@@ -1,6 +1,6 @@
 /*
 
- $Id: scauchy.cc,v 1.2 2003/02/26 01:36:27 garrett Exp $
+ $Id: scauchy.cc,v 1.3 2003/02/27 02:13:47 lindy Exp $
 
 */
 
@@ -8,41 +8,8 @@
 #include <config.h>
 #endif
 
-/* scauchy.cc */
 
-/***** RCS INFO **********************************************************
-
-$Id: scauchy.cc,v 1.2 2003/02/26 01:36:27 garrett Exp $
-$Source: /Users/mp/facil/autodock/git-luna/autodock-cvstar/scauchy.cc,v $
-$Log: scauchy.cc,v $
-Revision 1.2  2003/02/26 01:36:27  garrett
-
-General changes to generate identical output on each hardware/os
-platform (as much as possible):
-
-    -DUSE_DOUBLE compile switch introduced. Mixed float/double
-    precision would be used otherwise, as before the "pre-integration-305"
-    stage.  This switch controls the new typedef "FloatOrDouble", which is
-    "double" when -DUSE_DOUBLE is used as a compile-time flag, otherwise this
-    is typedef'ed to "float". (GMM, WML)
-
-    Prior to switching all floats to doubles, the AutoDock docking
-    log files often had differences in energies, coordinates or state
-    variables in the sixth (or so) decimal place of floats.
-
-Lindy added the HAVE_CONFIG_H compile-time switch with "config.h"
-in preparation for "autoconf" and "configure"... (WML)
-
-// Revision 3.0  1996/03/11  05:40:00  halliday
-// The function definition for the GA/LS hybrid.
-//
-Revision 1.1  1993/02/05  15:42:11  whart
-Initial revision
-
-
-****** RCS INFO *********************************************************/
-
-/* cauchy.c
+/* scauchy.cc
  *
  * Code for generating deviates from the Cauchy/Lorentzian distribution.
  *
