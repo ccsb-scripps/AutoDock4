@@ -345,7 +345,7 @@ ACRO_LINK= -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw
 
 LIB= $(ACRO_LINK)
 
-autodock4 : main.o $(ADLIB) $(COLINYLIB)
+autodock4 : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -353,7 +353,7 @@ autodock4 : main.o $(ADLIB) $(COLINYLIB)
 	@echo " "
 	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock4sqrt : main.o $(ADLIB) $(COLINYLIB)
+autodock4sqrt : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -361,7 +361,7 @@ autodock4sqrt : main.o $(ADLIB) $(COLINYLIB)
 	@echo " "
 	$(CC) $(CFLAGS) -o $@ main.o -L. -lad $(LIB)
 
-autodock4minpt : main.o $(ADLIB) $(COLINYLIB)
+autodock4minpt : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
