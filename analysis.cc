@@ -1,4 +1,12 @@
-/* analysis.cc */
+/*
+
+ $Id: analysis.cc,v 1.3 2003/02/27 01:58:12 lindy Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <math.h>
 
