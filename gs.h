@@ -34,7 +34,7 @@ class Genetic_Algorithm : public Global_Search
       unsigned int generations, max_generations;
       unsigned int converged; // gmm 7-jan-98
       unsigned int *ordering;
-      unsigned int outputEveryNgens = OUTLEV1_GENS; // gmm 2000.11.1,2003.08.18
+      unsigned int outputEveryNgens; // gmm 2000.11.1,2003.08.18
       FloatOrDouble *alloc, *mutation_table;
       EvalMode e_mode;
       Selection_Mode s_mode;
@@ -98,7 +98,7 @@ inline Genetic_Algorithm::Genetic_Algorithm(void)
    quatStep = torsStep = Rad( 50.0 );
    worst = avg = 0.0L;
    converged = 0; // gmm 7-jan-98
-   outputEveryNgens = 100; // gmm 2000-nov-1
+   outputEveryNgens = OUTLEV1_GENS; // gmm 2000-nov-1
 }
 
 inline Genetic_Algorithm::~Genetic_Algorithm(void)
