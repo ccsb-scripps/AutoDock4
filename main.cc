@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.11 2005/02/11 16:16:03 billhart Exp $
+ $Id: main.cc,v 1.12 2005/03/11 02:04:44 garrett Exp $
 
 */
 
@@ -34,6 +34,7 @@
 #include "autoglobal.h"
 #include "printdate.h"
 #include "parse_dpf_line.h"
+#include "parse_param_line.h"
 #include "print_2x.h"
 #include "strindex.h"
 #include "stop.h"
@@ -43,6 +44,7 @@
 #include "structs.h"
 #include "assert.h"
 #include "qmultiply.h"
+#include "parsetypes.h"
 
 #ifdef sun
     extern "C"
@@ -52,20 +54,15 @@
     }
 #endif
 
-#define RIJ_MIN 1.0
-#define RIJ_MAX 6.0
-#define EPSIJ_MIN 0.0
-#define EPSIJ_MAX 10.0
-
-extern int   debug;
-extern int   keepresnum;
+extern int debug;
+extern int keepresnum;
 extern FloatOrDouble idct;
+extern Eval evaluate;
+extern Linear_FE_Model AD4;
+
 
 int sel_prop_count = 0;
 
-extern Eval evaluate;
-
-// int main( int argc, char **argv, char **envp )
 
 int main (int argc, char * const argv[], char * const envp[])
 
@@ -118,7 +115,8 @@ int main (int argc, char * const argv[], char * const envp[])
 *******************************************************************************/
 
 {
-char atm_typ_str[ATOM_MAPS];
+char atm_typ_str[ATOM_MAPS]; //  "atm_typ_str" used to serve a similar role to "ligand_atom_types" in AD3.
+char *ligand_atom_type_ptrs[MAX_MAPS]; /* array of ptrs used to parse input line of atom type names */
 char atomstuff[MAX_ATOMS][MAX_CHARS];
 char error_message[LINE_LEN];
 char FN_clus[MAX_CHARS];
@@ -130,6 +128,7 @@ char FN_template_energy_file[MAX_CHARS];
 char FN_trj[MAX_CHARS];
 char FN_receptor[MAX_CHARS];
 char FN_rms_ref_crds[MAX_CHARS];
+char FN_parameter_library[MAX_CHARS];
 char hostnm[MAX_CHARS];
 char line[LINE_LEN];
 char line_template[LINE_LEN];
@@ -138,8 +137,16 @@ char param[2][MAX_CHARS];
 char timeSeedIsSet[2];
 char pdbaname[MAX_ATOMS][5];
 char selminpar = 'm';
-char S_contype[8]; 
+char S_contype[8];
 char torfmt[LINE_LEN];
+char *commentbegin;
+char ligand_atom_types[MAX_MAPS][3];
+
+
+ENTRY item, *found_item; /* hash-table search routine -- see hsearch(3C)*/
+static ParameterEntry thisParameter;
+ParameterEntry parameterArray[MAX_MAPS];
+
 
 FILE *template_energy_file;
 
@@ -148,14 +155,11 @@ FloatOrDouble crd[MAX_ATOMS][SPACE];
 FloatOrDouble lig_center[SPACE];
 FloatOrDouble map_center[SPACE];
 FloatOrDouble vt[MAX_TORS][SPACE];
-FloatOrDouble c=0.;
 FloatOrDouble cA;
 FloatOrDouble cB;
 FloatOrDouble charge[MAX_ATOMS];
-FloatOrDouble clus_rms_tol = 0.;
-FloatOrDouble e0max = BIG;
-FloatOrDouble eintra = 0.0;
-FloatOrDouble einter = 0.0;
+FloatOrDouble abs_charge[MAX_ATOMS];
+FloatOrDouble qsp_abs_charge[MAX_ATOMS];
 FloatOrDouble econf[MAX_RUNS];
 FloatOrDouble elec[MAX_ATOMS];
 FloatOrDouble emap[MAX_ATOMS];
@@ -166,38 +170,15 @@ FloatOrDouble F_tor;
 FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2];
 FloatOrDouble F_torPref;
 FloatOrDouble F_torHWdth;
-FloatOrDouble FE_estat_coeff = 1.0;
-FloatOrDouble inv_spacing = 0.;
-FloatOrDouble qtwFac = 1.0;
-FloatOrDouble qtwStep0 = 5.;
-FloatOrDouble qtwStepFinal = 5.0;
 FloatOrDouble mapmax[MAX_MAPS];
 FloatOrDouble mapmin[MAX_MAPS];
-FloatOrDouble maxrad = -1.;
 FloatOrDouble q1q2[MAX_NONBONDS];
-FloatOrDouble r2sum=0.;
 FloatOrDouble Rij;
-FloatOrDouble RJ = 8.31441;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
-FloatOrDouble Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
-FloatOrDouble T0K = 273.15;        // 0 degrees Celsius, in K
-FloatOrDouble RTreduc = 1.;
-FloatOrDouble spacing = 0.;
 FloatOrDouble sqlower;
 FloatOrDouble squpper;
-FloatOrDouble RT0 = 616.;
-FloatOrDouble RTFac = 0.95;
 FloatOrDouble template_energy[MAX_ATOMS]; // template energy value for each atom
 FloatOrDouble template_stddev[MAX_ATOMS]; // and standard deviation of this energy
 FloatOrDouble tmpconst;
-FloatOrDouble torsdoffac = 0.3113;
-FloatOrDouble torsFreeEnergy = 0.0;
-FloatOrDouble torFac = 1.0;
-FloatOrDouble torStep0 = 5.;
-FloatOrDouble torStepFinal = 5.0;
-FloatOrDouble trnFac = 1.0;
-FloatOrDouble trnStep0 = 0.2;
-FloatOrDouble trnStepFinal = 0.2;
-FloatOrDouble WallEnergy = 1.0e8; /* Energy barrier beyond walls of gridmaps. */
 FloatOrDouble xhi;
 FloatOrDouble xlo;
 FloatOrDouble yhi;
@@ -205,9 +186,107 @@ FloatOrDouble ylo;
 FloatOrDouble zhi;
 FloatOrDouble zlo;
 
-unsigned short US_TorE[MAX_TORS];
-unsigned int extOutputEveryNgens = 100;
+// Distance-dependence in Desolvation Term
+const double sigma = 3.6L;
+const double qsolpar = 0.01097L;
 
+// i
+double Ri, epsi, Ri_hb, epsi_hb;
+hbond_type hbondi;
+// j
+double Rj, epsj, Rj_hb, epsj_hb;
+hbond_type hbondj;
+
+#ifdef USE_DOUBLE
+FloatOrDouble scale_1_4 = 0.5L;
+FloatOrDouble c=0.0L;
+FloatOrDouble clus_rms_tol = 0.0L;
+FloatOrDouble e0max = BIG;
+FloatOrDouble eintra = 0.0L;
+FloatOrDouble einter = 0.0L;
+FloatOrDouble AD3_FE_coeff_estat   = 1.000L;
+FloatOrDouble inv_spacing = 0.0L;
+FloatOrDouble qtwFac = 1.0L;
+FloatOrDouble qtwStep0 = 5.0L;
+FloatOrDouble qtwStepFinal = 5.0L;
+FloatOrDouble maxrad = -1.0L;
+FloatOrDouble r2sum=0.0L;
+FloatOrDouble RJ = 8.31441L;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
+FloatOrDouble Rcal = 1.9871917L; // in cal/K/mol, Gas Constant, RJ/4.184
+FloatOrDouble T0K = 273.15L;     // 0 degrees Celsius, in K
+FloatOrDouble RTreduc = 1.0L;
+FloatOrDouble spacing = 0.0L;
+FloatOrDouble RT0 = 616.0L;
+FloatOrDouble RTFac = 0.95L;
+FloatOrDouble torsdoffac = 0.3113L;
+FloatOrDouble torsFreeEnergy = 0.0L;
+FloatOrDouble torFac = 1.0L;
+FloatOrDouble torStep0 = 5.0L;
+FloatOrDouble torStepFinal = 5.0L;
+FloatOrDouble trnFac = 1.0L;
+FloatOrDouble trnStep0 = 0.2L;
+FloatOrDouble trnStepFinal = 0.2L;
+FloatOrDouble WallEnergy = 1.0e8L; /* Energy barrier beyond walls of gridmaps. */
+//  The GA Stuff
+FloatOrDouble m_rate = 0.02L;
+FloatOrDouble c_rate = 0.80L;
+FloatOrDouble alpha = 0.0L;
+FloatOrDouble beta = 1.0L;
+FloatOrDouble search_freq = 0.06L;
+FloatOrDouble rho = 1.0L;
+FloatOrDouble lb_rho = 0.01L;
+FloatOrDouble *rho_ptr = NULL;
+FloatOrDouble *lb_rho_ptr = NULL;
+FloatOrDouble unbound_ligand_FE = 0.0L;
+
+#else
+FloatOrDouble scale_1_4 = 0.5;
+FloatOrDouble c=0.0;
+FloatOrDouble clus_rms_tol = 0.0;
+FloatOrDouble e0max = BIG;
+FloatOrDouble eintra = 0.0;
+FloatOrDouble einter = 0.0;
+FloatOrDouble AD3_FE_coeff_estat   = 1.000;
+FloatOrDouble inv_spacing = 0.0;
+FloatOrDouble qtwFac = 1.0;
+FloatOrDouble qtwStep0 = 5.0;
+FloatOrDouble qtwStepFinal = 5.0;
+FloatOrDouble maxrad = -1.0;
+FloatOrDouble r2sum=0.0;
+FloatOrDouble RJ = 8.31441;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
+FloatOrDouble Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
+FloatOrDouble T0K = 273.15;        // 0 degrees Celsius, in K
+FloatOrDouble RTreduc = 1.0;
+FloatOrDouble spacing = 0.0;
+FloatOrDouble RT0 = 616.0;
+FloatOrDouble RTFac = 0.95;
+FloatOrDouble torsdoffac = 0.3113;
+FloatOrDouble torsFreeEnergy = 0.0;
+FloatOrDouble torFac = 1.0;
+FloatOrDouble torStep0 = 5.0;
+FloatOrDouble torStepFinal = 5.0;
+FloatOrDouble trnFac = 1.0;
+FloatOrDouble trnStep0 = 0.2;
+FloatOrDouble trnStepFinal = 0.2;
+FloatOrDouble WallEnergy = 1.0e8; /* Energy barrier beyond walls of gridmaps. */
+//  The GA Stuff
+FloatOrDouble m_rate = 0.02;
+FloatOrDouble c_rate = 0.80;
+FloatOrDouble alpha = 0;
+FloatOrDouble beta = 1;
+FloatOrDouble search_freq = 0.06;
+FloatOrDouble rho = 1.0;
+FloatOrDouble lb_rho = 0.01;
+FloatOrDouble *rho_ptr = NULL;
+FloatOrDouble *lb_rho_ptr = NULL;
+FloatOrDouble unbound_ligand_FE = 0.0;
+
+#endif
+
+unsigned short US_TorE[MAX_TORS];
+unsigned int outputEveryNgens = 100;
+
+Boole B_atom_types_found = FALSE;
 Boole B_isGaussTorCon = FALSE;
 Boole B_constrain_dist;
 Boole B_either = FALSE;
@@ -237,7 +316,9 @@ Boole B_CalcTrnRF = FALSE;
 Boole B_CalcQtwRF = FALSE;
 Boole B_CalcTorRF = FALSE;
 Boole B_charMap = FALSE;
-// Boole B_do_simanneal = FALSE;
+Boole B_include_1_4_interactions = FALSE;  // This was the default behaviour in previous AutoDock versions (1 to 3).
+Boole B_found_move_keyword = FALSE;
+Boole B_hash_table_created = FALSE;
 
 
 int atm1=0;
@@ -250,6 +331,7 @@ int curatm=0;
 int dpf_keyword = -1;
 int gridpts1[SPACE];
 int gridpts[SPACE];
+int hbond = 0;
 int Htype = 0;
 int ncycles = -1;
 int iCon=0;
@@ -261,7 +343,8 @@ int nruns = 0;
 int nstepmax = -1;
 int naccmax = 0;
 int natom = 0;
-int nonbondlist[MAX_NONBONDS][4];
+int nonbondlist[MAX_NONBONDS][MAX_NBDATA];
+int nonbond14list[MAX_NONBONDS][4];
 int nconf = 0;
 int ncycm1 = 1;
 int ndihed = 0;
@@ -269,13 +352,13 @@ int nlig = 0;
 int nres = 0;
 int nmol = 0;
 int Nnb = 0;
-int Nnbonds[MAX_ATOMS]; /* num. non-bonded interactions for each atom */
+int Nnb14 = 0;
 int nrejmax = 0;
 int ntor;
 int ntor1;
 int ntorsdof = 0;
 int num_all_maps = 0;
-int num_atm_maps = 0;
+int num_atom_types = 0;
 int nval = 0;
 int outlev = -1;
 int retval = 0;
@@ -285,6 +368,7 @@ int trj_end_cyc = 0;
 int trj_begin_cyc = 0;
 int trj_freq = 0;
 int type[MAX_ATOMS];
+int bond_index[MAX_ATOMS];
 int xA;
 int xB;
 int I_tor;
@@ -295,6 +379,9 @@ int OutputEveryNTests = 1000;
 int NumLocalTests = 10;
 int maxTests = 10000;
 int ignore_inter[MAX_ATOMS];
+int nfields;
+int par_lib_FN_found = 0;
+int param_keyword = -1;
 /* int beg; */
 /* int end; */
 /* int imol = 0; */
@@ -318,16 +405,18 @@ State sHist[MAX_RUNS];  /*qtnHist[MAX_RUNS][QUAT],torHist[MAX_RUNS][MAX_TORS];*/
 Molecule mol;        /* ligand */
 
 static FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS];
-static FloatOrDouble ELECSCALE = 83.015909;      /* relative dielectric epsilon = 4*r */
-/* static FloatOrDouble ELECSCALE = 332.06363;   // relative dielectric epsilon = r   */
+static FloatOrDouble sol_fn[NEINT];  // internal desolvation energy function
 static FloatOrDouble F_A_from;
 static FloatOrDouble F_A_to;
 static FloatOrDouble F_lnH;
 static FloatOrDouble F_W;
 static FloatOrDouble F_hW;
 static FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
-static FloatOrDouble version = 4.00;
 static FourByteLong clktck = 0;
+
+static FloatOrDouble ELECSCALE = 83.015909;      /* relative dielectric epsilon = 4*r */
+/* static FloatOrDouble ELECSCALE = 332.06363;   // relative dielectric epsilon = r   */
+static FloatOrDouble version = 4.00;
 
 struct tms tms_jobStart;
 struct tms tms_gaStart;
@@ -351,15 +440,7 @@ int window_size = 10;
 int low = 0;
 int high = 100;
 int elitism = 1;
-FloatOrDouble m_rate = 0.02;
-FloatOrDouble c_rate = 0.80;
-FloatOrDouble alpha = 0;
-FloatOrDouble beta = 1;
-FloatOrDouble search_freq = 0.06;
-FloatOrDouble rho = 1.0;
-FloatOrDouble lb_rho = 0.01;
-FloatOrDouble *rho_ptr = NULL;
-FloatOrDouble *lb_rho_ptr = NULL;
+
 
 Selection_Mode s_mode = Proportional;
 Xover_Mode c_mode = TwoPt;
@@ -367,6 +448,9 @@ Worst_Mode w_mode = AverageOfN;
 EvalMode e_mode = Normal_Eval;
 Global_Search *GlobalSearchMethod = NULL;
 Local_Search *LocalSearchMethod = NULL;
+
+GridMap grid_map;
+
 
 //______________________________________________________________________________
 /*
@@ -392,11 +476,11 @@ if ( setflags(argc,argv) == -1) {
 (void) strcpy( torfmt, "%*s\0" ); /* len(torfmt) is 4 chars */
 
 for (j = 0;  j < MAX_ATOMS;  j++ ) {
-    Nnbonds[j] = type[j] = 0;
+    type[j] = 0;
     template_energy[j] = 0.0;
     template_stddev[j] = 1.0;
     ignore_inter[j] = 0;
-} 
+}
 
 for (i = 0; i  < MAX_TORS;  i++ ) {
     for (j = 0;  j < MAX_ATOMS;  j++ ) {
@@ -413,14 +497,14 @@ for (i = 0; i  < MAX_TORS;  i++ ) {
 initialiseState( &sInit );
 initialiseState( &(mol.S) );
 
-F_W      =  360. / NTORDIVS;
-F_hW     =  F_W  / 2.;
-F_A_from = -360. + F_hW;
-F_A_to   =  360. + F_hW;
+F_W      =  360.0 / NTORDIVS;
+F_hW     =  F_W  / 2.0;
+F_A_from = -360.0 + F_hW;
+F_A_to   =  360.0 + F_hW;
 
 for (k = 0; k < MAX_RUNS; k++) {
     for (i = 0; i  < MAX_TORS;  i++ ) {
-        sHist[k].tor[i] = 0.;
+        sHist[k].tor[i] = 0.0;
     }
 }
 
@@ -440,12 +524,12 @@ for (j = 0; j < MAX_NONBONDS; j++) {
 
 for (j = 0; j < MAX_RUNS; j++) {
     // isort[j] = j;
-    econf[j] = 0.;
+    econf[j] = 0.0;
 }
 
 B_constrain_dist = B_haveCharges = FALSE;
 ntor1 = ntor = atomC1 = atomC2 = 0;
-sqlower = squpper = 0.;
+sqlower = squpper = 0.0;
 
 timeSeedIsSet[0] = 'F';
 timeSeedIsSet[1] = 'F';
@@ -455,10 +539,11 @@ if (clktck == 0) {        /* fetch clock ticks per second first time */
         stop("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
         exit( -1 );
     } else {
-        idct = (FloatOrDouble)1. / (FloatOrDouble)clktck;
+        idct = (FloatOrDouble)1.0 / (FloatOrDouble)clktck;
         if (debug) {
+            pr(logFile, "N.B. debug is on and set to %d\n\n", debug);
             pr(logFile, "\n\nFYI:  Number of clock ticks per second = %d\n", clktck);
-			pr(logFile, "FYI:  Elapsed time per clock tick = %.3e seconds\n\n\n\n", idct);
+            pr(logFile, "FYI:  Elapsed time per clock tick = %.3e milli-seconds\n\n\n\n", idct * 1000. );
         }
     }
 }
@@ -471,6 +556,22 @@ if (clktck == 0) {        /* fetch clock ticks per second first time */
 */
 
 F_lnH = ((FloatOrDouble)log(0.5));
+
+//______________________________________________________________________________
+//
+// Create a hash search table for the Rij,epsij parameter dictionary,
+// using hsearch and <search.h>
+//
+
+if (hcreate(MAX_NUM_AUTOGRID_TYPES) == 0) {
+    prStr( error_message,"%s: ERROR:  Could not create the hash table needed to store the AutoDock parameters.\n", programname );
+    pr_2x( logFile, stderr, error_message );
+    B_hash_table_created = FALSE;
+    exit(-1);
+} else {
+    B_hash_table_created = TRUE;
+};
+
 
 //______________________________________________________________________________
 /*
@@ -504,7 +605,7 @@ pr( logFile, "Parameter file used for this docking:\t\t%s\n\n", dock_param_fn );
 
 //______________________________________________________________________________
 /*
-** Start reading in the parameter/run-control file,
+** Start reading in the DPF parameter/run-control file,
 */
 
 while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
@@ -546,14 +647,58 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
+    case DPF_OUTLEV:
+        /*
+        **  outlev
+        **  Output level,
+        */
+        retval = sscanf( line, "%*s %d", &outlev );
+        switch ( outlev ) {
+        case -1:
+            pr( logFile, "Output Level = -1.  ONLY STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
+            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            break;
+        case 0:
+            pr( logFile, "Output Level = 0.  NO OUTPUT DURING DOCKING.\n" );
+            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            break;
+        case 1:
+            pr( logFile, "Output Level = 1.  MINIMUM OUTPUT DURING DOCKING.\n" );
+            outputEveryNgens = (unsigned int) OUTLEV1_GENS;
+            break;
+        case 2:
+        default:
+            pr( logFile, "Output Level = 2.  FULL OUTPUT DURING DOCKING.\n" );
+            outputEveryNgens = (unsigned int) OUTLEV2_GENS;
+            break;
+        }
+        pr( logFile, "\n\tOutput every %u generations.\n", outputEveryNgens );
+        (void) fflush(logFile);
+        break;
+
+//______________________________________________________________________________
+
     case DPF_TYPES:
         /*
         ** types
+        **       - for backwards compatibility with AutoDock 3 and earlier.
         ** ATOM_TYPE_NAMES
         */
-        (void) strncpy( atm_typ_str, "????????", (size_t)ATOM_MAPS);
-        // TO DO: add outlev
-        dpftypes( &Htype,&num_all_maps,&num_atm_maps,atm_typ_str,line );
+        for (i=0; i<ATOM_MAPS-1; i++) {
+            atm_typ_str[i] = '?'; 
+        }
+        atm_typ_str[ATOM_MAPS-1] = '\0';
+        // This is deprecated 
+        prStr( error_message, "%s: WARNING:  In AutoDock 4, the new command, \"ligand_types\" is preferable to the \"types\" command.\n\n", programname);
+        pr_2x( logFile, stderr, error_message );
+        dpftypes( &Htype, &num_all_maps, &num_atom_types, atm_typ_str, line );
+        if (num_atom_types > 0) {
+            B_atom_types_found = TRUE;
+        } else {
+            prStr( error_message, "%s:  ERROR!  No atom types have been found; we cannot continue without this information!\n\n", programname );
+            pr_2x( logFile, stderr, error_message );
+            exit(-1);
+        }
         (void) fflush(logFile);
         break;
 
@@ -566,15 +711,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** Read the (AVS-format) grid data file, .fld
         */
         // TO DO: add outlev
-        readfield( &inv_spacing, &spacing, FN_gdfld, 
-            FN_gpf, gridpts1, gridpts, &xhi,&yhi,&zhi, 
-            jobStart, line, &xlo,&ylo,&zlo, FN_receptor, 
+        readfield( &inv_spacing, &spacing, FN_gdfld,
+            FN_gpf, gridpts1, gridpts, &xhi,&yhi,&zhi,
+            jobStart, line, &xlo,&ylo,&zlo, FN_receptor,
             map_center, tms_jobStart );
         (void) fflush(logFile);
         break;
 
 //______________________________________________________________________________
- 
+
     case DPF_MAP:
         /*
         ** map
@@ -582,16 +727,25 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** Read in active site grid map...
         */
         B_charMap = FALSE;
-        // TO DO: add outlev
-        readmap( &B_havemap, &imap, &num_atm_maps, &spacing, 
-            atm_typ_str, FN_gdfld, gridpts1, gridpts, 
-            jobStart, line, FN_receptor, map, map_center, 
-            mapmax, mapmin, tms_jobStart, B_charMap );
+        // "imap" is incremented each time we call "readmap".
+        // map_index could be incremented here if we had the atom_type stored in each map...
+        if (B_atom_types_found == TRUE) {
+            readmap( &B_havemap, &imap, &num_atom_types, &spacing,
+                     ligand_atom_types, FN_gdfld, gridpts1, gridpts,
+                     jobStart, line, FN_receptor, map, map_center,
+                     mapmax, mapmin, tms_jobStart, B_charMap, outlev);
+                     //grid_map
+                   //);
+        } else {
+            prStr( error_message, "%s:  ERROR! No atom types have been found; we cannot continue without this information!\n\n", programname );
+            pr_2x( logFile, stderr, error_message );
+            exit(-1);
+        }
         (void) fflush(logFile);
         break;
 
 //______________________________________________________________________________
- 
+
     case DPF_CHARMAP:
         /*
         ** charmap
@@ -599,13 +753,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** Read in active site grid map...
         */
         B_charMap = TRUE;
-        // TO DO: add outlev
-        readmap( &B_havemap, &imap, &num_atm_maps, &spacing, 
-            atm_typ_str, FN_gdfld, gridpts1, gridpts, 
-            jobStart, line, FN_receptor, map, map_center, 
-            mapmax, mapmin, tms_jobStart, B_charMap );
+        if (B_atom_types_found == TRUE) {
+            readmap( &B_havemap, &imap, &num_atom_types, &spacing,
+                     ligand_atom_types, FN_gdfld, gridpts1, gridpts,
+                     jobStart, line, FN_receptor, map, map_center,
+                     mapmax, mapmin, tms_jobStart, B_charMap, outlev);
+                     // grid_map
+                   // );
+        } else {
+            prStr( error_message, "%s:  ERROR! No atom types have been found; we cannot continue without this information!\n\n", programname );
+            pr_2x( logFile, stderr, error_message );
+            exit(-1);
+        }
         (void) fflush(logFile);
         break;
+
 //______________________________________________________________________________
 
     case DPF_MOVE:
@@ -613,19 +775,30 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** move
         ** Movable ligand,
         */
-        // TO DO: add outlev
-        mol = readPDBQ( line,
-             atm_typ_str, num_atm_maps,
-             &natom, 
-             crdpdb, charge, &B_haveCharges, type,
-             pdbaname, FN_ligand, atomstuff, Htype,
-             &B_constrain_dist, &atomC1, &atomC2, 
-             &sqlower, &squpper,
-             &ntor1, &ntor, tlist, vt, 
-             &Nnb, Nnbonds, nonbondlist,
-             jobStart, tms_jobStart, hostnm, &ntorsdof, outlev,
-             ignore_inter);
+        B_found_move_keyword = TRUE;
 
+        print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
+
+        mol = readPDBQT(line,
+                        num_atom_types,
+                        &natom,
+                        crdpdb, charge, &B_haveCharges,
+                        type, bond_index,
+                        pdbaname, FN_ligand, atomstuff, Htype,
+                        &B_constrain_dist, &atomC1, &atomC2,
+                        &sqlower, &squpper,
+                        &ntor1, &ntor, tlist, vt,
+                        &Nnb, nonbondlist,
+                        jobStart, tms_jobStart, hostnm, &ntorsdof, outlev,
+                        ignore_inter,
+                        B_include_1_4_interactions);
+
+        // pre-calculate some values we will need later in computing the desolvation energy
+        //
+        for (i=0; i<natom; i++) {
+            abs_charge[i] = fabs(charge[i]);
+            qsp_abs_charge[i] = qsolpar * abs_charge[i];
+        }
         pr(logFile, "Number of \"true\" ligand atoms:  %d\n", true_ligand_atoms+1);
 
         for (i=0;i<natom;i++) {
@@ -656,172 +829,163 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 /*____________________________________________________________________________*/
 
     case DPF_COLINY:
-      {
-      //ostdiostream fstr(logFile);
-      //ostdiostream fstr(logFile->_file);
-      //CommonIO::set_streams(&fstr,&fstr,&cin);
+    {
+        //ostdiostream fstr(logFile);
+        //ostdiostream fstr(logFile->_file);
+        //CommonIO::set_streams(&fstr,&fstr,&cin);
 
-	struct tms tms_colinyStart;
-	struct tms tms_colinyEnd;
-	
-	Clock  colinyStart;
-	Clock  colinyEnd;
+        struct tms tms_colinyStart;
+        struct tms tms_colinyEnd;
 
-      char algname[64];
-      char nruns_str[64];
-      (void) sscanf(line, "%*s %s %d", algname, &nruns);
-      (void) sscanf(line, "%*s %s %s", algname, nruns_str);
+        Clock  colinyStart;
+        Clock  colinyEnd;
 
-      if (strcmp(algname,"help")==0) {
-	 utilib::BasicArray<double> initvec;
-	 coliny_init(algname, "", initvec);
-	 prStr(error_message, "ERROR:  no optimizer type specified.");
-	 stop(error_message);
-	 exit(-1);
-	 }
-      else if (strcmp(nruns_str,"help")==0) {
-	 utilib::BasicArray<double> initvec;
-	 coliny_init(algname, nruns_str, initvec);
-	 prStr(error_message, "ERROR:  no optimizer type specified.");
-	 stop(error_message);
-	 exit(-1);
-	 }
+        char algname[64];
+        char nruns_str[64];
+        (void) sscanf(line, "%*s %s %d", algname, &nruns);
+        (void) sscanf(line, "%*s %s %s", algname, nruns_str);
 
-      if (!command_mode) {
-	  if (nruns>MAX_RUNS) {
+        if (strcmp(algname,"help")==0) {
+            utilib::BasicArray<double> initvec;
+            coliny_init(algname, "", initvec);
+            prStr(error_message, "ERROR:  no optimizer type specified.");
+            stop(error_message);
+            exit(-1);
+        }
+        else if (strcmp(nruns_str,"help")==0) {
+            utilib::BasicArray<double> initvec;
+            coliny_init(algname, nruns_str, initvec);
+            prStr(error_message, "ERROR:  no optimizer type specified.");
+            stop(error_message);
+            exit(-1);
+        }
 
-	      prStr(error_message, "ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", nruns, MAX_RUNS);
-	      stop(error_message);
-	      exit(-1);
+        if (!command_mode) {
+            if (nruns>MAX_RUNS) {
+                prStr(error_message, "ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", nruns, MAX_RUNS);
+                stop(error_message);
+                exit(-1);
+            }
 
-	  } 
+            /*
+            evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, inv_spacing,
+                         elec, emap,
+                         xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
+                         e_internal, Nnb, B_calcIntElec, q1q2, B_isGaussTorCon,
+                         B_isTorConstrained, B_ShowTorE, US_TorE, US_torProfile,
+                         vt, tlist, crdpdb, sInit, sol_fn, parameterArray);
+                         */
+            evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, inv_spacing,
+                           elec, emap,
+                           xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
+                           e_internal, Nnb, B_calcIntElec, q1q2, B_isGaussTorCon,
+                           B_isTorConstrained, B_ShowTorE, US_TorE, US_torProfile,
+                           vt, tlist, crdpdb, sInit, mol,
+                           B_template, template_energy, template_stddev,
+                           ignore_inter,
+                           B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
-	  /*
-	  evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
-			 elec, emap,
-			 xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
-			 e_internal, Nnb, B_calcIntElec, q1q2, B_isGaussTorCon,
-			 B_isTorConstrained, B_ShowTorE, US_TorE, US_torProfile,
-			 vt, tlist, crdpdb, sInit);
-			 */
-          evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
-              elec, emap,
-              xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist, e_internal, Nnb, 
-              B_calcIntElec, q1q2, B_isGaussTorCon, B_isTorConstrained,
-              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol, 
-              B_template, template_energy, template_stddev,
-              ignore_inter);
+            char domain[1024];
+            // NOTE: Coliny enforces the bound constraints, but since the
+            // torsion angles are periodic, we simply prevent the optimizer
+            // from going too far.
+            if (sInit.ntor > 0) {
+                sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-6.2832,12.5664] [-6.2832,12.5664]^%d",(double)xlo, (double)xhi, (double)ylo, (double)yhi, (double)zlo, (double)zhi, sInit.ntor);
+            } else {
+                sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-3.1416,3.1416]",(double)xlo, (double)xhi, (double)ylo, (double)yhi, (double)zlo, (double)zhi);
+            }
+            ucout << domain << endl;
+            ucout << Flush;
 
-    	#if 0
-          evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
-              		elec, emap,
-              		xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
-			e_internal, Nnb, B_calcIntElec, q1q2, B_isGaussTorCon,
-			B_isTorConstrained, B_ShowTorE, US_TorE, US_torProfile,
-			vt, tlist, crdpdb, sInit, mol, 
-              		B_template, template_energy, template_stddev);
-	#endif
+            pr(logFile, "Number of Coliny %s dockings = %d run%c\n", algname, nruns, (nruns>1)?'s':' ');
 
-	  char domain[1024];
-          // NOTE: Coliny enforces the bound constraints, but since the 
-	  // torsion angles are periodic, we simply prevent the optimizer 
-	  // from going too far.
-          if (sInit.ntor > 0)
-	     sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-6.2832,12.5664] [-6.2832,12.5664]^%d",(double)xlo, (double)xhi, (double)ylo, (double)yhi, (double)zlo, (double)zhi, sInit.ntor);
-          else 
-	     sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-3.1416,3.1416]",(double)xlo, (double)xhi, (double)ylo, (double)yhi, (double)zlo, (double)zhi);
-	  ucout << domain << endl;
-	  ucout << Flush;
+            //
+            // COLINY-SPECIFIC LOGIC - BEGIN
+            //
 
-	  pr(logFile, "Number of Coliny %s dockings = %d run%c\n", algname,
-			nruns, (nruns>1)?'s':' ');
+            try {
 
-	  //
-	  // COLINY-SPECIFIC LOGIC - BEGIN
-	  //
+                utilib::BasicArray<double> initvec, finalpt;
+                coliny_init(algname, domain, initvec);
 
-	  try {
+                for (j=0; j<nruns; j++) {
 
-	  utilib::BasicArray<double> initvec, finalpt;
-	  coliny_init(algname, domain, initvec);
-	  
-	  for (j=0; j<nruns; j++) {
+                  fprintf( logFile, "\n\n\tBEGINNING Coliny %s DOCKING\n",algname);
+                  pr(logFile, "\nDoing %s run:  %d/%d.\n", algname, j+1, nruns);
 
-	      fprintf( logFile, "\n\n\tBEGINNING Coliny %s DOCKING\n",algname);
-	      pr(logFile, "\nDoing %s run:  %d/%d.\n", algname, j+1, nruns);
+                  if (timeSeedIsSet[0] == 'T') {
+                      seed[0] = (FourByteLong)time( &time_seed );
+                  }
+                  if (timeSeedIsSet[1] == 'T') {
+                      seed[1] = (FourByteLong)time( &time_seed );
+                  }
+                  setall(seed[0], seed[1]);
+                  initgn(-1); // Reinitializes the state of the current generator
 
-	      if (timeSeedIsSet[0] == 'T') {
-		  seed[0] = (FourByteLong)time( &time_seed );
-	      }
-	      if (timeSeedIsSet[1] == 'T') {
-		  seed[1] = (FourByteLong)time( &time_seed );
-	      }
-	      setall(seed[0], seed[1]);
-	      initgn(-1); // Reinitializes the state of the current generator
+                  pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
+                  (void) fflush(logFile);
 
-	      pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
-	      (void) fflush(logFile);
+                  colinyStart = times(&tms_colinyStart);
 
-	      colinyStart = times(&tms_colinyStart);
+                  finalpt.resize( initvec.size() );
+                  int neval, niters;
+                  coliny_minimize( seed[0]+seed[1]*j+j, initvec, finalpt, neval,
+                                    niters );
+                  //fstr.flush();
 
-	      finalpt.resize( initvec.size() );
-	      int neval, niters;
-	      coliny_minimize( seed[0]+seed[1]*j+j, initvec, finalpt, neval,
-				niters );
-	      //fstr.flush();
+                  make_state_from_rep( finalpt, finalpt.size(), &sHist[nconf]);
 
-	      make_state_from_rep( finalpt.data(), finalpt.size(), &sHist[nconf]);
+                  pr(logFile, "\nFinal docked state:\n");
+                  pr(logFile, "\nTotal Num Evals: %d\n", neval);
+                  printState(logFile, sHist[nconf], 2);
 
-	      pr(logFile, "\nFinal docked state:\n");
-	      pr(logFile, "\nTotal Num Evals: %d\n", neval);
-	      printState(logFile, sHist[nconf], 2);
+                  colinyEnd = times(&tms_colinyEnd);
+                  pr(logFile, "Time taken for this %s run:\n", algname);
+                  timesyshms(colinyEnd-colinyStart, &tms_colinyStart, &tms_colinyEnd);
+                  pr(logFile, "\n");
+                  (void) fflush(logFile);
 
-	      colinyEnd = times(&tms_colinyEnd);
-	      pr(logFile, "Time taken for this %s run:\n", algname);
-	      timesyshms(colinyEnd-colinyStart, &tms_colinyStart, &tms_colinyEnd);
-	      pr(logFile, "\n");
-	      (void) fflush(logFile);
- 
-	      pr(logFile, "Total number of Energy Evaluations: %d\n", evaluate.evals() );
-	      pr(logFile, "Total number of Iterations:        %d\n", niters);
- 
+                  pr(logFile, "Total number of Energy Evaluations: %d\n", evaluate.evals() );
+                  pr(logFile, "Total number of Iterations:        %d\n", niters);
 
-	      pr( logFile, UnderLine );
-	      pr( logFile, "\n\n\tFINAL Coliny %s DOCKED STATE\n",algname );
-	      pr( logFile,     "\t____________________________________\n\n\n" );
+                  pr( logFile, UnderLine );
+                  pr( logFile, "\n\n\tFINAL Coliny %s DOCKED STATE\n",algname );
+                  pr( logFile,     "\t____________________________________\n\n\n" );
 
-              writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center, 
-                    &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff, 
-                    crd, emap, elec, charge, 
-                    ligand_is_inhibitor,
-                    torsFreeEnergy,
-                    vt, tlist, crdpdb, nonbondlist, e_internal,
-                    type, Nnb, B_calcIntElec, q1q2,
-                    map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
-                    B_template, template_energy, template_stddev,
-                    outlev, 
-					ignore_inter);
+                  writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center,
+                        &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
+                        crd, emap, elec, 
+                        charge, abs_charge, qsp_abs_charge,
+                        ligand_is_inhibitor,
+                        torsFreeEnergy,
+                        vt, tlist, crdpdb, nonbondlist, e_internal,
+                        type, Nnb, B_calcIntElec, q1q2,
+                        map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
+                        B_template, template_energy, template_stddev,
+                        outlev,
+                        ignore_inter,
+                        B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
-	      econf[nconf] = eintra + einter; // new2
-		
-	      ++nconf;
+                  econf[nconf] = eintra + einter; // new2
 
-	  } // Next run
-	  (void) fflush(logFile);
-	  }
-	catch (std::exception& err) {
-	    (void)fprintf(logFile, "Caught Exception: %s\n", err.what());
-	    exit(1);
-	  }
+                  ++nconf;
 
-      } else {
-	    (void)fprintf(logFile, "NOTE: Command mode has been set, so optimization cannot be performed.\n\n");
-      }
-      }
-      break;
+                } // Next run
+                (void) fflush(logFile);
+            }
+            catch (std::exception& err) {
+                (void)fprintf(logFile, "Caught Exception: %s\n", err.what());
+                exit(1);
+            }
+
+        } else {
+            (void)fprintf(logFile, "NOTE: Command mode has been set, so optimization cannot be performed.\n\n");
+        }
+    }
+    break;
 #endif
 
- 
+
 //______________________________________________________________________________
 
     case DPF_ABOUT:
@@ -849,11 +1013,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             /*
             **  Zero-out on central point...
             */
-            maxrad = -1.;
-            
-            /* was: for ( i=0; i<natom; i++ ) { */
+            maxrad = -1.0;
+
+            /* was: for ( i=0; i<natom; i++ )  */
             for ( i=0; i<true_ligand_atoms; i++ ) { /*new, gmm, 6-23-1998*/
-                r2sum=0.;
+                r2sum=0.0;
                 for (xyz = 0;  xyz < SPACE;  xyz++) {
                     c = crd[i][xyz] = (crdpdb[i][xyz] -= lig_center[xyz]);
                     r2sum += c*c;
@@ -863,7 +1027,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             if (outlev >= 0) {
                 pr( logFile, "Furthest ligand atom from \"about\" center is %.3f Angstroms (maxrad).\n\n",maxrad);
             }
-
         }
         (void) fflush(logFile);
         break;
@@ -871,7 +1034,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case DPF_TRAN0:
-        /* 
+        /*
         **  tran0
         **  Initial_translation,
         */
@@ -910,10 +1073,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         if (equal(param[0],"random",6)) {
             B_RandomQuat0 = TRUE;
-            sInit.Q.nx  = random_range( -1.,   1. );
-            sInit.Q.ny  = random_range( -1.,   1. );
-            sInit.Q.nz  = random_range( -1.,   1. );
-            sInit.Q.ang = random_range(  0., 360. );
+            sInit.Q.nx  = random_range( -1.0,   1.0 );
+            sInit.Q.ny  = random_range( -1.0,   1.0 );
+            sInit.Q.nz  = random_range( -1.0,   1.0 );
+            sInit.Q.ang = random_range(  0.0, 360.0 );
 
             if (outlev >= 0) {
                 pr( logFile, "Each run will begin with a new, random initial quaternion.\n");
@@ -979,7 +1142,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             B_RandomDihe0 = TRUE;
             sInit.ntor = nval = ndihed;
             for ( i=0; i<nval; i++ ) {
-                sInit.tor[i] = random_range( -180., 180. );
+                sInit.tor[i] = random_range( -180.0, 180.0 );
             }
         } else {
             B_RandomDihe0 = FALSE;
@@ -1075,7 +1238,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case DPF_DSTEP:
-        /*  
+        /*
         **  dstep
         **  Torsion_step,
         */
@@ -1122,7 +1285,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (outlev >= 0) {
             pr( logFile, "Reduction factor for translations =\t%-.3f /cycle\n", trnFac );
         }
-        B_trnReduc = (trnFac != 1.);       
+        B_trnReduc = (trnFac != 1.);
         (void) fflush(logFile);
         break;
 
@@ -1181,7 +1344,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_INTNBP_REQM_EPS:
         /*
         **  intnbp_r_eps
-        **  Read internal energy parameters: 
+        **  Read internal energy parameters:
         **  Lennard-Jones and Hydrogen Bond Potentials,
         **  Using epsilon and r-equilibrium values...
         */
@@ -1195,7 +1358,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             (void) fprintf( logFile,
             "WARNING: pairwise distance, Rij, %.2f, is not a very reasonable value for the equilibrium separation of two atoms! (%.2f Angstroms <= Rij <= %.2f Angstroms)\n\n", Rij, RIJ_MIN, RIJ_MAX);
             (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
-            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS 
+            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
              * exit(-1); */
         }
         /* check that the epsij is reasonable */
@@ -1203,14 +1366,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             (void) fprintf( logFile,
             "WARNING: well-depth, epsilon_ij, %.2f, is not a very reasonable value for the equilibrium potential energy of two atoms! (%.2f kcal/mol <= epsilon_ij <= %.2f kcal/mol)\n\n", epsij, EPSIJ_MIN, EPSIJ_MAX);
             (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
-            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS 
+            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
              * exit(-1); */
         }
         /* Defend against division by zero... */
         if (xA != xB) {
             cA = (tmpconst = epsij / (FloatOrDouble)(xA - xB)) * pow( (double)Rij, (double)xA ) * (FloatOrDouble)xB;
             cB = tmpconst * pow( (double)Rij, (double)xB ) * (FloatOrDouble)xA;
-            intnbtable( &B_havenbp, &a1, &a2, num_atm_maps, atm_typ_str, cA, cB, xA, xB, e_internal );
+            intnbtable( &B_havenbp, &a1, &a2, num_atom_types, ligand_atom_types, cA, cB, xA, xB, e_internal, sol_fn, AD4.coeff_desolv, sigma );
         } else {
             pr(logFile,"WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
             exit(-1);
@@ -1223,7 +1386,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_INTNBP_COEFFS:
         /*
         **  intnbp_coeffs
-        **  Read internal energy parameters: 
+        **  Read internal energy parameters:
         **  Lennard-Jones and Hydrogen Bond Potentials,
         **  Using coefficients...
         */
@@ -1235,14 +1398,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         /* Defend against division by zero... */
         if (xA != xB) {
-            intnbtable( &B_havenbp, &a1, &a2, num_atm_maps, atm_typ_str, cA, cB, xA, xB, e_internal );
+            intnbtable( &B_havenbp, &a1, &a2, num_atom_types, ligand_atom_types, cA, cB, xA, xB, e_internal, sol_fn, AD4.coeff_desolv, sigma );
         } else {
             pr(logFile,"WARNING: Exponents must be different. Aborting...\n");
             exit(-1);
         }
 
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1258,7 +1421,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         #endif
         if (RT0 <= 0.) {
             pr( logFile, "\nWARNING!  Negative temperatures not allowed! Will default to RT = 616 cal mol.\n" );
-            RT0 = 616.;
+            RT0 = 616.0;
         }
         if (outlev >= 0) {
             pr( logFile, "\n\t\tTEMPERATURE SCHEDULE INFORMATION\n" );
@@ -1298,8 +1461,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             exit( -1 );
         }
         (void) fflush(logFile);
-        B_tempChange = ( RTFac != 1. );
-        break; 
+        B_tempChange = ( RTFac != 1.0 );
+        break;
 
 //______________________________________________________________________________
 
@@ -1316,7 +1479,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         pr( logFile, "Number of runs =\t\t\t\t%8d run%c\n", nruns, (nruns > 1)?'s':' ');
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1339,7 +1502,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1364,7 +1527,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1389,7 +1552,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1410,37 +1573,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
         }
         (void) fflush(logFile);
-        break; 
-
-//______________________________________________________________________________
-
-    case DPF_OUTLEV:
-        /*
-        **  outlev
-        **  Output level,
-        */
-        (void) sscanf( line, "%*s %d", &outlev );
-        switch ( outlev ) {
-        case -1:
-            pr( logFile, "Output Level = -1.  ONLY STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
-            extOutputEveryNgens = OUTLEV0_GENS;
-            break;
-        case 0:
-            pr( logFile, "Output Level = 0.  NO OUTPUT DURING DOCKING.\n" );
-            extOutputEveryNgens = OUTLEV0_GENS;
-            break;
-        case 1:
-            pr( logFile, "Output Level = 1.  MINIMUM OUTPUT DURING DOCKING.\n" );
-            extOutputEveryNgens = OUTLEV1_GENS;
-            break;
-        case 2:
-        default:
-            pr( logFile, "Output Level = 2.  FULL OUTPUT DURING DOCKING.\n" );
-            extOutputEveryNgens = OUTLEV2_GENS;
-            break;
-        }
-        (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1458,7 +1591,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "Maximum RMS tolerance for conformational cluster analysis = %.2f Angstroms\n", clus_rms_tol);
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1472,7 +1605,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "RMS reference coordinates will taken from \"%s\"\n", FN_rms_ref_crds );
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1499,7 +1632,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1508,7 +1641,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  trjbeg
         **  Trajectory begin cycle,
         */
-        (void) sscanf( line, "%*s %d", &trj_begin_cyc ); 
+        (void) sscanf( line, "%*s %d", &trj_begin_cyc );
         if (outlev >= 0) {
             pr( logFile, "Begin outputting trajectory of states at cycle:\t%d\n", trj_begin_cyc );
         }
@@ -1519,7 +1652,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         --trj_begin_cyc;
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1528,7 +1661,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  trjend
         **  Trajectory end cycle,
         */
-        (void) sscanf( line, "%*s %d", &trj_end_cyc ); 
+        (void) sscanf( line, "%*s %d", &trj_end_cyc );
         if (outlev >= 0) {
             pr( logFile, "Cease outputting trajectory of states at cycle:\t%d\n", trj_end_cyc );
         }
@@ -1539,7 +1672,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         --trj_end_cyc;
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1553,7 +1686,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "\nWrite trajectory of state variables to file: \"%s\"\n", FN_trj);
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1577,7 +1710,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "WARNING: Missing or unknown accepted/rejected output flag.\n" );
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1595,7 +1728,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "External grid energy (beyond grid map walls) = %.2f\n\n", WallEnergy );
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1609,12 +1742,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (outlev >= 0) {
             pr( logFile, "Cluster mode is now set.\n\n" );
         }
-        clmode( atm_typ_str, num_atm_maps, clus_rms_tol,
-          hostnm, jobStart, tms_jobStart, 
-          B_write_all_clusmem, FN_clus, crdpdb, lig_center, 
+        clmode( num_atom_types, clus_rms_tol,
+          hostnm, jobStart, tms_jobStart,
+          B_write_all_clusmem, FN_clus, crdpdb, lig_center,
           B_symmetry_flag, FN_rms_ref_crds );
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1627,7 +1760,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (outlev >= 0) {
             pr( logFile, "All members of each cluster will be written out after the clustering histogram.\n(This is instead of outputting just the lowest energy member in each.)\n\n" );
         }
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1642,7 +1775,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "Symmetry will be ignored in RMS calculations.\n\n" );
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1666,7 +1799,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1680,16 +1813,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "Internal electrostatic energies will be calculated.\n\n");
         }
         #ifdef USE_DOUBLE
-            retval = sscanf( line, "%*s %lf", &FE_estat_coeff );
+            retval = sscanf( line, "%*s %lf", &AD3_FE_coeff_estat );
         #else
-            retval = sscanf( line, "%*s %f", &FE_estat_coeff );
+            retval = sscanf( line, "%*s %f", &AD3_FE_coeff_estat );
         #endif
         if (retval == 1) {
             if (outlev >= 0) {
-                pr(logFile, "Internal electrostatics will be scaled by a factor of %.4f\n", FE_estat_coeff);
+                pr(logFile, "Internal electrostatics will be scaled by a factor of %.4f\n", AD3_FE_coeff_estat);
             }
         } else {
-            FE_estat_coeff = 1.0;
+            AD3_FE_coeff_estat = 1.0;
         }
         if (!B_haveCharges) {
             pr( logFile, "%s: WARNING! No partial atomic charges have been supplied yet.\n\n",programname);
@@ -1704,14 +1837,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     atm2 = nonbondlist[i][ATM2];
                     q1q2[i] = charge[atm1] * charge[atm2];
                     pr(logFile,"   %4d     %5d-%-5d    %5.2f",i+1,atm1+1,atm2+1,q1q2[i]);
-                    q1q2[i] *= ELECSCALE * FE_estat_coeff;
+                    q1q2[i] *= ELECSCALE * AD3_FE_coeff_estat;
                     pr(logFile,"    %5.2f\n",q1q2[i]);
                 }
                 pr(logFile,"\n");
             }
         }
         (void) fflush(logFile);
-        break; 
+        break;
 
 //______________________________________________________________________________
 
@@ -1783,8 +1916,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
-    case DPF_GAUSSTORCON: 
-    case DPF_HARDTORCON: 
+    case DPF_GAUSSTORCON:
+    case DPF_HARDTORCON:
         /*
         ** "gausstorcon" Add Gaussian torsion contraints,
         ** "hardtorcon"  Add Hard torsion contraints,
@@ -1807,7 +1940,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     B_isTorConstrained[I_tor] = 1;
                     /*
                     ** Initialize... Torsion Energy Profile...
-                    ** Set energies at every torsion division 
+                    ** Set energies at every torsion division
                     ** to the user-defined (maximum) barrier energy,
                     */
                     for (US_tD = 0;  US_tD < NTORDIVS;  US_tD++) {
@@ -1826,7 +1959,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 (void) strcpy( S_contype, " " );
             }
                 /*
-            ** F_torPref ranges from -180. to +180. degrees...
+            ** F_torPref ranges from -180.0 to +180.0 degrees...
             */
             F_torPref = Wrp(ModDeg(F_torPref));
             if (F_torHWdth < 0.) {
@@ -1846,7 +1979,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 */
                 for (F_A = F_A_from;  F_A <= F_A_to;  F_A += F_W) {
                     F_Aova = (F_A - F_torPref) / F_torHWdth;
-                    US_energy = (unsigned short) (((FloatOrDouble)US_torBarrier) * (1. - exp(F_lnH * F_Aova*F_Aova)));
+                    US_energy = (unsigned short) (((FloatOrDouble)US_torBarrier) * (1.0 - exp(F_lnH * F_Aova*F_Aova)));
                     /*
                     ** if F_A(<-180.or>180), wrap to -180to180,
                     */
@@ -1931,7 +2064,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr(logFile,"Using user-specified maximum number of retries for initialization, %d retries.\n\n", MaxRetries);
         }
         if (e0max < 0.) {
-            e0max = 1000.;
+            e0max = 1000.0;
         }
         pr(logFile,"\nIf the initial energy is greater than e0max, %.3f,\nthen a new, random initial state will be created.\n\n",e0max);
         (void) fflush(logFile);
@@ -1947,7 +2080,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** Calculate reduction factor based on initial and final step values,
         ** and number of cycles...
         */
-        // B_do_simanneal = TRUE;
         if (!command_mode) {
             ncycm1 = ncycles - 1;
             if (ncycm1 < 0) {
@@ -1956,7 +2088,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             if (B_CalcTrnRF) {
                 trnFac = RedFac(trnStep0, trnStepFinal, ncycm1);
                 pr( logFile, "Calculated reduction factor for translations     = %-.3f /cycle\n", trnFac);
-                B_trnReduc = (trnFac != 1.);       
+                B_trnReduc = (trnFac != 1.);
             }
             if (B_CalcQtwRF) {
                 qtwFac = RedFac(qtwStep0, qtwStepFinal, ncycm1);
@@ -1980,41 +2112,43 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
             pr(logFile, "\n");
             if (B_havenbp) {
-                nbe( atm_typ_str, e_internal, num_atm_maps );
+                nbe( atm_typ_str, e_internal, num_atom_types );
             }
             if (B_cluster_mode) {
-                clmode( atm_typ_str, num_atm_maps, clus_rms_tol,
-                  hostnm, jobStart, tms_jobStart, 
-                  B_write_all_clusmem, FN_clus, crdpdb, lig_center, 
+                clmode( num_atom_types, clus_rms_tol,
+                  hostnm, jobStart, tms_jobStart,
+                  B_write_all_clusmem, FN_clus, crdpdb, lig_center,
                   B_symmetry_flag, FN_rms_ref_crds );
             }
             for (j = 0; j < MAX_RUNS; j++) {
                 econf[j] = torsFreeEnergy;
             }
             /* ___________________________________________________________________
-            ** 
+            **
             ** Begin the automated docking simulation,
             ** ___________________________________________________________________
             */
-            simanneal(&nconf, Nnb, WallEnergy, atomstuff, charge,B_calcIntElec,
+            simanneal(&nconf, Nnb, WallEnergy, atomstuff, charge, abs_charge, qsp_abs_charge, B_calcIntElec,
                     q1q2,crd,crdpdb,dock_param_fn,e_internal,econf,B_either,
                     elec,emap,xhi,yhi,zhi,ncycles,inv_spacing,nruns,jobStart,
-                    xlo,ylo,zlo,map, 
-                    naccmax, natom, nonbondlist, nrejmax, ntor1, ntor, outlev, 
+                    xlo,ylo,zlo,map,
+                    naccmax, natom, nonbondlist, nrejmax, ntor1, ntor, outlev,
                     sInit, sHist,   qtwFac, B_qtwReduc, qtwStep0,
-                    B_selectmin,FN_ligand,lig_center,RT0,B_tempChange,RTFac, 
-                    tms_jobStart, tlist, torFac, B_torReduc, torStep0, 
-                    FN_trj, trj_end_cyc, trj_begin_cyc, trj_freq, trnFac,  
+                    B_selectmin,FN_ligand,lig_center,RT0,B_tempChange,RTFac,
+                    tms_jobStart, tlist, torFac, B_torReduc, torStep0,
+                    FN_trj, trj_end_cyc, trj_begin_cyc, trj_freq, trnFac,
                     B_trnReduc, trnStep0, type, vt, B_write_trj,
-                    B_constrain_dist, atomC1, atomC2, sqlower, squpper, 
-                    B_linear_schedule, RTreduc, 
+                    B_constrain_dist, atomC1, atomC2, sqlower, squpper,
+                    B_linear_schedule, RTreduc,
                     /*maxrad,*/
-                    B_watch, FN_watch, 
+                    B_watch, FN_watch,
                     B_isGaussTorCon, US_torProfile, B_isTorConstrained,
-                    B_ShowTorE, US_TorE, F_TorConRange, N_con, 
+                    B_ShowTorE, US_TorE, F_TorConRange, N_con,
                     B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                     e0max, torsFreeEnergy, MaxRetries, ligand_is_inhibitor,
-                    ignore_inter);
+                    ignore_inter,
+                    B_include_1_4_interactions, scale_1_4,
+                    sol_fn, parameterArray);
             (void) fflush(logFile);
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so simulated annealing cannot be performed.\n\n");
@@ -2030,8 +2164,26 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
           delete GlobalSearchMethod;
       }
 
-      pr(logFile, "Passing the current parameters to the Genetic Algorithm.\n");
-      GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate, window_size, num_generations, extOutputEveryNgens);
+      pr(logFile, "Creating a new Genetic Algorithm object with the current parameters.\n\n");
+      switch ( outlev ) {
+        case -1:
+            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            break;
+        case 0:
+            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            break;
+        case 1:
+            outputEveryNgens = (unsigned int) OUTLEV1_GENS;
+            break;
+        case 2:
+        default:
+            outputEveryNgens = (unsigned int) OUTLEV2_GENS;
+            break;
+      }
+      if (debug > 0) {
+          pr( logFile, "\n\tOutput every %u generations.\n", outputEveryNgens );
+      }
+      GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate, window_size, num_generations, outputEveryNgens);
       ((Genetic_Algorithm *)GlobalSearchMethod)->mutation_values(low, high, alpha, beta);
       ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
 
@@ -2046,7 +2198,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
           delete LocalSearchMethod;
       }
 
-      pr(logFile, "Passing the current settings to the local search Solis-Wets algorithm (SW1 object).\n");
+      pr(logFile, "Creating a new Local Search object using the Solis-Wets algorithm (SW1) with the current settings.\n\n");
       LocalSearchMethod = new Solis_Wets1(7+sInit.ntor, max_its, max_succ, max_fail, rho, lb_rho, 2.0, 0.5, search_freq);
 
       (void) fflush(logFile);
@@ -2060,7 +2212,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
           delete LocalSearchMethod;
       }
 
-      pr(logFile, "Passing the current settings to the local search pseudo-Solis-Wets algorithm (pSW1 object).\n");
+      pr(logFile, "Creating a new Local Search object using the pseudo-Solis-Wets algorithm (pSW1) with the current settings.\n\n");
 
       //  Allocate space for the variable rho's
       rho_ptr = new FloatOrDouble[7+sInit.ntor];
@@ -2115,13 +2267,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
             pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
 
-            evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
+            evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, inv_spacing,
               elec, emap,
-              xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist, e_internal, Nnb, 
+              xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist, e_internal, Nnb,
               B_calcIntElec, q1q2, B_isGaussTorCon, B_isTorConstrained,
-              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol, 
+              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol,
               B_template, template_energy, template_stddev,
-              ignore_inter);
+              ignore_inter,
+              B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
             for (j=0; j<nruns; j++) {
                 j1 = j + 1;
@@ -2152,14 +2305,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                 // Reiterate output level...
                 pr(logFile, "Output level is set to %d.\n\n", outlev);
-                
+
                 // Start Lamarckian GA run
-                sHist[nconf] = call_glss( GlobalSearchMethod, LocalSearchMethod, sInit, 
-                                          num_evals, pop_size, xlo, xhi, 
+                sHist[nconf] = call_glss( GlobalSearchMethod, LocalSearchMethod, sInit,
+                                          num_evals, pop_size, xlo, xhi,
                                           ylo, yhi, zlo, zhi, outlev,
-                                          extOutputEveryNgens, &mol,
+                                          outputEveryNgens, &mol,
                                           B_template, B_RandomTran0,
-					                   B_RandomQuat0, B_RandomDihe0);
+                                                           B_RandomQuat0, B_RandomDihe0);
                                           // State of best individual at end
                                           // of GA-LS run is returned.
                 // Finished Lamarckian GA run
@@ -2173,13 +2326,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                 pr(logFile, "Total number of Energy Evaluations: %lu\n", evaluate.evals() );
                 pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
- 
+
                 pr( logFile, "\n\n\tFINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE\n" );
                 pr( logFile,     "\t_______________________________________________\n\n\n" );
 
-                writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center, 
-                    &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff, 
-                    crd, emap, elec, charge, 
+                writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center,
+                    &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
+                    crd, emap, elec, 
+                    charge, abs_charge, qsp_abs_charge, 
                     ligand_is_inhibitor,
                     torsFreeEnergy,
                     vt, tlist, crdpdb, nonbondlist, e_internal,
@@ -2187,7 +2341,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
                     B_template, template_energy, template_stddev,
                     outlev,
-                    ignore_inter);
+                    ignore_inter,
+                    B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
+
                 econf[nconf] = eintra + einter; // new2
 
                 ++nconf;
@@ -2222,13 +2378,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
 
 
-           evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
+           evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, inv_spacing,
               elec, emap,
               xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
               e_internal, Nnb, B_calcIntElec, q1q2,B_isGaussTorCon,B_isTorConstrained,
               B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol,
               B_template, template_energy, template_stddev,
-              ignore_inter);
+              ignore_inter,
+              B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
            for (j=0; j<nruns; j++) {
 
@@ -2255,13 +2412,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                timesyshms( gaEnd - gaStart, &tms_gaStart, &tms_gaEnd );
                pr( logFile, "\n");
                (void) fflush( logFile );
-                
+
                pr( logFile, "\n\n\tFINAL LOCAL SEARCH DOCKED STATE\n" );
                pr( logFile,     "\t_______________________________\n\n\n" );
-               
-               writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center, 
-                    &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff, 
-                    crd, emap, elec, charge, 
+
+               writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center,
+                    &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
+                    crd, emap, elec, 
+                    charge, abs_charge, qsp_abs_charge, 
                     ligand_is_inhibitor,
                     torsFreeEnergy,
                     vt, tlist, crdpdb, nonbondlist, e_internal,
@@ -2269,10 +2427,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
                     B_template, template_energy, template_stddev,
                     outlev,
-                    ignore_inter);
+                    ignore_inter,
+                    B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
                econf[nconf] = eintra + einter; // new2
-               
+
                ++nconf;
 
                pr( logFile, UnderLine );
@@ -2306,17 +2465,18 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
           pr(logFile, "Number of Genetic Algorithm (GA) only dockings = %d run%c\n", nruns, (nruns>1)?'s':' ');
 
 
-          evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
+          evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, inv_spacing,
              elec, emap,
              xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
              e_internal, Nnb, B_calcIntElec, q1q2, B_isGaussTorCon,B_isTorConstrained,
              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol,
              B_template, template_energy, template_stddev,
-             ignore_inter);
+             ignore_inter,
+              B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
           for (j=0; j<nruns; j++) {
 
-              fprintf( logFile, "\n\n\tBEGINNING GENETIC ALGORITHM DOCKING\n");
+              fprintf( logFile, "\n\n\tBEGINNING GENETIC ALGORITHM DOCKING\n", sol_fn, parameterArray);
               pr(logFile, "\nDoing Genetic Algorithm run:  %d/%d.\n", j+1, nruns);
 
               if (timeSeedIsSet[0] == 'T') {
@@ -2333,7 +2493,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
               gaStart = times(&tms_gaStart);
 
-              sHist[nconf] = call_gs(GlobalSearchMethod, sInit, num_evals, pop_size, xlo, xhi, ylo, yhi, zlo, zhi, &mol, extOutputEveryNgens);
+              sHist[nconf] = call_gs(GlobalSearchMethod, sInit, num_evals, 
+                      pop_size, xlo, xhi, ylo, yhi, zlo, zhi, &mol, outputEveryNgens);
 
               pr(logFile, "\nFinal docked state:\n");
               printState(logFile, sHist[nconf], 2);
@@ -2343,17 +2504,18 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               timesyshms(gaEnd-gaStart, &tms_gaStart, &tms_gaEnd);
               pr(logFile, "\n");
               (void) fflush(logFile);
- 
+
               pr(logFile, "Total number of Energy Evaluations: %lu\n", evaluate.evals() );
               pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
- 
+
 
               pr( logFile, "\n\n\tFINAL GENETIC ALGORITHM DOCKED STATE\n" );
               pr( logFile,     "\t____________________________________\n\n\n" );
 
-              writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center, 
-                    &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff, 
-                    crd, emap, elec, charge, 
+              writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center,
+                    &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
+                    crd, emap, elec, 
+                    charge, abs_charge, qsp_abs_charge, 
                     ligand_is_inhibitor,
                     torsFreeEnergy,
                     vt, tlist, crdpdb, nonbondlist, e_internal,
@@ -2361,10 +2523,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
                     B_template, template_energy, template_stddev,
                     outlev,
-                    ignore_inter);
+                    ignore_inter,
+                    B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
               econf[nconf] = eintra + einter; // new2
-                
+
               ++nconf;
 
               pr( logFile, UnderLine );
@@ -2433,7 +2596,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
        break;
 
 //______________________________________________________________________________
- 
+
     case GA_mutation_rate:
        #ifdef USE_DOUBLE
            (void) sscanf(line, "%*s %lf", &m_rate);
@@ -2477,7 +2640,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
        #else
            (void) sscanf(line, "%*s %f", &beta);
        #endif
-       pr(logFile, "The beta parameter (for the Cauchy distribution) is being set to %f.\n", 
+       pr(logFile, "The beta parameter (for the Cauchy distribution) is being set to %f.\n",
           beta);
         (void) fflush(logFile);
        break;
@@ -2505,7 +2668,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
        pr(logFile, "Solis & Wets algorithms contract rho every %u in a row failures.\n", max_fail);
         (void) fflush(logFile);
       break;
-        
+
 //______________________________________________________________________________
 
     case SW_rho:
@@ -2554,14 +2717,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** _____________________________________________________________________
         */
         if (!command_mode) {
-            analysis( Nnb, atomstuff, charge, B_calcIntElec, q1q2, clus_rms_tol,
-                  crdpdb, e_internal, inv_spacing, map, econf, nruns, 
+            analysis( Nnb, atomstuff, charge, abs_charge, qsp_abs_charge, B_calcIntElec, q1q2, clus_rms_tol,
+                  crdpdb, e_internal, inv_spacing, map, econf, nruns,
                   xlo,ylo,zlo,
                   natom, nonbondlist, nconf, ntor, sHist, FN_ligand,
                   lig_center, B_symmetry_flag, tlist, type, vt, FN_rms_ref_crds,
                   torsFreeEnergy, B_write_all_clusmem, ligand_is_inhibitor,
                   B_template, template_energy, template_stddev, outlev,
-                  ignore_inter);
+                  ignore_inter, B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
             (void) fflush(logFile);
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so cluster analysis cannot be performed.\n\n");
@@ -2594,48 +2757,23 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_INVESTIGATE:
         /*
         ** Bin energies by RMSD from reference structure
+        **
+        ** investigate 100000 1000000 100
         */
         (void) sscanf( line, "%*s %d %d %d", &OutputEveryNTests, &maxTests, &NumLocalTests );
         (void) fprintf( logFile, "OutputEveryNTests= %d\n", OutputEveryNTests);
         (void) fprintf( logFile, "maxTests= %d\n", maxTests );
         (void) fprintf( logFile, "NumLocalTests= %d\n\n", NumLocalTests );
-        (void) investigate( Nnb,
-                charge,
-                B_calcIntElec,
-                q1q2,
-                crd,
-                crdpdb,
-                e_internal,
-                xhi,
-                yhi,
-                zhi,
-                inv_spacing,
-                maxTests,
-                xlo,
-                ylo,
-                zlo,
-                map,
-                natom,
-                nonbondlist,
-                ntor,
-                outlev,
-                tlist,
-                type,
-                vt,
-                B_isGaussTorCon,
-                       US_torProfile,
-                B_isTorConstrained,
-                B_ShowTorE,
-                       US_TorE,
-                F_TorConRange,
-                N_con,
-                B_symmetry_flag,
-                FN_rms_ref_crds,
-                OutputEveryNTests,
-                NumLocalTests,
-                trnStep0,
-                torStep0,
-                ignore_inter);
+        (void) investigate( Nnb, charge, abs_charge, qsp_abs_charge, B_calcIntElec, q1q2,
+                crd, crdpdb, e_internal, xhi, yhi, zhi,
+                inv_spacing, maxTests, xlo, ylo, zlo,
+                map, natom, nonbondlist, ntor,
+                outlev, tlist, type, vt, B_isGaussTorCon, US_torProfile,
+                B_isTorConstrained, B_ShowTorE, US_TorE,
+                F_TorConRange, N_con, B_symmetry_flag, FN_rms_ref_crds,
+                OutputEveryNTests, NumLocalTests, trnStep0, torStep0,
+                ignore_inter,
+                B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
         (void) fflush(logFile);
         break;
@@ -2688,6 +2826,389 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) fflush(logFile);
         break;
 
+/*____________________________________________________________________________*/
+
+    case DPF_INCLUDE_1_4_INTERACTIONS:
+        /*
+         * include_1_4_interactions 0.5
+         *
+         * Set the Boolean variable, B_include_1_4_interactions, to TRUE.
+         *
+         * NOTE:  You must use this command _before_ the "move ligand.pdbq"
+         *        command, since "include_1_4_interactions" affects how the Ligand
+         *        PDBQ specified by the "move" command will be interpreted.
+         */
+        if (B_found_move_keyword == TRUE) {  // If we have found the move keyword already, warn the user that his command should be given first!
+            pr(logFile, "\nWARNING:  This command will be ignored.\n\nYou must put this command _before_ the \"move ligand.pdbq\" command, since this command affects how the PDBQ file will be interpreted.\n\n");
+        }
+        #ifdef USE_DOUBLE
+            (void) sscanf( line, "%*s %lf", &scale_1_4 );
+        #else
+            (void) sscanf( line, "%*s %f", &scale_1_4 );
+        #endif
+        B_include_1_4_interactions = TRUE;
+        print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
+        break;
+
+/*____________________________________________________________________________*/
+
+    case DPF_PARAMETER_LIBRARY:
+        /*
+        ** parameter_file parm_data.dat
+        **  or
+        ** parameter_library parm_data.dat
+        **
+        ** initial implementation suggested by Mike Pique &
+        **                        implemented by Ruth Huey
+        */
+        par_lib_FN_found = sscanf( line, "%*s %s", FN_parameter_library );
+        (void) fflush(logFile);
+
+        /* Open and read the parm_data.dat file */
+        FILE *parameter_library_file;
+        char parameter_library_line[MAX_CHARS];
+        if ((parameter_library_file = fopen(FN_parameter_library, "r")) == NULL) {
+             fprintf(stderr,"Sorry, I can't find or open %s\n", FN_parameter_library);
+             exit(-1);
+        }
+
+        if (B_hash_table_created == TRUE) {
+            // We must have called hcreate successfully before we can use hsearch...
+
+            // local variables
+            char thisAtomTypeStr[MAX_LEN_AUTOGRID_TYPE+1];
+            ParameterEntry *newParameter;
+
+
+            while (fgets(parameter_library_line, sizeof(parameter_library_line), parameter_library_file) != NULL) {
+
+                // terminate line at beginning of comment
+                // commentbegin = strchr(parameter_library_line, '#');
+                // if (commentbegin != NULL) {
+                    // *commentbegin = '\0';
+                // }
+
+                param_keyword = parse_param_line( parameter_library_line );
+                if (debug > 0) {
+                    pr(logFile, "DEBUG: parameter_library_line=\"%s\"\n\nDEBUG: param_keyword= %d\n\n", parameter_library_line, param_keyword);
+                }
+
+                switch( param_keyword ) {
+
+                    case PAR_:
+                    case PAR_NULL:
+                    case PAR_COMMENT:
+                        break;
+
+                    case PAR_VDW:
+                        nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_vdW);
+                        if (nfields < 1) {
+                            pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
+                            continue; // skip any parameter_library_line without enough info
+                        }
+                        pr( logFile, "Free energy coefficient for the van der Waals term = \t%.4lf\n\n", AD4.coeff_vdW);
+                        break;
+
+                    case PAR_HBOND:
+                        nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_hbond);
+                        if (nfields < 1) {
+                            pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
+                            continue; // skip any parameter_library_line without enough info
+                        }
+                        pr( logFile, "Free energy coefficient for the H-bonding term     = \t%.4lf\n\n", AD4.coeff_hbond);
+                        break;
+
+                    case PAR_ESTAT:
+                        nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_estat);
+                        if (nfields < 1) {
+                            pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
+                            continue; // skip any parameter_library_line without enough info
+                        }
+                        pr( logFile, "Free energy coefficient for the electrostatic term = \t%.4lf\n\n", AD4.coeff_estat);
+                        break;
+
+                    case PAR_DESOLV:
+                        nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_desolv);
+                        if (nfields < 1) {
+                            pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
+                            continue; // skip any parameter_library_line without enough info
+                        }
+                        pr( logFile, "Free energy coefficient for the desolvation term   = \t%.4lf\n\n", AD4.coeff_desolv);
+                        break;
+
+                    case PAR_TORS:
+                        nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_tors);
+                        if (nfields < 1) {
+                            pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
+                            continue; // skip any parameter_library_line without enough info
+                        }
+                        pr( logFile, "Free energy coefficient for the torsional term     = \t%.4lf\n\n", AD4.coeff_tors);
+                        break;
+
+                    case PAR_ATOM_PAR:
+                        // Read in 1 line of atom parameters
+                        // NB: scanf doesn't try to write missing fields
+                        nfields = sscanf(parameter_library_line, "%*s %s %lf %lf %lf %lf %lf %lf %d %d %d %d",
+                                            thisAtomTypeStr,
+                                            &thisParameter.Rij,
+                                            &thisParameter.epsij,
+                                            &thisParameter.vol,
+                                            &thisParameter.solpar,
+                                            &thisParameter.Rij_hb,
+                                            &thisParameter.epsij_hb,
+                                            &thisParameter.hbond,
+                                            &thisParameter.rec_index,
+                                            &thisParameter.map_index,
+                                            &thisParameter.bond_index);
+                        if (nfields < 2) {
+                            continue; // skip any parameter_library_line without enough info
+                        }
+                        thisParameter.epsij    *= AD4.coeff_vdW;
+                        thisParameter.epsij_hb *= AD4.coeff_hbond;
+                        // thisParameter.vol   *= AD4.coeff_desolv;
+         
+                        // Read autogrid_type into a temporary string and test that it's not too long.
+                        if (strlen(thisAtomTypeStr) < MAX_LEN_AUTOGRID_TYPE+1) {
+                            (void)strcpy(thisParameter.autogrid_type, thisAtomTypeStr);
+                        }
+                        newParameter = (ParameterEntry *) calloc(1, sizeof(ParameterEntry));
+                        // newParameter->rec_index = -1;
+                        // newParameter->map_index = -1;
+                        *newParameter = thisParameter;
+         
+                        item.key = newParameter->autogrid_type; // ptr to string
+                        item.data = newParameter;               // ptr to entire record
+                        // Try to enter this item into the hsearch table...
+                        if (hsearch(item, ENTER) == NULL) {
+                            prStr( error_message, "%s: WARNING:  I'm sorry, I could not add this entry to my parameter library:\n\n", programname);
+                            pr_2x( logFile, stderr, error_message );
+                            prStr( error_message, "%s: WARNING:  %s\n", programname, parameter_library_line);
+                            pr_2x( logFile, stderr, error_message );
+                        } else {
+                            pr(logFile, "Parameters for the atom type named \"%s\" were found.\n", newParameter->autogrid_type);
+                            if (outlev == 2) {
+                                pr(logFile, "\tRij = %.2f, epsij = %.3f, At.frag.vol. = %.3f, At.solv.par. = %.3f, \n\tHb Rij = %.3f, Hb epsij = %.3f, Hb type = %d,  bond index = %d\n\n",
+                                        newParameter->Rij, newParameter->epsij, newParameter->vol, newParameter->solpar,
+                                        newParameter->Rij_hb, newParameter->epsij_hb, newParameter->hbond, newParameter->bond_index );
+                            } else if (outlev > 2) {
+                                pr(logFile, "\tRij = %5.2f\n\tepsij = %5.3f\n\tAtomic fragmental volume = %5.3f\n\tAtomic solvation parameter = %5.3f\n\tH-bonding Rij = %5.3f\n\tH-bonding epsij = %5.3f\n\tH-bonding type = %d,  bond index = %d\n\n",
+                                        newParameter->Rij, newParameter->epsij, newParameter->vol, newParameter->solpar,
+                                        newParameter->Rij_hb, newParameter->epsij_hb, newParameter->hbond, newParameter->bond_index );
+                            }
+                        } // hsearch enter
+                        break;
+
+                    default:
+                        break;
+
+                } // switch
+            } // while there is another line of parameters to read in
+        } // if empty hsearch table was created
+        break;
+
+/*____________________________________________________________________________*/
+
+    case DPF_LIGAND_TYPES:
+        /*
+         *  Read in the ligand atom type names
+         *
+         *  ligand_types C HD OA P               # ligand atom type names
+         *
+         *  The order of the arguments is the index that will 
+         *  be used for look up in the grid maps, "map_index".
+         */
+        
+        //  Use "parsetypes" to read in the atom types;
+        //  
+        //  The array "ligand_atom_type_ptrs" is returned, having been filled with pointers
+        //  to the beginning of each "atom type word" (not atom type characters);
+        //  an atom type can be either 1 or 2 characters long.
+        //
+        //  "atm_typ_str" used to serve a similar role to "ligand_atom_types" in AD3.
+        num_atom_types = parsetypes(line, ligand_atom_type_ptrs, MAX_ATOM_TYPES);
+
+        for (i=0; i<num_atom_types; i++) {
+            strcpy(ligand_atom_types[i], ligand_atom_type_ptrs[i]);
+#ifdef DEBUG
+            (void) fprintf(stderr, "%d %s ->%s\n",i, ligand_atom_type_ptrs[i], ligand_atom_types[i]);
+#endif
+        }
+
+        if (num_atom_types > 0) {
+            B_atom_types_found = TRUE;
+        } else {
+            prStr( error_message, "%s:  ERROR! No atom types have been found; we cannot continue without this information!\n\n", programname );
+            pr_2x( logFile, stderr, error_message );
+            exit(-1);
+        }
+
+        if (debug > 0) {
+            for (i=0; i<num_atom_types; i++) {
+                (void) fprintf(logFile, "ligand_atom_types[%d] = %s\n", i, ligand_atom_types[i] );
+            }
+        }
+
+        // For all ligand atom types...
+        // set up the map_index
+        // "ligand_types"
+        // 
+        for (i=0; i<num_atom_types; i++) {
+            
+            // To search for this atom type's parameters in the
+            // parameter dictionary, we need to construct a
+            // dummy parameter with the ligand_atom_type string
+            // set.  We'll use thisParameter as the dummy.
+            strcpy(thisParameter.autogrid_type, ligand_atom_types[i]);
+
+            // Now search the parameter dictionary:
+            item.key = thisParameter.autogrid_type; // "autogrid_type", the atom type name, is what we will search on:
+            if ((found_item = hsearch (item, FIND)) != NULL ) {
+                // We have found this atom type's parameters
+                ParameterEntry *found_parm;
+                // Get the data
+                found_parm = (ParameterEntry *)found_item->data;
+                // Now we can set the ParameterEntry's map_index to the
+                // 0-based index it had in the list of ligand types supplied
+                // in this DPF line:
+                found_parm->map_index = i;
+                parameterArray[i] = *found_parm;
+                if (outlev > 0) {
+                    (void) fprintf( logFile, "Parameters found for ligand type \"%s\" (grid map index = %d)",
+                                    found_parm->autogrid_type, found_parm->map_index );
+                    if (par_lib_FN_found == 1) {
+                        pr( logFile, " in parameter library \"%s\".\n", FN_parameter_library );
+                    } else {
+                        pr( logFile, "\n");
+                    }
+                }
+            } else {
+                // We could not find this parameter -- return error here
+                prStr( error_message,"%s: ERROR:  Unknown ligand atom type \"%s\"; add parameters for it to the parameter library first!\n", programname, ligand_atom_types[i]);
+                pr_2x( logFile, stderr, error_message );
+                if (par_lib_FN_found == 1) {
+                    prStr( error_message,"%s:         Edit the parameter library file \"%s\" and try again.\n", programname, FN_parameter_library );
+                    pr_2x( logFile, stderr, error_message );
+                }
+                exit(-1);
+            } // if hsearch FIND
+        } // for i
+        pr( logFile, "\n\n");
+
+        ElecMap = num_atom_types;
+        DesolvMap = num_atom_types + 1;
+
+        (void) fflush( logFile);
+
+        // Calculate the internal energy table
+
+        // loop over atom types, i, from 1 to number of atom types
+        //     loop over atom types, j, from i to number of atom types
+        for (i=0; i<num_atom_types; i++) {
+
+            //  Find internal energy parameters, i.e.  epsilon and r-equilibrium values...
+            //  Lennard-Jones and Hydrogen Bond Potentials
+
+            Ri = parameterArray[i].Rij;
+            epsi = parameterArray[i].epsij;
+            Ri_hb = parameterArray[i].Rij_hb;
+            epsi_hb = parameterArray[i].epsij_hb;
+            hbondi = parameterArray[i].hbond;
+
+            for (j=i; j<num_atom_types; j++) {
+                
+                //  Find internal energy parameters, i.e.  epsilon and r-equilibrium values...
+                //  Lennard-Jones and Hydrogen Bond Potentials
+
+                Rj = parameterArray[j].Rij;
+                epsj = parameterArray[j].epsij;
+                Rj_hb = parameterArray[j].Rij_hb;
+                epsj_hb = parameterArray[j].epsij_hb;
+                hbondj = parameterArray[j].hbond;
+
+                // we need to determine the correct xA and xB exponents
+                xA = 12; // for both LJ, 12-6 and HB, 12-10, xA is 12
+                xB =  6; // assume we have LJ, 12-6
+
+                if ( ((hbondi == DS) || (hbondi == D1)) && ((hbondj == AS) || (hbondj == A1) || (hbondj == A2)) ) {
+                    // i is a donor and j is an acceptor.
+                    // we need to calculate the arithmetic mean of Ri_hb and Rj_hb, etc.
+                    Rij = arithmetic_mean(Ri_hb, Rj_hb);
+                    // we need to calculate the geometric mean of epsi_hb and epsj_hb, etc.
+                    epsij = geometric_mean(epsi_hb, epsj_hb);
+                    xB = 10;
+                } else if ( ((hbondi == AS) || (hbondi == A1) || (hbondi == A2)) && ((hbondj == DS) || (hbondj == D1))) {
+                    // i is an acceptor and j is a donor.
+                    // we need to calculate the arithmetic mean of Ri_hb and Rj_hb, etc.
+                    Rij = arithmetic_mean(Ri_hb, Rj_hb);
+                    // we need to calculate the geometric mean of epsi_hb and epsj_hb, etc.
+                    epsij = geometric_mean(epsi_hb, epsj_hb);
+                    xB = 10;
+                } else {
+                    // we need to calculate the arithmetic mean of Ri and Rj, etc.
+                    Rij = arithmetic_mean(Ri, Rj);
+                    // we need to calculate the geometric mean of epsi and epsj, etc.
+                    epsij = geometric_mean(epsi, epsj);
+                }
+
+                /* Check that the Rij is reasonable */
+                if ((Rij < RIJ_MIN) || (Rij > RIJ_MAX)) {
+                    (void) fprintf( logFile,
+                    "WARNING: pairwise distance, Rij, %.2f, is not a very reasonable value for the equilibrium separation of two atoms! (%.2f Angstroms <= Rij <= %.2f Angstroms)\n\n", Rij, RIJ_MIN, RIJ_MAX);
+                    (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
+                    /* gmm commented out for dave goodsell, mutable atoms
+                     * exit(-1); */
+                }
+                /* Check that the epsij is reasonable */
+                if ((epsij < EPSIJ_MIN) || (epsij > EPSIJ_MAX)) {
+                    (void) fprintf( logFile,
+                    "WARNING: well-depth, epsilon_ij, %.2f, is not a very reasonable value for the equilibrium potential energy of two atoms! (%.2f kcal/mol <= epsilon_ij <= %.2f kcal/mol)\n\n", epsij, EPSIJ_MIN, EPSIJ_MAX);
+                    (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
+                    /* gmm commented out for dave goodsell, mutable atoms
+                     * exit(-1); */
+                }
+                /* Defend against division by zero... */
+                if (xA != xB) {
+                    cA = (tmpconst = epsij / (FloatOrDouble)(xA - xB)) * pow( (double)Rij, (double)xA ) * (FloatOrDouble)xB;
+                    cB = tmpconst * pow( (double)Rij, (double)xB ) * (FloatOrDouble)xA;
+                    intnbtable( &B_havenbp, &a1, &a2, num_atom_types, ligand_atom_types, cA, cB, xA, xB, e_internal, sol_fn, AD4.coeff_desolv, sigma );
+                } else {
+                    pr(logFile,"WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
+                    exit(-1);
+                }
+                (void) fflush(logFile);
+
+            } // for j
+        } // for i
+        break;
+
+/*____________________________________________________________________________*/
+
+    case DPF_UNBOUND:
+        /*
+        ** unbound 0.
+        */
+#ifdef USE_DOUBLE
+        (void) sscanf( line, "%*s %lf", &unbound_ligand_FE );
+        pr(logFile, "\nThe free energy of the unbound state is %+.3lf kcal/mol\n\n", unbound_ligand_FE);
+#else
+        (void) sscanf( line, "%*s %f", &unbound_ligand_FE );
+        pr(logFile, "\nThe free energy of the unbound state is %+.3f kcal/mol\n\n", unbound_ligand_FE);
+#endif
+        (void) fflush(logFile);
+        break;
+
+/*____________________________________________________________________________*/
+
+    case DPF_EPDB:
+        /*
+         * epdb
+         *
+         * computes the energy of the ligand specified by the "move lig.pdbqt" command.
+         */
+
+        (void) fflush(logFile);
+        break;
+
 /*_12yy_______________________________________________________________________*/
 
     case DPF_:
@@ -2695,9 +3216,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **
         */
         /*
-        ** (void) sscanf( line, "%*s %d", &i );
-        ** (void) fflush(logFile);
-        ** break;
+        (void) sscanf( line, "%*s %d", &i );
+        (void) fflush(logFile);
+        break;
         */
 
 //______________________________________________________________________________
@@ -2707,6 +3228,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Do nothing...
         */
         break;
+
 //______________________________________________________________________________
 
     } /* switch */
@@ -2724,19 +3246,20 @@ pr( logFile, ">>> Closing the docking parameter file (DPF)...\n\n" );
 
 
 /* _________________________________________________________________________
-** 
+**
 ** If in command-mode, set the command file-pointers to standard i/o,
 ** _________________________________________________________________________
 */
 if (command_mode) {
     status = cmdmode( natom,jobStart,tms_jobStart,
-              xlo,ylo,zlo, xhi,yhi,zhi, inv_spacing,
-              map, e_internal, WallEnergy, vt, tlist, ntor, 
-              Nnb, nonbondlist, atomstuff, crdpdb, 
-              hostnm, type, charge, B_calcIntElec, q1q2,
-              atm_typ_str, torsFreeEnergy,
-              ligand_is_inhibitor, map_center,
-              ignore_inter);
+                      xlo,ylo,zlo, xhi,yhi,zhi, inv_spacing,
+                      map, e_internal, WallEnergy, vt, tlist, ntor,
+                      Nnb, nonbondlist, atomstuff, crdpdb,
+                      hostnm, type, charge, abs_charge, qsp_abs_charge, B_calcIntElec, q1q2,
+                      atm_typ_str, torsFreeEnergy,
+                      ligand_is_inhibitor, map_center,
+                      ignore_inter,
+                      B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
     exit( status );  /* "command_mode" exits here... */
 }
 
@@ -2755,4 +3278,5 @@ success( hostnm, jobStart, tms_jobStart );
 return 0;
 
 } /* END OF PROGRAM */
+
 /* EOF */
