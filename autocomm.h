@@ -46,11 +46,13 @@
 #define BIG          1.0E12 /* Very large constant                            */
 #define MAX_CHARS    128    /* Number of characters in atom data & filenames  */
 #define LINE_LEN     256    /* Line length in characters                      */
-#if defined(__ppc__)
-#define MAX_GRID_PTS 64     /* Maximum number of grid points in 1 dimension   */
-#else
+/* #if defined(__ppc__)
+ * / * this was necessary for 10.0.1 since there was a problem linking with
+ *   * the 128 setting for MAX_GRID_PTS * /
+ * #define MAX_GRID_PTS 64     / * Maximum number of grid points in 1 dimension   * /
+   #else */
 #define MAX_GRID_PTS 128    /* Maximum number of grid points in 1 dimension   */
-#endif
+/* #endif / * __ppc__ */
 #define	EINTCLAMP    100000. /* Clamp pairwise internal energies (kcal/mol )  */
 #define MAX_MAPS     8      /* Maximum number of energy maps                  */
 #define ATOM_MAPS    6      /* Number of atomic affinity grids                */
