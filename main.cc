@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.14 2005/03/15 23:52:27 gillet Exp $
+ $Id: main.cc,v 1.15 2005/03/16 15:23:39 billhart Exp $
 
 */
 
@@ -1020,7 +1020,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 		} // Next run
 		if(write_stateFile){
-		  fprintf(stateFile,'\t</runs>\n');
+		  fprintf(stateFile,"\t</runs>\n");
 		  (void) fflush(stateFile);
 		}
 		(void) fflush(logFile);
