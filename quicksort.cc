@@ -1,3 +1,13 @@
+/*
+
+ $Id: quicksort.cc,v 1.2 2003/02/26 01:30:49 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* quicksort.cc */
 
     #include "quicksort.h"
@@ -16,7 +26,7 @@
 extern FILE *logFile;
 #endif /* DEBUG */
 
-void quicksort( float e[], 
+void quicksort( FloatOrDouble e[], 
 		int isort[],
 		int left,
 		int right )

@@ -1,3 +1,13 @@
+/*
+
+ $Id: mkTorTree.cc,v 1.3 2004/11/16 23:42:53 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* mkTorTree.cc */
 
 #include <math.h>
@@ -27,9 +37,10 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 		Boole *P_B_constrain,
 		int   *P_atomC1,
 		int   *P_atomC2,
-		float *P_sqlower,
-		float *P_squpper,
-                int   *P_ntorsdof )
+		FloatOrDouble *P_sqlower,
+		FloatOrDouble *P_squpper,
+         int   *P_ntorsdof,
+         int   ignore_inter[MAX_ATOMS])
 
 {
 
@@ -41,6 +52,10 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     int   nbranches = 0;
     int   ntor=0;
     int   tlistsort[ MAX_TORS ][ MAX_ATOMS ];
+    int   found_new_res = 0;
+    int   nres = 0;
+    int   natoms_in_res = 0;
+    int   thisatom = 0;
 
     register int   i = 0;
     register int   j = 0;
@@ -49,9 +64,9 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     char  error_message[ LINE_LEN ];
     char  rec5[ 5 ];
 
-    float lower = 0.;
-    float temp  = 0.;
-    float upper = 0.01;
+    FloatOrDouble lower = 0.;
+    FloatOrDouble temp  = 0.;
+    FloatOrDouble upper = 0.01;
 
 #ifdef DEBUG
     int   oo = 0;
@@ -64,7 +79,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     /* TorsionTree torstree; */
 
     for (i = 0; i  < MAX_TORS;  i++ ) {
-	for (j = 0;  j < MAX_ATOMS;  j++ ) {
+        for (j = 0;  j < MAX_ATOMS;  j++ ) {
             tlistsort[ i ][ j ] = 0;
         }
     }
@@ -123,15 +138,43 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 	    case PDBQ_ATOM: 
 	    case PDBQ_HETATM:
 
-		atomlast = atomnumber[ i ];
+             /* This is an ATOM or HETATM. */
+
+		    atomlast = atomnumber[ i ];
+
+             if (found_new_res) {
+                    /* We are in a residue. */
+                    if (natoms_in_res < 2) {
+                        /* flag the first two atoms in each new 
+                         * residue to prevent them being
+                         * included in the intermolecular
+                         * energy calculation.  */
+                         ignore_inter[thisatom] = 1;
+                    }
+                    /* Keep counting the number of atoms in the residue. */
+                    natoms_in_res++;
+                } else {
+                    /* We are not in a residue.
+                     *
+                     * "found_new_res" can only be reset to FALSE 
+                     * if we encounter an "END_RES" record. 
+                     * By default, found_new_res is set to FALSE. */
+                     
+                    /* reset the atom counter */
+                    natoms_in_res = 0;
+                }
+                /* Increment atom counter for all atoms in PDBQ file */
+                thisatom++;
+
 #ifdef DEBUG
-		C = 'A';
-		PrintDebugTors;
-		PrintDebugTors2;
-		pr( logFile, "]\n" );
+                C = 'A';
+                PrintDebugTors;
+                PrintDebugTors2;
+                pr( logFile, "]\n" );
 #endif /* DEBUG */
 
-		break;
+                break;
+
     /*____________________________________________________________*/
 	    case PDBQ_BRANCH:
 
@@ -240,7 +283,11 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     /*____________________________________________________________*/
 	    case PDBQ_CONSTRAINT:
 
-		sscanf(Rec_line[ i ],"%*s %d %d %f %f", P_atomC1, P_atomC2, &lower, &upper);
+        #ifdef USE_DOUBLE
+            sscanf(Rec_line[ i ],"%*s %d %d %lf %lf", P_atomC1, P_atomC2, &lower, &upper);
+        #else
+            sscanf(Rec_line[ i ],"%*s %d %d %f %f", P_atomC1, P_atomC2, &lower, &upper);
+        #endif
 
                 *P_B_constrain = TRUE;
 
@@ -250,18 +297,31 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 		pr( logFile, "Constrain the distance between atom %d and atom %d to be within %.3f and %.3f Angstroms.\n\n", *P_atomC1, *P_atomC2, lower, upper);
 
                 if (lower > upper) {
-		    pr( logFile, "WARNING!  The lower bound was larger than the upper bound. I will switch these around.\n\n");
-		    temp = upper;
-		    upper = lower;
-		    lower = temp;
+                    pr( logFile, "WARNING!  The lower bound was larger than the upper bound. I will switch these around.\n\n");
+                    temp = upper;
+                    upper = lower;
+                    lower = temp;
 
-		} else if (lower == upper) {
-		    pr( logFile, "WARNING!  The lower bound is the same as the upper bound.\n\n");
-		    upper += 0.01;
-		}
-		*P_sqlower = lower * lower;
-		*P_squpper = upper * upper;
-		break;
+                } else if (lower == upper) {
+                    pr( logFile, "WARNING!  The lower bound is the same as the upper bound.\n\n");
+                    upper += 0.01;
+                }
+                *P_sqlower = lower * lower;
+                *P_squpper = upper * upper;
+                break;
+
+    /*____________________________________________________________*/
+            case PDBQ_BEGIN_RES:
+                found_new_res = 1;
+                natoms_in_res = 0; /* reset number of atoms in this residue */
+                break;
+
+    /*____________________________________________________________*/
+            case PDBQ_END_RES:
+                found_new_res = 0;
+                nres++;
+                pr(logFile, "Residue number %d has %d moving atoms.\n\n", nres, natoms_in_res-2);
+                break;
 
     /*____________________________________________________________*/
 	    case PDBQ_TORSDOF:

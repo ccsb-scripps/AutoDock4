@@ -1,3 +1,13 @@
+/*
+
+ $Id: parse_dpf_line.cc,v 1.3 2003/12/04 21:34:01 billhart Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* parse_dpf_line.cc */
 
     #include <stdio.h>
@@ -30,7 +40,11 @@ int parse_dpf_line( char line[LINE_LEN] )
 {
     int j, i, token = DPF_;	       /* return -1 if nothing is recognized. */
     char c[LINE_LEN];
+#if defined(USING_COLINY)
+    const int tokentablesize = 88;
+#else
     const int tokentablesize = 87;
+#endif
     const struct {
        char *lexeme;
        int tokenvalue;
@@ -121,6 +135,9 @@ int parse_dpf_line( char line[LINE_LEN] )
               {"ligand_is_not_inhibitor", DPF_LIG_NOT_INHIB}, // 85
               {"template", DPF_TEMPL_ENERGY}, // 86
               {"template_energy_file", DPF_TEMPL_ENERGY} // 87
+#if defined(USING_COLINY)
+              ,{"coliny", DPF_COLINY} // 87
+#endif
               }; // 87
 
     c[0] = '\0';

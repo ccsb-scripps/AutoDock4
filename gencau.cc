@@ -1,29 +1,22 @@
-/***** RCS INFO **********************************************************
+/*
 
-$Id: gencau.cc,v 1.1.1.1 2001/08/13 22:05:53 gillet Exp $
-$Source: /Users/mp/facil/autodock/git-luna/autodock-cvstar/gencau.cc,v $
-$Log: gencau.cc,v $
-Revision 1.1.1.1  2001/08/13 22:05:53  gillet
- import initial of autodock sources
+ $Id: gencau.cc,v 1.3 2003/02/27 02:11:08 lindy Exp $
 
-// Revision 3.0  1996/03/11  05:40:00  halliday
-// The function definition for the GA/LS hybrid.
-//
+*/
 
-****** RCS INFO *********************************************************/
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-/* gencau.c
- *
- */
 
 #include <math.h>
 #include "ranlib.h"
 
 
-float rcauchy(float alpha, float beta)
+FloatOrDouble rcauchy(FloatOrDouble alpha, FloatOrDouble beta)
 /*
 **********************************************************************
-     float rcauchy(float alpha, float beta)
+     FloatOrDouble rcauchy(FloatOrDouble alpha, FloatOrDouble beta)
          GENerate random deviate from a CAUchy distribution
                               Function
      Generates a single random deviate from a Cauchy distribution
@@ -32,7 +25,7 @@ float rcauchy(float alpha, float beta)
 **********************************************************************
 */
 {
-static float gencau;
+static FloatOrDouble gencau;
 
     gencau = beta*scauchy1()+alpha;
     return gencau;

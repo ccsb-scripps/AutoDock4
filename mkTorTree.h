@@ -15,7 +15,8 @@ void  mkTorTree(int   atomnumber[MAX_RECORDS],
                 Boole *P_B_constrain,
                 int   *P_atomC1,
                 int   *P_atomC2,
-                float *P_sqlower,
-                float *P_squpper,
-                int   *P_ntorsdof );
+                FloatOrDouble *P_sqlower,
+                FloatOrDouble *P_squpper,
+                int   *P_ntorsdof,
+                int   ignore_inter[MAX_ATOMS]);
 #endif

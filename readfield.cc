@@ -1,3 +1,13 @@
+/*
+
+ $Id: readfield.cc,v 1.2 2003/02/26 01:35:35 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* readfield.cc */
 
 
@@ -12,28 +22,28 @@
 
 extern FILE *logFile;
 
-void readfield( float *P_F_invSpacing, 
-	     float *P_F_spacing,
+void readfield( FloatOrDouble *P_F_invSpacing, 
+	     FloatOrDouble *P_F_spacing,
 	     char FN_gdfld[MAX_CHARS],
 	     char FN_gpf[MAX_CHARS],
 	     int I_gridpts1[SPACE],
 	     int I_gridpts[SPACE],
-	     float *P_F_xhi,
-	     float *P_F_yhi,
-	     float *P_F_zhi,
+	     FloatOrDouble *P_F_xhi,
+	     FloatOrDouble *P_F_yhi,
+	     FloatOrDouble *P_F_zhi,
 	     Clock jobStart,
 	     char line[LINE_LEN],
-	     float *P_F_xlo,
-	     float *P_F_ylo,
-	     float *P_F_zlo,
+	     FloatOrDouble *P_F_xlo,
+	     FloatOrDouble *P_F_ylo,
+	     FloatOrDouble *P_F_zlo,
 	     char FN_macromol[MAX_CHARS],
-	     float F_mapCenter[SPACE],
+	     FloatOrDouble F_mapCenter[SPACE],
 	     struct tms tms_jobStart )
 
 {
     FILE *fldFile;
     char rec9[9], inputline[LINE_LEN];
-    float F_localSpacing;
+    FloatOrDouble F_localSpacing;
     register int RI_XYZ = 0;
 
     /*
@@ -53,7 +63,11 @@ void readfield( float *P_F_invSpacing,
     while( fgets(line, LINE_LEN, fldFile) != NULL ) {
 	(void) sscanf(line,"%s", rec9);
 	if (equal(rec9,"#SPACING", 8)) {
-	    (void) sscanf(line,"%*s %f", &F_localSpacing);
+        #ifdef USE_DOUBLE
+            (void) sscanf(line,"%*s %lf", &F_localSpacing);
+        #else
+            (void) sscanf(line,"%*s %f", &F_localSpacing);
+        #endif
 	    *P_F_spacing = F_localSpacing;
 	    break;
 	}
@@ -82,7 +96,11 @@ void readfield( float *P_F_invSpacing,
     ** #CENTER 
     */
     (void) fgets(inputline, LINE_LEN, fldFile);
-    (void) sscanf(inputline,"%*s %f %f %f", &F_mapCenter[X], &F_mapCenter[Y], &F_mapCenter[Z]);
+    #ifdef USE_DOUBLE
+        (void) sscanf(inputline,"%*s %lf %lf %lf", &F_mapCenter[X], &F_mapCenter[Y], &F_mapCenter[Z]);
+    #else
+        (void) sscanf(inputline,"%*s %f %f %f", &F_mapCenter[X], &F_mapCenter[Y], &F_mapCenter[Z]);
+    #endif
     pr( logFile, "Coordinates of Central Grid Point of Maps =\t(%.3f, %.3f, %.3f)\n\n", F_mapCenter[X],  F_mapCenter[Y],  F_mapCenter[Z]);
 
     /*
@@ -106,13 +124,13 @@ void readfield( float *P_F_invSpacing,
     /*
     ** Determine the dimensions of the grids,
     */
-    *P_F_xlo = F_mapCenter[X] - (float)(I_gridpts[X]/2) * (*P_F_spacing);
-    *P_F_ylo = F_mapCenter[Y] - (float)(I_gridpts[Y]/2) * (*P_F_spacing);
-    *P_F_zlo = F_mapCenter[Z] - (float)(I_gridpts[Z]/2) * (*P_F_spacing);
+    *P_F_xlo = F_mapCenter[X] - (FloatOrDouble)(I_gridpts[X]/2) * (*P_F_spacing);
+    *P_F_ylo = F_mapCenter[Y] - (FloatOrDouble)(I_gridpts[Y]/2) * (*P_F_spacing);
+    *P_F_zlo = F_mapCenter[Z] - (FloatOrDouble)(I_gridpts[Z]/2) * (*P_F_spacing);
 
-    *P_F_xhi = F_mapCenter[X] + (float)(I_gridpts[X]/2) * (*P_F_spacing);
-    *P_F_yhi = F_mapCenter[Y] + (float)(I_gridpts[Y]/2) * (*P_F_spacing);
-    *P_F_zhi = F_mapCenter[Z] + (float)(I_gridpts[Z]/2) * (*P_F_spacing);
+    *P_F_xhi = F_mapCenter[X] + (FloatOrDouble)(I_gridpts[X]/2) * (*P_F_spacing);
+    *P_F_yhi = F_mapCenter[Y] + (FloatOrDouble)(I_gridpts[Y]/2) * (*P_F_spacing);
+    *P_F_zhi = F_mapCenter[Z] + (FloatOrDouble)(I_gridpts[Z]/2) * (*P_F_spacing);
 
     pr( logFile, "Minimum coordinates in grid = (%.3f, %.3f, %.3f)\n",   *P_F_xlo, *P_F_ylo, *P_F_zlo);
     pr( logFile, "Maximum coordinates in grid = (%.3f, %.3f, %.3f)\n\n", *P_F_xhi, *P_F_yhi, *P_F_zhi);

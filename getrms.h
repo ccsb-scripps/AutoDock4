@@ -3,8 +3,8 @@
 
 #include "constants.h"
 
-float  getrms( float Crd[MAX_ATOMS][SPACE], 
-               float CrdRef[MAX_ATOMS][SPACE], 
+FloatOrDouble  getrms( FloatOrDouble Crd[MAX_ATOMS][SPACE], 
+               FloatOrDouble CrdRef[MAX_ATOMS][SPACE], 
                Boole B_symmetry_flag, 
                int   natom, 
                int   type[MAX_ATOMS] );

@@ -1,4 +1,12 @@
-/* analysis.cc */
+/*
+
+ $Id: analysis.cc,v 1.5 2004/11/16 23:42:52 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <math.h>
 
@@ -29,64 +37,67 @@ extern char  *programname;
 
 void analysis( int   Nnb, 
                char  atomstuff[MAX_ATOMS][MAX_CHARS], 
-               float charge[MAX_ATOMS], 
+               FloatOrDouble charge[MAX_ATOMS], 
                Boole B_calcIntElec,
-               float q1q2[MAX_NONBONDS],
-               float clus_rms_tol, 
-               float crdpdb[MAX_ATOMS][SPACE], 
-               float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], 
-               float inv_spacing, 
-               float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-               float econf[MAX_RUNS], 
+               FloatOrDouble q1q2[MAX_NONBONDS],
+               FloatOrDouble clus_rms_tol, 
+               FloatOrDouble crdpdb[MAX_ATOMS][SPACE], 
+               FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], 
+               FloatOrDouble inv_spacing, 
+               FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+               FloatOrDouble econf[MAX_RUNS], 
                int   irunmax, 
-               float xlo, 
-               float ylo, 
-               float zlo, 
+               FloatOrDouble xlo, 
+               FloatOrDouble ylo, 
+               FloatOrDouble zlo, 
                int   natom, 
-               int   nonbondlist[MAX_NONBONDS][2], 
+               int   nonbondlist[MAX_NONBONDS][4], 
                int   nconf, 
                int   ntor, 
                State hist[MAX_RUNS], 
                char  smFileName[MAX_CHARS], 
-               float sml_center[SPACE],
+               FloatOrDouble sml_center[SPACE],
                Boole B_symmetry_flag, 
                int   tlist[MAX_TORS][MAX_ATOMS], 
                int   type[MAX_ATOMS], 
-               float vt[MAX_TORS][SPACE],
+               FloatOrDouble vt[MAX_TORS][SPACE],
                char  FN_rms_ref_crds[MAX_CHARS],
-               float torsFreeEnergy,
+               FloatOrDouble torsFreeEnergy,
                Boole B_write_all_clusmem,
                int ligand_is_inhibitor,
                Boole B_template,
-               float template_energy[MAX_ATOMS],
-               float template_stddev[MAX_ATOMS])
+               FloatOrDouble template_energy[MAX_ATOMS],
+               FloatOrDouble template_stddev[MAX_ATOMS],
+               int   outlev,
+			 int   ignore_inter[MAX_ATOMS])
 
 {
     /* register int   imol = 0; */
-    char  filename[MAX_CHARS];
-    char  label[MAX_CHARS];
-    char  rec14[14];
-    char  rec9[9];
+    static char  filename[MAX_CHARS];
+    static char  label[MAX_CHARS];
+    static char  rec14[14];
+    static char  rec9[9];
 
-    float clu_rms[MAX_RUNS][MAX_RUNS];
-    float crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
-    float crd[MAX_ATOMS][SPACE];
-    float einter = 0.;
-    float eintra = 0.;
-    float elec[MAX_ATOMS];
-    float emap[MAX_ATOMS];
-    float ref_crds[MAX_ATOMS][SPACE];
-    float ref_rms[MAX_RUNS];
-    float torDeg = 0.;
-    float modtorDeg = 0.;
-    float MaxValue = 99.99;
+    static FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS];
+    static FloatOrDouble crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
+    static FloatOrDouble crd[MAX_ATOMS][SPACE];
+    FloatOrDouble einter = 0.;
+    FloatOrDouble eintra = 0.;
+    static FloatOrDouble elec[MAX_ATOMS];
+    static FloatOrDouble emap[MAX_ATOMS];
+    // FloatOrDouble lo[3];
+    static FloatOrDouble ref_crds[MAX_ATOMS][SPACE];
+    static FloatOrDouble ref_rms[MAX_RUNS];
+    FloatOrDouble torDeg = 0.;
+    FloatOrDouble modtorDeg = 0.;
+    FloatOrDouble MaxValue = 99.99;
 
     int   c = 0;
     int   c1 = 0;
-    int   cluster[MAX_RUNS][MAX_RUNS];
+    static int   cluster[MAX_RUNS][MAX_RUNS];
     int   i1=1;
     int   indpf = 0;
-    int   isort[MAX_RUNS];
+    static int   isort[MAX_RUNS];
     int   ncluster = 1;
     int   num_in_clu[MAX_RUNS];
     int   off[VECLENMAX];
@@ -94,7 +105,6 @@ void analysis( int   Nnb,
     int   veclen = 0;
     int   kmax = 0;
 
-    // register int   XYZ = 0;
     register int   i = 0;
     register int   j = 0;
     register int   k = 0;
@@ -112,10 +122,8 @@ void analysis( int   Nnb,
         }
     }
 
+    // Read in reference coordinates...
     if (strncmp(FN_rms_ref_crds,"unspecified filename",20) != 0) {
-        /*
-        Read in reference coordinates...
-        */
         if ((ref_natoms = getpdbcrds( FN_rms_ref_crds, ref_crds)) == -1) {
             fprintf( logFile, "%s: Problems while reading reference coordinates file \"%s\".\n", programname, FN_rms_ref_crds);
             fprintf( logFile, "Will attempt to use the input PDBQ file coordinates as reference instead.\n");
@@ -126,13 +134,13 @@ void analysis( int   Nnb,
         }
     }
 
-    /*
-    Generate coordinates for each final transformation,
-    */
+    // Generate coordinates for each final transformation,
     for ( k=0; k<nconf; k++ ) {
 
         /* fprintf( logFile, "\n\nState hist[%d].\n", k); */
-        printState( logFile, hist[k], 2 );
+        if (outlev > -1) {
+            printState( logFile, hist[k], 2 );
+        }
 
         /* fprintf( logFile, "\nCopying state %d.\n", k); */
         copyState( &save, hist[k] );
@@ -143,19 +151,16 @@ void analysis( int   Nnb,
         /* fprintf( logFile, "Saving coordinates of state %d.\n", k); */
 
         /* Save coordinates in crdSave array...  */
-        (void)memcpy(crdSave[k], crd, natom*3*sizeof(float));
-        // for (j = 0;  j < natom;  j++) {
-            // for (XYZ = 0;  XYZ < SPACE;  XYZ++) {
-                // crdSave[k][j][XYZ] = crd[j][XYZ]; // } /* XYZ */ // } /*j*/
+        (void)memcpy(crdSave[k], crd, natom*3*sizeof(FloatOrDouble));
     } /*k*/
 
     flushLog;
 
+    // Sort conformations by energy and perform cluster analysis,
     if (nconf > 1) {
         sort_enrg( econf, isort, nconf );
 
-        ncluster = cluster_analysis( clus_rms_tol, cluster, 
-                    num_in_clu, isort, 
+        ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort, 
                     nconf, natom, type, crdSave, crdpdb, 
                     sml_center, clu_rms, B_symmetry_flag,
                     ref_crds, ref_natoms, ref_rms);
@@ -163,16 +168,17 @@ void analysis( int   Nnb,
         pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
         flushLog;
 
-        prClusterHist( ncluster, irunmax, clus_rms_tol,num_in_clu, 
-                       cluster, econf, clu_rms, ref_rms);
+        prClusterHist( ncluster, irunmax, clus_rms_tol,num_in_clu, cluster, econf, clu_rms, ref_rms);
 
-        pr( logFile, "\n\tLOWEST ENERGY DOCKED CONFORMATION from EACH CLUSTER");
-        pr( logFile, "\n\t___________________________________________________\n\n\n" );
+        if (outlev > -1) {
+            pr( logFile, "\n\tLOWEST ENERGY DOCKED CONFORMATION from EACH CLUSTER");
+            pr( logFile, "\n\t___________________________________________________\n\n\n" );
 
-        if (keepresnum > 0 ) {
-            pr( logFile, "\nKeeping original residue number (specified in the input PDBQ file) for outputting.\n\n");
-        } else {
-            pr( logFile, "\nResidue number will be set to the conformation's cluster rank.\n\n");
+            if (keepresnum > 0 ) {
+                pr( logFile, "\nKeeping original residue number (specified in the input PDBQ file) for outputting.\n\n");
+            } else {
+                pr( logFile, "\nResidue number will be set to the conformation's cluster rank.\n\n");
+            }
         }
     } else {
         pr( logFile, "\nSorry!  Unable to perform cluster analysis, because not enough conformations were generated.\n\n\n" );
@@ -185,7 +191,8 @@ void analysis( int   Nnb,
     }
     flushLog;
 
-    for (i = 0;  i < ncluster;  i++) { // each cluster, i
+    // For each cluster, i
+    for (i = 0;  i < ncluster;  i++) {
         i1 = i + 1;
 
         // c = cluster[i][0];
@@ -195,34 +202,31 @@ void analysis( int   Nnb,
             kmax = 1;	/* write lowest-energy only */
         }
 
-        for (k = 0;  k < kmax;  k++) { // each member of this cluster, k
+        // For each member, k, of this cluster
+        for (k = 0;  k < kmax;  k++) {
             c = cluster[i][k];
             c1 = c + 1;
 
-            (void)memcpy(crd, crdSave[c], natom*3*sizeof(float));
-            // for (j = 0;  j < natom;  j++) {
-                // for (XYZ = 0;  XYZ < SPACE;  XYZ++) {
-                    // crd[j][XYZ] = crdSave[c][j][XYZ]; // } // }/*j*/
+            (void)memcpy(crd, crdSave[c], natom*3*sizeof(FloatOrDouble));
      
             if (ntor > 0) {
-                // eintra = eintcal( nonbondlist,e_internal,crd,type,Nnb,B_calcIntElec,q1q2 ) + torsFreeEnergy;
-                eintra = eintcal( nonbondlist,e_internal,crd,type,Nnb,B_calcIntElec,q1q2 );
+                // eintra = eintcal( nonbondlist,e_internal,crd,Nnb,B_calcIntElec,q1q2 ) + torsFreeEnergy;
+                eintra = eintcal( nonbondlist,e_internal,crd,Nnb,B_calcIntElec,q1q2 );
             } else {
                 // eintra = torsFreeEnergy;
                 eintra = 0.0;
             }
             if (!B_template) {
-                 einter = trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo );
+                 einter = trilinterp4( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
             } else {
                  einter = byatom_template_trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo,
                                                       template_energy, template_stddev);
             }
-     
 
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
             printEnergies( einter, eintra, torsFreeEnergy, "USER    ", ligand_is_inhibitor );
      
-            pr( logFile, "USER\n");
+            pr( logFile, "USER  \n");
             pr( logFile, "USER    DPF = %s\n", dock_param_fn);
             pr( logFile, "USER    NEWDPF move\t%s\n", smFileName );
             pr( logFile, "USER    NEWDPF about\t%f %f %f\n", sml_center[X],sml_center[Y],sml_center[Z]);
@@ -239,74 +243,81 @@ void analysis( int   Nnb,
                 }/*t*/
                 pr( logFile, "\n" );
             }/*if*/
-            pr( logFile, "USER\n");
+            pr( logFile, "USER  \n");
             flushLog;
-            off[0]=5; off[1]=6; off[2]=7; off[3]=8; off[4]=9; off[5]=10;
      
             if (keepresnum > 0) {
-                if (!B_template) {
-                    pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
-                } else {
-                    pr( logFile, "USER                              x       y       z    vdW   Template    q     RMS \n" );
+                if (outlev > -1) {
+                    // Log File PDBQ coordinates [
+                    if (!B_template) {
+                        pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
+                    } else {
+                        pr( logFile, "USER                              x       y       z    vdW   Template    q     RMS \n" );
+                    }
+                    for (j = 0;  j < natom;  j++) {
+                        strncpy( rec14, &atomstuff[j][13], (size_t)13);
+                        rec14[13]='\0';
+                        pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", j+1, rec14, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
+                        pr(logFile," %6.3f\n", ref_rms[c]); 
+                    }
+                    //]
                 }
-                /*
-                 * 123456
-                 * +99.99
-                 */
-                for (j = 0;  j < natom;  j++) {
-                    strncpy( rec14, &atomstuff[j][13], (size_t)13);
-                    rec14[13]='\0';
-                    pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", j+1, rec14, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
-                    pr(logFile," %6.3f\n", ref_rms[c]); 
-                    /* 
-                    pr( logFile, "ATOM  %5d  %13s    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %6.3f\n", j+1, rec14, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j], ref_rms[c]);
-                    */
-                }
-                if (!B_template) {
-                    strcpy( label, "x y z vdW Elec q RMS\0" );
-                } else {
-                    strcpy( label, "x y z vdW Template q RMS\0" );
-                }
-                veclen = 7;
-                off[6]=11;
             } else {
-                if (!B_template) {
-                    pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
-                } else {
-                    pr( logFile, "USER                 Rank         x       y       z    vdW   Template    q     RMS \n" );
+                if (outlev > -1) {
+                    // Log File PDBQ coordinates [
+                    if (!B_template) {
+                        pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
+                    } else {
+                        pr( logFile, "USER                 Rank         x       y       z    vdW   Template    q     RMS \n" );
+                    }
+                    for (j = 0;  j < natom;  j++) {
+                        strncpy( rec9, &atomstuff[j][13], (size_t)8);
+                        rec9[8]='\0';
+                        pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, "", j+1, rec9, i1, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
+                        pr(logFile," %6.3f\n", ref_rms[c]); 
+                    }/*j*/
+                    //]
                 }
-                for (j = 0;  j < natom;  j++) {
-                    strncpy( rec9, &atomstuff[j][13], (size_t)8);
-                    rec9[8]='\0';
-                    pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, "", j+1, rec9, i1, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
-                    pr(logFile," %6.3f\n", ref_rms[c]); 
-                    /*
-                    pr( logFile, "ATOM  %5d  %8s%5d    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %6.3f\n",
-                    j+1, rec9, i1, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j], ref_rms[c]);
-                    */
-                }/*j*/
-                if (!B_template) {
-                    strcpy( label, "x y z vdW Elec q Rank RMS\0" );
-                } else {
-                    strcpy( label, "x y z vdW Template q Rank RMS\0" );
-                }
-                veclen = 8;
-                off[6]=4;
-                off[7]=11;
             }/*if*/
             pr( logFile, "TER\n" );
             pr( logFile, "ENDMDL\n" );
+            // End of outputting coordinates of this "MODEL"...
             flushLog;
         } /*k*/
     } /*i   (Next cluster.) */
     pr( logFile, "\n\n" );
 
+    // AVS Field file [
+    off[0]=5;
+    off[1]=6;
+    off[2]=7;
+    off[3]=8;
+    off[4]=9;
+    off[5]=10;
+    if (keepresnum > 0) {
+        off[6]=11;
+        veclen = 7;
+        if (!B_template) {
+            strcpy( label, "x y z vdW Elec q RMS\0" );
+        } else {
+            strcpy( label, "x y z vdW Template q RMS\0" );
+        }
+    } else {
+        off[6]=4;
+        off[7]=11;
+        veclen = 8;
+        if (!B_template) {
+            strcpy( label, "x y z vdW Elec q Rank RMS\0" );
+        } else {
+            strcpy( label, "x y z vdW Template q Rank RMS\0" );
+        }
+    }
     indpf = strindex( dock_param_fn, ".dpf" );
     strncpy( filename, dock_param_fn, (size_t)indpf );
     filename[ indpf ] = '\0';
     strcat( filename, ".dlg.pdb\0" );
 
     print_avsfld( logFile, veclen, natom, ncluster, off, 12, label, filename );
-
+    //]
 }
 /* EOF */

@@ -3,6 +3,7 @@
 #define _STRUCTS_H
 
 #include "constants.h"
+#include "typedefs.h"
 
 /******************************************************************************
  *      Name: structs.h                                                       *
@@ -55,21 +56,32 @@ typedef struct quat {
 
 /*____________________________________________________________________________*/
 
+typedef struct energy {
+    double total; /* total energy */
+    double intra; /* intramolecular energy, a.k.a. "internal" energy */
+    double inter; /* intermolecular energy */
+    double FE;    /* estimated Free Energy of binding */
+} Energy;
+
+/*____________________________________________________________________________*/
+
 typedef struct state {
 	Coord	T;		/* coordinates of center of molecule */
 	Quat	Q;		/* rigid-body orientation */
 	double	tor[MAX_TORS];	/* torsion angles in radians */
 	int	ntor;		/* number of torsions in molecule */
+    int     hasEnergy; /* if 0, this state has an undefined energy */
+    Energy  e;      /* energy structure */
 } State;
 
 /*____________________________________________________________________________*/
 
 typedef struct molecule {
-	float	crdpdb[MAX_ATOMS][SPACE];	/* original coordinates of atoms */
-	float	crd[MAX_ATOMS][SPACE];		/* current coordinates of atoms */
+	FloatOrDouble	crdpdb[MAX_ATOMS][SPACE];	/* original coordinates of atoms */
+	FloatOrDouble	crd[MAX_ATOMS][SPACE];		/* current coordinates of atoms */
 	char    atomstr[MAX_ATOMS][MAX_CHARS];	/* strings describing atoms, from PDB file, cols,1-30.*/
 	int	natom;				/* number of atoms in molecule */
-	float	vt[MAX_TORS][SPACE];		/* vectors  of torsions */
+	FloatOrDouble	vt[MAX_TORS][SPACE];		/* vectors  of torsions */
 	int	tlist[MAX_TORS][MAX_ATOMS];	/* torsion list of movable atoms */
 	State	S;				/* state of molecule */
 } Molecule;
@@ -126,6 +138,7 @@ typedef struct torsion {
     int 	IDmove[MAX_ATOMS];  /* atom serial-IDs of atoms moved by this */
     Coord	vt;		/* bond-vector of rotatable bond */
 } Torsion;
+
 /*______________________________________________________________________________
 ** Molecular fragments, side-chains, even entire ligands */
 

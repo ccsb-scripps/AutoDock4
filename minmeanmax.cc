@@ -1,3 +1,13 @@
+/*
+
+ $Id: minmeanmax.cc,v 1.2 2003/02/26 01:20:08 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* minmeanmax.cc */
 
 /* Calculates the min, mean and max of each gene for a given population */

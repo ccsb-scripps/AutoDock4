@@ -1,3 +1,13 @@
+/*
+
+ $Id: get_atom_type.cc,v 1.2 2003/02/26 01:05:24 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* get_atom_type.cc */
 
 
@@ -48,8 +58,8 @@ int get_atom_type( char aname[4],
         }
     }    
     if (type == -1) {
-        (void) fprintf(stderr, "%s: Atom type error, can't find type for \"%s\" in typelist \"%s\".\n", programname, aname, chtype );
-        (void) fprintf(logFile, "%s: Atom type error, can't find type for \"%s\" in typelist \"%s\".\n", programname, aname, chtype );
+        (void) fprintf(stderr, "\n%s: WARNING!  Atom type error, can't find type for \"%s\" in typelist \"%s\".\n", programname, aname, chtype );
+        (void) fprintf(logFile, "\n%s: WARNING!  Atom type error, can't find type for \"%s\" in typelist \"%s\".\n", programname, aname, chtype );
         type = UNKNOWN;
     }
     return (type);

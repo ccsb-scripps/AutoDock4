@@ -1,10 +1,20 @@
+/*
+
+ $Id: swap.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* swap.cc */
 
-    #include "swap.h"
-    #ifdef DEBUG
-	#include <stdio.h>
-	#include <string.h>
-    #endif /* DEBUG */
+#include "swap.h"
+#ifdef DEBUG
+#include <stdio.h>
+#include <string.h>
+#endif /* DEBUG */
 
 
 #ifdef DEBUG

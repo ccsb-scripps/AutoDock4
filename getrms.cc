@@ -1,3 +1,13 @@
+/*
+
+ $Id: getrms.cc,v 1.2 2003/02/26 01:07:17 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* getrms.cc */
 
 #include <math.h>
@@ -6,8 +16,8 @@
 
 
 
-float getrms ( float Crd[MAX_ATOMS][SPACE], 
-	       float CrdRef[MAX_ATOMS][SPACE], 
+FloatOrDouble getrms ( FloatOrDouble Crd[MAX_ATOMS][SPACE], 
+	       FloatOrDouble CrdRef[MAX_ATOMS][SPACE], 
 	       Boole B_symmetry_flag, 
 	       int natom, 
 	       int type[MAX_ATOMS] )

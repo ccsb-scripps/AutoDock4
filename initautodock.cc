@@ -1,36 +1,42 @@
+/*
+
+ $Id: initautodock.cc,v 1.5 2004/11/16 23:42:53 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* initautodock.cc */
 
 #include <math.h>
-
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include "initautodock.h"
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "initautodock.h"
 
 #define TINYDELTA 0.001	 /* To nudge ligand into grid... */
 #define AddNewHardCon(iCon,low,upp)  F_TorConRange[i][iCon][LOWER]=low;F_TorConRange[i][iCon][UPPER]=upp
-
 
 extern int   keepresnum;
 extern FILE *logFile;
 extern char  *programname;
 
-
 void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
-		    float crd[MAX_ATOMS][SPACE],
-		    float crdpdb[MAX_ATOMS][SPACE],
-		    float xhi,
-		    float yhi,
-		    float zhi,
-		    float xlo,
-		    float ylo,
-		    float zlo,
+		    FloatOrDouble crd[MAX_ATOMS][SPACE],
+		    FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+		    FloatOrDouble xhi,
+		    FloatOrDouble yhi,
+		    FloatOrDouble zhi,
+		    FloatOrDouble xlo,
+		    FloatOrDouble ylo,
+		    FloatOrDouble zlo,
 		    int   natom,
 		    int   ntor,
 		    State *s0,
 		    int   tlist[MAX_TORS][MAX_ATOMS],
-		    float vt[MAX_TORS][SPACE],
+		    FloatOrDouble vt[MAX_TORS][SPACE],
 		    int   outlev)
 
 {
@@ -43,12 +49,12 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
     char  rec8[10];
     char  axis[5];
 
-    float delta[MAX_ATOMS][SPACE];
-    float delta_max[SPACE];
-    float delta_min[SPACE];
-    float last_delta[SPACE];
-    float hi[SPACE];
-    float lo[SPACE];
+    FloatOrDouble delta[MAX_ATOMS][SPACE];
+    FloatOrDouble delta_max[SPACE];
+    FloatOrDouble delta_min[SPACE];
+    FloatOrDouble last_delta[SPACE];
+    FloatOrDouble hi[SPACE];
+    FloatOrDouble lo[SPACE];
 
     int   ip[SPACE];
     int   ip_max[SPACE];
@@ -236,9 +242,9 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 		prStr( note, ">>> Trying a new, randomly-generated rigid body rotation. (quat0 override)\n");
 		pr_2x( stderr, logFile, note );
 
-                s0->Q.nx  = random_range( -1., 1. );
-                s0->Q.nx  = random_range( -1., 1. );
-                s0->Q.nx  = random_range( -1., 1. );
+         s0->Q.nx  = random_range( -1., 1. );
+         s0->Q.ny  = random_range( -1., 1. );
+         s0->Q.nz  = random_range( -1., 1. );
 		s0->Q.ang = Rad( random_range( 0., 360. ) );  /*radians*/
 
 		mkUnitQuat( &(s0->Q) );

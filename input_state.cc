@@ -1,3 +1,13 @@
+/*
+
+ $Id: input_state.cc,v 1.2 2003/02/26 01:09:41 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* input_state.cc */
 
 #include <math.h>
@@ -14,12 +24,12 @@ int input_state( State *S,
 		 char  line[LINE_LEN],
 		 int   ntor,
 		 int   *p_istep,
-		 float *p_energy,
-		 float *p_eint,
+		 FloatOrDouble *p_energy,
+		 FloatOrDouble *p_eint,
 		 char  *p_lastmove )
 {
     int i, istep, status;
-    float energy, eint;
+    FloatOrDouble energy, eint;
     char lastmove;
     char myline[LINELEN];
 
@@ -27,7 +37,11 @@ int input_state( State *S,
     fprintf(stderr, "line=|%s|\n", line);
 #endif /* DEBUG */
 
-    status = sscanf(line, "%*s %d %1s %f %f %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T.x), &(S->T.y), &(S->T.z),  &(S->Q.nx), &(S->Q.ny), &(S->Q.nz),  &(S->Q.ang) );
+    #ifdef USE_DOUBLE
+        status = sscanf(line, "%*s %d %1s %lf %lf %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T.x), &(S->T.y), &(S->T.z),  &(S->Q.nx), &(S->Q.ny), &(S->Q.nz),  &(S->Q.ang) );
+    #else
+        status = sscanf(line, "%*s %d %1s %f %f %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T.x), &(S->T.y), &(S->T.z),  &(S->Q.nx), &(S->Q.ny), &(S->Q.nz),  &(S->Q.ang) );
+    #endif
 
     if (status != 0) {
 	S->Q.ang = Rad( S->Q.ang );

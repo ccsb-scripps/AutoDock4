@@ -21,4 +21,7 @@ int openFile( char       filename[MAX_CHARS],
               Clock      start,
               struct tms tms_start,
 	      Boole	 mayExit);
+
+FILE *ad_fopen(const char *path, const char *mode);
+
 #endif

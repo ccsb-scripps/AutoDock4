@@ -1,3 +1,13 @@
+/*
+
+ $Id: print_avsfld.cc,v 1.2 2003/02/26 01:29:18 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* print_avsfld.cc */
 
 
@@ -26,7 +36,7 @@ void print_avsfld( FILE *logFile,
     fprintf( logFile, "AVSFLD: veclen=%-9d # vector size\n", veclen );
     fprintf( logFile, "AVSFLD: dim1=%-11d # atoms\n", natom );
     fprintf( logFile, "AVSFLD: dim2=%-11d # conformations\n", nframe );
-    fprintf( logFile, "AVSFLD: data=float       # data type (byte,integer,float,double)\n" );
+    fprintf( logFile, "AVSFLD: data=FloatOrDouble       # data type (byte,integer,FloatOrDouble,double)\n" );
     fprintf( logFile, "AVSFLD: field=uniform    # field coordinate layout\n" );
     fprintf( logFile, "AVSFLD: label= %s\n", label );
     for (i=0; i<veclen; i++) {

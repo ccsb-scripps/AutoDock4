@@ -1,0 +1,2653 @@
+      ________________________________________________________________
+
+__________//___________________________/////___________________/____________
+_________/__/__________________________/____/__________________/____________
+________/____/___________/_____________/_____/_________________/____________
+________/____/__/_____/_/////___/////__/_____/__/////___/////__/___/________
+_______/______/_/_____/__/_____/_____/_/_____/_/_____/_/_____/_/_//_________
+_______////////_/_____/__/_____/_____/_/_____/_/_____/_/_______//_/_________
+_______/______/_/____//__/___/_/_____/_/____/__/_____/_/_____/_/___/________
+_______/______/__////_/___///___/////__/////____/////___/////__/____/_______
+
+      ________________________________________________________________
+
+                                ______
+                               /      \
+                              /        \
+                             /          \
+                             \    /\    /
+                              \  /  \  /
+                               \/ /\ \/
+                                 /  \
+                                /____\
+
+                  ______________________________________ 
+                 |                                      |
+                 |            AutoDock 3.05             |
+                 |                                      |
+                 |            (c) 1991-2002             |
+                 |    The Scripps Research Institute    |
+                 |                                      |
+                 |       Garrett M. Morris, TSRI        |
+                 |         garrett@scripps.edu          |
+                 |                                      |
+                 |       David S. Goodsell, TSRI        |
+                 |         goodsell@scripps.edu         |
+                 |                                      |
+                 |        Arthur J. Olson, TSRI         |
+                 |           olson@scripps.edu          |
+                 |______________________________________|
+
+                  ______________________________________ 
+                 |                                      |
+                 | Automated Docking of Flexible Ligand |
+                 |     to Macromolecular Receptor       |
+                 |______________________________________|
+
+
+
+This file was created at:			5:11 16" p.m., 02/26/2003
+                   using:			"nemo.mgl"
+
+NOTE: "rus" stands for:
+
+      r = Real, wall-clock or elapsed time;
+      u = User or cpu-usage time;
+      s = System time
+
+All timings are in seconds, unless otherwise stated.
+
+
+Parameter file used for this docking:		mtxA.4dfr.GASW.dpf
+
+
+
+DPF> seed    863546106 2863 	# for random number generator
+
+2 seeds found.
+argument "863546106" found
+argument "2863" found
+Random number generator was seeded with the user-specified value  863546106
+Random number generator was seeded with the user-specified value  2863
+
+Portable random number generator was seeded with the user-specified values  863546106, 2863
+
+
+DPF> types	CANOH		# atom type names
+
+Atom descriptors for types 1-5 = C, A, N, O, H  respectively.
+
+Electrostatic energies will be stored in Grid Map 6
+
+
+DPF> fld	4dfr.maps.fld	# grid data file
+
+Opening Grid Map Dimensions file:		4dfr.maps.fld
+
+Grid Point Spacing =				0.375 Angstroms
+
+Even Number of User-specified Grid Points =	60 x-points
+						60 y-points
+						60 z-points
+
+Adding the Central Grid Point makes:		61 x-points
+						61 y-points
+						61 z-points
+
+Coordinates of Central Grid Point of Maps =	(20.168, 69.307, 43.231)
+
+Macromolecule file used to create Grid Maps =	4dfr.pdbqs
+
+Grid Parameter file used to create Grid Maps =	4dfrA.gpf
+
+Minimum coordinates in grid = (8.918, 58.057, 31.981)
+Maximum coordinates in grid = (31.418, 80.557, 54.481)
+
+
+
+DPF> map	4dfr.C.map	# C-atomic affinity map
+
+Opened Grid Map 1 (C):				4dfr.C.map
+Checking header information.
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
+		"4dfrA.gpf" :: "mtxA.4dfr.GASW.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 1... 
+Closing file.
+226981 energies found for map 1
+Minimum energy = -0.94,  maximum energy = 201955.59
+
+Time taken (s): Real= 1.15,  CPU= 0.94,  System= 0.19
+
+
+
+DPF> map	4dfr.A.map	# A-atomic affinity map
+
+Opened Grid Map 2 (A):				4dfr.A.map
+Checking header information.
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
+		"4dfrA.gpf" :: "mtxA.4dfr.GASW.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 2... 
+Closing file.
+226981 energies found for map 2
+Minimum energy = -0.78,  maximum energy = 201955.80
+
+Time taken (s): Real= 1.02,  CPU= 0.99,  System= 0.00
+
+
+
+DPF> map	4dfr.N.map	# N-atomic affinity map
+
+Opened Grid Map 3 (N):				4dfr.N.map
+Checking header information.
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
+		"4dfrA.gpf" :: "mtxA.4dfr.GASW.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 3... 
+Closing file.
+226981 energies found for map 3
+Minimum energy = -0.73,  maximum energy = 200423.72
+
+Time taken (s): Real= 1.01,  CPU= 0.99,  System= 0.00
+
+
+
+DPF> map	4dfr.O.map	# O-atomic affinity map
+
+Opened Grid Map 4 (O):				4dfr.O.map
+Checking header information.
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
+		"4dfrA.gpf" :: "mtxA.4dfr.GASW.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 4... 
+Closing file.
+226981 energies found for map 4
+Minimum energy = -0.72,  maximum energy = 200377.20
+
+Time taken (s): Real= 1.02,  CPU= 0.98,  System= 0.00
+
+
+
+DPF> map	4dfr.H.map	# H-atomic affinity map
+
+Opened Grid Map 5 (H):				4dfr.H.map
+Checking header information.
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
+		"4dfrA.gpf" :: "mtxA.4dfr.GASW.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 5... 
+Closing file.
+226981 energies found for map 5
+Minimum energy = -0.84,  maximum energy = 111743.72
+
+Time taken (s): Real= 0.99,  CPU= 0.96,  System= 0.00
+
+
+
+DPF> map	4dfr.e.map	# electrostatics map
+
+Opened Grid Map 6 (e):				4dfr.e.map
+Checking header information.
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
+		"4dfrA.gpf" :: "mtxA.4dfr.GASW.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 6... 
+Closing file.
+226981 energies found for map 6
+Minimum energy = -362.27,  maximum energy = 280.30
+
+Time taken (s): Real= 0.96,  CPU= 0.95,  System= 0.00
+
+DPF> 
+
+
+DPF> move	mtxA.pdbq	# small molecule
+
+Atomic coordinate, partial charge, PDBQ file = "mtxA.pdbq"
+
+
+INPUT PDBQ FILE:
+________________
+
+
+INPUT-PDBQ: REMARK  7 active torsions (identified by new id numbers):
+INPUT-PDBQ: REMARK  status: ('A' for Active; 'I' for Inactive)
+INPUT-PDBQ: REMARK    1  A      1- 13 between atoms:  N10  and  C9  
+INPUT-PDBQ: REMARK    2  A     13- 14 between atoms:  C9   and  A6  
+INPUT-PDBQ: REMARK       I     17- 18 between atoms:  C4   and  NA4 
+INPUT-PDBQ: REMARK       I     22- 23 between atoms:  C2   and  NA2 
+INPUT-PDBQ: REMARK    3  A     11- 30 between atoms:  N    and  CA  
+INPUT-PDBQ: REMARK    4  A     30- 31 between atoms:  CA   and  CT  
+INPUT-PDBQ: REMARK    5  A     30- 34 between atoms:  CA   and  CB  
+INPUT-PDBQ: REMARK    6  A     34- 35 between atoms:  CB   and  CG  
+INPUT-PDBQ: REMARK    7  A     35- 36 between atoms:  CG   and  CD  
+INPUT-PDBQ: ROOT
+INPUT-PDBQ: ATOM      1  N10 MTX     1      22.028  67.717  43.540  0.00  0.00    -0.225
+INPUT-PDBQ: ATOM      2  CM  MTX     1      23.296  66.877  43.297  0.00  0.00     0.433
+INPUT-PDBQ: ATOM      3  A11 MTX     1      19.702  69.969  41.061  0.00  0.00     0.037
+INPUT-PDBQ: ATOM      4  A12 MTX     1      20.746  69.211  40.495  0.00  0.00     0.020
+INPUT-PDBQ: ATOM      5  A13 MTX     1      21.534  68.508  41.355  0.00  0.00     0.078
+INPUT-PDBQ: ATOM      6  A14 MTX     1      21.189  68.492  42.724  0.00  0.00     0.203
+INPUT-PDBQ: ATOM      7  A15 MTX     1      20.168  69.307  43.231  0.00  0.00     0.078
+INPUT-PDBQ: ATOM      8  A16 MTX     1      19.422  70.099  42.451  0.00  0.00     0.020
+INPUT-PDBQ: ATOM      9  C   MTX     1      18.966  70.777  40.090  0.00  0.00     0.247
+INPUT-PDBQ: ATOM     10  O   MTX     1      19.469  71.019  39.002  0.00  0.00    -0.270
+INPUT-PDBQ: ATOM     11  N   MTX     1      17.735  71.051  40.429  0.00  0.00    -0.270
+INPUT-PDBQ: ATOM     12  H46 MTX     1      17.372  70.614  41.252  0.00  0.00     0.153
+INPUT-PDBQ: ENDROOT
+INPUT-PDBQ: BRANCH 1 13
+INPUT-PDBQ: ATOM     13  C9  MTX     1      21.711  67.394  45.048  0.00  0.00     0.409
+INPUT-PDBQ: TORS 13 14
+INPUT-PDBQ: ATOM     14  A6  MTX     1      20.308  66.821  45.261  0.00  0.00     0.124
+INPUT-PDBQ: ATOM     15  N5  MTX     1      19.814  66.982  46.490  0.00  0.00    -0.237
+INPUT-PDBQ: ATOM     16  A4A MTX     1      18.630  66.369  46.644  0.00  0.00     0.148
+INPUT-PDBQ: ATOM     17  A4  MTX     1      18.001  66.587  47.924  0.00  0.00     0.149
+INPUT-PDBQ: ATOM     18  NA4 MTX     1      18.523  67.297  48.888  0.00  0.00    -0.341
+INPUT-PDBQ: ATOM     19  H35 MTX     1      19.449  67.682  48.786  0.00  0.00     0.144
+INPUT-PDBQ: ATOM     20  H53 MTX     1      17.989  67.463  49.753  0.00  0.00     0.144
+INPUT-PDBQ: ATOM     21  N3  MTX     1      16.766  66.078  48.071  0.00  0.00    -0.198
+INPUT-PDBQ: ATOM     22  A2  MTX     1      16.136  65.424  47.049  0.00  0.00     0.216
+INPUT-PDBQ: ATOM     23  NA2 MTX     1      14.808  64.996  47.270  0.00  0.00    -0.327
+INPUT-PDBQ: ATOM     24  H34 MTX     1      14.307  64.510  46.542  0.00  0.00     0.145
+INPUT-PDBQ: ATOM     25  H52 MTX     1      14.351  65.180  48.175  0.00  0.00     0.145
+INPUT-PDBQ: ATOM     26  N1  MTX     1      16.724  65.101  45.857  0.00  0.00    -0.193
+INPUT-PDBQ: ATOM     27  A8A MTX     1      17.991  65.747  45.644  0.00  0.00     0.185
+INPUT-PDBQ: ATOM     28  N8  MTX     1      18.560  65.424  44.401  0.00  0.00    -0.232
+INPUT-PDBQ: ATOM     29  A7  MTX     1      19.725  66.102  44.371  0.00  0.00     0.143
+INPUT-PDBQ: ENDTORS 13 14
+INPUT-PDBQ: ENDBRANCH 1 13
+INPUT-PDBQ: BRANCH 11 30
+INPUT-PDBQ: ATOM     30  CA  MTX     1      16.877  71.923  39.715  0.00  0.00     0.287
+INPUT-PDBQ: BRANCH 30 31
+INPUT-PDBQ: ATOM     31  CT  MTX     1      16.397  72.948  40.561  0.00  0.00     0.109
+INPUT-PDBQ: ATOM     32  O1  MTX     1      16.202  72.626  41.863  0.00  0.00    -0.699
+INPUT-PDBQ: ATOM     33  O2  MTX     1      15.866  74.111  40.362  0.00  0.00    -0.699
+INPUT-PDBQ: ENDBRANCH 30 31
+INPUT-PDBQ: BRANCH 30 34
+INPUT-PDBQ: ATOM     34  CB  MTX     1      15.656  71.197  39.259  0.00  0.00     0.125
+INPUT-PDBQ: TORS 34 35
+INPUT-PDBQ: ATOM     35  CG  MTX     1      16.080  70.349  37.905  0.00  0.00     0.266
+INPUT-PDBQ: TORS 35 36
+INPUT-PDBQ: ATOM     36  CD  MTX     1      16.286  70.898  36.272  0.00  0.00     0.086
+INPUT-PDBQ: ATOM     37  OE1 MTX     1      17.507  70.413  35.853  0.00  0.00    -0.700
+INPUT-PDBQ: ATOM     38  OE2 MTX     1      15.722  72.117  36.236  0.00  0.00    -0.700
+INPUT-PDBQ: ENDTORS 35 36
+INPUT-PDBQ: ENDTORS 34 35
+INPUT-PDBQ: ENDBRANCH 30 34
+INPUT-PDBQ: ENDBRANCH 11 30
+________________________________________________________________________________
+
+Number of atoms found in molecule =	38 atoms
+
+Number of atoms with type 1 = 8
+Number of atoms with type 2 = 12
+Number of atoms with type 3 = 8
+Number of atoms with type 4 = 5
+Number of atoms with type 5 = 5
+
+Total charge on molecule =		-0.997 e
+
+REMARK  7 active torsions (identified by new id numbers):
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A      1- 13 between atoms:  N10  and  C9  
+REMARK    2  A     13- 14 between atoms:  C9   and  A6  
+REMARK       I     17- 18 between atoms:  C4   and  NA4 
+REMARK       I     22- 23 between atoms:  C2   and  NA2 
+REMARK    3  A     11- 30 between atoms:  N    and  CA  
+REMARK    4  A     30- 31 between atoms:  CA   and  CT  
+REMARK    5  A     30- 34 between atoms:  CA   and  CB  
+REMARK    6  A     34- 35 between atoms:  CB   and  CG  
+REMARK    7  A     35- 36 between atoms:  CG   and  CD  
+
+
+Number of Rotatable Bonds in Small Molecule =	7 torsions
+
+
+TORSION TREE
+____________
+
+Sorted in order of increasing number of atoms moved:
+
+Torsion		   #
+ #  Atom1--Atom2 Moved List of Atoms Moved
+___ ____________ _____ ________________________________________________________
+ 1     CA--CT       2  O1,O2.
+ 2     CG--CD       2  OE1,OE2.
+ 3     CB--CG       3  CD,OE1,OE2.
+ 4     CA--CB       4  CG,CD,OE1,OE2.
+ 5      N--CA       8  CT,O1,O2,CB,CG,CD,OE1,OE2.
+ 6     C9--A6      15  N5,A4A,A4,NA4,H35,H53,N3,A2,NA2,H34,H52,N1,A8A,N8,A7.
+ 7    N10--C9      16  A6,N5,A4A,A4,NA4,H35,H53,N3,A2,NA2,H34,H52,N1,A8A,N8,A7.
+
+
+Calculating normalized torsion vectors.
+
+
+
+DPF> about	20.168 69.307 43.231	# small molecule center
+
+Small molecule center of rotation =	(+20.168, +69.307, +43.231)
+
+
+
+DPF> tran0	random		# initial coordinates/A or "random"
+
+
+
+DPF> quat0	random		# initial quaternion or "random"
+
+
+
+DPF> ndihe	7		# number of initial torsions
+
+
+
+DPF> dihe0	random		# initial torsions
+
+DPF> 
+
+
+DPF> torsdof 7 0.3113	# num. non-H tors.degrees of freedom & coeff.
+
+Number of torsional degrees of freedom = 7
+
+Note: this must exclude any torsions involving -OH and -NH2 groups.
+
+Free energy coefficient for torsional degrees of freedom = 0.3113
+
+Estimated loss of torsional free energy upon binding = +2.1791 kcal/mol
+
+DPF> 
+
+
+DPF> tstep	0.2		# translation step/A
+
+Initial cycle, maximum translation step = +/- 0.2 Angstroms
+
+
+DPF> qstep	5.		# quaternion step/deg
+
+
+
+DPF> dstep	5.		# torsion step/deg
+
+
+
+DPF> trnrf	1.		# trans reduction factor/per cycle
+
+
+
+DPF> quarf	1.		# quat reduction factor/per cycle
+
+
+
+DPF> dihrf	1.		# tors reduction factor/per cycle
+
+DPF> 
+
+
+DPF> intnbp_r_eps  4.00 0.0222750  12  6	#C-C lj
+
+Non-bonded parameters for C-C interactions, used in internal energy calculations:
+
+              373712.5           182.5 
+    E    =  -----------  -  -----------
+     C,C         12               6
+                r               r 
+
+Calculating C-C interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.26,  CPU= 0.05,  System= 0.21
+
+
+DPF> intnbp_r_eps  4.00 0.0222750  12  6	#C-A lj
+
+Non-bonded parameters for C-A interactions, used in internal energy calculations:
+
+              373712.5           182.5 
+    E    =  -----------  -  -----------
+     C,A         12               6
+                r               r 
+
+Calculating C-A interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.75 0.0230026  12  6	#C-N lj
+
+Non-bonded parameters for C-N interactions, used in internal energy calculations:
+
+              177890.2           127.9 
+    E    =  -----------  -  -----------
+     C,N         12               6
+                r               r 
+
+Calculating C-N interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.60 0.0257202  12  6	#C-O lj
+
+Non-bonded parameters for C-O interactions, used in internal energy calculations:
+
+              121872.1           112.0 
+    E    =  -----------  -  -----------
+     C,O         12               6
+                r               r 
+
+Calculating C-O interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.00 0.0081378  12  6	#C-H lj
+
+Non-bonded parameters for C-H interactions, used in internal energy calculations:
+
+                4324.8            11.9 
+    E    =  -----------  -  -----------
+     C,H         12               6
+                r               r 
+
+Calculating C-H interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  4.00 0.0222750  12  6	#A-A lj
+
+Non-bonded parameters for A-A interactions, used in internal energy calculations:
+
+              373712.5           182.5 
+    E    =  -----------  -  -----------
+     A,A         12               6
+                r               r 
+
+Calculating A-A interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.75 0.0230026  12  6	#A-N lj
+
+Non-bonded parameters for A-N interactions, used in internal energy calculations:
+
+              177890.2           127.9 
+    E    =  -----------  -  -----------
+     A,N         12               6
+                r               r 
+
+Calculating A-N interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.60 0.0257202  12  6	#A-O lj
+
+Non-bonded parameters for A-O interactions, used in internal energy calculations:
+
+              121872.1           112.0 
+    E    =  -----------  -  -----------
+     A,O         12               6
+                r               r 
+
+Calculating A-O interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.00 0.0081378  12  6	#A-H lj
+
+Non-bonded parameters for A-H interactions, used in internal energy calculations:
+
+                4324.8            11.9 
+    E    =  -----------  -  -----------
+     A,H         12               6
+                r               r 
+
+Calculating A-H interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.50 0.0237600  12  6	#N-N lj
+
+Non-bonded parameters for N-N interactions, used in internal energy calculations:
+
+               80290.3            87.4 
+    E    =  -----------  -  -----------
+     N,N         12               6
+                r               r 
+
+Calculating N-N interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.35 0.0265667  12  6	#N-O lj
+
+Non-bonded parameters for N-O interactions, used in internal energy calculations:
+
+               53073.2            75.1 
+    E    =  -----------  -  -----------
+     N,O         12               6
+                r               r 
+
+Calculating N-O interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  2.75 0.0084051  12  6	#N-H lj
+
+Non-bonded parameters for N-H interactions, used in internal energy calculations:
+
+                1572.3             7.3 
+    E    =  -----------  -  -----------
+     N,H         12               6
+                r               r 
+
+Calculating N-H interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.20 0.0297000  12  6	#O-O lj
+
+Non-bonded parameters for O-O interactions, used in internal energy calculations:
+
+               34241.8            63.8 
+    E    =  -----------  -  -----------
+     O,O         12               6
+                r               r 
+
+Calculating O-O interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+
+
+DPF> intnbp_r_eps  1.90 0.3280000  12 10	#O-H hb
+
+Non-bonded parameters for O-H interactions, used in internal energy calculations:
+
+                3629.8          1206.6 
+    E    =  -----------  -  -----------
+     O,H         12              10
+                r               r 
+
+Calculating O-H interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.13,  CPU= 0.13,  System= 0.00
+
+
+DPF> intnbp_r_eps  2.00 0.0029700  12  6	#H-H lj
+
+Non-bonded parameters for H-H interactions, used in internal energy calculations:
+
+                  12.2             0.4 
+    E    =  -----------  -  -----------
+     H,H         12               6
+                r               r 
+
+Calculating H-H interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
+DPF> 
+DPF> #intelec		# calculate internal electrostatic energy
+DPF> 
+
+
+DPF> outlev	1		# diagnostic output level
+
+Output Level = 1.  MINIMUM OUTPUT DURING DOCKING.
+DPF> 
+
+
+DPF> rmstol	0.5		# cluster tolerance/A
+
+Maximum RMS tolerance for conformational cluster analysis = 0.50 Angstroms
+
+
+DPF> rmsref	mtxA.pdbq	# reference structure for RMS calc.
+
+RMS reference coordinates will taken from "mtxA.pdbq"
+DPF> #rmsnosym		# do no symmetry checking in RMS calc.
+
+
+DPF> write_all		# write all conformations in a cluster
+
+All members of each cluster will be written out after the clustering histogram.
+(This is instead of outputting just the lowest energy member in each.)
+
+DPF> 
+
+
+DPF> extnrg	1000.		# external grid energy
+
+External grid energy (beyond grid map walls) = 1000.00
+
+
+
+DPF> e0max	0. 10000	# max. allowable initial energy, max. num. retries
+
+Using user-specified maximum number of retries for initialization, 10000 retries.
+
+
+If the initial energy is greater than e0max, 0.000,
+then a new, random initial state will be created.
+
+DPF> 
+
+
+DPF> ga_pop_size 50		# number of individuals in population
+
+A population of 50 individuals will be used
+
+
+DPF> ga_num_evals 1500	# maximum number of energy evaluations
+
+There will be at most 1500 function evaluations used.
+
+
+DPF> ga_num_generations 27000	# maximum number of generations
+
+The GA will run for at most 27000 generations.
+
+
+DPF> ga_elitism 1		# num. of top individuals that automatically survive
+
+The 1 best will be preserved each generation.
+
+
+DPF> ga_mutation_rate 0.02	# rate of gene mutation
+
+The mutation rate is 0.020000.
+
+
+DPF> ga_crossover_rate 0.80	# rate of crossover
+
+The crossover rate is 0.800000.
+
+
+DPF> ga_window_size 10	# num. of generations for picking worst individual
+
+The GA's selection window is 10 generations.
+
+
+DPF> ga_cauchy_alpha 0	# ~mean of Cauchy distribution for gene mutation
+
+The alpha parameter (for the Cauchy distribution) is being set to 0.000000.
+
+
+DPF> ga_cauchy_beta 1	# ~variance of Cauchy distribution for gene mutation
+
+The beta parameter (for the Cauchy distribution) is being set to 1.000000.
+
+
+DPF> set_ga			# set the above parameters for GA
+
+Passing the current parameters to the Genetic Algorithm.
+DPF> 
+
+
+DPF> sw_max_its 300		# number of iterations of Solis & Wets local search
+
+Solis & Wets algorithms will perform at most 300 iterations.
+
+
+DPF> sw_max_succ 4		# number of consecutive successes before changing rho
+
+Solis & Wets algorithms expand rho every 4 in a row successes.
+
+
+DPF> sw_max_fail 4		# number of consecutive failures before changing rho
+
+Solis & Wets algorithms contract rho every 4 in a row failures.
+
+
+DPF> sw_rho 1.0		# size of local search space to sample
+
+rho is set to 1.000000.
+
+
+DPF> sw_lb_rho 0.01		# lower bound on rho
+
+rho will never get smaller than 0.010000.
+
+
+DPF> ls_search_freq 0.06	# probability of performing local search on an indiv.
+
+Local search will be performed with frequency 0.060000.
+
+
+DPF> set_psw1		# set the above pseudo-Solis & Wets parameters
+
+Passing the current settings to the local search pseudo-Solis-Wets algorithm (pSW1 object).
+DPF> 
+
+
+DPF> ga_run 10		# do this many hybrid GA-LS runs
+
+Number of requested LGA dockings = 10 runs
+
+
+	BEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING
+
+Run:	1 / 10
+Seeds:	863546106 2863
+Date:	Wed Feb 26 17:11:24 2003
+Output level is set to 1.
+
+
+Creating a population of 50 individuals.
+
+Assigning a random translation, a random orientation and 7 random torsions to each of the 50 individuals.
+
+Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of 1500
+energy evaluations.
+
+
+Run completed;  time taken for this run:
+Real= 0.34s,  CPU= 0.34s,  System= 0.00s
+
+5:11 24" p.m., 02/26/2003
+Total number of Energy Evaluations: 2217
+Total number of Generations:        1
+
+
+	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
+	_______________________________________________
+
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+DOCKED: MODEL        1
+DOCKED: USER    Run = 1
+DOCKED: USER    DPF = mtxA.4dfr.GASW.dpf
+DOCKED: USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+DOCKED: USER    
+DOCKED: USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+DOCKED: USER    
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+DOCKED: USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+DOCKED: USER    
+DOCKED: USER    NEWDPF move mtxA.pdbq
+DOCKED: USER    NEWDPF about 20.168000 69.307000 43.231000
+DOCKED: USER    NEWDPF tran0 27.701021 66.623214 38.226554
+DOCKED: USER    NEWDPF quat0 0.913065 -0.161004 0.374686 -117.145550
+DOCKED: USER    NEWDPF ndihe 7
+DOCKED: USER    NEWDPF dihe0 -157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+DOCKED: USER                              x       y       z     vdW  Elec       q
+DOCKED: USER                           _______ _______ _______ _____ _____    ______
+DOCKED: ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225
+DOCKED: ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433
+DOCKED: ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037
+DOCKED: ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020
+DOCKED: ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078
+DOCKED: ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203
+DOCKED: ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078
+DOCKED: ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020
+DOCKED: ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247
+DOCKED: ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270
+DOCKED: ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270
+DOCKED: ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153
+DOCKED: ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409
+DOCKED: ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124
+DOCKED: ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237
+DOCKED: ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148
+DOCKED: ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149
+DOCKED: ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341
+DOCKED: ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144
+DOCKED: ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144
+DOCKED: ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198
+DOCKED: ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216
+DOCKED: ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327
+DOCKED: ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145
+DOCKED: ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145
+DOCKED: ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193
+DOCKED: ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185
+DOCKED: ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232
+DOCKED: ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143
+DOCKED: ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287
+DOCKED: ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109
+DOCKED: ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699
+DOCKED: ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699
+DOCKED: ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125
+DOCKED: ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266
+DOCKED: ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086
+DOCKED: ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700
+DOCKED: ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700
+DOCKED: TER
+DOCKED: ENDMDL
+________________________________________________________________________________
+
+
+
+	BEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING
+
+Run:	2 / 10
+Seeds:	863546106 2863
+Date:	Wed Feb 26 17:11:24 2003
+Output level is set to 1.
+
+
+Creating a population of 50 individuals.
+
+Assigning a random translation, a random orientation and 7 random torsions to each of the 50 individuals.
+
+Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of 1500
+energy evaluations.
+
+
+Run completed;  time taken for this run:
+Real= 0.34s,  CPU= 0.34s,  System= 0.00s
+
+5:11 25" p.m., 02/26/2003
+Total number of Energy Evaluations: 2217
+Total number of Generations:        1
+
+
+	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
+	_______________________________________________
+
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+DOCKED: MODEL        2
+DOCKED: USER    Run = 2
+DOCKED: USER    DPF = mtxA.4dfr.GASW.dpf
+DOCKED: USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+DOCKED: USER    
+DOCKED: USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+DOCKED: USER    
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+DOCKED: USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+DOCKED: USER    
+DOCKED: USER    NEWDPF move mtxA.pdbq
+DOCKED: USER    NEWDPF about 20.168000 69.307000 43.231000
+DOCKED: USER    NEWDPF tran0 27.701021 66.623214 38.226554
+DOCKED: USER    NEWDPF quat0 0.913065 -0.161004 0.374686 -117.145550
+DOCKED: USER    NEWDPF ndihe 7
+DOCKED: USER    NEWDPF dihe0 -157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+DOCKED: USER                              x       y       z     vdW  Elec       q
+DOCKED: USER                           _______ _______ _______ _____ _____    ______
+DOCKED: ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225
+DOCKED: ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433
+DOCKED: ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037
+DOCKED: ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020
+DOCKED: ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078
+DOCKED: ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203
+DOCKED: ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078
+DOCKED: ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020
+DOCKED: ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247
+DOCKED: ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270
+DOCKED: ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270
+DOCKED: ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153
+DOCKED: ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409
+DOCKED: ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124
+DOCKED: ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237
+DOCKED: ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148
+DOCKED: ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149
+DOCKED: ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341
+DOCKED: ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144
+DOCKED: ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144
+DOCKED: ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198
+DOCKED: ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216
+DOCKED: ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327
+DOCKED: ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145
+DOCKED: ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145
+DOCKED: ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193
+DOCKED: ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185
+DOCKED: ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232
+DOCKED: ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143
+DOCKED: ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287
+DOCKED: ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109
+DOCKED: ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699
+DOCKED: ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699
+DOCKED: ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125
+DOCKED: ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266
+DOCKED: ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086
+DOCKED: ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700
+DOCKED: ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700
+DOCKED: TER
+DOCKED: ENDMDL
+________________________________________________________________________________
+
+
+
+	BEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING
+
+Run:	3 / 10
+Seeds:	863546106 2863
+Date:	Wed Feb 26 17:11:25 2003
+Output level is set to 1.
+
+
+Creating a population of 50 individuals.
+
+Assigning a random translation, a random orientation and 7 random torsions to each of the 50 individuals.
+
+Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of 1500
+energy evaluations.
+
+
+Run completed;  time taken for this run:
+Real= 0.34s,  CPU= 0.34s,  System= 0.00s
+
+5:11 25" p.m., 02/26/2003
+Total number of Energy Evaluations: 2217
+Total number of Generations:        1
+
+
+	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
+	_______________________________________________
+
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+DOCKED: MODEL        3
+DOCKED: USER    Run = 3
+DOCKED: USER    DPF = mtxA.4dfr.GASW.dpf
+DOCKED: USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+DOCKED: USER    
+DOCKED: USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+DOCKED: USER    
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+DOCKED: USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+DOCKED: USER    
+DOCKED: USER    NEWDPF move mtxA.pdbq
+DOCKED: USER    NEWDPF about 20.168000 69.307000 43.231000
+DOCKED: USER    NEWDPF tran0 27.701021 66.623214 38.226554
+DOCKED: USER    NEWDPF quat0 0.913065 -0.161004 0.374686 -117.145550
+DOCKED: USER    NEWDPF ndihe 7
+DOCKED: USER    NEWDPF dihe0 -157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+DOCKED: USER                              x       y       z     vdW  Elec       q
+DOCKED: USER                           _______ _______ _______ _____ _____    ______
+DOCKED: ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225
+DOCKED: ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433
+DOCKED: ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037
+DOCKED: ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020
+DOCKED: ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078
+DOCKED: ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203
+DOCKED: ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078
+DOCKED: ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020
+DOCKED: ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247
+DOCKED: ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270
+DOCKED: ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270
+DOCKED: ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153
+DOCKED: ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409
+DOCKED: ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124
+DOCKED: ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237
+DOCKED: ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148
+DOCKED: ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149
+DOCKED: ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341
+DOCKED: ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144
+DOCKED: ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144
+DOCKED: ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198
+DOCKED: ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216
+DOCKED: ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327
+DOCKED: ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145
+DOCKED: ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145
+DOCKED: ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193
+DOCKED: ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185
+DOCKED: ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232
+DOCKED: ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143
+DOCKED: ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287
+DOCKED: ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109
+DOCKED: ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699
+DOCKED: ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699
+DOCKED: ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125
+DOCKED: ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266
+DOCKED: ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086
+DOCKED: ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700
+DOCKED: ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700
+DOCKED: TER
+DOCKED: ENDMDL
+________________________________________________________________________________
+
+
+
+	BEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING
+
+Run:	4 / 10
+Seeds:	863546106 2863
+Date:	Wed Feb 26 17:11:25 2003
+Output level is set to 1.
+
+
+Creating a population of 50 individuals.
+
+Assigning a random translation, a random orientation and 7 random torsions to each of the 50 individuals.
+
+Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of 1500
+energy evaluations.
+
+
+Run completed;  time taken for this run:
+Real= 0.34s,  CPU= 0.34s,  System= 0.00s
+
+5:11 25" p.m., 02/26/2003
+Total number of Energy Evaluations: 2217
+Total number of Generations:        1
+
+
+	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
+	_______________________________________________
+
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+DOCKED: MODEL        4
+DOCKED: USER    Run = 4
+DOCKED: USER    DPF = mtxA.4dfr.GASW.dpf
+DOCKED: USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+DOCKED: USER    
+DOCKED: USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+DOCKED: USER    
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+DOCKED: USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+DOCKED: USER    
+DOCKED: USER    NEWDPF move mtxA.pdbq
+DOCKED: USER    NEWDPF about 20.168000 69.307000 43.231000
+DOCKED: USER    NEWDPF tran0 27.701021 66.623214 38.226554
+DOCKED: USER    NEWDPF quat0 0.913065 -0.161004 0.374686 -117.145550
+DOCKED: USER    NEWDPF ndihe 7
+DOCKED: USER    NEWDPF dihe0 -157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+DOCKED: USER                              x       y       z     vdW  Elec       q
+DOCKED: USER                           _______ _______ _______ _____ _____    ______
+DOCKED: ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225
+DOCKED: ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433
+DOCKED: ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037
+DOCKED: ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020
+DOCKED: ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078
+DOCKED: ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203
+DOCKED: ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078
+DOCKED: ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020
+DOCKED: ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247
+DOCKED: ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270
+DOCKED: ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270
+DOCKED: ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153
+DOCKED: ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409
+DOCKED: ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124
+DOCKED: ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237
+DOCKED: ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148
+DOCKED: ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149
+DOCKED: ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341
+DOCKED: ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144
+DOCKED: ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144
+DOCKED: ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198
+DOCKED: ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216
+DOCKED: ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327
+DOCKED: ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145
+DOCKED: ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145
+DOCKED: ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193
+DOCKED: ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185
+DOCKED: ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232
+DOCKED: ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143
+DOCKED: ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287
+DOCKED: ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109
+DOCKED: ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699
+DOCKED: ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699
+DOCKED: ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125
+DOCKED: ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266
+DOCKED: ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086
+DOCKED: ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700
+DOCKED: ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700
+DOCKED: TER
+DOCKED: ENDMDL
+________________________________________________________________________________
+
+
+
+	BEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING
+
+Run:	5 / 10
+Seeds:	863546106 2863
+Date:	Wed Feb 26 17:11:25 2003
+Output level is set to 1.
+
+
+Creating a population of 50 individuals.
+
+Assigning a random translation, a random orientation and 7 random torsions to each of the 50 individuals.
+
+Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of 1500
+energy evaluations.
+
+
+Run completed;  time taken for this run:
+Real= 0.34s,  CPU= 0.34s,  System= 0.00s
+
+5:11 26" p.m., 02/26/2003
+Total number of Energy Evaluations: 2217
+Total number of Generations:        1
+
+
+	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
+	_______________________________________________
+
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+DOCKED: MODEL        5
+DOCKED: USER    Run = 5
+DOCKED: USER    DPF = mtxA.4dfr.GASW.dpf
+DOCKED: USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+DOCKED: USER    
+DOCKED: USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+DOCKED: USER    
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+DOCKED: USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+DOCKED: USER    
+DOCKED: USER    NEWDPF move mtxA.pdbq
+DOCKED: USER    NEWDPF about 20.168000 69.307000 43.231000
+DOCKED: USER    NEWDPF tran0 27.701021 66.623214 38.226554
+DOCKED: USER    NEWDPF quat0 0.913065 -0.161004 0.374686 -117.145550
+DOCKED: USER    NEWDPF ndihe 7
+DOCKED: USER    NEWDPF dihe0 -157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+DOCKED: USER                              x       y       z     vdW  Elec       q
+DOCKED: USER                           _______ _______ _______ _____ _____    ______
+DOCKED: ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225
+DOCKED: ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433
+DOCKED: ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037
+DOCKED: ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020
+DOCKED: ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078
+DOCKED: ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203
+DOCKED: ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078
+DOCKED: ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020
+DOCKED: ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247
+DOCKED: ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270
+DOCKED: ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270
+DOCKED: ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153
+DOCKED: ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409
+DOCKED: ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124
+DOCKED: ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237
+DOCKED: ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148
+DOCKED: ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149
+DOCKED: ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341
+DOCKED: ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144
+DOCKED: ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144
+DOCKED: ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198
+DOCKED: ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216
+DOCKED: ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327
+DOCKED: ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145
+DOCKED: ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145
+DOCKED: ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193
+DOCKED: ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185
+DOCKED: ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232
+DOCKED: ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143
+DOCKED: ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287
+DOCKED: ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109
+DOCKED: ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699
+DOCKED: ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699
+DOCKED: ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125
+DOCKED: ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266
+DOCKED: ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086
+DOCKED: ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700
+DOCKED: ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700
+DOCKED: TER
+DOCKED: ENDMDL
+________________________________________________________________________________
+
+
+
+	BEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING
+
+Run:	6 / 10
+Seeds:	863546106 2863
+Date:	Wed Feb 26 17:11:26 2003
+Output level is set to 1.
+
+
+Creating a population of 50 individuals.
+
+Assigning a random translation, a random orientation and 7 random torsions to each of the 50 individuals.
+
+Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of 1500
+energy evaluations.
+
+
+Run completed;  time taken for this run:
+Real= 0.34s,  CPU= 0.34s,  System= 0.00s
+
+5:11 26" p.m., 02/26/2003
+Total number of Energy Evaluations: 2217
+Total number of Generations:        1
+
+
+	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
+	_______________________________________________
+
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+DOCKED: MODEL        6
+DOCKED: USER    Run = 6
+DOCKED: USER    DPF = mtxA.4dfr.GASW.dpf
+DOCKED: USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+DOCKED: USER    
+DOCKED: USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+DOCKED: USER    
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+DOCKED: USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+DOCKED: USER    
+DOCKED: USER    NEWDPF move mtxA.pdbq
+DOCKED: USER    NEWDPF about 20.168000 69.307000 43.231000
+DOCKED: USER    NEWDPF tran0 27.701021 66.623214 38.226554
+DOCKED: USER    NEWDPF quat0 0.913065 -0.161004 0.374686 -117.145550
+DOCKED: USER    NEWDPF ndihe 7
+DOCKED: USER    NEWDPF dihe0 -157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+DOCKED: USER                              x       y       z     vdW  Elec       q
+DOCKED: USER                           _______ _______ _______ _____ _____    ______
+DOCKED: ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225
+DOCKED: ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433
+DOCKED: ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037
+DOCKED: ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020
+DOCKED: ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078
+DOCKED: ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203
+DOCKED: ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078
+DOCKED: ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020
+DOCKED: ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247
+DOCKED: ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270
+DOCKED: ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270
+DOCKED: ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153
+DOCKED: ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409
+DOCKED: ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124
+DOCKED: ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237
+DOCKED: ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148
+DOCKED: ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149
+DOCKED: ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341
+DOCKED: ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144
+DOCKED: ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144
+DOCKED: ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198
+DOCKED: ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216
+DOCKED: ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327
+DOCKED: ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145
+DOCKED: ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145
+DOCKED: ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193
+DOCKED: ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185
+DOCKED: ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232
+DOCKED: ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143
+DOCKED: ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287
+DOCKED: ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109
+DOCKED: ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699
+DOCKED: ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699
+DOCKED: ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125
+DOCKED: ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266
+DOCKED: ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086
+DOCKED: ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700
+DOCKED: ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700
+DOCKED: TER
+DOCKED: ENDMDL
+________________________________________________________________________________
+
+
+
+	BEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING
+
+Run:	7 / 10
+Seeds:	863546106 2863
+Date:	Wed Feb 26 17:11:26 2003
+Output level is set to 1.
+
+
+Creating a population of 50 individuals.
+
+Assigning a random translation, a random orientation and 7 random torsions to each of the 50 individuals.
+
+Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of 1500
+energy evaluations.
+
+
+Run completed;  time taken for this run:
+Real= 0.34s,  CPU= 0.34s,  System= 0.00s
+
+5:11 26" p.m., 02/26/2003
+Total number of Energy Evaluations: 2217
+Total number of Generations:        1
+
+
+	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
+	_______________________________________________
+
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+DOCKED: MODEL        7
+DOCKED: USER    Run = 7
+DOCKED: USER    DPF = mtxA.4dfr.GASW.dpf
+DOCKED: USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+DOCKED: USER    
+DOCKED: USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+DOCKED: USER    
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+DOCKED: USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+DOCKED: USER    
+DOCKED: USER    NEWDPF move mtxA.pdbq
+DOCKED: USER    NEWDPF about 20.168000 69.307000 43.231000
+DOCKED: USER    NEWDPF tran0 27.701021 66.623214 38.226554
+DOCKED: USER    NEWDPF quat0 0.913065 -0.161004 0.374686 -117.145550
+DOCKED: USER    NEWDPF ndihe 7
+DOCKED: USER    NEWDPF dihe0 -157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+DOCKED: USER                              x       y       z     vdW  Elec       q
+DOCKED: USER                           _______ _______ _______ _____ _____    ______
+DOCKED: ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225
+DOCKED: ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433
+DOCKED: ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037
+DOCKED: ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020
+DOCKED: ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078
+DOCKED: ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203
+DOCKED: ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078
+DOCKED: ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020
+DOCKED: ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247
+DOCKED: ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270
+DOCKED: ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270
+DOCKED: ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153
+DOCKED: ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409
+DOCKED: ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124
+DOCKED: ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237
+DOCKED: ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148
+DOCKED: ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149
+DOCKED: ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341
+DOCKED: ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144
+DOCKED: ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144
+DOCKED: ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198
+DOCKED: ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216
+DOCKED: ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327
+DOCKED: ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145
+DOCKED: ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145
+DOCKED: ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193
+DOCKED: ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185
+DOCKED: ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232
+DOCKED: ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143
+DOCKED: ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287
+DOCKED: ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109
+DOCKED: ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699
+DOCKED: ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699
+DOCKED: ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125
+DOCKED: ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266
+DOCKED: ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086
+DOCKED: ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700
+DOCKED: ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700
+DOCKED: TER
+DOCKED: ENDMDL
+________________________________________________________________________________
+
+
+
+	BEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING
+
+Run:	8 / 10
+Seeds:	863546106 2863
+Date:	Wed Feb 26 17:11:26 2003
+Output level is set to 1.
+
+
+Creating a population of 50 individuals.
+
+Assigning a random translation, a random orientation and 7 random torsions to each of the 50 individuals.
+
+Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of 1500
+energy evaluations.
+
+
+Run completed;  time taken for this run:
+Real= 0.34s,  CPU= 0.34s,  System= 0.00s
+
+5:11 27" p.m., 02/26/2003
+Total number of Energy Evaluations: 2217
+Total number of Generations:        1
+
+
+	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
+	_______________________________________________
+
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+DOCKED: MODEL        8
+DOCKED: USER    Run = 8
+DOCKED: USER    DPF = mtxA.4dfr.GASW.dpf
+DOCKED: USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+DOCKED: USER    
+DOCKED: USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+DOCKED: USER    
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+DOCKED: USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+DOCKED: USER    
+DOCKED: USER    NEWDPF move mtxA.pdbq
+DOCKED: USER    NEWDPF about 20.168000 69.307000 43.231000
+DOCKED: USER    NEWDPF tran0 27.701021 66.623214 38.226554
+DOCKED: USER    NEWDPF quat0 0.913065 -0.161004 0.374686 -117.145550
+DOCKED: USER    NEWDPF ndihe 7
+DOCKED: USER    NEWDPF dihe0 -157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+DOCKED: USER                              x       y       z     vdW  Elec       q
+DOCKED: USER                           _______ _______ _______ _____ _____    ______
+DOCKED: ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225
+DOCKED: ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433
+DOCKED: ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037
+DOCKED: ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020
+DOCKED: ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078
+DOCKED: ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203
+DOCKED: ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078
+DOCKED: ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020
+DOCKED: ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247
+DOCKED: ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270
+DOCKED: ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270
+DOCKED: ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153
+DOCKED: ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409
+DOCKED: ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124
+DOCKED: ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237
+DOCKED: ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148
+DOCKED: ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149
+DOCKED: ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341
+DOCKED: ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144
+DOCKED: ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144
+DOCKED: ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198
+DOCKED: ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216
+DOCKED: ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327
+DOCKED: ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145
+DOCKED: ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145
+DOCKED: ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193
+DOCKED: ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185
+DOCKED: ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232
+DOCKED: ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143
+DOCKED: ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287
+DOCKED: ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109
+DOCKED: ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699
+DOCKED: ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699
+DOCKED: ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125
+DOCKED: ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266
+DOCKED: ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086
+DOCKED: ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700
+DOCKED: ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700
+DOCKED: TER
+DOCKED: ENDMDL
+________________________________________________________________________________
+
+
+
+	BEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING
+
+Run:	9 / 10
+Seeds:	863546106 2863
+Date:	Wed Feb 26 17:11:27 2003
+Output level is set to 1.
+
+
+Creating a population of 50 individuals.
+
+Assigning a random translation, a random orientation and 7 random torsions to each of the 50 individuals.
+
+Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of 1500
+energy evaluations.
+
+
+Run completed;  time taken for this run:
+Real= 0.34s,  CPU= 0.34s,  System= 0.00s
+
+5:11 27" p.m., 02/26/2003
+Total number of Energy Evaluations: 2217
+Total number of Generations:        1
+
+
+	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
+	_______________________________________________
+
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+DOCKED: MODEL        9
+DOCKED: USER    Run = 9
+DOCKED: USER    DPF = mtxA.4dfr.GASW.dpf
+DOCKED: USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+DOCKED: USER    
+DOCKED: USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+DOCKED: USER    
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+DOCKED: USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+DOCKED: USER    
+DOCKED: USER    NEWDPF move mtxA.pdbq
+DOCKED: USER    NEWDPF about 20.168000 69.307000 43.231000
+DOCKED: USER    NEWDPF tran0 27.701021 66.623214 38.226554
+DOCKED: USER    NEWDPF quat0 0.913065 -0.161004 0.374686 -117.145550
+DOCKED: USER    NEWDPF ndihe 7
+DOCKED: USER    NEWDPF dihe0 -157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+DOCKED: USER                              x       y       z     vdW  Elec       q
+DOCKED: USER                           _______ _______ _______ _____ _____    ______
+DOCKED: ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225
+DOCKED: ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433
+DOCKED: ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037
+DOCKED: ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020
+DOCKED: ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078
+DOCKED: ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203
+DOCKED: ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078
+DOCKED: ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020
+DOCKED: ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247
+DOCKED: ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270
+DOCKED: ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270
+DOCKED: ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153
+DOCKED: ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409
+DOCKED: ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124
+DOCKED: ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237
+DOCKED: ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148
+DOCKED: ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149
+DOCKED: ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341
+DOCKED: ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144
+DOCKED: ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144
+DOCKED: ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198
+DOCKED: ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216
+DOCKED: ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327
+DOCKED: ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145
+DOCKED: ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145
+DOCKED: ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193
+DOCKED: ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185
+DOCKED: ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232
+DOCKED: ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143
+DOCKED: ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287
+DOCKED: ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109
+DOCKED: ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699
+DOCKED: ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699
+DOCKED: ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125
+DOCKED: ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266
+DOCKED: ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086
+DOCKED: ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700
+DOCKED: ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700
+DOCKED: TER
+DOCKED: ENDMDL
+________________________________________________________________________________
+
+
+
+	BEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING
+
+Run:	10 / 10
+Seeds:	863546106 2863
+Date:	Wed Feb 26 17:11:27 2003
+Output level is set to 1.
+
+
+Creating a population of 50 individuals.
+
+Assigning a random translation, a random orientation and 7 random torsions to each of the 50 individuals.
+
+Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of 1500
+energy evaluations.
+
+
+Run completed;  time taken for this run:
+Real= 0.34s,  CPU= 0.34s,  System= 0.00s
+
+5:11 27" p.m., 02/26/2003
+Total number of Energy Evaluations: 2217
+Total number of Generations:        1
+
+
+	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
+	_______________________________________________
+
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+DOCKED: MODEL       10
+DOCKED: USER    Run = 10
+DOCKED: USER    DPF = mtxA.4dfr.GASW.dpf
+DOCKED: USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+DOCKED: USER    
+DOCKED: USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+DOCKED: USER    
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+DOCKED: USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+DOCKED: USER    
+DOCKED: USER    NEWDPF move mtxA.pdbq
+DOCKED: USER    NEWDPF about 20.168000 69.307000 43.231000
+DOCKED: USER    NEWDPF tran0 27.701021 66.623214 38.226554
+DOCKED: USER    NEWDPF quat0 0.913065 -0.161004 0.374686 -117.145550
+DOCKED: USER    NEWDPF ndihe 7
+DOCKED: USER    NEWDPF dihe0 -157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+DOCKED: USER                              x       y       z     vdW  Elec       q
+DOCKED: USER                           _______ _______ _______ _____ _____    ______
+DOCKED: ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225
+DOCKED: ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433
+DOCKED: ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037
+DOCKED: ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020
+DOCKED: ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078
+DOCKED: ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203
+DOCKED: ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078
+DOCKED: ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020
+DOCKED: ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247
+DOCKED: ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270
+DOCKED: ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270
+DOCKED: ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153
+DOCKED: ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409
+DOCKED: ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124
+DOCKED: ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237
+DOCKED: ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148
+DOCKED: ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149
+DOCKED: ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341
+DOCKED: ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144
+DOCKED: ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144
+DOCKED: ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198
+DOCKED: ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216
+DOCKED: ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327
+DOCKED: ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145
+DOCKED: ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145
+DOCKED: ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193
+DOCKED: ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185
+DOCKED: ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232
+DOCKED: ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143
+DOCKED: ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287
+DOCKED: ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109
+DOCKED: ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699
+DOCKED: ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699
+DOCKED: ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125
+DOCKED: ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266
+DOCKED: ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086
+DOCKED: ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700
+DOCKED: ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700
+DOCKED: TER
+DOCKED: ENDMDL
+________________________________________________________________________________
+
+
+
+DPF> analysis		# do cluster analysis on results
+
+
+		CLUSTER ANALYSIS OF CONFORMATIONS
+		_________________________________
+
+Number of conformations = 10
+
+RMS Reference Coordinates from "mtxA.pdbq":-
+
+Atom     1,  x,y,z =   22.028   67.717   43.540
+Atom     2,  x,y,z =   23.296   66.877   43.297
+Atom     3,  x,y,z =   19.702   69.969   41.061
+Atom     4,  x,y,z =   20.746   69.211   40.495
+Atom     5,  x,y,z =   21.534   68.508   41.355
+Atom     6,  x,y,z =   21.189   68.492   42.724
+Atom     7,  x,y,z =   20.168   69.307   43.231
+Atom     8,  x,y,z =   19.422   70.099   42.451
+Atom     9,  x,y,z =   18.966   70.777   40.090
+Atom    10,  x,y,z =   19.469   71.019   39.002
+Atom    11,  x,y,z =   17.735   71.051   40.429
+Atom    12,  x,y,z =   17.372   70.614   41.252
+Atom    13,  x,y,z =   21.711   67.394   45.048
+Atom    14,  x,y,z =   20.308   66.821   45.261
+Atom    15,  x,y,z =   19.814   66.982   46.490
+Atom    16,  x,y,z =   18.630   66.369   46.644
+Atom    17,  x,y,z =   18.001   66.587   47.924
+Atom    18,  x,y,z =   18.523   67.297   48.888
+Atom    19,  x,y,z =   19.449   67.682   48.786
+Atom    20,  x,y,z =   17.989   67.463   49.753
+Atom    21,  x,y,z =   16.766   66.078   48.071
+Atom    22,  x,y,z =   16.136   65.424   47.049
+Atom    23,  x,y,z =   14.808   64.996   47.270
+Atom    24,  x,y,z =   14.307   64.510   46.542
+Atom    25,  x,y,z =   14.351   65.180   48.175
+Atom    26,  x,y,z =   16.724   65.101   45.857
+Atom    27,  x,y,z =   17.991   65.747   45.644
+Atom    28,  x,y,z =   18.560   65.424   44.401
+Atom    29,  x,y,z =   19.725   66.102   44.371
+Atom    30,  x,y,z =   16.877   71.923   39.715
+Atom    31,  x,y,z =   16.397   72.948   40.561
+Atom    32,  x,y,z =   16.202   72.626   41.863
+Atom    33,  x,y,z =   15.866   74.111   40.362
+Atom    34,  x,y,z =   15.656   71.197   39.259
+Atom    35,  x,y,z =   16.080   70.349   37.905
+Atom    36,  x,y,z =   16.286   70.898   36.272
+Atom    37,  x,y,z =   17.507   70.413   35.853
+Atom    38,  x,y,z =   15.722   72.117   36.236
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+
+STATE VARIABLES:
+________________
+
+Translation x,y,z         = 27.701 66.623 38.227
+Quaternion nx,ny,nz,angle = 0.913 -0.161 0.375 -117.146
+Quaternion x,y,z,w        = -0.779 0.137 -0.320 0.521
+Number of Torsions        = 7
+Torsions (degrees)        = -157.90, 163.70, -113.26, -41.66, 2.45, -88.57, -98.86.
+
+
+Outputting structurally similar clusters, ranked in order of increasing energy.
+
+
+________________________________________________________________________________
+
+Number of distinct conformational clusters found = 1,  out of 10 runs,
+Using an rmsd-tolerance of 0.5 A
+
+
+	CLUSTERING HISTOGRAM
+	____________________
+
+________________________________________________________________________________
+     |           |     |           |     |                                    
+Clus | Lowest    | Run | Mean      | Num | Histogram                          
+-ter | Docked    |     | Docked    | in  |                                    
+Rank | Energy    |     | Energy    | Clus|    5    10   15   20   25   30   35
+_____|___________|_____|___________|_____|____:____|____:____|____:____|____:___
+   1 |     -2.16 |   5 |     -2.16 |  10 |##########
+_____|___________|_____|___________|_____|______________________________________
+
+
+Number of multi-member conformational clusters found = 1, out of 10 runs.
+
+
+
+	RMSD TABLE
+	__________
+
+_____________________________________________________________________
+     |      |      |           |         |                 |
+Rank | Sub- | Run  | Docked    | Cluster | Reference       | Grep
+     | Rank |      | Energy    | RMSD    | RMSD            | Pattern
+_____|______|______|___________|_________|_________________|___________
+   1      1      5       -2.16      0.00      9.59           RANKING
+   1      2      6       -2.16      0.00      9.59           RANKING
+   1      3      2       -2.16      0.00      9.59           RANKING
+   1      4      7       -2.16      0.00      9.59           RANKING
+   1      5      4       -2.16      0.00      9.59           RANKING
+   1      6      8       -2.16      0.00      9.59           RANKING
+   1      7      3       -2.16      0.00      9.59           RANKING
+   1      8      9       -2.16      0.00      9.59           RANKING
+   1      9      1       -2.16      0.00      9.59           RANKING
+   1     10     10       -2.16      0.00      9.59           RANKING
+_______________________________________________________________________
+
+
+	LOWEST ENERGY DOCKED CONFORMATION from EACH CLUSTER
+	___________________________________________________
+
+
+
+Keeping original residue number (specified in the input PDBQ file) for outputting.
+
+MODEL        5
+USER    Run = 5
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 10
+USER  
+USER    RMSD from reference structure       = 9.590 A
+USER  
+USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+USER    
+USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+USER    
+USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+USER    
+USER  
+USER    DPF = mtxA.4dfr.GASW.dpf
+USER    NEWDPF move	mtxA.pdbq
+USER    NEWDPF about	20.168000 69.307000 43.231000
+USER    NEWDPF tran0	27.701021 66.623214 38.226554
+USER    NEWDPF quat0	0.913065 -0.161004 0.374686 -117.145550
+USER    NEWDPF ndihe	7
+USER    NEWDPF dihe0	-157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225  9.590
+ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433  9.590
+ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037  9.590
+ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020  9.590
+ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078  9.590
+ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203  9.590
+ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078  9.590
+ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020  9.590
+ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247  9.590
+ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270  9.590
+ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270  9.590
+ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153  9.590
+ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409  9.590
+ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124  9.590
+ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237  9.590
+ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148  9.590
+ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149  9.590
+ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341  9.590
+ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144  9.590
+ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144  9.590
+ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198  9.590
+ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216  9.590
+ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327  9.590
+ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145  9.590
+ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145  9.590
+ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193  9.590
+ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185  9.590
+ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232  9.590
+ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143  9.590
+ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287  9.590
+ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109  9.590
+ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699  9.590
+ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699  9.590
+ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125  9.590
+ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266  9.590
+ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086  9.590
+ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700  9.590
+ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700  9.590
+TER
+ENDMDL
+MODEL        6
+USER    Run = 6
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 10
+USER  
+USER    RMSD from reference structure       = 9.590 A
+USER  
+USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+USER    
+USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+USER    
+USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+USER    
+USER  
+USER    DPF = mtxA.4dfr.GASW.dpf
+USER    NEWDPF move	mtxA.pdbq
+USER    NEWDPF about	20.168000 69.307000 43.231000
+USER    NEWDPF tran0	27.701021 66.623214 38.226554
+USER    NEWDPF quat0	0.913065 -0.161004 0.374686 -117.145550
+USER    NEWDPF ndihe	7
+USER    NEWDPF dihe0	-157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225  9.590
+ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433  9.590
+ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037  9.590
+ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020  9.590
+ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078  9.590
+ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203  9.590
+ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078  9.590
+ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020  9.590
+ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247  9.590
+ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270  9.590
+ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270  9.590
+ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153  9.590
+ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409  9.590
+ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124  9.590
+ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237  9.590
+ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148  9.590
+ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149  9.590
+ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341  9.590
+ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144  9.590
+ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144  9.590
+ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198  9.590
+ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216  9.590
+ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327  9.590
+ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145  9.590
+ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145  9.590
+ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193  9.590
+ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185  9.590
+ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232  9.590
+ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143  9.590
+ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287  9.590
+ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109  9.590
+ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699  9.590
+ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699  9.590
+ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125  9.590
+ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266  9.590
+ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086  9.590
+ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700  9.590
+ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700  9.590
+TER
+ENDMDL
+MODEL        2
+USER    Run = 2
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 10
+USER  
+USER    RMSD from reference structure       = 9.590 A
+USER  
+USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+USER    
+USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+USER    
+USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+USER    
+USER  
+USER    DPF = mtxA.4dfr.GASW.dpf
+USER    NEWDPF move	mtxA.pdbq
+USER    NEWDPF about	20.168000 69.307000 43.231000
+USER    NEWDPF tran0	27.701021 66.623214 38.226554
+USER    NEWDPF quat0	0.913065 -0.161004 0.374686 -117.145550
+USER    NEWDPF ndihe	7
+USER    NEWDPF dihe0	-157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225  9.590
+ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433  9.590
+ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037  9.590
+ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020  9.590
+ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078  9.590
+ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203  9.590
+ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078  9.590
+ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020  9.590
+ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247  9.590
+ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270  9.590
+ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270  9.590
+ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153  9.590
+ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409  9.590
+ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124  9.590
+ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237  9.590
+ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148  9.590
+ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149  9.590
+ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341  9.590
+ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144  9.590
+ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144  9.590
+ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198  9.590
+ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216  9.590
+ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327  9.590
+ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145  9.590
+ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145  9.590
+ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193  9.590
+ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185  9.590
+ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232  9.590
+ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143  9.590
+ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287  9.590
+ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109  9.590
+ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699  9.590
+ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699  9.590
+ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125  9.590
+ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266  9.590
+ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086  9.590
+ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700  9.590
+ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700  9.590
+TER
+ENDMDL
+MODEL        7
+USER    Run = 7
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 10
+USER  
+USER    RMSD from reference structure       = 9.590 A
+USER  
+USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+USER    
+USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+USER    
+USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+USER    
+USER  
+USER    DPF = mtxA.4dfr.GASW.dpf
+USER    NEWDPF move	mtxA.pdbq
+USER    NEWDPF about	20.168000 69.307000 43.231000
+USER    NEWDPF tran0	27.701021 66.623214 38.226554
+USER    NEWDPF quat0	0.913065 -0.161004 0.374686 -117.145550
+USER    NEWDPF ndihe	7
+USER    NEWDPF dihe0	-157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225  9.590
+ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433  9.590
+ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037  9.590
+ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020  9.590
+ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078  9.590
+ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203  9.590
+ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078  9.590
+ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020  9.590
+ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247  9.590
+ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270  9.590
+ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270  9.590
+ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153  9.590
+ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409  9.590
+ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124  9.590
+ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237  9.590
+ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148  9.590
+ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149  9.590
+ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341  9.590
+ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144  9.590
+ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144  9.590
+ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198  9.590
+ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216  9.590
+ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327  9.590
+ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145  9.590
+ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145  9.590
+ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193  9.590
+ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185  9.590
+ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232  9.590
+ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143  9.590
+ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287  9.590
+ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109  9.590
+ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699  9.590
+ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699  9.590
+ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125  9.590
+ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266  9.590
+ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086  9.590
+ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700  9.590
+ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700  9.590
+TER
+ENDMDL
+MODEL        4
+USER    Run = 4
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 10
+USER  
+USER    RMSD from reference structure       = 9.590 A
+USER  
+USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+USER    
+USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+USER    
+USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+USER    
+USER  
+USER    DPF = mtxA.4dfr.GASW.dpf
+USER    NEWDPF move	mtxA.pdbq
+USER    NEWDPF about	20.168000 69.307000 43.231000
+USER    NEWDPF tran0	27.701021 66.623214 38.226554
+USER    NEWDPF quat0	0.913065 -0.161004 0.374686 -117.145550
+USER    NEWDPF ndihe	7
+USER    NEWDPF dihe0	-157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225  9.590
+ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433  9.590
+ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037  9.590
+ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020  9.590
+ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078  9.590
+ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203  9.590
+ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078  9.590
+ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020  9.590
+ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247  9.590
+ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270  9.590
+ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270  9.590
+ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153  9.590
+ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409  9.590
+ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124  9.590
+ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237  9.590
+ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148  9.590
+ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149  9.590
+ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341  9.590
+ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144  9.590
+ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144  9.590
+ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198  9.590
+ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216  9.590
+ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327  9.590
+ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145  9.590
+ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145  9.590
+ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193  9.590
+ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185  9.590
+ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232  9.590
+ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143  9.590
+ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287  9.590
+ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109  9.590
+ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699  9.590
+ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699  9.590
+ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125  9.590
+ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266  9.590
+ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086  9.590
+ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700  9.590
+ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700  9.590
+TER
+ENDMDL
+MODEL        8
+USER    Run = 8
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 10
+USER  
+USER    RMSD from reference structure       = 9.590 A
+USER  
+USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+USER    
+USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+USER    
+USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+USER    
+USER  
+USER    DPF = mtxA.4dfr.GASW.dpf
+USER    NEWDPF move	mtxA.pdbq
+USER    NEWDPF about	20.168000 69.307000 43.231000
+USER    NEWDPF tran0	27.701021 66.623214 38.226554
+USER    NEWDPF quat0	0.913065 -0.161004 0.374686 -117.145550
+USER    NEWDPF ndihe	7
+USER    NEWDPF dihe0	-157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225  9.590
+ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433  9.590
+ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037  9.590
+ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020  9.590
+ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078  9.590
+ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203  9.590
+ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078  9.590
+ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020  9.590
+ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247  9.590
+ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270  9.590
+ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270  9.590
+ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153  9.590
+ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409  9.590
+ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124  9.590
+ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237  9.590
+ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148  9.590
+ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149  9.590
+ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341  9.590
+ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144  9.590
+ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144  9.590
+ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198  9.590
+ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216  9.590
+ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327  9.590
+ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145  9.590
+ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145  9.590
+ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193  9.590
+ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185  9.590
+ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232  9.590
+ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143  9.590
+ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287  9.590
+ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109  9.590
+ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699  9.590
+ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699  9.590
+ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125  9.590
+ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266  9.590
+ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086  9.590
+ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700  9.590
+ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700  9.590
+TER
+ENDMDL
+MODEL        3
+USER    Run = 3
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 10
+USER  
+USER    RMSD from reference structure       = 9.590 A
+USER  
+USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+USER    
+USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+USER    
+USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+USER    
+USER  
+USER    DPF = mtxA.4dfr.GASW.dpf
+USER    NEWDPF move	mtxA.pdbq
+USER    NEWDPF about	20.168000 69.307000 43.231000
+USER    NEWDPF tran0	27.701021 66.623214 38.226554
+USER    NEWDPF quat0	0.913065 -0.161004 0.374686 -117.145550
+USER    NEWDPF ndihe	7
+USER    NEWDPF dihe0	-157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225  9.590
+ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433  9.590
+ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037  9.590
+ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020  9.590
+ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078  9.590
+ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203  9.590
+ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078  9.590
+ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020  9.590
+ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247  9.590
+ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270  9.590
+ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270  9.590
+ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153  9.590
+ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409  9.590
+ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124  9.590
+ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237  9.590
+ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148  9.590
+ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149  9.590
+ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341  9.590
+ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144  9.590
+ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144  9.590
+ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198  9.590
+ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216  9.590
+ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327  9.590
+ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145  9.590
+ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145  9.590
+ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193  9.590
+ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185  9.590
+ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232  9.590
+ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143  9.590
+ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287  9.590
+ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109  9.590
+ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699  9.590
+ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699  9.590
+ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125  9.590
+ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266  9.590
+ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086  9.590
+ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700  9.590
+ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700  9.590
+TER
+ENDMDL
+MODEL        9
+USER    Run = 9
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 10
+USER  
+USER    RMSD from reference structure       = 9.590 A
+USER  
+USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+USER    
+USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+USER    
+USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+USER    
+USER  
+USER    DPF = mtxA.4dfr.GASW.dpf
+USER    NEWDPF move	mtxA.pdbq
+USER    NEWDPF about	20.168000 69.307000 43.231000
+USER    NEWDPF tran0	27.701021 66.623214 38.226554
+USER    NEWDPF quat0	0.913065 -0.161004 0.374686 -117.145550
+USER    NEWDPF ndihe	7
+USER    NEWDPF dihe0	-157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225  9.590
+ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433  9.590
+ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037  9.590
+ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020  9.590
+ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078  9.590
+ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203  9.590
+ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078  9.590
+ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020  9.590
+ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247  9.590
+ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270  9.590
+ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270  9.590
+ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153  9.590
+ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409  9.590
+ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124  9.590
+ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237  9.590
+ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148  9.590
+ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149  9.590
+ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341  9.590
+ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144  9.590
+ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144  9.590
+ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198  9.590
+ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216  9.590
+ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327  9.590
+ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145  9.590
+ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145  9.590
+ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193  9.590
+ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185  9.590
+ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232  9.590
+ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143  9.590
+ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287  9.590
+ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109  9.590
+ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699  9.590
+ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699  9.590
+ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125  9.590
+ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266  9.590
+ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086  9.590
+ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700  9.590
+ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700  9.590
+TER
+ENDMDL
+MODEL        1
+USER    Run = 1
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 10
+USER  
+USER    RMSD from reference structure       = 9.590 A
+USER  
+USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+USER    
+USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+USER    
+USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+USER    
+USER  
+USER    DPF = mtxA.4dfr.GASW.dpf
+USER    NEWDPF move	mtxA.pdbq
+USER    NEWDPF about	20.168000 69.307000 43.231000
+USER    NEWDPF tran0	27.701021 66.623214 38.226554
+USER    NEWDPF quat0	0.913065 -0.161004 0.374686 -117.145550
+USER    NEWDPF ndihe	7
+USER    NEWDPF dihe0	-157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225  9.590
+ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433  9.590
+ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037  9.590
+ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020  9.590
+ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078  9.590
+ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203  9.590
+ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078  9.590
+ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020  9.590
+ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247  9.590
+ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270  9.590
+ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270  9.590
+ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153  9.590
+ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409  9.590
+ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124  9.590
+ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237  9.590
+ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148  9.590
+ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149  9.590
+ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341  9.590
+ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144  9.590
+ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144  9.590
+ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198  9.590
+ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216  9.590
+ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327  9.590
+ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145  9.590
+ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145  9.590
+ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193  9.590
+ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185  9.590
+ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232  9.590
+ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143  9.590
+ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287  9.590
+ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109  9.590
+ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699  9.590
+ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699  9.590
+ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125  9.590
+ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266  9.590
+ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086  9.590
+ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700  9.590
+ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700  9.590
+TER
+ENDMDL
+MODEL       10
+USER    Run = 10
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 10
+USER  
+USER    RMSD from reference structure       = 9.590 A
+USER  
+USER    Estimated Free Energy of Binding    =   -0.29 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.62       [Temperature = 298.15 K]
+USER    
+USER    Final Docked Energy                 =   -2.16 kcal/mol  [=(1)+(2)]
+USER    
+USER    (1) Final Intermolecular Energy     =   -2.47 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +0.31 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.18 kcal/mol
+USER    
+USER  
+USER    DPF = mtxA.4dfr.GASW.dpf
+USER    NEWDPF move	mtxA.pdbq
+USER    NEWDPF about	20.168000 69.307000 43.231000
+USER    NEWDPF tran0	27.701021 66.623214 38.226554
+USER    NEWDPF quat0	0.913065 -0.161004 0.374686 -117.145550
+USER    NEWDPF ndihe	7
+USER    NEWDPF dihe0	-157.90 163.70 -113.26 -41.66 2.45 -88.57 -98.86 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  N10 MTX     1      29.119  66.494  40.240 -0.21 +0.10    -0.225  9.590
+ATOM      2  CM  MTX     1      29.824  65.975  41.508 -0.26 -0.24    +0.433  9.590
+ATOM      3  A11 MTX     1      26.035  65.029  38.012 -0.09 -0.01    +0.037  9.590
+ATOM      4  A12 MTX     1      26.373  64.364  39.207 -0.06 -0.00    +0.020  9.590
+ATOM      5  A13 MTX     1      27.437  64.850  39.903 -0.20 -0.02    +0.078  9.590
+ATOM      6  A14 MTX     1      28.052  66.038  39.450 -0.19 -0.08    +0.203  9.590
+ATOM      7  A15 MTX     1      27.701  66.623  38.227 -0.13 -0.03    +0.078  9.590
+ATOM      8  A16 MTX     1      26.730  66.135  37.445 -0.08 -0.01    +0.020  9.590
+ATOM      9  C   MTX     1      24.951  64.390  37.267 -0.08 -0.05    +0.247  9.590
+ATOM     10  O   MTX     1      24.663  63.225  37.502 +0.17 +0.05    -0.270  9.590
+ATOM     11  N   MTX     1      24.268  65.195  36.498 -0.02 +0.05    -0.270  9.590
+ATOM     12  H46 MTX     1      24.469  66.173  36.556 +0.12 -0.03    +0.153  9.590
+ATOM     13  C9  MTX     1      29.808  67.896  40.039 -0.24 -0.23    +0.409  9.590
+ATOM     14  A6  MTX     1      30.150  68.196  38.578 -0.17 -0.05    +0.124  9.590
+ATOM     15  N5  MTX     1      29.481  69.218  38.041 -0.15 +0.09    -0.237  9.590
+ATOM     16  A4A MTX     1      29.746  69.365  36.733 -0.07 -0.04    +0.148  9.590
+ATOM     17  A4  MTX     1      29.125  70.513  36.119 -0.08 -0.03    +0.149  9.590
+ATOM     18  NA4 MTX     1      28.342  71.349  36.746 -0.14 +0.05    -0.341  9.590
+ATOM     19  H35 MTX     1      28.088  71.178  37.706 +0.08 -0.03    +0.144  9.590
+ATOM     20  H53 MTX     1      27.984  72.184  36.260 +0.10 -0.01    +0.144  9.590
+ATOM     21  N3  MTX     1      29.457  70.751  34.838 -0.02 +0.03    -0.198  9.590
+ATOM     22  A2  MTX     1      30.360  69.966  34.176 -0.01 -0.03    +0.216  9.590
+ATOM     23  NA2 MTX     1      30.708  70.343  32.860 -0.00 +0.04    -0.327  9.590
+ATOM     24  H34 MTX     1      31.370  69.791  32.336 +0.12 -0.02    +0.145  9.590
+ATOM     25  H52 MTX     1      30.285  71.180  32.434 +0.12 -0.02    +0.145  9.590
+ATOM     26  N1  MTX     1      30.896  68.812  34.676 -0.00 +0.03    -0.193  9.590
+ATOM     27  A8A MTX     1      30.647  68.620  36.080 -0.02 -0.04    +0.185  9.590
+ATOM     28  N8  MTX     1      31.233  67.444  36.576 -0.01 +0.05    -0.232  9.590
+ATOM     29  A7  MTX     1      30.902  67.421  37.883 -0.06 -0.04    +0.143  9.590
+ATOM     30  CA  MTX     1      23.264  64.782  35.589 -0.03 -0.04    +0.287  9.590
+ATOM     31  CT  MTX     1      23.593  65.181  34.273 -0.01 -0.01    +0.109  9.590
+ATOM     32  O1  MTX     1      22.842  64.663  33.271 +0.23 +0.09    -0.699  9.590
+ATOM     33  O2  MTX     1      24.610  65.772  33.735 +0.24 +0.09    -0.699  9.590
+ATOM     34  CB  MTX     1      21.974  65.470  35.887 -0.05 -0.01    +0.125  9.590
+ATOM     35  CG  MTX     1      20.860  64.287  36.191 -0.16 -0.02    +0.266  9.590
+ATOM     36  CD  MTX     1      19.262  64.413  36.855 -0.17 +0.02    +0.086  9.590
+ATOM     37  OE1 MTX     1      19.418  64.834  38.159 -0.09 -0.30    -0.700  9.590
+ATOM     38  OE2 MTX     1      18.566  63.411  36.292 -0.11 -0.05    -0.700  9.590
+TER
+ENDMDL
+
+
+AVSFLD: # AVS field file
+AVSFLD: #
+AVSFLD: # Created by AutoDock
+AVSFLD: #
+AVSFLD: ndim=2           # number of dimensions in the field
+AVSFLD: nspace=1         # number of physical coordinates
+AVSFLD: veclen=7         # vector size
+AVSFLD: dim1=38          # atoms
+AVSFLD: dim2=1           # conformations
+AVSFLD: data=FloatOrDouble       # data type (byte,integer,FloatOrDouble,double)
+AVSFLD: field=uniform    # field coordinate layout
+AVSFLD: label= x y z vdW Elec q RMS
+AVSFLD: variable 1 file = mtxA.4dfr.GASW.dlg.pdb filetype = ascii offset = 5 stride = 12
+AVSFLD: variable 2 file = mtxA.4dfr.GASW.dlg.pdb filetype = ascii offset = 6 stride = 12
+AVSFLD: variable 3 file = mtxA.4dfr.GASW.dlg.pdb filetype = ascii offset = 7 stride = 12
+AVSFLD: variable 4 file = mtxA.4dfr.GASW.dlg.pdb filetype = ascii offset = 8 stride = 12
+AVSFLD: variable 5 file = mtxA.4dfr.GASW.dlg.pdb filetype = ascii offset = 9 stride = 12
+AVSFLD: variable 6 file = mtxA.4dfr.GASW.dlg.pdb filetype = ascii offset = 10 stride = 12
+AVSFLD: variable 7 file = mtxA.4dfr.GASW.dlg.pdb filetype = ascii offset = 11 stride = 12
+AVSFLD: # end of file
+
+>>> Closing the docking parameter file (DPF)...
+
+This docking finished at:			5:11 27" p.m., 02/26/2003
+
+
+
+
+________________________________________________________________________________
+
+/home/lindy/dev/integration-305/autodock/autodock3: Successful Completion on "nemo.mgl"
+
+Real= 11.45s,  CPU= 10.47s,  System= 0.43s
+________________________________________________________________________________
+

@@ -2,40 +2,40 @@
 #ifndef _RANLIB_H
 #define _RANLIB_H
 
-#include "structs.h"
+#include "typedefs.h"
 
 extern void advnst(FourByteLong k);
-extern float genbet(float aa,float bb);
-extern float genchi(float df);
-extern float genexp(float av);
-extern float genf(float dfn, float dfd);
-extern float gengam(float a,float r);
-extern void genmn(float *parm,float *x,float *work);
-extern void genmul(FourByteLong n,float *p,FourByteLong ncat,FourByteLong *ix);
-extern float gennch(float df,float xnonc);
-extern float gennf(float dfn, float dfd, float xnonc);
-extern float gennor(float av,float sd);
+extern FloatOrDouble genbet(FloatOrDouble aa,FloatOrDouble bb);
+extern FloatOrDouble genchi(FloatOrDouble df);
+extern FloatOrDouble genexp(FloatOrDouble av);
+extern FloatOrDouble genf(FloatOrDouble dfn, FloatOrDouble dfd);
+extern FloatOrDouble gengam(FloatOrDouble a,FloatOrDouble r);
+extern void genmn(FloatOrDouble *parm,FloatOrDouble *x,FloatOrDouble *work);
+extern void genmul(FourByteLong n,FloatOrDouble *p,FourByteLong ncat,FourByteLong *ix);
+extern FloatOrDouble gennch(FloatOrDouble df,FloatOrDouble xnonc);
+extern FloatOrDouble gennf(FloatOrDouble dfn, FloatOrDouble dfd, FloatOrDouble xnonc);
+extern FloatOrDouble gennor(FloatOrDouble av,FloatOrDouble sd);
 extern void genprm(FourByteLong *iarray,int larray);
-extern float genunf(float low,float high);
+extern FloatOrDouble genunf(FloatOrDouble low,FloatOrDouble high);
 extern void getsd(FourByteLong *iseed1,FourByteLong *iseed2);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
-extern FourByteLong ignbin(FourByteLong n,float pp);
-extern FourByteLong ignnbn(FourByteLong n,float p);
+extern FourByteLong ignbin(FourByteLong n,FloatOrDouble pp);
+extern FourByteLong ignnbn(FourByteLong n,FloatOrDouble p);
 extern FourByteLong ignlgi(void);
-extern FourByteLong ignpoi(float mu);
+extern FourByteLong ignpoi(FloatOrDouble mu);
 extern FourByteLong ignuin(FourByteLong low,FourByteLong high);
 extern void initgn(FourByteLong isdtyp);
 extern FourByteLong mltmod(FourByteLong a,FourByteLong s,FourByteLong m);
 extern void phrtsd(char* phrase,FourByteLong* seed1,FourByteLong* seed2);
-extern float ranf(void);
+extern FloatOrDouble ranf(void);
 extern void setall(FourByteLong iseed1,FourByteLong iseed2);
 extern void setant(FourByteLong qvalue);
-extern void setgmn(float *meanv,float *covm,FourByteLong p,float *parm);
+extern void setgmn(FloatOrDouble *meanv,FloatOrDouble *covm,FourByteLong p,FloatOrDouble *parm);
 extern void setsd(FourByteLong iseed1,FourByteLong iseed2);
-extern float sexpo(void);
-extern float sgamma(float a);
-extern float snorm(void);
-extern float rcauchy(float, float);
-extern float scauchy1(void);
+extern FloatOrDouble sexpo(void);
+extern FloatOrDouble sgamma(FloatOrDouble a);
+extern FloatOrDouble snorm(void);
+extern FloatOrDouble rcauchy(FloatOrDouble, FloatOrDouble);
+extern FloatOrDouble scauchy1(void);
 
 #endif

@@ -1,3 +1,13 @@
+/*
+
+ $Id: summarizegrids.cc,v 1.2 2003/02/26 01:42:55 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* summarizegrids.cc */
 
     #include <stdio.h>
@@ -7,8 +17,8 @@
 extern FILE *logFile;
 
 void summarizegrids( char  atm_typ_str[ATOM_MAPS],
-		     float mapmax[MAX_MAPS],
-		     float mapmin[MAX_MAPS],
+		     FloatOrDouble mapmax[MAX_MAPS],
+		     FloatOrDouble mapmin[MAX_MAPS],
 		     int   num_all_maps,
 		     int   num_atm_maps )
 {

@@ -33,7 +33,7 @@
 #define FALSE        0      /* Logical constant                               */
 #define TRUE         1      /* Logical constant                               */
 
-#define PI	     3.14159265358979323846   /* Mathematical constant, pi    */
+#define PI	         3.14159265358979323846   /* Mathematical constant, pi    */
 #define TWOPI	     6.28318530717958647692
 
 #define X            0      /* x-coordinate                                   */
@@ -45,12 +45,20 @@
 #define APPROX_ZERO  1.0E-6 /* To avoid division-by-zero errors...            */
 #define BIG          1.0E12 /* Very large constant                            */
 #define MAX_CHARS    128    /* Number of characters in atom data & filenames  */
-#define LINE_LEN     128    /* Line length in characters                      */
-#if defined(__ppc__)
-#define MAX_GRID_PTS 64     /* Maximum number of grid points in 1 dimension   */
+
+#ifdef USE_XCODE
+#define LINE_LEN     140    /* Line length in characters                      */
 #else
-#define MAX_GRID_PTS 128    /* Maximum number of grid points in 1 dimension   */
+#define LINE_LEN     256    /* Line length in characters                      */
 #endif
+
+#ifdef USE_XCODE
+/* The stacksize limit within Xcode forces us to use smaller grids */
+#define MAX_GRID_PTS 61     /* Maximum number of grid points in 1 dimension   */
+#else
+#define MAX_GRID_PTS 128	/* Maximum number of grid points in 1 dimension   */
+#endif
+
 #define	EINTCLAMP    100000. /* Clamp pairwise internal energies (kcal/mol )  */
 #define MAX_MAPS     8      /* Maximum number of energy maps                  */
 #define ATOM_MAPS    6      /* Number of atomic affinity grids                */
@@ -90,19 +98,23 @@
 #define prStr           (void) sprintf
 #define flushLog        (void) fflush(logFile)
 
-#define dist(x1,y1,z1,x2,y2,z2,r) _dx=((x2)-(x1));_dy=((y2)-(y1));_dz=((z2)-(z1));r=sqrt(_dx*_dx + _dy*_dy + _dz*_dz)
+#define dist(x1,y1,z1,x2,y2,z2,r) _dx=((x2)-(x1)),_dy=((y2)-(y1)),_dz=((z2)-(z1)),r=sqrt(_dx*_dx + _dy*_dy + _dz*_dz)
 
 /*
 ** New types...
 */
+
+
+#include "typedefs.h"
+
 
 typedef char Boole;
 
 
 typedef struct AtomDesc {
 
-	float crd[XYZ];
-	float q;
+	FloatOrDouble crd[XYZ];
+	FloatOrDouble q;
 	int   type;
 
 	} AtomDesc;

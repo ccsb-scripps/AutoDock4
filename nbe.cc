@@ -1,3 +1,13 @@
+/*
+
+ $Id: nbe.cc,v 1.2 2003/02/26 01:21:57 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* nbe.cc */
 
 #include <math.h>
@@ -30,7 +40,7 @@
 extern FILE *logFile;
 
 void nbe( char atm_typ_str[ATOM_MAPS],
-	  float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+	  FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
 	  int num_atm_maps )
 
 {
@@ -39,7 +49,7 @@ void nbe( char atm_typ_str[ATOM_MAPS],
     register int i = 0;
     register int j = 0;
     register int k = 0;
-    float r = 0.;
+    FloatOrDouble r = 0.;
 
     pr( logFile,"SUMMARY OF PAIRWISE-ATOMIC NON-BONDED INTERNAL ENERGIES\n" );
     pr( logFile,"________________________________________________________\n\n");

@@ -2,7 +2,7 @@
 #ifndef NONBONDS
 #define NONBONDS
 #include "constants.h"
-void  nonbonds( float crdpdb[MAX_ATOMS][SPACE],
+void  nonbonds( FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
                 int   nbmatrix_binary[MAX_ATOMS][MAX_ATOMS],
                 int   natom,
                 int   atomnumber[MAX_RECORDS], 

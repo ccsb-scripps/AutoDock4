@@ -1,3 +1,13 @@
+/*
+
+ $Id: output_state.cc,v 1.3 2004/02/12 04:32:15 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* output_state.cc */
 
     #include <stdio.h>
@@ -19,20 +29,23 @@ void output_state( FILE *fp,
 		   State S,
                    int ntor,
                    int istep,
-                   float energy,
-                   float eint,
+                   FloatOrDouble energy,
+                   FloatOrDouble eint,
                    char lastmove,
                    Boole B_watch,
                    char FN_watch[MAX_CHARS],
                    char atomstuff[MAX_ATOMS][MAX_CHARS],
                    int natom,
-                   float crd[MAX_ATOMS][SPACE])
+                   FloatOrDouble crd[MAX_ATOMS][SPACE])
 /*----------------------------------------------------------------------------*/
 {
     int i;
 	/*int lockf_status;*/
+	
+#ifndef __ppc__
 	int FD_watch;
     FILE *FP_watch;
+#endif
 
     fprintf(fp, "state %d %c %f %f  %lf %lf %lf  %lf %lf %lf %lf\n",
         istep, lastmove, energy, eint, S.T.x, S.T.y, S.T.z,

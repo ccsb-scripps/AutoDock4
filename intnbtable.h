@@ -8,9 +8,9 @@ void intnbtable(Boole *P_B_havenbp,
                 int   *P_a2,
 		int   num_atm_maps,
                 char  atm_tyP_str[ATOM_MAPS],
-                float cA,
-                float cB,
+                FloatOrDouble cA,
+                FloatOrDouble cB,
                 int   xA,
                 int   xB,
-                float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS] );
+                FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS] );
 #endif

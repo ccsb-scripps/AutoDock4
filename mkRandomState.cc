@@ -1,3 +1,13 @@
+/*
+
+ $Id: mkRandomState.cc,v 1.2 2003/02/26 01:20:47 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* mkRandomState.cc */
 
 #include <math.h>
@@ -7,14 +17,14 @@
     #include "mkRandomState.h"
 
 
-State mkRandomState( float xlo,
-		     float xhi,
-		     float ylo,
-		     float yhi,
-		     float zlo,
-		     float zhi,
+State mkRandomState( FloatOrDouble xlo,
+		     FloatOrDouble xhi,
+		     FloatOrDouble ylo,
+		     FloatOrDouble yhi,
+		     FloatOrDouble zlo,
+		     FloatOrDouble zhi,
 		     int   ntor,
-		     float F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		     FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		     int   N_con[MAX_TORS])
 
 {
@@ -23,7 +33,7 @@ State mkRandomState( float xlo,
     double t;
     int I_ranCon;
     double x0, r1, r2, t1, t2;
-    float a, b;
+    FloatOrDouble a, b;
 
     now.ntor = ntor;
 

@@ -1,3 +1,13 @@
+/*
+
+ $Id: call_ls.cc,v 1.4 2004/02/12 05:50:47 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
      Call_ls:  Invokes a local searcher on a docking to try and 
                find the locally optimal solution.  So, the docking
@@ -6,7 +16,7 @@
 
 				rsh 2/5/96
 ********************************************************************/
-#include <iostream.h>
+// possibly unnecessary // #include <iostream.h>
 #include "ls.h"
 #include "support.h"
 #include "eval.h"
@@ -72,7 +82,7 @@ Individual cnv_state_to_ind(const State &original)
 
 State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Molecule *mol) 
 {
-   int i;
+   register unsigned int i;
 
    evaluate.reset();
    local_method->reset();

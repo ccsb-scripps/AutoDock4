@@ -31,28 +31,34 @@ class Genetic_Algorithm : public Global_Search
 {
 //   friend void debug(Genetic_Algorithm &, Population &);
    private:
-      unsigned int generations, max_generations;
-      unsigned int converged; // gmm 7-jan-98
-      unsigned int *ordering;
-      unsigned int outputEveryNgens; // gmm 2000.11.1
-      float *alloc, *mutation_table;
       EvalMode e_mode;
       Selection_Mode s_mode;
-      Worst_Mode w_mode;
-      int window_size, elitism;
       Xover_Mode c_mode;
+      Worst_Mode w_mode;
+      unsigned int elitism;
+	  FloatOrDouble c_rate;
+	  FloatOrDouble m_rate;
+      unsigned int window_size;
+      FloatOrDouble alpha;
+	  FloatOrDouble beta;
+      FloatOrDouble tranStep, quatStep, torsStep;
+      int low, high; // should these be int or FloatOrDouble?
+      unsigned int generations; 
+	  unsigned int max_generations;
+      unsigned int converged; // gmm 7-jan-98
+ 	  FloatOrDouble *alloc;
+      FloatOrDouble *mutation_table;
+      unsigned int *ordering;	  
       unsigned int m_table_size;
-      float m_rate, c_rate, tournament_prob;
-      float alpha, beta;
-      float tranStep, quatStep, torsStep;
-      int low, high;
-      double avg, worst;
+      double worst, avg;
       double *worst_window;
+	  FloatOrDouble tournament_prob;
+      unsigned int outputEveryNgens; // gmm 2000.11.1,2003.08.18
 
       double worst_this_generation(Population &);
       void set_worst(Population &);
-      void make_table(int, float);
-      int check_table(float);
+      void make_table(int, FloatOrDouble);
+      int check_table(FloatOrDouble);
       M_mode m_type(RepType);
       void mutate(Genotype &, int);
       void mutation(Population &);
@@ -64,11 +70,11 @@ class Genetic_Algorithm : public Global_Search
 
    public:
       Genetic_Algorithm(void);
-      // Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, float, float, int, unsigned int); // before 2000.11.1
-      Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, float, float, int, unsigned int, unsigned int); // after 2000.11.1
+      // Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, FloatOrDouble, FloatOrDouble, int, unsigned int); // before 2000.11.1
+      Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, FloatOrDouble, FloatOrDouble, int, unsigned int, unsigned int); // after 2000.11.1
       ~Genetic_Algorithm(void);
       void initialize(unsigned int, unsigned int);
-      void mutation_values(int, int, float, float);
+      void mutation_values(int, int, FloatOrDouble, FloatOrDouble);
       unsigned int num_generations(void);
       void reset(void);
       void reset(unsigned int);
@@ -87,7 +93,7 @@ inline Global_Search::~Global_Search(void)
 
 // Default values set in this constructor.
 inline Genetic_Algorithm::Genetic_Algorithm(void)
-: m_table_size(0), mutation_table(NULL), ordering(NULL), alloc(NULL), worst_window(NULL)
+: alloc(NULL), mutation_table(NULL), ordering(NULL), m_table_size(0), worst_window(NULL)
 {
    generations = 0;
    elitism = window_size = low = high = 0;
@@ -98,7 +104,7 @@ inline Genetic_Algorithm::Genetic_Algorithm(void)
    quatStep = torsStep = Rad( 50.0 );
    worst = avg = 0.0L;
    converged = 0; // gmm 7-jan-98
-   outputEveryNgens = 100; // gmm 2000-nov-1
+   outputEveryNgens = OUTLEV1_GENS; // gmm 2000-nov-1
 }
 
 inline Genetic_Algorithm::~Genetic_Algorithm(void)
@@ -120,7 +126,7 @@ inline Genetic_Algorithm::~Genetic_Algorithm(void)
    }
 }
 
-inline void Genetic_Algorithm::mutation_values(int init_low, int init_high, float init_alpha, float init_beta)
+inline void Genetic_Algorithm::mutation_values(int init_low, int init_high, FloatOrDouble init_alpha, FloatOrDouble init_beta)
 {
    low = init_low;
    high = init_high;

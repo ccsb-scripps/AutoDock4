@@ -11,5 +11,7 @@ void  weedbonds( int   natom,
                  int   *P_Nnb,
                  int   Nnbonds[MAX_ATOMS],
                  int   nbmatrix_binary[MAX_ATOMS][MAX_ATOMS],
-                 int   nonbondlist[MAX_NONBONDS][2] );
+                 int   nonbondlist[MAX_NONBONDS][4],
+                 int   outlev,
+				 int   type[MAX_ATOMS]);
 #endif

@@ -5,5 +5,5 @@
 #include "openfile.h"
 
 int   getpdbcrds( char  rms_ref_crds_FN[MAX_CHARS],
-		float ref_crds[MAX_ATOMS][SPACE] );
+		FloatOrDouble ref_crds[MAX_ATOMS][SPACE] );
 #endif

@@ -1,3 +1,13 @@
+/*
+
+ $Id: investigate.cc,v 1.4 2004/11/16 23:42:53 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* investigate.cc */
 
 #include <math.h>
@@ -23,41 +33,42 @@ extern char *programname;
 
 
 void investigate( int   Nnb,
-		float charge[MAX_ATOMS],
+		FloatOrDouble charge[MAX_ATOMS],
 		Boole B_calcIntElec,
-		float q1q2[MAX_NONBONDS],
-		float crd[MAX_ATOMS][SPACE],
-		float crdpdb[MAX_ATOMS][SPACE],
-		float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
-		float xhi,
-		float yhi,
-		float zhi,
-		float inv_spacing,
+		FloatOrDouble q1q2[MAX_NONBONDS],
+		FloatOrDouble crd[MAX_ATOMS][SPACE],
+		FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+		FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+		FloatOrDouble xhi,
+		FloatOrDouble yhi,
+		FloatOrDouble zhi,
+		FloatOrDouble inv_spacing,
 		int   maxTests,
-		float xlo,
-		float ylo,
-		float zlo,
-		float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+		FloatOrDouble xlo,
+		FloatOrDouble ylo,
+		FloatOrDouble zlo,
+		FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 		int   natom,
-		int   nonbondlist[MAX_NONBONDS][2],
+		int   nonbondlist[MAX_NONBONDS][4],
 		int   ntor,
 		int   outlev,
 		int   tlist[MAX_TORS][MAX_ATOMS],
 		int   type[MAX_ATOMS],
-		float vt[MAX_TORS][SPACE],
+		FloatOrDouble vt[MAX_TORS][SPACE],
 		Boole B_isGaussTorCon,
-       unsigned short US_torProfile[MAX_TORS][NTORDIVS],
+         unsigned short US_torProfile[MAX_TORS][NTORDIVS],
 		Boole B_isTorConstrained[MAX_TORS],
 		Boole B_ShowTorE,
-       unsigned short US_TorE[MAX_TORS],
-		float F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+         unsigned short US_TorE[MAX_TORS],
+		FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		int   N_con[MAX_TORS],
 		Boole B_symmetry_flag,
 		char  FN_rms_ref_crds[MAX_CHARS],
-                int   OutputEveryNTests,
+         int   OutputEveryNTests,
 		int   NumLocalTests,
-		float trnStep,
-		float torStep)
+		FloatOrDouble trnStep,
+		FloatOrDouble torStep,
+         int   ignore_inter[MAX_ATOMS])
 
 {
     Boole B_outside = FALSE;
@@ -69,12 +80,12 @@ void investigate( int   Nnb,
     register int i = 0;
     //register int XYZ = 0;
 
-    float e = 0.;
-    float ref_crds[MAX_ATOMS][SPACE];
-    float rms;
-    float MaxRms = 20.0;
-    float RmsBinSize = 0.25;
-    float MinEnergyInRmsBin[NUMRMSBINS];
+    FloatOrDouble e = 0.;
+    FloatOrDouble ref_crds[MAX_ATOMS][SPACE];
+    FloatOrDouble rms;
+    FloatOrDouble MaxRms = 20.0;
+    FloatOrDouble RmsBinSize = 0.25;
+    FloatOrDouble MinEnergyInRmsBin[NUMRMSBINS];
     int   NumberInRmsBin[NUMRMSBINS];
     int   NumberRandomInRmsBin[NUMRMSBINS];
     int   NumberChangeInRmsBin[NUMRMSBINS];
@@ -175,19 +186,17 @@ void investigate( int   Nnb,
 		rms = getrms( crd, ref_crds, B_symmetry_flag, natom, type);
 	    } while (rms > MaxRms);
 	    /* Calculate Energy of System, */
-	    e = quicktrilinterp( crd, charge, type, natom, map, 
-				 inv_spacing, xlo, ylo, zlo) 
-		+ eintcal( nonbondlist, e_internal, crd, 
-				     type, Nnb, B_calcIntElec, q1q2);
+	    e = quicktrilinterp4( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo, ignore_inter) 
+		    + eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
 	    if (B_isGaussTorCon) {
 		for (Itor = 0; Itor < ntor; Itor++) {
 		    if (B_isTorConstrained[Itor] == 1) {
 			indx = Rad2Div( sNow.tor[Itor] );
 			if (B_ShowTorE) {
-			    e += (float)( US_TorE[Itor] 
+			    e += (FloatOrDouble)( US_TorE[Itor] 
 					  = US_torProfile[Itor][indx] );
 			} else {
-			    e += (float)US_torProfile[Itor][indx];
+			    e += (FloatOrDouble)US_torProfile[Itor][indx];
 			}
 		    }
 		}

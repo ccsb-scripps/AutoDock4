@@ -6,6 +6,7 @@
 #ifndef _EVAL_H
 #define _EVAL_H
 
+#include "structs.h"
 #include "rep.h"
 
 #include <stdio.h>
@@ -13,8 +14,12 @@
 #include "cnv_state_to_coords.h"
 #include "trilinterp.h"
 #include "eintcal.h"
-#include "structs.h"
 #include "energy.h"
+
+
+#if defined(USING_COLINY)
+void make_state_from_rep(double *x, int n, State *now);
+#endif
 
 void make_state_from_rep(Representation **rep, State *stateNow);
 
@@ -23,51 +28,58 @@ class Eval
    private:
       UnsignedFourByteLong num_evals;
       int natom, Nnb;
-      float inv_spacing, xlo, xhi, ylo, yhi, zlo, zhi;  // gmm added new private members xhi,yhi,zhi
-      float xcen, ycen, zcen; // gmm added 14-Jan-1998, center of grid
-      float eval_elec[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
-      float eval_emap[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
+      FloatOrDouble inv_spacing, xlo, xhi, ylo, yhi, zlo, zhi;  // gmm added new private members xhi,yhi,zhi
+      FloatOrDouble xcen, ycen, zcen; // gmm added 14-Jan-1998, center of grid
+      FloatOrDouble eval_elec[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
+      FloatOrDouble eval_emap[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
       State stateNow;
       unsigned short *US_TorE, (*US_torProfile)[NTORDIVS]; 
-      int *type, (*nonbondlist)[2], (*tlist)[MAX_ATOMS];
-//      float (*q1q2), *Addr_eintra, (*charge);
-      float *q1q2, *charge;
-      float (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE]; 
-      float (*e_internal)[ATOM_MAPS][ATOM_MAPS]; 
-      float (*map)[MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
+      int *type, (*nonbondlist)[4], (*tlist)[MAX_ATOMS];
+//      FloatOrDouble (*q1q2), *Addr_eintra, (*charge);
+      FloatOrDouble *q1q2, *charge;
+      FloatOrDouble (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE]; 
+      FloatOrDouble (*e_internal)[ATOM_MAPS][ATOM_MAPS]; 
+      FloatOrDouble (*map)[MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
       Boole *B_isTorConstrained; 
       Molecule mol;
       Boole B_template; // Use the template-docking scoring function if true 15-jan-2001
-      // float template_energy[MAX_ATOMS]; // atomic template values
-      // float template_stddev[MAX_ATOMS]; // atomic template values
-      float *template_energy; // atomic template values
-      float *template_stddev; // atomic template values
+      // FloatOrDouble template_energy[MAX_ATOMS]; // atomic template values
+      // FloatOrDouble template_stddev[MAX_ATOMS]; // atomic template values
+      FloatOrDouble *template_energy; // atomic template values
+      FloatOrDouble *template_stddev; // atomic template values
+      int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
    
    public:
       Eval(void);
-      void setup(float init_crd[MAX_ATOMS][SPACE], float init_charge[MAX_ATOMS], 
+      void setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE], FloatOrDouble init_charge[MAX_ATOMS], 
             int   init_type[MAX_ATOMS], int init_natom, 
-            float init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-            float init_inv_spacing, 
-            float init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-            float init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-            float init_xlo, float init_xhi, // added by GMM
-            float init_ylo, float init_yhi, // xhi,yhi,zhi
-            float init_zlo, float init_zhi, // ...
-//            float init_Addr_eintra, int init_nonbondlist[MAX_NONBONDS][2], 
-            int init_nonbondlist[MAX_NONBONDS][2], 
-            float init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], int init_Nnb, 
-            Boole init_B_calcIntElec, float init_q1q2[MAX_NONBONDS], 
+            FloatOrDouble init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+            FloatOrDouble init_inv_spacing, 
+            FloatOrDouble init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+            FloatOrDouble init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+            FloatOrDouble init_xlo, FloatOrDouble init_xhi, // added by GMM
+            FloatOrDouble init_ylo, FloatOrDouble init_yhi, // xhi,yhi,zhi
+            FloatOrDouble init_zlo, FloatOrDouble init_zhi, // ...
+//            FloatOrDouble init_Addr_eintra, int init_nonbondlist[MAX_NONBONDS][4], 
+            int init_nonbondlist[MAX_NONBONDS][4], 
+            FloatOrDouble init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], int init_Nnb, 
+            Boole init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS], 
             Boole init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS], 
             Boole init_B_ShowTorE, unsigned short init_US_TorE[MAX_TORS], 
             unsigned short init_US_torProfile[MAX_TORS][NTORDIVS], 
-            float init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], 
-            float init_crdpdb[MAX_ATOMS][SPACE], State stateInit, Molecule molInit,
+            FloatOrDouble init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], 
+            FloatOrDouble init_crdpdb[MAX_ATOMS][SPACE], State stateInit, Molecule molInit,
             Boole init_B_template, 
-            float init_template_energy[MAX_ATOMS], 
-            float init_template_stddev[MAX_ATOMS]);
+            FloatOrDouble init_template_energy[MAX_ATOMS], 
+            FloatOrDouble init_template_stddev[MAX_ATOMS],
+            int   init_ignore_inter[MAX_ATOMS]);
       double operator()(Representation **);
+#if defined(USING_COLINY)
+      double operator()(double*, int);
+#endif
+      double eval();			// WEH - a basic change that facilitates
+      					// the use of Coliny
       UnsignedFourByteLong evals(void);
       void reset(void);
       int write(FILE *out_file, Representation **rep);
@@ -78,28 +90,29 @@ inline Eval::Eval(void)
 {
 }
 
-inline void Eval::setup(float init_crd[MAX_ATOMS][SPACE], float init_charge[MAX_ATOMS], 
+inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE], FloatOrDouble init_charge[MAX_ATOMS], 
             int init_type[MAX_ATOMS], int init_natom, 
-            float init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-            float init_inv_spacing, 
-            float init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-            float init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-            float init_xlo, float init_xhi,   // gmm
-            float init_ylo, float init_yhi,   // gmm
-            float init_zlo, float init_zhi,   // gmm
-//            float init_Addr_eintra, int init_nonbondlist[MAX_NONBONDS][2], 
-            int init_nonbondlist[MAX_NONBONDS][2], 
-            float init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], int init_Nnb, 
-            Boole init_B_calcIntElec, float init_q1q2[MAX_NONBONDS], 
+            FloatOrDouble init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+            FloatOrDouble init_inv_spacing, 
+            FloatOrDouble init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+            FloatOrDouble init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+            FloatOrDouble init_xlo, FloatOrDouble init_xhi,   // gmm
+            FloatOrDouble init_ylo, FloatOrDouble init_yhi,   // gmm
+            FloatOrDouble init_zlo, FloatOrDouble init_zhi,   // gmm
+//            FloatOrDouble init_Addr_eintra, int init_nonbondlist[MAX_NONBONDS][4], 
+            int init_nonbondlist[MAX_NONBONDS][4], 
+            FloatOrDouble init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], int init_Nnb, 
+            Boole init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS], 
             Boole init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS], 
             Boole init_B_ShowTorE, unsigned short init_US_TorE[MAX_TORS], 
             unsigned short init_US_torProfile[MAX_TORS][NTORDIVS], 
-            float init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], 
-            float init_crdpdb[MAX_ATOMS][SPACE], State stateInit,
+            FloatOrDouble init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], 
+            FloatOrDouble init_crdpdb[MAX_ATOMS][SPACE], State stateInit,
             Molecule molInit, 
             Boole init_B_template, 
-            float init_template_energy[MAX_ATOMS], 
-            float init_template_stddev[MAX_ATOMS])
+            FloatOrDouble init_template_energy[MAX_ATOMS], 
+            FloatOrDouble init_template_stddev[MAX_ATOMS],
+            int   init_ignore_inter[MAX_ATOMS])
 {
    register int i;
 
@@ -136,6 +149,7 @@ inline void Eval::setup(float init_crd[MAX_ATOMS][SPACE], float init_charge[MAX_
    num_evals = 0;
    for (i=0; i<MAX_ATOMS; i++) {
        init_elec[i] = init_emap[i] = 0.0;
+       ignore_inter[i] = init_ignore_inter[i];
    }
    mol = molInit;
    B_template = init_B_template;

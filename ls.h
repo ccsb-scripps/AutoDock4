@@ -28,15 +28,15 @@ class Solis_Wets_Base : public Local_Search
 {
    protected:
       unsigned int size, max_its, max_successes, max_failures;
-      float expansion, contraction;
-      float search_frequency;
-      float *deviates, *bias;
+      FloatOrDouble expansion, contraction;
+      FloatOrDouble search_frequency;
+      FloatOrDouble *deviates, *bias;
 
    public:
       Solis_Wets_Base(void);
-      Solis_Wets_Base(unsigned int, unsigned int, unsigned int, unsigned int, float, float, float);
+      Solis_Wets_Base(unsigned int, unsigned int, unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble);
       virtual ~Solis_Wets_Base(void);
-      virtual double gen_deviates(float) = 0;
+      virtual double gen_deviates(FloatOrDouble) = 0;
       virtual void SW(Phenotype &) = 0;
       virtual void reset(void);
       virtual int terminate(void);
@@ -46,28 +46,28 @@ class Solis_Wets_Base : public Local_Search
 class Solis_Wets : public Solis_Wets_Base
 {
    protected:
-      float rho, lower_bound_on_rho;
+      FloatOrDouble rho, lower_bound_on_rho;
 
    public:
       Solis_Wets(void);
-      Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, float, float, float, float, float);
+      Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble);
       virtual ~Solis_Wets(void);
-      virtual double gen_deviates(float) = 0;
+      virtual double gen_deviates(FloatOrDouble) = 0;
       void SW(Phenotype &);
 };
 
 class Pseudo_Solis_Wets : public Solis_Wets_Base
 {
    protected:
-      float *rho, *lower_bound_on_rho;
-      float *temp_rho;
+      FloatOrDouble *rho, *lower_bound_on_rho;
+      FloatOrDouble *temp_rho;
 
    public:
       Pseudo_Solis_Wets(void);
-      Pseudo_Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, float, float, float);
-      Pseudo_Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, float, float, float, float *, float *);
+      Pseudo_Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble);
+      Pseudo_Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble *, FloatOrDouble *);
       virtual ~Pseudo_Solis_Wets(void);
-      virtual double gen_deviates(float) = 0;
+      virtual double gen_deviates(FloatOrDouble) = 0;
       void SW(Phenotype &);
 };
 
@@ -75,38 +75,38 @@ class Solis_Wets1 : public Solis_Wets
 {
    public:
       Solis_Wets1(void);
-      Solis_Wets1(unsigned int, unsigned int, unsigned int, unsigned int, float, float, float, float, float);
+      Solis_Wets1(unsigned int, unsigned int, unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble);
       ~Solis_Wets1(void);
-      double gen_deviates(float);
+      double gen_deviates(FloatOrDouble);
 };
 
 class Solis_Wets2 : public Solis_Wets
 {
    public:
       Solis_Wets2(void);
-      Solis_Wets2(unsigned int, unsigned int, unsigned int, unsigned int, float, float, float, float, float);
+      Solis_Wets2(unsigned int, unsigned int, unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble);
       ~Solis_Wets2(void);
-      double gen_deviates(float);
+      double gen_deviates(FloatOrDouble);
 };
 
 class Pseudo_Solis_Wets1 : public Pseudo_Solis_Wets
 {
    public:
       Pseudo_Solis_Wets1(void);
-      Pseudo_Solis_Wets1(unsigned int, unsigned int, unsigned int, unsigned int, float, float, float);
-      Pseudo_Solis_Wets1(unsigned int, unsigned int, unsigned int, unsigned int, float, float, float, float *, float *);
+      Pseudo_Solis_Wets1(unsigned int, unsigned int, unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble);
+      Pseudo_Solis_Wets1(unsigned int, unsigned int, unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble *, FloatOrDouble *);
       ~Pseudo_Solis_Wets1(void);
-      double gen_deviates(float);
+      double gen_deviates(FloatOrDouble);
 };
 
 class Pseudo_Solis_Wets2 : public Pseudo_Solis_Wets
 {
    public:
       Pseudo_Solis_Wets2(void);
-      Pseudo_Solis_Wets2(unsigned int, unsigned int, unsigned int, unsigned int, float, float, float);
-      Pseudo_Solis_Wets2(unsigned int, unsigned int, unsigned int, unsigned int, float, float, float, float *, float *);
+      Pseudo_Solis_Wets2(unsigned int, unsigned int, unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble);
+      Pseudo_Solis_Wets2(unsigned int, unsigned int, unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble *, FloatOrDouble *);
       ~Pseudo_Solis_Wets2(void);
-      double gen_deviates(float);
+      double gen_deviates(FloatOrDouble);
 };
 
 //  Inline Functions
@@ -126,12 +126,12 @@ inline Solis_Wets_Base::Solis_Wets_Base(void)
 
 inline Solis_Wets_Base::Solis_Wets_Base(unsigned int init_size, unsigned int init_max_its, 
                                         unsigned int init_max_succ, unsigned int init_max_fail, 
-                                        float init_expansion, float init_contraction, float init_search_freq)
+                                        FloatOrDouble init_expansion, FloatOrDouble init_contraction, FloatOrDouble init_search_freq)
 :  size(init_size), max_its(init_max_its), max_successes(init_max_succ), max_failures(init_max_fail),
    expansion(init_expansion), contraction(init_contraction), search_frequency(init_search_freq)
 {
-   bias = new float[size];
-   deviates = new float[size];
+   bias = new FloatOrDouble[size];
+   deviates = new FloatOrDouble[size];
 }
 
 inline Solis_Wets_Base::~Solis_Wets_Base(void)
@@ -163,8 +163,8 @@ inline Solis_Wets::Solis_Wets(void)
 }
 
 inline Solis_Wets::Solis_Wets(unsigned int init_size, unsigned int init_max_its, unsigned int init_max_succ, 
-                              unsigned int init_max_fail, float init_rho, float init_lb_on_rho, 
-                              float init_expansion, float init_contraction, float init_search_freq)
+                              unsigned int init_max_fail, FloatOrDouble init_rho, FloatOrDouble init_lb_on_rho, 
+                              FloatOrDouble init_expansion, FloatOrDouble init_contraction, FloatOrDouble init_search_freq)
 :  Solis_Wets_Base(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion, init_contraction, 
                    init_search_freq), rho(init_rho), lower_bound_on_rho(init_lb_on_rho)
 {
@@ -181,7 +181,7 @@ inline Pseudo_Solis_Wets::Pseudo_Solis_Wets(void)
 
 inline Pseudo_Solis_Wets::Pseudo_Solis_Wets(unsigned int init_size, unsigned init_max_its, 
                                             unsigned int init_max_succ, unsigned int init_max_fail, 
-                                            float init_expansion, float init_contraction, float init_search_freq)
+                                            FloatOrDouble init_expansion, FloatOrDouble init_contraction, FloatOrDouble init_search_freq)
 :  Solis_Wets_Base(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion, init_contraction, 
                    init_search_freq), rho(NULL), lower_bound_on_rho(NULL), temp_rho(NULL)
 {
@@ -189,12 +189,12 @@ inline Pseudo_Solis_Wets::Pseudo_Solis_Wets(unsigned int init_size, unsigned ini
 
 inline Pseudo_Solis_Wets::Pseudo_Solis_Wets(unsigned int init_size, unsigned init_max_its, 
                                             unsigned int init_max_succ, unsigned int init_max_fail, 
-                                            float init_expansion, float init_contraction, float init_search_freq, 
-                                            float *init_rho, float *init_lb_on_rho)
+                                            FloatOrDouble init_expansion, FloatOrDouble init_contraction, FloatOrDouble init_search_freq, 
+                                            FloatOrDouble *init_rho, FloatOrDouble *init_lb_on_rho)
 :  Solis_Wets_Base(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion, init_contraction, 
                    init_search_freq), rho(init_rho), lower_bound_on_rho(init_lb_on_rho)
 {
-   temp_rho = new float[init_size];
+   temp_rho = new FloatOrDouble[init_size];
 }
 
 inline Pseudo_Solis_Wets::~Pseudo_Solis_Wets(void)
@@ -221,8 +221,8 @@ inline Solis_Wets1::Solis_Wets1(void)
 }
 
 inline Solis_Wets1::Solis_Wets1(unsigned int init_size, unsigned int init_max_its, unsigned int init_max_succ, 
-                                unsigned int init_max_fail, float init_rho, float init_lb_on_rho, 
-                                float init_expansion, float init_contraction, float init_search_freq)
+                                unsigned int init_max_fail, FloatOrDouble init_rho, FloatOrDouble init_lb_on_rho, 
+                                FloatOrDouble init_expansion, FloatOrDouble init_contraction, FloatOrDouble init_search_freq)
 :  Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_rho, init_lb_on_rho, init_expansion, 
               init_contraction, init_search_freq)
 {
@@ -232,7 +232,7 @@ inline Solis_Wets1::~Solis_Wets1(void)
 {
 }
 
-inline double Solis_Wets1::gen_deviates(float rho)
+inline double Solis_Wets1::gen_deviates(FloatOrDouble rho)
 {
    return(gennor(0.0, rho));
 }
@@ -243,8 +243,8 @@ inline Solis_Wets2::Solis_Wets2(void)
 }
 
 inline Solis_Wets2::Solis_Wets2(unsigned int init_size, unsigned int init_max_its, unsigned int init_max_succ, 
-                              unsigned int init_max_fail, float init_rho, float init_lb_on_rho, 
-                              float init_expansion, float init_contraction, float init_search_freq)
+                              unsigned int init_max_fail, FloatOrDouble init_rho, FloatOrDouble init_lb_on_rho, 
+                              FloatOrDouble init_expansion, FloatOrDouble init_contraction, FloatOrDouble init_search_freq)
 :  Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_rho, init_lb_on_rho, init_expansion,
               init_contraction, init_search_freq)
 {
@@ -254,7 +254,7 @@ inline Solis_Wets2::~Solis_Wets2(void)
 {
 }
 
-inline double Solis_Wets2::gen_deviates(float rho)
+inline double Solis_Wets2::gen_deviates(FloatOrDouble rho)
 {
    return(genunf(-rho/2.0, rho/2.0));
 }
@@ -266,8 +266,8 @@ inline Pseudo_Solis_Wets1::Pseudo_Solis_Wets1(void)
 
 inline Pseudo_Solis_Wets1::Pseudo_Solis_Wets1(unsigned int init_size, unsigned int init_max_its, 
                                               unsigned int init_max_succ, unsigned int init_max_fail,  
-                                              float init_expansion, float init_contraction, 
-                                              float init_search_freq)
+                                              FloatOrDouble init_expansion, FloatOrDouble init_contraction, 
+                                              FloatOrDouble init_search_freq)
 :  Pseudo_Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion,
                      init_contraction, init_search_freq)
 {
@@ -275,9 +275,9 @@ inline Pseudo_Solis_Wets1::Pseudo_Solis_Wets1(unsigned int init_size, unsigned i
 
 inline Pseudo_Solis_Wets1::Pseudo_Solis_Wets1(unsigned int init_size, unsigned int init_max_its, 
                                               unsigned int init_max_succ, unsigned int init_max_fail,  
-                                              float init_expansion, float init_contraction, 
-                                              float init_search_freq, float *init_rho,
-                                              float *init_lb_on_rho)
+                                              FloatOrDouble init_expansion, FloatOrDouble init_contraction, 
+                                              FloatOrDouble init_search_freq, FloatOrDouble *init_rho,
+                                              FloatOrDouble *init_lb_on_rho)
 :  Pseudo_Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion,
                      init_contraction, init_search_freq, init_rho, init_lb_on_rho)
 {
@@ -287,7 +287,7 @@ inline Pseudo_Solis_Wets1::~Pseudo_Solis_Wets1(void)
 {
 }
 
-inline double Pseudo_Solis_Wets1::gen_deviates(float rho)
+inline double Pseudo_Solis_Wets1::gen_deviates(FloatOrDouble rho)
 {
    return(gennor(0.0, rho));
 }
@@ -299,8 +299,8 @@ inline Pseudo_Solis_Wets2::Pseudo_Solis_Wets2(void)
 
 inline Pseudo_Solis_Wets2::Pseudo_Solis_Wets2(unsigned int init_size, unsigned int init_max_its, 
                                               unsigned int init_max_succ, unsigned int init_max_fail,  
-                                              float init_expansion, float init_contraction, 
-                                              float init_search_freq)
+                                              FloatOrDouble init_expansion, FloatOrDouble init_contraction, 
+                                              FloatOrDouble init_search_freq)
 :  Pseudo_Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion,
                      init_contraction, init_search_freq)
 {
@@ -308,9 +308,9 @@ inline Pseudo_Solis_Wets2::Pseudo_Solis_Wets2(unsigned int init_size, unsigned i
 
 inline Pseudo_Solis_Wets2::Pseudo_Solis_Wets2(unsigned int init_size, unsigned int init_max_its, 
                                               unsigned int init_max_succ, unsigned int init_max_fail,  
-                                              float init_expansion, float init_contraction, 
-                                              float init_search_freq, float *init_rho,
-                                              float *init_lb_on_rho)
+                                              FloatOrDouble init_expansion, FloatOrDouble init_contraction, 
+                                              FloatOrDouble init_search_freq, FloatOrDouble *init_rho,
+                                              FloatOrDouble *init_lb_on_rho)
 :  Pseudo_Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion,
                      init_contraction, init_search_freq, init_rho, init_lb_on_rho)
 {
@@ -320,7 +320,7 @@ inline Pseudo_Solis_Wets2::~Pseudo_Solis_Wets2(void)
 {
 }
 
-inline double Pseudo_Solis_Wets2::gen_deviates(float rho)
+inline double Pseudo_Solis_Wets2::gen_deviates(FloatOrDouble rho)
 {
    return(genunf(-rho/2.0, rho/2.0));
 }

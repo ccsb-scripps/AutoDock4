@@ -11,6 +11,66 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.5  2004/12/07 02:07:53  gillet
+** -- fix problem of compilation with g++ 3.3.2 on Linux:
+** 	added Genotype(Genotype const &); in support.h
+** 	it s definition in support.cc
+**
+** 	added Individual(Individual const &)
+**
+** Use the following message to resolve problem:
+** http://gcc.gnu.org/ml/gcc-help/2003-10/msg00121.html
+**
+** You should put a copy constructor in your Anton class.
+**
+** "Anton(Anton& a)" isn't a copy constructor.  You need an "Anton(Anton const& a)".
+**
+** If Anton objects cannot be used in a copy constructor, then there are certain operations which Anton objects cannot perform.
+**
+** It appears that you hit upon one of them.
+**
+** If the "some code which _needs_ to modify a" is doing so in such a way that the LOGICAL state of the object is not affected, then those data members which are being modified should be marked as "mutable" in the class itself.  For example, certain reference counting schemes.  Another example is the std::string's c_str() method, which is a const method.
+**
+** If the "some code which _needs_ to modify a" does modify the LOGICAL state of the Anton object being copied from, then that's not kosher for use in a copy constructor.  C'est la vie.
+**
+** The Standard C++ Library auto_ptr<> is an example of a template class which modifies the state of the copied-from object.  That's one of the reasons that auto_ptr<>'s and STL don't mix (by-and-large).
+**
+** Or to say it another way, auto_ptr<> doesn't satisfy the contract requirements of STL containers.  Generally speaking.  If someone is REALLY careful, they may be able to use auto_ptr<> in a STL container... but I tend to recommend against it.   The BOOST <www.boost.org> folks have some smart pointer classes that are STL friendly.
+**
+** Revision 1.4  2004/11/16 23:42:56  garrett
+** This is the result of merging the existing CVS respository with the AutoDock 4.0 code.  We have tested the code with a variety of problems: rigid ligand-rigid protein, rigid ligand-flexible protein, flexible ligand-rigid protein and flexible ligand-flexible protein: all four tests passed.  There was a bug fix regarding the flexible ligand-rigid protein case, to do with the absence of a BEGIN_RES record in the PDBQ file. -- GMM & RH
+**
+** Revision 1.3  2004/02/12 04:32:16  garrett
+**
+** After a first round of compilation using Apple's IDE, Xcode, various
+** warnings have been eliminated (mainly unsigned ints and ints being
+** interchanged); and
+**
+** After using Apple's Shark tool for profiling source code, the
+** internal energy calculation has been optimized.
+**
+** The non-bonded cutoff used in the internal energy calculation has been
+** reduced from 64 Angstroms to 8 Angstroms.  Most contributions beyond
+** 8 Angstroms are very small, less than -0.001 kcal/mol, even for the
+** largest atoms. Also, the conversion from double to int used to
+** be done before the if to decide if we were within the cutoff; now
+** the square of the distance is used in the comparison, and only if
+** we are within the cutoff, do we convert from the double to int.
+**
+** The version checked in here still uses the type array to lookup
+** the energy of interaction for a nonbond; this level of indirection
+** can be pre-computed, and this should appear in my next round of checkins
+**
+** -- Garrett
+**
+** Revision 1.2  2002/10/30 01:49:15  garrett
+** Commented out the #include <iostream.h> lines, since these appeared
+** to conflict with <stdio.h>.  Also, added -lsupc++ to the linker
+** options for Mac OS X 10.2, which now uses GCC 3.1; this may be
+** necessary on GNU/Linux systems that use GCC 3.1.
+**
+** -- Lindy and Garrett
+**
 ** Revision 1.1.1.1  2001/08/13 22:05:53  gillet
 **  import initial of autodock sources
 **
@@ -50,9 +110,10 @@ class Genotype
    public:
       Genotype(void);
       Genotype(Genotype &); /* copy constructor */
+      Genotype(Genotype const &);
       Genotype(unsigned int, Representation **); /* creates a genotype from the
 					     representation & total # vectors */
-      ~Genotype(void);
+      ~Genotype(void); /* destructor */
       Genotype &operator=(const Genotype &);
       unsigned int num_vectors(void); /* e.g. "real,bit,bit,int" would = 4 */
       unsigned int num_genes(void); /* returns number_of_genes (see above) */
@@ -73,9 +134,9 @@ class Phenotype
    //friend void debug(Phenotype &);
    protected:
       unsigned int number_of_dimensions, number_of_points;
-      double value;
       Lookup *lookup;
       Representation **value_vector;
+      double value;
       unsigned evalflag : 1;  //  =1 means that this is the current evaluation
       unsigned modified : 1;  //  =1 means that this has been modified
 
@@ -111,6 +172,7 @@ class Individual
 
       Individual(void);
       Individual(Individual &); /* copy constructor */
+      Individual(Individual const &);
       Individual(Genotype &, Phenotype &);
       ~Individual(void); /* destructor */
       Individual &operator=(const Individual &); /* assignment function for
@@ -129,9 +191,9 @@ class Population
 {
    //friend void debug(Population &);
    protected:
-      Individual *heap; /* a heap of individuals -- special binary tree */
       int lhb;  //  These keep track of the lower & upper heap bounds
       int size; /* the number of individuals in the population */
+      Individual *heap; /* a heap of individuals -- special binary tree */
       void swap(Individual &, Individual &); /* for maintaining the heap order*/
       void SiftUp(void); /* for maintaining the heap order*/
       void SiftDown(void); /* for maintaining the heap order*/
@@ -146,7 +208,7 @@ class Population
       Population &operator=(const Population &);
       unsigned int num_individuals(void); /* returns the size of the pop. */
       void msort(int); /* sorts the first m individuals using heap properties */
-      void print(ostream &, int); /* prints top int energies */
+      // void print(ostream &, int); /* prints top int energies */
       void print(FILE *, int); /* like above */
       void printPopulationAsStates(FILE *, int, int); /*prints energies,states of top energies */
 };
@@ -257,7 +319,7 @@ inline double Individual::value(EvalMode mode)
 }
 
 inline Population::Population(void)
-:heap((Individual *)NULL), lhb(-1), size(0)
+:lhb(-1), size(0), heap((Individual *)NULL)
 {
 }
 

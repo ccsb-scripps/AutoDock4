@@ -1,3 +1,13 @@
+/*
+
+ $Id: ls.cc,v 1.4 2004/11/16 23:42:53 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
       These are the methods of the local searchers
 
@@ -11,14 +21,14 @@ extern class Eval evaluate;
 extern FILE *logFile;
 
 //  This function adds array1 + array2 to all the reals in the representation
-Phenotype genPh(const Phenotype &original, float *array1, float *array2)
+Phenotype genPh(const Phenotype &original, FloatOrDouble *array1, FloatOrDouble *array2)
 {
    RepType genetype;
-   register int i, index = 0;
+   register unsigned int i, index = 0;
    Phenotype retval(original);
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, float *array1, float *array2)\n");
+   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, FloatOrDouble *array1, FloatOrDouble *array2)\n");
 #endif /* DEBUG */
 
 
@@ -33,15 +43,15 @@ Phenotype genPh(const Phenotype &original, float *array1, float *array2)
    return(retval);
 }
 
-//  Solis & Wetts adds a random deviate to every
+//  What Solis & Wetts does is add random deviates to every
 //  real number in the Phenotype.
 //  
 //  This has only one value of rho, for all genes.
 //
 void Solis_Wets::SW(Phenotype &vector)
 {
-   register int i, j, num_successes = 0, num_failures = 0;
-   register float temp_rho = rho;
+   register unsigned int i, j, num_successes = 0, num_failures = 0;
+   register FloatOrDouble temp_rho = rho;
    Phenotype newPh;
 
 #ifdef DEBUG
@@ -106,15 +116,14 @@ void Solis_Wets::SW(Phenotype &vector)
 } // void Solis_Wets::SW(Phenotype &vector)
 
 
-//  pseudo-Solis & Wets 
-//  This adds a random deviate to each dimension
+//  This is pseudo-Solis & Wets in that it adds random deviates to every dimension
 //  of the current solution, but the variances vary across dimensions.
 //
 //  This has a different value of rho for each gene.
 //
 void Pseudo_Solis_Wets::SW(Phenotype &vector)
 {
-   register int i, j, num_successes = 0, num_failures = 0,  all_rho_stepsizes_too_small = 1;
+   register unsigned int i, j, num_successes = 0, num_failures = 0,  all_rho_stepsizes_too_small = 1;
     
    Phenotype newPh;
 

@@ -1,3 +1,13 @@
+/*
+
+ $Id: eval.cc,v 1.8 2004/11/16 23:42:52 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
      These are the functions associated with the evaluation object.
 
@@ -12,7 +22,6 @@ extern FILE *logFile;
 
 #include <stdio.h>
 #include <string.h>
-#include "structs.h"
 
 #ifdef sgi
     #include <ieeefp.h>
@@ -70,6 +79,12 @@ void make_state_from_rep(Representation **rep, State *stateNow)
 
 double Eval::operator()(Representation **rep)
 {
+   make_state_from_rep(rep, &stateNow);
+   return eval();
+}
+
+double Eval::eval()
+{
    register int i;
    int   B_outside = 0;
    int   I_tor = 0;
@@ -77,13 +92,11 @@ double Eval::operator()(Representation **rep)
    double energy = 0.0;
 
 #ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/double Eval::operator()(Representation **rep)\n");
+    (void)fprintf(logFile,"eval.cc/double Eval::eval()\n");
     if (B_template) {
-        (void)fprintf(logFile,"eval.cc/double Eval::operator() -- B_template is true.\n");
+        (void)fprintf(logFile,"eval.cc/double Eval::eval() -- B_template is true.\n");
     }
 #endif /* DEBUG */
-
-   make_state_from_rep(rep, &stateNow);
 
 #ifdef DEBUG
     if (is_out_grid(stateNow.T.x, stateNow.T.y, stateNow.T.z)) {
@@ -127,16 +140,19 @@ double Eval::operator()(Representation **rep)
     *                              B_ShowTorE, US_TorE, US_torProfile);
     * --------------------------------------------------------------------------*/
 
-            energy = quicktrilinterp( crd, charge, type, natom, map, inv_spacing,
-                                      xlo, ylo, zlo)
-                     + eintcal( nonbondlist, e_internal, crd, type, Nnb, 
-                                B_calcIntElec, q1q2);
+            energy = quicktrilinterp4( crd, charge, type, natom, map, inv_spacing,
+                                      xlo, ylo, zlo,
+                             		 ignore_inter);
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval() after quicktrilinterp, energy= %.5lf\n",energy);
+#endif /* DEBUG */
+            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
+#endif /* DEBUG */
             /*
-            energy = trilinterp(      crd, charge, type, natom, map, inv_spacing, 
-                                      eval_elec, eval_emap, 
-                                      xlo, ylo, zlo)
-                     + eintcal( nonbondlist, e_internal, crd, type, Nnb, 
-                                B_calcIntElec, q1q2);
+            energy = trilinterp( crd, charge, type, natom, map, inv_spacing, eval_elec, eval_emap, xlo, ylo, zlo)
+                     + eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
             */
          
             if (B_isGaussTorCon) {
@@ -166,12 +182,14 @@ double Eval::operator()(Representation **rep)
              * distance from centre of grid map, otherwise use the normal 
              * trilinear interpolation.
              */
-            energy = outsidetrilinterp( crd, charge, type, natom, map,
-                                        inv_spacing, // eval_elec, eval_emap, 
-                                        xlo, ylo, zlo,
-                                        xhi, yhi, zhi,  xcen, ycen, zcen )
-                     + eintcal( nonbondlist, e_internal, crd, type, Nnb,
-                                B_calcIntElec, q1q2);
+            energy = outsidetrilinterp4( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,  xcen, ycen, zcen, ignore_inter );
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval() after outsidetrilinterp, energy= %.5lf\n",energy);
+#endif /* DEBUG */
+            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
+#endif /* DEBUG */
             if (B_isGaussTorCon) {
                 for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
                     if (B_isTorConstrained[I_tor] == 1) {
@@ -218,12 +236,15 @@ double Eval::operator()(Representation **rep)
           (void)fprintf(logFile, "\n");
       } // i
    }
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval() returns energy= %.5lf\n",energy);
+#endif /*DEBUG*/
    return(energy);
 }
 
 int Eval::write(FILE *out_file, Representation **rep)
 {
-    int i, retval;
+    int i=0, retval=0;
     //char rec14[14];
 
 #ifdef DEBUG
@@ -242,3 +263,69 @@ int Eval::write(FILE *out_file, Representation **rep)
     } // i
     return retval;
 }
+
+#if defined(USING_COLINY)
+double Eval::operator()(double* vec, int len)
+{
+   make_state_from_rep(vec, len, &stateNow);
+   return eval();
+}
+
+
+void make_state_from_rep(double *rep, int n, State *now)
+{
+#ifdef DEBUG
+(void)fprintf(logFile, "eval.cc/make_state_from_rep(double *rep, int n, State *now)\n");
+#endif /* DEBUG */
+
+//  Do the translations
+now->T.x = rep[0];
+now->T.y = rep[1];
+now->T.z = rep[2];
+
+//  Set up the quaternion
+now->Q.nx = rep[3];
+now->Q.ny = rep[4];
+now->Q.nz = rep[5];
+now->Q.ang = rep[6];
+
+//  Copy the angles
+now->ntor = n - 7;
+for (int i=0, j=7; j<n; i++, j++)
+  now->tor[i] = rep[j];
+
+mkUnitQuat(&(now->Q));
+}
+
+extern Eval evaluate;
+
+double ADEvalFn(double* x, int n)
+{
+//
+// Normalize the data
+//
+//
+// Quaternion vector
+/*
+double sum=0.0;
+if (x[3] < 0.0) x[3] = 1e-16;
+if (x[4] < 0.0) x[4] = 1e-16;
+if (x[5] < 0.0) x[5] = 1e-16;
+*/
+double sum = sqrt(x[3]*x[3]+x[4]*x[4]+x[5]*x[5]);
+if (sum < 1e-8)
+   x[3]=x[4]=x[5]=1.0/sqrt(3.0);
+   else {
+      x[3] /= sum;
+      x[4] /= sum;
+      x[5] /= sum;
+      }
+
+// torsion angles
+for (int i=6; i<n; i++)
+  x[i] = WrpModRad(x[i]);
+
+return ::evaluate(x,n);
+}
+//
+#endif

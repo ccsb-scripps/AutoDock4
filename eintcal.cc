@@ -1,216 +1,188 @@
-/* eintcal.cc */
+/* 
+
+ $Id: eintcal.cc,v 1.5 2004/11/16 23:42:52 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <math.h>
 
-#ifdef EINTCALPRINT        /*EINTCALPRINT[*/
-    #include <stdio.h>
-#endif                     /*EINTCALPRINT]*/
-    #include "eintcal.h"
-    #include "constants.h"
+#ifdef EINTCALPRINT
+#include <stdio.h>
+#endif
 
-#ifndef EINTCALPRINT        /*!EINTCALPRINT[*/
+#include "eintcal.h"
+#include "constants.h"
 
-float eintcal( int nonbondlist[MAX_NONBONDS][2],
-               float eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
-               float tcoord[MAX_ATOMS][SPACE],
-               int type[MAX_ATOMS],
-               int Nnb,
-               Boole B_calcIntElec,
-               float q1q2[MAX_NONBONDS])
-
-/******************************************************************************/
-/*      Name: eintcal                                                         */
-/*  Function: Calculate the Internal Energy of the Small Molecule.            */
-/*            Accelerated non-square-rooting, dx,dy,dz version.               */
-/* Copyright: (C) 1994, TSRI                                                  */
-/*____________________________________________________________________________*/
-/*   Authors: Garrett M. Morris, TSRI                                         */
-/*            David Goodsell, UCLA                                            */
-/*      Date: 16/03/94                                                        */
-/*____________________________________________________________________________*/
-/*    Inputs: nonbondlist, eint_table, tcoord, type, Nnb                      */
-/*   Returns: eint                                                            */
-/*   Globals: NEINT, MAX_ATOMS, SPACE                                         */
-/*____________________________________________________________________________*/
-/* Modification Record                                                        */
-/* Date     Inits   Comments                                                  */
-/* 07/05/92 DSG     Original FORTRAN                                          */
-/* 15/05/92 GMM     Translated into C                                         */
-/* 15/05/92 GMM     hypotenuse macro                                          */
-/* 19/11/93 GMM     Accelerated non-square-rooting version.                   */
-/* 16/03/94 GMM     Accelerated dx,dy,dz version.                             */
-/******************************************************************************/
-
-                        /*!EINTCALPRINT]*/
-#else                        /*EINTCALPRINT[*/
+#ifndef EINTCALPRINT
+FloatOrDouble eintcal( int           nonbondlist[MAX_NONBONDS][4],
+                       FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+                       FloatOrDouble tcoord[MAX_ATOMS][SPACE],
+                       int           Nnb,
+                       Boole         B_calcIntElec,
+                       FloatOrDouble q1q2[MAX_NONBONDS])
+#else                        
+/* EINTCALPRINT [ */
 
 extern FILE *logFile;
 
-float eintcalPrint( int nonbondlist[MAX_NONBONDS][2],
-                    float eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
-                    float tcoord[MAX_ATOMS][SPACE],
-                    int type[MAX_ATOMS],
-                    int Nnb,
-                    Boole B_calcIntElec,
-                    float q1q2[MAX_NONBONDS])
+FloatOrDouble eintcalPrint( int           nonbondlist[MAX_NONBONDS][4],
+                            FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+                            FloatOrDouble tcoord[MAX_ATOMS][SPACE],
+                            int           Nnb,
+                            Boole		  B_calcIntElec,
+                            FloatOrDouble q1q2[MAX_NONBONDS])
+/* EINTCALPRINT ] */
+#endif
 
-#endif                       /*EINTCALPRINT]*/
+/* *****************************************************************************/
+/*       Name: eintcal                                                         */
+/*   Function: Calculate the Internal Energy of the Small Molecule.            */
+/*             Accelerated non-square-rooting, dx,dy,dz version.               */
+/*  Copyright: (C) 1994-2004, TSRI											   */
+/* ____________________________________________________________________________*/
+/*    Authors: Garrett M. Morris, TSRI                                         */
+/*             David Goodsell, UCLA                                            */
+/*       Date: 16/03/94                                                        */
+/* ____________________________________________________________________________*/
+/*     Inputs: nonbondlist, e_internal, tcoord, type, Nnb                      */
+/*    Returns: eint                                                            */
+/*    Globals: NEINT, MAX_ATOMS, SPACE                                         */
+/* ____________________________________________________________________________*/
+/*  Modification Record                                                        */
+/*  Date     Inits   Comments                                                  */
+/*  07/05/92 DSG     Original FORTRAN                                          */
+/*  15/05/92 GMM     Translated into C                                         */
+/*  15/05/92 GMM     hypotenuse macro                                          */
+/*  19/11/93 GMM     Accelerated non-square-rooting version.                   */
+/*  16/03/94 GMM     Accelerated dx,dy,dz version.                             */
+/*  10/02/04 GMM     Reduced NBC from 64.0 to 8.0 Å							   */
+/* *****************************************************************************/
 
 
 {
-#ifndef  EINTCALPRINT        /*!EINTCALPRINT[*/
+#ifndef  EINTCALPRINT        
+/*  not EINTCALPRINT [ */
+#ifndef  NOSQRT              
+    double r; /*  SQRT */                     
+#endif                       
+/*  not EINTCALPRINT ] */
+#else
+/* EINTCALPRINT [ */
+    double epair=0.0L;
+#ifndef  NOSQRT
+    double d; /*  SQRT  */
+#endif
+/* EINTCALPRINT ] */
+#endif
 
-#ifndef  NOSQRT              /*!NOSQRT[*/
-    double r;
-                             /*!NOSQRT]*/
-#else                        /*NOSQRT[*/
-    double r2;
-#endif                       /*NOSQRT]*/
-                             /*!EINTCALPRINT]*/
-#else                        /*EINTCALPRINT[*/
-
-    double epair=0.;
-    double r2;
-
-#ifndef  NOSQRT              /*!NOSQRT[*/
-    double d;
-#endif                       /*!NOSQRT]*/
-#endif                       /*EINTCALPRINT]*/
-
-    double eint=0., dx,dy,dz;
-    int a1, a2;
     register int inb;
-
-#ifdef BOUNDED               /*BOUNDED[*/
+    double eint=0.0L, dx, dy, dz;
+    double r2 = 0.0L;
+    int a1, a2;
+    int t1, t2; // Xcode-gmm
     int index;
-#endif                       /*BOUNDED]*/
-
-#ifdef EINTCALPRINT          /*EINTCALPRINT[*/
-    pr( logFile, "Non-bond  Atom1-Atom2  Distance  Energy\n");
-#endif                        /*EINTCALPRINT]*/
+        
+#ifdef EINTCALPRINT          
+    pr( logFile, "Non-bond  Atom1-Atom2  Distance  Energy\n"); /* EINTCALPRINT  */
+#endif                        
 
     for (inb = 0;  inb < Nnb;  inb++) {
 
-        dx = tcoord[(a1 = nonbondlist[inb][ATM1])][X] - tcoord[(a2 = nonbondlist[inb][ATM2])][X];
+/* #pragma function_align 32 */
+		
+        a1 = nonbondlist[inb][ATM1];
+        a2 = nonbondlist[inb][ATM2];
+        t1 = nonbondlist[inb][TYPE1]; // Xcode-gmm
+        t2 = nonbondlist[inb][TYPE2]; // Xcode-gmm
+
+        dx = tcoord[a1][X] - tcoord[a2][X];
         dy = tcoord[a1][Y] - tcoord[a2][Y];
         dz = tcoord[a1][Z] - tcoord[a2][Z];
 
-#ifndef NOSQRT              /*!NOSQRT[*/
-        /* NOSQRT is not defined, i.e. SQRTing version, which is slower... */
+#ifndef NOSQRT              
+/* SQRT  [ */
+        /*  NOSQRT is _not_ defined, i.e. SQRTing version, which is slower... */
         if (B_calcIntElec) {
-            /*** Calculate internal electrostatic energy too ***/
-            /* r = hypotenuse(dx,dy,dz); */
+            /* ** Calculate internal electrostatic energy too ***/
+            /*  r = hypotenuse(dx,dy,dz); */
 
             r = clamp(hypotenuse(dx,dy,dz), RMIN_ELEC);
 
-#ifdef BOUNDED              /*BOUNDED[*/
             index = Ang_to_index(r);
-#ifndef EINTCALPRINT        /*!EINTCALPRINT[*/
-            eint += (eint_table[ BoundedNeint(index) ][type[a2]][type[a1]] + q1q2[inb]/(r*r));
-                            /*!EINTCALPRINT]*/
-#else                       /*EINTCALPRINT[*/
-            epair = (eint_table[ BoundedNeint(index) ][type[a2]][type[a1]] + q1q2[inb]/(r*r));
-#endif                      /*EINTCALPRINT]*/
-                            /*BOUNDED]*/
-#else                       /*!BOUNDED[*/
-            assert( Ang_to_index(r) >= 0 );
-            assert( Ang_to_index(r) < NEINT );
-#ifndef EINTCALPRINT        /*!EINTCALPRINT[*/
-            eint += (eint_table[ Ang_to_index(r) ][type[a2]][type[a1]] + q1q2[inb]/(r*r));
-                            /*!EINTCALPRINT]*/
-#else                       /*EINTCALPRINT[*/
-            epair = (eint_table[ Ang_to_index(r) ][type[a2]][type[a1]] + q1q2[inb]/(r*r));
-#endif                      /*EINTCALPRINT]*/
-#endif                      /*!BOUNDED]*/
+#ifndef EINTCALPRINT        
+            eint += (e_internal[ BoundedNeint(index) ][t2][t1] + q1q2[inb]/(r*r)); /*  not EINTCALPRINT  */
+#else                       
+            epair = (e_internal[ BoundedNeint(index) ][t2][t1] + q1q2[inb]/(r*r)); /* EINTCALPRINT  */
+#endif                      
 
         } else {
-            /*** Calculate van der Waals/H-bond energy only ***/
-
-#ifdef BOUNDED              /*BOUNDED[*/
+            /* ** Calculate van der Waals/H-bond energy only ***/
             index = Ang_to_index(hypotenuse(dx,dy,dz));
-#ifndef EINTCALPRINT        /*!EINTCALPRINT[*/
-            eint += eint_table[ BoundedNeint(index) ][type[a2]][type[a1]];
-                            /*!EINTCALPRINT]*/
-#else                       /*EINTCALPRINT[*/
-            epair = eint_table[ BoundedNeint(index) ][type[a2]][type[a1]];
-#endif                      /*EINTCALPRINT]*/
-                            /*BOUNDED]*/
-#else                       /*!BOUNDED[*/
-            assert( Ang_to_index(hypotenuse(dx,dy,dz)) >= 0 );
-            assert( Ang_to_index(hypotenuse(dx,dy,dz)) < NEINT );
-#ifndef EINTCALPRINT        /*!EINTCALPRINT[*/
-            eint += eint_table[ Ang_to_index(hypotenuse(dx,dy,dz)) ][type[a2]][type[a1]];
-                            /*!EINTCALPRINT]*/
-#else                       /*EINTCALPRINT[*/
-            epair = eint_table[ Ang_to_index(hypotenuse(dx,dy,dz)) ][type[a2]][type[a1]];
-#endif                      /*EINTCALPRINT]*/
-#endif                      /*!BOUNDED]*/
-
+#ifndef EINTCALPRINT        
+            eint += e_internal[ BoundedNeint(index) ][t2][t1]; /*  not EINTCALPRINT */
+#else                       
+            epair = e_internal[ BoundedNeint(index) ][t2][t1]; /* EINTCALPRINT */
+#endif                      
         }
-                            /*!NOSQRT]*/
-#else                       /*NOSQRT[*/
-        /* NOSQRTing version, faster... */
+/* SQRT  ] */
+                
+#else
+		
+/* NOSQRT [ */
+        /*  NOSQRTing version, faster... */
         if (B_calcIntElec) {
             r2 = sqhypotenuse(dx,dy,dz);
             r2 = clamp(r2, RMIN_ELEC2);
-
-#ifdef BOUNDED              /*BOUNDED[*/
             index = SqAng_to_index(r2);
-#ifndef EINTCALPRINT        /*!EINTCALPRINT[*/
-            eint += (eint_table[ BoundedNeint(index) ][type[a2]][type[a1]] + q1q2[inb]/r2);
-                            /*!EINTCALPRINT]*/
-#else                       /*EINTCALPRINT[*/
-            epair = (eint_table[ BoundedNeint(index) ][type[a2]][type[a1]] + q1q2[inb]/r2);
-#endif                      /*EINTCALPRINT]*/
-                            /*BOUNDED]*/
-#else                       /*!BOUNDED[*/
-            assert( SqAng_to_index(r2) >= 0 );
-            assert( SqAng_to_index(r2) < NEINT );
-#ifndef EINTCALPRINT        /*!EINTCALPRINT[*/
-            eint += (eint_table[ SqAng_to_index(r2) ][type[a2]][type[a1]] + q1q2[inb]/r2);
-                            /*!EINTCALPRINT]*/
-#else                       /*EINTCALPRINT[*/
-            epair = (eint_table[ SqAng_to_index(r2) ][type[a2]][type[a1]] + q1q2[inb]/r2);
-#endif                      /*EINTCALPRINT]*/
-#endif                      /*!BOUNDED]*/
-
+#ifndef EINTCALPRINT
+            eint += (e_internal[ BoundedNeint(index) ][t2][t1] + q1q2[inb]/r2); /*  not EINTCALPRINT  */
+#else
+            epair = (e_internal[ BoundedNeint(index) ][t2][t1] + q1q2[inb]/r2); /* EINTCALPRINT  */
+#endif
         } else {
 
-#ifdef BOUNDED              /*BOUNDED[*/
-            index = SqAng_to_index(sqhypotenuse(dx,dy,dz));
-#ifndef EINTCALPRINT        /*!EINTCALPRINT[*/
-            eint += eint_table[ BoundedNeint(index) ][type[a2]][type[a1]];
-                            /*!EINTCALPRINT]*/
-#else                       /*EINTCALPRINT[*/
-            epair = eint_table[ BoundedNeint(index) ][type[a2]][type[a1]];
-#endif                      /*EINTCALPRINT]*/
-                            /*BOUNDED]*/
-#else                       /*!BOUNDED[*/
-            assert( SqAng_to_index(sqhypotenuse(dx,dy,dz)) >= 0 );
-            assert( SqAng_to_index(sqhypotenuse(dx,dy,dz)) < NEINT );
-#ifndef EINTCALPRINT        /*!EINTCALPRINT[*/
-            eint += eint_table[ SqAng_to_index(sqhypotenuse(dx,dy,dz)) ][type[a2]][type[a1]];
-                            /*!EINTCALPRINT]*/
-#else                       /*EINTCALPRINT[*/
-            epair = eint_table[ SqAng_to_index(sqhypotenuse(dx,dy,dz)) ][type[a2]][type[a1]];
-#endif                      /*EINTCALPRINT]*/
-#endif                      /*!BOUNDED]*/
+            r2 = sqhypotenuse(dx,dy,dz);
 
+#ifndef EINTCALPRINT
+/*  not EINTCALPRINT [ */
+            if (r2 < NBC2) {  // Xcode-gmm
+                // atom pair is close enough to interact
+                // Xcode-gmm -- only do the double-to-int conversion if within nonbond cutoff
+                eint += e_internal[SqAng_to_index_Int(r2)][t2][t1];
+            }   // otherwise, the atoms are too far apart, so don't add anything to the total energy, & save some time
+/*  not EINTCALPRINT ] */
+#else
+/* EINTCALPRINT [ */
+            if (r2 < NBC2) {  // Xcode-gmm
+                epair = e_internal[SqAng_to_index_Int(r2)][t2][t1];
+            } else {
+                epair = 0.0L;
+            }
+/* EINTCALPRINT ] */
+#endif
         }
-#endif                      /*NOSQRT]*/
+/* NOSQRT ] */
+#endif 
 
-#ifdef EINTCALPRINT         /*EINTCALPRINT[*/
+
+#ifdef EINTCALPRINT
+/* EINTCALPRINT [ */
         eint += epair;
         pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf\n", (int)(inb+1), (int)(a1+1),
         (int)(a2+1), (double)sqrt(r2), (double)epair);
-#endif                      /*EINTCALPRINT]*/
+/* EINTCALPRINT ] */
+#endif
 
-    } /* next non-bond interaction */
+    } /*  next non-bond interaction */
 
-#ifdef EINTCALPRINT         /*EINTCALPRINT[*/
-    pr( logFile, "\n\nIntramolecular Interaction Energy = %+8.3lf\n", (double)eint);
-#endif                      /*EINTCALPRINT]*/
+#ifdef EINTCALPRINT
+    pr( logFile, "\n\nIntramolecular Interaction Energy = %+8.3lf\n", (double)eint); /* EINTCALPRINT  */
+#endif
 
-    return (float)eint;
+    return (FloatOrDouble)eint;
 }
-/* EOF */
+/*  EOF */

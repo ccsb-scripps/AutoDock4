@@ -1,3 +1,13 @@
+/*
+
+ $Id: check_header_int.cc,v 1.2 2003/02/26 00:36:47 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* check_header_int.cc */
 
     #include <stdio.h>

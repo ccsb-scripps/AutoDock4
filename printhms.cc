@@ -1,3 +1,13 @@
+/*
+
+ $Id: printhms.cc,v 1.2 2003/02/26 01:30:20 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* printhms.cc */
 
     #include <stdio.h>
@@ -5,19 +15,19 @@
 
 extern FILE *logFile;
 
-void printhms( float t )
+void printhms( FloatOrDouble t )
 
 {
     int   h,
           m;
-    float T, s;
-    float min = 60.,
+    FloatOrDouble T, s;
+    FloatOrDouble min = 60.,
 	  hrs = 3600.;
 
     h = (int)(t/hrs);
-    T = t - ((float)h)*hrs;
+    T = t - ((FloatOrDouble)h)*hrs;
     m = (int)(T/min);
-    s = T - ((float)m)*min;
+    s = T - ((FloatOrDouble)m)*min;
 
     if (h == 0) {
         if (m == 0)

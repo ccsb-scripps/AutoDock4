@@ -1,3 +1,13 @@
+/*
+
+ $Id: cnv_state_to_coords.cc,v 1.3 2004/11/16 23:42:52 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* cnv_state_to_coords.cc */
 
 #include <math.h>
@@ -10,13 +20,14 @@
 #include "stateLibrary.h"
 
 extern FILE *logFile;
+extern int true_ligand_atoms;
 
 void cnv_state_to_coords( State now,
-                          float vt[MAX_TORS][SPACE],
+                          FloatOrDouble vt[MAX_TORS][SPACE],
                           int   tlist[MAX_TORS][MAX_ATOMS],
                           int   ntor,
-                          float crdpdb[MAX_ATOMS][SPACE],
-                          float crd[MAX_ATOMS][SPACE],
+                          FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+                          FloatOrDouble crd[MAX_ATOMS][SPACE],
                           int   natom)
 
 {
@@ -32,7 +43,7 @@ void cnv_state_to_coords( State now,
     //  coordinates ensures that cumulative
     //  rounding errors do not occur.
     //  this memcpy call...
-    (void)memcpy(crd, crdpdb, natom*3*sizeof(float));
+    (void)memcpy(crd, crdpdb, natom*3*sizeof(FloatOrDouble));
 
     //  is about 100x faster than these nested for-loops...
     //for (i = 0;  i < natom;  i++) {
@@ -46,7 +57,7 @@ void cnv_state_to_coords( State now,
     if (ntor > 0) {
       torsion( now, crd, vt, tlist, ntor );
     }
-    qtransform( now.T, now.Q, crd, natom );
+    qtransform( now.T, now.Q, crd, true_ligand_atoms );
 
 #ifdef DEBUG
     } else {

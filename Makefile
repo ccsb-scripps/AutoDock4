@@ -1,9 +1,9 @@
 #
-# Makefile to build AutoDock from Object files.
+# Makefile to build AutoDock 4 from Object files.
 #
 # NOTE: Must be run in the $(AUTODOCK_DEV) directory.
 #
-# Copyright (C) 1994-2001,  Garrett Matthew Morris,  TSRI.
+# Copyright (C) 1994-2005,  Garrett Matthew Morris,  TSRI.
 #
 #
 # Edit this Makefile to reflect your machine architecture.
@@ -110,7 +110,8 @@ OBJS = \
     torsion.o \
     usage.o \
     weedbonds.o \
-    warn_bad_file.o
+    warn_bad_file.o \
+    coliny.o
 
 OBJNOSQRT = \
     eintcal.o \
@@ -137,8 +138,8 @@ ADLIB = libad.a
 ARFLAGS = r # SGI, Sun, Alpha, Linux, Mac OS X
 
 
-RANLIB = file # SGI.
-# RANLIB = ranlib # Linux, Mac OS X.
+# RANLIB = file # SGI.
+RANLIB = ranlib # Linux, Mac OS X.
 
 RANLIBFLAGS = # Linux, SGI
 # RANLIBFLAGS = -s # MacOS X.
@@ -243,58 +244,67 @@ LNSSQRT = \
 # C++ compiler
 #
 
-CC = cc # MacOS X Gnu compiler
-# CC = CC # SGI, Sun.
+# CC = CC # SGI.
 # CC = cxx # Alpha.
-CC = gcc # use this if you have the Gnu compiler, as on Linux, MkLinux, LinuxPPC systems.
-
-LIB = -lm # SGI, Sun, Linux, MacOS X.
-# LIB = -lm -lc # Alpha, Convex.
-# LIB = -lm -lg++ # HP, Gnu.
+CC = g++ # HP, Gnu.
 
 CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
+# CSTD = $(DBUG) $(PROF) $(WARN) -DUSE_XCODE # Smaller memory footprint, good for Xcode
+# CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
+# CSTD = $(DBUG) $(PROF) $(WARN) -I/opt/sfw/include # Sun Soliaris 8
 # CSTD = $(DBUG) $(PROF) $(WARN) -std # Convex.
 # CSTD = -std -verbose $(PROF) $(DBUG) $(WARN) # Alpha. Not sarah
 # CSTD = -std arm -verbose $(PROF) $(DBUG) $(WARN) # Alpha. sarah
 # CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP.
 
-CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Optimize the object files, too.
+CFLAGS = $(CSTD) $(OPT) $(COLINY_INCLUDES) # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Optimize the object files, too.
 
-OLIMIT = $(CSTD) $(OPT) # SGI, Sun, HP, Convex, Linux, MacOS X.
+OLIMIT = $(CSTD) $(OPT) $(COLINY_INCLUDES) # SGI, Sun, HP, Convex, Linux, MacOS X.
 # OLIMIT = $(CSTD) $(OPT) -OPT:Olimit=2500 # Alpha, Some SGIs.
 # OLIMIT = $(CFLAGS) # Do not optimize.
 
+# OPTLEVEL = -fast # Agressive optimization for the G5 on Mac OS X.
 OPTLEVEL = -O3 # Agressive optimization.
 # OPTLEVEL = -O2 # High optimization.
-# OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.
+# OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing.
 # OPTLEVEL = -O0 # Do not optimize.
 
-# OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.
+OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.
 # OPT_SGI_IPNUM = -Ofast=ip19 # SGI, 'uname -a' says 'IP19'
 # OPT_SGI_IPNUM = -Ofast=ip21 # SGI, 'uname -a' says 'IP21'
 # OPT_SGI_IPNUM = -Ofast=ip25 # SGI, 'uname -a' says 'IP25' PowerChallenge is R10000, IP25
 # OPT_SGI_IPNUM = -Ofast=ip27 # SGI, 'uname -a' says 'IP27'
-OPT_SGI_IPNUM = -Ofast=ip30 # SGI, 'uname -a' says 'IP30'
+# OPT_SGI_IPNUM = -Ofast=ip30 # SGI, 'uname -a' says 'IP30'
+# OPT_SGI_IPNUM = `uname -m | sed 's/IP/-Ofast=ip/'` # SGI, dynamic
 # TSRI job = IP30
-# TSRI atlas = IP27
+# TSRI ben = IP30
+# TSRI atlas, thing1, thing2 = IP27
 
-# OPT_SGI_R000 = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.
+OPT_SGI_R000 = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.
 # OPT_SGI_R000 = -r4000 -mips2 # SGI, 'hinv' says MIPS Processor is R4000
 # OPT_SGI_R000 = -r8000 -mips4 # SGI, 'hinv' says MIPS Processor is R8000
-OPT_SGI_R000 = -r10000 -mips4 # SGI, 'hinv' says MIPS Processor is R10000
+# OPT_SGI_R000 = -r10000 -mips4 # SGI, 'hinv' says MIPS Processor is R10000
 # OPT_SGI_R000 = -r12000 -mips4 # SGI, 'hinv' says MIPS Processor is R12000
+# OPT_SGI_R000 = -r14000 -mips4 # SGI, 'hinv' says MIPS Processor is R14000
+# OPT_SGI_R000 = `hinv | grep '^CPU:' | awk '{print $3}' | sed 's/R/-r/'` -mips4 # SGI, dynamic, -mips4 (works with -r8000 to -r14000, not -r4000)
 # TSRI job = R10000
+# TSRI ben = R12000
 # TSRI atlas = R12000
+# TSRI thing1, thing2 = R14000
 
+OPT = $(OPTLEVEL) # Alpha, HP, Sun, Convex, Linux, MacOS X.
+# OPT = $(OPTLEVEL) -ffast-math # Gnu cc, fast-math is dangerous!
 # OPT = $(OPTLEVEL) -n32 $(OPT_SGI_IPNUM) $(OPT_SGI_R000) -IPA $(LNO_OPT) # SGI
 # OPT = $(OPTLEVEL) -n32 $(OPT_SGI_IPNUM) $(OPT_SGI_R000) -IPA $(LNO_OPT) -DUSE_INT_AS_LONG # SGI (long is 8bytes).
 # OPT = $(OPTLEVEL) $(OPT_SGI_IPNUM) $(OPT_SGI_R000) $(LNO_OPT) # SGI, not new 32-bit
-OPT = $(OPTLEVEL) # Alpha, HP, Sun, Convex, Linux, MacOS X.
 
-LNO_OPT = # SGI, no special optimization at link time; MacOS X
+LNO_OPT = # SGI, no special optimization at link time; Sun; Linux; MacOS X
 # LNO_OPT = -LNO:auto_dist=ON:gather_scatter=2 # SGI
 
-LINKOPT = $(CSTD) $(OPT) # SGI
+LINKOPT = $(CSTD) $(OPT) # 
+# LINKOPT = $(CSTD) $(OPT) -fno-stack-limit # Cygwin, 32MB stacksize
+# LINKOPT = $(CSTD) $(OPT) -Wl,--stack=0x2000000 # Cygwin, 32MB stacksize
+# LINKOPT = $(CSTD) $(OPT) -L/opt/sfw/lib # Sun
 
 LINK = $(LINKOPT) # Linking flags.
 # LINK = $(LINKOPT) -cord # Procedure rearranger on SGI.
@@ -308,13 +318,14 @@ LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X.
 
 DBUG = -DNDEBUG # No debugging and no assert code.
 # DBUG = # Use assert code.
-# DBUG = -g # dbx.
+# DBUG = -g # dbx, or Gnu gdb.
 # DBUG = -g -DDEBUG # dbx + DEBUG-specific code.
 # DBUG = -g3 # dbx + optimization.
 # DBUG = -g3 -DDEBUG # dbx + optimization, + DEBUG-specific code.
 # DBUG = -DDEBUG # Just DEBUG-specific code.
 # DBUG = -DDEBUG2 # Just DEBUG2-specific code for tracking prop.selection.
 # DBUG = -DDEBUG3 # Just DEBUG3-specific code for print age of individuals.
+# DBUG = -g -DDEBUG -DDEBUG2 -DDEBUG3 # Debug everything
 
 PROF = # No profiling.
 # PROF = -p # Profiling.
@@ -323,28 +334,47 @@ WARN = # Default warning level.
 # WARN = -woff all # For no warnings.
 # WARN = -fullwarn -ansiE -ansiW # For full warnings during compilation.
 
+##
+## To use coliny and utilib, uncomment the following
+##
+### COLINY_FLAGS= -DUNIX -DLINUX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES # Linux
+### COLINY_INCLUDES= -I../coliny -I../coliny/packages/include -I../utilib -DUSING_COLINY $(COLINY_FLAGS)
+### COLINY_LINK= -L../coliny/lib/current -L../utilib/lib/current -lcoliny -lutilib -lg2c # Linux
+##
+## To Not Use coliny, uncomment these lines:
+COLINY_FLAGS=
+COLINY_INCLUDES=
+COLINY_LINK=
 
-autodock3 : main.o $(ADLIB)
-	echo $(EXE)'  on  '`date`', using '`hostname` >> LATEST_MAKE
+autodock4 : main.o $(ADLIB)
+	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4
+	@echo " "
 	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock3sqrt : main.o $(ADLIB)
+autodock4sqrt : main.o $(ADLIB)
 	$(CC) $(CFLAGS) -o $@ main.o -L. -lad $(LIB)
 
-autodock3minpt : main.o $(ADLIB)
+autodock4minpt : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', using '`hostname` >> LATEST_MAKE
 	$(CC) $(CFLAGS) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock3alt : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+autodock4alt : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
 	echo $(EXE)'  on  '`date`', using '`hostname` >> LATEST_MAKE
 	$(CC) $(LINK) -DNOSQRT -o $@ $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT) $(LIB)
 
 install :
-	echo Moving autodock3 to $(AUTODOCK_BIN)
+	@echo " "
+	@echo Moving autodock4 to $(AUTODOCK_BIN)
+	@echo " "
 	mv autodock3 $(AUTODOCK_BIN)
 
 $(ADLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+	@echo " "
+	@echo Making the AutoDock library
+	@echo " "
 	$(AR) $(ARFLAGS) $(ADLIB) $(?:.cc=.o)
 	$(RANLIB) $(RANLIBFLAGS) $(ADLIB)
 
@@ -357,6 +387,15 @@ lchecksqrt : $(LNS) $(LNSSQRT)
 
 dualmap : dualmap.c
 	$(CC) $(CFLAGS) -lm dualmap.c -o $@
+
+.SUFFIXES: .cc .c .i
+
+.cc.i:
+	$(CC) $(OLIMIT) -E $< > $*.i
+
+.c.i:
+	$(CC) $(CFLAGS) -E $< > $*.i
+
 
 #
 # Object dependencies:
@@ -410,7 +449,7 @@ com.o : com.cc ranlib.h
 stateLibrary.o : stateLibrary.cc stateLibrary.h constants.h
 	$(CC) $(CFLAGS) -c stateLibrary.cc
 
-readPDBQ.o : readPDBQ.cc  readPDBQ.h constants.h openfile.h stop.h readPDBQ.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.h weedbonds.h torNorVec.h success.h autocomm.h
+readPDBQ.o : readPDBQ.cc  readPDBQ.h constants.h openfile.h stop.h readPDBQ.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.h weedbonds.h torNorVec.h success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h
 	$(CC) $(OLIMIT) -c readPDBQ.cc
 
 dpftypes.o : dpftypes.cc dpftypes.h constants.h dpftoken.h stop.h
@@ -464,7 +503,7 @@ linpack.o : linpack.cc
 ls.o : ls.cc ls.h support.h ranlib.h
 	$(CC) $(CFLAGS) -c ls.cc
 
-main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h
+main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h
 	$(CC) $(OLIMIT) -c -DWRITEPDBQSTATE main.cc
 
 mapping.o : mapping.cc support.h
@@ -637,6 +676,9 @@ intnbtable.sqrt.o : intnbtable.cc intnbtable.h constants.h
 
 nbe.sqrt.o : nbe.cc nbe.h constants.h
 	$(CC) $(CFLAGS) -c nbe.cc -o nbe.sqrt.o
+
+coliny.o : coliny.h
+	$(CC) $(CFLAGS) -c coliny.cc -o coliny.o
 
 #
 # lcheck dependencies...
@@ -883,7 +925,7 @@ nbe.sqrt.ln : nbe.cc
 #
 
 clean :
-	/bin/rm -f *.o *.s *.ln a.out mon.out autodock3 autodock3sqrt autodock3minpt dualmap libad.a
+	/bin/rm -f *.o *.s *.ln a.out mon.out autodock4 autodock4sqrt autodock4minpt dualmap libad.a
 
 cleanlcheck :
 	/bin/rm -f *.ln

@@ -1,3 +1,13 @@
+/*
+
+ $Id: rep.cc,v 1.6 2004/02/12 05:50:49 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* rep.cc */
 
 /********************************************************************
@@ -5,8 +15,8 @@
 
 				rsh 9/95
 ********************************************************************/
-
-#include <iostream.h>
+ 
+// possibly unnecessary // #include <iostream.h>
 #include <stdio.h>
 #include <math.h>
 #include <limits.h>
@@ -15,21 +25,20 @@
 #include "structs.h"
 
 extern FILE *logFile;
+extern int debug;
 
 //  Initializations
 FourByteLong IntVector::low = -INT_MAX/4;
 FourByteLong IntVector::high = INT_MAX/4;
-//float RealVector::low = -100.0;
-//float RealVector::high = 100.0;
+/* A nonstatic data member cannot be defined outside its class:
+ * FloatOrDouble RealVector::low = REALV_LOW;
+ * FloatOrDouble RealVector::high = REALV_HIGH;
+ */
 //  For now assume that normalize handles this constraint
-//float ConstrainedRealVector::low = -100.0;
-//float ConstrainedRealVector::high = 100.0;
-//float RealVector::low = -PI;
-//float RealVector::high = PI;
-float ConstrainedRealVector::low = -PI;
-float ConstrainedRealVector::high = PI;
+FloatOrDouble ConstrainedRealVector::low = REALV_LOW;
+FloatOrDouble ConstrainedRealVector::high = REALV_HIGH;
 double ConstrainedRealVector::sum = 1.0;
-float BitVector::one_prob = 0.5;
+FloatOrDouble BitVector::one_prob = 0.5;
 
 //  The member functions for the canonical base classes
 
@@ -80,12 +89,13 @@ IntVector::IntVector(const IntVector &original)
 #endif /* DEBUG */
 
    mytype = T_IntV;
-   if (original.vector!=NULL) { vector = new FourByteLong[number_of_pts];
+   if (original.vector!=NULL) {
+      vector = new FourByteLong[number_of_pts];
    } else {
       vector = NULL;
    }
 
-   for (register int i=0; i<number_of_pts; i++) {
+   for (register unsigned int i=0; i<number_of_pts; i++) {
       vector[i] = original.vector[i];
    }
 }
@@ -214,7 +224,7 @@ const void *IntVector::internals(void) const
 
 Representation &IntVector::operator=(const Representation &original)
 {
-   register int i;
+   register unsigned int i;
    FourByteLong *array;
 
 #ifdef DEBUG
@@ -299,7 +309,7 @@ RealVector::RealVector(const RealVector &original)
       vector = NULL;
    }
 
-   for (register int i=0; i<original.number_of_pts; i++) {
+   for (register unsigned int i=0; i<original.number_of_pts; i++) {
       vector[i] = original.vector[i];
 #ifdef DEBUG
     (void)fprintf(logFile, "rep.cc/i=%d, original.number_of_pts=%d, vector[%d]= %.3f\n",i, original.number_of_pts, i, vector[i]);
@@ -337,10 +347,14 @@ void RealVector::write(double value, int gene)
 #endif /* DEBUG */
 
    if (value<low) {
-//      (void)fprintf(logFile,"Writing out of bounds Real!  value (%lf) too low (%lf)\n",value,low); // used to be "stderr"
+      if (debug > 0) {
+      (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too low (%lf)\n",value,low); // used to be "stderr"
+      }
       vector[gene] = low;
    } else if (value>high) {
-//      (void)fprintf(logFile,"Writing out of bounds Real!  value (%lf) too high (%lf)\n",value,high); // used to be "stderr"
+      if (debug > 0) {
+      (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too high (%lf)\n",value,high); // used to be "stderr"
+      }
       vector[gene] = high;
    } else {
       vector[gene] = value;
@@ -434,7 +448,7 @@ Representation &RealVector::operator=(const Representation &original)
     (void)fprintf(logFile, "rep.cc/Representation &RealVector::operator=(const Representation &original) \n");
 #endif /* DEBUG */
 
-   register int i;
+   register unsigned int i;
    double *array;
 
    if (original.type()==T_RealV) {
@@ -514,7 +528,7 @@ ConstrainedRealVector::ConstrainedRealVector(const ConstrainedRealVector &origin
       vector = NULL;
    }
 
-   for (register int i=0; i<original.number_of_pts; i++) {
+   for (register unsigned int i=0; i<original.number_of_pts; i++) {
       vector[i] = original.vector[i];
    }
 }
@@ -610,7 +624,7 @@ void ConstrainedRealVector::normalize(void) const
 
 //   kluge = &normalized;
    if (!normalized) {
-      register int i;
+      register unsigned int i;
       register double tempsum = 0.0, hypotenuse;
 
       for (i=0; i<number_of_pts; i++) {
@@ -679,7 +693,7 @@ const void *ConstrainedRealVector::internals(void) const
 
 Representation &ConstrainedRealVector::operator=(const Representation &original)
 {
-   register int i;
+   register unsigned int i;
    double *array;
 
 #ifdef DEBUG
@@ -729,12 +743,12 @@ BitVector::BitVector(int num_els)
    }
 }
 
-BitVector::BitVector(int num_els, float prob)
+BitVector::BitVector(int num_els, FloatOrDouble prob)
 : Representation(num_els)
 {
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/BitVector::BitVector(int num_els=%d, float prob=%f) \n",num_els,prob);
+    (void)fprintf(logFile, "rep.cc/BitVector::BitVector(int num_els=%d, FloatOrDouble prob=%f) \n",num_els,prob);
 #endif /* DEBUG */
 
    mytype = T_BitV;
@@ -761,7 +775,7 @@ BitVector::BitVector(const BitVector &original)
       vector = NULL;
    }
 
-   for (register int i=0; i<number_of_pts; i++) {
+   for (register unsigned int i=0; i<number_of_pts; i++) {
       vector[i] = original.vector[i];
    }
 }
@@ -868,7 +882,7 @@ const void *BitVector::internals(void) const
 
 Representation &BitVector::operator=(const Representation &original)
 {
-   register int i;
+   register unsigned int i;
    unsigned char *array;
 
 #ifdef DEBUG

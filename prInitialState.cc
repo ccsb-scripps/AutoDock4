@@ -1,3 +1,13 @@
+/*
+
+ $Id: prInitialState.cc,v 1.2 2003/02/26 01:25:17 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* prInitialState.cc */
 
 #include <math.h>
@@ -15,16 +25,16 @@ extern char *programname;
 
 void prInitialState(
 
-    float einter,
-    float eintra,
-    float torsFreeEnergy,
+    FloatOrDouble einter,
+    FloatOrDouble eintra,
+    FloatOrDouble torsFreeEnergy,
     int natom,
-    float crd[MAX_ATOMS][SPACE],
+    FloatOrDouble crd[MAX_ATOMS][SPACE],
     char atomstuff[MAX_ATOMS][MAX_CHARS],
     int type[MAX_ATOMS],
-    float emap[MAX_ATOMS],
-    float elec[MAX_ATOMS],
-    float charge[MAX_ATOMS],
+    FloatOrDouble emap[MAX_ATOMS],
+    FloatOrDouble elec[MAX_ATOMS],
+    FloatOrDouble charge[MAX_ATOMS],
     int ligand_is_inhibitor)
 
 {

@@ -1,15 +1,25 @@
+/*
+
+ $Id: timesyshms.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* timesyshms.cc */
 
-    #include <stdio.h>
-    #include <sys/types.h>
-    #include <sys/times.h>
-    #include <time.h>
-    #include <unistd.h>
-    #include "timesyshms.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/times.h>
+#include <time.h>
+#include <unistd.h>
+#include "timesyshms.h"
 
 
 extern  FILE    *logFile;
-extern	float	idct;
+extern	FloatOrDouble	idct;
 
 /*----------------------------------------------------------------------------*/
 
@@ -22,19 +32,19 @@ void timesyshms( Clock  duration,
 {
     int   h,
           m;
-    float t,
+    FloatOrDouble t,
 	  T,
 	  s;
-    const float min = 60.,
+    const FloatOrDouble min = 60.,
                 hrs = 3600.;
  
 
     (void)fprintf( logFile, "Real= " );
-    t = (float)duration * idct;
+    t = (FloatOrDouble)duration * idct;
     h = (int)(t/hrs);
-    T = t - ((float)h)*hrs;
+    T = t - ((FloatOrDouble)h)*hrs;
     m = (int)(T/min);
-    s = T - ((float)m)*min;
+    s = T - ((FloatOrDouble)m)*min;
     if (h == 0) {
         if (m == 0)
             (void)fprintf(logFile,       "%.2fs",       s );
@@ -45,11 +55,11 @@ void timesyshms( Clock  duration,
     }
 
     (void)fprintf( logFile, ",  CPU= " );
-    t = (float)((end->tms_utime  - start->tms_utime) * idct);
+    t = (FloatOrDouble)((end->tms_utime  - start->tms_utime) * idct);
     h = (int)(t/hrs);
-    T = t - ((float)h)*hrs;
+    T = t - ((FloatOrDouble)h)*hrs;
     m = (int)(T/min);
-    s = T - ((float)m)*min;
+    s = T - ((FloatOrDouble)m)*min;
     if (h == 0) {
         if (m == 0)
             (void)fprintf(logFile,       "%.2fs",       s );
@@ -60,11 +70,11 @@ void timesyshms( Clock  duration,
     }
 
     (void)fprintf( logFile, ",  System= " );
-    t = (float)((end->tms_stime  - start->tms_stime) * idct);
+    t = (FloatOrDouble)((end->tms_stime  - start->tms_stime) * idct);
     h = (int)(t/hrs);
-    T = t - ((float)h)*hrs;
+    T = t - ((FloatOrDouble)h)*hrs;
     m = (int)(T/min);
-    s = T - ((float)m)*min;
+    s = T - ((FloatOrDouble)m)*min;
     if (h == 0) {
         if (m == 0)
             (void)fprintf(logFile,       "%.2fs",       s );

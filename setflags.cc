@@ -1,10 +1,20 @@
+/*
+
+ $Id: setflags.cc,v 1.3.2.1 2005/03/01 00:01:29 gillet Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* setflags.cc */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "setflags.h"
-
+#include "openfile.h"
 
 extern FILE *parFile;
 extern FILE *logFile;
@@ -20,7 +30,7 @@ extern int  parse_tors_mode;
 extern int  keepresnum;
 
 
-int setflags( int I_argc, char **PPC_argv )
+int setflags( int I_argc, char * const PPC_argv[])
 
 /*
 ** naming convention: 
@@ -104,7 +114,7 @@ int setflags( int I_argc, char **PPC_argv )
             command_mode = TRUE;
             break;
         case 'l':
-            if ( (logFile = fopen(PPC_argv[2], "w")) == NULL ) {
+            if ( (logFile = ad_fopen(PPC_argv[2], "w")) == NULL ) {
 #ifdef DEBUG
                 fprintf(stderr,"\n Log file name = %s\n",PPC_argv[2]); 
 #endif /* DEBUG */
@@ -118,7 +128,7 @@ int setflags( int I_argc, char **PPC_argv )
             break;
         case 'p':
             strcpy(dock_param_fn, PPC_argv[2]);
-            if ( (parFile = fopen(PPC_argv[2], "r")) == NULL ) {
+            if ( (parFile = ad_fopen(PPC_argv[2], "r")) == NULL ) {
 #ifdef DEBUG
                 fprintf(stderr,"\n Parameter file name = %s\n",PPC_argv[2]);
 #endif /* DEBUG */

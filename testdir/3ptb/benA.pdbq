@@ -1,0 +1,20 @@
+REMARK  0 active torsions (identified by new id numbers):
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK       I      1-  7 between atoms:  C1   and  C7  
+REMARK       I      7-  8 between atoms:  C7   and  N1  
+REMARK       I      7-  9 between atoms:  C7   and  N2  
+ROOT
+ATOM      1  A1  BEN     1      -1.853  14.311  16.658  0.00  0.00    -0.259
+ATOM      2  A2  BEN     1      -2.107  15.653  16.758  0.00  0.00     0.086
+ATOM      3  A3  BEN     1      -1.774  16.341  17.932  0.00  0.00     0.020
+ATOM      4  A4  BEN     1      -1.175  15.662  19.005  0.00  0.00     0.171
+ATOM      5  A5  BEN     1      -0.914  14.295  18.885  0.00  0.00     0.027
+ATOM      6  A6  BEN     1      -1.257  13.634  17.708  0.00  0.00     0.073
+ATOM      7  C7  BEN     1      -2.193  13.627  15.496  0.00  0.00     0.773
+ATOM      8  N1  BEN     1      -2.797  14.235  14.491  0.00  0.00    -0.768
+ATOM      9  N2  BEN     1      -1.762  12.391  15.309  0.00  0.00    -0.764
+ATOM     10  H11 BEN     1      -3.039  13.707  13.640  0.00  0.00     0.407
+ATOM     11  H12 BEN     1      -3.026  15.237  14.558  0.00  0.00     0.416
+ATOM     12  H21 BEN     1      -1.287  11.890  16.073  0.00  0.00     0.417
+ATOM     13  H22 BEN     1      -1.901  11.929  14.399  0.00  0.00     0.402
+ENDROOT

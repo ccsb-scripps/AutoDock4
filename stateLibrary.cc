@@ -1,3 +1,13 @@
+/*
+
+ $Id: stateLibrary.cc,v 1.4 2003/02/26 01:42:17 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* stateLibrary.cc */
 
 #include <math.h>
@@ -59,7 +69,7 @@ void printState( FILE *fp,
                  int detail )
 {
     register int i;
-    float torDegTmp;
+    FloatOrDouble torDegTmp;
 
     switch( detail ) {
         case 2:
@@ -67,7 +77,7 @@ void printState( FILE *fp,
             (void)fprintf( fp, "\nSTATE VARIABLES:\n________________\n\n" );
             (void)fprintf( fp, "Translation x,y,z         = %.3f %.3f %.3f\n", S.T.x, S.T.y, S.T.z );
             S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-            (void)fprintf( fp, "Quaternion nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, S.Q.ang );
+            (void)fprintf( fp, "Quaternion nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, Deg(S.Q.ang) );
             (void)fprintf( fp, "Quaternion x,y,z,w        = %.3f %.3f %.3f %.3f\n", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
             //(void)fprintf( fp, "Quaternion qmag           = %.3f\n", S.Q.qmag );
             (void)fprintf( fp, "Number of Torsions        = %d\n", S.ntor );
@@ -100,13 +110,14 @@ void printState( FILE *fp,
 void writeState( FILE *fp, State S )
 {
     register int i;
-    float torDegTmp;
+    FloatOrDouble torDegTmp;
 
     (void)fprintf( fp, "State= " );
     (void)fprintf( fp, "%.3f %.3f %.3f  ", S.T.x, S.T.y, S.T.z );
     
     S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-    (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
+    (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q.nx, S.Q.ny, S.Q.nz,
+		   Deg(S.Q.ang) );
     if (S.ntor > 0) {
         for (i=0; i<S.ntor; i++) {
             S.tor[i] = WrpRad( ModRad( S.tor[i] ) );

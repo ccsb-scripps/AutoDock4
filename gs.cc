@@ -1,10 +1,20 @@
+/*
+
+ $Id: gs.cc,v 1.5 2004/11/16 23:42:52 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
      These are the methods for Global_Search and its derivations.
 
                                 rsh 9/95
 *********************************************************************/
 
-#include <iostream.h>
+// possibly unnecessary // #include <iostream.h>
 #include <math.h>
 #include "gs.h"
 #include "ranlib.h"
@@ -94,7 +104,7 @@ double avg_in_window(double *window, int size)
 //  Also set avg
 double Genetic_Algorithm::worst_this_generation(Population &pop)
 {
-   register int i;
+   register unsigned int i;
    double worstval, avgval;
 
 #ifdef DEBUG2
@@ -136,8 +146,8 @@ Genetic_Algorithm::Genetic_Algorithm( EvalMode init_e_mode,
                                       Xover_Mode init_c_mode,
                                       Worst_Mode init_w_mode, 
                                       int init_elitism, 
-                                      float init_c_rate, 
-                                      float init_m_rate, 
+                                      FloatOrDouble init_c_rate, 
+                                      FloatOrDouble init_m_rate, 
                                       int init_window_size, 
                                       unsigned int init_max_generations,
                                       unsigned int outputEveryNgens)
@@ -155,8 +165,8 @@ beta(0.0),
 tranStep(2.0),
 quatStep(0.872664626),
 torsStep(0.872664626),
-low(-100.0),
-high(100.0),
+low(-100),
+high(100),
 generations(0),
 max_generations(init_max_generations),
 converged(0),
@@ -235,17 +245,17 @@ M_mode Genetic_Algorithm::m_type(RepType type)
    }
 }
 
-void Genetic_Algorithm::make_table(int size, float prob)
+void Genetic_Algorithm::make_table(int size, FloatOrDouble prob)
 {
    register int i, j;
-   double L = 0.;
+   double L = 0.0L;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::make_table(int size=%d, float prob=%f)\n",size, prob);
+   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::make_table(int size=%d, FloatOrDouble prob=%f)\n",size, prob);
 #endif /* DEBUG */
 
    m_table_size = size;
-   mutation_table = new float[size+1];
+   mutation_table = new FloatOrDouble[size+1];
 
    mutation_table[0] = pow(1-prob, size);
    mutation_table[size] = 1;
@@ -269,12 +279,12 @@ void Genetic_Algorithm::make_table(int size, float prob)
    }
 }
 
-int Genetic_Algorithm::check_table(float prob)
+int Genetic_Algorithm::check_table(FloatOrDouble prob)
 {
    int low, high;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "gs.cc/int Genetic_Algorithm::check_table(float prob=%f)\n",prob);
+   (void)fprintf(logFile, "gs.cc/int Genetic_Algorithm::check_table(FloatOrDouble prob=%f)\n",prob);
 #endif /* DEBUG */
 
    low = 0; high = m_table_size;
@@ -312,7 +322,7 @@ void Genetic_Algorithm::initialize(unsigned int pop_size, unsigned int num_poss_
       delete [] mutation_table;
    }
 
-   alloc = new float[pop_size];
+   alloc = new FloatOrDouble[pop_size];
 
    ordering = new unsigned int[pop_size];
    for (i=0; i<pop_size; i++) {
@@ -391,7 +401,8 @@ void Genetic_Algorithm::mutation(Population &pure)
 
 void Genetic_Algorithm::crossover(Population &original)
 {
-   int i, starting_point, temp_index, temp_ordering;
+   register unsigned int i;
+   int starting_point, temp_index, temp_ordering;
    
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover(Population &original)\n");
@@ -450,7 +461,7 @@ void Genetic_Algorithm::crossover(Population &original)
  */
 void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsigned int pt1, unsigned int pt2)
 {
-   int i;
+   register unsigned int i;
    Element temp;
 
 #ifdef DEBUG
@@ -515,10 +526,10 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
 
 void Genetic_Algorithm::selection_proportional(Population &original_pop, Individual *new_pop)
 {
-   register int i=0;
-   int temp_ordering, temp_index, start_index = 0;
+   register unsigned int i=0, start_index = 0;
+   int temp_ordering, temp_index;
 #ifdef DEBUG2
-   float debug_ranf;
+   FloatOrDouble debug_ranf;
    int allzero = 1;//debug
    Molecule *individualMol;//debug
 #endif
@@ -585,7 +596,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
 #ifdef DEBUG2
              (void)fprintf(logFile,"gs.cc:allocLoop:  worst= %.3f\toriginal_pop[%d].value(e_mode)= %.3f\talloc[%d]= %.3e\tinvdiffwa= %.3e\n",worst, i, original_pop[i].value(e_mode), i, alloc[i], invdiffwa);//debug
              if (!finite(original_pop[i].value(e_mode) || ISNAN(original_pop[i].value(e_mode))) ) {
-                 original_pop[i].getMol(individualMol); # individualMol is returned...
+                 original_pop[i].getMol(individualMol); // individualMol is returned...
                  (void) writeMolAsPDBQ( individualMol, logFile);//debug
              }
 #endif
@@ -668,7 +679,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
    int J;//debug
    (void)fprintf(logFile, "gs.cc: checking that all alloc[] variables are not all zero...\n"); //debug
    for (J=0;  J < original_pop.num_individuals();  J++) {//debug
-       allzero = allzero & (alloc[J] == (float)0.0);//debug
+       allzero = allzero & (alloc[J] == (FloatOrDouble)0.0);//debug
    }//debug
    if (allzero) {//debug
        (void)fprintf(logFile, "gs.cc:  W A R N I N G !  all alloc variables are zero!\n"); //debug
@@ -757,7 +768,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
 
        allzero = 1;//debug
        for (J=0;  J < original_pop.num_individuals();  J++) {//debug
-           allzero = allzero & (alloc[J] == (float)0.0);//debug
+           allzero = allzero & (alloc[J] == (FloatOrDouble)0.0);//debug
        }//debug
        if (allzero) {//debug
            (void)fprintf(logFile, "gs.cc:  W A R N I N G !  all alloc variables are zero!\n"); //debug
@@ -788,7 +799,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
  */
 void Genetic_Algorithm::selection_tournament(Population &original, Individual *new_pop)
 {
-   register int i = 0, start_index = 0;
+   register unsigned int i = 0, start_index = 0;
    int temp_ordering, temp_index;
 
 #ifdef DEBUG
@@ -856,7 +867,7 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
 //  For right now global search is taken to be a GA
 int Genetic_Algorithm::search(Population &solutions)
 {
-   int i;
+   register unsigned int i;
    unsigned int oldest = 0, oldestIndividual = 0, fittestIndividual = 0;
    double fittest = BIG;
 
