@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.cc,v 1.2 2003/02/26 01:22:37 garrett Exp $
+ $Id: openfile.cc,v 1.3 2005/03/15 23:52:27 gillet Exp $
 
 */
 
@@ -10,13 +10,39 @@
 
 /* openfile.cc */
 
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include "openfile.h"
+#include <stdio.h>
+#include <stdlib.h>
+/* the BOINC API header file */
+#ifdef BOINC
+#include "diagnostics.h"
+#include "boinc_api.h" 
+#include "filesys.h" 		// boinc_fopen(), etc... */
+#endif
+#include "openfile.h"
 
 
 extern char *programname;
 extern FILE *logFile;
+/*----------------------------------------------------------------------------*/
+/* fopen rewrite to either use BOINC api or normal system call */
+FILE *ad_fopen(const char *path, const char *mode)
+{
+  FILE *filep;
+#ifdef BOINC
+  int rc;
+  char resolved_name[512];
+  rc = boinc_resolve_filename(path, resolved_name, sizeof(resolved_name));
+  if (rc){
+      fprintf(stderr, "BOINC_ERROR: cannot open filename.%s\n",path);
+      boinc_finish(rc);    /* back to BOINC core */
+    }
+    // Then open the file with boinc_fopen() not just fopen()
+    filep = boinc_fopen(resolved_name, mode);
+#else
+    filep = fopen(path,mode);
+#endif
+    return filep;
+}
 
 /*----------------------------------------------------------------------------*/
 int openfile( char filename[MAX_CHARS],
@@ -24,7 +50,7 @@ int openfile( char filename[MAX_CHARS],
 	      FILE **fp )
 
 {
-	if ( (*fp = fopen(filename, mode)) == NULL ) {
+	if ( (*fp = ad_fopen(filename, mode)) == NULL ) {
 		fprintf(stderr, "\n%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
 		fprintf(logFile,"\n%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
 		return( FALSE );
@@ -44,7 +70,7 @@ int openFile( char       filename[MAX_CHARS],
     Clock  jobEnd;
     struct tms tms_jobEnd;
 
-    if ( (*fp = fopen(filename, mode)) == NULL ) {
+    if ( (*fp = ad_fopen(filename, mode)) == NULL ) {
 	fprintf(stderr, "\n%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
 	fprintf(logFile,"\n%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
 

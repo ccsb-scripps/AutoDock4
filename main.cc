@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.13 2005/03/14 15:10:45 billhart Exp $
+ $Id: main.cc,v 1.14 2005/03/15 23:52:27 gillet Exp $
 
 */
 
@@ -12,6 +12,13 @@
 
 // possibly unnecessary // #include <iostream.h>
 #include <math.h>
+
+/* the BOINC API header file */
+#ifdef BOINC
+#include "diagnostics.h"
+#include "boinc_api.h" 
+#include "filesys.h" 		// boinc_fopen(), etc... */
+#endif
 
 #include "coliny.h"
 #include "hybrids.h"
@@ -29,6 +36,8 @@
 #include <sys/param.h>
 #include <ctype.h> // tolower
 #include <unistd.h> // sysconf
+
+
 
 #include "main.h"
 #include "autoglobal.h"
@@ -451,6 +460,45 @@ Local_Search *LocalSearchMethod = NULL;
 
 GridMap grid_map;
 
+//_____________________________________________________________________________
+/*
+** Boinc initialization
+*/
+#ifdef BOINC
+    int flags = 0;
+    int rc;
+    flags =
+      BOINC_DIAG_DUMPCALLSTACKENABLED |
+      BOINC_DIAG_HEAPCHECKENABLED |
+      BOINC_DIAG_REDIRECTSTDERR |
+      BOINC_DIAG_REDIRECTSTDOUT ;
+    boinc_init_diagnostics(flags);
+
+#ifdef BOINCCOMPOUND
+    BOINC_OPTIONS options;
+    options.main_program = false;
+    options.check_heartbeat = false; // monitor does check heartbeat
+    options.handle_trickle_ups = false;
+    options.handle_trickle_downs = false;
+    options.handle_process_control = false;
+    options.send_status_msgs = true;// only the worker programs (i.e. model) sends status msgs
+    options.direct_process_action = true;// monitor handles suspend/quit, but app/model doesn't
+    // Initialisation of Boinc 
+    rc =  boinc_init_options(options); //return 0 for success
+    if( rc ){
+      fprintf(stderr,"BOINC_ERROR: boinc_init_options() failed \n");
+      exit(rc);
+    }
+
+#else
+    // All BOINC applications must initialize the BOINC interface:
+    rc = boinc_init();
+    if (rc){
+      fprintf(stderr, "BOINC_ERROR: boinc_init() failed.\n");
+      exit(rc);
+    }
+#endif
+#endif
 
 //______________________________________________________________________________
 /*
@@ -952,7 +1000,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   pr( logFile, "\n\n\tFINAL Coliny %s DOCKED STATE\n",algname );
                   pr( logFile,     "\t____________________________________\n\n\n" );
 
-                  writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center,
+                  writeStateOfPDBQ( j, seed, FN_ligand, dock_param_fn, lig_center,
                         &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
                         crd, emap, elec, 
                         charge, abs_charge, qsp_abs_charge,
@@ -966,17 +1014,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         ignore_inter,
                         B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
-                  econf[nconf] = eintra + einter; // new2
+		  econf[nconf] = eintra + einter; // new2
+		  
+		  ++nconf;
 
-                  ++nconf;
-
-                } // Next run
-                (void) fflush(logFile);
-            }
-            catch (std::exception& err) {
-                (void)fprintf(logFile, "Caught Exception: %s\n", err.what());
-                exit(1);
-            }
+		} // Next run
+		if(write_stateFile){
+		  fprintf(stateFile,'\t</runs>\n');
+		  (void) fflush(stateFile);
+		}
+		(void) fflush(logFile);
+	    }
+	    catch (std::exception& err) {
+	      (void)fprintf(logFile, "Caught Exception: %s\n", err.what());
+	      exit(1);
+	    }
 
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so optimization cannot be performed.\n\n");
@@ -2276,6 +2328,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               ignore_inter,
               B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
+	    if(write_stateFile){
+	      fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
+	      fprintf(stateFile,"\t<runs>\n");
+	    }
             for (j=0; j<nruns; j++) {
                 j1 = j + 1;
 
@@ -2330,7 +2386,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "\n\n\tFINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE\n" );
                 pr( logFile,     "\t_______________________________________________\n\n\n" );
 
-                writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center,
+
+                writeStateOfPDBQ( j,seed,  FN_ligand, dock_param_fn, lig_center,
                     &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
                     crd, emap, elec, 
                     charge, abs_charge, qsp_abs_charge, 
@@ -2350,6 +2407,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                 pr( logFile, UnderLine );
             } // Next LGA run
+	    if(write_stateFile){
+	       fprintf(stateFile,"\t</runs>\n");
+	       (void) fflush(stateFile);
+	    }
             (void) fflush(logFile);
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set.  Sorry, genetic algorithm-local search cannot be performed.\n\n");
@@ -2387,6 +2448,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               ignore_inter,
               B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
+	   if(write_stateFile){
+	     fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
+	     fprintf(stateFile,"\t<runs>\n");
+	   }
+
            for (j=0; j<nruns; j++) {
 
                pr( logFile, "\nDoing Local Search run: %d / %d.\n", j+1, nruns );
@@ -2416,7 +2482,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                pr( logFile, "\n\n\tFINAL LOCAL SEARCH DOCKED STATE\n" );
                pr( logFile,     "\t_______________________________\n\n\n" );
 
-               writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center,
+               writeStateOfPDBQ( j,seed, FN_ligand, dock_param_fn, lig_center,
                     &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
                     crd, emap, elec, 
                     charge, abs_charge, qsp_abs_charge, 
@@ -2437,6 +2503,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                pr( logFile, UnderLine );
 
            } // Next run
+	   if(write_stateFile){
+	     fprintf(stateFile,"\t</runs>\n");
+	     (void) fflush(stateFile);
+	   }
            (void) fflush(logFile);
        } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so local search cannot be performed.\n\n");
@@ -2474,6 +2544,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
              ignore_inter,
               B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
 
+
+	  if(write_stateFile){
+	    fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
+	    fprintf(stateFile,"\t<runs>\n");
+	  }
           for (j=0; j<nruns; j++) {
 
               fprintf( logFile, "\n\n\tBEGINNING GENETIC ALGORITHM DOCKING\n", sol_fn, parameterArray);
@@ -2512,7 +2587,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               pr( logFile, "\n\n\tFINAL GENETIC ALGORITHM DOCKED STATE\n" );
               pr( logFile,     "\t____________________________________\n\n\n" );
 
-              writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center,
+              writeStateOfPDBQ( j, seed, FN_ligand, dock_param_fn, lig_center,
                     &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
                     crd, emap, elec, 
                     charge, abs_charge, qsp_abs_charge, 
@@ -2533,6 +2608,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               pr( logFile, UnderLine );
 
           } // Next run
+	  if(write_stateFile){
+	    fprintf(stateFile,"\t</runs>\n");
+	    (void) fflush(stateFile);
+	  }
           (void) fflush(logFile);
       } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so global search cannot be performed.\n\n");
@@ -2800,7 +2879,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr( logFile, "\nAutoDock will use a template scoring function to perform docking.\n\n");
         (void) sscanf( line, "%*s %s", FN_template_energy_file);
         pr( logFile, "Template energy file \"%s\" will be read in.  Expecting %d pairs of values\n\n", FN_template_energy_file, natom);
-        if ((template_energy_file = fopen(FN_template_energy_file, "r")) == NULL) {
+        if ((template_energy_file = ad_fopen(FN_template_energy_file, "r")) == NULL) {
             pr(logFile, "\n%s: ERROR:  I'm sorry, I cannot find or open \"%s\".\n\n", programname, FN_template_energy_file);
         }
         curatm = 0;
@@ -2867,7 +2946,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /* Open and read the parm_data.dat file */
         FILE *parameter_library_file;
         char parameter_library_line[MAX_CHARS];
-        if ((parameter_library_file = fopen(FN_parameter_library, "r")) == NULL) {
+        if ((parameter_library_file = ad_fopen(FN_parameter_library, "r")) == NULL) {
              fprintf(stderr,"Sorry, I can't find or open %s\n", FN_parameter_library);
              exit(-1);
         }
@@ -3273,10 +3352,40 @@ printdate( logFile, 1 );
 pr( logFile, "\n\n\n" );
 
 success( hostnm, jobStart, tms_jobStart );
+
+ if(write_stateFile){
+   fprintf(stateFile,"</autodock>\n");
+   (void) fclose( stateFile );
+ }
 (void) fclose( logFile );
+
+
+//________________________________________________________________________________
+/*
+** End of Boinc
+*/
+#ifdef BOINCCOMPOUND
+ boinc_fraction_done(1.);
+#endif
+#ifdef BOINC	   
+    boinc_finish(0);       /* should not return */
+#endif
 
 return 0;
 
 } /* END OF PROGRAM */
 
 /* EOF */
+
+#ifdef BOINC
+/*  Dummy graphics API entry points.
+ *  This app does not do graphics, but it still must provide these callbacks.
+ */
+
+void app_graphics_render(int xs, int ys, double time_of_day) {}
+void app_graphics_reread_prefs(){}
+void boinc_app_mouse_move(int x, int y, bool left, bool middle, bool right ){}
+void boinc_app_mouse_button(int x, int y, int which, bool is_down){}
+void boinc_app_key_press(int wParam, int lParam){}
+void boinc_app_key_release(int wParam, int lParam){}
+#endif
