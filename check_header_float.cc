@@ -1,3 +1,13 @@
+/*
+
+ $Id: check_header_float.cc,v 1.2 2003/02/26 00:36:07 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* check_header_float.cc */
 
     #include <stdio.h>
@@ -9,7 +19,7 @@ extern char *programname;
 extern FILE *logFile;
 
 
-void check_header_float( float f1, float f2, char keyword[], char filename[] )
+void check_header_float( FloatOrDouble f1, FloatOrDouble f2, char keyword[], char filename[] )
 
 {
     if ( f1 != f2 ) { 
