@@ -20,8 +20,8 @@
 
 State call_glss(Global_Search *global_method, Local_Search *local_method, 
 		State now, unsigned int num_evals, unsigned int pop_size, 
-		float xlo, float xhi, float ylo, 
-		float yhi, float zlo, float zhi,
+		FloatOrDouble xlo, FloatOrDouble xhi, FloatOrDouble ylo, 
+		FloatOrDouble yhi, FloatOrDouble zlo, FloatOrDouble zhi,
 		int outlev, unsigned int extOutputEveryNgens, Molecule *mol,
 		Boole B_template,
 		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0);
@@ -53,7 +53,8 @@ State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Mole
 #define CALL_GS
 
 State call_gs(Global_Search *global_method, State now, unsigned int num_evals, unsigned int pop_size,
-              float xlo, float xhi, float ylo, float yhi, float zlo, float zhi, Molecule *mol);
+              FloatOrDouble xlo, FloatOrDouble xhi, FloatOrDouble ylo, FloatOrDouble yhi, FloatOrDouble zlo, FloatOrDouble zhi, Molecule *mol,
+              int extOutputEveryNgens);
 
 #endif
 
