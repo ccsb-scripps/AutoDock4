@@ -369,7 +369,7 @@ install :
 	@echo " "
 	@echo Moving autodock4 to $(AUTODOCK_BIN)
 	@echo " "
-	mv autodock3 $(AUTODOCK_BIN)
+	mv autodock4 $(AUTODOCK_BIN)
 
 $(ADLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
 	@echo " "
