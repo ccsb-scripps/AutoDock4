@@ -1,3 +1,13 @@
+/*
+
+ $Id: call_ls.cc,v 1.3 2003/02/26 00:28:06 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
      Call_ls:  Invokes a local searcher on a docking to try and 
                find the locally optimal solution.  So, the docking
