@@ -3,8 +3,8 @@
 #define TORNORVEC
 #include "constants.h"
 #include "stop.h"
-void  torNorVec( float crdpdb[MAX_ATOMS][SPACE],
+void  torNorVec( FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
                  int   ntor,
                  int   tlist[MAX_TORS][MAX_ATOMS],
-                 float vt[MAX_TORS][SPACE] );
+                 FloatOrDouble vt[MAX_TORS][SPACE] );
 #endif

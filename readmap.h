@@ -11,7 +11,7 @@
 #include "check_header_float.h"
 #include "check_header_int.h"
 #include "timesys.h"
-float   mapc2f( char C_mapValue );
+FloatOrDouble   mapc2f( char C_mapValue );
 #endif
 
 #ifndef READMAP
@@ -29,7 +29,7 @@ float   mapc2f( char C_mapValue );
 void    readmap( Boole *P_B_HaveMap, 
                 int   *P_Imap,
                 int   *P_NumAtmMaps, 
-                float *P_ExtSpacing, 
+                FloatOrDouble *P_ExtSpacing, 
                 char  AtmTypStr[ATOM_MAPS], 
                 char  ExtFldFileName[MAX_CHARS], 
                 int   ExtGridPts1[SPACE], 
@@ -37,10 +37,10 @@ void    readmap( Boole *P_B_HaveMap,
                 Clock jobStart, 
                 char  line[LINE_LEN], 
                 char  ExtMacromolFileName[MAX_CHARS], 
-                float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                float MapCenter[SPACE], 
-                float MapMax[MAX_MAPS], 
-                float MapMin[MAX_MAPS], 
+                FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+                FloatOrDouble MapCenter[SPACE], 
+                FloatOrDouble MapMax[MAX_MAPS], 
+                FloatOrDouble MapMin[MAX_MAPS], 
 		struct tms tmsJobStart,
 		Boole B_charMap);
 #endif
