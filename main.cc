@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.16 2005/03/23 00:31:07 garrett Exp $
+ $Id: main.cc,v 1.17 2005/03/28 19:45:51 rhuey Exp $
 
 */
 
@@ -884,7 +884,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "%s: WARNING! No partial atomic charges have been supplied yet.\n\n",programname);
         } else {
             pr(logFile,"Calculating the product of the partial atomic charges q1*q2 for all %d non-bonded pairs...\n\n\n",Nnb);
-            if (outlev <= 0) {
+            if (outlev >= 0) {
                 pr(logFile,"Non-bonded                           Scaled\n");
                 pr(logFile,"   Pair     Atom1-Atom2    q1*q2      q1*q2\n");
                 pr(logFile,"__________  ___________  _________  _________\n");
@@ -3075,7 +3075,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         } else {
                             pr(logFile, "Parameters for the atom type named \"%s\" were read in from the parameter library.\n", newParameter->autogrid_type);
                             if (outlev == 2) {
-                                pr(logFile, "\tRij = %.2f, epsij = %.3f, At.frag.vol. = %.3f, At.solv.par. = %.3f, \n\tHb Rij = %.3f, Hb epsij = %.3f, Hb type = %d,  bond index = %d\n\n",
+                                pr(logFile, "\tRij = %.2f, WEIGHTED epsij = %.3f, At.frag.vol. = %.3f, At.solv.par. = %.3f, \n\tHb Rij = %.3f, WEIGHTED Hb epsij = %.3f, Hb type = %d,  bond index = %d\n\n",
                                         newParameter->Rij, newParameter->epsij, newParameter->vol, newParameter->solpar,
                                         newParameter->Rij_hb, newParameter->epsij_hb, newParameter->hbond, newParameter->bond_index );
                             } else if (outlev > 2) {
@@ -3161,8 +3161,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 found_parm->map_index = i;
                 parameterArray[i] = *found_parm;
                 if (outlev > 0) {
-                    (void) fprintf( logFile, "Parameters found for ligand type \"%s\" (grid map index = %d)",
-                                    found_parm->autogrid_type, found_parm->map_index );
+                    (void) fprintf( logFile, "Parameters found for ligand type \"%s\" (grid map index = %d, WEIGHTED epsii=%6.4f)",
+                                    found_parm->autogrid_type, found_parm->map_index, found_parm->epsij );
                     if (par_lib_FN_found == 1) {
                         pr( logFile, " in parameter library \"%s\".\n", FN_parameter_library );
                     } else {
@@ -3236,6 +3236,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     Rij = arithmetic_mean(Ri, Rj);
                     // we need to calculate the geometric mean of epsi and epsj, etc.
                     epsij = geometric_mean(epsi, epsj);
+                    
                 }
 
                 /* Check that the Rij is reasonable */
