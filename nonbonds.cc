@@ -1,3 +1,13 @@
+/*
+
+ $Id: nonbonds.cc,v 1.2 2003/02/26 01:22:11 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* nonbonds.cc */
 
 #include <math.h>
@@ -11,7 +21,7 @@
 extern  FILE    *logFile;
 #endif /* DEBUG */
 
-void nonbonds( float crdpdb[MAX_ATOMS][SPACE],
+void nonbonds( FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
                int nbmatrix_binary[MAX_ATOMS][MAX_ATOMS],
                int natom,
                int atomnumber[MAX_RECORDS], 
@@ -23,20 +33,20 @@ void nonbonds( float crdpdb[MAX_ATOMS][SPACE],
 
 {
     char rec5[5];
-    static float d12max  = 2.101;
-    static float d12min  = 1.000;
-    static float d13max  = 2.650;
-    static float d13min  = 2.100;
-    static float d14max  = 3.970;
-    static float d14min  = 2.651;
-    static float dH12max = 1.437;
-    static float dH12min = 0.900;
-    static float dH13max = 2.200;
-    static float dH13min = 1.700;
-    static float dH14max = 3.310;
-    static float dH14min = 2.201;
-    float rij = 0.;
-    float threshold = 4.0;
+    static FloatOrDouble d12max  = 2.101;
+    static FloatOrDouble d12min  = 1.000;
+    static FloatOrDouble d13max  = 2.650;
+    static FloatOrDouble d13min  = 2.100;
+    static FloatOrDouble d14max  = 3.970;
+    static FloatOrDouble d14min  = 2.651;
+    static FloatOrDouble dH12max = 1.437;
+    static FloatOrDouble dH12min = 0.900;
+    static FloatOrDouble dH13max = 2.200;
+    static FloatOrDouble dH13min = 1.700;
+    static FloatOrDouble dH14max = 3.310;
+    static FloatOrDouble dH14min = 2.201;
+    FloatOrDouble rij = 0.;
+    FloatOrDouble threshold = 4.0;
 
     int ii = 0;
     int npiece = 0;
@@ -44,7 +54,7 @@ void nonbonds( float crdpdb[MAX_ATOMS][SPACE],
     register int i = 0;
     register int j = 0;
 
-    float d[SPACE];
+    FloatOrDouble d[SPACE];
 
 /*
 ** 
