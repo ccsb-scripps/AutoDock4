@@ -1,0 +1,2742 @@
+
+       _______________________________________________________
+
+__________//____________________________/////_________________/________
+_________/__/____________/_____________/______________/_______/________
+________/____/___________/_____________/_/////________________/________
+________/____/__/_____/_/////___/////__/_____/_/_///__/__////_/________
+_______/______/_/_____/__/_____/_____/_/_____/_//___/_/_/____//________
+_______////////_/_____/__/_____/_____/_/_____/_/______/_/_____/________
+_______/______/_/____//__/___/_/_____/_/_____/_/______/_/____//________
+_______/______/__////_/___///___/////___/////__/______/__////_/________
+
+       _______________________________________________________
+
+                                ______
+                               /      \
+                              /        \
+                             /          \
+                             \    /\    /
+                              \  /  \  /
+                               \/ /\ \/
+                                 /  \
+                                /____\
+
+
+                  ______________________________________ 
+                 |                                      |
+                 |            AutoGrid 3.06             |
+                 |                                      |
+                 |        Garrett M. Morris, TSRI       |
+                 |        David S. Goodsell, TSRI       |
+                 |        Arthur J. Olson, TSRI         |
+                 |                                      |
+                 |           (c) 2000, TSRI             |
+                 |   The Scripps Research Institute     |
+                 |______________________________________|
+
+                  ______________________________________ 
+                 |                                      |
+                 | Calculation of Non-Bond and Electro- |
+                 | static Energy Grid Maps for AutoDock |
+                 |   Including Solvation Free Energy    |
+                 |       and Optional Disordered-H      |
+                 |______________________________________|
+
+This file was created at:			10:26 08" a.m., 12/05/102
+                   using:			"nemo.mgl"
+GPF> receptor 1hvr.pdbqs		#macromolecule
+Macromolecular Input File :	1hvr.pdbqs
+
+Atom Type Assignments:
+
+Atom no. 1,  " N  "  at (-12.735, 38.918, 31.287),   was assigned atom type 2, "N".
+Atom no. 2,  " CA "  at (-12.709, 39.097, 29.830),   was assigned atom type 1, "C".
+Atom no. 3,  " C  "  at (-13.575, 38.051, 29.162),   was assigned atom type 1, "C".
+Atom no. 4,  " O  "  at (-14.097, 37.126, 29.753),   was assigned atom type 3, "O".
+Atom no. 5,  " CB "  at (-11.243, 39.010, 29.398),   was assigned atom type 1, "C".
+Atom no. 6,  " CG "  at (-10.636, 38.128, 30.469),   was assigned atom type 1, "C".
+Atom no. 7,  " CD "  at (-11.368, 38.593, 31.729),   was assigned atom type 1, "C".
+Atom no. 8,  " H1 "  at (-13.142, 39.756, 31.758),   was assigned atom type 5, "H".
+Atom no. 9,  " H2 "  at (-13.429, 38.158, 31.502),   was assigned atom type 5, "H".
+Atom no. 10,  " N  "  at (-13.682, 38.255, 27.876),   was assigned atom type 2, "N".
+Atom no. 11,  " CA "  at (-14.320, 37.303, 26.995),   was assigned atom type 1, "C".
+Atom no. 12,  " C  "  at (-13.161, 36.667, 26.252),   was assigned atom type 1, "C".
+Atom no. 13,  " O  "  at (-12.199, 37.328, 25.864),   was assigned atom type 3, "O".
+Atom no. 14,  " CB "  at (-15.221, 38.120, 26.074),   was assigned atom type 1, "C".
+Atom no. 15,  " CG "  at (-16.190, 37.395, 25.158),   was assigned atom type 1, "C".
+Atom no. 16,  " CD "  at (-16.623, 38.390, 24.092),   was assigned atom type 1, "C".
+Atom no. 17,  " OE1"  at (-16.247, 38.312, 22.930),   was assigned atom type 3, "O".
+Atom no. 18,  " NE2"  at (-17.374, 39.400, 24.512),   was assigned atom type 2, "N".
+Atom no. 19,  " H  "  at (-13.185, 38.995, 27.427),   was assigned atom type 5, "H".
+Atom no. 20,  "HE21"  at (-17.652, 40.125, 23.878),   was assigned atom type 5, "H".
+Atom no. 21,  "HE22"  at (-17.694, 39.448, 25.458),   was assigned atom type 5, "H".
+Atom no. 22,  " N  "  at (-13.253, 35.366, 26.117),   was assigned atom type 2, "N".
+Atom no. 23,  " CA "  at (-12.269, 34.588, 25.374),   was assigned atom type 1, "C".
+Atom no. 24,  " C  "  at (-13.029, 33.962, 24.196),   was assigned atom type 1, "C".
+Atom no. 25,  " O  "  at (-14.003, 33.234, 24.394),   was assigned atom type 3, "O".
+Atom no. 26,  " CB "  at (-11.730, 33.474, 26.320),   was assigned atom type 1, "C".
+Atom no. 27,  " CG1"  at (-10.597, 32.691, 25.660),   was assigned atom type 1, "C".
+Atom no. 28,  " CG2"  at (-11.293, 33.952, 27.723),   was assigned atom type 1, "C".
+Atom no. 29,  " H  "  at (-14.058, 34.893, 26.477),   was assigned atom type 5, "H".
+Atom no. 30,  " N  "  at (-12.612, 34.301, 22.976),   was assigned atom type 2, "N".
+Atom no. 31,  " CA "  at (-13.127, 33.558, 21.845),   was assigned atom type 1, "C".
+Atom no. 32,  " C  "  at (-12.159, 32.418, 21.669),   was assigned atom type 1, "C".
+Atom no. 33,  " O  "  at (-11.038, 32.479, 22.141),   was assigned atom type 3, "O".
+Atom no. 34,  " CB "  at (-13.237, 34.425, 20.555),   was assigned atom type 1, "C".
+Atom no. 35,  " OG1"  at (-11.953, 34.894, 20.130),   was assigned atom type 3, "O".
+Atom no. 36,  " CG2"  at (-14.202, 35.617, 20.673),   was assigned atom type 1, "C".
+Atom no. 37,  " H  "  at (-11.801, 34.863, 22.831),   was assigned atom type 5, "H".
+Atom no. 38,  " HG1"  at (-12.071, 35.428, 19.325),   was assigned atom type 5, "H".
+Atom no. 39,  " N  "  at (-12.618, 31.395, 21.004),   was assigned atom type 2, "N".
+Atom no. 40,  " CA "  at (-11.920, 30.110, 21.049),   was assigned atom type 1, "C".
+Atom no. 41,  " C  "  at (-11.199, 29.773, 19.773),   was assigned atom type 1, "C".
+Atom no. 42,  " O  "  at (-11.099, 28.619, 19.382),   was assigned atom type 3, "O".
+Atom no. 43,  " CB "  at (-12.954, 29.000, 21.285),   was assigned atom type 1, "C".
+Atom no. 44,  " CG "  at (-13.442, 28.734, 22.702),   was assigned atom type 1, "C".
+Atom no. 45,  " CD1"  at (-12.580, 29.280, 23.843),   was assigned atom type 1, "C".
+Atom no. 46,  " CD2"  at (-14.901, 29.033, 22.745),   was assigned atom type 1, "C".
+Atom no. 47,  " H  "  at (-13.486, 31.467, 20.508),   was assigned atom type 5, "H".
+Atom no. 48,  " N  "  at (-10.681, 30.790, 19.105),   was assigned atom type 2, "N".
+Atom no. 49,  " CA "  at (-9.891, 30.544, 17.902),   was assigned atom type 1, "C".
+Atom no. 50,  " C  "  at (-8.489, 30.171, 18.246),   was assigned atom type 1, "C".
+Atom no. 51,  " O  "  at (-7.745, 29.659, 17.420),   was assigned atom type 3, "O".
+Atom no. 52,  " CB "  at (-9.698, 31.798, 17.052),   was assigned atom type 1, "C".
+Atom no. 53,  " CG "  at (-11.048, 32.302, 16.696),   was assigned atom type 1, "C".
+Atom no. 54,  " CD1"  at (-11.858, 33.131, 17.471),   was assigned atom type 1, "C".
+Atom no. 55,  " CD2"  at (-11.804, 31.923, 15.616),   was assigned atom type 1, "C".
+Atom no. 56,  " NE1"  at (-13.092, 33.287, 16.966),   was assigned atom type 2, "N".
+Atom no. 57,  " CE2"  at (-13.130, 32.566, 15.812),   was assigned atom type 1, "C".
+Atom no. 58,  " CE3"  at (-11.538, 31.151, 14.478),   was assigned atom type 1, "C".
+Atom no. 59,  " CZ2"  at (-14.130, 32.381, 14.829),   was assigned atom type 1, "C".
+Atom no. 60,  " CZ3"  at (-12.567, 31.005, 13.511),   was assigned atom type 1, "C".
+Atom no. 61,  " CH2"  at (-13.839, 31.606, 13.679),   was assigned atom type 1, "C".
+Atom no. 62,  " H  "  at (-10.745, 31.705, 19.499),   was assigned atom type 5, "H".
+Atom no. 63,  " HE1"  at (-13.804, 33.839, 17.351),   was assigned atom type 5, "H".
+Atom no. 64,  " N  "  at (-8.144, 30.475, 19.476),   was assigned atom type 2, "N".
+Atom no. 65,  " CA "  at (-6.832, 30.207, 20.065),   was assigned atom type 1, "C".
+Atom no. 66,  " C  "  at (-7.054, 29.249, 21.206),   was assigned atom type 1, "C".
+Atom no. 67,  " O  "  at (-8.130, 29.257, 21.772),   was assigned atom type 3, "O".
+Atom no. 68,  " CB "  at (-6.392, 31.535, 20.721),   was assigned atom type 1, "C".
+Atom no. 69,  " CG "  at (-7.530, 32.429, 21.389),   was assigned atom type 1, "C".
+Atom no. 70,  " CD "  at (-8.068, 32.183, 22.843),   was assigned atom type 1, "C".
+Atom no. 71,  " OE1"  at (-8.919, 31.355, 23.168),   was assigned atom type 3, "O".
+Atom no. 72,  " NE2"  at (-7.573, 33.053, 23.740),   was assigned atom type 2, "N".
+Atom no. 73,  " H  "  at (-8.835, 30.773, 20.136),   was assigned atom type 5, "H".
+Atom no. 74,  "HE21"  at (-7.917, 33.064, 24.676),   was assigned atom type 5, "H".
+Atom no. 75,  "HE22"  at (-6.852, 33.693, 23.485),   was assigned atom type 5, "H".
+Atom no. 76,  " N  "  at (-6.043, 28.501, 21.611),   was assigned atom type 2, "N".
+Atom no. 77,  " CA "  at (-6.232, 27.848, 22.918),   was assigned atom type 1, "C".
+Atom no. 78,  " C  "  at (-6.497, 28.885, 24.007),   was assigned atom type 1, "C".
+Atom no. 79,  " O  "  at (-5.768, 29.873, 24.059),   was assigned atom type 3, "O".
+Atom no. 80,  " CB "  at (-4.994, 27.014, 23.341),   was assigned atom type 1, "C".
+Atom no. 81,  " CG "  at (-4.893, 25.664, 22.642),   was assigned atom type 1, "C".
+Atom no. 82,  " CD "  at (-3.726, 24.784, 23.138),   was assigned atom type 1, "C".
+Atom no. 83,  " NE "  at (-3.819, 23.390, 22.632),   was assigned atom type 2, "N".
+Atom no. 84,  " CZ "  at (-3.288, 22.328, 23.296),   was assigned atom type 1, "C".
+Atom no. 85,  " NH1"  at (-2.552, 22.483, 24.391),   was assigned atom type 2, "N".
+Atom no. 86,  " NH2"  at (-3.494, 21.076, 22.873),   was assigned atom type 2, "N".
+Atom no. 87,  " H  "  at (-5.213, 28.378, 21.064),   was assigned atom type 5, "H".
+Atom no. 88,  " HE "  at (-4.324, 23.228, 21.784),   was assigned atom type 5, "H".
+Atom no. 89,  "HH11"  at (-2.374, 23.397, 24.755),   was assigned atom type 5, "H".
+Atom no. 90,  "HH12"  at (-2.175, 21.681, 24.854),   was assigned atom type 5, "H".
+Atom no. 91,  "HH21"  at (-4.047, 20.907, 22.057),   was assigned atom type 5, "H".
+Atom no. 92,  "HH22"  at (-3.095, 20.309, 23.374),   was assigned atom type 5, "H".
+Atom no. 93,  " N  "  at (-7.536, 28.661, 24.834),   was assigned atom type 2, "N".
+Atom no. 94,  " CA "  at (-7.769, 29.631, 25.882),   was assigned atom type 1, "C".
+Atom no. 95,  " C  "  at (-6.747, 29.433, 26.994),   was assigned atom type 1, "C".
+Atom no. 96,  " O  "  at (-6.969, 28.695, 27.938),   was assigned atom type 3, "O".
+Atom no. 97,  " CB "  at (-9.251, 29.345, 26.223),   was assigned atom type 1, "C".
+Atom no. 98,  " CG "  at (-9.429, 27.855, 26.000),   was assigned atom type 1, "C".
+Atom no. 99,  " CD "  at (-8.542, 27.595, 24.797),   was assigned atom type 1, "C".
+Atom no. 100,  " N  "  at (-5.587, 30.070, 26.850),   was assigned atom type 2, "N".
+Atom no. 101,  " CA "  at (-4.573, 29.932, 27.892),   was assigned atom type 1, "C".
+Atom no. 102,  " C  "  at (-4.515, 31.109, 28.780),   was assigned atom type 1, "C".
+Atom no. 103,  " O  "  at (-4.677, 32.228, 28.318),   was assigned atom type 3, "O".
+Atom no. 104,  " CB "  at (-3.202, 29.954, 27.285),   was assigned atom type 1, "C".
+Atom no. 105,  " CG "  at (-2.781, 28.744, 26.503),   was assigned atom type 1, "C".
+Atom no. 106,  " CD1"  at (-1.439, 29.103, 25.866),   was assigned atom type 1, "C".
+Atom no. 107,  " CD2"  at (-2.698, 27.496, 27.399),   was assigned atom type 1, "C".
+Atom no. 108,  " H  "  at (-5.431, 30.673, 26.068),   was assigned atom type 5, "H".
+Atom no. 109,  " N  "  at (-4.233, 30.879, 30.030),   was assigned atom type 2, "N".
+Atom no. 110,  " CA "  at (-4.172, 32.041, 30.905),   was assigned atom type 1, "C".
+Atom no. 111,  " C  "  at (-2.926, 31.965, 31.780),   was assigned atom type 1, "C".
+Atom no. 112,  " O  "  at (-2.371, 30.889, 31.986),   was assigned atom type 3, "O".
+Atom no. 113,  " CB "  at (-5.513, 31.929, 31.644),   was assigned atom type 1, "C".
+Atom no. 114,  " CG1"  at (-5.394, 31.433, 33.069),   was assigned atom type 1, "C".
+Atom no. 115,  " CG2"  at (-6.413, 33.141, 31.388),   was assigned atom type 1, "C".
+Atom no. 116,  " H  "  at (-4.120, 29.946, 30.382),   was assigned atom type 5, "H".
+Atom no. 117,  " N  "  at (-2.475, 33.090, 32.300),   was assigned atom type 2, "N".
+Atom no. 118,  " CA "  at (-1.433, 32.979, 33.341),   was assigned atom type 1, "C".
+Atom no. 119,  " C  "  at (-1.959, 32.666, 34.767),   was assigned atom type 1, "C".
+Atom no. 120,  " O  "  at (-2.910, 33.324, 35.202),   was assigned atom type 3, "O".
+Atom no. 121,  " CB "  at (-0.548, 34.282, 33.408),   was assigned atom type 1, "C".
+Atom no. 122,  " OG1"  at (-1.382, 35.423, 33.650),   was assigned atom type 3, "O".
+Atom no. 123,  " CG2"  at (0.291, 34.522, 32.157),   was assigned atom type 1, "C".
+Atom no. 124,  " H  "  at (-2.924, 33.977, 32.167),   was assigned atom type 5, "H".
+Atom no. 125,  " HG1"  at (-1.855, 35.292, 34.491),   was assigned atom type 5, "H".
+Atom no. 126,  " N  "  at (-1.314, 31.701, 35.462),   was assigned atom type 2, "N".
+Atom no. 127,  " CA "  at (-1.631, 31.477, 36.881),   was assigned atom type 1, "C".
+Atom no. 128,  " C  "  at (-0.402, 31.683, 37.793),   was assigned atom type 1, "C".
+Atom no. 129,  " O  "  at (0.724, 31.474, 37.374),   was assigned atom type 3, "O".
+Atom no. 130,  " CB "  at (-2.225, 30.057, 37.154),   was assigned atom type 1, "C".
+Atom no. 131,  " CG1"  at (-1.176, 28.954, 36.985),   was assigned atom type 1, "C".
+Atom no. 132,  " CG2"  at (-3.493, 29.863, 36.302),   was assigned atom type 1, "C".
+Atom no. 133,  " CD1"  at (-1.742, 27.561, 37.234),   was assigned atom type 1, "C".
+Atom no. 134,  " H  "  at (-0.545, 31.201, 35.052),   was assigned atom type 5, "H".
+Atom no. 135,  " N  "  at (-0.640, 32.037, 39.048),   was assigned atom type 2, "N".
+Atom no. 136,  " CA "  at (0.401, 31.856, 40.047),   was assigned atom type 1, "C".
+Atom no. 137,  " C  "  at (-0.112, 30.869, 41.039),   was assigned atom type 1, "C".
+Atom no. 138,  " O  "  at (-1.267, 30.940, 41.438),   was assigned atom type 3, "O".
+Atom no. 139,  " CB "  at (0.595, 33.199, 40.712),   was assigned atom type 1, "C".
+Atom no. 140,  " CG "  at (1.684, 33.314, 41.792),   was assigned atom type 1, "C".
+Atom no. 141,  " CD "  at (1.739, 34.792, 42.208),   was assigned atom type 1, "C".
+Atom no. 142,  " CE "  at (2.717, 35.166, 43.335),   was assigned atom type 1, "C".
+Atom no. 143,  " NZ "  at (2.561, 36.597, 43.692),   was assigned atom type 2, "N".
+Atom no. 144,  " H  "  at (-1.567, 32.309, 39.315),   was assigned atom type 5, "H".
+Atom no. 145,  " HZ1"  at (2.681, 37.186, 42.844),   was assigned atom type 5, "H".
+Atom no. 146,  " HZ2"  at (1.613, 36.753, 44.091),   was assigned atom type 5, "H".
+Atom no. 147,  " HZ3"  at (3.280, 36.856, 44.398),   was assigned atom type 5, "H".
+Atom no. 148,  " N  "  at (0.749, 29.944, 41.401),   was assigned atom type 2, "N".
+Atom no. 149,  " CA "  at (0.460, 28.912, 42.393),   was assigned atom type 1, "C".
+Atom no. 150,  " C  "  at (1.758, 28.577, 43.016),   was assigned atom type 1, "C".
+Atom no. 151,  " O  "  at (2.741, 28.431, 42.327),   was assigned atom type 3, "O".
+Atom no. 152,  " CB "  at (0.125, 27.538, 41.821),   was assigned atom type 1, "C".
+Atom no. 153,  " CG1"  at (-0.231, 27.667, 40.378),   was assigned atom type 1, "C".
+Atom no. 154,  " CG2"  at (-0.742, 26.587, 42.681),   was assigned atom type 1, "C".
+Atom no. 155,  " CD1"  at (1.080, 27.448, 39.624),   was assigned atom type 1, "C".
+Atom no. 156,  " H  "  at (1.666, 29.932, 40.986),   was assigned atom type 5, "H".
+Atom no. 157,  " N  "  at (1.783, 28.428, 44.307),   was assigned atom type 2, "N".
+Atom no. 158,  " CA "  at (3.070, 28.073, 44.931),   was assigned atom type 1, "C".
+Atom no. 159,  " C  "  at (4.228, 29.067, 44.721),   was assigned atom type 1, "C".
+Atom no. 160,  " O  "  at (5.394, 28.701, 44.728),   was assigned atom type 3, "O".
+Atom no. 161,  " H  "  at (0.976, 28.610, 44.875),   was assigned atom type 5, "H".
+Atom no. 162,  " N  "  at (3.881, 30.331, 44.483),   was assigned atom type 2, "N".
+Atom no. 163,  " CA "  at (4.917, 31.311, 44.149),   was assigned atom type 1, "C".
+Atom no. 164,  " C  "  at (5.485, 31.230, 42.742),   was assigned atom type 1, "C".
+Atom no. 165,  " O  "  at (6.350, 32.003, 42.364),   was assigned atom type 3, "O".
+Atom no. 166,  " H  "  at (2.927, 30.630, 44.563),   was assigned atom type 5, "H".
+Atom no. 167,  " N  "  at (4.993, 30.265, 41.964),   was assigned atom type 2, "N".
+Atom no. 168,  " CA "  at (5.499, 30.043, 40.609),   was assigned atom type 1, "C".
+Atom no. 169,  " C  "  at (4.495, 30.520, 39.611),   was assigned atom type 1, "C".
+Atom no. 170,  " O  "  at (3.291, 30.520, 39.870),   was assigned atom type 3, "O".
+Atom no. 171,  " CB "  at (5.722, 28.552, 40.382),   was assigned atom type 1, "C".
+Atom no. 172,  " CG "  at (6.704, 28.059, 41.407),   was assigned atom type 1, "C".
+Atom no. 173,  " CD "  at (6.824, 26.588, 41.244),   was assigned atom type 1, "C".
+Atom no. 174,  " OE1"  at (7.130, 26.109, 40.166),   was assigned atom type 3, "O".
+Atom no. 175,  " NE2"  at (6.545, 25.881, 42.334),   was assigned atom type 2, "N".
+Atom no. 176,  " H  "  at (4.210, 29.706, 42.245),   was assigned atom type 5, "H".
+Atom no. 177,  "HE21"  at (6.525, 24.885, 42.304),   was assigned atom type 5, "H".
+Atom no. 178,  "HE22"  at (6.417, 26.321, 43.223),   was assigned atom type 5, "H".
+Atom no. 179,  " N  "  at (5.028, 30.918, 38.469),   was assigned atom type 2, "N".
+Atom no. 180,  " CA "  at (4.142, 31.414, 37.429),   was assigned atom type 1, "C".
+Atom no. 181,  " C  "  at (4.016, 30.341, 36.341),   was assigned atom type 1, "C".
+Atom no. 182,  " O  "  at (5.006, 29.796, 35.892),   was assigned atom type 3, "O".
+Atom no. 183,  " CB "  at (4.818, 32.649, 36.849),   was assigned atom type 1, "C".
+Atom no. 184,  " CG "  at (4.704, 34.013, 37.520),   was assigned atom type 1, "C".
+Atom no. 185,  " CD1"  at (3.904, 34.035, 38.794),   was assigned atom type 1, "C".
+Atom no. 186,  " CD2"  at (6.051, 34.739, 37.586),   was assigned atom type 1, "C".
+Atom no. 187,  " H  "  at (6.014, 30.837, 38.300),   was assigned atom type 5, "H".
+Atom no. 188,  " N  "  at (2.809, 30.018, 35.936),   was assigned atom type 2, "N".
+Atom no. 189,  " CA "  at (2.566, 28.965, 34.937),   was assigned atom type 1, "C".
+Atom no. 190,  " C  "  at (1.533, 29.435, 33.944),   was assigned atom type 1, "C".
+Atom no. 191,  " O  "  at (0.833, 30.401, 34.168),   was assigned atom type 3, "O".
+Atom no. 192,  " CB "  at (1.933, 27.769, 35.632),   was assigned atom type 1, "C".
+Atom no. 193,  " CG "  at (2.872, 26.644, 36.062),   was assigned atom type 1, "C".
+Atom no. 194,  " CD "  at (3.505, 26.759, 37.422),   was assigned atom type 1, "C".
+Atom no. 195,  " CE "  at (3.985, 25.372, 37.823),   was assigned atom type 1, "C".
+Atom no. 196,  " NZ "  at (5.049, 24.920, 36.909),   was assigned atom type 2, "N".
+Atom no. 197,  " H  "  at (2.012, 30.510, 36.301),   was assigned atom type 5, "H".
+Atom no. 198,  " HZ1"  at (5.844, 25.590, 36.941),   was assigned atom type 5, "H".
+Atom no. 199,  " HZ2"  at (5.374, 23.979, 37.206),   was assigned atom type 5, "H".
+Atom no. 200,  " HZ3"  at (4.679, 24.864, 35.939),   was assigned atom type 5, "H".
+Atom no. 201,  " N  "  at (1.387, 28.765, 32.841),   was assigned atom type 2, "N".
+Atom no. 202,  " CA "  at (0.152, 29.063, 32.090),   was assigned atom type 1, "C".
+Atom no. 203,  " C  "  at (-0.657, 27.774, 32.038),   was assigned atom type 1, "C".
+Atom no. 204,  " O  "  at (-0.119, 26.668, 32.171),   was assigned atom type 3, "O".
+Atom no. 205,  " CB "  at (0.351, 29.552, 30.641),   was assigned atom type 1, "C".
+Atom no. 206,  " CG "  at (1.333, 30.668, 30.361),   was assigned atom type 1, "C".
+Atom no. 207,  " CD "  at (1.377, 30.937, 28.856),   was assigned atom type 1, "C".
+Atom no. 208,  " OE1"  at (0.435, 31.577, 28.387),   was assigned atom type 3, "O".
+Atom no. 209,  " OE2"  at (2.340, 30.539, 28.159),   was assigned atom type 3, "O".
+Atom no. 210,  " H  "  at (1.995, 28.010, 32.588),   was assigned atom type 5, "H".
+Atom no. 211,  " N  "  at (-1.954, 27.968, 31.879),   was assigned atom type 2, "N".
+Atom no. 212,  " CA "  at (-2.846, 26.827, 31.955),   was assigned atom type 1, "C".
+Atom no. 213,  " C  "  at (-4.017, 27.088, 31.045),   was assigned atom type 1, "C".
+Atom no. 214,  " O  "  at (-4.334, 28.204, 30.671),   was assigned atom type 3, "O".
+Atom no. 215,  " CB "  at (-3.260, 26.581, 33.397),   was assigned atom type 1, "C".
+Atom no. 216,  " H  "  at (-2.338, 28.890, 31.763),   was assigned atom type 5, "H".
+Atom no. 217,  " N  "  at (-4.609, 25.998, 30.628),   was assigned atom type 2, "N".
+Atom no. 218,  " CA "  at (-5.684, 25.981, 29.648),   was assigned atom type 1, "C".
+Atom no. 219,  " C  "  at (-7.000, 26.135, 30.381),   was assigned atom type 1, "C".
+Atom no. 220,  " O  "  at (-7.228, 25.474, 31.393),   was assigned atom type 3, "O".
+Atom no. 221,  " CB "  at (-5.578, 24.586, 29.030),   was assigned atom type 1, "C".
+Atom no. 222,  " CG "  at (-6.480, 24.293, 27.857),   was assigned atom type 1, "C".
+Atom no. 223,  " CD1"  at (-6.023, 25.051, 26.644),   was assigned atom type 1, "C".
+Atom no. 224,  " CD2"  at (-6.396, 22.806, 27.611),   was assigned atom type 1, "C".
+Atom no. 225,  " H  "  at (-4.328, 25.118, 31.014),   was assigned atom type 5, "H".
+Atom no. 226,  " N  "  at (-7.869, 27.023, 29.889),   was assigned atom type 2, "N".
+Atom no. 227,  " CA "  at (-9.199, 27.040, 30.518),   was assigned atom type 1, "C".
+Atom no. 228,  " C  "  at (-10.039, 25.941, 29.905),   was assigned atom type 1, "C".
+Atom no. 229,  " O  "  at (-10.233, 25.938, 28.697),   was assigned atom type 3, "O".
+Atom no. 230,  " CB "  at (-9.911, 28.376, 30.277),   was assigned atom type 1, "C".
+Atom no. 231,  " CG "  at (-9.127, 29.564, 30.868),   was assigned atom type 1, "C".
+Atom no. 232,  " CD1"  at (-9.750, 30.864, 30.389),   was assigned atom type 1, "C".
+Atom no. 233,  " CD2"  at (-8.995, 29.459, 32.386),   was assigned atom type 1, "C".
+Atom no. 234,  " H  "  at (-7.664, 27.553, 29.064),   was assigned atom type 5, "H".
+Atom no. 235,  " N  "  at (-10.490, 25.003, 30.745),   was assigned atom type 2, "N".
+Atom no. 236,  " CA "  at (-11.066, 23.758, 30.228),   was assigned atom type 1, "C".
+Atom no. 237,  " C  "  at (-12.432, 23.397, 30.842),   was assigned atom type 1, "C".
+Atom no. 238,  " O  "  at (-12.551, 22.827, 31.925),   was assigned atom type 3, "O".
+Atom no. 239,  " CB "  at (-10.021, 22.681, 30.517),   was assigned atom type 1, "C".
+Atom no. 240,  " CG "  at (-10.255, 21.403, 29.779),   was assigned atom type 1, "C".
+Atom no. 241,  " OD1"  at (-11.371, 21.075, 29.401),   was assigned atom type 3, "O".
+Atom no. 242,  " OD2"  at (-9.296, 20.715, 29.569),   was assigned atom type 3, "O".
+Atom no. 243,  " H  "  at (-10.346, 25.071, 31.739),   was assigned atom type 5, "H".
+Atom no. 244,  " N  "  at (-13.492, 23.679, 30.062),   was assigned atom type 2, "N".
+Atom no. 245,  " CA "  at (-14.845, 23.308, 30.482),   was assigned atom type 1, "C".
+Atom no. 246,  " C  "  at (-15.152, 21.827, 30.546),   was assigned atom type 1, "C".
+Atom no. 247,  " O  "  at (-16.033, 21.367, 31.239),   was assigned atom type 3, "O".
+Atom no. 248,  " CB "  at (-15.824, 24.046, 29.562),   was assigned atom type 1, "C".
+Atom no. 249,  " OG1"  at (-15.610, 23.759, 28.181),   was assigned atom type 3, "O".
+Atom no. 250,  " CG2"  at (-15.616, 25.530, 29.761),   was assigned atom type 1, "C".
+Atom no. 251,  " H  "  at (-13.399, 24.194, 29.206),   was assigned atom type 5, "H".
+Atom no. 252,  " HG1"  at (-16.424, 23.341, 27.852),   was assigned atom type 5, "H".
+Atom no. 253,  " N  "  at (-14.407, 21.023, 29.808),   was assigned atom type 2, "N".
+Atom no. 254,  " CA "  at (-14.692, 19.585, 29.908),   was assigned atom type 1, "C".
+Atom no. 255,  " C  "  at (-14.037, 18.908, 31.090),   was assigned atom type 1, "C".
+Atom no. 256,  " O  "  at (-14.301, 17.756, 31.339),   was assigned atom type 3, "O".
+Atom no. 257,  " H  "  at (-13.649, 21.390, 29.281),   was assigned atom type 5, "H".
+Atom no. 258,  " N  "  at (-13.154, 19.601, 31.785),   was assigned atom type 2, "N".
+Atom no. 259,  " CA "  at (-12.400, 18.951, 32.817),   was assigned atom type 1, "C".
+Atom no. 260,  " C  "  at (-13.073, 19.311, 34.105),   was assigned atom type 1, "C".
+Atom no. 261,  " O  "  at (-13.351, 20.449, 34.450),   was assigned atom type 3, "O".
+Atom no. 262,  " CB "  at (-10.921, 19.382, 32.802),   was assigned atom type 1, "C".
+Atom no. 263,  " H  "  at (-13.095, 20.599, 31.738),   was assigned atom type 5, "H".
+Atom no. 264,  " N  "  at (-13.393, 18.264, 34.841),   was assigned atom type 2, "N".
+Atom no. 265,  " CA "  at (-14.116, 18.489, 36.100),   was assigned atom type 1, "C".
+Atom no. 266,  " C  "  at (-13.227, 19.138, 37.134),   was assigned atom type 1, "C".
+Atom no. 267,  " O  "  at (-13.729, 19.958, 37.896),   was assigned atom type 3, "O".
+Atom no. 268,  " CB "  at (-14.686, 17.172, 36.717),   was assigned atom type 1, "C".
+Atom no. 269,  " CG "  at (-15.662, 16.336, 35.848),   was assigned atom type 1, "C".
+Atom no. 270,  " OD1"  at (-16.482, 16.859, 35.073),   was assigned atom type 3, "O".
+Atom no. 271,  " OD2"  at (-15.562, 15.112, 35.959),   was assigned atom type 3, "O".
+Atom no. 272,  " H  "  at (-13.223, 17.340, 34.487),   was assigned atom type 5, "H".
+Atom no. 273,  " N  "  at (-11.920, 18.740, 37.125),   was assigned atom type 2, "N".
+Atom no. 274,  " CA "  at (-10.978, 19.259, 38.109),   was assigned atom type 1, "C".
+Atom no. 275,  " C  "  at (-9.738, 19.815, 37.468),   was assigned atom type 1, "C".
+Atom no. 276,  " O  "  at (-9.569, 19.744, 36.273),   was assigned atom type 3, "O".
+Atom no. 277,  " CB "  at (-10.455, 18.192, 39.008),   was assigned atom type 1, "C".
+Atom no. 278,  " CG "  at (-11.477, 17.743, 40.004),   was assigned atom type 1, "C".
+Atom no. 279,  " OD1"  at (-12.049, 18.561, 40.749),   was assigned atom type 3, "O".
+Atom no. 280,  " OD2"  at (-11.697, 16.535, 40.022),   was assigned atom type 3, "O".
+Atom no. 281,  " H  "  at (-11.565, 18.146, 36.404),   was assigned atom type 5, "H".
+Atom no. 282,  " N  "  at (-8.894, 20.392, 38.291),   was assigned atom type 2, "N".
+Atom no. 283,  " CA "  at (-7.699, 21.042, 37.838),   was assigned atom type 1, "C".
+Atom no. 284,  " C  "  at (-6.537, 20.067, 37.987),   was assigned atom type 1, "C".
+Atom no. 285,  " O  "  at (-6.358, 19.482, 39.043),   was assigned atom type 3, "O".
+Atom no. 286,  " CB "  at (-7.539, 22.307, 38.739),   was assigned atom type 1, "C".
+Atom no. 287,  " OG1"  at (-8.611, 23.234, 38.458),   was assigned atom type 3, "O".
+Atom no. 288,  " CG2"  at (-6.215, 23.038, 38.561),   was assigned atom type 1, "C".
+Atom no. 289,  " H  "  at (-9.064, 20.370, 39.276),   was assigned atom type 5, "H".
+Atom no. 290,  " HG1"  at (-9.419, 22.892, 38.870),   was assigned atom type 5, "H".
+Atom no. 291,  " N  "  at (-5.751, 19.936, 36.928),   was assigned atom type 2, "N".
+Atom no. 292,  " CA "  at (-4.540, 19.100, 36.930),   was assigned atom type 1, "C".
+Atom no. 293,  " C  "  at (-3.275, 19.816, 36.419),   was assigned atom type 1, "C".
+Atom no. 294,  " O  "  at (-3.238, 20.403, 35.346),   was assigned atom type 3, "O".
+Atom no. 295,  " CB "  at (-4.750, 17.729, 36.217),   was assigned atom type 1, "C".
+Atom no. 296,  " CG1"  at (-5.295, 17.759, 34.808),   was assigned atom type 1, "C".
+Atom no. 297,  " CG2"  at (-3.477, 16.886, 36.265),   was assigned atom type 1, "C".
+Atom no. 298,  " H  "  at (-5.927, 20.493, 36.112),   was assigned atom type 5, "H".
+Atom no. 299,  " N  "  at (-2.247, 19.798, 37.250),   was assigned atom type 2, "N".
+Atom no. 300,  " CA "  at (-1.046, 20.530, 36.931),   was assigned atom type 1, "C".
+Atom no. 301,  " C  "  at (0.027, 19.561, 36.746),   was assigned atom type 1, "C".
+Atom no. 302,  " O  "  at (0.129, 18.545, 37.411),   was assigned atom type 3, "O".
+Atom no. 303,  " CB "  at (-0.688, 21.397, 38.138),   was assigned atom type 1, "C".
+Atom no. 304,  " CG "  at (-1.196, 22.854, 38.097),   was assigned atom type 1, "C".
+Atom no. 305,  " CD1"  at (-2.258, 23.189, 37.060),   was assigned atom type 1, "C".
+Atom no. 306,  " CD2"  at (-1.638, 23.304, 39.462),   was assigned atom type 1, "C".
+Atom no. 307,  " H  "  at (-2.275, 19.243, 38.086),   was assigned atom type 5, "H".
+Atom no. 308,  " N  "  at (0.869, 19.923, 35.824),   was assigned atom type 2, "N".
+Atom no. 309,  " CA "  at (2.093, 19.152, 35.760),   was assigned atom type 1, "C".
+Atom no. 310,  " C  "  at (2.814, 19.160, 37.097),   was assigned atom type 1, "C".
+Atom no. 311,  " O  "  at (2.575, 19.972, 37.983),   was assigned atom type 3, "O".
+Atom no. 312,  " CB "  at (3.062, 19.725, 34.745),   was assigned atom type 1, "C".
+Atom no. 313,  " CG "  at (2.462, 20.359, 33.498),   was assigned atom type 1, "C".
+Atom no. 314,  " CD "  at (3.585, 20.921, 32.629),   was assigned atom type 1, "C".
+Atom no. 315,  " OE1"  at (4.127, 22.011, 32.930),   was assigned atom type 3, "O".
+Atom no. 316,  " OE2"  at (3.917, 20.247, 31.643),   was assigned atom type 3, "O".
+Atom no. 317,  " H  "  at (0.735, 20.772, 35.311),   was assigned atom type 5, "H".
+Atom no. 318,  " N  "  at (3.726, 18.220, 37.189),   was assigned atom type 2, "N".
+Atom no. 319,  " CA "  at (4.640, 18.085, 38.319),   was assigned atom type 1, "C".
+Atom no. 320,  " C  "  at (5.202, 19.369, 38.938),   was assigned atom type 1, "C".
+Atom no. 321,  " O  "  at (5.900, 20.157, 38.315),   was assigned atom type 3, "O".
+Atom no. 322,  " CB "  at (5.771, 17.186, 37.819),   was assigned atom type 1, "C".
+Atom no. 323,  " CG "  at (6.419, 16.302, 38.868),   was assigned atom type 1, "C".
+Atom no. 324,  " CD "  at (5.360, 15.422, 39.458),   was assigned atom type 1, "C".
+Atom no. 325,  " OE1"  at (4.799, 14.603, 38.715),   was assigned atom type 3, "O".
+Atom no. 326,  " OE2"  at (5.112, 15.573, 40.658),   was assigned atom type 3, "O".
+Atom no. 327,  " H  "  at (3.807, 17.554, 36.441),   was assigned atom type 5, "H".
+Atom no. 328,  " N  "  at (4.882, 19.545, 40.207),   was assigned atom type 2, "N".
+Atom no. 329,  " CA "  at (5.244, 20.763, 40.924),   was assigned atom type 1, "C".
+Atom no. 330,  " C  "  at (5.497, 20.413, 42.363),   was assigned atom type 1, "C".
+Atom no. 331,  " O  "  at (4.996, 19.422, 42.895),   was assigned atom type 3, "O".
+Atom no. 332,  " CB "  at (4.060, 21.711, 41.096),   was assigned atom type 1, "C".
+Atom no. 333,  " CG "  at (3.590, 22.500, 39.905),   was assigned atom type 1, "C".
+Atom no. 334,  " SD "  at (2.417, 23.638, 40.589),   was assigned atom type 4, "S".
+Atom no. 335,  " CE "  at (3.570, 24.644, 41.528),   was assigned atom type 1, "C".
+Atom no. 336,  " H  "  at (4.358, 18.860, 40.713),   was assigned atom type 5, "H".
+Atom no. 337,  " N  "  at (6.238, 21.333, 42.974),   was assigned atom type 2, "N".
+Atom no. 338,  " CA "  at (6.375, 21.434, 44.423),   was assigned atom type 1, "C".
+Atom no. 339,  " C  "  at (5.171, 22.127, 45.023),   was assigned atom type 1, "C".
+Atom no. 340,  " O  "  at (5.007, 23.337, 44.886),   was assigned atom type 3, "O".
+Atom no. 341,  " CB "  at (7.627, 22.288, 44.738),   was assigned atom type 1, "C".
+Atom no. 342,  " OG "  at (8.125, 22.958, 43.551),   was assigned atom type 3, "O".
+Atom no. 343,  " H  "  at (6.685, 22.072, 42.471),   was assigned atom type 5, "H".
+Atom no. 344,  " HG "  at (8.938, 23.430, 43.763),   was assigned atom type 5, "H".
+Atom no. 345,  " N  "  at (4.332, 21.344, 45.681),   was assigned atom type 2, "N".
+Atom no. 346,  " CA "  at (3.368, 22.051, 46.497),   was assigned atom type 1, "C".
+Atom no. 347,  " C  "  at (3.526, 21.762, 47.974),   was assigned atom type 1, "C".
+Atom no. 348,  " O  "  at (3.524, 20.629, 48.437),   was assigned atom type 3, "O".
+Atom no. 349,  " CB "  at (1.949, 21.738, 46.065),   was assigned atom type 1, "C".
+Atom no. 350,  " CG "  at (1.551, 22.488, 44.806),   was assigned atom type 1, "C".
+Atom no. 351,  " CD1"  at (0.097, 22.154, 44.485),   was assigned atom type 1, "C".
+Atom no. 352,  " CD2"  at (1.747, 23.988, 44.945),   was assigned atom type 1, "C".
+Atom no. 353,  " H  "  at (4.493, 20.364, 45.789),   was assigned atom type 5, "H".
+Atom no. 354,  " N  "  at (3.622, 22.862, 48.706),   was assigned atom type 2, "N".
+Atom no. 355,  " CA "  at (3.480, 22.806, 50.169),   was assigned atom type 1, "C".
+Atom no. 356,  " C  "  at (2.218, 22.136, 50.716),   was assigned atom type 1, "C".
+Atom no. 357,  " O  "  at (1.148, 22.723, 50.846),   was assigned atom type 3, "O".
+Atom no. 358,  " CB "  at (3.533, 24.301, 50.542),   was assigned atom type 1, "C".
+Atom no. 359,  " CG "  at (3.174, 25.071, 49.271),   was assigned atom type 1, "C".
+Atom no. 360,  " CD "  at (3.842, 24.218, 48.206),   was assigned atom type 1, "C".
+Atom no. 361,  " N  "  at (2.405, 20.900, 51.113),   was assigned atom type 2, "N".
+Atom no. 362,  " CA "  at (1.326, 20.309, 51.875),   was assigned atom type 1, "C".
+Atom no. 363,  " C  "  at (1.477, 18.815, 51.919),   was assigned atom type 1, "C".
+Atom no. 364,  " O  "  at (2.560, 18.279, 51.679),   was assigned atom type 3, "O".
+Atom no. 365,  " H  "  at (3.212, 20.361, 50.864),   was assigned atom type 5, "H".
+Atom no. 366,  " N  "  at (0.344, 18.192, 52.255),   was assigned atom type 2, "N".
+Atom no. 367,  " CA "  at (0.221, 16.735, 52.172),   was assigned atom type 1, "C".
+Atom no. 368,  " C  "  at (-0.649, 16.421, 50.969),   was assigned atom type 1, "C".
+Atom no. 369,  " O  "  at (-1.217, 17.346, 50.411),   was assigned atom type 3, "O".
+Atom no. 370,  " CB "  at (-0.398, 16.162, 53.474),   was assigned atom type 1, "C".
+Atom no. 371,  " CG "  at (-1.932, 16.103, 53.609),   was assigned atom type 1, "C".
+Atom no. 372,  " CD "  at (-2.676, 17.446, 53.619),   was assigned atom type 1, "C".
+Atom no. 373,  " NE "  at (-4.071, 17.218, 53.224),   was assigned atom type 2, "N".
+Atom no. 374,  " CZ "  at (-4.704, 18.021, 52.348),   was assigned atom type 1, "C".
+Atom no. 375,  " NH1"  at (-4.158, 19.153, 51.881),   was assigned atom type 2, "N".
+Atom no. 376,  " NH2"  at (-5.918, 17.661, 51.941),   was assigned atom type 2, "N".
+Atom no. 377,  " H  "  at (-0.501, 18.727, 52.310),   was assigned atom type 5, "H".
+Atom no. 378,  " HE "  at (-4.547, 16.417, 53.589),   was assigned atom type 5, "H".
+Atom no. 379,  "HH11"  at (-3.246, 19.435, 52.178),   was assigned atom type 5, "H".
+Atom no. 380,  "HH12"  at (-4.666, 19.719, 51.231),   was assigned atom type 5, "H".
+Atom no. 381,  "HH21"  at (-6.333, 16.818, 52.284),   was assigned atom type 5, "H".
+Atom no. 382,  "HH22"  at (-6.415, 18.233, 51.290),   was assigned atom type 5, "H".
+Atom no. 383,  " N  "  at (-0.771, 15.157, 50.578),   was assigned atom type 2, "N".
+Atom no. 384,  " CA "  at (-1.610, 14.902, 49.412),   was assigned atom type 1, "C".
+Atom no. 385,  " C  "  at (-2.181, 13.530, 49.494),   was assigned atom type 1, "C".
+Atom no. 386,  " O  "  at (-1.685, 12.698, 50.238),   was assigned atom type 3, "O".
+Atom no. 387,  " CB "  at (-0.811, 15.079, 48.110),   was assigned atom type 1, "C".
+Atom no. 388,  " CG "  at (0.541, 14.400, 48.169),   was assigned atom type 1, "C".
+Atom no. 389,  " CD1"  at (1.743, 14.980, 48.627),   was assigned atom type 1, "C".
+Atom no. 390,  " CD2"  at (0.869, 13.085, 47.779),   was assigned atom type 1, "C".
+Atom no. 391,  " NE1"  at (2.803, 14.130, 48.559),   was assigned atom type 2, "N".
+Atom no. 392,  " CE2"  at (2.340, 12.936, 48.043),   was assigned atom type 1, "C".
+Atom no. 393,  " CE3"  at (0.148, 12.002, 47.232),   was assigned atom type 1, "C".
+Atom no. 394,  " CZ2"  at (2.967, 11.703, 47.734),   was assigned atom type 1, "C".
+Atom no. 395,  " CZ3"  at (0.828, 10.798, 46.940),   was assigned atom type 1, "C".
+Atom no. 396,  " CH2"  at (2.212, 10.644, 47.186),   was assigned atom type 1, "C".
+Atom no. 397,  " H  "  at (-0.345, 14.377, 51.035),   was assigned atom type 5, "H".
+Atom no. 398,  " HE1"  at (3.724, 14.335, 48.827),   was assigned atom type 5, "H".
+Atom no. 399,  " N  "  at (-3.225, 13.315, 48.716),   was assigned atom type 2, "N".
+Atom no. 400,  " CA "  at (-3.765, 11.962, 48.572),   was assigned atom type 1, "C".
+Atom no. 401,  " C  "  at (-3.549, 11.473, 47.134),   was assigned atom type 1, "C".
+Atom no. 402,  " O  "  at (-3.679, 12.249, 46.201),   was assigned atom type 3, "O".
+Atom no. 403,  " CB "  at (-5.264, 11.999, 48.878),   was assigned atom type 1, "C".
+Atom no. 404,  " CG "  at (-5.622, 12.744, 50.164),   was assigned atom type 1, "C".
+Atom no. 405,  " CD "  at (-5.110, 12.094, 51.455),   was assigned atom type 1, "C".
+Atom no. 406,  " CE "  at (-5.791, 10.757, 51.802),   was assigned atom type 1, "C".
+Atom no. 407,  " NZ "  at (-5.366, 10.319, 53.141),   was assigned atom type 2, "N".
+Atom no. 408,  " H  "  at (-3.588, 14.070, 48.164),   was assigned atom type 5, "H".
+Atom no. 409,  " HZ1"  at (-5.607, 11.052, 53.838),   was assigned atom type 5, "H".
+Atom no. 410,  " HZ2"  at (-5.847, 9.432, 53.389),   was assigned atom type 5, "H".
+Atom no. 411,  " HZ3"  at (-4.337, 10.168, 53.142),   was assigned atom type 5, "H".
+Atom no. 412,  " N  "  at (-3.179, 10.194, 46.943),   was assigned atom type 2, "N".
+Atom no. 413,  " CA "  at (-3.154, 9.629, 45.568),   was assigned atom type 1, "C".
+Atom no. 414,  " C  "  at (-4.540, 9.488, 44.965),   was assigned atom type 1, "C".
+Atom no. 415,  " O  "  at (-5.488, 9.108, 45.639),   was assigned atom type 3, "O".
+Atom no. 416,  " CB "  at (-2.519, 8.242, 45.786),   was assigned atom type 1, "C".
+Atom no. 417,  " CG "  at (-1.796, 8.302, 47.140),   was assigned atom type 1, "C".
+Atom no. 418,  " CD "  at (-2.701, 9.238, 47.952),   was assigned atom type 1, "C".
+Atom no. 419,  " N  "  at (-4.636, 9.799, 43.690),   was assigned atom type 2, "N".
+Atom no. 420,  " CA "  at (-5.922, 9.717, 43.025),   was assigned atom type 1, "C".
+Atom no. 421,  " C  "  at (-5.553, 9.277, 41.644),   was assigned atom type 1, "C".
+Atom no. 422,  " O  "  at (-4.431, 9.510, 41.222),   was assigned atom type 3, "O".
+Atom no. 423,  " CB "  at (-6.517, 11.135, 43.064),   was assigned atom type 1, "C".
+Atom no. 424,  " CG "  at (-7.863, 11.482, 42.398),   was assigned atom type 1, "C".
+Atom no. 425,  " CD "  at (-9.139, 11.004, 43.122),   was assigned atom type 1, "C".
+Atom no. 426,  " CE "  at (-10.478, 11.614, 42.596),   was assigned atom type 1, "C".
+Atom no. 427,  " NZ "  at (-10.936, 11.114, 41.279),   was assigned atom type 2, "N".
+Atom no. 428,  " H  "  at (-3.851, 10.146, 43.166),   was assigned atom type 5, "H".
+Atom no. 429,  " HZ1"  at (-10.215, 11.322, 40.558),   was assigned atom type 5, "H".
+Atom no. 430,  " HZ2"  at (-11.087, 10.087, 41.329),   was assigned atom type 5, "H".
+Atom no. 431,  " HZ3"  at (-11.828, 11.581, 41.020),   was assigned atom type 5, "H".
+Atom no. 432,  " N  "  at (-6.468, 8.636, 40.938),   was assigned atom type 2, "N".
+Atom no. 433,  " CA "  at (-6.245, 8.475, 39.498),   was assigned atom type 1, "C".
+Atom no. 434,  " C  "  at (-7.324, 9.162, 38.733),   was assigned atom type 1, "C".
+Atom no. 435,  " O  "  at (-8.465, 9.196, 39.162),   was assigned atom type 3, "O".
+Atom no. 436,  " CB "  at (-6.331, 7.037, 39.070),   was assigned atom type 1, "C".
+Atom no. 437,  " CG "  at (-5.242, 6.261, 39.725),   was assigned atom type 1, "C".
+Atom no. 438,  " SD "  at (-5.573, 4.590, 39.290),   was assigned atom type 4, "S".
+Atom no. 439,  " CE "  at (-4.345, 3.826, 40.363),   was assigned atom type 1, "C".
+Atom no. 440,  " H  "  at (-7.375, 8.443, 41.307),   was assigned atom type 5, "H".
+Atom no. 441,  " N  "  at (-6.965, 9.699, 37.597),   was assigned atom type 2, "N".
+Atom no. 442,  " CA "  at (-8.033, 10.262, 36.809),   was assigned atom type 1, "C".
+Atom no. 443,  " C  "  at (-7.951, 9.700, 35.432),   was assigned atom type 1, "C".
+Atom no. 444,  " O  "  at (-6.893, 9.252, 35.015),   was assigned atom type 3, "O".
+Atom no. 445,  " CB "  at (-7.931, 11.799, 36.789),   was assigned atom type 1, "C".
+Atom no. 446,  " CG1"  at (-6.633, 12.335, 36.218),   was assigned atom type 1, "C".
+Atom no. 447,  " CG2"  at (-8.148, 12.338, 38.205),   was assigned atom type 1, "C".
+Atom no. 448,  " CD1"  at (-6.808, 13.728, 35.629),   was assigned atom type 1, "C".
+Atom no. 449,  " H  "  at (-6.030, 9.612, 37.239),   was assigned atom type 5, "H".
+Atom no. 450,  " N  "  at (-9.078, 9.709, 34.737),   was assigned atom type 2, "N".
+Atom no. 451,  " CA "  at (-9.052, 9.165, 33.383),   was assigned atom type 1, "C".
+Atom no. 452,  " C  "  at (-9.348, 10.198, 32.305),   was assigned atom type 1, "C".
+Atom no. 453,  " O  "  at (-10.179, 11.083, 32.453),   was assigned atom type 3, "O".
+Atom no. 454,  " H  "  at (-9.911, 10.166, 35.063),   was assigned atom type 5, "H".
+Atom no. 455,  " N  "  at (-8.650, 10.060, 31.218),   was assigned atom type 2, "N".
+Atom no. 456,  " CA "  at (-8.789, 11.026, 30.140),   was assigned atom type 1, "C".
+Atom no. 457,  " C  "  at (-8.981, 10.298, 28.866),   was assigned atom type 1, "C".
+Atom no. 458,  " O  "  at (-9.414, 9.158, 28.849),   was assigned atom type 3, "O".
+Atom no. 459,  " H  "  at (-8.021, 9.284, 31.128),   was assigned atom type 5, "H".
+Atom no. 460,  " N  "  at (-8.616, 10.950, 27.786),   was assigned atom type 2, "N".
+Atom no. 461,  " CA "  at (-8.884, 10.280, 26.531),   was assigned atom type 1, "C".
+Atom no. 462,  " C  "  at (-8.205, 8.951, 26.379),   was assigned atom type 1, "C".
+Atom no. 463,  " O  "  at (-8.806, 7.963, 25.958),   was assigned atom type 3, "O".
+Atom no. 464,  " CB "  at (-8.652, 11.181, 25.287),   was assigned atom type 1, "C".
+Atom no. 465,  " CG1"  at (-9.862, 10.969, 24.400),   was assigned atom type 1, "C".
+Atom no. 466,  " CG2"  at (-7.424, 10.959, 24.407),   was assigned atom type 1, "C".
+Atom no. 467,  " CD1"  at (-11.018, 11.730, 25.033),   was assigned atom type 1, "C".
+Atom no. 468,  " H  "  at (-8.190, 11.846, 27.844),   was assigned atom type 5, "H".
+Atom no. 469,  " N  "  at (-6.921, 8.946, 26.736),   was assigned atom type 2, "N".
+Atom no. 470,  " CA "  at (-6.227, 7.694, 26.433),   was assigned atom type 1, "C".
+Atom no. 471,  " C  "  at (-6.049, 6.734, 27.617),   was assigned atom type 1, "C".
+Atom no. 472,  " O  "  at (-5.392, 5.715, 27.500),   was assigned atom type 3, "O".
+Atom no. 473,  " H  "  at (-6.491, 9.688, 27.250),   was assigned atom type 5, "H".
+Atom no. 474,  " N  "  at (-6.592, 7.067, 28.772),   was assigned atom type 2, "N".
+Atom no. 475,  " CA "  at (-6.361, 6.126, 29.843),   was assigned atom type 1, "C".
+Atom no. 476,  " C  "  at (-6.294, 6.850, 31.139),   was assigned atom type 1, "C".
+Atom no. 477,  " O  "  at (-6.822, 7.940, 31.254),   was assigned atom type 3, "O".
+Atom no. 478,  " H  "  at (-7.147, 7.885, 28.914),   was assigned atom type 5, "H".
+Atom no. 479,  " N  "  at (-5.667, 6.219, 32.104),   was assigned atom type 2, "N".
+Atom no. 480,  " CA "  at (-5.666, 6.761, 33.458),   was assigned atom type 1, "C".
+Atom no. 481,  " C  "  at (-4.315, 7.291, 33.811),   was assigned atom type 1, "C".
+Atom no. 482,  " O  "  at (-3.295, 6.719, 33.459),   was assigned atom type 3, "O".
+Atom no. 483,  " CB "  at (-5.977, 5.641, 34.448),   was assigned atom type 1, "C".
+Atom no. 484,  " CG "  at (-7.470, 5.518, 34.596),   was assigned atom type 1, "C".
+Atom no. 485,  " CD1"  at (-8.267, 5.101, 33.502),   was assigned atom type 1, "C".
+Atom no. 486,  " CD2"  at (-8.072, 5.932, 35.807),   was assigned atom type 1, "C".
+Atom no. 487,  " CE1"  at (-9.671, 5.134, 33.613),   was assigned atom type 1, "C".
+Atom no. 488,  " CE2"  at (-9.478, 5.960, 35.911),   was assigned atom type 1, "C".
+Atom no. 489,  " CZ "  at (-10.270, 5.570, 34.811),   was assigned atom type 1, "C".
+Atom no. 490,  " H  "  at (-5.090, 5.425, 31.893),   was assigned atom type 5, "H".
+Atom no. 491,  " N  "  at (-4.311, 8.386, 34.547),   was assigned atom type 2, "N".
+Atom no. 492,  " CA "  at (-3.046, 8.779, 35.168),   was assigned atom type 1, "C".
+Atom no. 493,  " C  "  at (-3.246, 8.810, 36.687),   was assigned atom type 1, "C".
+Atom no. 494,  " O  "  at (-4.358, 8.988, 37.181),   was assigned atom type 3, "O".
+Atom no. 495,  " CB "  at (-2.460, 10.154, 34.635),   was assigned atom type 1, "C".
+Atom no. 496,  " CG1"  at (-3.358, 11.389, 34.883),   was assigned atom type 1, "C".
+Atom no. 497,  " CG2"  at (-1.970, 10.076, 33.177),   was assigned atom type 1, "C".
+Atom no. 498,  " CD1"  at (-2.572, 12.687, 34.748),   was assigned atom type 1, "C".
+Atom no. 499,  " H  "  at (-5.172, 8.841, 34.789),   was assigned atom type 5, "H".
+Atom no. 500,  " N  "  at (-2.117, 8.639, 37.393),   was assigned atom type 2, "N".
+Atom no. 501,  " CA "  at (-2.083, 8.793, 38.852),   was assigned atom type 1, "C".
+Atom no. 502,  " C  "  at (-1.566, 10.161, 39.270),   was assigned atom type 1, "C".
+Atom no. 503,  " O  "  at (-0.510, 10.626, 38.865),   was assigned atom type 3, "O".
+Atom no. 504,  " CB "  at (-1.238, 7.641, 39.462),   was assigned atom type 1, "C".
+Atom no. 505,  " CG "  at (-1.747, 7.122, 40.823),   was assigned atom type 1, "C".
+Atom no. 506,  " CD "  at (-0.838, 6.093, 41.507),   was assigned atom type 1, "C".
+Atom no. 507,  " CE "  at (-0.670, 4.822, 40.673),   was assigned atom type 1, "C".
+Atom no. 508,  " NZ "  at (0.152, 3.834, 41.398),   was assigned atom type 2, "N".
+Atom no. 509,  " H  "  at (-1.244, 8.505, 36.917),   was assigned atom type 5, "H".
+Atom no. 510,  " HZ1"  at (-0.308, 3.594, 42.300),   was assigned atom type 5, "H".
+Atom no. 511,  " HZ2"  at (0.249, 2.975, 40.819),   was assigned atom type 5, "H".
+Atom no. 512,  " HZ3"  at (1.092, 4.236, 41.584),   was assigned atom type 5, "H".
+Atom no. 513,  " N  "  at (-2.381, 10.814, 40.077),   was assigned atom type 2, "N".
+Atom no. 514,  " CA "  at (-2.069, 12.175, 40.493),   was assigned atom type 1, "C".
+Atom no. 515,  " C  "  at (-2.082, 12.284, 42.022),   was assigned atom type 1, "C".
+Atom no. 516,  " O  "  at (-2.613, 11.424, 42.716),   was assigned atom type 3, "O".
+Atom no. 517,  " CB "  at (-3.132, 13.104, 39.865),   was assigned atom type 1, "C".
+Atom no. 518,  " CG1"  at (-3.121, 13.013, 38.345),   was assigned atom type 1, "C".
+Atom no. 519,  " CG2"  at (-4.538, 12.805, 40.379),   was assigned atom type 1, "C".
+Atom no. 520,  " H  "  at (-3.199, 10.376, 40.451),   was assigned atom type 5, "H".
+Atom no. 521,  " N  "  at (-1.507, 13.368, 42.535),   was assigned atom type 2, "N".
+Atom no. 522,  " CA "  at (-1.664, 13.688, 43.964),   was assigned atom type 1, "C".
+Atom no. 523,  " C  "  at (-2.664, 14.805, 44.157),   was assigned atom type 1, "C".
+Atom no. 524,  " O  "  at (-2.518, 15.858, 43.574),   was assigned atom type 3, "O".
+Atom no. 525,  " CB "  at (-0.321, 14.172, 44.545),   was assigned atom type 1, "C".
+Atom no. 526,  " CG "  at (0.865, 13.323, 44.076),   was assigned atom type 1, "C".
+Atom no. 527,  " CD "  at (2.222, 13.774, 44.604),   was assigned atom type 1, "C".
+Atom no. 528,  " NE "  at (2.455, 15.203, 44.362),   was assigned atom type 2, "N".
+Atom no. 529,  " CZ "  at (3.602, 15.622, 43.781),   was assigned atom type 1, "C".
+Atom no. 530,  " NH1"  at (4.553, 14.752, 43.435),   was assigned atom type 2, "N".
+Atom no. 531,  " NH2"  at (3.810, 16.923, 43.530),   was assigned atom type 2, "N".
+Atom no. 532,  " H  "  at (-1.077, 14.030, 41.916),   was assigned atom type 5, "H".
+Atom no. 533,  " HE "  at (1.761, 15.871, 44.634),   was assigned atom type 5, "H".
+Atom no. 534,  "HH11"  at (4.432, 13.774, 43.604),   was assigned atom type 5, "H".
+Atom no. 535,  "HH12"  at (5.392, 15.081, 43.001),   was assigned atom type 5, "H".
+Atom no. 536,  "HH21"  at (3.116, 17.598, 43.779),   was assigned atom type 5, "H".
+Atom no. 537,  "HH22"  at (4.660, 17.218, 43.094),   was assigned atom type 5, "H".
+Atom no. 538,  " N  "  at (-3.665, 14.561, 44.954),   was assigned atom type 2, "N".
+Atom no. 539,  " CA "  at (-4.652, 15.551, 45.304),   was assigned atom type 1, "C".
+Atom no. 540,  " C  "  at (-4.147, 16.352, 46.465),   was assigned atom type 1, "C".
+Atom no. 541,  " O  "  at (-3.863, 15.794, 47.514),   was assigned atom type 3, "O".
+Atom no. 542,  " CB "  at (-5.939, 14.828, 45.723),   was assigned atom type 1, "C".
+Atom no. 543,  " CG "  at (-7.045, 15.763, 46.228),   was assigned atom type 1, "C".
+Atom no. 544,  " CD "  at (-8.415, 15.092, 46.417),   was assigned atom type 1, "C".
+Atom no. 545,  " OE1"  at (-8.873, 14.271, 45.638),   was assigned atom type 3, "O".
+Atom no. 546,  " NE2"  at (-9.125, 15.511, 47.460),   was assigned atom type 2, "N".
+Atom no. 547,  " H  "  at (-3.725, 13.670, 45.396),   was assigned atom type 5, "H".
+Atom no. 548,  "HE21"  at (-10.050, 15.165, 47.641),   was assigned atom type 5, "H".
+Atom no. 549,  "HE22"  at (-8.759, 16.185, 48.100),   was assigned atom type 5, "H".
+Atom no. 550,  " N  "  at (-4.096, 17.661, 46.267),   was assigned atom type 2, "N".
+Atom no. 551,  " CA "  at (-3.901, 18.588, 47.380),   was assigned atom type 1, "C".
+Atom no. 552,  " C  "  at (-5.107, 19.454, 47.478),   was assigned atom type 1, "C".
+Atom no. 553,  " O  "  at (-5.698, 19.814, 46.476),   was assigned atom type 3, "O".
+Atom no. 554,  " CB "  at (-2.784, 19.571, 47.102),   was assigned atom type 1, "C".
+Atom no. 555,  " CG "  at (-1.412, 18.958, 47.030),   was assigned atom type 1, "C".
+Atom no. 556,  " CD1"  at (-0.961, 18.347, 45.830),   was assigned atom type 1, "C".
+Atom no. 557,  " CD2"  at (-0.543, 19.123, 48.130),   was assigned atom type 1, "C".
+Atom no. 558,  " CE1"  at (0.381, 17.934, 45.728),   was assigned atom type 1, "C".
+Atom no. 559,  " CE2"  at (0.800, 18.704, 48.022),   was assigned atom type 1, "C".
+Atom no. 560,  " CZ "  at (1.259, 18.125, 46.821),   was assigned atom type 1, "C".
+Atom no. 561,  " OH "  at (2.596, 17.804, 46.696),   was assigned atom type 3, "O".
+Atom no. 562,  " H  "  at (-4.255, 18.051, 45.355),   was assigned atom type 5, "H".
+Atom no. 563,  " HH "  at (2.764, 17.510, 45.795),   was assigned atom type 5, "H".
+Atom no. 564,  " N  "  at (-5.480, 19.755, 48.701),   was assigned atom type 2, "N".
+Atom no. 565,  " CA "  at (-6.696, 20.523, 48.941),   was assigned atom type 1, "C".
+Atom no. 566,  " C  "  at (-6.316, 21.872, 49.490),   was assigned atom type 1, "C".
+Atom no. 567,  " O  "  at (-5.193, 22.083, 49.928),   was assigned atom type 3, "O".
+Atom no. 568,  " CB "  at (-7.613, 19.827, 49.967),   was assigned atom type 1, "C".
+Atom no. 569,  " CG "  at (-8.114, 18.471, 49.469),   was assigned atom type 1, "C".
+Atom no. 570,  " OD1"  at (-8.290, 18.315, 48.259),   was assigned atom type 3, "O".
+Atom no. 571,  " OD2"  at (-8.342, 17.564, 50.283),   was assigned atom type 3, "O".
+Atom no. 572,  " H  "  at (-4.872, 19.563, 49.470),   was assigned atom type 5, "H".
+Atom no. 573,  " N  "  at (-7.282, 22.783, 49.469),   was assigned atom type 2, "N".
+Atom no. 574,  " CA "  at (-7.049, 24.153, 49.891),   was assigned atom type 1, "C".
+Atom no. 575,  " C  "  at (-5.769, 24.749, 49.351),   was assigned atom type 1, "C".
+Atom no. 576,  " O  "  at (-4.984, 25.273, 50.112),   was assigned atom type 3, "O".
+Atom no. 577,  " CB "  at (-7.129, 24.263, 51.434),   was assigned atom type 1, "C".
+Atom no. 578,  " CG "  at (-8.544, 24.398, 52.088),   was assigned atom type 1, "C".
+Atom no. 579,  " CD "  at (-9.055, 25.856, 52.327),   was assigned atom type 1, "C".
+Atom no. 580,  " OE1"  at (-9.933, 26.386, 51.659),   was assigned atom type 3, "O".
+Atom no. 581,  " NE2"  at (-8.551, 26.494, 53.367),   was assigned atom type 2, "N".
+Atom no. 582,  " H  "  at (-8.186, 22.527, 49.126),   was assigned atom type 5, "H".
+Atom no. 583,  "HE21"  at (-8.759, 27.454, 53.569),   was assigned atom type 5, "H".
+Atom no. 584,  "HE22"  at (-7.887, 26.062, 53.978),   was assigned atom type 5, "H".
+Atom no. 585,  " N  "  at (-5.571, 24.667, 48.030),   was assigned atom type 2, "N".
+Atom no. 586,  " CA "  at (-4.423, 25.363, 47.421),   was assigned atom type 1, "C".
+Atom no. 587,  " C  "  at (-4.850, 26.724, 46.805),   was assigned atom type 1, "C".
+Atom no. 588,  " O  "  at (-5.901, 26.853, 46.181),   was assigned atom type 3, "O".
+Atom no. 589,  " CB "  at (-3.817, 24.439, 46.361),   was assigned atom type 1, "C".
+Atom no. 590,  " CG1"  at (-3.383, 23.159, 47.029),   was assigned atom type 1, "C".
+Atom no. 591,  " CG2"  at (-2.642, 25.036, 45.610),   was assigned atom type 1, "C".
+Atom no. 592,  " CD1"  at (-2.223, 23.418, 47.990),   was assigned atom type 1, "C".
+Atom no. 593,  " H  "  at (-6.237, 24.220, 47.425),   was assigned atom type 5, "H".
+Atom no. 594,  " N  "  at (-4.031, 27.752, 47.020),   was assigned atom type 2, "N".
+Atom no. 595,  " CA "  at (-4.420, 29.045, 46.481),   was assigned atom type 1, "C".
+Atom no. 596,  " C  "  at (-3.870, 29.220, 45.098),   was assigned atom type 1, "C".
+Atom no. 597,  " O  "  at (-2.704, 28.925, 44.900),   was assigned atom type 3, "O".
+Atom no. 598,  " CB "  at (-3.862, 30.107, 47.462),   was assigned atom type 1, "C".
+Atom no. 599,  " CG "  at (-3.965, 31.577, 47.064),   was assigned atom type 1, "C".
+Atom no. 600,  " CD1"  at (-5.395, 32.051, 47.130),   was assigned atom type 1, "C".
+Atom no. 601,  " CD2"  at (-3.018, 32.422, 47.937),   was assigned atom type 1, "C".
+Atom no. 602,  " H  "  at (-3.151, 27.622, 47.479),   was assigned atom type 5, "H".
+Atom no. 603,  " N  "  at (-4.679, 29.703, 44.176),   was assigned atom type 2, "N".
+Atom no. 604,  " CA "  at (-4.192, 29.949, 42.829),   was assigned atom type 1, "C".
+Atom no. 605,  " C  "  at (-4.649, 31.324, 42.433),   was assigned atom type 1, "C".
+Atom no. 606,  " O  "  at (-5.693, 31.757, 42.874),   was assigned atom type 3, "O".
+Atom no. 607,  " CB "  at (-4.769, 28.910, 41.810),   was assigned atom type 1, "C".
+Atom no. 608,  " CG1"  at (-4.221, 27.476, 41.914),   was assigned atom type 1, "C".
+Atom no. 609,  " CG2"  at (-4.443, 29.273, 40.357),   was assigned atom type 1, "C".
+Atom no. 610,  " CD1"  at (-4.420, 26.666, 40.603),   was assigned atom type 1, "C".
+Atom no. 611,  " H  "  at (-5.638, 29.920, 44.385),   was assigned atom type 5, "H".
+Atom no. 612,  " N  "  at (-3.889, 32.027, 41.617),   was assigned atom type 2, "N".
+Atom no. 613,  " CA "  at (-4.438, 33.274, 41.069),   was assigned atom type 1, "C".
+Atom no. 614,  " C  "  at (-4.397, 33.159, 39.593),   was assigned atom type 1, "C".
+Atom no. 615,  " O  "  at (-3.304, 32.966, 39.081),   was assigned atom type 3, "O".
+Atom no. 616,  " CB "  at (-3.585, 34.474, 41.396),   was assigned atom type 1, "C".
+Atom no. 617,  " CG "  at (-3.577, 34.662, 42.889),   was assigned atom type 1, "C".
+Atom no. 618,  " CD "  at (-2.583, 35.735, 43.251),   was assigned atom type 1, "C".
+Atom no. 619,  " OE1"  at (-2.633, 36.807, 42.627),   was assigned atom type 3, "O".
+Atom no. 620,  " OE2"  at (-1.757, 35.487, 44.151),   was assigned atom type 3, "O".
+Atom no. 621,  " H  "  at (-3.008, 31.677, 41.289),   was assigned atom type 5, "H".
+Atom no. 622,  " N  "  at (-5.577, 33.195, 38.978),   was assigned atom type 2, "N".
+Atom no. 623,  " CA "  at (-5.889, 32.903, 37.558),   was assigned atom type 1, "C".
+Atom no. 624,  " C  "  at (-6.300, 34.230, 36.974),   was assigned atom type 1, "C".
+Atom no. 625,  " O  "  at (-7.312, 34.765, 37.396),   was assigned atom type 3, "O".
+Atom no. 626,  " CB "  at (-7.179, 32.025, 37.490),   was assigned atom type 1, "C".
+Atom no. 627,  " CG1"  at (-7.147, 30.725, 38.316),   was assigned atom type 1, "C".
+Atom no. 628,  " CG2"  at (-7.634, 31.766, 36.045),   was assigned atom type 1, "C".
+Atom no. 629,  " CD1"  at (-8.533, 30.065, 38.448),   was assigned atom type 1, "C".
+Atom no. 630,  " H  "  at (-6.362, 33.489, 39.533),   was assigned atom type 5, "H".
+Atom no. 631,  " N  "  at (-5.503, 34.809, 36.078),   was assigned atom type 2, "N".
+Atom no. 632,  " CA "  at (-5.606, 36.288, 35.944),   was assigned atom type 1, "C".
+Atom no. 633,  " C  "  at (-5.591, 36.967, 37.350),   was assigned atom type 1, "C".
+Atom no. 634,  " O  "  at (-5.087, 36.408, 38.311),   was assigned atom type 3, "O".
+Atom no. 635,  " CB "  at (-6.855, 36.771, 35.127),   was assigned atom type 1, "C".
+Atom no. 636,  " SG "  at (-6.954, 36.583, 33.304),   was assigned atom type 4, "S".
+Atom no. 637,  " H  "  at (-4.674, 34.344, 35.760),   was assigned atom type 5, "H".
+Atom no. 638,  " N  "  at (-6.185, 38.152, 37.510),   was assigned atom type 2, "N".
+Atom no. 639,  " CA "  at (-6.206, 38.676, 38.888),   was assigned atom type 1, "C".
+Atom no. 640,  " C  "  at (-7.300, 38.100, 39.816),   was assigned atom type 1, "C".
+Atom no. 641,  " O  "  at (-7.925, 38.799, 40.611),   was assigned atom type 3, "O".
+Atom no. 642,  " H  "  at (-6.603, 38.661, 36.759),   was assigned atom type 5, "H".
+Atom no. 643,  " N  "  at (-7.541, 36.791, 39.695),   was assigned atom type 2, "N".
+Atom no. 644,  " CA "  at (-8.638, 36.237, 40.510),   was assigned atom type 1, "C".
+Atom no. 645,  " C  "  at (-8.099, 35.111, 41.366),   was assigned atom type 1, "C".
+Atom no. 646,  " O  "  at (-7.558, 34.155, 40.834),   was assigned atom type 3, "O".
+Atom no. 647,  " CB "  at (-9.732, 35.578, 39.656),   was assigned atom type 1, "C".
+Atom no. 648,  " CG "  at (-10.353, 36.495, 38.647),   was assigned atom type 1, "C".
+Atom no. 649,  " ND1"  at (-9.656, 37.123, 37.694),   was assigned atom type 2, "N".
+Atom no. 650,  " CD2"  at (-11.720, 36.783, 38.487),   was assigned atom type 1, "C".
+Atom no. 651,  " CE1"  at (-10.550, 37.811, 36.914),   was assigned atom type 1, "C".
+Atom no. 652,  " NE2"  at (-11.819, 37.605, 37.405),   was assigned atom type 2, "N".
+Atom no. 653,  " H  "  at (-6.937, 36.168, 39.193),   was assigned atom type 5, "H".
+Atom no. 654,  " HD1"  at (-8.699, 37.019, 37.541),   was assigned atom type 5, "H".
+Atom no. 655,  " N  "  at (-8.290, 35.232, 42.675),   was assigned atom type 2, "N".
+Atom no. 656,  " CA "  at (-7.914, 34.149, 43.571),   was assigned atom type 1, "C".
+Atom no. 657,  " C  "  at (-9.027, 33.170, 43.744),   was assigned atom type 1, "C".
+Atom no. 658,  " O  "  at (-10.178, 33.566, 43.788),   was assigned atom type 3, "O".
+Atom no. 659,  " CB "  at (-7.658, 34.685, 44.949),   was assigned atom type 1, "C".
+Atom no. 660,  " CG "  at (-6.627, 35.765, 44.943),   was assigned atom type 1, "C".
+Atom no. 661,  " CD "  at (-6.231, 36.150, 46.353),   was assigned atom type 1, "C".
+Atom no. 662,  " CE "  at (-5.391, 37.433, 46.306),   was assigned atom type 1, "C".
+Atom no. 663,  " NZ "  at (-6.277, 38.589, 45.991),   was assigned atom type 2, "N".
+Atom no. 664,  " H  "  at (-8.831, 35.993, 43.021),   was assigned atom type 5, "H".
+Atom no. 665,  " HZ1"  at (-6.769, 38.417, 45.091),   was assigned atom type 5, "H".
+Atom no. 666,  " HZ2"  at (-6.976, 38.705, 46.752),   was assigned atom type 5, "H".
+Atom no. 667,  " HZ3"  at (-5.705, 39.453, 45.912),   was assigned atom type 5, "H".
+Atom no. 668,  " N  "  at (-8.674, 31.907, 43.873),   was assigned atom type 2, "N".
+Atom no. 669,  " CA "  at (-9.576, 30.788, 44.101),   was assigned atom type 1, "C".
+Atom no. 670,  " C  "  at (-8.794, 29.917, 45.037),   was assigned atom type 1, "C".
+Atom no. 671,  " O  "  at (-7.568, 29.907, 44.978),   was assigned atom type 3, "O".
+Atom no. 672,  " CB "  at (-9.851, 30.036, 42.793),   was assigned atom type 1, "C".
+Atom no. 673,  " H  "  at (-7.703, 31.655, 43.817),   was assigned atom type 5, "H".
+Atom no. 674,  " N  "  at (-9.499, 29.217, 45.912),   was assigned atom type 2, "N".
+Atom no. 675,  " CA "  at (-8.839, 28.181, 46.740),   was assigned atom type 1, "C".
+Atom no. 676,  " C  "  at (-9.588, 26.891, 46.453),   was assigned atom type 1, "C".
+Atom no. 677,  " O  "  at (-10.802, 26.896, 46.341),   was assigned atom type 3, "O".
+Atom no. 678,  " CB "  at (-8.842, 28.478, 48.291),   was assigned atom type 1, "C".
+Atom no. 679,  " CG1"  at (-7.750, 29.442, 48.740),   was assigned atom type 1, "C".
+Atom no. 680,  " CG2"  at (-8.573, 27.226, 49.096),   was assigned atom type 1, "C".
+Atom no. 681,  " CD1"  at (-7.621, 29.517, 50.264),   was assigned atom type 1, "C".
+Atom no. 682,  " H  "  at (-10.502, 29.251, 45.911),   was assigned atom type 5, "H".
+Atom no. 683,  " N  "  at (-8.861, 25.805, 46.307),   was assigned atom type 2, "N".
+Atom no. 684,  " CA "  at (-9.517, 24.558, 45.966),   was assigned atom type 1, "C".
+Atom no. 685,  " C  "  at (-8.524, 23.481, 45.701),   was assigned atom type 1, "C".
+Atom no. 686,  " O  "  at (-7.328, 23.606, 45.960),   was assigned atom type 3, "O".
+Atom no. 687,  " H  "  at (-7.858, 25.835, 46.346),   was assigned atom type 5, "H".
+Atom no. 688,  " N  "  at (-9.102, 22.404, 45.200),   was assigned atom type 2, "N".
+Atom no. 689,  " CA "  at (-8.334, 21.187, 44.976),   was assigned atom type 1, "C".
+Atom no. 690,  " C  "  at (-7.596, 21.243, 43.682),   was assigned atom type 1, "C".
+Atom no. 691,  " O  "  at (-8.167, 21.602, 42.663),   was assigned atom type 3, "O".
+Atom no. 692,  " CB "  at (-9.304, 19.984, 44.934),   was assigned atom type 1, "C".
+Atom no. 693,  " OG1"  at (-10.041, 19.933, 46.159),   was assigned atom type 3, "O".
+Atom no. 694,  " CG2"  at (-8.589, 18.642, 44.707),   was assigned atom type 1, "C".
+Atom no. 695,  " H  "  at (-10.077, 22.386, 44.982),   was assigned atom type 5, "H".
+Atom no. 696,  " HG1"  at (-10.712, 19.241, 46.069),   was assigned atom type 5, "H".
+Atom no. 697,  " N  "  at (-6.342, 20.872, 43.778),   was assigned atom type 2, "N".
+Atom no. 698,  " CA "  at (-5.475, 20.782, 42.634),   was assigned atom type 1, "C".
+Atom no. 699,  " C  "  at (-4.830, 19.405, 42.632),   was assigned atom type 1, "C".
+Atom no. 700,  " O  "  at (-4.334, 18.906, 43.628),   was assigned atom type 3, "O".
+Atom no. 701,  " CB "  at (-4.418, 21.893, 42.788),   was assigned atom type 1, "C".
+Atom no. 702,  " CG1"  at (-3.323, 21.690, 41.762),   was assigned atom type 1, "C".
+Atom no. 703,  " CG2"  at (-5.008, 23.324, 42.629),   was assigned atom type 1, "C".
+Atom no. 704,  " H  "  at (-5.974, 20.592, 44.671),   was assigned atom type 5, "H".
+Atom no. 705,  " N  "  at (-4.849, 18.764, 41.471),   was assigned atom type 2, "N".
+Atom no. 706,  " CA "  at (-4.209, 17.441, 41.306),   was assigned atom type 1, "C".
+Atom no. 707,  " C  "  at (-2.878, 17.620, 40.583),   was assigned atom type 1, "C".
+Atom no. 708,  " O  "  at (-2.811, 18.359, 39.597),   was assigned atom type 3, "O".
+Atom no. 709,  " CB "  at (-5.115, 16.527, 40.452),   was assigned atom type 1, "C".
+Atom no. 710,  " CG "  at (-6.548, 16.410, 40.970),   was assigned atom type 1, "C".
+Atom no. 711,  " CD1"  at (-7.448, 15.699, 39.956),   was assigned atom type 1, "C".
+Atom no. 712,  " CD2"  at (-6.551, 15.726, 42.325),   was assigned atom type 1, "C".
+Atom no. 713,  " H  "  at (-5.199, 19.207, 40.644),   was assigned atom type 5, "H".
+Atom no. 714,  " N  "  at (-1.817, 16.980, 41.060),   was assigned atom type 2, "N".
+Atom no. 715,  " CA "  at (-0.603, 17.249, 40.333),   was assigned atom type 1, "C".
+Atom no. 716,  " C  "  at (-0.158, 15.960, 39.728),   was assigned atom type 1, "C".
+Atom no. 717,  " O  "  at (-0.322, 14.923, 40.361),   was assigned atom type 3, "O".
+Atom no. 718,  " CB "  at (0.436, 17.834, 41.295),   was assigned atom type 1, "C".
+Atom no. 719,  " CG1"  at (1.645, 18.317, 40.516),   was assigned atom type 1, "C".
+Atom no. 720,  " CG2"  at (-0.142, 18.991, 42.108),   was assigned atom type 1, "C".
+Atom no. 721,  " H  "  at (-1.874, 16.399, 41.875),   was assigned atom type 5, "H".
+Atom no. 722,  " N  "  at (0.341, 16.026, 38.499),   was assigned atom type 2, "N".
+Atom no. 723,  " CA "  at (0.636, 14.769, 37.832),   was assigned atom type 1, "C".
+Atom no. 724,  " C  "  at (1.214, 14.965, 36.455),   was assigned atom type 1, "C".
+Atom no. 725,  " O  "  at (1.548, 16.071, 36.053),   was assigned atom type 3, "O".
+Atom no. 726,  " H  "  at (0.461, 16.900, 38.017),   was assigned atom type 5, "H".
+Atom no. 727,  " N  "  at (1.348, 13.844, 35.735),   was assigned atom type 2, "N".
+Atom no. 728,  " CA "  at (1.985, 13.899, 34.414),   was assigned atom type 1, "C".
+Atom no. 729,  " C  "  at (0.950, 14.218, 33.354),   was assigned atom type 1, "C".
+Atom no. 730,  " O  "  at (0.611, 13.431, 32.484),   was assigned atom type 3, "O".
+Atom no. 731,  " CB "  at (2.573, 12.476, 34.278),   was assigned atom type 1, "C".
+Atom no. 732,  " CG "  at (1.533, 11.591, 34.964),   was assigned atom type 1, "C".
+Atom no. 733,  " CD "  at (1.028, 12.470, 36.122),   was assigned atom type 1, "C".
+Atom no. 734,  " N  "  at (0.444, 15.414, 33.449),   was assigned atom type 2, "N".
+Atom no. 735,  " CA "  at (-0.388, 15.845, 32.356),   was assigned atom type 1, "C".
+Atom no. 736,  " C  "  at (0.528, 16.483, 31.333),   was assigned atom type 1, "C".
+Atom no. 737,  " O  "  at (1.516, 17.078, 31.728),   was assigned atom type 3, "O".
+Atom no. 738,  " CB "  at (-1.377, 16.833, 32.958),   was assigned atom type 1, "C".
+Atom no. 739,  " OG1"  at (-2.097, 17.445, 31.915),   was assigned atom type 3, "O".
+Atom no. 740,  " CG2"  at (-0.702, 17.894, 33.798),   was assigned atom type 1, "C".
+Atom no. 741,  " H  "  at (0.805, 16.056, 34.129),   was assigned atom type 5, "H".
+Atom no. 742,  " HG1"  at (-2.438, 18.302, 32.218),   was assigned atom type 5, "H".
+Atom no. 743,  " N  "  at (0.188, 16.368, 30.038),   was assigned atom type 2, "N".
+Atom no. 744,  " CA "  at (0.926, 17.146, 29.047),   was assigned atom type 1, "C".
+Atom no. 745,  " C  "  at (0.711, 18.673, 29.124),   was assigned atom type 1, "C".
+Atom no. 746,  " O  "  at (1.444, 19.432, 28.512),   was assigned atom type 3, "O".
+Atom no. 747,  " CB "  at (0.325, 16.641, 27.727),   was assigned atom type 1, "C".
+Atom no. 748,  " CG "  at (-0.503, 15.412, 28.016),   was assigned atom type 1, "C".
+Atom no. 749,  " CD "  at (-0.907, 15.591, 29.447),   was assigned atom type 1, "C".
+Atom no. 750,  " N  "  at (-0.342, 19.130, 29.799),   was assigned atom type 2, "N".
+Atom no. 751,  " CA "  at (-0.662, 20.562, 29.756),   was assigned atom type 1, "C".
+Atom no. 752,  " C  "  at (-1.292, 20.869, 31.096),   was assigned atom type 1, "C".
+Atom no. 753,  " O  "  at (-1.904, 20.021, 31.706),   was assigned atom type 3, "O".
+Atom no. 754,  " CB "  at (-1.627, 20.942, 28.561),   was assigned atom type 1, "C".
+Atom no. 755,  " CG1"  at (-2.971, 20.242, 28.656),   was assigned atom type 1, "C".
+Atom no. 756,  " CG2"  at (-1.951, 22.434, 28.444),   was assigned atom type 1, "C".
+Atom no. 757,  " H  "  at (-0.936, 18.548, 30.360),   was assigned atom type 5, "H".
+Atom no. 758,  " N  "  at (-1.106, 22.084, 31.563),   was assigned atom type 2, "N".
+Atom no. 759,  " CA "  at (-1.727, 22.483, 32.815),   was assigned atom type 1, "C".
+Atom no. 760,  " C  "  at (-3.158, 22.828, 32.453),   was assigned atom type 1, "C".
+Atom no. 761,  " O  "  at (-3.380, 23.565, 31.487),   was assigned atom type 3, "O".
+Atom no. 762,  " CB "  at (-1.004, 23.738, 33.365),   was assigned atom type 1, "C".
+Atom no. 763,  " CG "  at (0.383, 23.480, 33.952),   was assigned atom type 1, "C".
+Atom no. 764,  " OD1"  at (0.624, 22.546, 34.700),   was assigned atom type 3, "O".
+Atom no. 765,  " ND2"  at (1.318, 24.355, 33.606),   was assigned atom type 2, "N".
+Atom no. 766,  " H  "  at (-0.682, 22.769, 30.977),   was assigned atom type 5, "H".
+Atom no. 767,  "HD21"  at (2.261, 24.273, 33.927),   was assigned atom type 5, "H".
+Atom no. 768,  "HD22"  at (1.086, 25.140, 33.021),   was assigned atom type 5, "H".
+Atom no. 769,  " N  "  at (-4.118, 22.248, 33.201),   was assigned atom type 2, "N".
+Atom no. 770,  " CA "  at (-5.574, 22.351, 32.925),   was assigned atom type 1, "C".
+Atom no. 771,  " C  "  at (-6.286, 22.971, 34.110),   was assigned atom type 1, "C".
+Atom no. 772,  " O  "  at (-6.159, 22.477, 35.218),   was assigned atom type 3, "O".
+Atom no. 773,  " CB "  at (-6.127, 20.915, 32.703),   was assigned atom type 1, "C".
+Atom no. 774,  " CG1"  at (-5.483, 20.339, 31.425),   was assigned atom type 1, "C".
+Atom no. 775,  " CG2"  at (-7.668, 20.853, 32.664),   was assigned atom type 1, "C".
+Atom no. 776,  " CD1"  at (-5.817, 18.918, 30.968),   was assigned atom type 1, "C".
+Atom no. 777,  " H  "  at (-3.841, 21.685, 33.986),   was assigned atom type 5, "H".
+Atom no. 778,  " N  "  at (-7.041, 24.051, 33.877),   was assigned atom type 2, "N".
+Atom no. 779,  " CA "  at (-7.968, 24.578, 34.900),   was assigned atom type 1, "C".
+Atom no. 780,  " C  "  at (-9.373, 24.120, 34.590),   was assigned atom type 1, "C".
+Atom no. 781,  " O  "  at (-9.912, 24.449, 33.553),   was assigned atom type 3, "O".
+Atom no. 782,  " CB "  at (-8.044, 26.108, 34.888),   was assigned atom type 1, "C".
+Atom no. 783,  " CG1"  at (-6.687, 26.786, 34.786),   was assigned atom type 1, "C".
+Atom no. 784,  " CG2"  at (-8.869, 26.593, 36.091),   was assigned atom type 1, "C".
+Atom no. 785,  " CD1"  at (-5.858, 26.654, 36.060),   was assigned atom type 1, "C".
+Atom no. 786,  " H  "  at (-7.117, 24.441, 32.954),   was assigned atom type 5, "H".
+Atom no. 787,  " N  "  at (-9.925, 23.361, 35.517),   was assigned atom type 2, "N".
+Atom no. 788,  " CA "  at (-11.218, 22.762, 35.268),   was assigned atom type 1, "C".
+Atom no. 789,  " C  "  at (-12.314, 23.381, 36.042),   was assigned atom type 1, "C".
+Atom no. 790,  " O  "  at (-12.162, 24.416, 36.680),   was assigned atom type 3, "O".
+Atom no. 791,  " H  "  at (-9.463, 23.248, 36.395),   was assigned atom type 5, "H".
+Atom no. 792,  " N  "  at (-13.456, 22.734, 35.990),   was assigned atom type 2, "N".
+Atom no. 793,  " CA "  at (-14.671, 23.374, 36.508),   was assigned atom type 1, "C".
+Atom no. 794,  " C  "  at (-14.728, 23.648, 37.987),   was assigned atom type 1, "C".
+Atom no. 795,  " O  "  at (-15.326, 24.620, 38.415),   was assigned atom type 3, "O".
+Atom no. 796,  " CB "  at (-15.921, 22.637, 36.055),   was assigned atom type 1, "C".
+Atom no. 797,  " CG "  at (-16.209, 22.560, 34.532),   was assigned atom type 1, "C".
+Atom no. 798,  " CD "  at (-17.550, 21.840, 34.259),   was assigned atom type 1, "C".
+Atom no. 799,  " NE "  at (-17.588, 20.483, 34.840),   was assigned atom type 2, "N".
+Atom no. 800,  " CZ "  at (-18.276, 20.060, 35.941),   was assigned atom type 1, "C".
+Atom no. 801,  " NH1"  at (-19.029, 20.824, 36.698),   was assigned atom type 2, "N".
+Atom no. 802,  " NH2"  at (-18.197, 18.811, 36.354),   was assigned atom type 2, "N".
+Atom no. 803,  " H  "  at (-13.512, 21.883, 35.461),   was assigned atom type 5, "H".
+Atom no. 804,  " HE "  at (-16.992, 19.812, 34.407),   was assigned atom type 5, "H".
+Atom no. 805,  "HH11"  at (-19.145, 21.792, 36.474),   was assigned atom type 5, "H".
+Atom no. 806,  "HH12"  at (-19.487, 20.436, 37.498),   was assigned atom type 5, "H".
+Atom no. 807,  "HH21"  at (-17.637, 18.155, 35.851),   was assigned atom type 5, "H".
+Atom no. 808,  "HH22"  at (-18.700, 18.519, 37.166),   was assigned atom type 5, "H".
+Atom no. 809,  " N  "  at (-14.008, 22.848, 38.762),   was assigned atom type 2, "N".
+Atom no. 810,  " CA "  at (-13.831, 23.243, 40.154),   was assigned atom type 1, "C".
+Atom no. 811,  " C  "  at (-13.307, 24.649, 40.455),   was assigned atom type 1, "C".
+Atom no. 812,  " O  "  at (-13.672, 25.248, 41.463),   was assigned atom type 3, "O".
+Atom no. 813,  " CB "  at (-13.058, 22.196, 40.973),   was assigned atom type 1, "C".
+Atom no. 814,  " CG "  at (-11.616, 22.288, 40.736),   was assigned atom type 1, "C".
+Atom no. 815,  " OD1"  at (-11.175, 22.298, 39.595),   was assigned atom type 3, "O".
+Atom no. 816,  " ND2"  at (-10.888, 22.371, 41.841),   was assigned atom type 2, "N".
+Atom no. 817,  " H  "  at (-13.583, 22.025, 38.379),   was assigned atom type 5, "H".
+Atom no. 818,  "HD21"  at (-9.883, 22.366, 41.813),   was assigned atom type 5, "H".
+Atom no. 819,  "HD22"  at (-11.319, 22.395, 42.749),   was assigned atom type 5, "H".
+Atom no. 820,  " N  "  at (-12.435, 25.173, 39.573),   was assigned atom type 2, "N".
+Atom no. 821,  " CA "  at (-11.898, 26.508, 39.822),   was assigned atom type 1, "C".
+Atom no. 822,  " C  "  at (-12.614, 27.532, 38.946),   was assigned atom type 1, "C".
+Atom no. 823,  " O  "  at (-12.768, 28.699, 39.271),   was assigned atom type 3, "O".
+Atom no. 824,  " CB "  at (-10.380, 26.460, 39.590),   was assigned atom type 1, "C".
+Atom no. 825,  " CG "  at (-9.470, 26.373, 40.868),   was assigned atom type 1, "C".
+Atom no. 826,  " CD1"  at (-10.057, 25.654, 42.090),   was assigned atom type 1, "C".
+Atom no. 827,  " CD2"  at (-8.131, 25.768, 40.490),   was assigned atom type 1, "C".
+Atom no. 828,  " H  "  at (-12.190, 24.678, 38.736),   was assigned atom type 5, "H".
+Atom no. 829,  " N  "  at (-13.111, 27.048, 37.808),   was assigned atom type 2, "N".
+Atom no. 830,  " CA "  at (-13.831, 27.935, 36.886),   was assigned atom type 1, "C".
+Atom no. 831,  " C  "  at (-15.077, 28.519, 37.505),   was assigned atom type 1, "C".
+Atom no. 832,  " O  "  at (-15.428, 29.671, 37.309),   was assigned atom type 3, "O".
+Atom no. 833,  " CB "  at (-14.176, 27.223, 35.559),   was assigned atom type 1, "C".
+Atom no. 834,  " CG "  at (-12.962, 26.877, 34.678),   was assigned atom type 1, "C".
+Atom no. 835,  " CD1"  at (-13.511, 26.208, 33.432),   was assigned atom type 1, "C".
+Atom no. 836,  " CD2"  at (-12.090, 28.103, 34.318),   was assigned atom type 1, "C".
+Atom no. 837,  " H  "  at (-12.931, 26.097, 37.551),   was assigned atom type 5, "H".
+Atom no. 838,  " N  "  at (-15.745, 27.702, 38.308),   was assigned atom type 2, "N".
+Atom no. 839,  " CA "  at (-16.930, 28.259, 38.955),   was assigned atom type 1, "C".
+Atom no. 840,  " C  "  at (-16.603, 29.369, 39.933),   was assigned atom type 1, "C".
+Atom no. 841,  " O  "  at (-17.356, 30.329, 40.103),   was assigned atom type 3, "O".
+Atom no. 842,  " CB "  at (-17.679, 27.122, 39.617),   was assigned atom type 1, "C".
+Atom no. 843,  " OG1"  at (-16.744, 26.345, 40.364),   was assigned atom type 3, "O".
+Atom no. 844,  " CG2"  at (-18.269, 26.243, 38.534),   was assigned atom type 1, "C".
+Atom no. 845,  " H  "  at (-15.489, 26.750, 38.489),   was assigned atom type 5, "H".
+Atom no. 846,  " HG1"  at (-16.983, 25.407, 40.301),   was assigned atom type 5, "H".
+Atom no. 847,  " N  "  at (-15.418, 29.227, 40.550),   was assigned atom type 2, "N".
+Atom no. 848,  " CA "  at (-14.951, 30.203, 41.530),   was assigned atom type 1, "C".
+Atom no. 849,  " C  "  at (-14.559, 31.542, 41.020),   was assigned atom type 1, "C".
+Atom no. 850,  " O  "  at (-14.709, 32.556, 41.686),   was assigned atom type 3, "O".
+Atom no. 851,  " CB "  at (-13.785, 29.660, 42.327),   was assigned atom type 1, "C".
+Atom no. 852,  " CG "  at (-14.354, 28.791, 43.447),   was assigned atom type 1, "C".
+Atom no. 853,  " CD "  at (-13.291, 28.482, 44.477),   was assigned atom type 1, "C".
+Atom no. 854,  " OE1"  at (-12.752, 29.344, 45.188),   was assigned atom type 3, "O".
+Atom no. 855,  " NE2"  at (-12.994, 27.181, 44.517),   was assigned atom type 2, "N".
+Atom no. 856,  " H  "  at (-14.873, 28.412, 40.360),   was assigned atom type 5, "H".
+Atom no. 857,  "HE21"  at (-12.270, 26.846, 45.124),   was assigned atom type 5, "H".
+Atom no. 858,  "HE22"  at (-13.502, 26.523, 43.961),   was assigned atom type 5, "H".
+Atom no. 859,  " N  "  at (-14.057, 31.563, 39.799),   was assigned atom type 2, "N".
+Atom no. 860,  " CA "  at (-13.761, 32.877, 39.209),   was assigned atom type 1, "C".
+Atom no. 861,  " C  "  at (-14.925, 33.400, 38.382),   was assigned atom type 1, "C".
+Atom no. 862,  " O  "  at (-14.845, 34.392, 37.683),   was assigned atom type 3, "O".
+Atom no. 863,  " CB "  at (-12.455, 32.815, 38.362),   was assigned atom type 1, "C".
+Atom no. 864,  " CG1"  at (-12.604, 32.043, 37.046),   was assigned atom type 1, "C".
+Atom no. 865,  " CG2"  at (-11.320, 32.267, 39.228),   was assigned atom type 1, "C".
+Atom no. 866,  " CD1"  at (-11.491, 32.294, 36.040),   was assigned atom type 1, "C".
+Atom no. 867,  " H  "  at (-13.903, 30.713, 39.292),   was assigned atom type 5, "H".
+Atom no. 868,  " N  "  at (-16.017, 32.655, 38.450),   was assigned atom type 2, "N".
+Atom no. 869,  " CA "  at (-17.229, 33.039, 37.764),   was assigned atom type 1, "C".
+Atom no. 870,  " C  "  at (-17.219, 32.864, 36.266),   was assigned atom type 1, "C".
+Atom no. 871,  " O  "  at (-17.866, 33.620, 35.561),   was assigned atom type 3, "O".
+Atom no. 872,  " H  "  at (-16.022, 31.815, 38.988),   was assigned atom type 5, "H".
+Atom no. 873,  " N  "  at (-16.497, 31.858, 35.759),   was assigned atom type 2, "N".
+Atom no. 874,  " CA "  at (-16.487, 31.727, 34.299),   was assigned atom type 1, "C".
+Atom no. 875,  " C  "  at (-17.765, 31.119, 33.755),   was assigned atom type 1, "C".
+Atom no. 876,  " O  "  at (-18.295, 30.220, 34.405),   was assigned atom type 3, "O".
+Atom no. 877,  " CB "  at (-15.282, 30.885, 33.846),   was assigned atom type 1, "C".
+Atom no. 878,  " H  "  at (-16.080, 31.163, 36.347),   was assigned atom type 5, "H".
+Atom no. 879,  " N  "  at (-18.241, 31.614, 32.593),   was assigned atom type 2, "N".
+Atom no. 880,  " CA "  at (-19.359, 31.008, 31.879),   was assigned atom type 1, "C".
+Atom no. 881,  " C  "  at (-19.072, 30.826, 30.416),   was assigned atom type 1, "C".
+Atom no. 882,  " O  "  at (-18.178, 31.417, 29.821),   was assigned atom type 3, "O".
+Atom no. 883,  " CB "  at (-20.684, 31.820, 31.987),   was assigned atom type 1, "C".
+Atom no. 884,  " OG1"  at (-20.506, 33.183, 31.636),   was assigned atom type 3, "O".
+Atom no. 885,  " CG2"  at (-21.312, 31.779, 33.361),   was assigned atom type 1, "C".
+Atom no. 886,  " H  "  at (-17.795, 32.399, 32.159),   was assigned atom type 5, "H".
+Atom no. 887,  " HG1"  at (-20.047, 33.655, 32.351),   was assigned atom type 5, "H".
+Atom no. 888,  " N  "  at (-19.911, 29.971, 29.859),   was assigned atom type 2, "N".
+Atom no. 889,  " CA "  at (-19.828, 29.670, 28.431),   was assigned atom type 1, "C".
+Atom no. 890,  " C  "  at (-21.037, 30.274, 27.793),   was assigned atom type 1, "C".
+Atom no. 891,  " O  "  at (-22.109, 30.234, 28.360),   was assigned atom type 3, "O".
+Atom no. 892,  " CB "  at (-19.790, 28.149, 28.259),   was assigned atom type 1, "C".
+Atom no. 893,  " CG "  at (-19.337, 27.628, 26.913),   was assigned atom type 1, "C".
+Atom no. 894,  " CD1"  at (-17.975, 28.186, 26.483),   was assigned atom type 1, "C".
+Atom no. 895,  " CD2"  at (-19.274, 26.124, 27.070),   was assigned atom type 1, "C".
+Atom no. 896,  " H  "  at (-20.630, 29.528, 30.400),   was assigned atom type 5, "H".
+Atom no. 897,  " N  "  at (-20.843, 30.899, 26.668),   was assigned atom type 2, "N".
+Atom no. 898,  " CA "  at (-21.964, 31.605, 26.094),   was assigned atom type 1, "C".
+Atom no. 899,  " C  "  at (-21.987, 31.297, 24.656),   was assigned atom type 1, "C".
+Atom no. 900,  " O  "  at (-20.952, 31.333, 24.015),   was assigned atom type 3, "O".
+Atom no. 901,  " CB "  at (-21.663, 33.070, 26.243),   was assigned atom type 1, "C".
+Atom no. 902,  " CG "  at (-22.482, 33.539, 27.394),   was assigned atom type 1, "C".
+Atom no. 903,  " OD1"  at (-23.684, 33.770, 27.255),   was assigned atom type 3, "O".
+Atom no. 904,  " ND2"  at (-21.822, 33.622, 28.555),   was assigned atom type 2, "N".
+Atom no. 905,  " H  "  at (-19.944, 30.928, 26.222),   was assigned atom type 5, "H".
+Atom no. 906,  "HD21"  at (-22.279, 33.867, 29.405),   was assigned atom type 5, "H".
+Atom no. 907,  "HD22"  at (-20.845, 33.419, 28.603),   was assigned atom type 5, "H".
+Atom no. 908,  " N  "  at (-23.156, 30.983, 24.157),   was assigned atom type 2, "N".
+Atom no. 909,  " CA "  at (-23.365, 30.893, 22.710),   was assigned atom type 1, "C".
+Atom no. 910,  " C  "  at (-24.791, 31.341, 22.441),   was assigned atom type 1, "C".
+Atom no. 911,  " O  "  at (-25.148, 31.629, 21.311),   was assigned atom type 3, "O".
+Atom no. 912,  " CB "  at (-22.978, 29.511, 22.082),   was assigned atom type 1, "C".
+Atom no. 913,  " CG "  at (-23.778, 28.341, 22.591),   was assigned atom type 1, "C".
+Atom no. 914,  " CD1"  at (-23.494, 27.778, 23.849),   was assigned atom type 1, "C".
+Atom no. 915,  " CD2"  at (-24.829, 27.819, 21.796),   was assigned atom type 1, "C".
+Atom no. 916,  " CE1"  at (-24.268, 26.700, 24.315),   was assigned atom type 1, "C".
+Atom no. 917,  " CE2"  at (-25.607, 26.733, 22.251),   was assigned atom type 1, "C".
+Atom no. 918,  " CZ "  at (-25.320, 26.179, 23.516),   was assigned atom type 1, "C".
+Atom no. 919,  " OXT"  at (-25.553, 31.460, 23.396),   was assigned atom type 3, "O".
+Atom no. 920,  " H  "  at (-23.971, 30.912, 24.732),   was assigned atom type 5, "H".
+Atom no. 921,  " O  "  at (-6.606, 38.059, 32.857),   was assigned atom type 3, "O".
+Atom no. 922,  " H  "  at (-7.407, 38.609, 32.791),   was assigned atom type 5, "H".
+Atom no. 923,  " N  "  at (-27.333, 30.585, 24.814),   was assigned atom type 2, "N".
+Atom no. 924,  " CA "  at (-27.502, 30.371, 26.245),   was assigned atom type 1, "C".
+Atom no. 925,  " C  "  at (-26.178, 30.651, 26.864),   was assigned atom type 1, "C".
+Atom no. 926,  " O  "  at (-25.162, 30.565, 26.200),   was assigned atom type 3, "O".
+Atom no. 927,  " CB "  at (-27.975, 28.931, 26.416),   was assigned atom type 1, "C".
+Atom no. 928,  " CG "  at (-27.714, 28.308, 25.062),   was assigned atom type 1, "C".
+Atom no. 929,  " CD "  at (-27.924, 29.464, 24.097),   was assigned atom type 1, "C".
+Atom no. 930,  " H1 "  at (-27.699, 31.510, 24.504),   was assigned atom type 5, "H".
+Atom no. 931,  " H2 "  at (-26.303, 30.640, 24.623),   was assigned atom type 5, "H".
+Atom no. 932,  " N  "  at (-26.273, 31.007, 28.130),   was assigned atom type 2, "N".
+Atom no. 933,  " CA "  at (-25.141, 31.144, 29.028),   was assigned atom type 1, "C".
+Atom no. 934,  " C  "  at (-25.131, 29.927, 29.926),   was assigned atom type 1, "C".
+Atom no. 935,  " O  "  at (-26.119, 29.577, 30.554),   was assigned atom type 3, "O".
+Atom no. 936,  " CB "  at (-25.379, 32.387, 29.868),   was assigned atom type 1, "C".
+Atom no. 937,  " CG "  at (-24.244, 32.680, 30.835),   was assigned atom type 1, "C".
+Atom no. 938,  " CD "  at (-24.684, 33.778, 31.774),   was assigned atom type 1, "C".
+Atom no. 939,  " OE1"  at (-25.659, 33.697, 32.495),   was assigned atom type 3, "O".
+Atom no. 940,  " NE2"  at (-23.930, 34.852, 31.764),   was assigned atom type 2, "N".
+Atom no. 941,  " H  "  at (-27.177, 31.075, 28.559),   was assigned atom type 5, "H".
+Atom no. 942,  "HE21"  at (-24.164, 35.625, 32.352),   was assigned atom type 5, "H".
+Atom no. 943,  "HE22"  at (-23.132, 34.939, 31.174),   was assigned atom type 5, "H".
+Atom no. 944,  " N  "  at (-24.004, 29.264, 29.934),   was assigned atom type 2, "N".
+Atom no. 945,  " CA "  at (-23.893, 28.013, 30.678),   was assigned atom type 1, "C".
+Atom no. 946,  " C  "  at (-22.934, 28.286, 31.844),   was assigned atom type 1, "C".
+Atom no. 947,  " O  "  at (-21.797, 28.706, 31.645),   was assigned atom type 3, "O".
+Atom no. 948,  " CB "  at (-23.349, 26.937, 29.686),   was assigned atom type 1, "C".
+Atom no. 949,  " CG1"  at (-23.206, 25.583, 30.345),   was assigned atom type 1, "C".
+Atom no. 950,  " CG2"  at (-24.204, 26.759, 28.423),   was assigned atom type 1, "C".
+Atom no. 951,  " H  "  at (-23.204, 29.624, 29.457),   was assigned atom type 5, "H".
+Atom no. 952,  " N  "  at (-23.431, 28.109, 33.070),   was assigned atom type 2, "N".
+Atom no. 953,  " CA "  at (-22.545, 28.205, 34.230),   was assigned atom type 1, "C".
+Atom no. 954,  " C  "  at (-22.003, 26.782, 34.368),   was assigned atom type 1, "C".
+Atom no. 955,  " O  "  at (-22.475, 25.893, 33.661),   was assigned atom type 3, "O".
+Atom no. 956,  " CB "  at (-23.305, 28.695, 35.501),   was assigned atom type 1, "C".
+Atom no. 957,  " OG1"  at (-24.403, 27.818, 35.703),   was assigned atom type 3, "O".
+Atom no. 958,  " CG2"  at (-23.830, 30.136, 35.426),   was assigned atom type 1, "C".
+Atom no. 959,  " H  "  at (-24.349, 27.750, 33.226),   was assigned atom type 5, "H".
+Atom no. 960,  " HG1"  at (-24.960, 28.172, 36.408),   was assigned atom type 5, "H".
+Atom no. 961,  " N  "  at (-21.004, 26.589, 35.225),   was assigned atom type 2, "N".
+Atom no. 962,  " CA "  at (-20.206, 25.364, 35.109),   was assigned atom type 1, "C".
+Atom no. 963,  " C  "  at (-20.237, 24.516, 36.374),   was assigned atom type 1, "C".
+Atom no. 964,  " O  "  at (-19.370, 23.712, 36.680),   was assigned atom type 3, "O".
+Atom no. 965,  " CB "  at (-18.747, 25.763, 34.781),   was assigned atom type 1, "C".
+Atom no. 966,  " CG "  at (-18.667, 26.478, 33.449),   was assigned atom type 1, "C".
+Atom no. 967,  " CD1"  at (-17.342, 27.204, 33.294),   was assigned atom type 1, "C".
+Atom no. 968,  " CD2"  at (-18.868, 25.476, 32.301),   was assigned atom type 1, "C".
+Atom no. 969,  " H  "  at (-20.703, 27.320, 35.843),   was assigned atom type 5, "H".
+Atom no. 970,  " N  "  at (-21.305, 24.711, 37.132),   was assigned atom type 2, "N".
+Atom no. 971,  " CA "  at (-21.538, 23.865, 38.296),   was assigned atom type 1, "C".
+Atom no. 972,  " C  "  at (-21.918, 22.440, 37.967),   was assigned atom type 1, "C".
+Atom no. 973,  " O  "  at (-21.812, 21.557, 38.795),   was assigned atom type 3, "O".
+Atom no. 974,  " CB "  at (-22.676, 24.460, 39.099),   was assigned atom type 1, "C".
+Atom no. 975,  " CG "  at (-22.288, 25.835, 39.516),   was assigned atom type 1, "C".
+Atom no. 976,  " CD1"  at (-22.618, 27.027, 38.880),   was assigned atom type 1, "C".
+Atom no. 977,  " CD2"  at (-21.522, 26.177, 40.623),   was assigned atom type 1, "C".
+Atom no. 978,  " NE1"  at (-22.112, 28.122, 39.524),   was assigned atom type 2, "N".
+Atom no. 979,  " CE2"  at (-21.422, 27.664, 40.607),   was assigned atom type 1, "C".
+Atom no. 980,  " CE3"  at (-20.909, 25.438, 41.637),   was assigned atom type 1, "C".
+Atom no. 981,  " CZ2"  at (-20.713, 28.310, 41.616),   was assigned atom type 1, "C".
+Atom no. 982,  " CZ3"  at (-20.196, 26.133, 42.632),   was assigned atom type 1, "C".
+Atom no. 983,  " CH2"  at (-20.102, 27.548, 42.621),   was assigned atom type 1, "C".
+Atom no. 984,  " H  "  at (-22.043, 25.302, 36.806),   was assigned atom type 5, "H".
+Atom no. 985,  " HE1"  at (-22.241, 29.061, 39.262),   was assigned atom type 5, "H".
+Atom no. 986,  " N  "  at (-22.356, 22.220, 36.747),   was assigned atom type 2, "N".
+Atom no. 987,  " CA "  at (-22.512, 20.862, 36.223),   was assigned atom type 1, "C".
+Atom no. 988,  " C  "  at (-21.757, 20.765, 34.899),   was assigned atom type 1, "C".
+Atom no. 989,  " O  "  at (-21.432, 21.784, 34.320),   was assigned atom type 3, "O".
+Atom no. 990,  " CB "  at (-24.014, 20.674, 35.942),   was assigned atom type 1, "C".
+Atom no. 991,  " CG "  at (-24.982, 20.705, 37.134),   was assigned atom type 1, "C".
+Atom no. 992,  " CD "  at (-24.916, 19.386, 37.897),   was assigned atom type 1, "C".
+Atom no. 993,  " OE1"  at (-25.626, 18.422, 37.610),   was assigned atom type 3, "O".
+Atom no. 994,  " NE2"  at (-24.030, 19.375, 38.897),   was assigned atom type 2, "N".
+Atom no. 995,  " H  "  at (-22.528, 22.979, 36.117),   was assigned atom type 5, "H".
+Atom no. 996,  "HE21"  at (-23.943, 18.590, 39.506),   was assigned atom type 5, "H".
+Atom no. 997,  "HE22"  at (-23.442, 20.173, 39.070),   was assigned atom type 5, "H".
+Atom no. 998,  " N  "  at (-21.532, 19.541, 34.395),   was assigned atom type 2, "N".
+Atom no. 999,  " CA "  at (-20.913, 19.383, 33.072),   was assigned atom type 1, "C".
+Atom no. 1000,  " C  "  at (-21.712, 20.089, 31.990),   was assigned atom type 1, "C".
+Atom no. 1001,  " O  "  at (-22.931, 19.955, 31.988),   was assigned atom type 3, "O".
+Atom no. 1002,  " CB "  at (-20.864, 17.916, 32.707),   was assigned atom type 1, "C".
+Atom no. 1003,  " CG "  at (-19.939, 17.100, 33.554),   was assigned atom type 1, "C".
+Atom no. 1004,  " CD "  at (-19.865, 15.718, 32.923),   was assigned atom type 1, "C".
+Atom no. 1005,  " NE "  at (-18.879, 14.862, 33.593),   was assigned atom type 2, "N".
+Atom no. 1006,  " CZ "  at (-17.695, 14.522, 33.009),   was assigned atom type 1, "C".
+Atom no. 1007,  " NH1"  at (-17.349, 14.936, 31.783),   was assigned atom type 2, "N".
+Atom no. 1008,  " NH2"  at (-16.829, 13.746, 33.666),   was assigned atom type 2, "N".
+Atom no. 1009,  " H  "  at (-21.773, 18.731, 34.936),   was assigned atom type 5, "H".
+Atom no. 1010,  " HE "  at (-19.082, 14.531, 34.514),   was assigned atom type 5, "H".
+Atom no. 1011,  "HH11"  at (-17.963, 15.523, 31.255),   was assigned atom type 5, "H".
+Atom no. 1012,  "HH12"  at (-16.470, 14.660, 31.394),   was assigned atom type 5, "H".
+Atom no. 1013,  "HH21"  at (-17.050, 13.414, 34.583),   was assigned atom type 5, "H".
+Atom no. 1014,  "HH22"  at (-15.959, 13.497, 33.240),   was assigned atom type 5, "H".
+Atom no. 1015,  " N  "  at (-21.045, 20.866, 31.112),   was assigned atom type 2, "N".
+Atom no. 1016,  " CA "  at (-21.798, 21.571, 30.076),   was assigned atom type 1, "C".
+Atom no. 1017,  " C  "  at (-22.084, 20.642, 28.903),   was assigned atom type 1, "C".
+Atom no. 1018,  " O  "  at (-21.337, 20.526, 27.950),   was assigned atom type 3, "O".
+Atom no. 1019,  " CB "  at (-20.855, 22.765, 29.771),   was assigned atom type 1, "C".
+Atom no. 1020,  " CG "  at (-19.466, 22.154, 29.931),   was assigned atom type 1, "C".
+Atom no. 1021,  " CD "  at (-19.636, 21.224, 31.107),   was assigned atom type 1, "C".
+Atom no. 1022,  " N  "  at (-23.208, 19.935, 29.015),   was assigned atom type 2, "N".
+Atom no. 1023,  " CA "  at (-23.624, 18.910, 28.033),   was assigned atom type 1, "C".
+Atom no. 1024,  " C  "  at (-24.768, 19.453, 27.197),   was assigned atom type 1, "C".
+Atom no. 1025,  " O  "  at (-25.659, 20.120, 27.713),   was assigned atom type 3, "O".
+Atom no. 1026,  " CB "  at (-24.128, 17.753, 28.862),   was assigned atom type 1, "C".
+Atom no. 1027,  " CG "  at (-23.476, 16.390, 28.728),   was assigned atom type 1, "C".
+Atom no. 1028,  " CD1"  at (-21.967, 16.304, 28.770),   was assigned atom type 1, "C".
+Atom no. 1029,  " CD2"  at (-24.046, 15.679, 29.924),   was assigned atom type 1, "C".
+Atom no. 1030,  " H  "  at (-23.825, 20.131, 29.776),   was assigned atom type 5, "H".
+Atom no. 1031,  " N  "  at (-24.727, 19.190, 25.901),   was assigned atom type 2, "N".
+Atom no. 1032,  " CA "  at (-25.824, 19.605, 25.042),   was assigned atom type 1, "C".
+Atom no. 1033,  " C  "  at (-26.226, 18.468, 24.119),   was assigned atom type 1, "C".
+Atom no. 1034,  " O  "  at (-25.488, 17.508, 23.934),   was assigned atom type 3, "O".
+Atom no. 1035,  " CB "  at (-25.397, 20.819, 24.209),   was assigned atom type 1, "C".
+Atom no. 1036,  " CG1"  at (-25.344, 22.093, 25.020),   was assigned atom type 1, "C".
+Atom no. 1037,  " CG2"  at (-24.080, 20.536, 23.505),   was assigned atom type 1, "C".
+Atom no. 1038,  " H  "  at (-23.960, 18.675, 25.508),   was assigned atom type 5, "H".
+Atom no. 1039,  " N  "  at (-27.401, 18.615, 23.558),   was assigned atom type 2, "N".
+Atom no. 1040,  " CA "  at (-27.914, 17.606, 22.629),   was assigned atom type 1, "C".
+Atom no. 1041,  " C  "  at (-27.439, 17.895, 21.213),   was assigned atom type 1, "C".
+Atom no. 1042,  " O  "  at (-27.555, 19.024, 20.746),   was assigned atom type 3, "O".
+Atom no. 1043,  " CB "  at (-29.481, 17.582, 22.729),   was assigned atom type 1, "C".
+Atom no. 1044,  " OG1"  at (-29.878, 17.235, 24.071),   was assigned atom type 3, "O".
+Atom no. 1045,  " CG2"  at (-30.118, 16.517, 21.828),   was assigned atom type 1, "C".
+Atom no. 1046,  " H  "  at (-28.006, 19.382, 23.774),   was assigned atom type 5, "H".
+Atom no. 1047,  " HG1"  at (-30.819, 17.419, 24.200),   was assigned atom type 5, "H".
+Atom no. 1048,  " N  "  at (-26.859, 16.894, 20.545),   was assigned atom type 2, "N".
+Atom no. 1049,  " CA "  at (-26.437, 17.158, 19.175),   was assigned atom type 1, "C".
+Atom no. 1050,  " C  "  at (-27.136, 16.200, 18.244),   was assigned atom type 1, "C".
+Atom no. 1051,  " O  "  at (-27.537, 15.129, 18.655),   was assigned atom type 3, "O".
+Atom no. 1052,  " CB "  at (-24.924, 17.042, 19.015),   was assigned atom type 1, "C".
+Atom no. 1053,  " CG1"  at (-24.450, 15.616, 19.293),   was assigned atom type 1, "C".
+Atom no. 1054,  " CG2"  at (-24.244, 18.124, 19.880),   was assigned atom type 1, "C".
+Atom no. 1055,  " CD1"  at (-23.084, 15.273, 18.741),   was assigned atom type 1, "C".
+Atom no. 1056,  " H  "  at (-26.796, 15.974, 20.930),   was assigned atom type 5, "H".
+Atom no. 1057,  " N  "  at (-27.300, 16.605, 16.994),   was assigned atom type 2, "N".
+Atom no. 1058,  " CA "  at (-27.807, 15.652, 16.030),   was assigned atom type 1, "C".
+Atom no. 1059,  " C  "  at (-26.778, 15.548, 14.956),   was assigned atom type 1, "C".
+Atom no. 1060,  " O  "  at (-26.359, 16.544, 14.376),   was assigned atom type 3, "O".
+Atom no. 1061,  " CB "  at (-29.133, 16.164, 15.456),   was assigned atom type 1, "C".
+Atom no. 1062,  " CG "  at (-29.740, 15.213, 14.422),   was assigned atom type 1, "C".
+Atom no. 1063,  " CD "  at (-31.123, 15.687, 13.958),   was assigned atom type 1, "C".
+Atom no. 1064,  " CE "  at (-31.795, 14.704, 12.973),   was assigned atom type 1, "C".
+Atom no. 1065,  " NZ "  at (-32.989, 15.351, 12.405),   was assigned atom type 2, "N".
+Atom no. 1066,  " H  "  at (-27.008, 17.523, 16.721),   was assigned atom type 5, "H".
+Atom no. 1067,  " HZ1"  at (-32.712, 16.236, 11.935),   was assigned atom type 5, "H".
+Atom no. 1068,  " HZ2"  at (-33.435, 14.715, 11.714),   was assigned atom type 5, "H".
+Atom no. 1069,  " HZ3"  at (-33.664, 15.561, 13.169),   was assigned atom type 5, "H".
+Atom no. 1070,  " N  "  at (-26.362, 14.319, 14.721),   was assigned atom type 2, "N".
+Atom no. 1071,  " CA "  at (-25.344, 14.034, 13.733),   was assigned atom type 1, "C".
+Atom no. 1072,  " C  "  at (-25.658, 12.712, 13.044),   was assigned atom type 1, "C".
+Atom no. 1073,  " O  "  at (-25.977, 11.711, 13.645),   was assigned atom type 3, "O".
+Atom no. 1074,  " CB "  at (-23.987, 13.966, 14.476),   was assigned atom type 1, "C".
+Atom no. 1075,  " CG1"  at (-22.859, 13.729, 13.433),   was assigned atom type 1, "C".
+Atom no. 1076,  " CG2"  at (-23.987, 12.947, 15.656),   was assigned atom type 1, "C".
+Atom no. 1077,  " CD1"  at (-21.459, 13.534, 14.015),   was assigned atom type 1, "C".
+Atom no. 1078,  " H  "  at (-26.781, 13.546, 15.210),   was assigned atom type 5, "H".
+Atom no. 1079,  " N  "  at (-25.594, 12.706, 11.739),   was assigned atom type 2, "N".
+Atom no. 1080,  " CA "  at (-25.850, 11.493, 10.971),   was assigned atom type 1, "C".
+Atom no. 1081,  " C  "  at (-27.210, 10.893, 11.248),   was assigned atom type 1, "C".
+Atom no. 1082,  " O  "  at (-27.320, 9.690, 11.408),   was assigned atom type 3, "O".
+Atom no. 1083,  " H  "  at (-25.382, 13.551, 11.259),   was assigned atom type 5, "H".
+Atom no. 1084,  " N  "  at (-28.220, 11.757, 11.359),   was assigned atom type 2, "N".
+Atom no. 1085,  " CA "  at (-29.530, 11.295, 11.768),   was assigned atom type 1, "C".
+Atom no. 1086,  " C  "  at (-29.702, 10.759, 13.192),   was assigned atom type 1, "C".
+Atom no. 1087,  " O  "  at (-30.797, 10.386, 13.556),   was assigned atom type 3, "O".
+Atom no. 1088,  " H  "  at (-28.082, 12.735, 11.186),   was assigned atom type 5, "H".
+Atom no. 1089,  " N  "  at (-28.646, 10.696, 14.005),   was assigned atom type 2, "N".
+Atom no. 1090,  " CA "  at (-28.792, 10.180, 15.365),   was assigned atom type 1, "C".
+Atom no. 1091,  " C  "  at (-28.756, 11.302, 16.350),   was assigned atom type 1, "C".
+Atom no. 1092,  " O  "  at (-28.207, 12.362, 16.056),   was assigned atom type 3, "O".
+Atom no. 1093,  " CB "  at (-27.633, 9.234, 15.656),   was assigned atom type 1, "C".
+Atom no. 1094,  " CG "  at (-27.676, 8.151, 14.606),   was assigned atom type 1, "C".
+Atom no. 1095,  " CD "  at (-26.356, 7.443, 14.499),   was assigned atom type 1, "C".
+Atom no. 1096,  " OE1"  at (-25.925, 6.716, 15.377),   was assigned atom type 3, "O".
+Atom no. 1097,  " NE2"  at (-25.726, 7.647, 13.351),   was assigned atom type 2, "N".
+Atom no. 1098,  " H  "  at (-27.756, 11.069, 13.733),   was assigned atom type 5, "H".
+Atom no. 1099,  "HE21"  at (-24.858, 7.199, 13.134),   was assigned atom type 5, "H".
+Atom no. 1100,  "HE22"  at (-26.125, 8.284, 12.688),   was assigned atom type 5, "H".
+Atom no. 1101,  " N  "  at (-29.340, 11.051, 17.510),   was assigned atom type 2, "N".
+Atom no. 1102,  " CA "  at (-29.266, 12.052, 18.568),   was assigned atom type 1, "C".
+Atom no. 1103,  " C  "  at (-28.339, 11.587, 19.681),   was assigned atom type 1, "C".
+Atom no. 1104,  " O  "  at (-28.325, 10.432, 20.059),   was assigned atom type 3, "O".
+Atom no. 1105,  " CB "  at (-30.633, 12.278, 19.189),   was assigned atom type 1, "C".
+Atom no. 1106,  " CG "  at (-31.782, 12.527, 18.198),   was assigned atom type 1, "C".
+Atom no. 1107,  " CD1"  at (-33.121, 12.613, 18.944),   was assigned atom type 1, "C".
+Atom no. 1108,  " CD2"  at (-31.560, 13.803, 17.364),   was assigned atom type 1, "C".
+Atom no. 1109,  " H  "  at (-29.780, 10.172, 17.700),   was assigned atom type 5, "H".
+Atom no. 1110,  " N  "  at (-27.513, 12.507, 20.170),   was assigned atom type 2, "N".
+Atom no. 1111,  " CA "  at (-26.390, 12.239, 21.090),   was assigned atom type 1, "C".
+Atom no. 1112,  " C  "  at (-26.272, 13.434, 22.037),   was assigned atom type 1, "C".
+Atom no. 1113,  " O  "  at (-26.728, 14.516, 21.725),   was assigned atom type 3, "O".
+Atom no. 1114,  " CB "  at (-25.103, 12.172, 20.240),   was assigned atom type 1, "C".
+Atom no. 1115,  " CG "  at (-24.614, 10.750, 20.060),   was assigned atom type 1, "C".
+Atom no. 1116,  " CD "  at (-24.475, 10.235, 18.639),   was assigned atom type 1, "C".
+Atom no. 1117,  " CE "  at (-23.733, 8.890, 18.705),   was assigned atom type 1, "C".
+Atom no. 1118,  " NZ "  at (-24.521, 7.891, 19.471),   was assigned atom type 2, "N".
+Atom no. 1119,  " H  "  at (-27.608, 13.463, 19.875),   was assigned atom type 5, "H".
+Atom no. 1120,  " HZ1"  at (-25.458, 7.788, 19.031),   was assigned atom type 5, "H".
+Atom no. 1121,  " HZ2"  at (-24.029, 6.974, 19.454),   was assigned atom type 5, "H".
+Atom no. 1122,  " HZ3"  at (-24.633, 8.203, 20.456),   was assigned atom type 5, "H".
+Atom no. 1123,  " N  "  at (-25.667, 13.244, 23.200),   was assigned atom type 2, "N".
+Atom no. 1124,  " CA "  at (-25.325, 14.410, 24.016),   was assigned atom type 1, "C".
+Atom no. 1125,  " C  "  at (-23.812, 14.494, 23.998),   was assigned atom type 1, "C".
+Atom no. 1126,  " O  "  at (-23.158, 13.455, 23.879),   was assigned atom type 3, "O".
+Atom no. 1127,  " CB "  at (-25.807, 14.159, 25.453),   was assigned atom type 1, "C".
+Atom no. 1128,  " CG "  at (-27.224, 14.656, 25.640),   was assigned atom type 1, "C".
+Atom no. 1129,  " CD "  at (-27.586, 14.548, 27.088),   was assigned atom type 1, "C".
+Atom no. 1130,  " OE1"  at (-27.812, 13.422, 27.538),   was assigned atom type 3, "O".
+Atom no. 1131,  " OE2"  at (-27.645, 15.587, 27.752),   was assigned atom type 3, "O".
+Atom no. 1132,  " H  "  at (-25.326, 12.341, 23.473),   was assigned atom type 5, "H".
+Atom no. 1133,  " N  "  at (-23.278, 15.710, 24.092),   was assigned atom type 2, "N".
+Atom no. 1134,  " CA "  at (-21.827, 15.821, 23.996),   was assigned atom type 1, "C".
+Atom no. 1135,  " C  "  at (-21.337, 16.887, 24.930),   was assigned atom type 1, "C".
+Atom no. 1136,  " O  "  at (-22.074, 17.783, 25.266),   was assigned atom type 3, "O".
+Atom no. 1137,  " CB "  at (-21.401, 16.078, 22.554),   was assigned atom type 1, "C".
+Atom no. 1138,  " H  "  at (-23.855, 16.528, 24.170),   was assigned atom type 5, "H".
+Atom no. 1139,  " N  "  at (-20.123, 16.769, 25.413),   was assigned atom type 2, "N".
+Atom no. 1140,  " CA "  at (-19.576, 17.748, 26.336),   was assigned atom type 1, "C".
+Atom no. 1141,  " C  "  at (-18.985, 18.924, 25.575),   was assigned atom type 1, "C".
+Atom no. 1142,  " O  "  at (-18.175, 18.789, 24.657),   was assigned atom type 3, "O".
+Atom no. 1143,  " CB "  at (-18.558, 16.938, 27.119),   was assigned atom type 1, "C".
+Atom no. 1144,  " CG "  at (-17.734, 17.593, 28.214),   was assigned atom type 1, "C".
+Atom no. 1145,  " CD1"  at (-18.597, 17.910, 29.435),   was assigned atom type 1, "C".
+Atom no. 1146,  " CD2"  at (-16.560, 16.664, 28.549),   was assigned atom type 1, "C".
+Atom no. 1147,  " H  "  at (-19.520, 16.047, 25.080),   was assigned atom type 5, "H".
+Atom no. 1148,  " N  "  at (-19.419, 20.124, 25.939),   was assigned atom type 2, "N".
+Atom no. 1149,  " CA "  at (-18.739, 21.300, 25.365),   was assigned atom type 1, "C".
+Atom no. 1150,  " C  "  at (-17.396, 21.560, 26.065),   was assigned atom type 1, "C".
+Atom no. 1151,  " O  "  at (-17.294, 21.857, 27.271),   was assigned atom type 3, "O".
+Atom no. 1152,  " CB "  at (-19.569, 22.606, 25.498),   was assigned atom type 1, "C".
+Atom no. 1153,  " CG "  at (-20.986, 22.597, 24.891),   was assigned atom type 1, "C".
+Atom no. 1154,  " CD1"  at (-21.793, 23.757, 25.527),   was assigned atom type 1, "C".
+Atom no. 1155,  " CD2"  at (-20.977, 22.545, 23.360),   was assigned atom type 1, "C".
+Atom no. 1156,  " H  "  at (-20.084, 20.233, 26.682),   was assigned atom type 5, "H".
+Atom no. 1157,  " N  "  at (-16.357, 21.401, 25.238),   was assigned atom type 2, "N".
+Atom no. 1158,  " CA "  at (-15.015, 21.323, 25.785),   was assigned atom type 1, "C".
+Atom no. 1159,  " C  "  at (-14.050, 22.354, 25.193),   was assigned atom type 1, "C".
+Atom no. 1160,  " O  "  at (-13.474, 22.158, 24.153),   was assigned atom type 3, "O".
+Atom no. 1161,  " CB "  at (-14.565, 19.906, 25.445),   was assigned atom type 1, "C".
+Atom no. 1162,  " CG "  at (-13.381, 19.447, 26.270),   was assigned atom type 1, "C".
+Atom no. 1163,  " OD1"  at (-12.664, 20.263, 26.828),   was assigned atom type 3, "O".
+Atom no. 1164,  " OD2"  at (-13.176, 18.246, 26.384),   was assigned atom type 3, "O".
+Atom no. 1165,  " H  "  at (-16.480, 21.269, 24.248),   was assigned atom type 5, "H".
+Atom no. 1166,  " N  "  at (-13.792, 23.437, 25.919),   was assigned atom type 2, "N".
+Atom no. 1167,  " CA "  at (-12.825, 24.449, 25.443),   was assigned atom type 1, "C".
+Atom no. 1168,  " C  "  at (-11.346, 24.029, 25.443),   was assigned atom type 1, "C".
+Atom no. 1169,  " O  "  at (-10.439, 24.626, 24.867),   was assigned atom type 3, "O".
+Atom no. 1170,  " CB "  at (-13.059, 25.739, 26.284),   was assigned atom type 1, "C".
+Atom no. 1171,  " OG1"  at (-12.836, 25.482, 27.676),   was assigned atom type 3, "O".
+Atom no. 1172,  " CG2"  at (-14.477, 26.344, 26.130),   was assigned atom type 1, "C".
+Atom no. 1173,  " H  "  at (-14.281, 23.637, 26.771),   was assigned atom type 5, "H".
+Atom no. 1174,  " HG1"  at (-12.027, 25.956, 27.938),   was assigned atom type 5, "H".
+Atom no. 1175,  " N  "  at (-11.103, 22.934, 26.144),   was assigned atom type 2, "N".
+Atom no. 1176,  " CA "  at (-9.730, 22.452, 26.205),   was assigned atom type 1, "C".
+Atom no. 1177,  " C  "  at (-9.334, 21.684, 25.001),   was assigned atom type 1, "C".
+Atom no. 1178,  " O  "  at (-8.164, 21.467, 24.804),   was assigned atom type 3, "O".
+Atom no. 1179,  " H  "  at (-11.861, 22.427, 26.539),   was assigned atom type 5, "H".
+Atom no. 1180,  " N  "  at (-10.327, 21.222, 24.226),   was assigned atom type 2, "N".
+Atom no. 1181,  " CA "  at (-10.132, 20.225, 23.176),   was assigned atom type 1, "C".
+Atom no. 1182,  " C  "  at (-10.093, 20.927, 21.869),   was assigned atom type 1, "C".
+Atom no. 1183,  " O  "  at (-10.959, 21.711, 21.514),   was assigned atom type 3, "O".
+Atom no. 1184,  " CB "  at (-11.297, 19.242, 23.099),   was assigned atom type 1, "C".
+Atom no. 1185,  " H  "  at (-11.239, 21.633, 24.257),   was assigned atom type 5, "H".
+Atom no. 1186,  " N  "  at (-9.030, 20.654, 21.136),   was assigned atom type 2, "N".
+Atom no. 1187,  " CA "  at (-8.935, 21.401, 19.909),   was assigned atom type 1, "C".
+Atom no. 1188,  " C  "  at (-9.916, 20.942, 18.870),   was assigned atom type 1, "C".
+Atom no. 1189,  " O  "  at (-10.317, 21.722, 18.033),   was assigned atom type 3, "O".
+Atom no. 1190,  " CB "  at (-7.549, 21.334, 19.299),   was assigned atom type 1, "C".
+Atom no. 1191,  " CG "  at (-6.443, 21.727, 20.241),   was assigned atom type 1, "C".
+Atom no. 1192,  " OD1"  at (-6.654, 22.512, 21.174),   was assigned atom type 3, "O".
+Atom no. 1193,  " OD2"  at (-5.352, 21.208, 20.008),   was assigned atom type 3, "O".
+Atom no. 1194,  " H  "  at (-8.300, 20.057, 21.475),   was assigned atom type 5, "H".
+Atom no. 1195,  " N  "  at (-10.298, 19.673, 18.934),   was assigned atom type 2, "N".
+Atom no. 1196,  " CA "  at (-11.183, 19.121, 17.924),   was assigned atom type 1, "C".
+Atom no. 1197,  " C  "  at (-12.260, 18.331, 18.573),   was assigned atom type 1, "C".
+Atom no. 1198,  " O  "  at (-12.274, 18.208, 19.781),   was assigned atom type 3, "O".
+Atom no. 1199,  " CB "  at (-10.426, 18.239, 16.952),   was assigned atom type 1, "C".
+Atom no. 1200,  " CG "  at (-9.671, 19.089, 15.944),   was assigned atom type 1, "C".
+Atom no. 1201,  " OD1"  at (-10.287, 19.827, 15.158),   was assigned atom type 3, "O".
+Atom no. 1202,  " OD2"  at (-8.440, 19.003, 15.958),   was assigned atom type 3, "O".
+Atom no. 1203,  " H  "  at (-10.023, 19.079, 19.689),   was assigned atom type 5, "H".
+Atom no. 1204,  " N  "  at (-13.175, 17.861, 17.742),   was assigned atom type 2, "N".
+Atom no. 1205,  " CA "  at (-14.367, 17.158, 18.194),   was assigned atom type 1, "C".
+Atom no. 1206,  " C  "  at (-14.119, 15.665, 18.055),   was assigned atom type 1, "C".
+Atom no. 1207,  " O  "  at (-13.661, 15.263, 17.005),   was assigned atom type 3, "O".
+Atom no. 1208,  " CB "  at (-15.503, 17.651, 17.292),   was assigned atom type 1, "C".
+Atom no. 1209,  " OG1"  at (-15.739, 19.030, 17.591),   was assigned atom type 3, "O".
+Atom no. 1210,  " CG2"  at (-16.830, 16.875, 17.419),   was assigned atom type 1, "C".
+Atom no. 1211,  " H  "  at (-13.003, 17.891, 16.758),   was assigned atom type 5, "H".
+Atom no. 1212,  " HG1"  at (-16.597, 19.255, 17.212),   was assigned atom type 5, "H".
+Atom no. 1213,  " N  "  at (-14.386, 14.871, 19.079),   was assigned atom type 2, "N".
+Atom no. 1214,  " CA "  at (-14.211, 13.414, 19.052),   was assigned atom type 1, "C".
+Atom no. 1215,  " C  "  at (-15.505, 12.703, 19.510),   was assigned atom type 1, "C".
+Atom no. 1216,  " O  "  at (-15.946, 12.867, 20.640),   was assigned atom type 3, "O".
+Atom no. 1217,  " CB "  at (-13.176, 12.927, 20.080),   was assigned atom type 1, "C".
+Atom no. 1218,  " CG1"  at (-12.760, 11.497, 19.697),   was assigned atom type 1, "C".
+Atom no. 1219,  " CG2"  at (-12.002, 13.893, 20.353),   was assigned atom type 1, "C".
+Atom no. 1220,  " H  "  at (-14.807, 15.260, 19.901),   was assigned atom type 5, "H".
+Atom no. 1221,  " N  "  at (-16.107, 11.917, 18.652),   was assigned atom type 2, "N".
+Atom no. 1222,  " CA "  at (-17.333, 11.249, 19.071),   was assigned atom type 1, "C".
+Atom no. 1223,  " C  "  at (-17.022, 9.823, 19.345),   was assigned atom type 1, "C".
+Atom no. 1224,  " O  "  at (-16.095, 9.259, 18.785),   was assigned atom type 3, "O".
+Atom no. 1225,  " CB "  at (-18.420, 11.298, 17.972),   was assigned atom type 1, "C".
+Atom no. 1226,  " CG "  at (-19.196, 12.634, 17.766),   was assigned atom type 1, "C".
+Atom no. 1227,  " CD1"  at (-19.519, 13.401, 19.042),   was assigned atom type 1, "C".
+Atom no. 1228,  " CD2"  at (-18.442, 13.602, 16.909),   was assigned atom type 1, "C".
+Atom no. 1229,  " H  "  at (-15.696, 11.705, 17.762),   was assigned atom type 5, "H".
+Atom no. 1230,  " N  "  at (-17.831, 9.246, 20.217),   was assigned atom type 2, "N".
+Atom no. 1231,  " CA "  at (-17.723, 7.813, 20.413),   was assigned atom type 1, "C".
+Atom no. 1232,  " C  "  at (-18.042, 7.114, 19.123),   was assigned atom type 1, "C".
+Atom no. 1233,  " O  "  at (-18.680, 7.667, 18.246),   was assigned atom type 3, "O".
+Atom no. 1234,  " CB "  at (-18.707, 7.302, 21.461),   was assigned atom type 1, "C".
+Atom no. 1235,  " CG "  at (-18.196, 6.206, 22.461),   was assigned atom type 1, "C".
+Atom no. 1236,  " CD "  at (-17.362, 5.008, 21.896),   was assigned atom type 1, "C".
+Atom no. 1237,  " OE1"  at (-16.129, 5.142, 21.766),   was assigned atom type 3, "O".
+Atom no. 1238,  " OE2"  at (-17.930, 3.932, 21.618),   was assigned atom type 3, "O".
+Atom no. 1239,  " H  "  at (-18.583, 9.763, 20.628),   was assigned atom type 5, "H".
+Atom no. 1240,  " N  "  at (-17.589, 5.875, 19.024),   was assigned atom type 2, "N".
+Atom no. 1241,  " CA "  at (-17.965, 5.057, 17.887),   was assigned atom type 1, "C".
+Atom no. 1242,  " C  "  at (-19.457, 5.067, 17.620),   was assigned atom type 1, "C".
+Atom no. 1243,  " O  "  at (-20.349, 4.831, 18.432),   was assigned atom type 3, "O".
+Atom no. 1244,  " CB "  at (-17.354, 3.646, 18.022),   was assigned atom type 1, "C".
+Atom no. 1245,  " CG "  at (-15.995, 3.529, 17.297),   was assigned atom type 1, "C".
+Atom no. 1246,  " CD "  at (-16.195, 3.516, 15.776),   was assigned atom type 1, "C".
+Atom no. 1247,  " OE1"  at (-17.068, 2.798, 15.294),   was assigned atom type 3, "O".
+Atom no. 1248,  " OE2"  at (-15.482, 4.220, 15.057),   was assigned atom type 3, "O".
+Atom no. 1249,  " H  "  at (-17.015, 5.503, 19.750),   was assigned atom type 5, "H".
+Atom no. 1250,  " N  "  at (-19.658, 5.440, 16.390),   was assigned atom type 2, "N".
+Atom no. 1251,  " CA "  at (-20.951, 5.724, 15.833),   was assigned atom type 1, "C".
+Atom no. 1252,  " C  "  at (-20.646, 5.510, 14.384),   was assigned atom type 1, "C".
+Atom no. 1253,  " O  "  at (-19.478, 5.559, 14.005),   was assigned atom type 3, "O".
+Atom no. 1254,  " CB "  at (-21.211, 7.180, 16.158),   was assigned atom type 1, "C".
+Atom no. 1255,  " CG "  at (-22.319, 7.921, 15.465),   was assigned atom type 1, "C".
+Atom no. 1256,  " SD "  at (-21.820, 9.618, 15.693),   was assigned atom type 4, "S".
+Atom no. 1257,  " CE "  at (-20.303, 9.518, 14.775),   was assigned atom type 1, "C".
+Atom no. 1258,  " H  "  at (-18.896, 5.586, 15.755),   was assigned atom type 5, "H".
+Atom no. 1259,  " N  "  at (-21.693, 5.213, 13.613),   was assigned atom type 2, "N".
+Atom no. 1260,  " CA "  at (-21.547, 4.930, 12.189),   was assigned atom type 1, "C".
+Atom no. 1261,  " C  "  at (-22.159, 6.054, 11.426),   was assigned atom type 1, "C".
+Atom no. 1262,  " O  "  at (-23.275, 6.508, 11.670),   was assigned atom type 3, "O".
+Atom no. 1263,  " CB "  at (-22.231, 3.616, 11.821),   was assigned atom type 1, "C".
+Atom no. 1264,  " OG "  at (-21.711, 2.541, 12.636),   was assigned atom type 3, "O".
+Atom no. 1265,  " H  "  at (-22.614, 5.147, 13.996),   was assigned atom type 5, "H".
+Atom no. 1266,  " HG "  at (-20.757, 2.444, 12.492),   was assigned atom type 5, "H".
+Atom no. 1267,  " N  "  at (-21.279, 6.537, 10.573),   was assigned atom type 2, "N".
+Atom no. 1268,  " CA "  at (-21.336, 7.880, 10.047),   was assigned atom type 1, "C".
+Atom no. 1269,  " C  "  at (-20.821, 7.662, 8.655),   was assigned atom type 1, "C".
+Atom no. 1270,  " O  "  at (-19.866, 6.919, 8.463),   was assigned atom type 3, "O".
+Atom no. 1271,  " CB "  at (-20.361, 8.738, 10.871),   was assigned atom type 1, "C".
+Atom no. 1272,  " CG "  at (-20.431, 10.253, 10.706),   was assigned atom type 1, "C".
+Atom no. 1273,  " CD1"  at (-21.801, 10.767, 11.144),   was assigned atom type 1, "C".
+Atom no. 1274,  " CD2"  at (-19.259, 10.903, 11.470),   was assigned atom type 1, "C".
+Atom no. 1275,  " H  "  at (-20.467, 6.013, 10.305),   was assigned atom type 5, "H".
+Atom no. 1276,  " N  "  at (-21.560, 8.223, 7.713),   was assigned atom type 2, "N".
+Atom no. 1277,  " CA "  at (-21.296, 7.827, 6.333),   was assigned atom type 1, "C".
+Atom no. 1278,  " C  "  at (-20.099, 8.511, 5.684),   was assigned atom type 1, "C".
+Atom no. 1279,  " O  "  at (-19.903, 9.715, 5.761),   was assigned atom type 3, "O".
+Atom no. 1280,  " CB "  at (-22.658, 8.155, 5.698),   was assigned atom type 1, "C".
+Atom no. 1281,  " CG "  at (-23.216, 9.351, 6.479),   was assigned atom type 1, "C".
+Atom no. 1282,  " CD "  at (-22.728, 9.092, 7.886),   was assigned atom type 1, "C".
+Atom no. 1283,  " N  "  at (-19.322, 7.699, 4.984),   was assigned atom type 2, "N".
+Atom no. 1284,  " CA "  at (-18.361, 8.292, 4.058),   was assigned atom type 1, "C".
+Atom no. 1285,  " C  "  at (-16.981, 7.643, 4.014),   was assigned atom type 1, "C".
+Atom no. 1286,  " O  "  at (-16.772, 6.439, 4.136),   was assigned atom type 3, "O".
+Atom no. 1287,  " H  "  at (-19.491, 6.709, 4.994),   was assigned atom type 5, "H".
+Atom no. 1288,  " N  "  at (-16.018, 8.515, 3.780),   was assigned atom type 2, "N".
+Atom no. 1289,  " CA "  at (-14.641, 8.074, 3.596),   was assigned atom type 1, "C".
+Atom no. 1290,  " C  "  at (-13.911, 8.815, 4.677),   was assigned atom type 1, "C".
+Atom no. 1291,  " O  "  at (-14.388, 9.861, 5.104),   was assigned atom type 3, "O".
+Atom no. 1292,  " CB "  at (-14.151, 8.544, 2.200),   was assigned atom type 1, "C".
+Atom no. 1293,  " CG "  at (-14.193, 7.556, 0.993),   was assigned atom type 1, "C".
+Atom no. 1294,  " CD "  at (-15.510, 6.834, 0.588),   was assigned atom type 1, "C".
+Atom no. 1295,  " NE "  at (-16.615, 7.727, 0.206),   was assigned atom type 2, "N".
+Atom no. 1296,  " CZ "  at (-17.892, 7.327, 0.361),   was assigned atom type 1, "C".
+Atom no. 1297,  " NH1"  at (-18.213, 6.106, 0.807),   was assigned atom type 2, "N".
+Atom no. 1298,  " NH2"  at (-18.878, 8.173, 0.076),   was assigned atom type 2, "N".
+Atom no. 1299,  " H  "  at (-16.175, 9.500, 3.856),   was assigned atom type 5, "H".
+Atom no. 1300,  " HE "  at (-16.415, 8.634, -0.166),   was assigned atom type 5, "H".
+Atom no. 1301,  "HH11"  at (-17.498, 5.445, 1.034),   was assigned atom type 5, "H".
+Atom no. 1302,  "HH12"  at (-19.174, 5.854, 0.914),   was assigned atom type 5, "H".
+Atom no. 1303,  "HH21"  at (-18.671, 9.092, -0.257),   was assigned atom type 5, "H".
+Atom no. 1304,  "HH22"  at (-19.829, 7.887, 0.195),   was assigned atom type 5, "H".
+Atom no. 1305,  " N  "  at (-12.793, 8.235, 5.110),   was assigned atom type 2, "N".
+Atom no. 1306,  " CA "  at (-12.017, 8.764, 6.238),   was assigned atom type 1, "C".
+Atom no. 1307,  " C  "  at (-10.546, 8.350, 6.240),   was assigned atom type 1, "C".
+Atom no. 1308,  " O  "  at (-10.093, 7.452, 5.534),   was assigned atom type 3, "O".
+Atom no. 1309,  " CB "  at (-12.683, 8.380, 7.578),   was assigned atom type 1, "C".
+Atom no. 1310,  " CG "  at (-12.848, 6.891, 7.739),   was assigned atom type 1, "C".
+Atom no. 1311,  " CD1"  at (-14.034, 6.153, 7.543),   was assigned atom type 1, "C".
+Atom no. 1312,  " CD2"  at (-11.867, 5.963, 8.120),   was assigned atom type 1, "C".
+Atom no. 1313,  " NE1"  at (-13.869, 4.822, 7.784),   was assigned atom type 2, "N".
+Atom no. 1314,  " CE2"  at (-12.554, 4.634, 8.147),   was assigned atom type 1, "C".
+Atom no. 1315,  " CE3"  at (-10.502, 6.058, 8.439),   was assigned atom type 1, "C".
+Atom no. 1316,  " CZ2"  at (-11.805, 3.492, 8.494),   was assigned atom type 1, "C".
+Atom no. 1317,  " CZ3"  at (-9.793, 4.893, 8.775),   was assigned atom type 1, "C".
+Atom no. 1318,  " CH2"  at (-10.432, 3.631, 8.804),   was assigned atom type 1, "C".
+Atom no. 1319,  " H  "  at (-12.428, 7.422, 4.654),   was assigned atom type 5, "H".
+Atom no. 1320,  " HE1"  at (-14.561, 4.130, 7.719),   was assigned atom type 5, "H".
+Atom no. 1321,  " N  "  at (-9.809, 9.053, 7.087),   was assigned atom type 2, "N".
+Atom no. 1322,  " CA "  at (-8.384, 8.791, 7.318),   was assigned atom type 1, "C".
+Atom no. 1323,  " C  "  at (-8.210, 8.451, 8.791),   was assigned atom type 1, "C".
+Atom no. 1324,  " O  "  at (-9.030, 8.869, 9.593),   was assigned atom type 3, "O".
+Atom no. 1325,  " CB "  at (-7.638, 10.094, 7.035),   was assigned atom type 1, "C".
+Atom no. 1326,  " CG "  at (-7.909, 10.688, 5.656),   was assigned atom type 1, "C".
+Atom no. 1327,  " CD "  at (-7.321, 12.101, 5.573),   was assigned atom type 1, "C".
+Atom no. 1328,  " CE "  at (-7.438, 12.784, 4.196),   was assigned atom type 1, "C".
+Atom no. 1329,  " NZ "  at (-6.581, 12.121, 3.180),   was assigned atom type 2, "N".
+Atom no. 1330,  " H  "  at (-10.256, 9.760, 7.640),   was assigned atom type 5, "H".
+Atom no. 1331,  " HZ1"  at (-5.591, 12.143, 3.498),   was assigned atom type 5, "H".
+Atom no. 1332,  " HZ2"  at (-6.884, 11.134, 3.061),   was assigned atom type 5, "H".
+Atom no. 1333,  " HZ3"  at (-6.665, 12.623, 2.274),   was assigned atom type 5, "H".
+Atom no. 1334,  " N  "  at (-7.169, 7.704, 9.133),   was assigned atom type 2, "N".
+Atom no. 1335,  " CA "  at (-6.813, 7.545, 10.551),   was assigned atom type 1, "C".
+Atom no. 1336,  " C  "  at (-5.864, 8.639, 11.002),   was assigned atom type 1, "C".
+Atom no. 1337,  " O  "  at (-5.125, 9.217, 10.221),   was assigned atom type 3, "O".
+Atom no. 1338,  " CB "  at (-6.141, 6.183, 10.526),   was assigned atom type 1, "C".
+Atom no. 1339,  " CG "  at (-5.402, 6.150, 9.185),   was assigned atom type 1, "C".
+Atom no. 1340,  " CD "  at (-6.288, 6.961, 8.239),   was assigned atom type 1, "C".
+Atom no. 1341,  " N  "  at (-5.940, 8.931, 12.281),   was assigned atom type 2, "N".
+Atom no. 1342,  " CA "  at (-5.221, 10.037, 12.884),   was assigned atom type 1, "C".
+Atom no. 1343,  " C  "  at (-5.069, 9.538, 14.298),   was assigned atom type 1, "C".
+Atom no. 1344,  " O  "  at (-5.741, 8.592, 14.688),   was assigned atom type 3, "O".
+Atom no. 1345,  " CB "  at (-6.188, 11.214, 12.809),   was assigned atom type 1, "C".
+Atom no. 1346,  " CG "  at (-5.723, 12.639, 13.088),   was assigned atom type 1, "C".
+Atom no. 1347,  " CD "  at (-5.137, 13.363, 11.860),   was assigned atom type 1, "C".
+Atom no. 1348,  " CE "  at (-4.979, 14.872, 12.107),   was assigned atom type 1, "C".
+Atom no. 1349,  " NZ "  at (-4.508, 15.539, 10.885),   was assigned atom type 2, "N".
+Atom no. 1350,  " H  "  at (-6.540, 8.408, 12.895),   was assigned atom type 5, "H".
+Atom no. 1351,  " HZ1"  at (-5.196, 15.384, 10.121),   was assigned atom type 5, "H".
+Atom no. 1352,  " HZ2"  at (-4.411, 16.559, 11.062),   was assigned atom type 5, "H".
+Atom no. 1353,  " HZ3"  at (-3.586, 15.147, 10.607),   was assigned atom type 5, "H".
+Atom no. 1354,  " N  "  at (-4.204, 10.143, 15.071),   was assigned atom type 2, "N".
+Atom no. 1355,  " CA "  at (-3.948, 9.668, 16.436),   was assigned atom type 1, "C".
+Atom no. 1356,  " C  "  at (-4.091, 10.897, 17.252),   was assigned atom type 1, "C".
+Atom no. 1357,  " O  "  at (-3.532, 11.918, 16.875),   was assigned atom type 3, "O".
+Atom no. 1358,  " CB "  at (-2.469, 9.289, 16.553),   was assigned atom type 1, "C".
+Atom no. 1359,  " CG "  at (-2.092, 8.247, 17.585),   was assigned atom type 1, "C".
+Atom no. 1360,  " SD "  at (-2.444, 6.587, 17.011),   was assigned atom type 4, "S".
+Atom no. 1361,  " CE "  at (-1.549, 6.632, 15.449),   was assigned atom type 1, "C".
+Atom no. 1362,  " H  "  at (-3.696, 10.945, 14.758),   was assigned atom type 5, "H".
+Atom no. 1363,  " N  "  at (-4.840, 10.832, 18.331),   was assigned atom type 2, "N".
+Atom no. 1364,  " CA "  at (-4.897, 12.060, 19.141),   was assigned atom type 1, "C".
+Atom no. 1365,  " C  "  at (-4.410, 11.800, 20.538),   was assigned atom type 1, "C".
+Atom no. 1366,  " O  "  at (-4.573, 10.710, 21.070),   was assigned atom type 3, "O".
+Atom no. 1367,  " CB "  at (-6.316, 12.686, 19.186),   was assigned atom type 1, "C".
+Atom no. 1368,  " CG1"  at (-7.378, 11.691, 19.623),   was assigned atom type 1, "C".
+Atom no. 1369,  " CG2"  at (-6.711, 13.293, 17.843),   was assigned atom type 1, "C".
+Atom no. 1370,  " CD1"  at (-8.631, 12.354, 20.176),   was assigned atom type 1, "C".
+Atom no. 1371,  " H  "  at (-5.261, 9.969, 18.627),   was assigned atom type 5, "H".
+Atom no. 1372,  " N  "  at (-3.797, 12.796, 21.138),   was assigned atom type 2, "N".
+Atom no. 1373,  " CA "  at (-3.338, 12.506, 22.487),   was assigned atom type 1, "C".
+Atom no. 1374,  " C  "  at (-4.092, 13.254, 23.577),   was assigned atom type 1, "C".
+Atom no. 1375,  " O  "  at (-4.408, 14.421, 23.411),   was assigned atom type 3, "O".
+Atom no. 1376,  " H  "  at (-3.709, 13.708, 20.731),   was assigned atom type 5, "H".
+Atom no. 1377,  " N  "  at (-4.371, 12.563, 24.695),   was assigned atom type 2, "N".
+Atom no. 1378,  " CA "  at (-5.003, 13.205, 25.840),   was assigned atom type 1, "C".
+Atom no. 1379,  " C  "  at (-4.153, 13.058, 27.076),   was assigned atom type 1, "C".
+Atom no. 1380,  " O  "  at (-3.023, 12.613, 27.050),   was assigned atom type 3, "O".
+Atom no. 1381,  " H  "  at (-4.124, 11.593, 24.756),   was assigned atom type 5, "H".
+Atom no. 1382,  " N  "  at (-4.786, 13.348, 28.187),   was assigned atom type 2, "N".
+Atom no. 1383,  " CA "  at (-4.434, 12.636, 29.397),   was assigned atom type 1, "C".
+Atom no. 1384,  " C  "  at (-4.622, 11.117, 29.291),   was assigned atom type 1, "C".
+Atom no. 1385,  " O  "  at (-5.592, 10.523, 28.798),   was assigned atom type 3, "O".
+Atom no. 1386,  " CB "  at (-5.228, 13.278, 30.530),   was assigned atom type 1, "C".
+Atom no. 1387,  " CG1"  at (-4.522, 14.602, 30.812),   was assigned atom type 1, "C".
+Atom no. 1388,  " CG2"  at (-5.317, 12.436, 31.806),   was assigned atom type 1, "C".
+Atom no. 1389,  " CD1"  at (-5.071, 15.310, 32.039),   was assigned atom type 1, "C".
+Atom no. 1390,  " H  "  at (-5.614, 13.900, 28.156),   was assigned atom type 5, "H".
+Atom no. 1391,  " N  "  at (-3.534, 10.525, 29.717),   was assigned atom type 2, "N".
+Atom no. 1392,  " CA "  at (-3.433, 9.090, 29.573),   was assigned atom type 1, "C".
+Atom no. 1393,  " C  "  at (-2.692, 8.646, 28.325),   was assigned atom type 1, "C".
+Atom no. 1394,  " O  "  at (-2.132, 7.563, 28.272),   was assigned atom type 3, "O".
+Atom no. 1395,  " H  "  at (-2.741, 11.048, 30.048),   was assigned atom type 5, "H".
+Atom no. 1396,  " N  "  at (-2.706, 9.481, 27.308),   was assigned atom type 2, "N".
+Atom no. 1397,  " CA "  at (-2.164, 8.951, 26.069),   was assigned atom type 1, "C".
+Atom no. 1398,  " C  "  at (-3.167, 8.986, 24.956),   was assigned atom type 1, "C".
+Atom no. 1399,  " O  "  at (-4.048, 9.820, 24.951),   was assigned atom type 3, "O".
+Atom no. 1400,  " H  "  at (-3.102, 10.397, 27.348),   was assigned atom type 5, "H".
+Atom no. 1401,  " N  "  at (-2.973, 8.111, 24.001),   was assigned atom type 2, "N".
+Atom no. 1402,  " CA "  at (-3.424, 8.410, 22.663),   was assigned atom type 1, "C".
+Atom no. 1403,  " C  "  at (-4.345, 7.363, 22.108),   was assigned atom type 1, "C".
+Atom no. 1404,  " O  "  at (-4.253, 6.194, 22.436),   was assigned atom type 3, "O".
+Atom no. 1405,  " CB "  at (-2.196, 8.552, 21.764),   was assigned atom type 1, "C".
+Atom no. 1406,  " CG "  at (-1.404, 7.270, 21.689),   was assigned atom type 1, "C".
+Atom no. 1407,  " CD1"  at (-0.458, 6.947, 22.697),   was assigned atom type 1, "C".
+Atom no. 1408,  " CD2"  at (-1.612, 6.379, 20.610),   was assigned atom type 1, "C".
+Atom no. 1409,  " CE1"  at (0.278, 5.736, 22.631),   was assigned atom type 1, "C".
+Atom no. 1410,  " CE2"  at (-0.871, 5.172, 20.544),   was assigned atom type 1, "C".
+Atom no. 1411,  " CZ "  at (0.071, 4.852, 21.553),   was assigned atom type 1, "C".
+Atom no. 1412,  " H  "  at (-2.493, 7.249, 24.160),   was assigned atom type 5, "H".
+Atom no. 1413,  " N  "  at (-5.232, 7.803, 21.245),   was assigned atom type 2, "N".
+Atom no. 1414,  " CA "  at (-6.162, 6.858, 20.640),   was assigned atom type 1, "C".
+Atom no. 1415,  " C  "  at (-6.096, 7.069, 19.144),   was assigned atom type 1, "C".
+Atom no. 1416,  " O  "  at (-5.701, 8.133, 18.684),   was assigned atom type 3, "O".
+Atom no. 1417,  " CB "  at (-7.599, 7.085, 21.188),   was assigned atom type 1, "C".
+Atom no. 1418,  " CG1"  at (-8.150, 8.486, 20.968),   was assigned atom type 1, "C".
+Atom no. 1419,  " CG2"  at (-7.672, 6.764, 22.664),   was assigned atom type 1, "C".
+Atom no. 1420,  " CD1"  at (-9.671, 8.487, 21.139),   was assigned atom type 1, "C".
+Atom no. 1421,  " H  "  at (-5.240, 8.770, 20.978),   was assigned atom type 5, "H".
+Atom no. 1422,  " N  "  at (-6.444, 6.020, 18.393),   was assigned atom type 2, "N".
+Atom no. 1423,  " CA "  at (-6.435, 6.214, 16.937),   was assigned atom type 1, "C".
+Atom no. 1424,  " C  "  at (-7.834, 6.587, 16.613),   was assigned atom type 1, "C".
+Atom no. 1425,  " O  "  at (-8.730, 5.979, 17.165),   was assigned atom type 3, "O".
+Atom no. 1426,  " CB "  at (-6.128, 4.912, 16.188),   was assigned atom type 1, "C".
+Atom no. 1427,  " CG "  at (-4.735, 4.318, 16.443),   was assigned atom type 1, "C".
+Atom no. 1428,  " CD "  at (-4.606, 2.870, 15.899),   was assigned atom type 1, "C".
+Atom no. 1429,  " CE "  at (-3.240, 2.133, 16.066),   was assigned atom type 1, "C".
+Atom no. 1430,  " NZ "  at (-3.276, 0.714, 15.614),   was assigned atom type 2, "N".
+Atom no. 1431,  " H  "  at (-6.878, 5.213, 18.783),   was assigned atom type 5, "H".
+Atom no. 1432,  " HZ1"  at (-4.013, 0.203, 16.139),   was assigned atom type 5, "H".
+Atom no. 1433,  " HZ2"  at (-3.489, 0.680, 14.596),   was assigned atom type 5, "H".
+Atom no. 1434,  " HZ3"  at (-2.353, 0.269, 15.791),   was assigned atom type 5, "H".
+Atom no. 1435,  " N  "  at (-8.013, 7.576, 15.787),   was assigned atom type 2, "N".
+Atom no. 1436,  " CA "  at (-9.384, 8.012, 15.485),   was assigned atom type 1, "C".
+Atom no. 1437,  " C  "  at (-9.565, 7.977, 13.988),   was assigned atom type 1, "C".
+Atom no. 1438,  " O  "  at (-8.586, 8.061, 13.251),   was assigned atom type 3, "O".
+Atom no. 1439,  " CB "  at (-9.666, 9.460, 16.005),   was assigned atom type 1, "C".
+Atom no. 1440,  " CG1"  at (-9.775, 9.527, 17.533),   was assigned atom type 1, "C".
+Atom no. 1441,  " CG2"  at (-8.653, 10.484, 15.544),   was assigned atom type 1, "C".
+Atom no. 1442,  " H  "  at (-7.241, 7.991, 15.302),   was assigned atom type 5, "H".
+Atom no. 1443,  " N  "  at (-10.803, 7.872, 13.535),   was assigned atom type 2, "N".
+Atom no. 1444,  " CA "  at (-10.949, 8.106, 12.109),   was assigned atom type 1, "C".
+Atom no. 1445,  " C  "  at (-11.527, 9.467, 11.896),   was assigned atom type 1, "C".
+Atom no. 1446,  " O  "  at (-12.344, 9.967, 12.645),   was assigned atom type 3, "O".
+Atom no. 1447,  " CB "  at (-11.666, 6.936, 11.395),   was assigned atom type 1, "C".
+Atom no. 1448,  " CG "  at (-13.071, 6.488, 11.783),   was assigned atom type 1, "C".
+Atom no. 1449,  " CD "  at (-13.194, 5.074, 12.383),   was assigned atom type 1, "C".
+Atom no. 1450,  " NE "  at (-12.570, 5.023, 13.720),   was assigned atom type 2, "N".
+Atom no. 1451,  " CZ "  at (-12.447, 3.905, 14.474),   was assigned atom type 1, "C".
+Atom no. 1452,  " NH1"  at (-12.993, 2.729, 14.127),   was assigned atom type 2, "N".
+Atom no. 1453,  " NH2"  at (-11.743, 3.969, 15.603),   was assigned atom type 2, "N".
+Atom no. 1454,  " H  "  at (-11.587, 7.777, 14.150),   was assigned atom type 5, "H".
+Atom no. 1455,  " HE "  at (-12.175, 5.874, 14.067),   was assigned atom type 5, "H".
+Atom no. 1456,  "HH11"  at (-13.523, 2.651, 13.283),   was assigned atom type 5, "H".
+Atom no. 1457,  "HH12"  at (-12.868, 1.929, 14.714),   was assigned atom type 5, "H".
+Atom no. 1458,  "HH21"  at (-11.328, 4.835, 15.882),   was assigned atom type 5, "H".
+Atom no. 1459,  "HH22"  at (-11.631, 3.154, 16.171),   was assigned atom type 5, "H".
+Atom no. 1460,  " N  "  at (-11.017, 10.101, 10.890),   was assigned atom type 2, "N".
+Atom no. 1461,  " CA "  at (-11.519, 11.418, 10.690),   was assigned atom type 1, "C".
+Atom no. 1462,  " C  "  at (-12.188, 11.685, 9.392),   was assigned atom type 1, "C".
+Atom no. 1463,  " O  "  at (-11.798, 11.253, 8.318),   was assigned atom type 3, "O".
+Atom no. 1464,  " CB "  at (-10.446, 12.413, 10.971),   was assigned atom type 1, "C".
+Atom no. 1465,  " CG "  at (-9.224, 12.470, 10.125),   was assigned atom type 1, "C".
+Atom no. 1466,  " CD "  at (-9.027, 13.955, 10.093),   was assigned atom type 1, "C".
+Atom no. 1467,  " OE1"  at (-9.572, 14.682, 9.283),   was assigned atom type 3, "O".
+Atom no. 1468,  " NE2"  at (-8.298, 14.439, 11.079),   was assigned atom type 2, "N".
+Atom no. 1469,  " H  "  at (-10.333, 9.687, 10.289),   was assigned atom type 5, "H".
+Atom no. 1470,  "HE21"  at (-8.255, 15.425, 11.264),   was assigned atom type 5, "H".
+Atom no. 1471,  "HE22"  at (-7.783, 13.839, 11.685),   was assigned atom type 5, "H".
+Atom no. 1472,  " N  "  at (-13.287, 12.393, 9.590),   was assigned atom type 2, "N".
+Atom no. 1473,  " CA "  at (-14.240, 12.687, 8.533),   was assigned atom type 1, "C".
+Atom no. 1474,  " C  "  at (-14.322, 14.154, 8.533),   was assigned atom type 1, "C".
+Atom no. 1475,  " O  "  at (-14.417, 14.784, 9.576),   was assigned atom type 3, "O".
+Atom no. 1476,  " CB "  at (-15.644, 12.230, 8.899),   was assigned atom type 1, "C".
+Atom no. 1477,  " CG "  at (-15.756, 10.740, 9.102),   was assigned atom type 1, "C".
+Atom no. 1478,  " CD1"  at (-15.145, 10.161, 10.236),   was assigned atom type 1, "C".
+Atom no. 1479,  " CD2"  at (-16.512, 9.945, 8.197),   was assigned atom type 1, "C".
+Atom no. 1480,  " CE1"  at (-15.303, 8.785, 10.473),   was assigned atom type 1, "C".
+Atom no. 1481,  " CE2"  at (-16.665, 8.555, 8.438),   was assigned atom type 1, "C".
+Atom no. 1482,  " CZ "  at (-16.063, 7.986, 9.585),   was assigned atom type 1, "C".
+Atom no. 1483,  " OH "  at (-16.230, 6.647, 9.900),   was assigned atom type 3, "O".
+Atom no. 1484,  " H  "  at (-13.490, 12.776, 10.496),   was assigned atom type 5, "H".
+Atom no. 1485,  " HH "  at (-16.884, 6.267, 9.307),   was assigned atom type 5, "H".
+Atom no. 1486,  " N  "  at (-14.251, 14.677, 7.343),   was assigned atom type 2, "N".
+Atom no. 1487,  " CA "  at (-14.300, 16.121, 7.214),   was assigned atom type 1, "C".
+Atom no. 1488,  " C  "  at (-15.664, 16.490, 6.664),   was assigned atom type 1, "C".
+Atom no. 1489,  " O  "  at (-16.384, 15.636, 6.172),   was assigned atom type 3, "O".
+Atom no. 1490,  " CB "  at (-13.185, 16.573, 6.261),   was assigned atom type 1, "C".
+Atom no. 1491,  " CG "  at (-11.872, 15.940, 6.676),   was assigned atom type 1, "C".
+Atom no. 1492,  " OD1"  at (-11.223, 16.463, 7.583),   was assigned atom type 3, "O".
+Atom no. 1493,  " OD2"  at (-11.509, 14.913, 6.097),   was assigned atom type 3, "O".
+Atom no. 1494,  " H  "  at (-14.295, 14.115, 6.521),   was assigned atom type 5, "H".
+Atom no. 1495,  " N  "  at (-16.024, 17.761, 6.763),   was assigned atom type 2, "N".
+Atom no. 1496,  " CA "  at (-17.309, 18.177, 6.204),   was assigned atom type 1, "C".
+Atom no. 1497,  " C  "  at (-18.532, 17.413, 6.727),   was assigned atom type 1, "C".
+Atom no. 1498,  " O  "  at (-19.440, 17.066, 5.993),   was assigned atom type 3, "O".
+Atom no. 1499,  " CB "  at (-17.191, 18.150, 4.661),   was assigned atom type 1, "C".
+Atom no. 1500,  " CG "  at (-18.060, 19.142, 3.862),   was assigned atom type 1, "C".
+Atom no. 1501,  " CD "  at (-17.429, 20.526, 3.749),   was assigned atom type 1, "C".
+Atom no. 1502,  " OE1"  at (-16.218, 20.712, 3.816),   was assigned atom type 3, "O".
+Atom no. 1503,  " NE2"  at (-18.307, 21.511, 3.560),   was assigned atom type 2, "N".
+Atom no. 1504,  " H  "  at (-15.384, 18.434, 7.142),   was assigned atom type 5, "H".
+Atom no. 1505,  "HE21"  at (-18.004, 22.463, 3.498),   was assigned atom type 5, "H".
+Atom no. 1506,  "HE22"  at (-19.282, 21.315, 3.452),   was assigned atom type 5, "H".
+Atom no. 1507,  " N  "  at (-18.565, 17.173, 8.037),   was assigned atom type 2, "N".
+Atom no. 1508,  " CA "  at (-19.773, 16.581, 8.641),   was assigned atom type 1, "C".
+Atom no. 1509,  " C  "  at (-20.693, 17.657, 9.205),   was assigned atom type 1, "C".
+Atom no. 1510,  " O  "  at (-20.266, 18.615, 9.827),   was assigned atom type 3, "O".
+Atom no. 1511,  " CB "  at (-19.345, 15.580, 9.749),   was assigned atom type 1, "C".
+Atom no. 1512,  " CG1"  at (-18.552, 14.462, 9.107),   was assigned atom type 1, "C".
+Atom no. 1513,  " CG2"  at (-20.477, 15.018, 10.590),   was assigned atom type 1, "C".
+Atom no. 1514,  " CD1"  at (-19.352, 13.723, 8.024),   was assigned atom type 1, "C".
+Atom no. 1515,  " H  "  at (-17.813, 17.453, 8.637),   was assigned atom type 5, "H".
+Atom no. 1516,  " N  "  at (-21.972, 17.461, 8.948),   was assigned atom type 2, "N".
+Atom no. 1517,  " CA "  at (-22.989, 18.347, 9.502),   was assigned atom type 1, "C".
+Atom no. 1518,  " C  "  at (-23.285, 17.955, 10.907),   was assigned atom type 1, "C".
+Atom no. 1519,  " O  "  at (-23.583, 16.797, 11.146),   was assigned atom type 3, "O".
+Atom no. 1520,  " CB "  at (-24.335, 18.131, 8.780),   was assigned atom type 1, "C".
+Atom no. 1521,  " CG "  at (-25.344, 19.276, 8.553),   was assigned atom type 1, "C".
+Atom no. 1522,  " CD1"  at (-26.704, 18.626, 8.436),   was assigned atom type 1, "C".
+Atom no. 1523,  " CD2"  at (-25.350, 20.411, 9.562),   was assigned atom type 1, "C".
+Atom no. 1524,  " H  "  at (-22.263, 16.641, 8.452),   was assigned atom type 5, "H".
+Atom no. 1525,  " N  "  at (-23.270, 18.933, 11.793),   was assigned atom type 2, "N".
+Atom no. 1526,  " CA "  at (-23.704, 18.718, 13.160),   was assigned atom type 1, "C".
+Atom no. 1527,  " C  "  at (-24.747, 19.767, 13.502),   was assigned atom type 1, "C".
+Atom no. 1528,  " O  "  at (-24.610, 20.910, 13.131),   was assigned atom type 3, "O".
+Atom no. 1529,  " CB "  at (-22.464, 18.849, 14.114),   was assigned atom type 1, "C".
+Atom no. 1530,  " CG1"  at (-21.265, 17.913, 13.807),   was assigned atom type 1, "C".
+Atom no. 1531,  " CG2"  at (-22.829, 18.527, 15.560),   was assigned atom type 1, "C".
+Atom no. 1532,  " CD1"  at (-20.136, 18.609, 13.025),   was assigned atom type 1, "C".
+Atom no. 1533,  " H  "  at (-23.002, 19.863, 11.519),   was assigned atom type 5, "H".
+Atom no. 1534,  " N  "  at (-25.789, 19.401, 14.209),   was assigned atom type 2, "N".
+Atom no. 1535,  " CA "  at (-26.579, 20.452, 14.836),   was assigned atom type 1, "C".
+Atom no. 1536,  " C  "  at (-26.461, 20.395, 16.331),   was assigned atom type 1, "C".
+Atom no. 1537,  " O  "  at (-26.776, 19.372, 16.932),   was assigned atom type 3, "O".
+Atom no. 1538,  " CB "  at (-28.007, 20.226, 14.534),   was assigned atom type 1, "C".
+Atom no. 1539,  " CG "  at (-28.076, 20.360, 13.051),   was assigned atom type 1, "C".
+Atom no. 1540,  " CD "  at (-29.415, 19.871, 12.619),   was assigned atom type 1, "C".
+Atom no. 1541,  " OE1"  at (-30.404, 20.231, 13.281),   was assigned atom type 3, "O".
+Atom no. 1542,  " OE2"  at (-29.456, 19.126, 11.630),   was assigned atom type 3, "O".
+Atom no. 1543,  " H  "  at (-25.941, 18.438, 14.441),   was assigned atom type 5, "H".
+Atom no. 1544,  " N  "  at (-25.943, 21.497, 16.884),   was assigned atom type 2, "N".
+Atom no. 1545,  " CA "  at (-25.457, 21.569, 18.282),   was assigned atom type 1, "C".
+Atom no. 1546,  " C  "  at (-26.368, 22.519, 18.984),   was assigned atom type 1, "C".
+Atom no. 1547,  " O  "  at (-26.346, 23.707, 18.734),   was assigned atom type 3, "O".
+Atom no. 1548,  " CB "  at (-24.020, 22.194, 18.454),   was assigned atom type 1, "C".
+Atom no. 1549,  " CG1"  at (-22.850, 21.584, 17.664),   was assigned atom type 1, "C".
+Atom no. 1550,  " CG2"  at (-23.631, 22.303, 19.937),   was assigned atom type 1, "C".
+Atom no. 1551,  " CD1"  at (-22.619, 22.186, 16.266),   was assigned atom type 1, "C".
+Atom no. 1552,  " H  "  at (-25.826, 22.313, 16.306),   was assigned atom type 5, "H".
+Atom no. 1553,  " N  "  at (-27.195, 21.982, 19.836),   was assigned atom type 2, "N".
+Atom no. 1554,  " CA "  at (-28.271, 22.803, 20.401),   was assigned atom type 1, "C".
+Atom no. 1555,  " C  "  at (-29.035, 23.593, 19.318),   was assigned atom type 1, "C".
+Atom no. 1556,  " O  "  at (-29.314, 24.775, 19.410),   was assigned atom type 3, "O".
+Atom no. 1557,  " CB "  at (-27.736, 23.706, 21.580),   was assigned atom type 1, "C".
+Atom no. 1558,  " SG "  at (-28.959, 24.335, 22.824),   was assigned atom type 4, "S".
+Atom no. 1559,  " H  "  at (-27.163, 21.000, 20.039),   was assigned atom type 5, "H".
+Atom no. 1560,  " N  "  at (-29.381, 22.882, 18.245),   was assigned atom type 2, "N".
+Atom no. 1561,  " CA "  at (-30.213, 23.570, 17.265),   was assigned atom type 1, "C".
+Atom no. 1562,  " C  "  at (-29.556, 24.776, 16.599),   was assigned atom type 1, "C".
+Atom no. 1563,  " O  "  at (-30.276, 25.692, 16.214),   was assigned atom type 3, "O".
+Atom no. 1564,  " H  "  at (-29.227, 21.892, 18.191),   was assigned atom type 5, "H".
+Atom no. 1565,  " N  "  at (-28.197, 24.729, 16.449),   was assigned atom type 2, "N".
+Atom no. 1566,  " CA "  at (-27.371, 25.649, 15.604),   was assigned atom type 1, "C".
+Atom no. 1567,  " C  "  at (-26.576, 24.738, 14.673),   was assigned atom type 1, "C".
+Atom no. 1568,  " O  "  at (-26.054, 23.732, 15.122),   was assigned atom type 3, "O".
+Atom no. 1569,  " CB "  at (-26.248, 26.373, 16.386),   was assigned atom type 1, "C".
+Atom no. 1570,  " CG "  at (-26.703, 27.226, 17.547),   was assigned atom type 1, "C".
+Atom no. 1571,  " ND1"  at (-26.122, 28.390, 17.870),   was assigned atom type 2, "N".
+Atom no. 1572,  " CD2"  at (-27.717, 26.992, 18.480),   was assigned atom type 1, "C".
+Atom no. 1573,  " CE1"  at (-26.754, 28.895, 18.989),   was assigned atom type 1, "C".
+Atom no. 1574,  " NE2"  at (-27.750, 28.023, 19.366),   was assigned atom type 2, "N".
+Atom no. 1575,  " H  "  at (-27.664, 24.020, 16.911),   was assigned atom type 5, "H".
+Atom no. 1576,  " HD1"  at (-25.348, 28.802, 17.433),   was assigned atom type 5, "H".
+Atom no. 1577,  " N  "  at (-26.508, 25.045, 13.397),   was assigned atom type 2, "N".
+Atom no. 1578,  " CA "  at (-25.771, 24.128, 12.518),   was assigned atom type 1, "C".
+Atom no. 1579,  " C  "  at (-24.305, 24.478, 12.372),   was assigned atom type 1, "C".
+Atom no. 1580,  " O  "  at (-23.915, 25.621, 12.548),   was assigned atom type 3, "O".
+Atom no. 1581,  " CB "  at (-26.393, 24.140, 11.136),   was assigned atom type 1, "C".
+Atom no. 1582,  " CG "  at (-27.780, 23.571, 11.169),   was assigned atom type 1, "C".
+Atom no. 1583,  " CD "  at (-28.487, 23.774, 9.846),   was assigned atom type 1, "C".
+Atom no. 1584,  " CE "  at (-29.930, 23.293, 9.993),   was assigned atom type 1, "C".
+Atom no. 1585,  " NZ "  at (-30.691, 23.611, 8.774),   was assigned atom type 2, "N".
+Atom no. 1586,  " H  "  at (-26.817, 25.931, 13.044),   was assigned atom type 5, "H".
+Atom no. 1587,  " HZ1"  at (-30.664, 24.637, 8.608),   was assigned atom type 5, "H".
+Atom no. 1588,  " HZ2"  at (-30.267, 23.118, 7.963),   was assigned atom type 5, "H".
+Atom no. 1589,  " HZ3"  at (-31.678, 23.304, 8.890),   was assigned atom type 5, "H".
+Atom no. 1590,  " N  "  at (-23.501, 23.488, 12.027),   was assigned atom type 2, "N".
+Atom no. 1591,  " CA "  at (-22.089, 23.739, 11.736),   was assigned atom type 1, "C".
+Atom no. 1592,  " C  "  at (-21.664, 22.602, 10.874),   was assigned atom type 1, "C".
+Atom no. 1593,  " O  "  at (-22.360, 21.593, 10.831),   was assigned atom type 3, "O".
+Atom no. 1594,  " CB "  at (-21.261, 23.713, 13.018),   was assigned atom type 1, "C".
+Atom no. 1595,  " H  "  at (-23.818, 22.537, 11.976),   was assigned atom type 5, "H".
+Atom no. 1596,  " N  "  at (-20.525, 22.740, 10.211),   was assigned atom type 2, "N".
+Atom no. 1597,  " CA "  at (-19.983, 21.638, 9.377),   was assigned atom type 1, "C".
+Atom no. 1598,  " C  "  at (-18.473, 21.664, 9.528),   was assigned atom type 1, "C".
+Atom no. 1599,  " O  "  at (-17.873, 22.720, 9.550),   was assigned atom type 3, "O".
+Atom no. 1600,  " CB "  at (-20.439, 21.807, 7.892),   was assigned atom type 1, "C".
+Atom no. 1601,  " CG1"  at (-20.424, 20.571, 7.026),   was assigned atom type 1, "C".
+Atom no. 1602,  " CG2"  at (-19.775, 22.971, 7.156),   was assigned atom type 1, "C".
+Atom no. 1603,  " CD1"  at (-21.802, 20.600, 6.337),   was assigned atom type 1, "C".
+Atom no. 1604,  " H  "  at (-19.992, 23.588, 10.270),   was assigned atom type 5, "H".
+Atom no. 1605,  " N  "  at (-17.887, 20.499, 9.720),   was assigned atom type 2, "N".
+Atom no. 1606,  " CA "  at (-16.466, 20.461, 10.022),   was assigned atom type 1, "C".
+Atom no. 1607,  " C  "  at (-16.021, 19.044, 10.226),   was assigned atom type 1, "C".
+Atom no. 1608,  " O  "  at (-16.741, 18.075, 9.927),   was assigned atom type 3, "O".
+Atom no. 1609,  " H  "  at (-18.422, 19.649, 9.754),   was assigned atom type 5, "H".
+Atom no. 1610,  " N  "  at (-14.781, 18.989, 10.750),   was assigned atom type 2, "N".
+Atom no. 1611,  " CA "  at (-14.150, 17.718, 11.070),   was assigned atom type 1, "C".
+Atom no. 1612,  " C  "  at (-14.677, 17.131, 12.324),   was assigned atom type 1, "C".
+Atom no. 1613,  " O  "  at (-14.757, 17.815, 13.323),   was assigned atom type 3, "O".
+Atom no. 1614,  " CB "  at (-12.634, 17.921, 11.235),   was assigned atom type 1, "C".
+Atom no. 1615,  " OG1"  at (-12.148, 18.527, 10.017),   was assigned atom type 3, "O".
+Atom no. 1616,  " CG2"  at (-11.866, 16.614, 11.503),   was assigned atom type 1, "C".
+Atom no. 1617,  " H  "  at (-14.277, 19.829, 10.956),   was assigned atom type 5, "H".
+Atom no. 1618,  " HG1"  at (-11.211, 18.320, 9.936),   was assigned atom type 5, "H".
+Atom no. 1619,  " N  "  at (-14.994, 15.849, 12.255),   was assigned atom type 2, "N".
+Atom no. 1620,  " CA "  at (-15.369, 15.052, 13.410),   was assigned atom type 1, "C".
+Atom no. 1621,  " C  "  at (-14.412, 13.883, 13.410),   was assigned atom type 1, "C".
+Atom no. 1622,  " O  "  at (-14.176, 13.230, 12.394),   was assigned atom type 3, "O".
+Atom no. 1623,  " CB "  at (-16.808, 14.596, 13.170),   was assigned atom type 1, "C".
+Atom no. 1624,  " CG1"  at (-17.139, 13.268, 13.805),   was assigned atom type 1, "C".
+Atom no. 1625,  " CG2"  at (-17.799, 15.699, 13.544),   was assigned atom type 1, "C".
+Atom no. 1626,  " H  "  at (-14.903, 15.364, 11.377),   was assigned atom type 5, "H".
+Atom no. 1627,  " N  "  at (-13.844, 13.637, 14.584),   was assigned atom type 2, "N".
+Atom no. 1628,  " CA "  at (-13.037, 12.432, 14.751),   was assigned atom type 1, "C".
+Atom no. 1629,  " C  "  at (-13.952, 11.443, 15.409),   was assigned atom type 1, "C".
+Atom no. 1630,  " O  "  at (-14.760, 11.864, 16.223),   was assigned atom type 3, "O".
+Atom no. 1631,  " CB "  at (-11.948, 12.755, 15.738),   was assigned atom type 1, "C".
+Atom no. 1632,  " CG "  at (-10.672, 13.354, 15.217),   was assigned atom type 1, "C".
+Atom no. 1633,  " CD1"  at (-10.796, 14.192, 13.982),   was assigned atom type 1, "C".
+Atom no. 1634,  " CD2"  at (-10.059, 14.162, 16.356),   was assigned atom type 1, "C".
+Atom no. 1635,  " H  "  at (-14.088, 14.133, 15.419),   was assigned atom type 5, "H".
+Atom no. 1636,  " N  "  at (-13.825, 10.156, 15.080),   was assigned atom type 2, "N".
+Atom no. 1637,  " CA "  at (-14.626, 9.122, 15.734),   was assigned atom type 1, "C".
+Atom no. 1638,  " C  "  at (-13.690, 8.031, 16.206),   was assigned atom type 1, "C".
+Atom no. 1639,  " O  "  at (-12.749, 7.679, 15.502),   was assigned atom type 3, "O".
+Atom no. 1640,  " CB "  at (-15.549, 8.497, 14.702),   was assigned atom type 1, "C".
+Atom no. 1641,  " CG1"  at (-16.278, 7.319, 15.309),   was assigned atom type 1, "C".
+Atom no. 1642,  " CG2"  at (-16.519, 9.510, 14.067),   was assigned atom type 1, "C".
+Atom no. 1643,  " H  "  at (-13.179, 9.887, 14.361),   was assigned atom type 5, "H".
+Atom no. 1644,  " N  "  at (-13.954, 7.505, 17.394),   was assigned atom type 2, "N".
+Atom no. 1645,  " CA "  at (-12.984, 6.597, 17.949),   was assigned atom type 1, "C".
+Atom no. 1646,  " C  "  at (-13.403, 6.334, 19.361),   was assigned atom type 1, "C".
+Atom no. 1647,  " O  "  at (-14.470, 6.750, 19.790),   was assigned atom type 3, "O".
+Atom no. 1648,  " H  "  at (-14.732, 7.803, 17.959),   was assigned atom type 5, "H".
+Atom no. 1649,  " N  "  at (-12.549, 5.609, 20.078),   was assigned atom type 2, "N".
+Atom no. 1650,  " CA "  at (-12.971, 5.129, 21.396),   was assigned atom type 1, "C".
+Atom no. 1651,  " C  "  at (-12.734, 6.192, 22.448),   was assigned atom type 1, "C".
+Atom no. 1652,  " O  "  at (-11.808, 6.102, 23.229),   was assigned atom type 3, "O".
+Atom no. 1653,  " CB "  at (-12.030, 3.919, 21.542),   was assigned atom type 1, "C".
+Atom no. 1654,  " CG "  at (-10.724, 4.376, 20.910),   was assigned atom type 1, "C".
+Atom no. 1655,  " CD "  at (-11.228, 5.115, 19.685),   was assigned atom type 1, "C".
+Atom no. 1656,  " N  "  at (-13.566, 7.214, 22.452),   was assigned atom type 2, "N".
+Atom no. 1657,  " CA "  at (-13.483, 8.180, 23.549),   was assigned atom type 1, "C".
+Atom no. 1658,  " C  "  at (-14.556, 7.764, 24.518),   was assigned atom type 1, "C".
+Atom no. 1659,  " O  "  at (-15.588, 7.272, 24.110),   was assigned atom type 3, "O".
+Atom no. 1660,  " CB "  at (-13.753, 9.591, 23.001),   was assigned atom type 1, "C".
+Atom no. 1661,  " OG1"  at (-13.851, 10.491, 24.098),   was assigned atom type 3, "O".
+Atom no. 1662,  " CG2"  at (-15.033, 9.686, 22.170),   was assigned atom type 1, "C".
+Atom no. 1663,  " H  "  at (-14.336, 7.241, 21.810),   was assigned atom type 5, "H".
+Atom no. 1664,  " HG1"  at (-14.457, 11.214, 23.864),   was assigned atom type 5, "H".
+Atom no. 1665,  " N  "  at (-14.327, 7.986, 25.794),   was assigned atom type 2, "N".
+Atom no. 1666,  " CA "  at (-15.410, 7.696, 26.730),   was assigned atom type 1, "C".
+Atom no. 1667,  " C  "  at (-16.545, 8.708, 26.773),   was assigned atom type 1, "C".
+Atom no. 1668,  " O  "  at (-17.556, 8.433, 27.397),   was assigned atom type 3, "O".
+Atom no. 1669,  " CB "  at (-14.676, 7.654, 28.089),   was assigned atom type 1, "C".
+Atom no. 1670,  " CG "  at (-13.471, 8.577, 27.931),   was assigned atom type 1, "C".
+Atom no. 1671,  " CD "  at (-13.101, 8.456, 26.457),   was assigned atom type 1, "C".
+Atom no. 1672,  " N  "  at (-16.374, 9.898, 26.209),   was assigned atom type 2, "N".
+Atom no. 1673,  " CA "  at (-17.428, 10.928, 26.266),   was assigned atom type 1, "C".
+Atom no. 1674,  " C  "  at (-17.377, 11.568, 24.914),   was assigned atom type 1, "C".
+Atom no. 1675,  " O  "  at (-16.311, 11.687, 24.340),   was assigned atom type 3, "O".
+Atom no. 1676,  " CB "  at (-17.172, 11.975, 27.419),   was assigned atom type 1, "C".
+Atom no. 1677,  " CG1"  at (-18.083, 13.203, 27.376),   was assigned atom type 1, "C".
+Atom no. 1678,  " CG2"  at (-17.506, 11.338, 28.780),   was assigned atom type 1, "C".
+Atom no. 1679,  " H  "  at (-15.568, 10.115, 25.652),   was assigned atom type 5, "H".
+Atom no. 1680,  " N  "  at (-18.525, 11.942, 24.393),   was assigned atom type 2, "N".
+Atom no. 1681,  " CA "  at (-18.541, 12.724, 23.147),   was assigned atom type 1, "C".
+Atom no. 1682,  " C  "  at (-18.182, 14.170, 23.447),   was assigned atom type 1, "C".
+Atom no. 1683,  " O  "  at (-18.784, 14.754, 24.348),   was assigned atom type 3, "O".
+Atom no. 1684,  " CB "  at (-19.943, 12.782, 22.555),   was assigned atom type 1, "C".
+Atom no. 1685,  " CG "  at (-20.486, 11.454, 22.164),   was assigned atom type 1, "C".
+Atom no. 1686,  " OD1"  at (-19.890, 10.709, 21.417),   was assigned atom type 3, "O".
+Atom no. 1687,  " ND2"  at (-21.696, 11.189, 22.631),   was assigned atom type 2, "N".
+Atom no. 1688,  " H  "  at (-19.372, 11.833, 24.917),   was assigned atom type 5, "H".
+Atom no. 1689,  "HD21"  at (-22.172, 10.341, 22.400),   was assigned atom type 5, "H".
+Atom no. 1690,  "HD22"  at (-22.169, 11.851, 23.221),   was assigned atom type 5, "H".
+Atom no. 1691,  " N  "  at (-17.205, 14.714, 22.720),   was assigned atom type 2, "N".
+Atom no. 1692,  " CA "  at (-16.587, 16.028, 23.015),   was assigned atom type 1, "C".
+Atom no. 1693,  " C  "  at (-16.806, 16.906, 21.832),   was assigned atom type 1, "C".
+Atom no. 1694,  " O  "  at (-16.474, 16.508, 20.720),   was assigned atom type 3, "O".
+Atom no. 1695,  " CB "  at (-15.050, 15.861, 23.234),   was assigned atom type 1, "C".
+Atom no. 1696,  " CG1"  at (-14.801, 15.070, 24.541),   was assigned atom type 1, "C".
+Atom no. 1697,  " CG2"  at (-14.212, 17.174, 23.167),   was assigned atom type 1, "C".
+Atom no. 1698,  " CD1"  at (-13.516, 14.281, 24.443),   was assigned atom type 1, "C".
+Atom no. 1699,  " H  "  at (-16.825, 14.187, 21.954),   was assigned atom type 5, "H".
+Atom no. 1700,  " N  "  at (-17.347, 18.113, 22.102),   was assigned atom type 2, "N".
+Atom no. 1701,  " CA "  at (-17.350, 19.179, 21.089),   was assigned atom type 1, "C".
+Atom no. 1702,  " C  "  at (-16.206, 20.130, 21.423),   was assigned atom type 1, "C".
+Atom no. 1703,  " O  "  at (-16.241, 20.791, 22.457),   was assigned atom type 3, "O".
+Atom no. 1704,  " CB "  at (-18.669, 19.983, 21.169),   was assigned atom type 1, "C".
+Atom no. 1705,  " CG1"  at (-19.954, 19.150, 21.206),   was assigned atom type 1, "C".
+Atom no. 1706,  " CG2"  at (-18.670, 21.034, 20.021),   was assigned atom type 1, "C".
+Atom no. 1707,  " CD1"  at (-20.231, 18.466, 19.872),   was assigned atom type 1, "C".
+Atom no. 1708,  " H  "  at (-17.594, 18.364, 23.043),   was assigned atom type 5, "H".
+Atom no. 1709,  " N  "  at (-15.234, 20.158, 20.538),   was assigned atom type 2, "N".
+Atom no. 1710,  " CA "  at (-14.070, 20.986, 20.784),   was assigned atom type 1, "C".
+Atom no. 1711,  " C  "  at (-14.054, 22.253, 19.991),   was assigned atom type 1, "C".
+Atom no. 1712,  " O  "  at (-15.013, 22.608, 19.318),   was assigned atom type 3, "O".
+Atom no. 1713,  " H  "  at (-15.314, 19.635, 19.692),   was assigned atom type 5, "H".
+Atom no. 1714,  " N  "  at (-12.955, 22.970, 20.046),   was assigned atom type 2, "N".
+Atom no. 1715,  " CA "  at (-12.950, 24.341, 19.528),   was assigned atom type 1, "C".
+Atom no. 1716,  " C  "  at (-13.218, 24.532, 18.076),   was assigned atom type 1, "C".
+Atom no. 1717,  " O  "  at (-13.785, 25.514, 17.648),   was assigned atom type 3, "O".
+Atom no. 1718,  " CB "  at (-11.676, 25.121, 19.814),   was assigned atom type 1, "C".
+Atom no. 1719,  " CG "  at (-11.396, 25.319, 21.326),   was assigned atom type 1, "C".
+Atom no. 1720,  " CD "  at (-10.096, 26.147, 21.558),   was assigned atom type 1, "C".
+Atom no. 1721,  " NE "  at (-8.857, 25.470, 21.068),   was assigned atom type 2, "N".
+Atom no. 1722,  " CZ "  at (-8.162, 25.831, 19.959),   was assigned atom type 1, "C".
+Atom no. 1723,  " NH1"  at (-8.545, 26.823, 19.182),   was assigned atom type 2, "N".
+Atom no. 1724,  " NH2"  at (-7.061, 25.189, 19.557),   was assigned atom type 2, "N".
+Atom no. 1725,  " H  "  at (-12.181, 22.637, 20.594),   was assigned atom type 5, "H".
+Atom no. 1726,  " HE "  at (-8.533, 24.684, 21.592),   was assigned atom type 5, "H".
+Atom no. 1727,  "HH11"  at (-9.368, 27.348, 19.403),   was assigned atom type 5, "H".
+Atom no. 1728,  "HH12"  at (-8.012, 27.054, 18.369),   was assigned atom type 5, "H".
+Atom no. 1729,  "HH21"  at (-6.712, 24.415, 20.085),   was assigned atom type 5, "H".
+Atom no. 1730,  "HH22"  at (-6.586, 25.482, 18.728),   was assigned atom type 5, "H".
+Atom no. 1731,  " N  "  at (-12.875, 23.516, 17.326),   was assigned atom type 2, "N".
+Atom no. 1732,  " CA "  at (-13.182, 23.596, 15.898),   was assigned atom type 1, "C".
+Atom no. 1733,  " C  "  at (-14.641, 23.843, 15.550),   was assigned atom type 1, "C".
+Atom no. 1734,  " O  "  at (-14.995, 24.513, 14.600),   was assigned atom type 3, "O".
+Atom no. 1735,  " CB "  at (-12.570, 22.355, 15.189),   was assigned atom type 1, "C".
+Atom no. 1736,  " CG "  at (-13.422, 21.127, 15.214),   was assigned atom type 1, "C".
+Atom no. 1737,  " OD1"  at (-13.745, 20.542, 14.192),   was assigned atom type 3, "O".
+Atom no. 1738,  " ND2"  at (-13.808, 20.773, 16.409),   was assigned atom type 2, "N".
+Atom no. 1739,  " H  "  at (-12.237, 22.839, 17.696),   was assigned atom type 5, "H".
+Atom no. 1740,  "HD21"  at (-14.439, 20.002, 16.514),   was assigned atom type 5, "H".
+Atom no. 1741,  "HD22"  at (-13.478, 21.231, 17.229),   was assigned atom type 5, "H".
+Atom no. 1742,  " N  "  at (-15.512, 23.303, 16.392),   was assigned atom type 2, "N".
+Atom no. 1743,  " CA "  at (-16.917, 23.612, 16.149),   was assigned atom type 1, "C".
+Atom no. 1744,  " C  "  at (-17.423, 24.708, 17.061),   was assigned atom type 1, "C".
+Atom no. 1745,  " O  "  at (-18.302, 25.463, 16.684),   was assigned atom type 3, "O".
+Atom no. 1746,  " CB "  at (-17.795, 22.339, 16.199),   was assigned atom type 1, "C".
+Atom no. 1747,  " CG "  at (-17.413, 21.353, 15.047),   was assigned atom type 1, "C".
+Atom no. 1748,  " CD1"  at (-18.043, 20.004, 15.311),   was assigned atom type 1, "C".
+Atom no. 1749,  " CD2"  at (-17.800, 21.805, 13.641),   was assigned atom type 1, "C".
+Atom no. 1750,  " H  "  at (-15.228, 22.811, 17.215),   was assigned atom type 5, "H".
+Atom no. 1751,  " N  "  at (-16.817, 24.824, 18.250),   was assigned atom type 2, "N".
+Atom no. 1752,  " CA "  at (-17.259, 25.870, 19.185),   was assigned atom type 1, "C".
+Atom no. 1753,  " C  "  at (-17.154, 27.264, 18.589),   was assigned atom type 1, "C".
+Atom no. 1754,  " O  "  at (-17.992, 28.154, 18.669),   was assigned atom type 3, "O".
+Atom no. 1755,  " CB "  at (-16.460, 25.753, 20.483),   was assigned atom type 1, "C".
+Atom no. 1756,  " CG "  at (-16.774, 24.550, 21.372),   was assigned atom type 1, "C".
+Atom no. 1757,  " CD1"  at (-15.836, 24.608, 22.555),   was assigned atom type 1, "C".
+Atom no. 1758,  " CD2"  at (-18.214, 24.541, 21.838),   was assigned atom type 1, "C".
+Atom no. 1759,  " H  "  at (-16.137, 24.150, 18.540),   was assigned atom type 5, "H".
+Atom no. 1760,  " N  "  at (-16.092, 27.413, 17.881),   was assigned atom type 2, "N".
+Atom no. 1761,  " CA "  at (-15.952, 28.573, 17.026),   was assigned atom type 1, "C".
+Atom no. 1762,  " C  "  at (-17.088, 28.827, 16.016),   was assigned atom type 1, "C".
+Atom no. 1763,  " O  "  at (-17.534, 29.962, 15.899),   was assigned atom type 3, "O".
+Atom no. 1764,  " CB "  at (-14.597, 28.276, 16.416),   was assigned atom type 1, "C".
+Atom no. 1765,  " OG1"  at (-13.595, 28.966, 17.180),   was assigned atom type 3, "O".
+Atom no. 1766,  " CG2"  at (-14.491, 28.425, 14.935),   was assigned atom type 1, "C".
+Atom no. 1767,  " H  "  at (-15.350, 26.739, 17.890),   was assigned atom type 5, "H".
+Atom no. 1768,  " HG1"  at (-12.765, 28.479, 17.095),   was assigned atom type 5, "H".
+Atom no. 1769,  " N  "  at (-17.595, 27.791, 15.320),   was assigned atom type 2, "N".
+Atom no. 1770,  " CA "  at (-18.692, 28.064, 14.398),   was assigned atom type 1, "C".
+Atom no. 1771,  " C  "  at (-20.003, 28.385, 15.045),   was assigned atom type 1, "C".
+Atom no. 1772,  " O  "  at (-20.824, 29.138, 14.540),   was assigned atom type 3, "O".
+Atom no. 1773,  " CB "  at (-18.978, 26.889, 13.506),   was assigned atom type 1, "C".
+Atom no. 1774,  " CG "  at (-17.722, 26.589, 12.771),   was assigned atom type 1, "C".
+Atom no. 1775,  " CD "  at (-18.021, 25.581, 11.703),   was assigned atom type 1, "C".
+Atom no. 1776,  " OE1"  at (-19.005, 25.645, 10.949),   was assigned atom type 3, "O".
+Atom no. 1777,  " NE2"  at (-17.059, 24.653, 11.635),   was assigned atom type 2, "N".
+Atom no. 1778,  " H  "  at (-17.336, 26.849, 15.529),   was assigned atom type 5, "H".
+Atom no. 1779,  "HE21"  at (-17.091, 23.972, 10.896),   was assigned atom type 5, "H".
+Atom no. 1780,  "HE22"  at (-16.308, 24.612, 12.296),   was assigned atom type 5, "H".
+Atom no. 1781,  " N  "  at (-20.219, 27.804, 16.207),   was assigned atom type 2, "N".
+Atom no. 1782,  " CA "  at (-21.511, 28.136, 16.800),   was assigned atom type 1, "C".
+Atom no. 1783,  " C  "  at (-21.455, 29.411, 17.589),   was assigned atom type 1, "C".
+Atom no. 1784,  " O  "  at (-22.393, 29.761, 18.291),   was assigned atom type 3, "O".
+Atom no. 1785,  " CB "  at (-22.090, 26.998, 17.640),   was assigned atom type 1, "C".
+Atom no. 1786,  " CG1"  at (-21.371, 26.795, 18.961),   was assigned atom type 1, "C".
+Atom no. 1787,  " CG2"  at (-22.072, 25.735, 16.800),   was assigned atom type 1, "C".
+Atom no. 1788,  " CD1"  at (-22.206, 25.832, 19.790),   was assigned atom type 1, "C".
+Atom no. 1789,  " H  "  at (-19.556, 27.187, 16.638),   was assigned atom type 5, "H".
+Atom no. 1790,  " N  "  at (-20.303, 30.094, 17.447),   was assigned atom type 2, "N".
+Atom no. 1791,  " CA "  at (-20.031, 31.338, 18.157),   was assigned atom type 1, "C".
+Atom no. 1792,  " C  "  at (-19.840, 31.263, 19.668),   was assigned atom type 1, "C".
+Atom no. 1793,  " O  "  at (-20.237, 32.183, 20.366),   was assigned atom type 3, "O".
+Atom no. 1794,  " H  "  at (-19.559, 29.728, 16.892),   was assigned atom type 5, "H".
+Atom no. 1795,  " N  "  at (-19.230, 30.187, 20.191),   was assigned atom type 2, "N".
+Atom no. 1796,  " CA "  at (-19.230, 30.180, 21.653),   was assigned atom type 1, "C".
+Atom no. 1797,  " C  "  at (-18.146, 31.070, 22.194),   was assigned atom type 1, "C".
+Atom no. 1798,  " O  "  at (-17.111, 31.121, 21.542),   was assigned atom type 3, "O".
+Atom no. 1799,  " CB "  at (-18.996, 28.763, 22.136),   was assigned atom type 1, "C".
+Atom no. 1800,  " H  "  at (-18.768, 29.501, 19.627),   was assigned atom type 5, "H".
+Atom no. 1801,  " N  "  at (-18.354, 31.725, 23.350),   was assigned atom type 2, "N".
+Atom no. 1802,  " CA "  at (-17.242, 32.372, 24.072),   was assigned atom type 1, "C".
+Atom no. 1803,  " C  "  at (-17.155, 32.010, 25.536),   was assigned atom type 1, "C".
+Atom no. 1804,  " O  "  at (-18.121, 31.607, 26.169),   was assigned atom type 3, "O".
+Atom no. 1805,  " CB "  at (-17.311, 33.892, 23.984),   was assigned atom type 1, "C".
+Atom no. 1806,  " OG1"  at (-18.591, 34.408, 24.418),   was assigned atom type 3, "O".
+Atom no. 1807,  " CG2"  at (-16.940, 34.335, 22.587),   was assigned atom type 1, "C".
+Atom no. 1808,  " H  "  at (-19.262, 31.734, 23.771),   was assigned atom type 5, "H".
+Atom no. 1809,  " HG1"  at (-19.215, 34.404, 23.676),   was assigned atom type 5, "H".
+Atom no. 1810,  " N  "  at (-15.968, 32.181, 26.074),   was assigned atom type 2, "N".
+Atom no. 1811,  " CA "  at (-15.790, 32.067, 27.524),   was assigned atom type 1, "C".
+Atom no. 1812,  " C  "  at (-15.790, 33.454, 28.125),   was assigned atom type 1, "C".
+Atom no. 1813,  " O  "  at (-15.214, 34.364, 27.580),   was assigned atom type 3, "O".
+Atom no. 1814,  " CB "  at (-14.402, 31.574, 27.817),   was assigned atom type 1, "C".
+Atom no. 1815,  " CG "  at (-14.284, 30.125, 28.110),   was assigned atom type 1, "C".
+Atom no. 1816,  " CD1"  at (-12.830, 29.757, 27.868),   was assigned atom type 1, "C".
+Atom no. 1817,  " CD2"  at (-14.712, 29.881, 29.552),   was assigned atom type 1, "C".
+Atom no. 1818,  " H  "  at (-15.205, 32.514, 25.515),   was assigned atom type 5, "H".
+Atom no. 1819,  " N  "  at (-16.426, 33.608, 29.238),   was assigned atom type 2, "N".
+Atom no. 1820,  " CA "  at (-16.475, 34.926, 29.822),   was assigned atom type 1, "C".
+Atom no. 1821,  " C  "  at (-16.251, 34.777, 31.286),   was assigned atom type 1, "C".
+Atom no. 1822,  " O  "  at (-16.830, 33.920, 31.917),   was assigned atom type 3, "O".
+Atom no. 1823,  " CB "  at (-17.879, 35.439, 29.664),   was assigned atom type 1, "C".
+Atom no. 1824,  " CG "  at (-18.062, 35.939, 28.272),   was assigned atom type 1, "C".
+Atom no. 1825,  " OD1"  at (-17.877, 37.105, 27.990),   was assigned atom type 3, "O".
+Atom no. 1826,  " ND2"  at (-18.437, 35.041, 27.378),   was assigned atom type 2, "N".
+Atom no. 1827,  " H  "  at (-16.894, 32.838, 29.682),   was assigned atom type 5, "H".
+Atom no. 1828,  "HD21"  at (-18.584, 35.287, 26.415),   was assigned atom type 5, "H".
+Atom no. 1829,  "HD22"  at (-18.542, 34.079, 27.623),   was assigned atom type 5, "H".
+Atom no. 1830,  " N  "  at (-15.436, 35.644, 31.835),   was assigned atom type 2, "N".
+Atom no. 1831,  " CA "  at (-15.338, 35.849, 33.284),   was assigned atom type 1, "C".
+Atom no. 1832,  " C  "  at (-15.004, 37.320, 33.538),   was assigned atom type 1, "C".
+Atom no. 1833,  " O  "  at (-14.919, 37.782, 34.679),   was assigned atom type 3, "O".
+Atom no. 1834,  " CB "  at (-14.374, 34.845, 33.976),   was assigned atom type 1, "C".
+Atom no. 1835,  " CG "  at (-12.935, 34.871, 33.522),   was assigned atom type 1, "C".
+Atom no. 1836,  " CD1"  at (-12.553, 34.254, 32.305),   was assigned atom type 1, "C".
+Atom no. 1837,  " CD2"  at (-11.966, 35.468, 34.362),   was assigned atom type 1, "C".
+Atom no. 1838,  " CE1"  at (-11.191, 34.231, 31.935),   was assigned atom type 1, "C".
+Atom no. 1839,  " CE2"  at (-10.607, 35.446, 33.998),   was assigned atom type 1, "C".
+Atom no. 1840,  " CZ "  at (-10.227, 34.827, 32.787),   was assigned atom type 1, "C".
+Atom no. 1841,  " OXT"  at (-14.842, 38.047, 32.559),   was assigned atom type 3, "O".
+Atom no. 1842,  " H  "  at (-14.970, 36.317, 31.258),   was assigned atom type 5, "H".
+Atom no. 1843,  " O  "  at (-28.527, 23.445, 24.058),   was assigned atom type 3, "O".
+Atom no. 1844,  " H  "  at (-27.859, 23.903, 24.590),   was assigned atom type 5, "H".
+
+Maximum partial atomic charge found = +0.813 e
+Minimum partial atomic charge found = -0.867 e
+
+Atom	Atom	Number of this Type
+Type	 ID 	 in Macromolecule
+____	____	___________________
+ 1	 C		   976
+ 2	 N		   260
+ 3	 O		   272
+ 4	 S		     6
+ 5	 H		   330
+ 6	 X		     0
+ 7	 M		     0
+
+Total number of atoms :		1844 atoms 
+Total charge :			3.99 e
+
+
+Macromolecule coordinates fit within the following volume:
+
+                   _______(8.9, 40.1, 54.0)
+                  /|     /|
+                 / |    / |
+                /______/  |
+                |  |___|__| Midpoint = (-12.4, 20.2, 26.9)
+                |  /   |  /
+                | /    | /
+                |/_____|/
+(-33.7, 0.2, -0.3)      
+
+Maximum coordinates :		(8.938, 40.125, 53.978)
+Minimum coordinates :		(-33.664, 0.203, -0.257)
+
+
+GPF> gridfld  1hvr.maps.fld		#grid_data_file
+
+Creating (AVS-readable) grid maps file : 1hvr.maps.fld
+
+Creating (AVS-readable) grid-coordinates extrema file : 1hvr.maps.xyz
+
+GPF> npts     60 60 60		#num.grid points in xyz
+
+Number of grid points in x-direction:	61
+Number of grid points in y-direction:	61
+Number of grid points in z-direction:	61
+
+GPF> spacing  .375			#spacing (Angstroms)
+Grid Spacing :			0.375 Angstrom
+
+GPF> gridcenter -8.611 15.060 27.954	#xyz-coordinates or "auto"
+
+Grid maps will be centered on user-defined coordinates:
+
+		(-8.611, 15.060, 27.954)
+
+Grid maps will cover the following volume:
+
+                   _______(2.6, 26.3, 39.2)
+                  /|     /|
+                 / |    / |
+                /______/  |
+                |  |___|__| Midpoint = (-8.6, 15.1, 28.0)
+                |  /   |  /
+                | /    | /
+                |/_____|/
+(-19.9, 3.8, 16.7)      
+
+Grid map x-dimension :		22.5 Angstroms
+Grid map y-dimension :		22.5 Angstroms
+Grid map z-dimension :		22.5 Angstroms
+
+Maximum coordinates :		(2.639, 26.310, 39.204)
+Minimum coordinates :		(-19.861, 3.810, 16.704)
+
+GPF> types CANOH			#atom type names
+
+Atom names for types 1-5 and for substrate-atom affinity grid maps :	C A N O H  respectively.
+GPF> smooth 0.500			#store minimum energy within radius (Angstroms)
+
+Potentials will be smoothed by: 0.500000
+
+GPF> map 1hvr.C.map			#filename of grid map
+
+
+Output File 1   1hvr.C.map
+
+GPF> nbp_r_eps  4.00 0.0222750 12  6	#C-C lj
+
+              373712.5           182.5 
+    E    =  -----------  -  -----------
+     C, C         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.75 0.0230026 12  6	#C-N lj
+
+              177890.2           127.9 
+    E    =  -----------  -  -----------
+     C, N         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.60 0.0257202 12  6	#C-O lj
+
+              121872.1           112.0 
+    E    =  -----------  -  -----------
+     C, O         12               6
+                r               r 
+
+GPF> nbp_r_eps  4.00 0.0257202 12  6	#C-S lj
+
+              431513.4           210.7 
+    E    =  -----------  -  -----------
+     C, S         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.00 0.0081378 12  6	#C-H lj
+
+                4324.8            11.9 
+    E    =  -----------  -  -----------
+     C, H         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.00 0.0081378 12  6	#C-H lj
+
+                4324.8            11.9 
+    E    =  -----------  -  -----------
+     C, X         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.00 0.0081378 12  6	#C-H lj
+
+                4324.8            11.9 
+    E    =  -----------  -  -----------
+     C, M         12               6
+                r               r 
+
+
+  r     C        N        O        S        H        X        M    
+ ___ ________ ________ ________ ________ ________ ________ ________
+ 0.0    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.1    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.2    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.3    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.4    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.5    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.6    1e+05    1e+05    1e+05    1e+05 35009.98 35009.98 35009.98
+ 0.7    1e+05    1e+05    1e+05    1e+05  9069.95  9069.95  9069.95
+ 0.8    1e+05    1e+05 76032.47    1e+05  2691.86  2691.86  2691.86
+ 0.9 77484.29 36864.45 25244.65 89468.53   892.24   892.24   892.24
+ 1.0 28229.67 13426.26  9191.60 32595.86   324.00   324.00   324.00
+ 1.1 11118.61  5285.46  3616.85 12838.29   126.98   126.98   126.98
+ 1.2  4680.51  2223.35  1520.48  5404.42    53.07    53.07    53.07
+ 1.3  2086.66   990.19   676.55  2409.39    23.42    23.42    23.42
+ 1.4   977.84   463.35   316.19  1129.07    10.81    10.81    10.81
+ 1.5   478.65   226.36   154.20   552.69     5.19     5.19     5.19
+ 1.6   243.45   114.83    78.04   281.11     2.57     2.57     2.57
+ 1.7   128.07    60.19    40.78   147.88     1.30     1.30     1.30
+ 1.8    69.41    32.47    21.91    80.14     0.67     0.67     0.67
+ 1.9    38.61    17.95    12.05    44.58     0.35     0.35     0.35
+ 2.0    21.97    10.13     6.75    25.37     0.18     0.18     0.18
+ 2.1    12.75     5.82     3.84    14.73     0.09     0.09     0.09
+ 2.2     7.53     3.39     2.21     8.69     0.04     0.04     0.04
+ 2.3     4.50     1.99     1.27     5.20     0.02     0.02     0.02
+ 2.4     2.72     1.17     0.73     3.14     0.00     0.00     0.00
+ 2.5     1.66     0.69     0.42     1.91    -0.00    -0.00    -0.00
+ 2.6     1.01     0.40     0.23     1.17    -0.01    -0.01    -0.01
+ 2.7     0.61     0.23     0.12     0.71    -0.01    -0.01    -0.01
+ 2.8     0.37     0.12     0.05     0.43    -0.01    -0.01    -0.01
+ 2.9     0.22     0.06     0.02     0.25    -0.01    -0.01    -0.01
+ 3.0     0.12     0.02    -0.01     0.14    -0.01    -0.01    -0.01
+ 3.1     0.06     0.00    -0.02     0.07    -0.01    -0.01    -0.01
+ 3.2     0.03    -0.01    -0.02     0.03    -0.01    -0.01    -0.01
+ 3.3     0.00    -0.02    -0.03     0.00    -0.01    -0.01    -0.01
+ 3.4    -0.01    -0.02    -0.03    -0.01    -0.01    -0.01    -0.01
+ 3.5    -0.02    -0.02    -0.03    -0.02    -0.01    -0.01    -0.01
+ 3.6    -0.02    -0.02    -0.03    -0.02    -0.01    -0.01    -0.01
+ 3.7    -0.02    -0.02    -0.03    -0.03    -0.01    -0.01    -0.01
+ 3.8    -0.02    -0.02    -0.03    -0.03    -0.00    -0.00    -0.00
+ 3.9    -0.02    -0.02    -0.03    -0.03    -0.00    -0.00    -0.00
+ 4.0    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.1    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.2    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.3    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.4    -0.02    -0.02    -0.02    -0.02    -0.00    -0.00    -0.00
+ 4.5    -0.02    -0.02    -0.02    -0.02    -0.00    -0.00    -0.00
+ 4.6    -0.02    -0.02    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.7    -0.02    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.8    -0.02    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.9    -0.01    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 5.0    -0.01    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+
+GPF> sol_par 12.77 0.6844		#C atomic fragmental volume, solvation param.
+
+Probe solvation parameters: 
+
+	atomic fragmental volume: 12.77 A^3
+	atomic solvation parameter: 0.6844 cal/mol A^3
+
+GPF> constant 0.000			#C grid map constant energy
+
+
+Constant added to map: 0.000
+
+GPF> map 1hvr.A.map			#filename of grid map
+
+
+Output File 2   1hvr.A.map
+
+GPF> nbp_r_eps  4.00 0.0222750 12  6	#C-C lj
+
+              373712.5           182.5 
+    E    =  -----------  -  -----------
+     A, C         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.75 0.0230026 12  6	#C-N lj
+
+              177890.2           127.9 
+    E    =  -----------  -  -----------
+     A, N         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.60 0.0257202 12  6	#C-O lj
+
+              121872.1           112.0 
+    E    =  -----------  -  -----------
+     A, O         12               6
+                r               r 
+
+GPF> nbp_r_eps  4.00 0.0257202 12  6	#C-S lj
+
+              431513.4           210.7 
+    E    =  -----------  -  -----------
+     A, S         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.00 0.0081378 12  6	#C-H lj
+
+                4324.8            11.9 
+    E    =  -----------  -  -----------
+     A, H         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.00 0.0081378 12  6	#C-H lj
+
+                4324.8            11.9 
+    E    =  -----------  -  -----------
+     A, X         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.00 0.0081378 12  6	#C-H lj
+
+                4324.8            11.9 
+    E    =  -----------  -  -----------
+     A, M         12               6
+                r               r 
+
+
+  r     C        N        O        S        H        X        M    
+ ___ ________ ________ ________ ________ ________ ________ ________
+ 0.0    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.1    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.2    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.3    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.4    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.5    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.6    1e+05    1e+05    1e+05    1e+05 35009.98 35009.98 35009.98
+ 0.7    1e+05    1e+05    1e+05    1e+05  9069.95  9069.95  9069.95
+ 0.8    1e+05    1e+05 76032.47    1e+05  2691.86  2691.86  2691.86
+ 0.9 77484.29 36864.45 25244.65 89468.53   892.24   892.24   892.24
+ 1.0 28229.67 13426.26  9191.60 32595.86   324.00   324.00   324.00
+ 1.1 11118.61  5285.46  3616.85 12838.29   126.98   126.98   126.98
+ 1.2  4680.51  2223.35  1520.48  5404.42    53.07    53.07    53.07
+ 1.3  2086.66   990.19   676.55  2409.39    23.42    23.42    23.42
+ 1.4   977.84   463.35   316.19  1129.07    10.81    10.81    10.81
+ 1.5   478.65   226.36   154.20   552.69     5.19     5.19     5.19
+ 1.6   243.45   114.83    78.04   281.11     2.57     2.57     2.57
+ 1.7   128.07    60.19    40.78   147.88     1.30     1.30     1.30
+ 1.8    69.41    32.47    21.91    80.14     0.67     0.67     0.67
+ 1.9    38.61    17.95    12.05    44.58     0.35     0.35     0.35
+ 2.0    21.97    10.13     6.75    25.37     0.18     0.18     0.18
+ 2.1    12.75     5.82     3.84    14.73     0.09     0.09     0.09
+ 2.2     7.53     3.39     2.21     8.69     0.04     0.04     0.04
+ 2.3     4.50     1.99     1.27     5.20     0.02     0.02     0.02
+ 2.4     2.72     1.17     0.73     3.14     0.00     0.00     0.00
+ 2.5     1.66     0.69     0.42     1.91    -0.00    -0.00    -0.00
+ 2.6     1.01     0.40     0.23     1.17    -0.01    -0.01    -0.01
+ 2.7     0.61     0.23     0.12     0.71    -0.01    -0.01    -0.01
+ 2.8     0.37     0.12     0.05     0.43    -0.01    -0.01    -0.01
+ 2.9     0.22     0.06     0.02     0.25    -0.01    -0.01    -0.01
+ 3.0     0.12     0.02    -0.01     0.14    -0.01    -0.01    -0.01
+ 3.1     0.06     0.00    -0.02     0.07    -0.01    -0.01    -0.01
+ 3.2     0.03    -0.01    -0.02     0.03    -0.01    -0.01    -0.01
+ 3.3     0.00    -0.02    -0.03     0.00    -0.01    -0.01    -0.01
+ 3.4    -0.01    -0.02    -0.03    -0.01    -0.01    -0.01    -0.01
+ 3.5    -0.02    -0.02    -0.03    -0.02    -0.01    -0.01    -0.01
+ 3.6    -0.02    -0.02    -0.03    -0.02    -0.01    -0.01    -0.01
+ 3.7    -0.02    -0.02    -0.03    -0.03    -0.01    -0.01    -0.01
+ 3.8    -0.02    -0.02    -0.03    -0.03    -0.00    -0.00    -0.00
+ 3.9    -0.02    -0.02    -0.03    -0.03    -0.00    -0.00    -0.00
+ 4.0    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.1    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.2    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.3    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.4    -0.02    -0.02    -0.02    -0.02    -0.00    -0.00    -0.00
+ 4.5    -0.02    -0.02    -0.02    -0.02    -0.00    -0.00    -0.00
+ 4.6    -0.02    -0.02    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.7    -0.02    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.8    -0.02    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.9    -0.01    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 5.0    -0.01    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+
+GPF> sol_par 12.77 0.6844		#C atomic fragmental volume, solvation param.
+
+Probe solvation parameters: 
+
+	atomic fragmental volume: 12.77 A^3
+	atomic solvation parameter: 0.6844 cal/mol A^3
+
+GPF> constant 0.000			#C grid map constant energy
+
+
+Constant added to map: 0.000
+
+GPF> map 1hvr.N.map			#filename of grid map
+
+
+Output File 3   1hvr.N.map
+
+GPF> nbp_r_eps  3.75 0.0230026 12  6	#N-C lj
+
+              177890.2           127.9 
+    E    =  -----------  -  -----------
+     N, C         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.50 0.0237600 12  6	#N-N lj
+
+               80290.3            87.4 
+    E    =  -----------  -  -----------
+     N, N         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.35 0.0265667 12  6	#N-O lj
+
+               53073.2            75.1 
+    E    =  -----------  -  -----------
+     N, O         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.75 0.0265667 12  6	#N-S lj
+
+              205453.2           147.8 
+    E    =  -----------  -  -----------
+     N, S         12               6
+                r               r 
+
+GPF> nbp_r_eps  2.75 0.0084051 12  6	#N-H lj
+
+                1572.3             7.3 
+    E    =  -----------  -  -----------
+     N, H         12               6
+                r               r 
+
+GPF> nbp_r_eps  2.75 0.0084051 12  6	#N-H lj
+
+                1572.3             7.3 
+    E    =  -----------  -  -----------
+     N, X         12               6
+                r               r 
+
+GPF> nbp_r_eps  2.75 0.0084051 12  6	#N-H lj
+
+                1572.3             7.3 
+    E    =  -----------  -  -----------
+     N, M         12               6
+                r               r 
+
+
+  r     C        N        O        S        H        X        M    
+ ___ ________ ________ ________ ________ ________ ________ ________
+ 0.0    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.1    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.2    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.3    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.4    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.5    1e+05    1e+05    1e+05    1e+05 58267.27 58267.27 58267.27
+ 0.6    1e+05    1e+05    1e+05    1e+05 12719.72 12719.72 12719.72
+ 0.7    1e+05    1e+05    1e+05    1e+05  3293.16  3293.16  3293.16
+ 0.8    1e+05 50080.03 33090.01    1e+05   976.31   976.31   976.31
+ 0.9 36864.45 16625.18 10981.61 42576.36   323.03   323.03   323.03
+ 1.0 13426.26  6051.76  3995.54 15506.57   116.98   116.98   116.98
+ 1.1  5285.46  2380.46  1570.53  6104.40    45.66    45.66    45.66
+ 1.2  2223.35  1000.18   659.19  2567.85    18.96    18.96    18.96
+ 1.3   990.19   444.70   292.65  1143.61     8.29     8.29     8.29
+ 1.4   463.35   207.61   136.34   535.14     3.78     3.78     3.78
+ 1.5   226.36   101.10    66.20   261.44     1.78     1.78     1.78
+ 1.6   114.83    51.06    33.31   132.62     0.86     0.86     0.86
+ 1.7    60.19    26.61    17.27    69.52     0.42     0.42     0.42
+ 1.8    32.47    14.24     9.17    37.50     0.20     0.20     0.20
+ 1.9    17.95     7.79     4.97    20.73     0.09     0.09     0.09
+ 2.0    10.13     4.34     2.73    11.71     0.04     0.04     0.04
+ 2.1     5.82     2.45     1.51     6.72     0.01     0.01     0.01
+ 2.2     3.39     1.39     0.84     3.91     0.00     0.00     0.00
+ 2.3     1.99     0.79     0.46     2.30    -0.01    -0.01    -0.01
+ 2.4     1.17     0.44     0.24     1.36    -0.01    -0.01    -0.01
+ 2.5     0.69     0.24     0.12     0.80    -0.01    -0.01    -0.01
+ 2.6     0.40     0.13     0.05     0.46    -0.01    -0.01    -0.01
+ 2.7     0.23     0.06     0.01     0.26    -0.01    -0.01    -0.01
+ 2.8     0.12     0.02    -0.01     0.14    -0.01    -0.01    -0.01
+ 2.9     0.06    -0.00    -0.02     0.07    -0.01    -0.01    -0.01
+ 3.0     0.02    -0.02    -0.03     0.03    -0.01    -0.01    -0.01
+ 3.1     0.00    -0.02    -0.03     0.00    -0.01    -0.01    -0.01
+ 3.2    -0.01    -0.02    -0.03    -0.01    -0.01    -0.01    -0.01
+ 3.3    -0.02    -0.02    -0.03    -0.02    -0.01    -0.01    -0.01
+ 3.4    -0.02    -0.02    -0.03    -0.03    -0.01    -0.01    -0.01
+ 3.5    -0.02    -0.02    -0.03    -0.03    -0.01    -0.01    -0.01
+ 3.6    -0.02    -0.02    -0.03    -0.03    -0.00    -0.00    -0.00
+ 3.7    -0.02    -0.02    -0.03    -0.03    -0.00    -0.00    -0.00
+ 3.8    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 3.9    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.0    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.1    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.2    -0.02    -0.02    -0.02    -0.02    -0.00    -0.00    -0.00
+ 4.3    -0.02    -0.02    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.4    -0.02    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.5    -0.02    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.6    -0.02    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.7    -0.01    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.8    -0.01    -0.01    -0.01    -0.01    -0.00    -0.00    -0.00
+ 4.9    -0.01    -0.01    -0.01    -0.01    -0.00    -0.00    -0.00
+ 5.0    -0.01    -0.01    -0.01    -0.01    -0.00    -0.00    -0.00
+
+GPF> sol_par  0.00 0.0000		#N atomic fragmental volume, solvation param.
+
+Probe solvation parameters: 
+
+	atomic fragmental volume: 0.00 A^3
+	atomic solvation parameter: 0.0000 cal/mol A^3
+
+GPF> constant 0.000			#N grid map constant energy
+
+
+Constant added to map: 0.000
+
+GPF> map 1hvr.O.map			#filename of grid map
+
+
+Output File 4   1hvr.O.map
+
+GPF> nbp_r_eps  3.60 0.0257202 12  6	#O-C lj
+
+              121872.1           112.0 
+    E    =  -----------  -  -----------
+     O, C         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.35 0.0265667 12  6	#O-N lj
+
+               53073.2            75.1 
+    E    =  -----------  -  -----------
+     O, N         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.20 0.0297000 12  6	#O-O lj
+
+               34241.8            63.8 
+    E    =  -----------  -  -----------
+     O, O         12               6
+                r               r 
+
+GPF> nbp_r_eps  3.60 0.0297000 12  6	#O-S lj
+
+              140729.9           129.3 
+    E    =  -----------  -  -----------
+     O, S         12               6
+                r               r 
+
+GPF> nbp_r_eps  1.90 0.3280000 12 10	#O-H hb
+
+                3629.8          1206.6 
+    E    =  -----------  -  -----------
+     O, H         12              10
+                r               r 
+
+GPF> nbp_r_eps  1.90 0.3280000 12 10	#O-H hb
+
+                3629.8          1206.6 
+    E    =  -----------  -  -----------
+     O, X         12              10
+                r               r 
+
+GPF> nbp_r_eps  1.90 0.3280000 12 10	#O-H hb
+
+                3629.8          1206.6 
+    E    =  -----------  -  -----------
+     O, M         12              10
+                r               r 
+
+
+  r     C        N        O        S        H        X        M    
+ ___ ________ ________ ________ ________ ________ ________ ________
+ 0.0    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.1    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.2    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.3    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.4    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.5    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.6    1e+05    1e+05    1e+05    1e+05 22514.03 22514.03 22514.03
+ 0.7    1e+05    1e+05 71856.08    1e+05  5386.81  5386.81  5386.81
+ 0.8 76032.47 33090.01 21336.90 87797.31  1452.05  1452.05  1452.05
+ 0.9 25244.65 10981.61  7078.13 29150.87   427.93   427.93   427.93
+ 1.0  9191.60  3995.54  2573.63 10613.86   134.29   134.29   134.29
+ 1.1  3616.85  1570.53  1010.62  4176.50    43.66    43.66    43.66
+ 1.2  1520.48   659.19   423.58  1755.76    14.19    14.19    14.19
+ 1.3   676.55   292.65   187.66   781.24     4.32     4.32     4.32
+ 1.4   316.19   136.34    87.18   365.11     1.02     1.02     1.02
+ 1.5   154.20    66.20    42.16   178.06    -0.03    -0.03    -0.03
+ 1.6    78.04    33.31    21.09    90.12    -0.30    -0.30    -0.30
+ 1.7    40.78    17.27    10.85    47.09    -0.33    -0.33    -0.33
+ 1.8    21.91     9.17     5.71    25.30    -0.33    -0.33    -0.33
+ 1.9    12.05     4.97     3.05    13.91    -0.33    -0.33    -0.33
+ 2.0     6.75     2.73     1.64     7.80    -0.33    -0.33    -0.33
+ 2.1     3.84     1.51     0.88     4.43    -0.33    -0.33    -0.33
+ 2.2     2.21     0.84     0.47     2.55    -0.32    -0.32    -0.32
+ 2.3     1.27     0.46     0.24     1.47    -0.26    -0.26    -0.26
+ 2.4     0.73     0.24     0.11     0.85    -0.20    -0.20    -0.20
+ 2.5     0.42     0.12     0.04     0.48    -0.15    -0.15    -0.15
+ 2.6     0.23     0.05     0.00     0.26    -0.11    -0.11    -0.11
+ 2.7     0.12     0.01    -0.02     0.14    -0.08    -0.08    -0.08
+ 2.8     0.05    -0.01    -0.03     0.06    -0.06    -0.06    -0.06
+ 2.9     0.02    -0.02    -0.03     0.02    -0.04    -0.04    -0.04
+ 3.0    -0.01    -0.03    -0.03    -0.01    -0.03    -0.03    -0.03
+ 3.1    -0.02    -0.03    -0.03    -0.02    -0.02    -0.02    -0.02
+ 3.2    -0.02    -0.03    -0.03    -0.03    -0.02    -0.02    -0.02
+ 3.3    -0.03    -0.03    -0.03    -0.03    -0.01    -0.01    -0.01
+ 3.4    -0.03    -0.03    -0.03    -0.03    -0.01    -0.01    -0.01
+ 3.5    -0.03    -0.03    -0.03    -0.03    -0.01    -0.01    -0.01
+ 3.6    -0.03    -0.03    -0.03    -0.03    -0.00    -0.00    -0.00
+ 3.7    -0.03    -0.03    -0.03    -0.03    -0.00    -0.00    -0.00
+ 3.8    -0.03    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 3.9    -0.03    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.0    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.1    -0.02    -0.02    -0.02    -0.03    -0.00    -0.00    -0.00
+ 4.2    -0.02    -0.02    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.3    -0.02    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.4    -0.02    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.5    -0.02    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.6    -0.01    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 4.7    -0.01    -0.01    -0.01    -0.01    -0.00    -0.00    -0.00
+ 4.8    -0.01    -0.01    -0.01    -0.01    -0.00    -0.00    -0.00
+ 4.9    -0.01    -0.01    -0.01    -0.01    -0.00    -0.00    -0.00
+ 5.0    -0.01    -0.01    -0.01    -0.01    -0.00    -0.00    -0.00
+
+GPF> sol_par  0.00 0.0000		#O atomic fragmental volume, solvation param.
+
+Probe solvation parameters: 
+
+	atomic fragmental volume: 0.00 A^3
+	atomic solvation parameter: 0.0000 cal/mol A^3
+
+GPF> constant 0.236			#O grid map constant energy
+
+
+Constant added to map: 0.236
+
+GPF> map 1hvr.H.map			#filename of grid map
+
+
+Output File 5   1hvr.H.map
+
+GPF> nbp_r_eps  3.00 0.0081378 12  6	#H-C lj
+
+                4324.8            11.9 
+    E    =  -----------  -  -----------
+     H, C         12               6
+                r               r 
+
+GPF> nbp_r_eps  2.75 0.0084051 12  6	#H-N lj
+
+                1572.3             7.3 
+    E    =  -----------  -  -----------
+     H, N         12               6
+                r               r 
+
+GPF> nbp_r_eps  1.90 0.3280000 12 10	#H-O hb
+
+                3629.8          1206.6 
+    E    =  -----------  -  -----------
+     H, O         12              10
+                r               r 
+
+GPF> nbp_r_eps  2.50 0.0656000 12 10	#H-S hb
+
+               19550.3          3753.7 
+    E    =  -----------  -  -----------
+     H, S         12              10
+                r               r 
+
+GPF> nbp_r_eps  2.00 0.0029700 12  6	#H-H lj
+
+                  12.2             0.4 
+    E    =  -----------  -  -----------
+     H, H         12               6
+                r               r 
+
+GPF> nbp_r_eps  2.00 0.0029700 12  6	#H-H lj
+
+                  12.2             0.4 
+    E    =  -----------  -  -----------
+     H, X         12               6
+                r               r 
+
+GPF> nbp_r_eps  2.00 0.0029700 12  6	#H-H lj
+
+                  12.2             0.4 
+    E    =  -----------  -  -----------
+     H, M         12               6
+                r               r 
+
+
+  r     C        N        O        S        H        X        M    
+ ___ ________ ________ ________ ________ ________ ________ ________
+ 0.0    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.1    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.2    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05    1e+05
+ 0.3    1e+05    1e+05    1e+05    1e+05 19772.18 19772.18 19772.18
+ 0.4    1e+05    1e+05    1e+05    1e+05  2570.53  2570.53  2570.53
+ 0.5    1e+05 58267.27    1e+05    1e+05   448.85   448.85   448.85
+ 0.6 35009.98 12719.72 22514.03    1e+05    97.49    97.49    97.49
+ 0.7  9069.95  3293.16  5386.81 34109.89    25.01    25.01    25.01
+ 0.8  2691.86   976.31  1452.05  9675.23     7.30     7.30     7.30
+ 0.9   892.24   323.03   427.93  3045.32     2.35     2.35     2.35
+ 1.0   324.00   116.98   134.29  1042.67     0.82     0.82     0.82
+ 1.1   126.98    45.66    43.66   382.21     0.30     0.30     0.30
+ 1.2    53.07    18.96    14.19   148.02     0.11     0.11     0.11
+ 1.3    23.42     8.29     4.32    59.84     0.04     0.04     0.04
+ 1.4    10.81     3.78     1.02    24.98     0.01     0.01     0.01
+ 1.5     5.19     1.78    -0.03    10.63     0.00     0.00     0.00
+ 1.6     2.57     0.86    -0.30     4.54    -0.00    -0.00    -0.00
+ 1.7     1.30     0.42    -0.33     1.91    -0.00    -0.00    -0.00
+ 1.8     0.67     0.20    -0.33     0.76    -0.00    -0.00    -0.00
+ 1.9     0.35     0.09    -0.33     0.26    -0.00    -0.00    -0.00
+ 2.0     0.18     0.04    -0.33     0.04    -0.00    -0.00    -0.00
+ 2.1     0.09     0.01    -0.33    -0.04    -0.00    -0.00    -0.00
+ 2.2     0.04     0.00    -0.32    -0.06    -0.00    -0.00    -0.00
+ 2.3     0.02    -0.01    -0.26    -0.07    -0.00    -0.00    -0.00
+ 2.4     0.00    -0.01    -0.20    -0.07    -0.00    -0.00    -0.00
+ 2.5    -0.00    -0.01    -0.15    -0.07    -0.00    -0.00    -0.00
+ 2.6    -0.01    -0.01    -0.11    -0.07    -0.00    -0.00    -0.00
+ 2.7    -0.01    -0.01    -0.08    -0.07    -0.00    -0.00    -0.00
+ 2.8    -0.01    -0.01    -0.06    -0.06    -0.00    -0.00    -0.00
+ 2.9    -0.01    -0.01    -0.04    -0.06    -0.00    -0.00    -0.00
+ 3.0    -0.01    -0.01    -0.03    -0.05    -0.00    -0.00    -0.00
+ 3.1    -0.01    -0.01    -0.02    -0.04    -0.00    -0.00    -0.00
+ 3.2    -0.01    -0.01    -0.02    -0.03    -0.00    -0.00    -0.00
+ 3.3    -0.01    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 3.4    -0.01    -0.01    -0.01    -0.02    -0.00    -0.00    -0.00
+ 3.5    -0.01    -0.01    -0.01    -0.01    -0.00    -0.00    -0.00
+ 3.6    -0.01    -0.00    -0.00    -0.01    -0.00    -0.00    -0.00
+ 3.7    -0.01    -0.00    -0.00    -0.01    -0.00    -0.00    -0.00
+ 3.8    -0.00    -0.00    -0.00    -0.01    -0.00    -0.00    -0.00
+ 3.9    -0.00    -0.00    -0.00    -0.01    -0.00    -0.00    -0.00
+ 4.0    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+ 4.1    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+ 4.2    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+ 4.3    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+ 4.4    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+ 4.5    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+ 4.6    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+ 4.7    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+ 4.8    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+ 4.9    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+ 5.0    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00    -0.00
+
+GPF> sol_par  0.00 0.0000		#H atomic fragmental volume, solvation param.
+
+Probe solvation parameters: 
+
+	atomic fragmental volume: 0.00 A^3
+	atomic solvation parameter: 0.0000 cal/mol A^3
+
+GPF> constant 0.118			#H grid map constant energy
+
+
+Constant added to map: 0.118
+
+GPF> elecmap 1hvr.e.map		#electrostatic potential map
+
+Electrostatics File: 1hvr.e.map
+
+GPF> dielectric -0.1146		#<0,distance-dep.diel; >0,constant
+
+Using *distance-dependent* dielectric function of Mehler and Solmajer, Prot.Eng.4, 903-910.
+
+  d   Dielectric
+ ___  __________
+ 0.0     1.00
+ 0.1     1.63
+ 0.2     1.91
+ 0.3     2.21
+ 0.4     2.51
+ 0.5     2.82
+ 0.6     3.13
+ 0.7     3.45
+ 0.8     3.78
+ 0.9     4.12
+ 1.0     4.47
+ 1.1     4.82
+ 1.2     5.18
+ 1.3     5.55
+ 1.4     5.93
+ 1.5     6.31
+ 1.6     6.70
+ 1.7     7.10
+ 1.8     7.51
+ 1.9     7.93
+ 2.0     8.36
+ 2.1     8.79
+ 2.2     9.23
+ 2.3     9.68
+ 2.4    10.14
+ 2.5    10.61
+ 2.6    11.08
+ 2.7    11.57
+ 2.8    12.06
+ 2.9    12.56
+ 3.0    13.07
+ 3.1    13.58
+ 3.2    14.11
+ 3.3    14.64
+ 3.4    15.18
+ 3.5    15.73
+ 3.6    16.28
+ 3.7    16.85
+ 3.8    17.42
+ 3.9    18.00
+ 4.0    18.58
+ 4.1    19.17
+ 4.2    19.77
+ 4.3    20.38
+ 4.4    20.99
+ 4.5    21.61
+ 4.6    22.23
+ 4.7    22.86
+ 4.8    23.50
+ 4.9    24.14
+ 5.0    24.78
+
+GPF> #fmap 1hvr.f.map		#floating grid
+
+>>> Closing the grid parameter file (GPF)... <<<
+
+________________________________________________________________________________
+
+
+
+No Floating Grid was requested.
+Beginning grid calculations.
+
+Calculating 6 grids over 226981 elements, around 1844 macromolecule atoms.
+
+                    Percent   Estimated Time  Time/this plane
+XY-plane  Z-coord   Done      Remaining       Real, User, System
+            /Ang              /sec            /sec
+________  ________  ________  ______________  __________________________
+
+    -30      5.454     1.6%        2m 09.00s  2.15 2.15 0.00 rus
+    -29      5.829     3.3%        2m 06.85s  2.15 2.14 0.01 rus
+    -28      6.204     4.9%        2m 07.02s  2.19 2.16 0.00 rus
+    -27      6.579     6.6%        2m 02.55s  2.15 2.15 0.00 rus
+    -26      6.954     8.2%        2m 00.40s  2.15 2.15 0.00 rus
+    -25      7.329     9.8%        1m 58.80s  2.16 2.16 0.00 rus
+    -24      7.704    11.5%        1m 56.64s  2.16 2.16 0.00 rus
+    -23      8.079    13.1%        1m 54.48s  2.16 2.16 0.00 rus
+    -22      8.454    14.8%        1m 52.84s  2.17 2.17 0.00 rus
+    -21      8.829    16.4%        1m 50.67s  2.17 2.16 0.01 rus
+    -20      9.204    18.0%        1m 48.00s  2.16 2.16 0.00 rus
+    -19      9.579    19.7%        1m 46.33s  2.17 2.17 0.00 rus
+    -18      9.954    21.3%        1m 44.16s  2.17 2.17 0.00 rus
+    -17     10.329    23.0%        1m 41.99s  2.17 2.17 0.00 rus
+    -16     10.704    24.6%        1m 39.82s  2.17 2.17 0.00 rus
+    -15     11.079    26.2%        1m 37.65s  2.17 2.17 0.00 rus
+    -14     11.454    27.9%        1m 35.04s  2.16 2.16 0.00 rus
+    -13     11.829    29.5%        1m 33.31s  2.17 2.15 0.02 rus
+    -12     12.204    31.1%        1m 30.72s  2.16 2.15 0.01 rus
+    -11     12.579    32.8%        1m 28.56s  2.16 2.16 0.00 rus
+    -10     12.954    34.4%        1m 26.00s  2.15 2.15 0.00 rus
+     -9     13.329    36.1%        1m 24.24s  2.16 2.16 0.00 rus
+     -8     13.704    37.7%        1m 21.70s  2.15 2.15 0.00 rus
+     -7     14.079    39.3%        1m 20.29s  2.17 2.16 0.00 rus
+     -6     14.454    41.0%        1m 17.76s  2.16 2.15 0.01 rus
+     -5     14.829    42.6%        1m 15.60s  2.16 2.15 0.01 rus
+     -4     15.204    44.3%        1m 13.78s  2.17 2.17 0.00 rus
+     -3     15.579    45.9%        1m 10.95s  2.15 2.15 0.00 rus
+     -2     15.954    47.5%        1m 09.12s  2.16 2.16 0.00 rus
+     -1     16.329    49.2%        1m 06.65s  2.15 2.15 0.00 rus
+      0     16.704    50.8%        1m 04.50s  2.15 2.15 0.00 rus
+      1     17.079    52.5%        1m 02.64s  2.16 2.16 0.00 rus
+      2     17.454    54.1%        1m 00.20s  2.15 2.14 0.01 rus
+      3     17.829    55.7%           58.05s  2.15 2.15 0.00 rus
+      4     18.204    57.4%           58.50s  2.25 2.21 0.00 rus
+      5     18.579    59.0%           56.00s  2.24 2.21 0.00 rus
+      6     18.954    60.7%           54.48s  2.27 2.23 0.00 rus
+      7     19.329    62.3%           50.37s  2.19 2.17 0.00 rus
+      8     19.704    63.9%           48.18s  2.19 2.18 0.00 rus
+      9     20.079    65.6%           45.36s  2.16 2.16 0.00 rus
+     10     20.454    67.2%           43.40s  2.17 2.17 0.00 rus
+     11     20.829    68.9%           41.23s  2.17 2.15 0.01 rus
+     12     21.204    70.5%           38.88s  2.16 2.15 0.01 rus
+     13     21.579    72.1%           36.55s  2.15 2.15 0.00 rus
+     14     21.954    73.8%           34.56s  2.16 2.16 0.00 rus
+     15     22.329    75.4%           32.70s  2.18 2.18 0.00 rus
+     16     22.704    77.0%           30.52s  2.18 2.16 0.00 rus
+     17     23.079    78.7%           28.21s  2.17 2.17 0.00 rus
+     18     23.454    80.3%           25.80s  2.15 2.15 0.00 rus
+     19     23.829    82.0%           23.87s  2.17 2.17 0.00 rus
+     20     24.204    83.6%           21.50s  2.15 2.15 0.00 rus
+     21     24.579    85.2%           19.44s  2.16 2.16 0.00 rus
+     22     24.954    86.9%           17.28s  2.16 2.15 0.01 rus
+     23     25.329    88.5%           15.19s  2.17 2.17 0.00 rus
+     24     25.704    90.2%           12.96s  2.16 2.14 0.01 rus
+     25     26.079    91.8%           10.75s  2.15 2.15 0.00 rus
+     26     26.454    93.4%            8.60s  2.15 2.15 0.00 rus
+     27     26.829    95.1%            6.48s  2.16 2.15 0.00 rus
+     28     27.204    96.7%            4.30s  2.15 2.15 0.00 rus
+     29     27.579    98.4%            2.16s  2.16 2.15 0.00 rus
+     30     27.954   100.0%            0.00s  2.23 2.18 0.01 rus
+
+Grid	Atom	Minimum		Maximum
+Map 	Type	Energy 		Energy 
+		(kcal/mol)		(kcal/mol)
+___	____	_____________	_____________
+ 1	 C	   -0.96	2.01e+05
+ 2	 A	   -0.96	2.01e+05
+ 3	 N	   -0.76	2.00e+05
+ 4	 O	   -0.77	2.00e+05
+ 5	 H	   -0.76	1.07e+05
+ 6	 e	  -294.22	2.98e+02	Electrostatic Potential
+
+
+ * Note:  Every pairwise-atomic interaction was clamped at 100000.00
+
+
+../../../autogrid/autogrid3: Successful Completion.
+elapsed (wall clock): 2m 13.22s,  user: 2m 12.76s,  system: 0.16s
