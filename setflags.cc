@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.3.2.2 2005/03/02 20:46:01 gillet Exp $
+ $Id: setflags.cc,v 1.3.2.3 2005/03/07 18:46:30 gillet Exp $
 
 */
 
@@ -15,6 +15,7 @@
 #include <string.h>
 #include "setflags.h"
 #include "openfile.h"
+#include "version.h"
 
 extern FILE *parFile;
 extern FILE *logFile;
@@ -140,6 +141,9 @@ int setflags( int I_argc, char * const PPC_argv[])
 	    else{
 	      fprintf(stateFile,"<? xml version=\"1.0\" ?>\n");
 	      fprintf(stateFile,"<autodock>\n");
+	      fprintf(stateFile,"\t<version>%s.%s</version>\n", AUTODOCK_MAJ_VERSION,AUTODOCK_MIN_VERSION);
+	      fprintf(stateFile,"\t<autogrid_version>%s.%s</autogrid_version>\n", AUTOGRID_MAJ_VERSION,AUTOGRID_MIN_VERSION);
+	      fprintf(stateFile,"\t<output_xml__version>%5.2f</output_xml_version>\n", OUTPUT_XML_VERSION);
 	      write_stateFile = TRUE;
 	    }
             PPC_argv++;
