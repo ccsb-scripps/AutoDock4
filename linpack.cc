@@ -1,12 +1,22 @@
+/*
+
+ $Id: linpack.cc,v 1.2 2003/02/26 01:10:32 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* linpack.cc */
 
 #include <math.h>
 #include "structs.h"
 
-float sdot(FourByteLong n,float *sx,FourByteLong incx,float *sy,FourByteLong incy)
+FloatOrDouble sdot(FourByteLong n,FloatOrDouble *sx,FourByteLong incx,FloatOrDouble *sy,FourByteLong incy)
 {
 static FourByteLong i,ix,iy,m,mp1;
-static float sdot,stemp;
+static FloatOrDouble sdot,stemp;
     stemp = sdot = 0.0;
     if(n <= 0) return sdot;
     if(incx == 1 && incy == 1) goto S20;
@@ -33,7 +43,7 @@ S60:
     sdot = stemp;
     return sdot;
 }
-void spofa(float *a,FourByteLong lda,FourByteLong n,FourByteLong *info)
+void spofa(FloatOrDouble *a,FourByteLong lda,FourByteLong n,FourByteLong *info)
 /*
      SPOFA FACTORS A REAL SYMMETRIC POSITIVE DEFINITE MATRIX.
      SPOFA IS USUALLY CALLED BY SPOCO, BUT IT CAN BE CALLED
@@ -64,9 +74,9 @@ void spofa(float *a,FourByteLong lda,FourByteLong n,FourByteLong *info)
      INTERNAL VARIABLES
 */
 {
-extern float sdot(FourByteLong n,float *sx,FourByteLong incx,float *sy,FourByteLong incy);
+extern FloatOrDouble sdot(FourByteLong n,FloatOrDouble *sx,FourByteLong incx,FloatOrDouble *sy,FourByteLong incy);
 static FourByteLong j,jm1,k;
-static float t,s;
+static FloatOrDouble t,s;
 /*
      BEGIN BLOCK WITH ...EXITS TO 40
 */

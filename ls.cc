@@ -1,3 +1,13 @@
+/*
+
+ $Id: ls.cc,v 1.2 2003/02/26 01:11:03 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
       These are the methods of the local searchers
 
@@ -11,14 +21,14 @@ extern class Eval evaluate;
 extern FILE *logFile;
 
 //  This function adds array1 + array2 to all the reals in the representation
-Phenotype genPh(const Phenotype &original, float *array1, float *array2)
+Phenotype genPh(const Phenotype &original, FloatOrDouble *array1, FloatOrDouble *array2)
 {
    RepType genetype;
    register int i, index = 0;
    Phenotype retval(original);
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, float *array1, float *array2)\n");
+   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, FloatOrDouble *array1, FloatOrDouble *array2)\n");
 #endif /* DEBUG */
 
 
@@ -41,7 +51,7 @@ Phenotype genPh(const Phenotype &original, float *array1, float *array2)
 void Solis_Wets::SW(Phenotype &vector)
 {
    register int i, j, num_successes = 0, num_failures = 0;
-   register float temp_rho = rho;
+   register FloatOrDouble temp_rho = rho;
    Phenotype newPh;
 
 #ifdef DEBUG
