@@ -52,7 +52,7 @@ int     keepresnum = 1;
 int     oldpdbq = FALSE;
 int     parse_tors_mode = FALSE;
 
-float	idct = 1.;
+FloatOrDouble	idct = 1.;
 
 FILE    *command_in_fp;
 FILE    *command_out_fp;
@@ -62,8 +62,8 @@ FILE    *logFile;
 
 /*
 ** struct  Quat {
-**             float angle;
-**             float vec[SPACE];
+**             FloatOrDouble angle;
+**             FloatOrDouble vec[SPACE];
 **             };
 */
 

@@ -15,14 +15,14 @@
 #include "openfile.h"
 void  clmode( char  atm_typ_str[ATOM_MAPS], 
               int   num_atm_maps, 
-              float clus_rms_tol, 
+              FloatOrDouble clus_rms_tol, 
               char  hostnm[MAX_CHARS], 
               Clock jobStart,
               struct tms tms_jobStart, 
               Boole B_write_all_clusmem, 
               char  clusFN[MAX_CHARS], 
-              float crdpdb[MAX_ATOMS][SPACE], 
-              float sml_center[SPACE], 
+              FloatOrDouble crdpdb[MAX_ATOMS][SPACE], 
+              FloatOrDouble sml_center[SPACE], 
               Boole B_symmetry_flag,
               char  rms_ref_crds[MAX_CHARS] );
 #endif
