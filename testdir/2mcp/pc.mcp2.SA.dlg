@@ -1,0 +1,787 @@
+      ________________________________________________________________
+
+__________//___________________________/////___________________/____________
+_________/__/__________________________/____/__________________/____________
+________/____/___________/_____________/_____/_________________/____________
+________/____/__/_____/_/////___/////__/_____/__/////___/////__/___/________
+_______/______/_/_____/__/_____/_____/_/_____/_/_____/_/_____/_/_//_________
+_______////////_/_____/__/_____/_____/_/_____/_/_____/_/_______//_/_________
+_______/______/_/____//__/___/_/_____/_/____/__/_____/_/_____/_/___/________
+_______/______/__////_/___///___/////__/////____/////___/////__/____/_______
+
+      ________________________________________________________________
+
+                                ______
+                               /      \
+                              /        \
+                             /          \
+                             \    /\    /
+                              \  /  \  /
+                               \/ /\ \/
+                                 /  \
+                                /____\
+
+                  ______________________________________ 
+                 |                                      |
+                 |            AutoDock 3.05             |
+                 |                                      |
+                 |            (c) 1991-2000             |
+                 |    The Scripps Research Institute    |
+                 |                                      |
+                 |       Garrett M. Morris, TSRI        |
+                 |         garrett@scripps.edu          |
+                 |                                      |
+                 |       David S. Goodsell, TSRI        |
+                 |         goodsell@scripps.edu         |
+                 |                                      |
+                 |        Arthur J. Olson, TSRI         |
+                 |           olson@scripps.edu          |
+                 |______________________________________|
+
+                  ______________________________________ 
+                 |                                      |
+                 | Automated Docking of Flexible Ligand |
+                 |     to Macromolecular Receptor       |
+                 |______________________________________|
+
+
+
+This file was created at:			11:22 08" a.m., 12/10/2002
+                   using:			"nemo.mgl"
+
+NOTE: "rus" stands for:
+
+      r = Real, wall-clock or elapsed time;
+      u = User or cpu-usage time;
+      s = System time
+
+All timings are in seconds, unless otherwise stated.
+
+
+Parameter file used for this docking:		pc.mcp2.SA.dpf
+
+
+
+DPF> seed    863546106 2863  # for random number generator
+
+2 seeds found.
+argument "863546106" found
+argument "2863" found
+Random number generator was seeded with the user-specified value  863546106
+Random number generator was seeded with the user-specified value  2863
+
+
+
+DPF> types	CNOP		# atom type names
+
+Atom descriptors for types 1-4 = C, N, O, P  respectively.
+
+Electrostatic energies will be stored in Grid Map 5
+
+
+DPF> fld	mcp2.maps.fld	# grid data file
+
+Opening Grid Map Dimensions file:		mcp2.maps.fld
+
+Grid Point Spacing =				0.375 Angstroms
+
+Even Number of User-specified Grid Points =	60 x-points
+						60 y-points
+						60 z-points
+
+Adding the Central Grid Point makes:		61 x-points
+						61 y-points
+						61 z-points
+
+Coordinates of Central Grid Point of Maps =	(50.203, 58.473, -36.378)
+
+Macromolecule file used to create Grid Maps =	mcp2.pdbqs
+
+Grid Parameter file used to create Grid Maps =	mcp2.gpf
+
+Minimum coordinates in grid = (38.953, 47.223, -47.628)
+Maximum coordinates in grid = (61.453, 69.723, -25.128)
+
+
+
+DPF> map	mcp2.C.map	# C-atomic affinity map
+
+Opened Grid Map 1 (C):				mcp2.C.map
+Checking header information.
+../../autodock3: Filename mismatch:
+		"mcp2.gpf" :: "pc.mcp2.SA.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 1... 
+Closing file.
+226981 energies found for map 1
+Minimum energy = -1.07,  maximum energy = 202293.53
+
+Time taken (s): Real= 0.76,  CPU= 0.73,  System= 0.03
+
+
+
+DPF> map	mcp2.N.map	# N-atomic affinity map
+
+Opened Grid Map 2 (N):				mcp2.N.map
+Checking header information.
+../../autodock3: Filename mismatch:
+		"mcp2.gpf" :: "pc.mcp2.SA.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 2... 
+Closing file.
+226981 energies found for map 2
+Minimum energy = -0.83,  maximum energy = 200273.58
+
+Time taken (s): Real= 0.70,  CPU= 0.69,  System= 0.01
+
+
+
+DPF> map	mcp2.O.map	# O-atomic affinity map
+
+Opened Grid Map 3 (O):				mcp2.O.map
+Checking header information.
+../../autodock3: Filename mismatch:
+		"mcp2.gpf" :: "pc.mcp2.SA.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 3... 
+Closing file.
+226981 energies found for map 3
+Minimum energy = -1.05,  maximum energy = 200665.89
+
+Time taken (s): Real= 0.70,  CPU= 0.70,  System= 0.00
+
+
+
+DPF> map	mcp2.P.map	# P-atomic affinity map
+
+Opened Grid Map 4 (P):				mcp2.P.map
+Checking header information.
+../../autodock3: Filename mismatch:
+		"mcp2.gpf" :: "pc.mcp2.SA.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 4... 
+Closing file.
+226981 energies found for map 4
+Minimum energy = -1.07,  maximum energy = 202293.53
+
+Time taken (s): Real= 0.70,  CPU= 0.68,  System= 0.02
+
+
+
+DPF> map	mcp2.e.map	# electrostatics map
+
+Opened Grid Map 5 (e):				mcp2.e.map
+Checking header information.
+../../autodock3: Filename mismatch:
+		"mcp2.gpf" :: "pc.mcp2.SA.gpf"
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 5... 
+Closing file.
+226981 energies found for map 5
+Minimum energy = -430.36,  maximum energy = 170.52
+
+Time taken (s): Real= 0.67,  CPU= 0.67,  System= 0.00
+
+DPF> 
+
+
+DPF> move	pc4.pdbq	# small molecule
+
+Atomic coordinate, partial charge, PDBQ file = "pc4.pdbq"
+
+
+INPUT PDBQ FILE:
+________________
+
+
+INPUT-PDBQ: REMARK  4 active torsions (identified by new id numbers):
+INPUT-PDBQ: REMARK  status:
+INPUT-PDBQ: REMARK     y      1-  5 between atoms: N1   and C2  
+INPUT-PDBQ: REMARK     y      5-  6 between atoms: C2   and C1  
+INPUT-PDBQ: REMARK     y      6-  7 between atoms: C1   and O2  
+INPUT-PDBQ: REMARK     y      7-  8 between atoms: O2   and P1  
+INPUT-PDBQ: ROOT
+INPUT-PDBQ: ATOM      1  N1  PC1     1      51.111  59.551 -34.867  0.00  0.00     1.000
+INPUT-PDBQ: ATOM      2  C3  PC1     1      50.011  59.064 -34.031  0.00  0.00     0.000
+INPUT-PDBQ: ATOM      3  C5  PC1     1      51.025  61.060 -34.988  0.00  0.00     0.000
+INPUT-PDBQ: ATOM      4  C4  PC1     1      52.471  59.176 -34.281  0.00  0.00     0.000
+INPUT-PDBQ: ENDROOT
+INPUT-PDBQ: BRANCH 1 5
+INPUT-PDBQ: ATOM      5  C2  PC1     1      50.985  59.018 -36.282  0.00  0.00     0.000
+INPUT-PDBQ: TORS 5 1
+INPUT-PDBQ: ATOM      6  C1  PC1     1      49.639  59.442 -36.883  0.00  0.00     0.000
+INPUT-PDBQ: TORS 6 7
+INPUT-PDBQ: ATOM      7  O2  PC1     1      49.305  58.670 -38.033  0.00  0.00     0.000
+INPUT-PDBQ: TORS 7 8
+INPUT-PDBQ: ATOM      8  P1  PC1     1      49.373  57.064 -37.806  0.00  0.00    -0.500
+INPUT-PDBQ: ATOM      9  O4  PC1     1      47.999  56.513 -37.767  0.00  0.00    -0.500
+INPUT-PDBQ: ATOM     10  O1  PC1     1      49.937  57.016 -36.403  0.00  0.00    -0.500
+INPUT-PDBQ: ATOM     11  O3  PC1     1      50.382  56.626 -38.816  0.00  0.00    -0.500
+INPUT-PDBQ: ENDTORS 7 8
+INPUT-PDBQ: ENDTORS 6 7
+INPUT-PDBQ: ENDTORS 5 6
+INPUT-PDBQ: ENDBRANCH 1 5
+________________________________________________________________________________
+
+Number of atoms found in molecule =	11 atoms
+
+Number of atoms with type 1 = 5
+Number of atoms with type 2 = 1
+Number of atoms with type 3 = 4
+Number of atoms with type 4 = 1
+
+Total charge on molecule =		-1.000 e
+
+REMARK  4 active torsions (identified by new id numbers):
+REMARK  status:
+REMARK     y      1-  5 between atoms: N1   and C2  
+REMARK     y      5-  6 between atoms: C2   and C1  
+REMARK     y      6-  7 between atoms: C1   and O2  
+REMARK     y      7-  8 between atoms: O2   and P1  
+
+
+Number of Rotatable Bonds in Small Molecule =	4 torsions
+
+
+TORSION TREE
+____________
+
+Sorted in order of increasing number of atoms moved:
+
+Torsion		   #
+ #  Atom1--Atom2 Moved List of Atoms Moved
+___ ____________ _____ ________________________________________________________
+ 1     O2--P1       3  O4,O1,O3.
+ 2     C1--O2       4  P1,O4,O1,O3.
+ 3     C2--C1       5  O2,P1,O4,O1,O3.
+ 4     N1--C2       6  C1,O2,P1,O4,O1,O3.
+
+
+
+Matrix of Non-Bonded Interactions:
+__________________________________
+
+Key:
+X = non-bonded interaction
+_ = 1,2 or 1,3 interaction
+
+
+Atom: ID:  1 2 3 4 5 6 7 8 91011
+_____ ___ ______________________
+  N1   1  |_|_|_|_|_|_|X|X|X|X|X
+  C3   2  |_|_|_|_|_|X|X|X|X|X|X
+  C5   3  |_|_|_|_|_|X|X|X|X|X|X
+  C4   4  |_|_|_|_|_|X|X|X|X|X|X
+  C2   5  |_|_|_|_|_|_|_|X|X|X|X
+  C1   6  |_|X|X|X|_|_|_|_|X|X|X
+  O2   7  |X|X|X|X|_|_|_|_|_|_|_
+  P1   8  |X|X|X|X|X|_|_|_|_|_|_
+  O4   9  |X|X|X|X|X|X|_|_|_|_|_
+  O1  10  |X|X|X|X|X|X|_|_|_|_|_
+  O3  11  |X|X|X|X|X|X|_|_|_|_|_
+
+
+
+List of Internal Non-Bonded Interactions:
+_________________________________________
+
+First Second Non-Bonded
+Atom  Atom(s)
+_____ ___________________________________________________
+  N1: O2, P1, O4, O1, O3.
+
+  C3: C1, O2, P1, O4, O1, O3.
+
+  C5: C1, O2, P1, O4, O1, O3.
+
+  C4: C1, O2, P1, O4, O1, O3.
+
+  C2: P1, O4, O1, O3.
+
+  C1: O4, O1, O3.
+
+
+Internal Non-bonded Interactions before,	66
+                       and after weeding =	30
+
+
+Calculating normalized torsion vectors.
+
+
+
+DPF> about	50.985 59.018 -36.282	# small molecule center
+
+Small molecule center of rotation =	(+50.985, +59.018, -36.282)
+
+Translating small molecule by:	(-50.985, -59.018, +36.282)
+
+Furthest ligand atom from "about" center is 4.171 Angstroms (maxrad).
+
+
+
+DPF> tran0	random		# initial coordinates/A or "random"
+
+
+
+DPF> quat0	random		# initial quaternion or "random"
+
+Each run will begin with a new, random initial quaternion.
+Initial quaternion,  q = [(x,y,z),w] =	[ (0.313, 0.507, -0.798), 3.3 deg ],
+Quaternion Vector Normalized to:  0.314 0.509 -0.801
+
+
+DPF> ndihe	4		# number of initial torsions
+
+Number of torsions = 4
+
+
+DPF> dihe0	random		# initial torsions
+
+	Initial torsion  1 = -106.67 deg
+	Initial torsion  2 =   21.54 deg
+	Initial torsion  3 = -115.47 deg
+	Initial torsion  4 =  154.17 deg
+DPF> 
+
+
+DPF> torsdof 4 0.3113	# num. non-H tors.degrees of freedom & coeff.
+
+Number of torsional degrees of freedom = 4
+
+Note: this must exclude any torsions involving -OH and -NH2 groups.
+
+Free energy coefficient for torsional degrees of freedom = 0.3113
+
+Estimated loss of torsional free energy upon binding = +1.2452 kcal/mol
+
+DPF> 
+
+
+DPF> tstep	0.2		# translation step/A
+
+Initial cycle, maximum translation step = +/- 0.2 Angstroms
+
+
+DPF> qstep	5.		# quaternion step/deg
+
+Initial cycle, maximum quaternion angle step = +/- 5.0 deg
+
+
+DPF> dstep	5.		# torsion step/deg
+
+Initial cycle, maximum torsion angle step = +/- 5.0 deg
+
+
+DPF> trnrf	1.		# trans reduction factor/per cycle
+
+Reduction factor for translations =	1.000 /cycle
+
+
+DPF> quarf	1.		# quat reduction factor/per cycle
+
+Reduction factor for quaternion angle =	1.000 /cycle
+
+
+DPF> dihrf	1.		# tors reduction factor/per cycle
+
+Reduction factor for torsion angles =	1.000 /cycle
+DPF> 
+DPF> #hardtorcon 1 -180. 30.	# constrain torsion, num., angle(deg), range(deg)
+DPF> 
+
+
+DPF> intnbp_r_eps  4.00 0.0222750  12  6	#C-C lj
+
+Non-bonded parameters for C-C interactions, used in internal energy calculations:
+
+              373712.5           182.5 
+    E    =  -----------  -  -----------
+     C,C         12               6
+                r               r 
+
+Calculating C-C interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.16,  CPU= 0.10,  System= 0.06
+
+
+DPF> intnbp_r_eps  3.75 0.0230026  12  6	#C-N lj
+
+Non-bonded parameters for C-N interactions, used in internal energy calculations:
+
+              177890.2           127.9 
+    E    =  -----------  -  -----------
+     C,N         12               6
+                r               r 
+
+Calculating C-N interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.60 0.0257202  12  6	#C-O lj
+
+Non-bonded parameters for C-O interactions, used in internal energy calculations:
+
+              121872.1           112.0 
+    E    =  -----------  -  -----------
+     C,O         12               6
+                r               r 
+
+Calculating C-O interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+
+
+DPF> intnbp_r_eps  4.00 0.0222750  12  6	#C-C lj
+
+Non-bonded parameters for C-P interactions, used in internal energy calculations:
+
+              373712.5           182.5 
+    E    =  -----------  -  -----------
+     C,P         12               6
+                r               r 
+
+Calculating C-P interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.50 0.0237600  12  6	#N-N lj
+
+Non-bonded parameters for N-N interactions, used in internal energy calculations:
+
+               80290.3            87.4 
+    E    =  -----------  -  -----------
+     N,N         12               6
+                r               r 
+
+Calculating N-N interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.35 0.0265667  12  6	#N-O lj
+
+Non-bonded parameters for N-O interactions, used in internal energy calculations:
+
+               53073.2            75.1 
+    E    =  -----------  -  -----------
+     N,O         12               6
+                r               r 
+
+Calculating N-O interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.75 0.0230026  12  6	#N-C lj
+
+Non-bonded parameters for N-P interactions, used in internal energy calculations:
+
+              177890.2           127.9 
+    E    =  -----------  -  -----------
+     N,P         12               6
+                r               r 
+
+Calculating N-P interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.20 0.0297000  12  6	#O-O lj
+
+Non-bonded parameters for O-O interactions, used in internal energy calculations:
+
+               34241.8            63.8 
+    E    =  -----------  -  -----------
+     O,O         12               6
+                r               r 
+
+Calculating O-O interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+
+
+DPF> intnbp_r_eps  3.60 0.0257202  12  6	#O-C lj
+
+Non-bonded parameters for O-P interactions, used in internal energy calculations:
+
+              121872.1           112.0 
+    E    =  -----------  -  -----------
+     O,P         12               6
+                r               r 
+
+Calculating O-P interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+
+
+DPF> intnbp_r_eps  4.00 0.0222750  12  6	#C-C lj
+
+Non-bonded parameters for P-P interactions, used in internal energy calculations:
+
+              373712.5           182.5 
+    E    =  -----------  -  -----------
+     P,P         12               6
+                r               r 
+
+Calculating P-P interaction energy versus atomic separation (131072 data points).
+Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+DPF> 
+DPF> #intelec		# calculate internal electrostatic energy
+DPF> 
+
+
+DPF> rt0 616.		# SA: initial RT
+
+
+		TEMPERATURE SCHEDULE INFORMATION
+		________________________________
+
+               -1 -1                 -1 -1
+R = 8.314 J mol  K    = 1.987 cal mol  K  
+
+                                        -1
+Initial R*Temperature =   616.00 cal mol
+      (=> Temperature =   309.99 K
+                   or =    36.84 C)
+
+
+
+DPF> rtrf 0.95		# SA: RT reduction factor/per cycle
+
+R*Temperature reduction factor =     0.95	/cycle
+
+
+DPF> linear_schedule	# SA: do not use geometric cooling
+
+A linear temperature reduction schedule will be used...
+
+
+Please specify the number of cycles first!
+
+
+
+DPF> runs	10		# SA: number of runs
+
+Number of runs =				      10 runs
+
+
+DPF> cycles	50		# SA: cycles
+
+Maximum number of cycles =			      50 cycles
+
+
+A linear temperature reduction schedule was requested...
+Annealing temperature will be reduced by 12.320 cal mol per cycle.
+
+
+
+DPF> accs	25000		# SA: steps accepted
+
+Maximum number accepted per cycle =		   25000 steps
+
+
+DPF> rejs	25000		# SA: steps rejected
+
+Maximum number rejected per cycle =		   25000 steps
+                                           	_________
+Maximum possible number of steps per cycle =	   50000 steps
+
+
+
+DPF> select	m		# SA: minimum or last
+
+../../autodock3 will begin each new cycle
+with the state of minimum energy from the previous annealing cycle.
+
+
+DPF> outlev	1		# SA: diagnostic output level
+
+Output Level = 1.  MINIMUM OUTPUT DURING DOCKING.
+DPF> 
+
+
+DPF> outlev	0		# GA: diagnostic output level
+
+Output Level = 0.  NO OUTPUT DURING DOCKING.
+DPF> 
+
+
+DPF> rmstol	0.5		# cluster tolerance/A
+
+Maximum RMS tolerance for conformational cluster analysis = 0.50 Angstroms
+
+
+DPF> rmsref	pc4.pdbq	# reference structure for RMS calc.
+
+RMS reference coordinates will taken from "pc4.pdbq"
+DPF> #rmsnosym		# do no symmetry checking in RMS calc.
+
+
+DPF> write_all		# write all conformations in a cluster
+
+All members of each cluster will be written out after the clustering histogram.
+(This is instead of outputting just the lowest energy member in each.)
+
+DPF> 
+
+
+DPF> extnrg	1000.		# external grid energy
+
+External grid energy (beyond grid map walls) = 1000.00
+
+
+
+DPF> e0max	0. 10000	# maximum allowable initial energy
+
+Using user-specified maximum number of retries for initialization, 10000 retries.
+
+
+If the initial energy is greater than e0max, 0.000,
+then a new, random initial state will be created.
+
+DPF> 
+
+
+DPF> simanneal		# do SA runs
+
+
+
+Total number of ligands read in by the DPF "move" command = 1
+
+
+SUMMARY OF PAIRWISE-ATOMIC NON-BONDED INTERNAL ENERGIES
+________________________________________________________
+
+Clamp pairwise-atomic interaction energies at:	100000.00
+    	
+ r  	Look-up	  E      E      E      E      E      E      E      E      E      E    
+ /Ang	Index	   C,C    C,N    C,O    C,P    N,N    N,O    N,P    O,O    O,P    P,P 
+______	_____	 ______ ______ ______ ______ ______ ______ ______ ______ ______ ______
+ 0.559	   10	100000.00100000.00100000.00100000.00100000.00100000.00100000.00100000.00100000.00100000.00
+ 0.791	   20	100000.00100000.00100000.00100000.00100000.00100000.00100000.00100000.00100000.00100000.00
+ 0.968	   30	100000.00100000.00100000.00100000.00100000.0078080.18100000.0050357.20100000.00100000.00
+ 1.118	   40	97873.0646567.3631890.7097873.0621002.8913874.3746567.368943.6231890.7097873.06
+ 1.250	   50	25633.4912190.998345.6325633.495494.613627.4712190.992336.368345.6325633.49
+ 1.369	   60	8572.944074.562787.788572.941834.551210.034074.56 778.362787.788572.94
+ 1.479	   70	3393.311611.321101.593393.31 724.44 477.211611.32 306.421101.593393.31
+ 1.581	   80	1519.05 720.45 492.021519.05 323.28 212.58 720.45 136.17 492.021519.05
+ 1.677	   90	 746.86 353.66 241.20 746.86 158.29 103.86 353.66  66.32 241.20 746.86
+ 1.768	  100	 395.29 186.82 127.19 395.29  83.35  54.53 186.82  34.68 127.19 395.29
+ 1.854	  110	 222.01 104.67  71.11 222.01  46.51  30.32 104.67  19.18  71.11 222.01
+ 1.936	  120	 130.92  61.54  41.70 130.92  27.22  17.66  61.54  11.10  41.70 130.92
+ 2.016	  130	  80.41  37.66  25.44  80.41  16.56  10.69  37.66   6.67  25.44  80.41
+ 2.092	  140	  51.11  23.84  16.04  51.11  10.41   6.67  23.84   4.12  16.04  51.11
+ 2.165	  150	  33.46  15.53  10.40  33.46   6.72   4.27  15.53   2.61  10.40  33.46
+ 2.236	  160	  22.46  10.36   6.90  22.46   4.44   2.80  10.36   1.68   6.90  22.46
+ 2.305	  170	  15.41   7.06   4.67  15.41   2.99   1.86   7.06   1.10   4.67  15.41
+ 2.372	  180	  10.77   4.90   3.22  10.77   2.04   1.25   4.90   0.72   3.22  10.77
+ 2.437	  190	   7.66   3.45   2.25   7.66   1.42   0.85   3.45   0.48   2.25   7.66
+ 2.500	  200	   5.52   2.46   1.59   5.52   0.99   0.58   2.46   0.31   1.59   5.52
+ 2.562	  210	   4.03   1.77   1.13   4.03   0.70   0.40   1.77   0.20   1.13   4.03
+ 2.622	  220	   2.98   1.29   0.81   2.98   0.49   0.27   1.29   0.13   0.81   2.98
+ 2.681	  230	   2.22   0.95   0.58   2.22   0.35   0.18   0.95   0.08   0.58   2.22
+ 2.739	  240	   1.67   0.70   0.42   1.67   0.24   0.12   0.70   0.04   0.42   1.67
+ 2.795	  250	   1.26   0.51   0.30   1.26   0.17   0.08   0.51   0.02   0.30   1.26
+ 2.850	  260	   0.96   0.38   0.21   0.96   0.12   0.04   0.38   0.00   0.21   0.96
+ 2.905	  270	   0.73   0.28   0.15   0.73   0.08   0.02   0.28  -0.01   0.15   0.73
+ 2.958	  280	   0.56   0.21   0.10   0.56   0.05   0.01   0.21  -0.02   0.10   0.56
+ 3.010	  290	   0.43   0.15   0.07   0.43   0.03  -0.01   0.15  -0.02   0.07   0.43
+ 3.062	  300	   0.33   0.11   0.04   0.33   0.01  -0.01   0.11  -0.03   0.04   0.33
+ 3.112	  310	   0.25   0.07   0.02   0.25   0.00  -0.02   0.07  -0.03   0.02   0.25
+ 3.162	  320	   0.19   0.05   0.01   0.19  -0.01  -0.02   0.05  -0.03   0.01   0.19
+ 3.211	  330	   0.14   0.03  -0.00   0.14  -0.01  -0.02   0.03  -0.03  -0.00   0.14
+ 3.260	  340	   0.11   0.02  -0.01   0.11  -0.02  -0.03   0.02  -0.03  -0.01   0.11
+ 3.307	  350	   0.08   0.01  -0.01   0.08  -0.02  -0.03   0.01  -0.03  -0.01   0.08
+ 3.354	  360	   0.06  -0.00  -0.02   0.06  -0.02  -0.03  -0.00  -0.03  -0.02   0.06
+ 3.400	  370	   0.04  -0.01  -0.02   0.04  -0.02  -0.03  -0.01  -0.03  -0.02   0.04
+ 3.446	  380	   0.02  -0.01  -0.02   0.02  -0.02  -0.03  -0.01  -0.03  -0.02   0.02
+ 3.491	  390	   0.01  -0.02  -0.02   0.01  -0.02  -0.03  -0.02  -0.02  -0.02   0.01
+ 3.536	  400	   0.00  -0.02  -0.03   0.00  -0.02  -0.02  -0.02  -0.02  -0.03   0.00
+ 3.579	  410	  -0.00  -0.02  -0.03  -0.00  -0.02  -0.02  -0.02  -0.02  -0.03  -0.00
+ 3.623	  420	  -0.01  -0.02  -0.03  -0.01  -0.02  -0.02  -0.02  -0.02  -0.03  -0.01
+ 3.666	  430	  -0.01  -0.02  -0.03  -0.01  -0.02  -0.02  -0.02  -0.02  -0.03  -0.01
+ 3.708	  440	  -0.01  -0.02  -0.03  -0.01  -0.02  -0.02  -0.02  -0.02  -0.03  -0.01
+ 3.750	  450	  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02
+ 3.791	  460	  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02
+ 3.832	  470	  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02
+ 3.873	  480	  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02
+ 3.913	  490	  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02
+ 3.953	  500	  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.01  -0.02  -0.02
+ 3.992	  510	  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.02  -0.01  -0.02  -0.02
+ 4.031	  520	  -0.02  -0.02  -0.02  -0.02  -0.02  -0.01  -0.02  -0.01  -0.02  -0.02
+ 4.070	  530	  -0.02  -0.02  -0.02  -0.02  -0.02  -0.01  -0.02  -0.01  -0.02  -0.02
+ 4.108	  540	  -0.02  -0.02  -0.02  -0.02  -0.01  -0.01  -0.02  -0.01  -0.02  -0.02
+ 4.146	  550	  -0.02  -0.02  -0.02  -0.02  -0.01  -0.01  -0.02  -0.01  -0.02  -0.02
+ 4.183	  560	  -0.02  -0.02  -0.02  -0.02  -0.01  -0.01  -0.02  -0.01  -0.02  -0.02
+ 4.220	  570	  -0.02  -0.02  -0.02  -0.02  -0.01  -0.01  -0.02  -0.01  -0.02  -0.02
+ 4.257	  580	  -0.02  -0.02  -0.02  -0.02  -0.01  -0.01  -0.02  -0.01  -0.02  -0.02
+ 4.294	  590	  -0.02  -0.02  -0.01  -0.02  -0.01  -0.01  -0.02  -0.01  -0.01  -0.02
+ 4.330	  600	  -0.02  -0.02  -0.01  -0.02  -0.01  -0.01  -0.02  -0.01  -0.01  -0.02
+ 4.366	  610	  -0.02  -0.01  -0.01  -0.02  -0.01  -0.01  -0.01  -0.01  -0.01  -0.02
+ 4.402	  620	  -0.02  -0.01  -0.01  -0.02  -0.01  -0.01  -0.01  -0.01  -0.01  -0.02
+ 4.437	  630	  -0.02  -0.01  -0.01  -0.02  -0.01  -0.01  -0.01  -0.01  -0.01  -0.02
+ 4.472	  640	  -0.02  -0.01  -0.01  -0.02  -0.01  -0.01  -0.01  -0.01  -0.01  -0.02
+
+
+		BEGINNING MONTE CARLO SIMULATED ANNEALING
+     		_________________________________________
+
+
+
+Sorry, too many retries (10000).  Continuing...
+
+Will use the state with the lowest energy found, 0.13
+
+
+		INITIAL STATE:  
+		______________
+
+
+INITIAL STATE:  USER    Transformed Initial Coordinates
+INITIAL STATE:  ATOM      1  N1  PC1     1      45.279  60.299 -39.903 +1.00 +0.00    +1.000
+INITIAL STATE:  ATOM      2  C3  PC1     1      44.313  61.270 -39.381 +1.00 +0.00    +0.000
+INITIAL STATE:  ATOM      3  C5  PC1     1      46.474  60.223 -38.973 +1.00 +0.00    +0.000
+INITIAL STATE:  ATOM      4  C4  PC1     1      44.662  58.908 -40.034 +1.00 +0.00    +0.000
+INITIAL STATE:  ATOM      5  C2  PC1     1      45.829  60.757 -41.241 +1.00 +0.00    +0.000
+INITIAL STATE:  ATOM      6  C1  PC1     1      45.077  60.060 -42.382 +1.00 +0.00    +0.000
+INITIAL STATE:  ATOM      7  O2  PC1     1      45.956  59.312 -43.217 +1.00 +0.00    +0.000
+INITIAL STATE:  ATOM      8  P1  PC1     1      45.399  59.058 -44.721 +1.00 +0.00    -0.500
+INITIAL STATE:  ATOM      9  O4  PC1     1      44.037  59.626 -44.844 +1.00 +0.00    -0.500
+INITIAL STATE:  ATOM     10  O1  PC1     1      45.279  57.550 -44.710 +1.00 +0.00    -0.500
+INITIAL STATE:  ATOM     11  O3  PC1     1      46.535  59.510 -45.579 +1.00 +0.00    -0.500
+INITIAL STATE:  TER
+
+
+		INITIAL ENERGY BREAKDOWN
+		________________________
+
+
+Energy of starting position of Small Molecule by atom: 
+
+Small Molecule  Atom  Non-bonded   Electrostatic  Partial
+Atom & Residue  Type    Energy        Energy      Charge
+______________  ____  ___________  _____________  ______
+    1  N1  PC1   2        -0.02        +0.07      +1.000
+    2  C3  PC1   1        -0.07        +0.00      +0.000
+    3  C5  PC1   1        -0.11        +0.00      +0.000
+    4  C4  PC1   1        -0.03        +0.00      +0.000
+    5  C2  PC1   1        -0.02        +0.00      +0.000
+    6  C1  PC1   1        -0.00        +0.00      +0.000
+    7  O2  PC1   3        +0.24        +0.00      +0.000
+    8  P1  PC1   4        +0.00        -0.01      -0.500
+    9  O4  PC1   3        +0.24        -0.01      -0.500
+   10  O1  PC1   3        +0.24        -0.01      -0.500
+   11  O3  PC1   3        +0.24        -0.01      -0.500
+Initial Estimated Free Energy of Binding    =   +1.98 kcal/mol  [=(1)+(3)]
+Initial 
+Initial Final Docked Energy                 =   +3.71 kcal/mol  [=(1)+(2)]
+Initial 
+Initial (1) Final Intermolecular Energy     =   +0.74 kcal/mol
+Initial (2) Final Internal Energy of Ligand =   +2.97 kcal/mol
+Initial (3) Torsional Free Energy           =   +1.25 kcal/mol
+Initial 
+Number of initialization attempts = 10000 (run 1)
+Time spent initializing: (Real, CPU, System): Real= 0.30,  CPU= 0.30,  System= 0.00
