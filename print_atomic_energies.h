@@ -5,7 +5,7 @@
 void  print_atomic_energies(int   natom,
                             char  atomstuff[MAX_ATOMS][MAX_CHARS],
                             int   type[MAX_ATOMS],
-                            float emap[MAX_ATOMS],
-                            float elec[MAX_ATOMS],
-                            float charge[MAX_ATOMS] );
+                            FloatOrDouble emap[MAX_ATOMS],
+                            FloatOrDouble elec[MAX_ATOMS],
+                            FloatOrDouble charge[MAX_ATOMS] );
 #endif
