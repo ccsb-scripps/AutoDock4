@@ -4,6 +4,8 @@
 # Create a makefile that uses acro
 #
 
+system("cp ../acro/test/config.* test");
+
 open (MAKEFILE, "Makefile") || die "ERROR: cannot open file \"Makefile\"!\n";
 open (OUTFILE, ">Makefile-acro") || die "ERROR: cannot open file \"Makefile-acro\"!\n";
 
