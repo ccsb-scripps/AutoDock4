@@ -50,6 +50,16 @@ if (strcmp(algname,"help")==0) {
    return;
    }
 //
+// If 'domain' equals "help", then return after print the 
+// solver options
+//
+if (strcmp(domain,"help")==0) {
+   coliny_solver.initialize(algname);
+   coliny_solver.help_options(cout);
+   cout << flush;
+   return;
+   }
+//
 // Setup the OptProblem object
 //
 colin::OptSetup(coliny_problem, &ADEvalFn, domain);

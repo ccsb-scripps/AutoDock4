@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.5 2003/12/04 21:34:00 billhart Exp $
+ $Id: main.cc,v 1.6 2003/12/04 21:58:29 billhart Exp $
 
 */
 
@@ -634,11 +634,20 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	Clock  colinyEnd;
 
       char algname[64];
+      char nruns_str[64];
       (void) sscanf(line, "%*s %s %d", algname, &nruns);
+      (void) sscanf(line, "%*s %s %s", algname, nruns_str);
 
       if (strcmp(algname,"help")==0) {
 	 utilib::BasicArray<double> initvec;
 	 coliny_init(algname, "", initvec);
+	 prStr(error_message, "ERROR:  no optimizer type specified.");
+	 stop(error_message);
+	 exit(-1);
+	 }
+      else if (strcmp(nruns_str,"help")==0) {
+	 utilib::BasicArray<double> initvec;
+	 coliny_init(algname, nruns_str, initvec);
 	 prStr(error_message, "ERROR:  no optimizer type specified.");
 	 stop(error_message);
 	 exit(-1);

@@ -507,7 +507,7 @@ linpack.o : linpack.cc
 ls.o : ls.cc ls.h support.h ranlib.h
 	$(CC) $(CFLAGS) -c ls.cc
 
-main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h
+main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h
 	$(CC) $(OLIMIT) -c -DWRITEPDBQSTATE main.cc
 
 mapping.o : mapping.cc support.h
