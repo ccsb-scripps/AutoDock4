@@ -1,3 +1,13 @@
+/*
+
+ $Id: changeState.cc,v 1.2 2003/02/26 00:33:57 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* changeState.cc */
 
 #include <math.h>
@@ -9,10 +19,10 @@
 
 
 State  changeState( State last,      /* ...must be a normalized quaternion! */
-		    float trnStep,
-		    float torStep,
+		    FloatOrDouble trnStep,
+		    FloatOrDouble torStep,
 		    int   ntor,
-		    float F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		    FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		    int   N_con[MAX_TORS])
 
 {
