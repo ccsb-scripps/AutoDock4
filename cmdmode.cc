@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.2 2003/02/26 00:52:37 garrett Exp $
+ $Id: cmdmode.cc,v 1.3 2003/02/26 02:55:40 garrett Exp $
 
 */
 
@@ -256,11 +256,10 @@ int cmdmode(int   natom,
                     }
                     /* gmm 2001.11.07
                     if (outside) {
-                        etotal = (einter = WallEnergy) + eintra;
+			etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + eintra; // gmm 2001.11.07
                     } else {
                         etotal = (einter = trilinterp(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo)) + eintra;
                     } / * endif */
-                    etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + eintra; // gmm 2001.11.07
 
                     pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
                     pr(logFile,     "\t\t==============================\n\n\n");
@@ -348,13 +347,12 @@ int cmdmode(int   natom,
                 } /*i*/
                 /*
                 if (outside) {
-                    etotal = (einter = WallEnergy) + eintra;
+                    etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + eintra; // gmm 2001.11.07
                 } else {
                     etotal = (einter = trilinterp(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo)) + eintra;
                     / * lo) ...using lo array is slower * /
                 }
                 */
-                etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + eintra; // gmm 2001.11.07
                 prStr(message, "%f\n", etotal);
                 pr_2x(command_out_fp, logFile, message);
                 fflush(logFile);
@@ -479,12 +477,11 @@ int cmdmode(int   natom,
                                     } /*i*/
                                     /* gmm 2001.11.07
                                     if (outside) {
-                                        etotal = (einter = WallEnergy) + Eint;
+                                        etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + Eint; // gmm 2001.11.07
                                     } else {
                                         etotal = (einter = trilinterp(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo)) + Eint;
                                             / * lo) + Eint; * /
                                     } / * endif */
-                                    etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + Eint; // gmm 2001.11.07
                                     pr(logFile, "USER   Run %d  Cycle %d  Step %d  Temp %.2f K  %c  Etot %.2f  Eint   %.2f\n", irun, icycle, nstep, T, lastmove, E, Eint);
                                     switch (lastmove) {
                                         case 'A':
