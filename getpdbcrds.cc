@@ -1,3 +1,13 @@
+/*
+
+ $Id: getpdbcrds.cc,v 1.2 2003/02/26 01:05:49 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* getpdbcrds.cc */
 
     #include <stdio.h>
@@ -12,7 +22,7 @@ extern char *programname;
 
 
 int getpdbcrds( char rms_ref_crds_FN[MAX_CHARS],
-		float ref_crds[MAX_ATOMS][SPACE] )
+		FloatOrDouble ref_crds[MAX_ATOMS][SPACE] )
 {
     int ii=0;
     int natoms=0;

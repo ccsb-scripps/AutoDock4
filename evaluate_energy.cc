@@ -1,3 +1,13 @@
+/*
+
+ $Id: evaluate_energy.cc,v 1.2 2003/02/26 01:02:12 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* evaluate_energy.cc */
 
     #include "structs.h"
@@ -6,22 +16,22 @@
 
 extern FILE *logFile;
 
-float evaluate_energy( 
+FloatOrDouble evaluate_energy( 
 
-    float crd[MAX_ATOMS][SPACE],
-    float charge[MAX_ATOMS],
+    FloatOrDouble crd[MAX_ATOMS][SPACE],
+    FloatOrDouble charge[MAX_ATOMS],
     int   type[MAX_ATOMS],
     int   natom,
-    float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-    float inv_spacing,
-    float xlo,
-    float ylo,
-    float zlo,
+    FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+    FloatOrDouble inv_spacing,
+    FloatOrDouble xlo,
+    FloatOrDouble ylo,
+    FloatOrDouble zlo,
     int   nonbondlist[MAX_NONBONDS][2],
-    float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+    FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
     int   Nnb,
     Boole B_calcIntElec,
-    float q1q2[MAX_NONBONDS],
+    FloatOrDouble q1q2[MAX_NONBONDS],
     Boole B_isGaussTorCon,
     Boole B_isTorConstrained[MAX_TORS],
     State now,
@@ -30,7 +40,7 @@ float evaluate_energy(
     unsigned short US_torProfile[MAX_TORS][NTORDIVS])
 
 {
-    float e = 0.;
+    FloatOrDouble e = 0.;
     int   I_tor = 0;
     int   indx = 0;
 
@@ -65,9 +75,9 @@ float evaluate_energy(
 	    if (B_isTorConstrained[I_tor] == 1) {
 		indx = Rad2Div( now.tor[I_tor] );
 		if (B_ShowTorE) {
-		    e += (float)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
+		    e += (FloatOrDouble)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
 		} else {
-		    e += (float)US_torProfile[I_tor][indx];
+		    e += (FloatOrDouble)US_torProfile[I_tor][indx];
 		}
 	    }/*if*/
 	}/*I_tor*/

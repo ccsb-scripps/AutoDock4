@@ -1,3 +1,13 @@
+/*
+
+ $Id: getInitialState.cc,v 1.2 2003/02/26 01:03:43 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* getInitialState.cc */
 
 #include <math.h>
@@ -16,8 +26,8 @@ extern char *programname;
 
 void getInitialState(   
 
-            float *Addr_e0total,
-            float e0max,
+            FloatOrDouble *Addr_e0total,
+            FloatOrDouble e0max,
 
             State *sInit, /* was qtn0[QUAT] and tor0[MAX_TORS] */
             State *sMinm, /* was qtnMin[QUAT] and torMin[MAX_TORS] */
@@ -27,41 +37,41 @@ void getInitialState(
             Boole B_RandomQuat0,
             Boole B_RandomDihe0,
 
-            float charge[MAX_ATOMS],
-            float q1q2[MAX_NONBONDS],
-            float crd[MAX_ATOMS][SPACE],
-            float crdpdb[MAX_ATOMS][SPACE],
+            FloatOrDouble charge[MAX_ATOMS],
+            FloatOrDouble q1q2[MAX_NONBONDS],
+            FloatOrDouble crd[MAX_ATOMS][SPACE],
+            FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
             char  atomstuff[MAX_ATOMS][MAX_CHARS],
-            float elec[MAX_ATOMS],
-            float emap[MAX_ATOMS],
-            float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+            FloatOrDouble elec[MAX_ATOMS],
+            FloatOrDouble emap[MAX_ATOMS],
+            FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
             Boole B_calcIntElec,
-            float xhi,
-            float yhi,
-            float zhi,
-            float xlo,
-            float ylo,
-            float zlo,
-            float inv_spacing,
-            float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            FloatOrDouble xhi,
+            FloatOrDouble yhi,
+            FloatOrDouble zhi,
+            FloatOrDouble xlo,
+            FloatOrDouble ylo,
+            FloatOrDouble zlo,
+            FloatOrDouble inv_spacing,
+            FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
             int   nonbondlist[MAX_NONBONDS][2],
             int   ntor,
             int   tlist[MAX_TORS][MAX_ATOMS],
             int   type[MAX_ATOMS],
-            float vt[MAX_TORS][SPACE],
+            FloatOrDouble vt[MAX_TORS][SPACE],
             int   irun1,
             int   outlev,
             int   MaxRetries,
-            float torsFreeEnergy,
+            FloatOrDouble torsFreeEnergy,
             int   ligand_is_inhibitor)
 
 {
-    float e0total = 0.;
-    float e0inter = 0.;
-    float e0intra = 0.;
-    float e0min = BIG;
+    FloatOrDouble e0total = 0.;
+    FloatOrDouble e0inter = 0.;
+    FloatOrDouble e0intra = 0.;
+    FloatOrDouble e0min = BIG;
     int   retries = 0;
     register int i = 0;
     Clock  initStart;
