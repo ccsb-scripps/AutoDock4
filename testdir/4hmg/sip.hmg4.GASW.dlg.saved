@@ -25,7 +25,7 @@ _______/______/__////_/___///___/////__/////____/////___/////__/____/_______
                  |                                      |
                  |            AutoDock 3.05             |
                  |                                      |
-                 |            (c) 1991-2000             |
+                 |            (c) 1991-2002             |
                  |    The Scripps Research Institute    |
                  |                                      |
                  |       Garrett M. Morris, TSRI        |
@@ -46,7 +46,7 @@ _______/______/__////_/___///___/////__/////____/////___/////__/____/_______
 
 
 
-This file was created at:			4:23 44" p.m., 12/19/2002
+This file was created at:			5:11 28" p.m., 02/26/2003
                    using:			"nemo.mgl"
 
 NOTE: "rus" stands for:
@@ -70,6 +70,7 @@ argument "2863" found
 Random number generator was seeded with the user-specified value  863546106
 Random number generator was seeded with the user-specified value  2863
 
+Portable random number generator was seeded with the user-specified values  863546106, 2863
 
 
 DPF> types	CNOH		# atom type names
@@ -108,7 +109,7 @@ DPF> map	hmg4.C.map	# C-atomic affinity map
 
 Opened Grid Map 1 (C):				hmg4.C.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"hmg4.gpf" :: "sip.hmg4.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -118,7 +119,7 @@ Closing file.
 226981 energies found for map 1
 Minimum energy = -1.03,  maximum energy = 202769.09
 
-Time taken (s): Real= 0.72,  CPU= 0.55,  System= 0.17
+Time taken (s): Real= 1.11,  CPU= 0.99,  System= 0.08
 
 
 
@@ -126,7 +127,7 @@ DPF> map	hmg4.N.map	# N-atomic affinity map
 
 Opened Grid Map 2 (N):				hmg4.N.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"hmg4.gpf" :: "sip.hmg4.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -136,7 +137,7 @@ Closing file.
 226981 energies found for map 2
 Minimum energy = -0.82,  maximum energy = 200484.84
 
-Time taken (s): Real= 0.67,  CPU= 0.66,  System= 0.01
+Time taken (s): Real= 0.97,  CPU= 0.94,  System= 0.00
 
 
 
@@ -144,7 +145,7 @@ DPF> map	hmg4.O.map	# O-atomic affinity map
 
 Opened Grid Map 3 (O):				hmg4.O.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"hmg4.gpf" :: "sip.hmg4.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -154,7 +155,7 @@ Closing file.
 226981 energies found for map 3
 Minimum energy = -0.95,  maximum energy = 200165.83
 
-Time taken (s): Real= 0.68,  CPU= 0.68,  System= 0.00
+Time taken (s): Real= 1.00,  CPU= 0.96,  System= 0.01
 
 
 
@@ -162,7 +163,7 @@ DPF> map	hmg4.H.map	# H-atomic affinity map
 
 Opened Grid Map 4 (H):				hmg4.H.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"hmg4.gpf" :: "sip.hmg4.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -172,7 +173,7 @@ Closing file.
 226981 energies found for map 4
 Minimum energy = -0.76,  maximum energy = 104866.80
 
-Time taken (s): Real= 0.67,  CPU= 0.67,  System= 0.00
+Time taken (s): Real= 0.97,  CPU= 0.96,  System= 0.00
 
 
 
@@ -180,7 +181,7 @@ DPF> map	hmg4.e.map	# electrostatics map
 
 Opened Grid Map 5 (e):				hmg4.e.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"hmg4.gpf" :: "sip.hmg4.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -190,7 +191,7 @@ Closing file.
 226981 energies found for map 5
 Minimum energy = -262.54,  maximum energy = 283.01
 
-Time taken (s): Real= 0.65,  CPU= 0.63,  System= 0.00
+Time taken (s): Real= 0.96,  CPU= 0.92,  System= 0.01
 
 DPF> 
 
@@ -320,129 +321,6 @@ ___ ____________ _____ ________________________________________________________
 11     C6--C7       8  C8,C9,O9,H9,O8,H8,O7,H7.
 
 
-
-Matrix of Non-Bonded Interactions:
-__________________________________
-
-Key:
-X = non-bonded interaction
-_ = 1,2 or 1,3 interaction
-
-
-Atom: ID:  1 2 3 4 5 6 7 8 91011121314151617181920212223242526272829
-_____ ___ __________________________________________________________
-  C2   1  |_|_|_|_|_|_|_|_|X|X|_|_|_|_|X|_|X|X|X|X|_|X|X|X|X|X|X|X|X
-  C3   2  |_|_|_|_|_|_|_|X|X|X|_|X|X|_|X|_|X|X|X|X|_|X|X|X|X|X|X|X|X
-  C4   3  |_|_|_|_|_|_|_|X|X|X|_|X|X|_|_|_|X|X|X|X|_|X|X|X|X|X|X|X|X
-  C5   4  |_|_|_|_|_|_|_|X|X|X|_|X|X|_|X|_|_|_|_|_|_|X|X|X|X|X|X|X|X
-  C6   5  |_|_|_|_|_|_|_|X|X|X|_|X|X|_|X|_|X|X|X|X|_|_|X|X|X|X|X|_|X
-  O6   6  |_|_|_|_|_|_|_|X|X|X|_|X|X|_|X|_|X|X|X|X|_|X|X|X|X|X|X|X|X
-  O2   7  |_|_|_|_|_|_|_|_|_|_|_|X|X|_|X|_|X|X|X|X|_|X|X|X|X|X|X|X|X
- C35   8  |_|X|X|X|X|X|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
- C40   9  |X|X|X|X|X|X|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
- C41  10  |X|X|X|X|X|X|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
-  C1  11  |_|_|_|_|_|_|_|X|X|X|_|_|_|_|X|_|X|X|X|X|_|X|X|X|X|X|X|X|X
- O1A  12  |_|X|X|X|X|X|X|X|X|X|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
- O1B  13  |_|X|X|X|X|X|X|X|X|X|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
-  O4  14  |_|_|_|_|_|_|_|X|X|X|_|X|X|_|_|_|X|X|X|X|_|X|X|X|X|X|X|X|X
-  H4  15  |X|X|_|X|X|X|X|X|X|X|X|X|X|_|_|X|_|X|X|X|X|X|X|X|X|X|X|X|X
-  N5  16  |_|_|_|_|_|_|_|X|X|X|_|X|X|_|X|_|_|_|_|_|_|X|X|X|X|X|X|X|X
-  H5  17  |X|X|X|_|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X
- C10  18  |X|X|X|_|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|X|X|X|X|X|X|X|X|X
- O10  19  |X|X|X|_|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|X|X|X|X|X|X|X|X|_
- C11  20  |X|X|X|_|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|X|X|X|X|X|X|X|X|X
-  C7  21  |_|_|_|_|_|_|_|X|X|X|_|X|X|_|X|_|X|X|X|X|_|_|_|X|X|_|X|_|_
-  C8  22  |X|X|X|X|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|X|_|_|_|X
-  C9  23  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|X|X|X
-  O9  24  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|X|X|X
-  H9  25  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|X|X|X|X
-  O8  26  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|X|_|_|X|X
-  H8  27  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|X|X|X|_|_|X|X
-  O7  28  |X|X|X|X|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|X|X|X|X|X|_|_
-  H7  29  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|X|_|X|X|X|X|X|X|_|_
-
-
-
-List of Internal Non-Bonded Interactions:
-_________________________________________
-
-First Second Non-Bonded
-Atom  Atom(s)
-_____ ___________________________________________________
-  C2: C40, C41, H4, H5, C10, O10, C11, C8, C9, 
-      O9, H9, O8, H8, O7, H7.
-
-  C3: C35, C40, C41, O1A, O1B, H4, H5, C10, O10, 
-      C11, C8, C9, O9, H9, O8, H8, O7, H7.
-
-  C4: C35, C40, C41, O1A, O1B, H5, C10, O10, C11, 
-      C8, C9, O9, H9, O8, H8, O7, H7.
-
-  C5: C35, C40, C41, O1A, O1B, H4, C8, C9, O9, 
-      H9, O8, H8, O7, H7.
-
-  C6: C35, C40, C41, O1A, O1B, H4, H5, C10, O10, 
-      C11, C9, O9, H9, O8, H8, H7.
-
-  O6: C35, C40, C41, O1A, O1B, H4, H5, C10, O10, 
-      C11, C8, C9, O9, H9, O8, H8, O7, H7.
-
-  O2: O1A, O1B, H4, H5, C10, O10, C11, C8, C9, 
-      O9, H9, O8, H8, O7, H7.
-
- C35: C1, O1A, O1B, O4, H4, N5, H5, C10, O10, 
-      C11, C7, C8, C9, O9, H9, O8, H8, O7, H7.
-
- C40: C1, O1A, O1B, O4, H4, N5, H5, C10, O10, 
-      C11, C7, C8, C9, O9, H9, O8, H8, O7, H7.
-
- C41: C1, O1A, O1B, O4, H4, N5, H5, C10, O10, 
-      C11, C7, C8, C9, O9, H9, O8, H8, O7, H7.
-
-  C1: H4, H5, C10, O10, C11, C8, C9, O9, H9, 
-      O8, H8, O7, H7.
-
- O1A: O4, H4, N5, H5, C10, O10, C11, C7, C8, 
-      C9, O9, H9, O8, H8, O7, H7.
-
- O1B: O4, H4, N5, H5, C10, O10, C11, C7, C8, 
-      C9, O9, H9, O8, H8, O7, H7.
-
-  O4: H5, C10, O10, C11, C8, C9, O9, H9, O8, 
-      H8, O7, H7.
-
-  H4: N5, C10, O10, C11, C7, C8, C9, O9, H9, 
-      O8, H8, O7, H7.
-
-  N5: C8, C9, O9, H9, O8, H8, O7, H7.
-
-  H5: C7, C8, C9, O9, H9, O8, H8, O7, H7.
-
- C10: C7, C8, C9, O9, H9, O8, H8, O7, H7.
-
- O10: C7, C8, C9, O9, H9, O8, H8, O7.
-
- C11: C7, C8, C9, O9, H9, O8, H8, O7, H7.
-
-  C7: O9, H9, H8.
-
-  C8: H9, H7.
-
-  C9: H8, O7, H7.
-
-  O9: H8, O7, H7.
-
-  H9: O8, H8, O7, H7.
-
-  O8: O7, H7.
-
-  H8: O7, H7.
-
-
-Internal Non-bonded Interactions before,	435
-                       and after weeding =	302
-
-
 Calculating normalized torsion vectors.
 
 
@@ -450,10 +328,6 @@ Calculating normalized torsion vectors.
 DPF> about	-6.237 74.033 26.371	# small molecule center
 
 Small molecule center of rotation =	(-6.237, +74.033, +26.371)
-
-Translating small molecule by:	(+6.237, -74.033, -26.371)
-
-Furthest ligand atom from "about" center is 5.671 Angstroms (maxrad).
 
 
 
@@ -463,29 +337,14 @@ DPF> tran0	random		# initial coordinates/A or "random"
 
 DPF> quat0	random		# initial quaternion or "random"
 
-Each run will begin with a new, random initial quaternion.
-Initial quaternion,  q = [(x,y,z),w] =	[ (0.313, 0.507, -0.798), 3.3 deg ],
-Quaternion Vector Normalized to:  0.314 0.509 -0.801
 
 
 DPF> ndihe	11		# number of initial torsions
 
-Number of torsions = 11
 
 
 DPF> dihe0	random		# initial torsions
 
-	Initial torsion  1 = -106.67 deg
-	Initial torsion  2 =   21.54 deg
-	Initial torsion  3 = -115.47 deg
-	Initial torsion  4 =  154.17 deg
-	Initial torsion  5 = -137.91 deg
-	Initial torsion  6 = -168.63 deg
-	Initial torsion  7 =  163.17 deg
-	Initial torsion  8 =  117.16 deg
-	Initial torsion  9 =  -10.89 deg
-	Initial torsion 10 =  -50.19 deg
-	Initial torsion 11 = -113.06 deg
 DPF> 
 
 
@@ -509,27 +368,22 @@ Initial cycle, maximum translation step = +/- 0.2 Angstroms
 
 DPF> qstep	5.		# quaternion step/deg
 
-Initial cycle, maximum quaternion angle step = +/- 5.0 deg
 
 
 DPF> dstep	5.		# torsion step/deg
 
-Initial cycle, maximum torsion angle step = +/- 5.0 deg
 
 
 DPF> trnrf	1.		# trans reduction factor/per cycle
 
-Reduction factor for translations =	1.000 /cycle
 
 
 DPF> quarf	1.		# quat reduction factor/per cycle
 
-Reduction factor for quaternion angle =	1.000 /cycle
 
 
 DPF> dihrf	1.		# tors reduction factor/per cycle
 
-Reduction factor for torsion angles =	1.000 /cycle
 DPF> 
 DPF> #hardtorcon 1 -180. 30.	# constrain torsion, num., angle(deg), range(deg)
 DPF> 
@@ -545,7 +399,7 @@ Non-bonded parameters for C-C interactions, used in internal energy calculations
                 r               r 
 
 Calculating C-C interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.16,  CPU= 0.08,  System= 0.08
+Time taken: Real= 0.26,  CPU= 0.06,  System= 0.20
 
 
 DPF> intnbp_r_eps  3.75 0.0230026  12  6	#C-N lj
@@ -558,7 +412,7 @@ Non-bonded parameters for C-N interactions, used in internal energy calculations
                 r               r 
 
 Calculating C-N interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.60 0.0257202  12  6	#C-O lj
@@ -571,7 +425,7 @@ Non-bonded parameters for C-O interactions, used in internal energy calculations
                 r               r 
 
 Calculating C-O interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.00 0.0081378  12  6	#C-H lj
@@ -584,7 +438,7 @@ Non-bonded parameters for C-H interactions, used in internal energy calculations
                 r               r 
 
 Calculating C-H interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.50 0.0237600  12  6	#N-N lj
@@ -597,7 +451,7 @@ Non-bonded parameters for N-N interactions, used in internal energy calculations
                 r               r 
 
 Calculating N-N interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.35 0.0265667  12  6	#N-O lj
@@ -610,7 +464,7 @@ Non-bonded parameters for N-O interactions, used in internal energy calculations
                 r               r 
 
 Calculating N-O interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  2.75 0.0084051  12  6	#N-H lj
@@ -623,7 +477,7 @@ Non-bonded parameters for N-H interactions, used in internal energy calculations
                 r               r 
 
 Calculating N-H interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.20 0.0297000  12  6	#O-O lj
@@ -636,7 +490,7 @@ Non-bonded parameters for O-O interactions, used in internal energy calculations
                 r               r 
 
 Calculating O-O interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  1.90 0.3280000  12 10	#O-H hb
@@ -649,7 +503,7 @@ Non-bonded parameters for O-H interactions, used in internal energy calculations
                 r               r 
 
 Calculating O-H interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.10,  CPU= 0.10,  System= 0.00
+Time taken: Real= 0.13,  CPU= 0.13,  System= 0.00
 
 
 DPF> intnbp_r_eps  2.00 0.0029700  12  6	#H-H lj
@@ -662,7 +516,7 @@ Non-bonded parameters for H-H interactions, used in internal energy calculations
                 r               r 
 
 Calculating H-H interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 DPF> 
 DPF> #intelec		# calculate internal electrostatic energy
 DPF> 
@@ -806,7 +660,7 @@ Number of requested LGA dockings = 10 runs
 
 Run:	1 / 10
 Seeds:	863546106 2863
-Date:	Thu Dec 19 16:23:48 2002
+Date:	Wed Feb 26 17:11:34 2003
 Output level is set to 1.
 
 
@@ -819,13 +673,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.20s,  CPU= 0.20s,  System= 0.00s
+Real= 0.26s,  CPU= 0.26s,  System= 0.00s
 
-4:23 49" p.m., 12/19/2002
-Total number of Energy Evaluations: 2241
+5:11 35" p.m., 02/26/2003
+Total number of Energy Evaluations: 2200
 Total number of Generations:        1
-________________________________________________________________________________
-
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -836,60 +688,60 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 DOCKED: MODEL        1
 DOCKED: USER    Run = 1
 DOCKED: USER    DPF = sip.hmg4.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-DOCKED: USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move sip.pdbq
-DOCKED: USER    NEWDPF about -6.237000 74.032997 26.371000
-DOCKED: USER    NEWDPF tran0 -13.805336 69.588419 22.182703
-DOCKED: USER    NEWDPF quat0 0.589213 0.288052 -0.754887 16.675322
+DOCKED: USER    NEWDPF about -6.237000 74.033000 26.371000
+DOCKED: USER    NEWDPF tran0 -12.697861 71.443335 18.230057
+DOCKED: USER    NEWDPF quat0 0.819293 0.462110 0.339432 89.625172
 DOCKED: USER    NEWDPF ndihe 11
-DOCKED: USER    NEWDPF dihe0 53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
+DOCKED: USER    NEWDPF dihe0 17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214
-DOCKED: ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110
-DOCKED: ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190
-DOCKED: ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322
-DOCKED: ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223
-DOCKED: ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331
-DOCKED: ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341
-DOCKED: ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116
-DOCKED: ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036
-DOCKED: ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036
-DOCKED: ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101
-DOCKED: ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544
-DOCKED: ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544
-DOCKED: ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385
-DOCKED: ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210
-DOCKED: ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204
-DOCKED: ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449
-DOCKED: ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380
-DOCKED: ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220
-DOCKED: ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173
-DOCKED: ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181
-DOCKED: ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171
-DOCKED: ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189
-DOCKED: ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392
-DOCKED: ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209
-DOCKED: ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387
-DOCKED: ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210
-DOCKED: ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386
-DOCKED: ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210
+DOCKED: ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214
+DOCKED: ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110
+DOCKED: ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190
+DOCKED: ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322
+DOCKED: ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223
+DOCKED: ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331
+DOCKED: ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341
+DOCKED: ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116
+DOCKED: ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036
+DOCKED: ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036
+DOCKED: ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101
+DOCKED: ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544
+DOCKED: ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544
+DOCKED: ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385
+DOCKED: ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210
+DOCKED: ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204
+DOCKED: ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449
+DOCKED: ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380
+DOCKED: ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220
+DOCKED: ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173
+DOCKED: ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181
+DOCKED: ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171
+DOCKED: ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189
+DOCKED: ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392
+DOCKED: ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209
+DOCKED: ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387
+DOCKED: ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210
+DOCKED: ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386
+DOCKED: ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -900,7 +752,7 @@ ________________________________________________________________________________
 
 Run:	2 / 10
 Seeds:	863546106 2863
-Date:	Thu Dec 19 16:23:49 2002
+Date:	Wed Feb 26 17:11:35 2003
 Output level is set to 1.
 
 
@@ -913,13 +765,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.20s,  CPU= 0.20s,  System= 0.00s
+Real= 0.26s,  CPU= 0.26s,  System= 0.00s
 
-4:23 49" p.m., 12/19/2002
-Total number of Energy Evaluations: 2241
+5:11 35" p.m., 02/26/2003
+Total number of Energy Evaluations: 2200
 Total number of Generations:        1
-________________________________________________________________________________
-
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -930,60 +780,60 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 DOCKED: MODEL        2
 DOCKED: USER    Run = 2
 DOCKED: USER    DPF = sip.hmg4.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-DOCKED: USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move sip.pdbq
-DOCKED: USER    NEWDPF about -6.237000 74.032997 26.371000
-DOCKED: USER    NEWDPF tran0 -13.805336 69.588419 22.182703
-DOCKED: USER    NEWDPF quat0 0.589213 0.288052 -0.754887 16.675322
+DOCKED: USER    NEWDPF about -6.237000 74.033000 26.371000
+DOCKED: USER    NEWDPF tran0 -12.697861 71.443335 18.230057
+DOCKED: USER    NEWDPF quat0 0.819293 0.462110 0.339432 89.625172
 DOCKED: USER    NEWDPF ndihe 11
-DOCKED: USER    NEWDPF dihe0 53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
+DOCKED: USER    NEWDPF dihe0 17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214
-DOCKED: ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110
-DOCKED: ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190
-DOCKED: ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322
-DOCKED: ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223
-DOCKED: ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331
-DOCKED: ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341
-DOCKED: ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116
-DOCKED: ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036
-DOCKED: ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036
-DOCKED: ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101
-DOCKED: ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544
-DOCKED: ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544
-DOCKED: ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385
-DOCKED: ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210
-DOCKED: ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204
-DOCKED: ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449
-DOCKED: ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380
-DOCKED: ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220
-DOCKED: ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173
-DOCKED: ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181
-DOCKED: ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171
-DOCKED: ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189
-DOCKED: ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392
-DOCKED: ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209
-DOCKED: ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387
-DOCKED: ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210
-DOCKED: ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386
-DOCKED: ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210
+DOCKED: ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214
+DOCKED: ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110
+DOCKED: ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190
+DOCKED: ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322
+DOCKED: ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223
+DOCKED: ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331
+DOCKED: ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341
+DOCKED: ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116
+DOCKED: ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036
+DOCKED: ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036
+DOCKED: ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101
+DOCKED: ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544
+DOCKED: ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544
+DOCKED: ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385
+DOCKED: ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210
+DOCKED: ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204
+DOCKED: ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449
+DOCKED: ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380
+DOCKED: ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220
+DOCKED: ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173
+DOCKED: ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181
+DOCKED: ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171
+DOCKED: ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189
+DOCKED: ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392
+DOCKED: ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209
+DOCKED: ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387
+DOCKED: ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210
+DOCKED: ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386
+DOCKED: ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -994,7 +844,7 @@ ________________________________________________________________________________
 
 Run:	3 / 10
 Seeds:	863546106 2863
-Date:	Thu Dec 19 16:23:49 2002
+Date:	Wed Feb 26 17:11:35 2003
 Output level is set to 1.
 
 
@@ -1007,13 +857,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.20s,  CPU= 0.20s,  System= 0.00s
+Real= 0.26s,  CPU= 0.26s,  System= 0.00s
 
-4:23 49" p.m., 12/19/2002
-Total number of Energy Evaluations: 2241
+5:11 35" p.m., 02/26/2003
+Total number of Energy Evaluations: 2200
 Total number of Generations:        1
-________________________________________________________________________________
-
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1024,60 +872,60 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 DOCKED: MODEL        3
 DOCKED: USER    Run = 3
 DOCKED: USER    DPF = sip.hmg4.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-DOCKED: USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move sip.pdbq
-DOCKED: USER    NEWDPF about -6.237000 74.032997 26.371000
-DOCKED: USER    NEWDPF tran0 -13.805336 69.588419 22.182703
-DOCKED: USER    NEWDPF quat0 0.589213 0.288052 -0.754887 16.675322
+DOCKED: USER    NEWDPF about -6.237000 74.033000 26.371000
+DOCKED: USER    NEWDPF tran0 -12.697861 71.443335 18.230057
+DOCKED: USER    NEWDPF quat0 0.819293 0.462110 0.339432 89.625172
 DOCKED: USER    NEWDPF ndihe 11
-DOCKED: USER    NEWDPF dihe0 53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
+DOCKED: USER    NEWDPF dihe0 17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214
-DOCKED: ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110
-DOCKED: ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190
-DOCKED: ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322
-DOCKED: ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223
-DOCKED: ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331
-DOCKED: ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341
-DOCKED: ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116
-DOCKED: ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036
-DOCKED: ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036
-DOCKED: ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101
-DOCKED: ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544
-DOCKED: ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544
-DOCKED: ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385
-DOCKED: ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210
-DOCKED: ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204
-DOCKED: ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449
-DOCKED: ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380
-DOCKED: ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220
-DOCKED: ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173
-DOCKED: ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181
-DOCKED: ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171
-DOCKED: ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189
-DOCKED: ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392
-DOCKED: ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209
-DOCKED: ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387
-DOCKED: ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210
-DOCKED: ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386
-DOCKED: ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210
+DOCKED: ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214
+DOCKED: ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110
+DOCKED: ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190
+DOCKED: ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322
+DOCKED: ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223
+DOCKED: ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331
+DOCKED: ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341
+DOCKED: ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116
+DOCKED: ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036
+DOCKED: ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036
+DOCKED: ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101
+DOCKED: ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544
+DOCKED: ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544
+DOCKED: ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385
+DOCKED: ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210
+DOCKED: ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204
+DOCKED: ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449
+DOCKED: ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380
+DOCKED: ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220
+DOCKED: ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173
+DOCKED: ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181
+DOCKED: ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171
+DOCKED: ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189
+DOCKED: ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392
+DOCKED: ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209
+DOCKED: ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387
+DOCKED: ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210
+DOCKED: ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386
+DOCKED: ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1088,7 +936,7 @@ ________________________________________________________________________________
 
 Run:	4 / 10
 Seeds:	863546106 2863
-Date:	Thu Dec 19 16:23:49 2002
+Date:	Wed Feb 26 17:11:35 2003
 Output level is set to 1.
 
 
@@ -1101,13 +949,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.20s,  CPU= 0.20s,  System= 0.00s
+Real= 0.26s,  CPU= 0.26s,  System= 0.00s
 
-4:23 49" p.m., 12/19/2002
-Total number of Energy Evaluations: 2241
+5:11 35" p.m., 02/26/2003
+Total number of Energy Evaluations: 2200
 Total number of Generations:        1
-________________________________________________________________________________
-
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1118,60 +964,60 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 DOCKED: MODEL        4
 DOCKED: USER    Run = 4
 DOCKED: USER    DPF = sip.hmg4.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-DOCKED: USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move sip.pdbq
-DOCKED: USER    NEWDPF about -6.237000 74.032997 26.371000
-DOCKED: USER    NEWDPF tran0 -13.805336 69.588419 22.182703
-DOCKED: USER    NEWDPF quat0 0.589213 0.288052 -0.754887 16.675322
+DOCKED: USER    NEWDPF about -6.237000 74.033000 26.371000
+DOCKED: USER    NEWDPF tran0 -12.697861 71.443335 18.230057
+DOCKED: USER    NEWDPF quat0 0.819293 0.462110 0.339432 89.625172
 DOCKED: USER    NEWDPF ndihe 11
-DOCKED: USER    NEWDPF dihe0 53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
+DOCKED: USER    NEWDPF dihe0 17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214
-DOCKED: ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110
-DOCKED: ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190
-DOCKED: ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322
-DOCKED: ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223
-DOCKED: ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331
-DOCKED: ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341
-DOCKED: ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116
-DOCKED: ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036
-DOCKED: ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036
-DOCKED: ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101
-DOCKED: ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544
-DOCKED: ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544
-DOCKED: ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385
-DOCKED: ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210
-DOCKED: ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204
-DOCKED: ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449
-DOCKED: ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380
-DOCKED: ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220
-DOCKED: ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173
-DOCKED: ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181
-DOCKED: ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171
-DOCKED: ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189
-DOCKED: ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392
-DOCKED: ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209
-DOCKED: ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387
-DOCKED: ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210
-DOCKED: ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386
-DOCKED: ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210
+DOCKED: ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214
+DOCKED: ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110
+DOCKED: ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190
+DOCKED: ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322
+DOCKED: ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223
+DOCKED: ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331
+DOCKED: ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341
+DOCKED: ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116
+DOCKED: ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036
+DOCKED: ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036
+DOCKED: ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101
+DOCKED: ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544
+DOCKED: ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544
+DOCKED: ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385
+DOCKED: ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210
+DOCKED: ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204
+DOCKED: ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449
+DOCKED: ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380
+DOCKED: ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220
+DOCKED: ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173
+DOCKED: ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181
+DOCKED: ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171
+DOCKED: ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189
+DOCKED: ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392
+DOCKED: ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209
+DOCKED: ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387
+DOCKED: ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210
+DOCKED: ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386
+DOCKED: ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1182,7 +1028,7 @@ ________________________________________________________________________________
 
 Run:	5 / 10
 Seeds:	863546106 2863
-Date:	Thu Dec 19 16:23:49 2002
+Date:	Wed Feb 26 17:11:35 2003
 Output level is set to 1.
 
 
@@ -1195,13 +1041,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.20s,  CPU= 0.20s,  System= 0.00s
+Real= 0.26s,  CPU= 0.26s,  System= 0.00s
 
-4:23 49" p.m., 12/19/2002
-Total number of Energy Evaluations: 2241
+5:11 36" p.m., 02/26/2003
+Total number of Energy Evaluations: 2200
 Total number of Generations:        1
-________________________________________________________________________________
-
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1212,60 +1056,60 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 DOCKED: MODEL        5
 DOCKED: USER    Run = 5
 DOCKED: USER    DPF = sip.hmg4.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-DOCKED: USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move sip.pdbq
-DOCKED: USER    NEWDPF about -6.237000 74.032997 26.371000
-DOCKED: USER    NEWDPF tran0 -13.805336 69.588419 22.182703
-DOCKED: USER    NEWDPF quat0 0.589213 0.288052 -0.754887 16.675322
+DOCKED: USER    NEWDPF about -6.237000 74.033000 26.371000
+DOCKED: USER    NEWDPF tran0 -12.697861 71.443335 18.230057
+DOCKED: USER    NEWDPF quat0 0.819293 0.462110 0.339432 89.625172
 DOCKED: USER    NEWDPF ndihe 11
-DOCKED: USER    NEWDPF dihe0 53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
+DOCKED: USER    NEWDPF dihe0 17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214
-DOCKED: ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110
-DOCKED: ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190
-DOCKED: ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322
-DOCKED: ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223
-DOCKED: ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331
-DOCKED: ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341
-DOCKED: ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116
-DOCKED: ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036
-DOCKED: ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036
-DOCKED: ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101
-DOCKED: ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544
-DOCKED: ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544
-DOCKED: ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385
-DOCKED: ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210
-DOCKED: ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204
-DOCKED: ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449
-DOCKED: ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380
-DOCKED: ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220
-DOCKED: ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173
-DOCKED: ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181
-DOCKED: ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171
-DOCKED: ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189
-DOCKED: ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392
-DOCKED: ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209
-DOCKED: ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387
-DOCKED: ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210
-DOCKED: ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386
-DOCKED: ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210
+DOCKED: ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214
+DOCKED: ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110
+DOCKED: ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190
+DOCKED: ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322
+DOCKED: ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223
+DOCKED: ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331
+DOCKED: ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341
+DOCKED: ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116
+DOCKED: ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036
+DOCKED: ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036
+DOCKED: ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101
+DOCKED: ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544
+DOCKED: ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544
+DOCKED: ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385
+DOCKED: ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210
+DOCKED: ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204
+DOCKED: ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449
+DOCKED: ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380
+DOCKED: ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220
+DOCKED: ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173
+DOCKED: ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181
+DOCKED: ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171
+DOCKED: ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189
+DOCKED: ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392
+DOCKED: ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209
+DOCKED: ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387
+DOCKED: ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210
+DOCKED: ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386
+DOCKED: ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1276,7 +1120,7 @@ ________________________________________________________________________________
 
 Run:	6 / 10
 Seeds:	863546106 2863
-Date:	Thu Dec 19 16:23:49 2002
+Date:	Wed Feb 26 17:11:36 2003
 Output level is set to 1.
 
 
@@ -1289,13 +1133,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.20s,  CPU= 0.20s,  System= 0.00s
+Real= 0.26s,  CPU= 0.26s,  System= 0.00s
 
-4:23 50" p.m., 12/19/2002
-Total number of Energy Evaluations: 2241
+5:11 36" p.m., 02/26/2003
+Total number of Energy Evaluations: 2200
 Total number of Generations:        1
-________________________________________________________________________________
-
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1306,60 +1148,60 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 DOCKED: MODEL        6
 DOCKED: USER    Run = 6
 DOCKED: USER    DPF = sip.hmg4.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-DOCKED: USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move sip.pdbq
-DOCKED: USER    NEWDPF about -6.237000 74.032997 26.371000
-DOCKED: USER    NEWDPF tran0 -13.805336 69.588419 22.182703
-DOCKED: USER    NEWDPF quat0 0.589213 0.288052 -0.754887 16.675322
+DOCKED: USER    NEWDPF about -6.237000 74.033000 26.371000
+DOCKED: USER    NEWDPF tran0 -12.697861 71.443335 18.230057
+DOCKED: USER    NEWDPF quat0 0.819293 0.462110 0.339432 89.625172
 DOCKED: USER    NEWDPF ndihe 11
-DOCKED: USER    NEWDPF dihe0 53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
+DOCKED: USER    NEWDPF dihe0 17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214
-DOCKED: ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110
-DOCKED: ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190
-DOCKED: ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322
-DOCKED: ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223
-DOCKED: ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331
-DOCKED: ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341
-DOCKED: ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116
-DOCKED: ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036
-DOCKED: ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036
-DOCKED: ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101
-DOCKED: ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544
-DOCKED: ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544
-DOCKED: ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385
-DOCKED: ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210
-DOCKED: ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204
-DOCKED: ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449
-DOCKED: ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380
-DOCKED: ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220
-DOCKED: ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173
-DOCKED: ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181
-DOCKED: ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171
-DOCKED: ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189
-DOCKED: ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392
-DOCKED: ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209
-DOCKED: ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387
-DOCKED: ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210
-DOCKED: ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386
-DOCKED: ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210
+DOCKED: ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214
+DOCKED: ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110
+DOCKED: ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190
+DOCKED: ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322
+DOCKED: ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223
+DOCKED: ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331
+DOCKED: ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341
+DOCKED: ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116
+DOCKED: ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036
+DOCKED: ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036
+DOCKED: ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101
+DOCKED: ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544
+DOCKED: ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544
+DOCKED: ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385
+DOCKED: ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210
+DOCKED: ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204
+DOCKED: ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449
+DOCKED: ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380
+DOCKED: ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220
+DOCKED: ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173
+DOCKED: ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181
+DOCKED: ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171
+DOCKED: ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189
+DOCKED: ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392
+DOCKED: ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209
+DOCKED: ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387
+DOCKED: ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210
+DOCKED: ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386
+DOCKED: ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1370,7 +1212,7 @@ ________________________________________________________________________________
 
 Run:	7 / 10
 Seeds:	863546106 2863
-Date:	Thu Dec 19 16:23:50 2002
+Date:	Wed Feb 26 17:11:36 2003
 Output level is set to 1.
 
 
@@ -1383,13 +1225,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.20s,  CPU= 0.20s,  System= 0.00s
+Real= 0.26s,  CPU= 0.26s,  System= 0.00s
 
-4:23 50" p.m., 12/19/2002
-Total number of Energy Evaluations: 2241
+5:11 36" p.m., 02/26/2003
+Total number of Energy Evaluations: 2200
 Total number of Generations:        1
-________________________________________________________________________________
-
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1400,60 +1240,60 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 DOCKED: MODEL        7
 DOCKED: USER    Run = 7
 DOCKED: USER    DPF = sip.hmg4.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-DOCKED: USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move sip.pdbq
-DOCKED: USER    NEWDPF about -6.237000 74.032997 26.371000
-DOCKED: USER    NEWDPF tran0 -13.805336 69.588419 22.182703
-DOCKED: USER    NEWDPF quat0 0.589213 0.288052 -0.754887 16.675322
+DOCKED: USER    NEWDPF about -6.237000 74.033000 26.371000
+DOCKED: USER    NEWDPF tran0 -12.697861 71.443335 18.230057
+DOCKED: USER    NEWDPF quat0 0.819293 0.462110 0.339432 89.625172
 DOCKED: USER    NEWDPF ndihe 11
-DOCKED: USER    NEWDPF dihe0 53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
+DOCKED: USER    NEWDPF dihe0 17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214
-DOCKED: ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110
-DOCKED: ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190
-DOCKED: ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322
-DOCKED: ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223
-DOCKED: ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331
-DOCKED: ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341
-DOCKED: ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116
-DOCKED: ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036
-DOCKED: ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036
-DOCKED: ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101
-DOCKED: ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544
-DOCKED: ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544
-DOCKED: ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385
-DOCKED: ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210
-DOCKED: ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204
-DOCKED: ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449
-DOCKED: ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380
-DOCKED: ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220
-DOCKED: ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173
-DOCKED: ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181
-DOCKED: ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171
-DOCKED: ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189
-DOCKED: ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392
-DOCKED: ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209
-DOCKED: ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387
-DOCKED: ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210
-DOCKED: ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386
-DOCKED: ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210
+DOCKED: ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214
+DOCKED: ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110
+DOCKED: ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190
+DOCKED: ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322
+DOCKED: ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223
+DOCKED: ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331
+DOCKED: ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341
+DOCKED: ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116
+DOCKED: ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036
+DOCKED: ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036
+DOCKED: ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101
+DOCKED: ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544
+DOCKED: ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544
+DOCKED: ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385
+DOCKED: ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210
+DOCKED: ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204
+DOCKED: ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449
+DOCKED: ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380
+DOCKED: ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220
+DOCKED: ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173
+DOCKED: ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181
+DOCKED: ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171
+DOCKED: ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189
+DOCKED: ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392
+DOCKED: ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209
+DOCKED: ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387
+DOCKED: ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210
+DOCKED: ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386
+DOCKED: ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1464,7 +1304,7 @@ ________________________________________________________________________________
 
 Run:	8 / 10
 Seeds:	863546106 2863
-Date:	Thu Dec 19 16:23:50 2002
+Date:	Wed Feb 26 17:11:36 2003
 Output level is set to 1.
 
 
@@ -1477,13 +1317,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.20s,  CPU= 0.20s,  System= 0.00s
+Real= 0.26s,  CPU= 0.26s,  System= 0.00s
 
-4:23 50" p.m., 12/19/2002
-Total number of Energy Evaluations: 2241
+5:11 36" p.m., 02/26/2003
+Total number of Energy Evaluations: 2200
 Total number of Generations:        1
-________________________________________________________________________________
-
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1494,60 +1332,60 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 DOCKED: MODEL        8
 DOCKED: USER    Run = 8
 DOCKED: USER    DPF = sip.hmg4.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-DOCKED: USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move sip.pdbq
-DOCKED: USER    NEWDPF about -6.237000 74.032997 26.371000
-DOCKED: USER    NEWDPF tran0 -13.805336 69.588419 22.182703
-DOCKED: USER    NEWDPF quat0 0.589213 0.288052 -0.754887 16.675322
+DOCKED: USER    NEWDPF about -6.237000 74.033000 26.371000
+DOCKED: USER    NEWDPF tran0 -12.697861 71.443335 18.230057
+DOCKED: USER    NEWDPF quat0 0.819293 0.462110 0.339432 89.625172
 DOCKED: USER    NEWDPF ndihe 11
-DOCKED: USER    NEWDPF dihe0 53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
+DOCKED: USER    NEWDPF dihe0 17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214
-DOCKED: ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110
-DOCKED: ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190
-DOCKED: ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322
-DOCKED: ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223
-DOCKED: ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331
-DOCKED: ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341
-DOCKED: ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116
-DOCKED: ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036
-DOCKED: ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036
-DOCKED: ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101
-DOCKED: ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544
-DOCKED: ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544
-DOCKED: ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385
-DOCKED: ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210
-DOCKED: ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204
-DOCKED: ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449
-DOCKED: ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380
-DOCKED: ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220
-DOCKED: ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173
-DOCKED: ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181
-DOCKED: ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171
-DOCKED: ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189
-DOCKED: ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392
-DOCKED: ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209
-DOCKED: ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387
-DOCKED: ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210
-DOCKED: ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386
-DOCKED: ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210
+DOCKED: ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214
+DOCKED: ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110
+DOCKED: ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190
+DOCKED: ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322
+DOCKED: ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223
+DOCKED: ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331
+DOCKED: ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341
+DOCKED: ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116
+DOCKED: ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036
+DOCKED: ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036
+DOCKED: ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101
+DOCKED: ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544
+DOCKED: ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544
+DOCKED: ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385
+DOCKED: ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210
+DOCKED: ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204
+DOCKED: ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449
+DOCKED: ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380
+DOCKED: ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220
+DOCKED: ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173
+DOCKED: ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181
+DOCKED: ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171
+DOCKED: ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189
+DOCKED: ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392
+DOCKED: ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209
+DOCKED: ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387
+DOCKED: ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210
+DOCKED: ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386
+DOCKED: ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1558,7 +1396,7 @@ ________________________________________________________________________________
 
 Run:	9 / 10
 Seeds:	863546106 2863
-Date:	Thu Dec 19 16:23:50 2002
+Date:	Wed Feb 26 17:11:36 2003
 Output level is set to 1.
 
 
@@ -1571,13 +1409,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.20s,  CPU= 0.20s,  System= 0.00s
+Real= 0.26s,  CPU= 0.26s,  System= 0.00s
 
-4:23 50" p.m., 12/19/2002
-Total number of Energy Evaluations: 2241
+5:11 37" p.m., 02/26/2003
+Total number of Energy Evaluations: 2200
 Total number of Generations:        1
-________________________________________________________________________________
-
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1588,60 +1424,60 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 DOCKED: MODEL        9
 DOCKED: USER    Run = 9
 DOCKED: USER    DPF = sip.hmg4.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-DOCKED: USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move sip.pdbq
-DOCKED: USER    NEWDPF about -6.237000 74.032997 26.371000
-DOCKED: USER    NEWDPF tran0 -13.805336 69.588419 22.182703
-DOCKED: USER    NEWDPF quat0 0.589213 0.288052 -0.754887 16.675322
+DOCKED: USER    NEWDPF about -6.237000 74.033000 26.371000
+DOCKED: USER    NEWDPF tran0 -12.697861 71.443335 18.230057
+DOCKED: USER    NEWDPF quat0 0.819293 0.462110 0.339432 89.625172
 DOCKED: USER    NEWDPF ndihe 11
-DOCKED: USER    NEWDPF dihe0 53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
+DOCKED: USER    NEWDPF dihe0 17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214
-DOCKED: ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110
-DOCKED: ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190
-DOCKED: ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322
-DOCKED: ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223
-DOCKED: ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331
-DOCKED: ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341
-DOCKED: ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116
-DOCKED: ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036
-DOCKED: ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036
-DOCKED: ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101
-DOCKED: ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544
-DOCKED: ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544
-DOCKED: ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385
-DOCKED: ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210
-DOCKED: ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204
-DOCKED: ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449
-DOCKED: ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380
-DOCKED: ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220
-DOCKED: ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173
-DOCKED: ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181
-DOCKED: ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171
-DOCKED: ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189
-DOCKED: ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392
-DOCKED: ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209
-DOCKED: ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387
-DOCKED: ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210
-DOCKED: ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386
-DOCKED: ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210
+DOCKED: ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214
+DOCKED: ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110
+DOCKED: ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190
+DOCKED: ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322
+DOCKED: ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223
+DOCKED: ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331
+DOCKED: ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341
+DOCKED: ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116
+DOCKED: ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036
+DOCKED: ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036
+DOCKED: ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101
+DOCKED: ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544
+DOCKED: ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544
+DOCKED: ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385
+DOCKED: ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210
+DOCKED: ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204
+DOCKED: ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449
+DOCKED: ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380
+DOCKED: ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220
+DOCKED: ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173
+DOCKED: ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181
+DOCKED: ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171
+DOCKED: ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189
+DOCKED: ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392
+DOCKED: ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209
+DOCKED: ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387
+DOCKED: ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210
+DOCKED: ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386
+DOCKED: ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1652,7 +1488,7 @@ ________________________________________________________________________________
 
 Run:	10 / 10
 Seeds:	863546106 2863
-Date:	Thu Dec 19 16:23:50 2002
+Date:	Wed Feb 26 17:11:37 2003
 Output level is set to 1.
 
 
@@ -1665,13 +1501,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.20s,  CPU= 0.20s,  System= 0.00s
+Real= 0.26s,  CPU= 0.26s,  System= 0.00s
 
-4:23 50" p.m., 12/19/2002
-Total number of Energy Evaluations: 2241
+5:11 37" p.m., 02/26/2003
+Total number of Energy Evaluations: 2200
 Total number of Generations:        1
-________________________________________________________________________________
-
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1682,60 +1516,60 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 DOCKED: MODEL       10
 DOCKED: USER    Run = 10
 DOCKED: USER    DPF = sip.hmg4.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-DOCKED: USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+DOCKED: USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move sip.pdbq
-DOCKED: USER    NEWDPF about -6.237000 74.032997 26.371000
-DOCKED: USER    NEWDPF tran0 -13.805336 69.588419 22.182703
-DOCKED: USER    NEWDPF quat0 0.589213 0.288052 -0.754887 16.675322
+DOCKED: USER    NEWDPF about -6.237000 74.033000 26.371000
+DOCKED: USER    NEWDPF tran0 -12.697861 71.443335 18.230057
+DOCKED: USER    NEWDPF quat0 0.819293 0.462110 0.339432 89.625172
 DOCKED: USER    NEWDPF ndihe 11
-DOCKED: USER    NEWDPF dihe0 53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
+DOCKED: USER    NEWDPF dihe0 17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214
-DOCKED: ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110
-DOCKED: ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190
-DOCKED: ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322
-DOCKED: ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223
-DOCKED: ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331
-DOCKED: ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341
-DOCKED: ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116
-DOCKED: ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036
-DOCKED: ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036
-DOCKED: ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101
-DOCKED: ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544
-DOCKED: ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544
-DOCKED: ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385
-DOCKED: ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210
-DOCKED: ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204
-DOCKED: ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449
-DOCKED: ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380
-DOCKED: ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220
-DOCKED: ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173
-DOCKED: ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181
-DOCKED: ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171
-DOCKED: ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189
-DOCKED: ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392
-DOCKED: ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209
-DOCKED: ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387
-DOCKED: ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210
-DOCKED: ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386
-DOCKED: ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210
+DOCKED: ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214
+DOCKED: ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110
+DOCKED: ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190
+DOCKED: ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322
+DOCKED: ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223
+DOCKED: ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331
+DOCKED: ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341
+DOCKED: ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116
+DOCKED: ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036
+DOCKED: ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036
+DOCKED: ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101
+DOCKED: ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544
+DOCKED: ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544
+DOCKED: ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385
+DOCKED: ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210
+DOCKED: ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204
+DOCKED: ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449
+DOCKED: ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380
+DOCKED: ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220
+DOCKED: ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173
+DOCKED: ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181
+DOCKED: ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171
+DOCKED: ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189
+DOCKED: ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392
+DOCKED: ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209
+DOCKED: ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387
+DOCKED: ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210
+DOCKED: ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386
+DOCKED: ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1785,101 +1619,101 @@ Atom    29,  x,y,z =   -6.433   76.100   24.660
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = -13.805 69.588 22.183
-Quaternion nx,ny,nz,angle = 0.589 0.288 -0.755 0.291
-Quaternion x,y,z,w        = 0.085 0.042 -0.109 0.989
+Translation x,y,z         = -12.698 71.443 18.230
+Quaternion nx,ny,nz,angle = 0.819 0.462 0.339 89.625
+Quaternion x,y,z,w        = 0.577 0.326 0.239 0.709
 Number of Torsions        = 11
-Torsions (degrees)        = 53.04, -103.27, -156.62, 177.67, -167.99, 82.64, -22.07, 23.48, -152.40, 137.42, 157.69.
+Torsions (degrees)        = 17.34, 85.84, 25.69, -37.19, -14.47, -146.96, -93.61, 96.36, 19.87, -117.25, -29.19.
 
 
 Outputting structurally similar clusters, ranked in order of increasing energy.
@@ -1900,7 +1734,7 @@ Clus | Lowest    | Run | Mean      | Num | Histogram
 -ter | Docked    |     | Docked    | in  |                                    
 Rank | Energy    |     | Energy    | Clus|    5    10   15   20   25   30   35
 _____|___________|_____|___________|_____|____:____|____:____|____:____|____:___
-   1 |    +20.50 |   5 |    +20.50 |  10 |##########
+   1 |     -0.05 |   5 |     -0.05 |  10 |##########
 _____|___________|_____|___________|_____|______________________________________
 
 
@@ -1916,16 +1750,16 @@ _____________________________________________________________________
 Rank | Sub- | Run  | Docked    | Cluster | Reference       | Grep
      | Rank |      | Energy    | RMSD    | RMSD            | Pattern
 _____|______|______|___________|_________|_________________|___________
-   1      1      5      +20.50      0.00      7.08           RANKING
-   1      2      6      +20.50      0.00      7.08           RANKING
-   1      3      2      +20.50      0.00      7.08           RANKING
-   1      4      7      +20.50      0.00      7.08           RANKING
-   1      5      4      +20.50      0.00      7.08           RANKING
-   1      6      8      +20.50      0.00      7.08           RANKING
-   1      7      3      +20.50      0.00      7.08           RANKING
-   1      8      9      +20.50      0.00      7.08           RANKING
-   1      9      1      +20.50      0.00      7.08           RANKING
-   1     10     10      +20.50      0.00      7.08           RANKING
+   1      1      5       -0.05      0.00      9.03           RANKING
+   1      2      6       -0.05      0.00      9.03           RANKING
+   1      3      2       -0.05      0.00      9.03           RANKING
+   1      4      7       -0.05      0.00      9.03           RANKING
+   1      5      4       -0.05      0.00      9.03           RANKING
+   1      6      8       -0.05      0.00      9.03           RANKING
+   1      7      3       -0.05      0.00      9.03           RANKING
+   1      8      9       -0.05      0.00      9.03           RANKING
+   1      9      1       -0.05      0.00      9.03           RANKING
+   1     10     10       -0.05      0.00      9.03           RANKING
 _______________________________________________________________________
 
 
@@ -1941,55 +1775,55 @@ USER    Run = 5
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.081 A
+USER    RMSD from reference structure       = 9.027 A
 USER  
-USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = sip.hmg4.GASW.dpf
 USER    NEWDPF move	sip.pdbq
-USER    NEWDPF about	-6.237000 74.032997 26.371000
-USER    NEWDPF tran0	-13.805336 69.588419 22.182703
-USER    NEWDPF quat0	0.589213 0.288052 -0.754887 16.675322
+USER    NEWDPF about	-6.237000 74.033000 26.371000
+USER    NEWDPF tran0	-12.697861 71.443335 18.230057
+USER    NEWDPF quat0	0.819293 0.462110 0.339432 89.625172
 USER    NEWDPF ndihe	11
-USER    NEWDPF dihe0	53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
-USER
+USER    NEWDPF dihe0	17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214  7.081
-ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110  7.081
-ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190  7.081
-ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322  7.081
-ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223  7.081
-ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331  7.081
-ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341  7.081
-ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116  7.081
-ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036  7.081
-ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036  7.081
-ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101  7.081
-ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544  7.081
-ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544  7.081
-ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385  7.081
-ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210  7.081
-ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204  7.081
-ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449  7.081
-ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380  7.081
-ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220  7.081
-ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173  7.081
-ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181  7.081
-ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171  7.081
-ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189  7.081
-ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392  7.081
-ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209  7.081
-ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387  7.081
-ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210  7.081
-ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386  7.081
-ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210  7.081
+ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214  9.027
+ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110  9.027
+ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190  9.027
+ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322  9.027
+ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223  9.027
+ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331  9.027
+ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341  9.027
+ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116  9.027
+ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036  9.027
+ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036  9.027
+ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101  9.027
+ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544  9.027
+ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544  9.027
+ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385  9.027
+ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210  9.027
+ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204  9.027
+ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449  9.027
+ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380  9.027
+ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220  9.027
+ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173  9.027
+ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181  9.027
+ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171  9.027
+ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189  9.027
+ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392  9.027
+ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209  9.027
+ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387  9.027
+ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210  9.027
+ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386  9.027
+ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210  9.027
 TER
 ENDMDL
 MODEL        6
@@ -1997,55 +1831,55 @@ USER    Run = 6
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.081 A
+USER    RMSD from reference structure       = 9.027 A
 USER  
-USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = sip.hmg4.GASW.dpf
 USER    NEWDPF move	sip.pdbq
-USER    NEWDPF about	-6.237000 74.032997 26.371000
-USER    NEWDPF tran0	-13.805336 69.588419 22.182703
-USER    NEWDPF quat0	0.589213 0.288052 -0.754887 16.675322
+USER    NEWDPF about	-6.237000 74.033000 26.371000
+USER    NEWDPF tran0	-12.697861 71.443335 18.230057
+USER    NEWDPF quat0	0.819293 0.462110 0.339432 89.625172
 USER    NEWDPF ndihe	11
-USER    NEWDPF dihe0	53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
-USER
+USER    NEWDPF dihe0	17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214  7.081
-ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110  7.081
-ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190  7.081
-ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322  7.081
-ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223  7.081
-ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331  7.081
-ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341  7.081
-ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116  7.081
-ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036  7.081
-ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036  7.081
-ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101  7.081
-ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544  7.081
-ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544  7.081
-ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385  7.081
-ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210  7.081
-ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204  7.081
-ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449  7.081
-ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380  7.081
-ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220  7.081
-ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173  7.081
-ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181  7.081
-ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171  7.081
-ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189  7.081
-ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392  7.081
-ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209  7.081
-ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387  7.081
-ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210  7.081
-ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386  7.081
-ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210  7.081
+ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214  9.027
+ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110  9.027
+ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190  9.027
+ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322  9.027
+ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223  9.027
+ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331  9.027
+ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341  9.027
+ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116  9.027
+ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036  9.027
+ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036  9.027
+ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101  9.027
+ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544  9.027
+ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544  9.027
+ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385  9.027
+ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210  9.027
+ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204  9.027
+ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449  9.027
+ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380  9.027
+ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220  9.027
+ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173  9.027
+ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181  9.027
+ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171  9.027
+ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189  9.027
+ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392  9.027
+ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209  9.027
+ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387  9.027
+ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210  9.027
+ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386  9.027
+ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210  9.027
 TER
 ENDMDL
 MODEL        2
@@ -2053,55 +1887,55 @@ USER    Run = 2
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.081 A
+USER    RMSD from reference structure       = 9.027 A
 USER  
-USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = sip.hmg4.GASW.dpf
 USER    NEWDPF move	sip.pdbq
-USER    NEWDPF about	-6.237000 74.032997 26.371000
-USER    NEWDPF tran0	-13.805336 69.588419 22.182703
-USER    NEWDPF quat0	0.589213 0.288052 -0.754887 16.675322
+USER    NEWDPF about	-6.237000 74.033000 26.371000
+USER    NEWDPF tran0	-12.697861 71.443335 18.230057
+USER    NEWDPF quat0	0.819293 0.462110 0.339432 89.625172
 USER    NEWDPF ndihe	11
-USER    NEWDPF dihe0	53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
-USER
+USER    NEWDPF dihe0	17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214  7.081
-ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110  7.081
-ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190  7.081
-ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322  7.081
-ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223  7.081
-ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331  7.081
-ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341  7.081
-ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116  7.081
-ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036  7.081
-ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036  7.081
-ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101  7.081
-ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544  7.081
-ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544  7.081
-ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385  7.081
-ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210  7.081
-ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204  7.081
-ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449  7.081
-ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380  7.081
-ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220  7.081
-ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173  7.081
-ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181  7.081
-ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171  7.081
-ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189  7.081
-ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392  7.081
-ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209  7.081
-ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387  7.081
-ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210  7.081
-ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386  7.081
-ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210  7.081
+ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214  9.027
+ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110  9.027
+ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190  9.027
+ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322  9.027
+ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223  9.027
+ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331  9.027
+ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341  9.027
+ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116  9.027
+ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036  9.027
+ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036  9.027
+ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101  9.027
+ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544  9.027
+ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544  9.027
+ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385  9.027
+ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210  9.027
+ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204  9.027
+ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449  9.027
+ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380  9.027
+ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220  9.027
+ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173  9.027
+ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181  9.027
+ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171  9.027
+ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189  9.027
+ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392  9.027
+ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209  9.027
+ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387  9.027
+ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210  9.027
+ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386  9.027
+ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210  9.027
 TER
 ENDMDL
 MODEL        7
@@ -2109,55 +1943,55 @@ USER    Run = 7
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.081 A
+USER    RMSD from reference structure       = 9.027 A
 USER  
-USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = sip.hmg4.GASW.dpf
 USER    NEWDPF move	sip.pdbq
-USER    NEWDPF about	-6.237000 74.032997 26.371000
-USER    NEWDPF tran0	-13.805336 69.588419 22.182703
-USER    NEWDPF quat0	0.589213 0.288052 -0.754887 16.675322
+USER    NEWDPF about	-6.237000 74.033000 26.371000
+USER    NEWDPF tran0	-12.697861 71.443335 18.230057
+USER    NEWDPF quat0	0.819293 0.462110 0.339432 89.625172
 USER    NEWDPF ndihe	11
-USER    NEWDPF dihe0	53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
-USER
+USER    NEWDPF dihe0	17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214  7.081
-ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110  7.081
-ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190  7.081
-ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322  7.081
-ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223  7.081
-ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331  7.081
-ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341  7.081
-ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116  7.081
-ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036  7.081
-ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036  7.081
-ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101  7.081
-ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544  7.081
-ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544  7.081
-ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385  7.081
-ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210  7.081
-ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204  7.081
-ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449  7.081
-ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380  7.081
-ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220  7.081
-ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173  7.081
-ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181  7.081
-ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171  7.081
-ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189  7.081
-ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392  7.081
-ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209  7.081
-ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387  7.081
-ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210  7.081
-ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386  7.081
-ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210  7.081
+ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214  9.027
+ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110  9.027
+ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190  9.027
+ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322  9.027
+ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223  9.027
+ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331  9.027
+ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341  9.027
+ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116  9.027
+ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036  9.027
+ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036  9.027
+ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101  9.027
+ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544  9.027
+ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544  9.027
+ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385  9.027
+ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210  9.027
+ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204  9.027
+ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449  9.027
+ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380  9.027
+ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220  9.027
+ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173  9.027
+ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181  9.027
+ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171  9.027
+ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189  9.027
+ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392  9.027
+ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209  9.027
+ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387  9.027
+ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210  9.027
+ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386  9.027
+ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210  9.027
 TER
 ENDMDL
 MODEL        4
@@ -2165,55 +1999,55 @@ USER    Run = 4
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.081 A
+USER    RMSD from reference structure       = 9.027 A
 USER  
-USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = sip.hmg4.GASW.dpf
 USER    NEWDPF move	sip.pdbq
-USER    NEWDPF about	-6.237000 74.032997 26.371000
-USER    NEWDPF tran0	-13.805336 69.588419 22.182703
-USER    NEWDPF quat0	0.589213 0.288052 -0.754887 16.675322
+USER    NEWDPF about	-6.237000 74.033000 26.371000
+USER    NEWDPF tran0	-12.697861 71.443335 18.230057
+USER    NEWDPF quat0	0.819293 0.462110 0.339432 89.625172
 USER    NEWDPF ndihe	11
-USER    NEWDPF dihe0	53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
-USER
+USER    NEWDPF dihe0	17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214  7.081
-ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110  7.081
-ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190  7.081
-ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322  7.081
-ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223  7.081
-ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331  7.081
-ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341  7.081
-ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116  7.081
-ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036  7.081
-ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036  7.081
-ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101  7.081
-ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544  7.081
-ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544  7.081
-ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385  7.081
-ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210  7.081
-ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204  7.081
-ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449  7.081
-ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380  7.081
-ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220  7.081
-ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173  7.081
-ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181  7.081
-ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171  7.081
-ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189  7.081
-ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392  7.081
-ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209  7.081
-ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387  7.081
-ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210  7.081
-ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386  7.081
-ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210  7.081
+ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214  9.027
+ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110  9.027
+ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190  9.027
+ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322  9.027
+ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223  9.027
+ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331  9.027
+ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341  9.027
+ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116  9.027
+ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036  9.027
+ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036  9.027
+ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101  9.027
+ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544  9.027
+ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544  9.027
+ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385  9.027
+ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210  9.027
+ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204  9.027
+ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449  9.027
+ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380  9.027
+ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220  9.027
+ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173  9.027
+ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181  9.027
+ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171  9.027
+ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189  9.027
+ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392  9.027
+ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209  9.027
+ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387  9.027
+ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210  9.027
+ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386  9.027
+ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210  9.027
 TER
 ENDMDL
 MODEL        8
@@ -2221,55 +2055,55 @@ USER    Run = 8
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.081 A
+USER    RMSD from reference structure       = 9.027 A
 USER  
-USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = sip.hmg4.GASW.dpf
 USER    NEWDPF move	sip.pdbq
-USER    NEWDPF about	-6.237000 74.032997 26.371000
-USER    NEWDPF tran0	-13.805336 69.588419 22.182703
-USER    NEWDPF quat0	0.589213 0.288052 -0.754887 16.675322
+USER    NEWDPF about	-6.237000 74.033000 26.371000
+USER    NEWDPF tran0	-12.697861 71.443335 18.230057
+USER    NEWDPF quat0	0.819293 0.462110 0.339432 89.625172
 USER    NEWDPF ndihe	11
-USER    NEWDPF dihe0	53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
-USER
+USER    NEWDPF dihe0	17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214  7.081
-ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110  7.081
-ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190  7.081
-ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322  7.081
-ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223  7.081
-ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331  7.081
-ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341  7.081
-ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116  7.081
-ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036  7.081
-ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036  7.081
-ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101  7.081
-ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544  7.081
-ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544  7.081
-ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385  7.081
-ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210  7.081
-ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204  7.081
-ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449  7.081
-ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380  7.081
-ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220  7.081
-ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173  7.081
-ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181  7.081
-ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171  7.081
-ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189  7.081
-ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392  7.081
-ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209  7.081
-ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387  7.081
-ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210  7.081
-ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386  7.081
-ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210  7.081
+ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214  9.027
+ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110  9.027
+ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190  9.027
+ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322  9.027
+ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223  9.027
+ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331  9.027
+ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341  9.027
+ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116  9.027
+ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036  9.027
+ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036  9.027
+ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101  9.027
+ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544  9.027
+ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544  9.027
+ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385  9.027
+ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210  9.027
+ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204  9.027
+ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449  9.027
+ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380  9.027
+ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220  9.027
+ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173  9.027
+ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181  9.027
+ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171  9.027
+ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189  9.027
+ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392  9.027
+ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209  9.027
+ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387  9.027
+ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210  9.027
+ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386  9.027
+ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210  9.027
 TER
 ENDMDL
 MODEL        3
@@ -2277,55 +2111,55 @@ USER    Run = 3
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.081 A
+USER    RMSD from reference structure       = 9.027 A
 USER  
-USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = sip.hmg4.GASW.dpf
 USER    NEWDPF move	sip.pdbq
-USER    NEWDPF about	-6.237000 74.032997 26.371000
-USER    NEWDPF tran0	-13.805336 69.588419 22.182703
-USER    NEWDPF quat0	0.589213 0.288052 -0.754887 16.675322
+USER    NEWDPF about	-6.237000 74.033000 26.371000
+USER    NEWDPF tran0	-12.697861 71.443335 18.230057
+USER    NEWDPF quat0	0.819293 0.462110 0.339432 89.625172
 USER    NEWDPF ndihe	11
-USER    NEWDPF dihe0	53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
-USER
+USER    NEWDPF dihe0	17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214  7.081
-ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110  7.081
-ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190  7.081
-ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322  7.081
-ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223  7.081
-ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331  7.081
-ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341  7.081
-ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116  7.081
-ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036  7.081
-ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036  7.081
-ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101  7.081
-ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544  7.081
-ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544  7.081
-ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385  7.081
-ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210  7.081
-ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204  7.081
-ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449  7.081
-ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380  7.081
-ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220  7.081
-ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173  7.081
-ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181  7.081
-ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171  7.081
-ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189  7.081
-ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392  7.081
-ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209  7.081
-ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387  7.081
-ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210  7.081
-ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386  7.081
-ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210  7.081
+ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214  9.027
+ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110  9.027
+ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190  9.027
+ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322  9.027
+ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223  9.027
+ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331  9.027
+ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341  9.027
+ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116  9.027
+ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036  9.027
+ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036  9.027
+ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101  9.027
+ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544  9.027
+ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544  9.027
+ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385  9.027
+ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210  9.027
+ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204  9.027
+ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449  9.027
+ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380  9.027
+ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220  9.027
+ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173  9.027
+ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181  9.027
+ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171  9.027
+ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189  9.027
+ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392  9.027
+ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209  9.027
+ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387  9.027
+ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210  9.027
+ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386  9.027
+ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210  9.027
 TER
 ENDMDL
 MODEL        9
@@ -2333,55 +2167,55 @@ USER    Run = 9
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.081 A
+USER    RMSD from reference structure       = 9.027 A
 USER  
-USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = sip.hmg4.GASW.dpf
 USER    NEWDPF move	sip.pdbq
-USER    NEWDPF about	-6.237000 74.032997 26.371000
-USER    NEWDPF tran0	-13.805336 69.588419 22.182703
-USER    NEWDPF quat0	0.589213 0.288052 -0.754887 16.675322
+USER    NEWDPF about	-6.237000 74.033000 26.371000
+USER    NEWDPF tran0	-12.697861 71.443335 18.230057
+USER    NEWDPF quat0	0.819293 0.462110 0.339432 89.625172
 USER    NEWDPF ndihe	11
-USER    NEWDPF dihe0	53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
-USER
+USER    NEWDPF dihe0	17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214  7.081
-ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110  7.081
-ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190  7.081
-ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322  7.081
-ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223  7.081
-ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331  7.081
-ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341  7.081
-ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116  7.081
-ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036  7.081
-ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036  7.081
-ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101  7.081
-ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544  7.081
-ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544  7.081
-ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385  7.081
-ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210  7.081
-ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204  7.081
-ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449  7.081
-ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380  7.081
-ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220  7.081
-ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173  7.081
-ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181  7.081
-ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171  7.081
-ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189  7.081
-ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392  7.081
-ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209  7.081
-ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387  7.081
-ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210  7.081
-ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386  7.081
-ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210  7.081
+ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214  9.027
+ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110  9.027
+ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190  9.027
+ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322  9.027
+ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223  9.027
+ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331  9.027
+ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341  9.027
+ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116  9.027
+ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036  9.027
+ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036  9.027
+ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101  9.027
+ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544  9.027
+ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544  9.027
+ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385  9.027
+ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210  9.027
+ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204  9.027
+ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449  9.027
+ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380  9.027
+ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220  9.027
+ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173  9.027
+ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181  9.027
+ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171  9.027
+ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189  9.027
+ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392  9.027
+ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209  9.027
+ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387  9.027
+ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210  9.027
+ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386  9.027
+ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210  9.027
 TER
 ENDMDL
 MODEL        1
@@ -2389,55 +2223,55 @@ USER    Run = 1
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.081 A
+USER    RMSD from reference structure       = 9.027 A
 USER  
-USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = sip.hmg4.GASW.dpf
 USER    NEWDPF move	sip.pdbq
-USER    NEWDPF about	-6.237000 74.032997 26.371000
-USER    NEWDPF tran0	-13.805336 69.588419 22.182703
-USER    NEWDPF quat0	0.589213 0.288052 -0.754887 16.675322
+USER    NEWDPF about	-6.237000 74.033000 26.371000
+USER    NEWDPF tran0	-12.697861 71.443335 18.230057
+USER    NEWDPF quat0	0.819293 0.462110 0.339432 89.625172
 USER    NEWDPF ndihe	11
-USER    NEWDPF dihe0	53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
-USER
+USER    NEWDPF dihe0	17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214  7.081
-ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110  7.081
-ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190  7.081
-ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322  7.081
-ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223  7.081
-ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331  7.081
-ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341  7.081
-ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116  7.081
-ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036  7.081
-ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036  7.081
-ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101  7.081
-ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544  7.081
-ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544  7.081
-ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385  7.081
-ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210  7.081
-ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204  7.081
-ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449  7.081
-ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380  7.081
-ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220  7.081
-ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173  7.081
-ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181  7.081
-ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171  7.081
-ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189  7.081
-ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392  7.081
-ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209  7.081
-ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387  7.081
-ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210  7.081
-ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386  7.081
-ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210  7.081
+ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214  9.027
+ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110  9.027
+ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190  9.027
+ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322  9.027
+ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223  9.027
+ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331  9.027
+ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341  9.027
+ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116  9.027
+ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036  9.027
+ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036  9.027
+ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101  9.027
+ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544  9.027
+ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544  9.027
+ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385  9.027
+ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210  9.027
+ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204  9.027
+ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449  9.027
+ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380  9.027
+ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220  9.027
+ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173  9.027
+ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181  9.027
+ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171  9.027
+ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189  9.027
+ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392  9.027
+ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209  9.027
+ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387  9.027
+ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210  9.027
+ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386  9.027
+ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210  9.027
 TER
 ENDMDL
 MODEL       10
@@ -2445,55 +2279,55 @@ USER    Run = 10
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.081 A
+USER    RMSD from reference structure       = 9.027 A
 USER  
-USER    Estimated Free Energy of Binding    =   +3.92 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    =   +0.85 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =  +20.50 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -0.05 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +0.50 kcal/mol
-USER    (2) Final Internal Energy of Ligand =  +20.00 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.57 kcal/mol
+USER    (2) Final Internal Energy of Ligand =   +2.52 kcal/mol
 USER    (3) Torsional Free Energy           =   +3.42 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = sip.hmg4.GASW.dpf
 USER    NEWDPF move	sip.pdbq
-USER    NEWDPF about	-6.237000 74.032997 26.371000
-USER    NEWDPF tran0	-13.805336 69.588419 22.182703
-USER    NEWDPF quat0	0.589213 0.288052 -0.754887 16.675322
+USER    NEWDPF about	-6.237000 74.033000 26.371000
+USER    NEWDPF tran0	-12.697861 71.443335 18.230057
+USER    NEWDPF quat0	0.819293 0.462110 0.339432 89.625172
 USER    NEWDPF ndihe	11
-USER    NEWDPF dihe0	53.04 -103.27 -156.62 177.67 -167.99 82.64 -22.07 23.48 -152.40 137.42 157.69 
-USER
+USER    NEWDPF dihe0	17.34 85.84 25.69 -37.19 -14.47 -146.96 -93.61 96.36 19.87 -117.25 -29.19 
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C2  SIA     1     -15.831  69.058  23.534 -0.07 +0.04    +0.214  7.081
-ATOM      2  C3  SIA     1     -15.214  69.857  24.696 -0.06 +0.02    +0.110  7.081
-ATOM      3  C4  SIA     1     -13.690  69.900  24.619 -0.10 +0.03    +0.190  7.081
-ATOM      4  C5  SIA     1     -13.283  70.533  23.282 -0.09 +0.04    +0.322  7.081
-ATOM      5  C6  SIA     1     -13.805  69.588  22.183 -0.13 +0.03    +0.223  7.081
-ATOM      6  O6  SIA     1     -15.236  69.465  22.296 +0.19 -0.05    -0.331  7.081
-ATOM      7  O2  SIA     1     -17.211  69.317  23.423 +0.22 -0.06    -0.341  7.081
-ATOM      8  C35 SIA     1     -17.411  70.528  22.689 -0.01 +0.02    +0.116  7.081
-ATOM      9  C40 SIA     1     -17.160  70.270  21.192 -0.01 +0.01    +0.036  7.081
-ATOM     10  C41 SIA     1     -16.432  71.604  23.197 -0.01 +0.01    +0.036  7.081
-ATOM     11  C1  SIA     1     -15.682  67.540  23.813 -0.08 +0.02    +0.101  7.081
-ATOM     12  O1A SIA     1     -14.880  67.084  24.621 +0.42 -0.12    -0.544  7.081
-ATOM     13  O1B SIA     1     -16.410  66.759  23.210 +0.15 -0.10    -0.544  7.081
-ATOM     14  O4  SIA     1     -13.104  70.610  25.705 +0.21 -0.08    -0.385  7.081
-ATOM     15  H4  SIA     1     -12.282  70.994  25.426 +0.11 +0.04    +0.210  7.081
-ATOM     16  N5  SIA     1     -11.835  70.656  23.340 -0.08 -0.02    -0.204  7.081
-ATOM     17  H5  SIA     1     -11.417  71.576  23.148 +0.11 +0.04    +0.449  7.081
-ATOM     18  C10 SIA     1     -11.023  69.646  23.627 -0.32 +0.00    +0.380  7.081
-ATOM     19  O10 SIA     1     -11.474  68.552  23.958 +0.01 +0.02    -0.220  7.081
-ATOM     20  C11 SIA     1      -9.527  69.898  23.580 -0.40 -0.01    +0.173  7.081
-ATOM     21  C7  SIA     1     -13.532  69.981  20.722 -0.12 +0.02    +0.181  7.081
-ATOM     22  C8  SIA     1     -13.320  71.518  20.635 -0.10 +0.01    +0.171  7.081
-ATOM     23  C9  SIA     1     -14.308  72.297  21.516 -0.04 +0.03    +0.189  7.081
-ATOM     24  O9  SIA     1     -13.593  73.358  22.120 +0.22 -0.05    -0.392  7.081
-ATOM     25  H9  SIA     1     -13.027  73.766  21.475 +0.11 +0.02    +0.209  7.081
-ATOM     26  O8  SIA     1     -12.013  71.890  21.031 +0.17 -0.00    -0.387  7.081
-ATOM     27  H8  SIA     1     -11.593  71.157  21.467 +0.11 -0.00    +0.210  7.081
-ATOM     28  O7  SIA     1     -12.376  69.295  20.283 +0.10 -0.00    -0.386  7.081
-ATOM     29  H7  SIA     1     -11.647  69.902  20.235 +0.10 -0.01    +0.210  7.081
+ATOM      1  C2  SIA     1     -13.115  68.995  18.029 -0.19 +0.02    +0.214  9.027
+ATOM      2  C3  SIA     1     -12.097  68.770  19.161 -0.31 -0.00    +0.110  9.027
+ATOM      3  C4  SIA     1     -11.076  69.901  19.248 -0.29 -0.04    +0.190  9.027
+ATOM      4  C5  SIA     1     -11.823  71.222  19.478 -0.30 -0.03    +0.322  9.027
+ATOM      5  C6  SIA     1     -12.698  71.443  18.230 -0.27 +0.00    +0.223  9.027
+ATOM      6  O6  SIA     1     -13.610  70.338  18.081 +0.17 -0.03    -0.331  9.027
+ATOM      7  O2  SIA     1     -14.231  68.148  18.181 +0.19 -0.05    -0.341  9.027
+ATOM      8  C35 SIA     1     -15.362  68.729  17.526 -0.04 +0.02    +0.116  9.027
+ATOM      9  C40 SIA     1     -16.572  68.711  18.478 -0.02 +0.01    +0.036  9.027
+ATOM     10  C41 SIA     1     -15.693  67.918  16.258 -0.03 +0.01    +0.036  9.027
+ATOM     11  C1  SIA     1     -12.464  68.636  16.668 -0.30 +0.01    +0.101  9.027
+ATOM     12  O1A SIA     1     -12.809  67.671  15.995 +0.11 -0.10    -0.544  9.027
+ATOM     13  O1B SIA     1     -11.574  69.360  16.236 -0.00 -0.00    -0.544  9.027
+ATOM     14  O4  SIA     1     -10.109  69.692  20.271 -0.06 +0.08    -0.385  9.027
+ATOM     15  H4  SIA     1      -9.438  70.362  20.216 +0.03 -0.09    +0.210  9.027
+ATOM     16  N5  SIA     1     -10.785  72.220  19.678 -0.29 +0.06    -0.204  9.027
+ATOM     17  H5  SIA     1      -9.979  72.218  19.038 -0.19 -0.33    +0.449  9.027
+ATOM     18  C10 SIA     1     -10.820  73.135  20.640 -0.36 -0.06    +0.380  9.027
+ATOM     19  O10 SIA     1     -11.803  73.242  21.368 +0.15 -0.01    -0.220  9.027
+ATOM     20  C11 SIA     1      -9.632  74.070  20.779 -0.17 -0.04    +0.173  9.027
+ATOM     21  C7  SIA     1     -13.565  72.712  18.188 -0.24 +0.01    +0.181  9.027
+ATOM     22  C8  SIA     1     -13.726  73.175  16.714 -0.22 +0.02    +0.171  9.027
+ATOM     23  C9  SIA     1     -14.487  72.152  15.857 -0.15 +0.04    +0.189  9.027
+ATOM     24  O9  SIA     1     -15.826  72.128  16.313 +0.21 -0.07    -0.392  9.027
+ATOM     25  H9  SIA     1     -16.080  71.232  16.502 +0.12 +0.04    +0.209  9.027
+ATOM     26  O8  SIA     1     -14.420  74.405  16.623 +0.06 -0.04    -0.387  9.027
+ATOM     27  H8  SIA     1     -14.351  74.743  15.738 +0.08 +0.04    +0.210  9.027
+ATOM     28  O7  SIA     1     -14.825  72.412  18.755 +0.19 -0.04    -0.386  9.027
+ATOM     29  H7  SIA     1     -14.706  71.844  19.507 +0.12 +0.03    +0.210  9.027
 TER
 ENDMDL
 
@@ -2507,7 +2341,7 @@ AVSFLD: nspace=1         # number of physical coordinates
 AVSFLD: veclen=7         # vector size
 AVSFLD: dim1=29          # atoms
 AVSFLD: dim2=1           # conformations
-AVSFLD: data=float       # data type (byte,integer,float,double)
+AVSFLD: data=FloatOrDouble       # data type (byte,integer,FloatOrDouble,double)
 AVSFLD: field=uniform    # field coordinate layout
 AVSFLD: label= x y z vdW Elec q RMS
 AVSFLD: variable 1 file = sip.hmg4.GASW.dlg.pdb filetype = ascii offset = 5 stride = 12
@@ -2521,15 +2355,15 @@ AVSFLD: # end of file
 
 >>> Closing the docking parameter file (DPF)...
 
-This docking finished at:			4:23 50" p.m., 12/19/2002
+This docking finished at:			5:11 37" p.m., 02/26/2003
 
 
 
 
 ________________________________________________________________________________
 
-../../autodock3: Successful Completion on "nemo.mgl"
+/home/lindy/dev/integration-305/autodock/autodock3: Successful Completion on "nemo.mgl"
 
-Real= 6.21s,  CPU= 5.90s,  System= 0.28s
+Real= 8.76s,  CPU= 8.24s,  System= 0.36s
 ________________________________________________________________________________
 

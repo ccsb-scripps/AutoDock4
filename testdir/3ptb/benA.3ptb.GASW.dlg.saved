@@ -25,7 +25,7 @@ _______/______/__////_/___///___/////__/////____/////___/////__/____/_______
                  |                                      |
                  |            AutoDock 3.05             |
                  |                                      |
-                 |            (c) 1991-2000             |
+                 |            (c) 1991-2002             |
                  |    The Scripps Research Institute    |
                  |                                      |
                  |       Garrett M. Morris, TSRI        |
@@ -46,7 +46,7 @@ _______/______/__////_/___///___/////__/////____/////___/////__/____/_______
 
 
 
-This file was created at:			5:52 18" p.m., 12/11/2002
+This file was created at:			5:11 08" p.m., 02/26/2003
                    using:			"nemo.mgl"
 
 NOTE: "rus" stands for:
@@ -70,6 +70,7 @@ argument "2863" found
 Random number generator was seeded with the user-specified value  863546106
 Random number generator was seeded with the user-specified value  2863
 
+Portable random number generator was seeded with the user-specified values  863546106, 2863
 
 
 DPF> types	CANH		# atom type names
@@ -108,7 +109,7 @@ DPF> map	3ptb.C.map	# C-atomic affinity map
 
 Opened Grid Map 1 (C):				3ptb.C.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"3ptbA.gpf" :: "benA.3ptb.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -118,7 +119,7 @@ Closing file.
 226981 energies found for map 1
 Minimum energy = -1.12,  maximum energy = 201978.05
 
-Time taken (s): Real= 0.77,  CPU= 0.66,  System= 0.11
+Time taken (s): Real= 1.15,  CPU= 0.99,  System= 0.13
 
 
 
@@ -126,7 +127,7 @@ DPF> map	3ptb.A.map	# A-atomic affinity map
 
 Opened Grid Map 2 (A):				3ptb.A.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"3ptbA.gpf" :: "benA.3ptb.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -136,7 +137,7 @@ Closing file.
 226981 energies found for map 2
 Minimum energy = -0.94,  maximum energy = 201978.22
 
-Time taken (s): Real= 0.73,  CPU= 0.71,  System= 0.02
+Time taken (s): Real= 1.03,  CPU= 1.00,  System= 0.00
 
 
 
@@ -144,7 +145,7 @@ DPF> map	3ptb.N.map	# N-atomic affinity map
 
 Opened Grid Map 3 (N):				3ptb.N.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"3ptbA.gpf" :: "benA.3ptb.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -154,7 +155,7 @@ Closing file.
 226981 energies found for map 3
 Minimum energy = -0.80,  maximum energy = 200529.28
 
-Time taken (s): Real= 0.72,  CPU= 0.72,  System= 0.00
+Time taken (s): Real= 1.08,  CPU= 0.99,  System= 0.02
 
 
 
@@ -162,7 +163,7 @@ DPF> map	3ptb.H.map	# H-atomic affinity map
 
 Opened Grid Map 4 (H):				3ptb.H.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"3ptbA.gpf" :: "benA.3ptb.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -172,7 +173,7 @@ Closing file.
 226981 energies found for map 4
 Minimum energy = -0.84,  maximum energy = 105498.09
 
-Time taken (s): Real= 0.69,  CPU= 0.68,  System= 0.01
+Time taken (s): Real= 0.97,  CPU= 0.96,  System= 0.00
 
 
 
@@ -180,7 +181,7 @@ DPF> map	3ptb.e.map	# electrostatics map
 
 Opened Grid Map 5 (e):				3ptb.e.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"3ptbA.gpf" :: "benA.3ptb.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -190,7 +191,7 @@ Closing file.
 226981 energies found for map 5
 Minimum energy = -220.09,  maximum energy = 743.64
 
-Time taken (s): Real= 0.67,  CPU= 0.67,  System= 0.00
+Time taken (s): Real= 0.96,  CPU= 0.94,  System= 0.00
 
 DPF> 
 
@@ -251,10 +252,6 @@ DPF> about	-1.853 14.311 16.658	# small molecule center
 
 Small molecule center of rotation =	(-1.853, +14.311, +16.658)
 
-Translating small molecule by:	(+1.853, -14.311, -16.658)
-
-Furthest ligand atom from "about" center is 3.298 Angstroms (maxrad).
-
 
 
 DPF> tran0	random		# initial coordinates/A or "random"
@@ -263,14 +260,10 @@ DPF> tran0	random		# initial coordinates/A or "random"
 
 DPF> quat0	random		# initial quaternion or "random"
 
-Each run will begin with a new, random initial quaternion.
-Initial quaternion,  q = [(x,y,z),w] =	[ (0.313, 0.507, -0.798), 3.3 deg ],
-Quaternion Vector Normalized to:  0.314 0.509 -0.801
 
 
 DPF> ndihe	0		# number of initial torsions
 
-Number of torsions = 0
 
 
 DPF> dihe0	random		# initial torsions
@@ -298,27 +291,22 @@ Initial cycle, maximum translation step = +/- 0.2 Angstroms
 
 DPF> qstep	5.		# quaternion step/deg
 
-Initial cycle, maximum quaternion angle step = +/- 5.0 deg
 
 
 DPF> dstep	5.		# torsion step/deg
 
-Initial cycle, maximum torsion angle step = +/- 5.0 deg
 
 
 DPF> trnrf	1.		# trans reduction factor/per cycle
 
-Reduction factor for translations =	1.000 /cycle
 
 
 DPF> quarf	1.		# quat reduction factor/per cycle
 
-Reduction factor for quaternion angle =	1.000 /cycle
 
 
 DPF> dihrf	1.		# tors reduction factor/per cycle
 
-Reduction factor for torsion angles =	1.000 /cycle
 DPF> 
 
 
@@ -332,7 +320,7 @@ Non-bonded parameters for C-C interactions, used in internal energy calculations
                 r               r 
 
 Calculating C-C interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.15,  CPU= 0.06,  System= 0.09
+Time taken: Real= 0.25,  CPU= 0.09,  System= 0.16
 
 
 DPF> intnbp_r_eps  4.00 0.0222750  12  6	#C-A lj
@@ -345,7 +333,7 @@ Non-bonded parameters for C-A interactions, used in internal energy calculations
                 r               r 
 
 Calculating C-A interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.75 0.0230026  12  6	#C-N lj
@@ -358,7 +346,7 @@ Non-bonded parameters for C-N interactions, used in internal energy calculations
                 r               r 
 
 Calculating C-N interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.00 0.0081378  12  6	#C-H lj
@@ -371,7 +359,7 @@ Non-bonded parameters for C-H interactions, used in internal energy calculations
                 r               r 
 
 Calculating C-H interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  4.00 0.0222750  12  6	#A-A lj
@@ -384,7 +372,7 @@ Non-bonded parameters for A-A interactions, used in internal energy calculations
                 r               r 
 
 Calculating A-A interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.75 0.0230026  12  6	#A-N lj
@@ -397,7 +385,7 @@ Non-bonded parameters for A-N interactions, used in internal energy calculations
                 r               r 
 
 Calculating A-N interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.00 0.0081378  12  6	#A-H lj
@@ -410,7 +398,7 @@ Non-bonded parameters for A-H interactions, used in internal energy calculations
                 r               r 
 
 Calculating A-H interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.50 0.0237600  12  6	#N-N lj
@@ -423,7 +411,7 @@ Non-bonded parameters for N-N interactions, used in internal energy calculations
                 r               r 
 
 Calculating N-N interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  2.75 0.0084051  12  6	#N-H lj
@@ -436,7 +424,7 @@ Non-bonded parameters for N-H interactions, used in internal energy calculations
                 r               r 
 
 Calculating N-H interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  2.00 0.0029700  12  6	#H-H lj
@@ -449,7 +437,7 @@ Non-bonded parameters for H-H interactions, used in internal energy calculations
                 r               r 
 
 Calculating H-H interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 DPF> 
 DPF> #intelec		# calculate internal electrostatic energy
 DPF> 
@@ -593,7 +581,7 @@ Number of requested LGA dockings = 10 runs
 
 Run:	1 / 10
 Seeds:	863546106 2863
-Date:	Wed Dec 11 17:52:22 2002
+Date:	Wed Feb 26 17:11:15 2003
 Output level is set to 1.
 
 
@@ -606,13 +594,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.05s,  CPU= 0.05s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-5:52 22" p.m., 12/11/2002
-Total number of Energy Evaluations: 1742
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 15" p.m., 02/26/2003
+Total number of Energy Evaluations: 1695
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -623,43 +609,43 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        1
 DOCKED: USER    Run = 1
 DOCKED: USER    DPF = benA.3ptb.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+DOCKED: USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move benA.pdbq
-DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658001
-DOCKED: USER    NEWDPF tran0 1.269822 20.833660 14.249895
-DOCKED: USER    NEWDPF quat0 0.481065 -0.547623 -0.684606 161.099673
+DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658000
+DOCKED: USER    NEWDPF tran0 -8.106714 20.601410 21.334353
+DOCKED: USER    NEWDPF quat0 0.469832 -0.522459 0.711544 -65.909582
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259
-DOCKED: ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086
-DOCKED: ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020
-DOCKED: ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171
-DOCKED: ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027
-DOCKED: ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073
-DOCKED: ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773
-DOCKED: ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768
-DOCKED: ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764
-DOCKED: ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407
-DOCKED: ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416
-DOCKED: ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417
-DOCKED: ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402
+DOCKED: ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259
+DOCKED: ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086
+DOCKED: ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020
+DOCKED: ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171
+DOCKED: ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027
+DOCKED: ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073
+DOCKED: ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773
+DOCKED: ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768
+DOCKED: ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764
+DOCKED: ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407
+DOCKED: ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416
+DOCKED: ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417
+DOCKED: ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -670,7 +656,7 @@ ________________________________________________________________________________
 
 Run:	2 / 10
 Seeds:	863546106 2863
-Date:	Wed Dec 11 17:52:22 2002
+Date:	Wed Feb 26 17:11:15 2003
 Output level is set to 1.
 
 
@@ -683,13 +669,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.06s,  CPU= 0.06s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-5:52 22" p.m., 12/11/2002
-Total number of Energy Evaluations: 1742
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 15" p.m., 02/26/2003
+Total number of Energy Evaluations: 1695
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -700,43 +684,43 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        2
 DOCKED: USER    Run = 2
 DOCKED: USER    DPF = benA.3ptb.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+DOCKED: USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move benA.pdbq
-DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658001
-DOCKED: USER    NEWDPF tran0 1.269822 20.833660 14.249895
-DOCKED: USER    NEWDPF quat0 0.481065 -0.547623 -0.684606 161.099673
+DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658000
+DOCKED: USER    NEWDPF tran0 -8.106714 20.601410 21.334353
+DOCKED: USER    NEWDPF quat0 0.469832 -0.522459 0.711544 -65.909582
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259
-DOCKED: ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086
-DOCKED: ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020
-DOCKED: ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171
-DOCKED: ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027
-DOCKED: ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073
-DOCKED: ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773
-DOCKED: ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768
-DOCKED: ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764
-DOCKED: ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407
-DOCKED: ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416
-DOCKED: ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417
-DOCKED: ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402
+DOCKED: ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259
+DOCKED: ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086
+DOCKED: ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020
+DOCKED: ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171
+DOCKED: ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027
+DOCKED: ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073
+DOCKED: ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773
+DOCKED: ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768
+DOCKED: ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764
+DOCKED: ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407
+DOCKED: ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416
+DOCKED: ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417
+DOCKED: ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -747,7 +731,7 @@ ________________________________________________________________________________
 
 Run:	3 / 10
 Seeds:	863546106 2863
-Date:	Wed Dec 11 17:52:22 2002
+Date:	Wed Feb 26 17:11:15 2003
 Output level is set to 1.
 
 
@@ -760,13 +744,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.06s,  CPU= 0.06s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-5:52 23" p.m., 12/11/2002
-Total number of Energy Evaluations: 1742
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 15" p.m., 02/26/2003
+Total number of Energy Evaluations: 1695
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -777,43 +759,43 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        3
 DOCKED: USER    Run = 3
 DOCKED: USER    DPF = benA.3ptb.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+DOCKED: USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move benA.pdbq
-DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658001
-DOCKED: USER    NEWDPF tran0 1.269822 20.833660 14.249895
-DOCKED: USER    NEWDPF quat0 0.481065 -0.547623 -0.684606 161.099673
+DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658000
+DOCKED: USER    NEWDPF tran0 -8.106714 20.601410 21.334353
+DOCKED: USER    NEWDPF quat0 0.469832 -0.522459 0.711544 -65.909582
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259
-DOCKED: ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086
-DOCKED: ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020
-DOCKED: ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171
-DOCKED: ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027
-DOCKED: ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073
-DOCKED: ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773
-DOCKED: ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768
-DOCKED: ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764
-DOCKED: ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407
-DOCKED: ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416
-DOCKED: ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417
-DOCKED: ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402
+DOCKED: ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259
+DOCKED: ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086
+DOCKED: ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020
+DOCKED: ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171
+DOCKED: ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027
+DOCKED: ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073
+DOCKED: ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773
+DOCKED: ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768
+DOCKED: ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764
+DOCKED: ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407
+DOCKED: ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416
+DOCKED: ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417
+DOCKED: ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -824,7 +806,7 @@ ________________________________________________________________________________
 
 Run:	4 / 10
 Seeds:	863546106 2863
-Date:	Wed Dec 11 17:52:23 2002
+Date:	Wed Feb 26 17:11:15 2003
 Output level is set to 1.
 
 
@@ -837,13 +819,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.05s,  CPU= 0.05s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-5:52 23" p.m., 12/11/2002
-Total number of Energy Evaluations: 1742
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 15" p.m., 02/26/2003
+Total number of Energy Evaluations: 1695
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -854,43 +834,43 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        4
 DOCKED: USER    Run = 4
 DOCKED: USER    DPF = benA.3ptb.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+DOCKED: USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move benA.pdbq
-DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658001
-DOCKED: USER    NEWDPF tran0 1.269822 20.833660 14.249895
-DOCKED: USER    NEWDPF quat0 0.481065 -0.547623 -0.684606 161.099673
+DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658000
+DOCKED: USER    NEWDPF tran0 -8.106714 20.601410 21.334353
+DOCKED: USER    NEWDPF quat0 0.469832 -0.522459 0.711544 -65.909582
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259
-DOCKED: ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086
-DOCKED: ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020
-DOCKED: ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171
-DOCKED: ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027
-DOCKED: ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073
-DOCKED: ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773
-DOCKED: ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768
-DOCKED: ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764
-DOCKED: ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407
-DOCKED: ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416
-DOCKED: ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417
-DOCKED: ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402
+DOCKED: ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259
+DOCKED: ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086
+DOCKED: ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020
+DOCKED: ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171
+DOCKED: ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027
+DOCKED: ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073
+DOCKED: ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773
+DOCKED: ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768
+DOCKED: ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764
+DOCKED: ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407
+DOCKED: ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416
+DOCKED: ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417
+DOCKED: ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -901,7 +881,7 @@ ________________________________________________________________________________
 
 Run:	5 / 10
 Seeds:	863546106 2863
-Date:	Wed Dec 11 17:52:23 2002
+Date:	Wed Feb 26 17:11:15 2003
 Output level is set to 1.
 
 
@@ -914,13 +894,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.06s,  CPU= 0.06s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-5:52 23" p.m., 12/11/2002
-Total number of Energy Evaluations: 1742
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 15" p.m., 02/26/2003
+Total number of Energy Evaluations: 1695
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -931,43 +909,43 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        5
 DOCKED: USER    Run = 5
 DOCKED: USER    DPF = benA.3ptb.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+DOCKED: USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move benA.pdbq
-DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658001
-DOCKED: USER    NEWDPF tran0 1.269822 20.833660 14.249895
-DOCKED: USER    NEWDPF quat0 0.481065 -0.547623 -0.684606 161.099673
+DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658000
+DOCKED: USER    NEWDPF tran0 -8.106714 20.601410 21.334353
+DOCKED: USER    NEWDPF quat0 0.469832 -0.522459 0.711544 -65.909582
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259
-DOCKED: ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086
-DOCKED: ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020
-DOCKED: ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171
-DOCKED: ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027
-DOCKED: ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073
-DOCKED: ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773
-DOCKED: ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768
-DOCKED: ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764
-DOCKED: ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407
-DOCKED: ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416
-DOCKED: ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417
-DOCKED: ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402
+DOCKED: ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259
+DOCKED: ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086
+DOCKED: ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020
+DOCKED: ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171
+DOCKED: ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027
+DOCKED: ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073
+DOCKED: ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773
+DOCKED: ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768
+DOCKED: ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764
+DOCKED: ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407
+DOCKED: ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416
+DOCKED: ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417
+DOCKED: ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -978,7 +956,7 @@ ________________________________________________________________________________
 
 Run:	6 / 10
 Seeds:	863546106 2863
-Date:	Wed Dec 11 17:52:23 2002
+Date:	Wed Feb 26 17:11:15 2003
 Output level is set to 1.
 
 
@@ -991,13 +969,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.06s,  CPU= 0.06s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-5:52 23" p.m., 12/11/2002
-Total number of Energy Evaluations: 1742
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 15" p.m., 02/26/2003
+Total number of Energy Evaluations: 1695
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1008,43 +984,43 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        6
 DOCKED: USER    Run = 6
 DOCKED: USER    DPF = benA.3ptb.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+DOCKED: USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move benA.pdbq
-DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658001
-DOCKED: USER    NEWDPF tran0 1.269822 20.833660 14.249895
-DOCKED: USER    NEWDPF quat0 0.481065 -0.547623 -0.684606 161.099673
+DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658000
+DOCKED: USER    NEWDPF tran0 -8.106714 20.601410 21.334353
+DOCKED: USER    NEWDPF quat0 0.469832 -0.522459 0.711544 -65.909582
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259
-DOCKED: ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086
-DOCKED: ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020
-DOCKED: ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171
-DOCKED: ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027
-DOCKED: ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073
-DOCKED: ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773
-DOCKED: ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768
-DOCKED: ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764
-DOCKED: ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407
-DOCKED: ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416
-DOCKED: ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417
-DOCKED: ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402
+DOCKED: ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259
+DOCKED: ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086
+DOCKED: ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020
+DOCKED: ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171
+DOCKED: ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027
+DOCKED: ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073
+DOCKED: ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773
+DOCKED: ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768
+DOCKED: ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764
+DOCKED: ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407
+DOCKED: ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416
+DOCKED: ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417
+DOCKED: ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1055,7 +1031,7 @@ ________________________________________________________________________________
 
 Run:	7 / 10
 Seeds:	863546106 2863
-Date:	Wed Dec 11 17:52:23 2002
+Date:	Wed Feb 26 17:11:15 2003
 Output level is set to 1.
 
 
@@ -1068,13 +1044,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.06s,  CPU= 0.06s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-5:52 23" p.m., 12/11/2002
-Total number of Energy Evaluations: 1742
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 15" p.m., 02/26/2003
+Total number of Energy Evaluations: 1695
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1085,43 +1059,43 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        7
 DOCKED: USER    Run = 7
 DOCKED: USER    DPF = benA.3ptb.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+DOCKED: USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move benA.pdbq
-DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658001
-DOCKED: USER    NEWDPF tran0 1.269822 20.833660 14.249895
-DOCKED: USER    NEWDPF quat0 0.481065 -0.547623 -0.684606 161.099673
+DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658000
+DOCKED: USER    NEWDPF tran0 -8.106714 20.601410 21.334353
+DOCKED: USER    NEWDPF quat0 0.469832 -0.522459 0.711544 -65.909582
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259
-DOCKED: ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086
-DOCKED: ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020
-DOCKED: ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171
-DOCKED: ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027
-DOCKED: ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073
-DOCKED: ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773
-DOCKED: ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768
-DOCKED: ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764
-DOCKED: ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407
-DOCKED: ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416
-DOCKED: ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417
-DOCKED: ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402
+DOCKED: ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259
+DOCKED: ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086
+DOCKED: ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020
+DOCKED: ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171
+DOCKED: ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027
+DOCKED: ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073
+DOCKED: ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773
+DOCKED: ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768
+DOCKED: ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764
+DOCKED: ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407
+DOCKED: ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416
+DOCKED: ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417
+DOCKED: ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1132,7 +1106,7 @@ ________________________________________________________________________________
 
 Run:	8 / 10
 Seeds:	863546106 2863
-Date:	Wed Dec 11 17:52:23 2002
+Date:	Wed Feb 26 17:11:15 2003
 Output level is set to 1.
 
 
@@ -1145,13 +1119,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.05s,  CPU= 0.05s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-5:52 23" p.m., 12/11/2002
-Total number of Energy Evaluations: 1742
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 15" p.m., 02/26/2003
+Total number of Energy Evaluations: 1695
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1162,43 +1134,43 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        8
 DOCKED: USER    Run = 8
 DOCKED: USER    DPF = benA.3ptb.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+DOCKED: USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move benA.pdbq
-DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658001
-DOCKED: USER    NEWDPF tran0 1.269822 20.833660 14.249895
-DOCKED: USER    NEWDPF quat0 0.481065 -0.547623 -0.684606 161.099673
+DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658000
+DOCKED: USER    NEWDPF tran0 -8.106714 20.601410 21.334353
+DOCKED: USER    NEWDPF quat0 0.469832 -0.522459 0.711544 -65.909582
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259
-DOCKED: ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086
-DOCKED: ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020
-DOCKED: ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171
-DOCKED: ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027
-DOCKED: ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073
-DOCKED: ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773
-DOCKED: ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768
-DOCKED: ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764
-DOCKED: ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407
-DOCKED: ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416
-DOCKED: ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417
-DOCKED: ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402
+DOCKED: ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259
+DOCKED: ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086
+DOCKED: ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020
+DOCKED: ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171
+DOCKED: ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027
+DOCKED: ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073
+DOCKED: ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773
+DOCKED: ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768
+DOCKED: ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764
+DOCKED: ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407
+DOCKED: ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416
+DOCKED: ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417
+DOCKED: ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1209,7 +1181,7 @@ ________________________________________________________________________________
 
 Run:	9 / 10
 Seeds:	863546106 2863
-Date:	Wed Dec 11 17:52:23 2002
+Date:	Wed Feb 26 17:11:15 2003
 Output level is set to 1.
 
 
@@ -1222,13 +1194,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.06s,  CPU= 0.06s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-5:52 23" p.m., 12/11/2002
-Total number of Energy Evaluations: 1742
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 15" p.m., 02/26/2003
+Total number of Energy Evaluations: 1695
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1239,43 +1209,43 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        9
 DOCKED: USER    Run = 9
 DOCKED: USER    DPF = benA.3ptb.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+DOCKED: USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move benA.pdbq
-DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658001
-DOCKED: USER    NEWDPF tran0 1.269822 20.833660 14.249895
-DOCKED: USER    NEWDPF quat0 0.481065 -0.547623 -0.684606 161.099673
+DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658000
+DOCKED: USER    NEWDPF tran0 -8.106714 20.601410 21.334353
+DOCKED: USER    NEWDPF quat0 0.469832 -0.522459 0.711544 -65.909582
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259
-DOCKED: ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086
-DOCKED: ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020
-DOCKED: ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171
-DOCKED: ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027
-DOCKED: ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073
-DOCKED: ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773
-DOCKED: ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768
-DOCKED: ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764
-DOCKED: ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407
-DOCKED: ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416
-DOCKED: ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417
-DOCKED: ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402
+DOCKED: ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259
+DOCKED: ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086
+DOCKED: ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020
+DOCKED: ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171
+DOCKED: ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027
+DOCKED: ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073
+DOCKED: ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773
+DOCKED: ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768
+DOCKED: ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764
+DOCKED: ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407
+DOCKED: ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416
+DOCKED: ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417
+DOCKED: ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1286,7 +1256,7 @@ ________________________________________________________________________________
 
 Run:	10 / 10
 Seeds:	863546106 2863
-Date:	Wed Dec 11 17:52:23 2002
+Date:	Wed Feb 26 17:11:15 2003
 Output level is set to 1.
 
 
@@ -1299,13 +1269,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.06s,  CPU= 0.06s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-5:52 23" p.m., 12/11/2002
-Total number of Energy Evaluations: 1742
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 16" p.m., 02/26/2003
+Total number of Energy Evaluations: 1695
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1316,43 +1284,43 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
 DOCKED: MODEL       10
 DOCKED: USER    Run = 10
 DOCKED: USER    DPF = benA.3ptb.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+DOCKED: USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move benA.pdbq
-DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658001
-DOCKED: USER    NEWDPF tran0 1.269822 20.833660 14.249895
-DOCKED: USER    NEWDPF quat0 0.481065 -0.547623 -0.684606 161.099673
+DOCKED: USER    NEWDPF about -1.853000 14.311000 16.658000
+DOCKED: USER    NEWDPF tran0 -8.106714 20.601410 21.334353
+DOCKED: USER    NEWDPF quat0 0.469832 -0.522459 0.711544 -65.909582
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259
-DOCKED: ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086
-DOCKED: ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020
-DOCKED: ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171
-DOCKED: ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027
-DOCKED: ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073
-DOCKED: ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773
-DOCKED: ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768
-DOCKED: ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764
-DOCKED: ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407
-DOCKED: ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416
-DOCKED: ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417
-DOCKED: ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402
+DOCKED: ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259
+DOCKED: ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086
+DOCKED: ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020
+DOCKED: ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171
+DOCKED: ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027
+DOCKED: ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073
+DOCKED: ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773
+DOCKED: ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768
+DOCKED: ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764
+DOCKED: ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407
+DOCKED: ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416
+DOCKED: ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417
+DOCKED: ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1386,9 +1354,9 @@ Atom    13,  x,y,z =   -1.901   11.929   14.399
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
@@ -1396,9 +1364,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
@@ -1406,9 +1374,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
@@ -1416,9 +1384,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
@@ -1426,9 +1394,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
@@ -1436,9 +1404,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
@@ -1446,9 +1414,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
@@ -1456,9 +1424,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
@@ -1466,9 +1434,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
@@ -1476,9 +1444,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 1.270 20.834 14.250
-Quaternion nx,ny,nz,angle = 0.481 -0.548 -0.685 2.812
-Quaternion x,y,z,w        = 0.475 -0.540 -0.675 0.164
+Translation x,y,z         = -8.107 20.601 21.334
+Quaternion nx,ny,nz,angle = 0.470 -0.522 0.712 -65.910
+Quaternion x,y,z,w        = -0.256 0.284 -0.387 0.839
 Number of Torsions        = 0
 
 
@@ -1501,7 +1469,7 @@ Clus | Lowest    | Run | Mean      | Num | Histogram
 -ter | Docked    |     | Docked    | in  |                                    
 Rank | Energy    |     | Energy    | Clus|    5    10   15   20   25   30   35
 _____|___________|_____|___________|_____|____:____|____:____|____:____|____:___
-   1 |     -1.94 |   5 |     -1.94 |  10 |##########
+   1 |     -2.88 |   5 |     -2.88 |  10 |##########
 _____|___________|_____|___________|_____|______________________________________
 
 
@@ -1517,16 +1485,16 @@ _____________________________________________________________________
 Rank | Sub- | Run  | Docked    | Cluster | Reference       | Grep
      | Rank |      | Energy    | RMSD    | RMSD            | Pattern
 _____|______|______|___________|_________|_________________|___________
-   1      1      5       -1.94      0.00      7.58           RANKING
-   1      2      6       -1.94      0.00      7.58           RANKING
-   1      3      2       -1.94      0.00      7.58           RANKING
-   1      4      7       -1.94      0.00      7.58           RANKING
-   1      5      4       -1.94      0.00      7.58           RANKING
-   1      6      8       -1.94      0.00      7.58           RANKING
-   1      7      3       -1.94      0.00      7.58           RANKING
-   1      8      9       -1.94      0.00      7.58           RANKING
-   1      9      1       -1.94      0.00      7.58           RANKING
-   1     10     10       -1.94      0.00      7.58           RANKING
+   1      1      5       -2.88      0.00      9.69           RANKING
+   1      2      6       -2.88      0.00      9.69           RANKING
+   1      3      2       -2.88      0.00      9.69           RANKING
+   1      4      7       -2.88      0.00      9.69           RANKING
+   1      5      4       -2.88      0.00      9.69           RANKING
+   1      6      8       -2.88      0.00      9.69           RANKING
+   1      7      3       -2.88      0.00      9.69           RANKING
+   1      8      9       -2.88      0.00      9.69           RANKING
+   1      9      1       -2.88      0.00      9.69           RANKING
+   1     10     10       -2.88      0.00      9.69           RANKING
 _______________________________________________________________________
 
 
@@ -1542,38 +1510,38 @@ USER    Run = 5
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.581 A
+USER    RMSD from reference structure       = 9.685 A
 USER  
-USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 USER    
-USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = benA.3ptb.GASW.dpf
 USER    NEWDPF move	benA.pdbq
-USER    NEWDPF about	-1.853000 14.311000 16.658001
-USER    NEWDPF tran0	1.269822 20.833660 14.249895
-USER    NEWDPF quat0	0.481065 -0.547623 -0.684606 161.099673
-USER
+USER    NEWDPF about	-1.853000 14.311000 16.658000
+USER    NEWDPF tran0	-8.106714 20.601410 21.334353
+USER    NEWDPF quat0	0.469832 -0.522459 0.711544 -65.909582
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259  7.581
-ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086  7.581
-ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020  7.581
-ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171  7.581
-ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027  7.581
-ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073  7.581
-ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773  7.581
-ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768  7.581
-ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764  7.581
-ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407  7.581
-ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416  7.581
-ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417  7.581
-ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402  7.581
+ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259  9.685
+ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086  9.685
+ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020  9.685
+ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171  9.685
+ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027  9.685
+ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073  9.685
+ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773  9.685
+ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768  9.685
+ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764  9.685
+ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407  9.685
+ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416  9.685
+ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417  9.685
+ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402  9.685
 TER
 ENDMDL
 MODEL        6
@@ -1581,38 +1549,38 @@ USER    Run = 6
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.581 A
+USER    RMSD from reference structure       = 9.685 A
 USER  
-USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 USER    
-USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = benA.3ptb.GASW.dpf
 USER    NEWDPF move	benA.pdbq
-USER    NEWDPF about	-1.853000 14.311000 16.658001
-USER    NEWDPF tran0	1.269822 20.833660 14.249895
-USER    NEWDPF quat0	0.481065 -0.547623 -0.684606 161.099673
-USER
+USER    NEWDPF about	-1.853000 14.311000 16.658000
+USER    NEWDPF tran0	-8.106714 20.601410 21.334353
+USER    NEWDPF quat0	0.469832 -0.522459 0.711544 -65.909582
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259  7.581
-ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086  7.581
-ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020  7.581
-ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171  7.581
-ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027  7.581
-ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073  7.581
-ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773  7.581
-ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768  7.581
-ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764  7.581
-ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407  7.581
-ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416  7.581
-ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417  7.581
-ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402  7.581
+ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259  9.685
+ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086  9.685
+ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020  9.685
+ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171  9.685
+ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027  9.685
+ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073  9.685
+ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773  9.685
+ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768  9.685
+ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764  9.685
+ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407  9.685
+ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416  9.685
+ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417  9.685
+ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402  9.685
 TER
 ENDMDL
 MODEL        2
@@ -1620,38 +1588,38 @@ USER    Run = 2
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.581 A
+USER    RMSD from reference structure       = 9.685 A
 USER  
-USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 USER    
-USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = benA.3ptb.GASW.dpf
 USER    NEWDPF move	benA.pdbq
-USER    NEWDPF about	-1.853000 14.311000 16.658001
-USER    NEWDPF tran0	1.269822 20.833660 14.249895
-USER    NEWDPF quat0	0.481065 -0.547623 -0.684606 161.099673
-USER
+USER    NEWDPF about	-1.853000 14.311000 16.658000
+USER    NEWDPF tran0	-8.106714 20.601410 21.334353
+USER    NEWDPF quat0	0.469832 -0.522459 0.711544 -65.909582
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259  7.581
-ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086  7.581
-ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020  7.581
-ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171  7.581
-ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027  7.581
-ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073  7.581
-ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773  7.581
-ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768  7.581
-ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764  7.581
-ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407  7.581
-ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416  7.581
-ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417  7.581
-ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402  7.581
+ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259  9.685
+ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086  9.685
+ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020  9.685
+ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171  9.685
+ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027  9.685
+ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073  9.685
+ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773  9.685
+ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768  9.685
+ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764  9.685
+ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407  9.685
+ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416  9.685
+ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417  9.685
+ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402  9.685
 TER
 ENDMDL
 MODEL        7
@@ -1659,38 +1627,38 @@ USER    Run = 7
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.581 A
+USER    RMSD from reference structure       = 9.685 A
 USER  
-USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 USER    
-USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = benA.3ptb.GASW.dpf
 USER    NEWDPF move	benA.pdbq
-USER    NEWDPF about	-1.853000 14.311000 16.658001
-USER    NEWDPF tran0	1.269822 20.833660 14.249895
-USER    NEWDPF quat0	0.481065 -0.547623 -0.684606 161.099673
-USER
+USER    NEWDPF about	-1.853000 14.311000 16.658000
+USER    NEWDPF tran0	-8.106714 20.601410 21.334353
+USER    NEWDPF quat0	0.469832 -0.522459 0.711544 -65.909582
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259  7.581
-ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086  7.581
-ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020  7.581
-ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171  7.581
-ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027  7.581
-ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073  7.581
-ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773  7.581
-ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768  7.581
-ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764  7.581
-ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407  7.581
-ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416  7.581
-ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417  7.581
-ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402  7.581
+ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259  9.685
+ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086  9.685
+ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020  9.685
+ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171  9.685
+ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027  9.685
+ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073  9.685
+ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773  9.685
+ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768  9.685
+ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764  9.685
+ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407  9.685
+ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416  9.685
+ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417  9.685
+ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402  9.685
 TER
 ENDMDL
 MODEL        4
@@ -1698,38 +1666,38 @@ USER    Run = 4
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.581 A
+USER    RMSD from reference structure       = 9.685 A
 USER  
-USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 USER    
-USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = benA.3ptb.GASW.dpf
 USER    NEWDPF move	benA.pdbq
-USER    NEWDPF about	-1.853000 14.311000 16.658001
-USER    NEWDPF tran0	1.269822 20.833660 14.249895
-USER    NEWDPF quat0	0.481065 -0.547623 -0.684606 161.099673
-USER
+USER    NEWDPF about	-1.853000 14.311000 16.658000
+USER    NEWDPF tran0	-8.106714 20.601410 21.334353
+USER    NEWDPF quat0	0.469832 -0.522459 0.711544 -65.909582
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259  7.581
-ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086  7.581
-ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020  7.581
-ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171  7.581
-ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027  7.581
-ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073  7.581
-ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773  7.581
-ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768  7.581
-ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764  7.581
-ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407  7.581
-ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416  7.581
-ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417  7.581
-ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402  7.581
+ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259  9.685
+ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086  9.685
+ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020  9.685
+ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171  9.685
+ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027  9.685
+ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073  9.685
+ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773  9.685
+ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768  9.685
+ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764  9.685
+ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407  9.685
+ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416  9.685
+ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417  9.685
+ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402  9.685
 TER
 ENDMDL
 MODEL        8
@@ -1737,38 +1705,38 @@ USER    Run = 8
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.581 A
+USER    RMSD from reference structure       = 9.685 A
 USER  
-USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 USER    
-USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = benA.3ptb.GASW.dpf
 USER    NEWDPF move	benA.pdbq
-USER    NEWDPF about	-1.853000 14.311000 16.658001
-USER    NEWDPF tran0	1.269822 20.833660 14.249895
-USER    NEWDPF quat0	0.481065 -0.547623 -0.684606 161.099673
-USER
+USER    NEWDPF about	-1.853000 14.311000 16.658000
+USER    NEWDPF tran0	-8.106714 20.601410 21.334353
+USER    NEWDPF quat0	0.469832 -0.522459 0.711544 -65.909582
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259  7.581
-ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086  7.581
-ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020  7.581
-ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171  7.581
-ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027  7.581
-ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073  7.581
-ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773  7.581
-ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768  7.581
-ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764  7.581
-ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407  7.581
-ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416  7.581
-ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417  7.581
-ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402  7.581
+ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259  9.685
+ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086  9.685
+ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020  9.685
+ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171  9.685
+ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027  9.685
+ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073  9.685
+ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773  9.685
+ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768  9.685
+ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764  9.685
+ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407  9.685
+ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416  9.685
+ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417  9.685
+ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402  9.685
 TER
 ENDMDL
 MODEL        3
@@ -1776,38 +1744,38 @@ USER    Run = 3
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.581 A
+USER    RMSD from reference structure       = 9.685 A
 USER  
-USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 USER    
-USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = benA.3ptb.GASW.dpf
 USER    NEWDPF move	benA.pdbq
-USER    NEWDPF about	-1.853000 14.311000 16.658001
-USER    NEWDPF tran0	1.269822 20.833660 14.249895
-USER    NEWDPF quat0	0.481065 -0.547623 -0.684606 161.099673
-USER
+USER    NEWDPF about	-1.853000 14.311000 16.658000
+USER    NEWDPF tran0	-8.106714 20.601410 21.334353
+USER    NEWDPF quat0	0.469832 -0.522459 0.711544 -65.909582
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259  7.581
-ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086  7.581
-ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020  7.581
-ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171  7.581
-ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027  7.581
-ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073  7.581
-ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773  7.581
-ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768  7.581
-ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764  7.581
-ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407  7.581
-ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416  7.581
-ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417  7.581
-ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402  7.581
+ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259  9.685
+ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086  9.685
+ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020  9.685
+ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171  9.685
+ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027  9.685
+ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073  9.685
+ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773  9.685
+ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768  9.685
+ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764  9.685
+ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407  9.685
+ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416  9.685
+ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417  9.685
+ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402  9.685
 TER
 ENDMDL
 MODEL        9
@@ -1815,38 +1783,38 @@ USER    Run = 9
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.581 A
+USER    RMSD from reference structure       = 9.685 A
 USER  
-USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 USER    
-USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = benA.3ptb.GASW.dpf
 USER    NEWDPF move	benA.pdbq
-USER    NEWDPF about	-1.853000 14.311000 16.658001
-USER    NEWDPF tran0	1.269822 20.833660 14.249895
-USER    NEWDPF quat0	0.481065 -0.547623 -0.684606 161.099673
-USER
+USER    NEWDPF about	-1.853000 14.311000 16.658000
+USER    NEWDPF tran0	-8.106714 20.601410 21.334353
+USER    NEWDPF quat0	0.469832 -0.522459 0.711544 -65.909582
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259  7.581
-ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086  7.581
-ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020  7.581
-ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171  7.581
-ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027  7.581
-ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073  7.581
-ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773  7.581
-ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768  7.581
-ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764  7.581
-ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407  7.581
-ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416  7.581
-ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417  7.581
-ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402  7.581
+ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259  9.685
+ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086  9.685
+ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020  9.685
+ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171  9.685
+ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027  9.685
+ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073  9.685
+ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773  9.685
+ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768  9.685
+ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764  9.685
+ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407  9.685
+ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416  9.685
+ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417  9.685
+ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402  9.685
 TER
 ENDMDL
 MODEL        1
@@ -1854,38 +1822,38 @@ USER    Run = 1
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.581 A
+USER    RMSD from reference structure       = 9.685 A
 USER  
-USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 USER    
-USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = benA.3ptb.GASW.dpf
 USER    NEWDPF move	benA.pdbq
-USER    NEWDPF about	-1.853000 14.311000 16.658001
-USER    NEWDPF tran0	1.269822 20.833660 14.249895
-USER    NEWDPF quat0	0.481065 -0.547623 -0.684606 161.099673
-USER
+USER    NEWDPF about	-1.853000 14.311000 16.658000
+USER    NEWDPF tran0	-8.106714 20.601410 21.334353
+USER    NEWDPF quat0	0.469832 -0.522459 0.711544 -65.909582
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259  7.581
-ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086  7.581
-ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020  7.581
-ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171  7.581
-ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027  7.581
-ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073  7.581
-ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773  7.581
-ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768  7.581
-ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764  7.581
-ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407  7.581
-ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416  7.581
-ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417  7.581
-ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402  7.581
+ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259  9.685
+ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086  9.685
+ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020  9.685
+ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171  9.685
+ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027  9.685
+ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073  9.685
+ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773  9.685
+ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768  9.685
+ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764  9.685
+ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407  9.685
+ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416  9.685
+ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417  9.685
+ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402  9.685
 TER
 ENDMDL
 MODEL       10
@@ -1893,38 +1861,38 @@ USER    Run = 10
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 7.581 A
+USER    RMSD from reference structure       = 9.685 A
 USER  
-USER    Estimated Free Energy of Binding    =   -1.94 kcal/mol  [=(1)+(3)]
-USER    Estimated Inhibition Constant, Ki   =   +0.04       [Temperature = 298.15 K]
+USER    Estimated Free Energy of Binding    =   -2.88 kcal/mol  [=(1)+(3)]
+USER    Estimated Inhibition Constant, Ki   =   +0.01       [Temperature = 298.15 K]
 USER    
-USER    Final Docked Energy                 =   -1.94 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 =   -2.88 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   -1.94 kcal/mol
+USER    (1) Final Intermolecular Energy     =   -2.88 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = benA.3ptb.GASW.dpf
 USER    NEWDPF move	benA.pdbq
-USER    NEWDPF about	-1.853000 14.311000 16.658001
-USER    NEWDPF tran0	1.269822 20.833660 14.249895
-USER    NEWDPF quat0	0.481065 -0.547623 -0.684606 161.099673
-USER
+USER    NEWDPF about	-1.853000 14.311000 16.658000
+USER    NEWDPF tran0	-8.106714 20.601410 21.334353
+USER    NEWDPF quat0	0.469832 -0.522459 0.711544 -65.909582
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  A1  BEN     1       1.270  20.834  14.250 -0.27 +0.00    -0.259  7.581
-ATOM      2  A2  BEN     1       0.923  20.591  15.552 -0.23 -0.01    +0.086  7.581
-ATOM      3  A3  BEN     1      -0.402  20.771  15.967 -0.19 -0.00    +0.020  7.581
-ATOM      4  A4  BEN     1      -1.380  21.193  15.052 -0.23 +0.00    +0.171  7.581
-ATOM      5  A5  BEN     1      -1.013  21.428  13.725 -0.26 +0.00    +0.027  7.581
-ATOM      6  A6  BEN     1       0.312  21.244  13.339 -0.27 +0.01    +0.073  7.581
-ATOM      7  C7  BEN     1       2.588  20.665  13.841 -0.38 +0.07    +0.773  7.581
-ATOM      8  N1  BEN     1       3.533  20.311  14.694 -0.27 -0.04    -0.768  7.581
-ATOM      9  N2  BEN     1       2.887  20.689  12.554 -0.26 -0.16    -0.764  7.581
-ATOM     10  H11 BEN     1       4.503  20.192  14.367 +0.06 +0.01    +0.407  7.581
-ATOM     11  H12 BEN     1       3.300  20.155  15.685 +0.07 +0.01    +0.416  7.581
-ATOM     12  H21 BEN     1       2.172  20.960  11.864 +0.09 +0.11    +0.417  7.581
-ATOM     13  H22 BEN     1       3.835  20.436  12.240 +0.07 +0.11    +0.402  7.581
+ATOM      1  A1  BEN     1      -8.107  20.601  21.334 -0.27 -0.08    -0.259  9.685
+ATOM      2  A2  BEN     1      -7.499  21.589  20.605 -0.17 +0.02    +0.086  9.685
+ATOM      3  A3  BEN     1      -6.181  21.961  20.897 -0.13 +0.00    +0.020  9.685
+ATOM      4  A4  BEN     1      -5.476  21.322  21.930 -0.14 +0.04    +0.171  9.685
+ATOM      5  A5  BEN     1      -6.106  20.311  22.659 -0.19 +0.01    +0.027  9.685
+ATOM      6  A6  BEN     1      -7.418  19.961  22.351 -0.24 +0.02    +0.073  9.685
+ATOM      7  C7  BEN     1      -9.419  20.239  21.051 -0.45 +0.16    +0.773  9.685
+ATOM      8  N1  BEN     1     -10.116  20.856  20.113 -0.23 -0.05    -0.768  9.685
+ATOM      9  N2  BEN     1      -9.936  19.153  21.600 -0.42 -0.07    -0.764  9.685
+ATOM     10  H11 BEN     1     -11.087  20.570  19.921 -0.15 -0.13    +0.407  9.685
+ATOM     11  H12 BEN     1      -9.689  21.623  19.574 +0.11 +0.06    +0.416  9.685
+ATOM     12  H21 BEN     1      -9.417  18.650  22.333 -0.25 -0.04    +0.417  9.685
+ATOM     13  H22 BEN     1     -10.858  18.811  21.295 -0.24 -0.05    +0.402  9.685
 TER
 ENDMDL
 
@@ -1938,7 +1906,7 @@ AVSFLD: nspace=1         # number of physical coordinates
 AVSFLD: veclen=7         # vector size
 AVSFLD: dim1=13          # atoms
 AVSFLD: dim2=1           # conformations
-AVSFLD: data=float       # data type (byte,integer,float,double)
+AVSFLD: data=FloatOrDouble       # data type (byte,integer,FloatOrDouble,double)
 AVSFLD: field=uniform    # field coordinate layout
 AVSFLD: label= x y z vdW Elec q RMS
 AVSFLD: variable 1 file = benA.3ptb.GASW.dlg.pdb filetype = ascii offset = 5 stride = 12
@@ -1952,15 +1920,15 @@ AVSFLD: # end of file
 
 >>> Closing the docking parameter file (DPF)...
 
-This docking finished at:			5:52 23" p.m., 12/11/2002
+This docking finished at:			5:11 16" p.m., 02/26/2003
 
 
 
 
 ________________________________________________________________________________
 
-../../autodock3: Successful Completion on "nemo.mgl"
+/home/lindy/dev/integration-305/autodock/autodock3: Successful Completion on "nemo.mgl"
 
-Real= 4.90s,  CPU= 4.62s,  System= 0.27s
+Real= 7.32s,  CPU= 6.42s,  System= 0.36s
 ________________________________________________________________________________
 

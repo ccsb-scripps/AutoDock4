@@ -25,7 +25,7 @@ _______/______/__////_/___///___/////__/////____/////___/////__/____/_______
                  |                                      |
                  |            AutoDock 3.05             |
                  |                                      |
-                 |            (c) 1991-2000             |
+                 |            (c) 1991-2002             |
                  |    The Scripps Research Institute    |
                  |                                      |
                  |       Garrett M. Morris, TSRI        |
@@ -46,7 +46,7 @@ _______/______/__////_/___///___/////__/////____/////___/////__/____/_______
 
 
 
-This file was created at:			11:06 11" a.m., 12/10/2002
+This file was created at:			5:10 55" p.m., 02/26/2003
                    using:			"nemo.mgl"
 
 NOTE: "rus" stands for:
@@ -70,6 +70,7 @@ argument "2863" found
 Random number generator was seeded with the user-specified value  863546106
 Random number generator was seeded with the user-specified value  2863
 
+Portable random number generator was seeded with the user-specified values  863546106, 2863
 
 
 DPF> types	CO		# atom type names
@@ -108,7 +109,7 @@ DPF> map	2cpp.C.map	# C-atomic affinity map
 
 Opened Grid Map 1 (C):				2cpp.C.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"2cpp.gpf" :: "cam.2cpp.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -118,7 +119,7 @@ Closing file.
 226981 energies found for map 1
 Minimum energy = -1.21,  maximum energy = 201960.88
 
-Time taken (s): Real= 0.79,  CPU= 0.73,  System= 0.06
+Time taken (s): Real= 1.17,  CPU= 0.99,  System= 0.17
 
 
 
@@ -126,7 +127,7 @@ DPF> map	2cpp.O.map	# O-atomic affinity map
 
 Opened Grid Map 2 (O):				2cpp.O.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"2cpp.gpf" :: "cam.2cpp.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -136,7 +137,7 @@ Closing file.
 226981 energies found for map 2
 Minimum energy = -1.05,  maximum energy = 200231.78
 
-Time taken (s): Real= 0.74,  CPU= 0.72,  System= 0.02
+Time taken (s): Real= 1.05,  CPU= 1.02,  System= 0.00
 
 
 
@@ -144,7 +145,7 @@ DPF> map	2cpp.e.map	# electrostatics map
 
 Opened Grid Map 3 (e):				2cpp.e.map
 Checking header information.
-../../autodock3: Filename mismatch:
+/home/lindy/dev/integration-305/autodock/autodock3: Filename mismatch:
 		"2cpp.gpf" :: "cam.2cpp.GASW.gpf"
 Number of grid points expected in  x-dimension:  61
 Number of grid points expected in  y-dimension:  61
@@ -154,7 +155,7 @@ Closing file.
 226981 energies found for map 3
 Minimum energy = -315.53,  maximum energy = 289.09
 
-Time taken (s): Real= 0.69,  CPU= 0.67,  System= 0.02
+Time taken (s): Real= 0.99,  CPU= 0.95,  System= 0.00
 
 DPF> 
 
@@ -201,10 +202,6 @@ DPF> about	46.508 44.528 14.647	# small molecule center
 
 Small molecule center of rotation =	(+46.508, +44.528, +14.647)
 
-Translating small molecule by:	(-46.508, -44.528, -14.647)
-
-Furthest ligand atom from "about" center is 2.682 Angstroms (maxrad).
-
 
 
 DPF> tran0	random		# initial coordinates/A or "random"
@@ -213,9 +210,6 @@ DPF> tran0	random		# initial coordinates/A or "random"
 
 DPF> quat0	random		# initial quaternion or "random"
 
-Each run will begin with a new, random initial quaternion.
-Initial quaternion,  q = [(x,y,z),w] =	[ (0.313, 0.507, -0.798), 3.3 deg ],
-Quaternion Vector Normalized to:  0.314 0.509 -0.801
 DPF> #ndihe	0		# number of initial torsions
 DPF> #dihe0	random		# initial torsions
 DPF> 
@@ -241,27 +235,22 @@ Initial cycle, maximum translation step = +/- 0.2 Angstroms
 
 DPF> qstep	5.		# quaternion step/deg
 
-Initial cycle, maximum quaternion angle step = +/- 5.0 deg
 
 
 DPF> dstep	5.		# torsion step/deg
 
-Initial cycle, maximum torsion angle step = +/- 5.0 deg
 
 
 DPF> trnrf	1.		# trans reduction factor/per cycle
 
-Reduction factor for translations =	1.000 /cycle
 
 
 DPF> quarf	1.		# quat reduction factor/per cycle
 
-Reduction factor for quaternion angle =	1.000 /cycle
 
 
 DPF> dihrf	1.		# tors reduction factor/per cycle
 
-Reduction factor for torsion angles =	1.000 /cycle
 DPF> 
 
 
@@ -275,7 +264,7 @@ Non-bonded parameters for C-C interactions, used in internal energy calculations
                 r               r 
 
 Calculating C-C interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.18,  CPU= 0.05,  System= 0.11
+Time taken: Real= 0.26,  CPU= 0.05,  System= 0.21
 
 
 DPF> intnbp_r_eps  3.60 0.0257202  12  6	#C-O lj
@@ -288,7 +277,7 @@ Non-bonded parameters for C-O interactions, used in internal energy calculations
                 r               r 
 
 Calculating C-O interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 
 
 DPF> intnbp_r_eps  3.20 0.0297000  12  6	#O-O lj
@@ -301,7 +290,7 @@ Non-bonded parameters for O-O interactions, used in internal energy calculations
                 r               r 
 
 Calculating O-O interaction energy versus atomic separation (131072 data points).
-Time taken: Real= 0.06,  CPU= 0.06,  System= 0.00
+Time taken: Real= 0.08,  CPU= 0.08,  System= 0.00
 DPF> 
 DPF> #intelec		# calculate internal electrostatic energy
 DPF> 
@@ -445,7 +434,7 @@ Number of requested LGA dockings = 10 runs
 
 Run:	1 / 10
 Seeds:	863546106 2863
-Date:	Tue Dec 10 11:06:13 2002
+Date:	Wed Feb 26 17:10:59 2003
 Output level is set to 1.
 
 
@@ -458,13 +447,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.12s,  CPU= 0.12s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-11:06 13" a.m., 12/10/2002
-Total number of Energy Evaluations: 4009
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:10 59" p.m., 02/26/2003
+Total number of Energy Evaluations: 1666
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -475,40 +462,40 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        1
 DOCKED: USER    Run = 1
 DOCKED: USER    DPF = cam.2cpp.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move cam.pdbq
-DOCKED: USER    NEWDPF about 46.507999 44.528000 14.647000
-DOCKED: USER    NEWDPF tran0 37.930431 38.297614 6.703281
-DOCKED: USER    NEWDPF quat0 -0.623308 -0.616878 -0.480572 -134.845049
+DOCKED: USER    NEWDPF about 46.508000 44.528000 14.647000
+DOCKED: USER    NEWDPF tran0 37.721990 51.092933 8.411195
+DOCKED: USER    NEWDPF quat0 0.754581 -0.510579 -0.412209 110.331718
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125
-DOCKED: ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224
-DOCKED: ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045
-DOCKED: ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007
-DOCKED: ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023
-DOCKED: ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039
-DOCKED: ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104
-DOCKED: ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052
-DOCKED: ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050
-DOCKED: ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077
-DOCKED: ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271
+DOCKED: ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125
+DOCKED: ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224
+DOCKED: ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045
+DOCKED: ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007
+DOCKED: ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023
+DOCKED: ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039
+DOCKED: ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104
+DOCKED: ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052
+DOCKED: ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050
+DOCKED: ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077
+DOCKED: ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -519,7 +506,7 @@ ________________________________________________________________________________
 
 Run:	2 / 10
 Seeds:	863546106 2863
-Date:	Tue Dec 10 11:06:13 2002
+Date:	Wed Feb 26 17:10:59 2003
 Output level is set to 1.
 
 
@@ -532,13 +519,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.11s,  CPU= 0.11s,  System= 0.00s
+Real= 0.06s,  CPU= 0.06s,  System= 0.00s
 
-11:06 13" a.m., 12/10/2002
-Total number of Energy Evaluations: 4009
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:10 59" p.m., 02/26/2003
+Total number of Energy Evaluations: 1666
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -549,40 +534,40 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        2
 DOCKED: USER    Run = 2
 DOCKED: USER    DPF = cam.2cpp.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move cam.pdbq
-DOCKED: USER    NEWDPF about 46.507999 44.528000 14.647000
-DOCKED: USER    NEWDPF tran0 37.930431 38.297614 6.703281
-DOCKED: USER    NEWDPF quat0 -0.623308 -0.616878 -0.480572 -134.845049
+DOCKED: USER    NEWDPF about 46.508000 44.528000 14.647000
+DOCKED: USER    NEWDPF tran0 37.721990 51.092933 8.411195
+DOCKED: USER    NEWDPF quat0 0.754581 -0.510579 -0.412209 110.331718
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125
-DOCKED: ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224
-DOCKED: ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045
-DOCKED: ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007
-DOCKED: ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023
-DOCKED: ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039
-DOCKED: ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104
-DOCKED: ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052
-DOCKED: ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050
-DOCKED: ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077
-DOCKED: ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271
+DOCKED: ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125
+DOCKED: ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224
+DOCKED: ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045
+DOCKED: ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007
+DOCKED: ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023
+DOCKED: ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039
+DOCKED: ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104
+DOCKED: ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052
+DOCKED: ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050
+DOCKED: ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077
+DOCKED: ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -593,7 +578,7 @@ ________________________________________________________________________________
 
 Run:	3 / 10
 Seeds:	863546106 2863
-Date:	Tue Dec 10 11:06:13 2002
+Date:	Wed Feb 26 17:10:59 2003
 Output level is set to 1.
 
 
@@ -606,13 +591,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.11s,  CPU= 0.11s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-11:06 14" a.m., 12/10/2002
-Total number of Energy Evaluations: 4009
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:10 59" p.m., 02/26/2003
+Total number of Energy Evaluations: 1666
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -623,40 +606,40 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        3
 DOCKED: USER    Run = 3
 DOCKED: USER    DPF = cam.2cpp.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move cam.pdbq
-DOCKED: USER    NEWDPF about 46.507999 44.528000 14.647000
-DOCKED: USER    NEWDPF tran0 37.930431 38.297614 6.703281
-DOCKED: USER    NEWDPF quat0 -0.623308 -0.616878 -0.480572 -134.845049
+DOCKED: USER    NEWDPF about 46.508000 44.528000 14.647000
+DOCKED: USER    NEWDPF tran0 37.721990 51.092933 8.411195
+DOCKED: USER    NEWDPF quat0 0.754581 -0.510579 -0.412209 110.331718
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125
-DOCKED: ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224
-DOCKED: ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045
-DOCKED: ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007
-DOCKED: ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023
-DOCKED: ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039
-DOCKED: ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104
-DOCKED: ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052
-DOCKED: ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050
-DOCKED: ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077
-DOCKED: ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271
+DOCKED: ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125
+DOCKED: ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224
+DOCKED: ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045
+DOCKED: ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007
+DOCKED: ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023
+DOCKED: ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039
+DOCKED: ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104
+DOCKED: ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052
+DOCKED: ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050
+DOCKED: ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077
+DOCKED: ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -667,7 +650,7 @@ ________________________________________________________________________________
 
 Run:	4 / 10
 Seeds:	863546106 2863
-Date:	Tue Dec 10 11:06:14 2002
+Date:	Wed Feb 26 17:10:59 2003
 Output level is set to 1.
 
 
@@ -680,13 +663,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.11s,  CPU= 0.11s,  System= 0.00s
+Real= 0.06s,  CPU= 0.06s,  System= 0.00s
 
-11:06 14" a.m., 12/10/2002
-Total number of Energy Evaluations: 4009
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:10 59" p.m., 02/26/2003
+Total number of Energy Evaluations: 1666
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -697,40 +678,40 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        4
 DOCKED: USER    Run = 4
 DOCKED: USER    DPF = cam.2cpp.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move cam.pdbq
-DOCKED: USER    NEWDPF about 46.507999 44.528000 14.647000
-DOCKED: USER    NEWDPF tran0 37.930431 38.297614 6.703281
-DOCKED: USER    NEWDPF quat0 -0.623308 -0.616878 -0.480572 -134.845049
+DOCKED: USER    NEWDPF about 46.508000 44.528000 14.647000
+DOCKED: USER    NEWDPF tran0 37.721990 51.092933 8.411195
+DOCKED: USER    NEWDPF quat0 0.754581 -0.510579 -0.412209 110.331718
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125
-DOCKED: ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224
-DOCKED: ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045
-DOCKED: ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007
-DOCKED: ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023
-DOCKED: ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039
-DOCKED: ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104
-DOCKED: ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052
-DOCKED: ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050
-DOCKED: ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077
-DOCKED: ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271
+DOCKED: ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125
+DOCKED: ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224
+DOCKED: ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045
+DOCKED: ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007
+DOCKED: ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023
+DOCKED: ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039
+DOCKED: ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104
+DOCKED: ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052
+DOCKED: ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050
+DOCKED: ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077
+DOCKED: ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -741,7 +722,7 @@ ________________________________________________________________________________
 
 Run:	5 / 10
 Seeds:	863546106 2863
-Date:	Tue Dec 10 11:06:14 2002
+Date:	Wed Feb 26 17:10:59 2003
 Output level is set to 1.
 
 
@@ -754,13 +735,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.12s,  CPU= 0.12s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-11:06 14" a.m., 12/10/2002
-Total number of Energy Evaluations: 4009
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 00" p.m., 02/26/2003
+Total number of Energy Evaluations: 1666
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -771,40 +750,40 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        5
 DOCKED: USER    Run = 5
 DOCKED: USER    DPF = cam.2cpp.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move cam.pdbq
-DOCKED: USER    NEWDPF about 46.507999 44.528000 14.647000
-DOCKED: USER    NEWDPF tran0 37.930431 38.297614 6.703281
-DOCKED: USER    NEWDPF quat0 -0.623308 -0.616878 -0.480572 -134.845049
+DOCKED: USER    NEWDPF about 46.508000 44.528000 14.647000
+DOCKED: USER    NEWDPF tran0 37.721990 51.092933 8.411195
+DOCKED: USER    NEWDPF quat0 0.754581 -0.510579 -0.412209 110.331718
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125
-DOCKED: ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224
-DOCKED: ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045
-DOCKED: ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007
-DOCKED: ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023
-DOCKED: ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039
-DOCKED: ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104
-DOCKED: ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052
-DOCKED: ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050
-DOCKED: ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077
-DOCKED: ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271
+DOCKED: ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125
+DOCKED: ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224
+DOCKED: ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045
+DOCKED: ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007
+DOCKED: ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023
+DOCKED: ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039
+DOCKED: ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104
+DOCKED: ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052
+DOCKED: ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050
+DOCKED: ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077
+DOCKED: ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -815,7 +794,7 @@ ________________________________________________________________________________
 
 Run:	6 / 10
 Seeds:	863546106 2863
-Date:	Tue Dec 10 11:06:14 2002
+Date:	Wed Feb 26 17:11:00 2003
 Output level is set to 1.
 
 
@@ -828,13 +807,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.11s,  CPU= 0.11s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-11:06 14" a.m., 12/10/2002
-Total number of Energy Evaluations: 4009
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 00" p.m., 02/26/2003
+Total number of Energy Evaluations: 1666
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -845,40 +822,40 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        6
 DOCKED: USER    Run = 6
 DOCKED: USER    DPF = cam.2cpp.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move cam.pdbq
-DOCKED: USER    NEWDPF about 46.507999 44.528000 14.647000
-DOCKED: USER    NEWDPF tran0 37.930431 38.297614 6.703281
-DOCKED: USER    NEWDPF quat0 -0.623308 -0.616878 -0.480572 -134.845049
+DOCKED: USER    NEWDPF about 46.508000 44.528000 14.647000
+DOCKED: USER    NEWDPF tran0 37.721990 51.092933 8.411195
+DOCKED: USER    NEWDPF quat0 0.754581 -0.510579 -0.412209 110.331718
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125
-DOCKED: ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224
-DOCKED: ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045
-DOCKED: ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007
-DOCKED: ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023
-DOCKED: ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039
-DOCKED: ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104
-DOCKED: ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052
-DOCKED: ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050
-DOCKED: ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077
-DOCKED: ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271
+DOCKED: ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125
+DOCKED: ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224
+DOCKED: ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045
+DOCKED: ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007
+DOCKED: ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023
+DOCKED: ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039
+DOCKED: ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104
+DOCKED: ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052
+DOCKED: ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050
+DOCKED: ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077
+DOCKED: ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -889,7 +866,7 @@ ________________________________________________________________________________
 
 Run:	7 / 10
 Seeds:	863546106 2863
-Date:	Tue Dec 10 11:06:14 2002
+Date:	Wed Feb 26 17:11:00 2003
 Output level is set to 1.
 
 
@@ -902,13 +879,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.11s,  CPU= 0.11s,  System= 0.00s
+Real= 0.06s,  CPU= 0.06s,  System= 0.00s
 
-11:06 14" a.m., 12/10/2002
-Total number of Energy Evaluations: 4009
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 00" p.m., 02/26/2003
+Total number of Energy Evaluations: 1666
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -919,40 +894,40 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        7
 DOCKED: USER    Run = 7
 DOCKED: USER    DPF = cam.2cpp.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move cam.pdbq
-DOCKED: USER    NEWDPF about 46.507999 44.528000 14.647000
-DOCKED: USER    NEWDPF tran0 37.930431 38.297614 6.703281
-DOCKED: USER    NEWDPF quat0 -0.623308 -0.616878 -0.480572 -134.845049
+DOCKED: USER    NEWDPF about 46.508000 44.528000 14.647000
+DOCKED: USER    NEWDPF tran0 37.721990 51.092933 8.411195
+DOCKED: USER    NEWDPF quat0 0.754581 -0.510579 -0.412209 110.331718
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125
-DOCKED: ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224
-DOCKED: ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045
-DOCKED: ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007
-DOCKED: ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023
-DOCKED: ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039
-DOCKED: ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104
-DOCKED: ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052
-DOCKED: ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050
-DOCKED: ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077
-DOCKED: ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271
+DOCKED: ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125
+DOCKED: ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224
+DOCKED: ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045
+DOCKED: ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007
+DOCKED: ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023
+DOCKED: ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039
+DOCKED: ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104
+DOCKED: ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052
+DOCKED: ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050
+DOCKED: ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077
+DOCKED: ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -963,7 +938,7 @@ ________________________________________________________________________________
 
 Run:	8 / 10
 Seeds:	863546106 2863
-Date:	Tue Dec 10 11:06:14 2002
+Date:	Wed Feb 26 17:11:00 2003
 Output level is set to 1.
 
 
@@ -976,13 +951,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.11s,  CPU= 0.11s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-11:06 14" a.m., 12/10/2002
-Total number of Energy Evaluations: 4009
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 00" p.m., 02/26/2003
+Total number of Energy Evaluations: 1666
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -993,40 +966,40 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        8
 DOCKED: USER    Run = 8
 DOCKED: USER    DPF = cam.2cpp.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move cam.pdbq
-DOCKED: USER    NEWDPF about 46.507999 44.528000 14.647000
-DOCKED: USER    NEWDPF tran0 37.930431 38.297614 6.703281
-DOCKED: USER    NEWDPF quat0 -0.623308 -0.616878 -0.480572 -134.845049
+DOCKED: USER    NEWDPF about 46.508000 44.528000 14.647000
+DOCKED: USER    NEWDPF tran0 37.721990 51.092933 8.411195
+DOCKED: USER    NEWDPF quat0 0.754581 -0.510579 -0.412209 110.331718
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125
-DOCKED: ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224
-DOCKED: ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045
-DOCKED: ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007
-DOCKED: ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023
-DOCKED: ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039
-DOCKED: ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104
-DOCKED: ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052
-DOCKED: ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050
-DOCKED: ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077
-DOCKED: ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271
+DOCKED: ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125
+DOCKED: ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224
+DOCKED: ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045
+DOCKED: ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007
+DOCKED: ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023
+DOCKED: ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039
+DOCKED: ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104
+DOCKED: ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052
+DOCKED: ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050
+DOCKED: ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077
+DOCKED: ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1037,7 +1010,7 @@ ________________________________________________________________________________
 
 Run:	9 / 10
 Seeds:	863546106 2863
-Date:	Tue Dec 10 11:06:14 2002
+Date:	Wed Feb 26 17:11:00 2003
 Output level is set to 1.
 
 
@@ -1050,13 +1023,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.12s,  CPU= 0.12s,  System= 0.00s
+Real= 0.06s,  CPU= 0.06s,  System= 0.00s
 
-11:06 14" a.m., 12/10/2002
-Total number of Energy Evaluations: 4009
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 00" p.m., 02/26/2003
+Total number of Energy Evaluations: 1666
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1067,40 +1038,40 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
 DOCKED: MODEL        9
 DOCKED: USER    Run = 9
 DOCKED: USER    DPF = cam.2cpp.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move cam.pdbq
-DOCKED: USER    NEWDPF about 46.507999 44.528000 14.647000
-DOCKED: USER    NEWDPF tran0 37.930431 38.297614 6.703281
-DOCKED: USER    NEWDPF quat0 -0.623308 -0.616878 -0.480572 -134.845049
+DOCKED: USER    NEWDPF about 46.508000 44.528000 14.647000
+DOCKED: USER    NEWDPF tran0 37.721990 51.092933 8.411195
+DOCKED: USER    NEWDPF quat0 0.754581 -0.510579 -0.412209 110.331718
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125
-DOCKED: ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224
-DOCKED: ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045
-DOCKED: ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007
-DOCKED: ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023
-DOCKED: ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039
-DOCKED: ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104
-DOCKED: ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052
-DOCKED: ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050
-DOCKED: ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077
-DOCKED: ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271
+DOCKED: ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125
+DOCKED: ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224
+DOCKED: ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045
+DOCKED: ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007
+DOCKED: ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023
+DOCKED: ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039
+DOCKED: ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104
+DOCKED: ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052
+DOCKED: ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050
+DOCKED: ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077
+DOCKED: ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1111,7 +1082,7 @@ ________________________________________________________________________________
 
 Run:	10 / 10
 Seeds:	863546106 2863
-Date:	Tue Dec 10 11:06:14 2002
+Date:	Wed Feb 26 17:11:00 2003
 Output level is set to 1.
 
 
@@ -1124,13 +1095,11 @@ energy evaluations.
 
 
 Run completed;  time taken for this run:
-Real= 0.11s,  CPU= 0.11s,  System= 0.00s
+Real= 0.07s,  CPU= 0.07s,  System= 0.00s
 
-11:06 14" a.m., 12/10/2002
-Total number of Energy Evaluations: 4009
-Total number of Generations:        2
-________________________________________________________________________________
-
+5:11 00" p.m., 02/26/2003
+Total number of Energy Evaluations: 1666
+Total number of Generations:        1
 
 
 	FINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE
@@ -1141,40 +1110,40 @@ ________________________________________________________________________________
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
 DOCKED: MODEL       10
 DOCKED: USER    Run = 10
 DOCKED: USER    DPF = cam.2cpp.GASW.dpf
-DOCKED: USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+DOCKED: USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 DOCKED: USER    
-DOCKED: USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+DOCKED: USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 DOCKED: USER    
-DOCKED: USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+DOCKED: USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 DOCKED: USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 DOCKED: USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 DOCKED: USER    
 DOCKED: USER    NEWDPF move cam.pdbq
-DOCKED: USER    NEWDPF about 46.507999 44.528000 14.647000
-DOCKED: USER    NEWDPF tran0 37.930431 38.297614 6.703281
-DOCKED: USER    NEWDPF quat0 -0.623308 -0.616878 -0.480572 -134.845049
+DOCKED: USER    NEWDPF about 46.508000 44.528000 14.647000
+DOCKED: USER    NEWDPF tran0 37.721990 51.092933 8.411195
+DOCKED: USER    NEWDPF quat0 0.754581 -0.510579 -0.412209 110.331718
 DOCKED: USER                              x       y       z     vdW  Elec       q
 DOCKED: USER                           _______ _______ _______ _____ _____    ______
-DOCKED: ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125
-DOCKED: ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224
-DOCKED: ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045
-DOCKED: ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007
-DOCKED: ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023
-DOCKED: ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039
-DOCKED: ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104
-DOCKED: ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052
-DOCKED: ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050
-DOCKED: ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077
-DOCKED: ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271
+DOCKED: ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125
+DOCKED: ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224
+DOCKED: ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045
+DOCKED: ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007
+DOCKED: ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023
+DOCKED: ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039
+DOCKED: ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104
+DOCKED: ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052
+DOCKED: ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050
+DOCKED: ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077
+DOCKED: ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271
 DOCKED: TER
 DOCKED: ENDMDL
 ________________________________________________________________________________
@@ -1206,9 +1175,9 @@ Atom    11,  x,y,z =   44.197   44.497   15.571
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
@@ -1216,9 +1185,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
@@ -1226,9 +1195,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
@@ -1236,9 +1205,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
@@ -1246,9 +1215,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
@@ -1256,9 +1225,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
@@ -1266,9 +1235,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
@@ -1276,9 +1245,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
@@ -1286,9 +1255,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
@@ -1296,9 +1265,9 @@ Number of Torsions        = 0
 STATE VARIABLES:
 ________________
 
-Translation x,y,z         = 37.930 38.298 6.703
-Quaternion nx,ny,nz,angle = -0.623 -0.617 -0.481 -2.353
-Quaternion x,y,z,w        = 0.576 0.570 0.444 0.384
+Translation x,y,z         = 37.722 51.093 8.411
+Quaternion nx,ny,nz,angle = 0.755 -0.511 -0.412 110.332
+Quaternion x,y,z,w        = 0.619 -0.419 -0.338 0.571
 Number of Torsions        = 0
 
 
@@ -1321,7 +1290,7 @@ Clus | Lowest    | Run | Mean      | Num | Histogram
 -ter | Docked    |     | Docked    | in  |                                    
 Rank | Energy    |     | Energy    | Clus|    5    10   15   20   25   30   35
 _____|___________|_____|___________|_____|____:____|____:____|____:____|____:___
-   1 |     +5.46 |   5 |     +5.46 |  10 |##########
+   1 |   +430.00 |   5 |   +430.00 |  10 |##########
 _____|___________|_____|___________|_____|______________________________________
 
 
@@ -1337,16 +1306,16 @@ _____________________________________________________________________
 Rank | Sub- | Run  | Docked    | Cluster | Reference       | Grep
      | Rank |      | Energy    | RMSD    | RMSD            | Pattern
 _____|______|______|___________|_________|_________________|___________
-   1      1      5       +5.46      0.00     11.95           RANKING
-   1      2      6       +5.46      0.00     11.95           RANKING
-   1      3      2       +5.46      0.00     11.95           RANKING
-   1      4      7       +5.46      0.00     11.95           RANKING
-   1      5      4       +5.46      0.00     11.95           RANKING
-   1      6      8       +5.46      0.00     11.95           RANKING
-   1      7      3       +5.46      0.00     11.95           RANKING
-   1      8      9       +5.46      0.00     11.95           RANKING
-   1      9      1       +5.46      0.00     11.95           RANKING
-   1     10     10       +5.46      0.00     11.95           RANKING
+   1      1      5     +430.00      0.00     11.02           RANKING
+   1      2      6     +430.00      0.00     11.02           RANKING
+   1      3      2     +430.00      0.00     11.02           RANKING
+   1      4      7     +430.00      0.00     11.02           RANKING
+   1      5      4     +430.00      0.00     11.02           RANKING
+   1      6      8     +430.00      0.00     11.02           RANKING
+   1      7      3     +430.00      0.00     11.02           RANKING
+   1      8      9     +430.00      0.00     11.02           RANKING
+   1      9      1     +430.00      0.00     11.02           RANKING
+   1     10     10     +430.00      0.00     11.02           RANKING
 _______________________________________________________________________
 
 
@@ -1362,35 +1331,35 @@ USER    Run = 5
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 11.947 A
+USER    RMSD from reference structure       = 11.023 A
 USER  
-USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = cam.2cpp.GASW.dpf
 USER    NEWDPF move	cam.pdbq
-USER    NEWDPF about	46.507999 44.528000 14.647000
-USER    NEWDPF tran0	37.930431 38.297614 6.703281
-USER    NEWDPF quat0	-0.623308 -0.616878 -0.480572 -134.845049
-USER
+USER    NEWDPF about	46.508000 44.528000 14.647000
+USER    NEWDPF tran0	37.721990 51.092933 8.411195
+USER    NEWDPF quat0	0.754581 -0.510579 -0.412209 110.331718
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125 11.947
-ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224 11.947
-ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045 11.947
-ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007 11.947
-ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023 11.947
-ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039 11.947
-ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104 11.947
-ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052 11.947
-ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050 11.947
-ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077 11.947
-ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271 11.947
+ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125 11.023
+ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224 11.023
+ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045 11.023
+ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007 11.023
+ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023 11.023
+ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039 11.023
+ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104 11.023
+ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052 11.023
+ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050 11.023
+ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077 11.023
+ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271 11.023
 TER
 ENDMDL
 MODEL        6
@@ -1398,35 +1367,35 @@ USER    Run = 6
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 11.947 A
+USER    RMSD from reference structure       = 11.023 A
 USER  
-USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = cam.2cpp.GASW.dpf
 USER    NEWDPF move	cam.pdbq
-USER    NEWDPF about	46.507999 44.528000 14.647000
-USER    NEWDPF tran0	37.930431 38.297614 6.703281
-USER    NEWDPF quat0	-0.623308 -0.616878 -0.480572 -134.845049
-USER
+USER    NEWDPF about	46.508000 44.528000 14.647000
+USER    NEWDPF tran0	37.721990 51.092933 8.411195
+USER    NEWDPF quat0	0.754581 -0.510579 -0.412209 110.331718
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125 11.947
-ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224 11.947
-ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045 11.947
-ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007 11.947
-ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023 11.947
-ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039 11.947
-ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104 11.947
-ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052 11.947
-ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050 11.947
-ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077 11.947
-ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271 11.947
+ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125 11.023
+ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224 11.023
+ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045 11.023
+ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007 11.023
+ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023 11.023
+ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039 11.023
+ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104 11.023
+ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052 11.023
+ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050 11.023
+ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077 11.023
+ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271 11.023
 TER
 ENDMDL
 MODEL        2
@@ -1434,35 +1403,35 @@ USER    Run = 2
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 11.947 A
+USER    RMSD from reference structure       = 11.023 A
 USER  
-USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = cam.2cpp.GASW.dpf
 USER    NEWDPF move	cam.pdbq
-USER    NEWDPF about	46.507999 44.528000 14.647000
-USER    NEWDPF tran0	37.930431 38.297614 6.703281
-USER    NEWDPF quat0	-0.623308 -0.616878 -0.480572 -134.845049
-USER
+USER    NEWDPF about	46.508000 44.528000 14.647000
+USER    NEWDPF tran0	37.721990 51.092933 8.411195
+USER    NEWDPF quat0	0.754581 -0.510579 -0.412209 110.331718
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125 11.947
-ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224 11.947
-ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045 11.947
-ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007 11.947
-ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023 11.947
-ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039 11.947
-ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104 11.947
-ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052 11.947
-ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050 11.947
-ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077 11.947
-ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271 11.947
+ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125 11.023
+ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224 11.023
+ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045 11.023
+ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007 11.023
+ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023 11.023
+ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039 11.023
+ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104 11.023
+ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052 11.023
+ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050 11.023
+ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077 11.023
+ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271 11.023
 TER
 ENDMDL
 MODEL        7
@@ -1470,35 +1439,35 @@ USER    Run = 7
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 11.947 A
+USER    RMSD from reference structure       = 11.023 A
 USER  
-USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = cam.2cpp.GASW.dpf
 USER    NEWDPF move	cam.pdbq
-USER    NEWDPF about	46.507999 44.528000 14.647000
-USER    NEWDPF tran0	37.930431 38.297614 6.703281
-USER    NEWDPF quat0	-0.623308 -0.616878 -0.480572 -134.845049
-USER
+USER    NEWDPF about	46.508000 44.528000 14.647000
+USER    NEWDPF tran0	37.721990 51.092933 8.411195
+USER    NEWDPF quat0	0.754581 -0.510579 -0.412209 110.331718
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125 11.947
-ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224 11.947
-ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045 11.947
-ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007 11.947
-ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023 11.947
-ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039 11.947
-ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104 11.947
-ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052 11.947
-ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050 11.947
-ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077 11.947
-ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271 11.947
+ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125 11.023
+ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224 11.023
+ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045 11.023
+ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007 11.023
+ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023 11.023
+ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039 11.023
+ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104 11.023
+ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052 11.023
+ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050 11.023
+ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077 11.023
+ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271 11.023
 TER
 ENDMDL
 MODEL        4
@@ -1506,35 +1475,35 @@ USER    Run = 4
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 11.947 A
+USER    RMSD from reference structure       = 11.023 A
 USER  
-USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = cam.2cpp.GASW.dpf
 USER    NEWDPF move	cam.pdbq
-USER    NEWDPF about	46.507999 44.528000 14.647000
-USER    NEWDPF tran0	37.930431 38.297614 6.703281
-USER    NEWDPF quat0	-0.623308 -0.616878 -0.480572 -134.845049
-USER
+USER    NEWDPF about	46.508000 44.528000 14.647000
+USER    NEWDPF tran0	37.721990 51.092933 8.411195
+USER    NEWDPF quat0	0.754581 -0.510579 -0.412209 110.331718
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125 11.947
-ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224 11.947
-ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045 11.947
-ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007 11.947
-ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023 11.947
-ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039 11.947
-ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104 11.947
-ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052 11.947
-ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050 11.947
-ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077 11.947
-ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271 11.947
+ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125 11.023
+ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224 11.023
+ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045 11.023
+ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007 11.023
+ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023 11.023
+ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039 11.023
+ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104 11.023
+ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052 11.023
+ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050 11.023
+ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077 11.023
+ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271 11.023
 TER
 ENDMDL
 MODEL        8
@@ -1542,35 +1511,35 @@ USER    Run = 8
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 11.947 A
+USER    RMSD from reference structure       = 11.023 A
 USER  
-USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = cam.2cpp.GASW.dpf
 USER    NEWDPF move	cam.pdbq
-USER    NEWDPF about	46.507999 44.528000 14.647000
-USER    NEWDPF tran0	37.930431 38.297614 6.703281
-USER    NEWDPF quat0	-0.623308 -0.616878 -0.480572 -134.845049
-USER
+USER    NEWDPF about	46.508000 44.528000 14.647000
+USER    NEWDPF tran0	37.721990 51.092933 8.411195
+USER    NEWDPF quat0	0.754581 -0.510579 -0.412209 110.331718
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125 11.947
-ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224 11.947
-ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045 11.947
-ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007 11.947
-ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023 11.947
-ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039 11.947
-ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104 11.947
-ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052 11.947
-ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050 11.947
-ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077 11.947
-ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271 11.947
+ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125 11.023
+ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224 11.023
+ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045 11.023
+ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007 11.023
+ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023 11.023
+ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039 11.023
+ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104 11.023
+ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052 11.023
+ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050 11.023
+ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077 11.023
+ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271 11.023
 TER
 ENDMDL
 MODEL        3
@@ -1578,35 +1547,35 @@ USER    Run = 3
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 11.947 A
+USER    RMSD from reference structure       = 11.023 A
 USER  
-USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = cam.2cpp.GASW.dpf
 USER    NEWDPF move	cam.pdbq
-USER    NEWDPF about	46.507999 44.528000 14.647000
-USER    NEWDPF tran0	37.930431 38.297614 6.703281
-USER    NEWDPF quat0	-0.623308 -0.616878 -0.480572 -134.845049
-USER
+USER    NEWDPF about	46.508000 44.528000 14.647000
+USER    NEWDPF tran0	37.721990 51.092933 8.411195
+USER    NEWDPF quat0	0.754581 -0.510579 -0.412209 110.331718
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125 11.947
-ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224 11.947
-ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045 11.947
-ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007 11.947
-ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023 11.947
-ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039 11.947
-ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104 11.947
-ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052 11.947
-ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050 11.947
-ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077 11.947
-ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271 11.947
+ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125 11.023
+ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224 11.023
+ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045 11.023
+ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007 11.023
+ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023 11.023
+ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039 11.023
+ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104 11.023
+ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052 11.023
+ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050 11.023
+ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077 11.023
+ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271 11.023
 TER
 ENDMDL
 MODEL        9
@@ -1614,35 +1583,35 @@ USER    Run = 9
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 11.947 A
+USER    RMSD from reference structure       = 11.023 A
 USER  
-USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = cam.2cpp.GASW.dpf
 USER    NEWDPF move	cam.pdbq
-USER    NEWDPF about	46.507999 44.528000 14.647000
-USER    NEWDPF tran0	37.930431 38.297614 6.703281
-USER    NEWDPF quat0	-0.623308 -0.616878 -0.480572 -134.845049
-USER
+USER    NEWDPF about	46.508000 44.528000 14.647000
+USER    NEWDPF tran0	37.721990 51.092933 8.411195
+USER    NEWDPF quat0	0.754581 -0.510579 -0.412209 110.331718
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125 11.947
-ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224 11.947
-ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045 11.947
-ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007 11.947
-ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023 11.947
-ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039 11.947
-ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104 11.947
-ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052 11.947
-ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050 11.947
-ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077 11.947
-ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271 11.947
+ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125 11.023
+ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224 11.023
+ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045 11.023
+ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007 11.023
+ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023 11.023
+ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039 11.023
+ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104 11.023
+ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052 11.023
+ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050 11.023
+ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077 11.023
+ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271 11.023
 TER
 ENDMDL
 MODEL        1
@@ -1650,35 +1619,35 @@ USER    Run = 1
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 11.947 A
+USER    RMSD from reference structure       = 11.023 A
 USER  
-USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = cam.2cpp.GASW.dpf
 USER    NEWDPF move	cam.pdbq
-USER    NEWDPF about	46.507999 44.528000 14.647000
-USER    NEWDPF tran0	37.930431 38.297614 6.703281
-USER    NEWDPF quat0	-0.623308 -0.616878 -0.480572 -134.845049
-USER
+USER    NEWDPF about	46.508000 44.528000 14.647000
+USER    NEWDPF tran0	37.721990 51.092933 8.411195
+USER    NEWDPF quat0	0.754581 -0.510579 -0.412209 110.331718
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125 11.947
-ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224 11.947
-ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045 11.947
-ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007 11.947
-ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023 11.947
-ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039 11.947
-ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104 11.947
-ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052 11.947
-ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050 11.947
-ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077 11.947
-ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271 11.947
+ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125 11.023
+ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224 11.023
+ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045 11.023
+ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007 11.023
+ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023 11.023
+ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039 11.023
+ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104 11.023
+ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052 11.023
+ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050 11.023
+ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077 11.023
+ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271 11.023
 TER
 ENDMDL
 MODEL       10
@@ -1686,35 +1655,35 @@ USER    Run = 10
 USER    Cluster Rank = 1
 USER    Number of conformations in this cluster = 10
 USER  
-USER    RMSD from reference structure       = 11.947 A
+USER    RMSD from reference structure       = 11.023 A
 USER  
-USER    Estimated Free Energy of Binding    =   +5.46 kcal/mol  [=(1)+(3)]
+USER    Estimated Free Energy of Binding    = +430.00 kcal/mol  [=(1)+(3)]
 USER    
-USER    Final Docked Energy                 =   +5.46 kcal/mol  [=(1)+(2)]
+USER    Final Docked Energy                 = +430.00 kcal/mol  [=(1)+(2)]
 USER    
-USER    (1) Final Intermolecular Energy     =   +5.46 kcal/mol
+USER    (1) Final Intermolecular Energy     = +430.00 kcal/mol
 USER    (2) Final Internal Energy of Ligand =   +0.00e+00 kcal/mol
 USER    (3) Torsional Free Energy           =   +0.00e+00 kcal/mol
 USER    
-USER
+USER  
 USER    DPF = cam.2cpp.GASW.dpf
 USER    NEWDPF move	cam.pdbq
-USER    NEWDPF about	46.507999 44.528000 14.647000
-USER    NEWDPF tran0	37.930431 38.297614 6.703281
-USER    NEWDPF quat0	-0.623308 -0.616878 -0.480572 -134.845049
-USER
+USER    NEWDPF about	46.508000 44.528000 14.647000
+USER    NEWDPF tran0	37.721990 51.092933 8.411195
+USER    NEWDPF quat0	0.754581 -0.510579 -0.412209 110.331718
+USER  
 USER                              x       y       z    vdW   Elec        q     RMS 
-ATOM      1  C1  CAM     1      37.930  38.298   6.703 -0.74 +0.04    -0.125 11.947
-ATOM      2  C2  CAM     1      37.916  36.709   6.532 -0.78 -0.13    +0.224 11.947
-ATOM      3  C3  CAM     1      36.475  36.272   6.846 +0.27 -0.04    +0.045 11.947
-ATOM      4  C4  CAM     1      35.823  37.643   7.266 +1.08 +0.01    -0.007 11.947
-ATOM      5  C5  CAM     1      36.388  38.119   8.645 -0.03 -0.03    +0.023 11.947
-ATOM      6  C6  CAM     1      37.853  38.528   8.272 +3.27 -0.02    +0.039 11.947
-ATOM      7  C7  CAM     1      36.451  38.638   6.220 -0.66 +0.06    -0.104 11.947
-ATOM      8  C8  CAM     1      36.133  38.341   4.713 +1.53 -0.01    +0.052 11.947
-ATOM      9  C9  CAM     1      36.008  40.133   6.397 +0.89 -0.04    +0.050 11.947
-ATOM     10  C10 CAM     1      39.121  38.976   6.022 -0.16 -0.02    +0.077 11.947
-ATOM     11  O   CAM     1      38.895  36.055   6.217 +0.75 +0.22    -0.271 11.947
+ATOM      1  C1  CAM     1      37.722  51.093   8.411+19.86 +0.04    -0.125 11.023
+ATOM      2  C2  CAM     1      37.117  52.563   8.247+49.60 -0.15    +0.224 11.023
+ATOM      3  C3  CAM     1      38.327  53.513   8.272+99.99 -0.02    +0.045 11.023
+ATOM      4  C4  CAM     1      39.505  52.504   8.549+43.81 +0.00    -0.007 11.023
+ATOM      5  C5  CAM     1      39.420  51.952  10.011 +1.30 -0.01    +0.023 11.023
+ATOM      6  C6  CAM     1      38.167  51.015   9.933+24.98 -0.01    +0.039 11.023
+ATOM      7  C7  CAM     1      39.106  51.279   7.644 +6.22 +0.04    -0.104 11.023
+ATOM      8  C8  CAM     1      39.008  51.566   6.106+33.87 -0.02    +0.052 11.023
+ATOM      9  C9  CAM     1      40.094  50.062   7.725+41.75 -0.01    +0.050 11.023
+ATOM     10  C10 CAM     1      36.762  49.984   7.975+50.91 -0.00    +0.077 11.023
+ATOM     11  O   CAM     1      35.926  52.794   8.133+31.06 +0.01    -0.271 11.023
 TER
 ENDMDL
 
@@ -1728,7 +1697,7 @@ AVSFLD: nspace=1         # number of physical coordinates
 AVSFLD: veclen=7         # vector size
 AVSFLD: dim1=11          # atoms
 AVSFLD: dim2=1           # conformations
-AVSFLD: data=float       # data type (byte,integer,float,double)
+AVSFLD: data=FloatOrDouble       # data type (byte,integer,FloatOrDouble,double)
 AVSFLD: field=uniform    # field coordinate layout
 AVSFLD: label= x y z vdW Elec q RMS
 AVSFLD: variable 1 file = cam.2cpp.GASW.dlg.pdb filetype = ascii offset = 5 stride = 12
@@ -1742,15 +1711,15 @@ AVSFLD: # end of file
 
 >>> Closing the docking parameter file (DPF)...
 
-This docking finished at:			11:06 14" a.m., 12/10/2002
+This docking finished at:			5:11 00" p.m., 02/26/2003
 
 
 
 
 ________________________________________________________________________________
 
-../../autodock3: Successful Completion on "nemo.mgl"
+/home/lindy/dev/integration-305/autodock/autodock3: Successful Completion on "nemo.mgl"
 
-Real= 3.69s,  CPU= 3.42s,  System= 0.25s
+Real= 4.43s,  CPU= 3.84s,  System= 0.42s
 ________________________________________________________________________________
 
