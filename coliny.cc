@@ -55,7 +55,7 @@ if (strcmp(algname,"help")==0) {
 //
 if (strcmp(domain,"help")==0) {
    coliny_solver.initialize(algname);
-   coliny_solver.help_options(cout);
+   coliny_solver.help_parameters(cout);
    cout << flush;
    return;
    }
@@ -75,7 +75,7 @@ char fname[256];
 sprintf(fname,"%s.in",algname);
 ifstr.open(fname);
 if (ifstr)
-   coliny_solver.read_option_values(ifstr);
+   coliny_solver.read_parameter_values(ifstr);
 //
 // Create a default 'initial point'
 //

@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.9 2004/11/16 23:42:53 garrett Exp $
+ $Id: main.cc,v 1.10 2004/12/31 21:36:24 billhart Exp $
 
 */
 
@@ -705,12 +705,22 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 			 vt, tlist, crdpdb, sInit);
 			 */
           evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
+              elec, emap,
+              xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist, e_internal, Nnb, 
+              B_calcIntElec, q1q2, B_isGaussTorCon, B_isTorConstrained,
+              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol, 
+              B_template, template_energy, template_stddev,
+              ignore_inter);
+
+    	#if 0
+          evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
               		elec, emap,
               		xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
 			e_internal, Nnb, B_calcIntElec, q1q2, B_isGaussTorCon,
 			B_isTorConstrained, B_ShowTorE, US_TorE, US_torProfile,
 			vt, tlist, crdpdb, sInit, mol, 
               		B_template, template_energy, template_stddev);
+	#endif
 
 	  char domain[1024];
           // NOTE: Coliny enforces the bound constraints, but since the 
