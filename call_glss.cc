@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.5 2003/02/26 00:23:58 garrett Exp $
+ $Id: call_glss.cc,v 1.6 2003/02/27 02:00:40 lindy Exp $
 
 */
 
@@ -14,54 +14,6 @@
 
                                 rsh 9/95
 ********************************************************************/
-/*
-** $Log: call_glss.cc,v $
-** Revision 1.5  2003/02/26 00:23:58  garrett
-**
-** General changes to generate identical output on each hardware/os
-** platform (as much as possible):
-**
-**     -DUSE_DOUBLE compile switch introduced. Mixed float/double
-**     precision would be used otherwise, as before the "pre-integration-305"
-**     stage.  This switch controls the new typedef "FloatOrDouble", which is
-**     "double" when -DUSE_DOUBLE is used as a compile-time flag, otherwise this
-**     is typedef'ed to "float". (GMM, WML)
-**
-**     Prior to switching all floats to doubles, the AutoDock docking
-**     log files often had differences in energies, coordinates or state
-**     variables in the sixth (or so) decimal place of floats.
-**
-**     Many #ifdef DEBUG statements have been added... (GMM,WML)
-**
-**     Lindy added the HAVE_CONFIG_H compile-time switch with "config.h"
-**     in preparation for "autoconf" and "configure"... (WML)
-**
-** Revision 1.4  2002/10/30 01:49:15  garrett
-** Commented out the #include <iostream.h> lines, since these appeared
-** to conflict with <stdio.h>.  Also, added -lsupc++ to the linker
-** options for Mac OS X 10.2, which now uses GCC 3.1; this may be
-** necessary on GNU/Linux systems that use GCC 3.1.
-**
-** -- Lindy and Garrett
-**
-** Revision 1.3  2002/04/17 06:04:01  garrett
-** Introduced the int "indiv" which can later be used to set arbitrary
-** individuals in a population, not just the first one.
-**
-** Also added the mapping() to ensure the phenotype matches the genotype.
-** This was causing an erroneous report of the initial state variables
-** in the very first listing of the top %d individuals in the population
-** when outlev was set to 3.                                       (gmm)
-**
-** Revision 1.2  2002/04/17 00:40:26  lindy
-** added Booleans to call_glss for tran0, quat0, dihe0
-** dpf parameters. Initilized the thisPop[0] to the
-** values placed in the State now.
-**
-** Revision 1.1.1.1  2001/08/13 22:05:52  gillet
-**  import initial of autodock sources
-**
-*/
 
 // possibly unnecessary // #include <iostream.h>
 #include "gs.h"
