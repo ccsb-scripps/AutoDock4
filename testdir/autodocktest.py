@@ -1,13 +1,17 @@
 #
-# Last modified on Wed Jan 22 15:17:57 PST 2003 by lindy
+# Last modified on Wed Jan 22 17:07:16 PST 2003 by lindy
 #
-# $Id: autodocktest.py,v 1.2 2003/01/22 23:21:42 lindy Exp $
+# $Id: autodocktest.py,v 1.3 2003/01/23 01:07:26 lindy Exp $
 #
 """
+We assume here that the test is being run from the autodock
+root directory that contains  the autodock source files.
+
+USAGE: python2.2 testdir/autdocktest.py [-v]
 
 """
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 #__test_for__ = '../autodock3"
 
 import os
@@ -32,9 +36,11 @@ class AutodockTestCase(unittest.TestCase):
         self.autodock = self.saved_cwd + '/autodock3'
 
     def tearDown(self):
+        """Restore the current working directory"""
         os.chdir(self.saved_cwd)
 
     def run_cmd(self, cmd_str):
+        """Fork the autodock3 command and wait for completion"""
         (i,o,e) = os.popen3(cmd_str) # trap all the outputs
         os.wait() # for the child process to finish
 
@@ -53,7 +59,8 @@ class AutodockTestCase(unittest.TestCase):
             ##self.assertEqual(c1.binding_energy, c2.binding_energy)
             # or introspect and compare all attributes
             for attr in c1.__dict__.keys():
-                #print "comparing %s (%s) %d" % (attr, type(getattr(c1, attr)))
+                #print "comparing %s (%s) %s" % (attr, type(getattr(c1, attr)),
+                #                                repr(getattr(c1,attr)))
                 if type(getattr(c1, attr)) != types.InstanceType:
                     self.assertEqual(getattr(c1, attr), getattr(c2, attr))
 
