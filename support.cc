@@ -1,7 +1,29 @@
+/*
+
+ $Id: support.cc,v 1.4 2003/02/26 01:46:21 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 //  These are the member functions for the support classes.
 
 /*
 ** $Log: support.cc,v $
+** Revision 1.4  2003/02/26 01:46:21  garrett
+**
+** #ifdef DEBUG statements have been modified, to print individuals' PDB-
+** formatted coordinates as MODEL/ENDMDLs ... (GMM,WML)
+**
+** Lindy added the HAVE_CONFIG_H compile-time switch with "config.h"
+** in preparation for "autoconf" and "configure"... (WML)
+**
+** Other changes specific to this file:
+**
+** Also added "math.h". Possibly needed by some compilers. (GMM)
+**
 ** Revision 1.3  2002/04/17 05:59:02  garrett
 ** Improved the readability of the printPopulationAsStates output.
 **
@@ -16,6 +38,7 @@
 
 #include "eval.h"
 
+    #include <math.h>
     #include <stdio.h>
     #include "support.h"
     #include "stateLibrary.h"
@@ -175,6 +198,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    register int i;
 #ifdef DEBUG2
    register int j;
+   char resstr[LINE_LEN];
 #endif /* DEBUG2 */
    double thisValue;
 
@@ -189,14 +213,17 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
       heap[i].printIndividualsState(output, ntor);
 
 #ifdef DEBUG2
-      if (!finite(thisValue) || ISNAN(thisValue)) {//debug
+      // to print only infinite or NaN structures // if (!finite(thisValue) || ISNAN(thisValue)) {//debug
 	  // Convert state to coords and print it out...//debug
 	  cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);//debug
+      (void)fprintf(logFile, "MODEL     %4d\n", i+1);
 	  for (j=0; j<heap[i].mol->natom; j++) {//debug
-	    (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "" , i+1, "C   RES     1", heap[i].mol->crd[i][X], heap[i].mol->crd[i][Y], heap[i].mol->crd[i][Z], 0.0, 0.0, 0.0); //debug
+        (void)sprintf(resstr, "C   RES  %4d", 1); // replace 1 with i+1 for incrementing residue numbers.
+	    (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "" , j+1, resstr, heap[i].mol->crd[j][X], heap[i].mol->crd[j][Y], heap[i].mol->crd[j][Z], 0.0, 0.0, 0.0); //debug
 	    (void)fprintf(logFile, "\n"); //debug
 	  }/*j*///debug
-      }// thisValue is either infinite or not-a-number.//debug
+      (void)fprintf(logFile, "ENDMDL\n");
+      // to print only infinite or NaN structures // }// thisValue is either infinite or not-a-number.//debug
 #endif /* DEBUG2 */
 
    }// i
