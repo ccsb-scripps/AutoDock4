@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.12 2005/03/11 02:04:44 garrett Exp $
+ $Id: main.cc,v 1.13 2005/03/14 15:10:45 billhart Exp $
 
 */
 
@@ -933,7 +933,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                     niters );
                   //fstr.flush();
 
-                  make_state_from_rep( finalpt, finalpt.size(), &sHist[nconf]);
+                  make_state_from_rep( finalpt.data(), finalpt.size(), &sHist[nconf]);
 
                   pr(logFile, "\nFinal docked state:\n");
                   pr(logFile, "\nTotal Num Evals: %d\n", neval);
