@@ -64,6 +64,7 @@ FILE    *parFile;
 FILE    *GPF;
 FILE    *logFile;
 
+
 #ifdef USE_DOUBLE
 FloatOrDouble	idct = 1.0L;
 #else
@@ -120,6 +121,8 @@ AD4.coeff_tors   = AD4_wrt_3.coeff_tors   * AD3.coeff_tors;
 
 */
 
+FILE    *stateFile;
+int     write_stateFile = FALSE;
 /*
 ** struct  Quat {
 **             FloatOrDouble angle;

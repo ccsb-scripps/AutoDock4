@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.5 2005/03/11 02:11:31 garrett Exp $
+ $Id: writePDBQ.cc,v 1.6 2005/03/15 23:49:26 gillet Exp $
 
 */
 
@@ -44,7 +44,8 @@ void writePDBQ ( int irun,
 
 #else /* WRITEPDBQSTATE */
 
-void writeStateOfPDBQ (  int   irun,
+
+void writeStateOfPDBQ(  int   irun,FourByteLong seed[2],
 
 #endif /* WRITEPDBQSTATE */
                     char smFileName[MAX_CHARS],
@@ -174,11 +175,21 @@ void writeStateOfPDBQ (  int   irun,
         pr( logFile, "DOCKED: MODEL     %4d\n", irun+1 );
         pr( logFile, "DOCKED: USER    Run = %d\n", irun+1 );
         pr( logFile, "DOCKED: USER    DPF = %s\n", dpfFN );
-
+	
+	
 #ifndef WRITEPDBQSTATE
         printEnergies( einter, eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor);
 #else /* WRITEPDBQSTATE */
-        printEnergies( *Ptr_einter, *Ptr_eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor);
+	printEnergies( *Ptr_einter, *Ptr_eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor);
+		
+	if (write_stateFile){
+	  pr( stateFile, "\n" );
+	  pr( stateFile, "\t<run id=\"%4d\">\n",irun+1);
+	  pr( stateFile, "\t\t<seed>%ld %ld</seed>\n", seed[0],seed[1] );
+	  pr( stateFile, "\t\t<dpf>%s</dpf>\n",dpfFN  );
+	  printStateEnergies( *Ptr_einter, *Ptr_eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor);
+	}
+
 #endif /* WRITEPDBQSTATE */
 
         (void)fprintf( logFile, "DOCKED: USER    NEWDPF move %s\n", smFileName );
@@ -190,23 +201,53 @@ void writeStateOfPDBQ (  int   irun,
         (void)fprintf( logFile, "DOCKED: USER    NEWDPF tran0 %f %f %f\n", (*Ptr_state).T.x, (*Ptr_state).T.y, (*Ptr_state).T.z );
         (void)fprintf( logFile, "DOCKED: USER    NEWDPF quat0 %f %f %f %f\n", (*Ptr_state).Q.nx, (*Ptr_state).Q.ny, (*Ptr_state).Q.nz, Deg( (*Ptr_state).Q.ang ) );
 #endif /* WRITEPDBQSTATE */
-        if (ntor > 0) {
-            (void)fprintf( logFile, "DOCKED: USER    NEWDPF ndihe %d\n", ntor );
-            (void)fprintf( logFile, "DOCKED: USER    NEWDPF dihe0 " );
-            for (i=0; i<ntor; i++) {
+	if (ntor > 0) {
+	  (void)fprintf( logFile, "DOCKED: USER    NEWDPF ndihe %d\n", ntor );
+	  (void)fprintf( logFile, "DOCKED: USER    NEWDPF dihe0 " );
+	  for (i=0; i<ntor; i++) {
 #ifndef WRITEPDBQSTATE
-                (void)fprintf( logFile, "%.2f ", Deg(state.tor[i]) );
+	    (void)fprintf( logFile, "%.2f ", Deg(state.tor[i]) );
 #else /* WRITEPDBQSTATE */
-                (void)fprintf( logFile, "%.2f ", Deg((*Ptr_state).tor[i]) );
+	    (void)fprintf( logFile, "%.2f ", Deg((*Ptr_state).tor[i]) );
 #endif /* WRITEPDBQSTATE */
-            }/*i*/
-            (void)fprintf( logFile, "\n" );
-        }/*endif*/
+	  }/*i*/
+	  (void)fprintf( logFile, "\n" );
+	  
+        } /*endif*/
+	
+	/* write state file */
+	if (write_stateFile){
+	      pr( stateFile, "\t\t<move>%s</move>\n", smFileName );
+	      pr( stateFile, "\t\t<about>%f %f %f</about>\n", sml_center[X],sml_center[Y],sml_center[Z]);
+
+#ifndef WRITEPDBQSTATE
+	      pr( stateFile, "\t\t<tran0>%f %f %f</tran0>\n", state.T.x, state.T.y, state.T.z);
+	      pr( stateFile, "\t\t<quat0>%f %f %f %f</quat0>\n", state.Q.nx, state.Q.ny, state.Q.nz, Deg( state.Q.ang ));
+
+#else /* WRITEPDBQSTATE */
+	      pr( stateFile,"\t\t<tran0>%f %f %f</tran0>\n", (*Ptr_state).T.x, (*Ptr_state).T.y, (*Ptr_state).T.z );
+	      pr( stateFile,"\t\t<quat0>%f %f %f %f</quat0>\n",(*Ptr_state).Q.nx, (*Ptr_state).Q.ny, (*Ptr_state).Q.nz, Deg( (*Ptr_state).Q.ang ) );
+#endif /* WRITEPDBQSTATE */
+	      if (ntor > 0) {
+		pr( stateFile,"\t\t<ndihe>%d</ndihe>\n",ntor);
+		pr( stateFile,"\t\t<dihe0>");
+		for (i=0; i<ntor; i++) {
+#ifndef WRITEPDBQSTATE
+		  pr( stateFile,"%.2f ", Deg(state.tor[i]) );
+#else /* WRITEPDBQSTATE */
+		  pr( stateFile, "%.2f ", Deg((*Ptr_state).tor[i]) );
+#endif /* WRITEPDBQSTATE */
+		}/*i*/
+		pr( stateFile, "</dihe0>\n" );
+	      }/*endif*/
+	      pr( stateFile, "\t</run>\n");
+	} /* end write state file */
+	
 
         (void)fprintf( logFile, "DOCKED: USER                              x       y       z     vdW  Elec       q\n" );
         (void)fprintf( logFile, "DOCKED: USER                           _______ _______ _______ _____ _____    ______\n" );
         if (keepresnum > 0) {
-            for (i = 0;  i < natom;  i++) {
+	  for (i = 0;  i < natom;  i++) {
 #ifndef WRITEPDBQSTATE
                 strncpy( rec14, &atomstuff[i][13], (size_t)13);
                 (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "DOCKED: ", i+1, rec14, crd[i][X], crd[i][Y], crd[i][Z], min(emap[i], MaxValue), min(elec[i], MaxValue), charge[i]);
@@ -241,6 +282,7 @@ void writeStateOfPDBQ (  int   irun,
         // output of coordinates // gmm 2001-11-01
     }
 }
+
 
 #else /* WRITEMOLASPDBQFUNC */
 
@@ -290,4 +332,17 @@ void writeMolAsPDBQ(Molecule *mol, FILE *output)
 }
 
 #endif /* WRITEMOLASPDBQFUNC */
+
+
+
+
+
+
+
+
+
 /* EOF */
+
+
+
+
