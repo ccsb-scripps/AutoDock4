@@ -42,7 +42,7 @@ void  writePDBQ( int   irun,
 #include "cnv_state_to_coords.h"
 #include "stateLibrary.h"
 
-void writeStateOfPDBQ(int irun,
+void writeStateOfPDBQ(int irun,FourByteLong seed[2],
                     char  smFileName[MAX_CHARS],
                     char  dpfFN[MAX_CHARS],
                     FloatOrDouble sml_center[SPACE],
@@ -85,6 +85,9 @@ void writeStateOfPDBQ(int irun,
 #endif
 
 #endif /* WRITEPDBQSTATE */
+extern FILE *stateFile;
+extern int write_stateFile;
+
 
 void writeMolAsPDBQ(Molecule *mol, FILE *output);
 

@@ -61,7 +61,8 @@ FILE    *command_out_fp;
 FILE    *parFile;
 FILE    *GPF;
 FILE    *logFile;
-
+FILE    *stateFile;
+int     write_stateFile = FALSE;
 /*
 ** struct  Quat {
 **             FloatOrDouble angle;

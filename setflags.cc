@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.3.2.1 2005/03/01 00:01:29 gillet Exp $
+ $Id: setflags.cc,v 1.3.2.2 2005/03/02 20:46:01 gillet Exp $
 
 */
 
@@ -18,6 +18,8 @@
 
 extern FILE *parFile;
 extern FILE *logFile;
+extern FILE *stateFile;
+extern int  write_stateFile;
 extern char *programname;
 
 extern char dock_param_fn[];
@@ -126,6 +128,24 @@ int setflags( int I_argc, char * const PPC_argv[])
             I_argc--;
             I_argindex++;
             break;
+        case 's':
+            if ( (stateFile = ad_fopen(PPC_argv[2], "w")) == NULL ) {
+#ifdef DEBUG
+                fprintf(stderr,"\n State file name = %s\n",PPC_argv[2]); 
+#endif /* DEBUG */
+                fprintf(stderr, "\n%s: can't create state file %s\n", programname, PPC_argv[2]);
+                fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
+                return(-1);
+            }
+	    else{
+	      fprintf(stateFile,"<? xml version=\"1.0\" ?>\n");
+	      fprintf(stateFile,"<autodock>\n");
+	      write_stateFile = TRUE;
+	    }
+            PPC_argv++;
+            I_argc--;
+            I_argindex++;
+            break;	    
         case 'p':
             strcpy(dock_param_fn, PPC_argv[2]);
             if ( (parFile = ad_fopen(PPC_argv[2], "r")) == NULL ) {
