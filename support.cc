@@ -2,6 +2,9 @@
 
 /*
 ** $Log: support.cc,v $
+** Revision 1.3  2002/04/17 05:59:02  garrett
+** Improved the readability of the printPopulationAsStates output.
+**
 ** Revision 1.2  2002/04/17 00:19:26  lindy
 ** changed Normal_Eval to Always_Eval when printing
 ** populations.
@@ -182,7 +185,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
    for (i=0; i<num; i++) {
       thisValue = heap[i].value(Always_Eval);
-      (void)fprintf( output, "(%d):\nEnergy= %8.2le\n", i+1, thisValue);
+      (void)fprintf( output, "(%d):\tEnergy= %8.2le\n\t", i+1, thisValue);
       heap[i].printIndividualsState(output, ntor);
 
 #ifdef DEBUG2
@@ -197,6 +200,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
 #endif /* DEBUG2 */
 
    }// i
+   (void)fprintf( output, "\n");
 }
 
 
