@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.3 2003/02/26 01:35:55 garrett Exp $
+ $Id: rep.cc,v 1.4 2003/10/14 02:42:07 garrett Exp $
 
 */
 
@@ -15,7 +15,7 @@
 
 				rsh 9/95
 ********************************************************************/
-
+ 
 // possibly unnecessary // #include <iostream.h>
 #include <stdio.h>
 #include <math.h>
@@ -29,15 +29,13 @@ extern FILE *logFile;
 //  Initializations
 FourByteLong IntVector::low = -INT_MAX/4;
 FourByteLong IntVector::high = INT_MAX/4;
-//FloatOrDouble RealVector::low = -100.0;
-//FloatOrDouble RealVector::high = 100.0;
+/* A nonstatic data member cannot be defined outside its class:
+ * FloatOrDouble RealVector::low = REALV_LOW;
+ * FloatOrDouble RealVector::high = REALV_HIGH;
+ */
 //  For now assume that normalize handles this constraint
-//FloatOrDouble ConstrainedRealVector::low = -100.0;
-//FloatOrDouble ConstrainedRealVector::high = 100.0;
-//FloatOrDouble RealVector::low = -PI;
-//FloatOrDouble RealVector::high = PI;
-FloatOrDouble ConstrainedRealVector::low = -PI;
-FloatOrDouble ConstrainedRealVector::high = PI;
+FloatOrDouble ConstrainedRealVector::low = REALV_LOW;
+FloatOrDouble ConstrainedRealVector::high = REALV_HIGH;
 double ConstrainedRealVector::sum = 1.0;
 FloatOrDouble BitVector::one_prob = 0.5;
 
@@ -90,7 +88,8 @@ IntVector::IntVector(const IntVector &original)
 #endif /* DEBUG */
 
    mytype = T_IntV;
-   if (original.vector!=NULL) { vector = new FourByteLong[number_of_pts];
+   if (original.vector!=NULL) {
+      vector = new FourByteLong[number_of_pts];
    } else {
       vector = NULL;
    }
@@ -347,10 +346,10 @@ void RealVector::write(double value, int gene)
 #endif /* DEBUG */
 
    if (value<low) {
-//      (void)fprintf(logFile,"Writing out of bounds Real!  value (%lf) too low (%lf)\n",value,low); // used to be "stderr"
+      (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too low (%lf)\n",value,low); // used to be "stderr"
       vector[gene] = low;
    } else if (value>high) {
-//      (void)fprintf(logFile,"Writing out of bounds Real!  value (%lf) too high (%lf)\n",value,high); // used to be "stderr"
+      (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too high (%lf)\n",value,high); // used to be "stderr"
       vector[gene] = high;
    } else {
       vector[gene] = value;
