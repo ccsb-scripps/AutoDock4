@@ -1,3 +1,13 @@
+/*
+
+ $Id: prTorConList.cc,v 1.2 2003/02/26 01:26:43 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* prTorConList.cc */
 
 #include <math.h>
@@ -15,7 +25,7 @@ extern FILE *logFile;
 void prTorConList( int ntor,
 		    Boole B_isTorConstrained[MAX_TORS],
 		    unsigned short US_torProfile[MAX_TORS][NTORDIVS],
-		    float F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		    FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		    int N_con[MAX_TORS])
 
 {
@@ -30,13 +40,13 @@ void prTorConList( int ntor,
     int jncol2;
     int N_ConChecks;
 
-    float lower;
-    float upper;
+    FloatOrDouble lower;
+    FloatOrDouble upper;
 
     unsigned short US_row = 0;
     unsigned short US_yscale;
 
-    jncol2 = (int)((float)NCOLS / 2. - 2.);
+    jncol2 = (int)((FloatOrDouble)NCOLS / 2. - 2.);
     jncol216 = jncol2 - 16;
 
     pr( logFile, UnderLine );

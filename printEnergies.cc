@@ -1,3 +1,13 @@
+/*
+
+ $Id: printEnergies.cc,v 1.2 2003/02/26 01:26:52 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* printEnergies.cc */
 
 #include <math.h>
@@ -11,14 +21,14 @@ extern FILE *logFile;
 
 #define print1000(x) pr(logFile,  ((fabs((x)) >= 0.001) && ((fabs(x)) <= 1000.)) ? "%+7.2f" : "%+11.2e" , (x));
 
-void printEnergies( float einter, float eintra, float torsFreeEnergy, char  *prefixString, int ligand_is_inhibitor )
+void printEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDouble torsFreeEnergy, char  *prefixString, int ligand_is_inhibitor )
 {
-    float deltaG = 0.0;
-    float Ki = 1.0;
-    float edocked=0.0;
-    // float RJ = 8.31441;  // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
-    float Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
-    float TK = 298.15;      // Room temperature, in K
+    FloatOrDouble deltaG = 0.0;
+    FloatOrDouble Ki = 1.0;
+    FloatOrDouble edocked=0.0;
+    // FloatOrDouble RJ = 8.31441;  // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
+    FloatOrDouble Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
+    FloatOrDouble TK = 298.15;      // Room temperature, in K
 
     edocked = einter + eintra;
     // equilibrium:   E  +  I  <=>    EI
