@@ -1,3 +1,13 @@
+/*
+
+ $Id: call_glss.cc,v 1.5 2003/02/26 00:23:58 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
      Call_glss:  Invokes a GA-LS hybrid to try and solve the
                  docking problem.
@@ -6,6 +16,26 @@
 ********************************************************************/
 /*
 ** $Log: call_glss.cc,v $
+** Revision 1.5  2003/02/26 00:23:58  garrett
+**
+** General changes to generate identical output on each hardware/os
+** platform (as much as possible):
+**
+**     -DUSE_DOUBLE compile switch introduced. Mixed float/double
+**     precision would be used otherwise, as before the "pre-integration-305"
+**     stage.  This switch controls the new typedef "FloatOrDouble", which is
+**     "double" when -DUSE_DOUBLE is used as a compile-time flag, otherwise this
+**     is typedef'ed to "float". (GMM, WML)
+**
+**     Prior to switching all floats to doubles, the AutoDock docking
+**     log files often had differences in energies, coordinates or state
+**     variables in the sixth (or so) decimal place of floats.
+**
+**     Many #ifdef DEBUG statements have been added... (GMM,WML)
+**
+**     Lindy added the HAVE_CONFIG_H compile-time switch with "config.h"
+**     in preparation for "autoconf" and "configure"... (WML)
+**
 ** Revision 1.4  2002/10/30 01:49:15  garrett
 ** Commented out the #include <iostream.h> lines, since these appeared
 ** to conflict with <stdio.h>.  Also, added -lsupc++ to the linker
@@ -52,26 +82,54 @@ Representation **generate_R(int num_torsions, double xlo, double xhi, double ylo
 {
    Representation **retval;
 
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Representation **generate_R()  about to create a new Representation with 5 elements, retval...\n");
+#endif
    retval = new Representation *[5];
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Representation **generate_R()  done creating   a new Representation with 5 elements, retval...\n");
+#endif
    retval[0] = new RealVector(1, xlo, xhi);
    retval[1] = new RealVector(1, ylo, yhi);
    retval[2] = new RealVector(1, zlo, zhi);
    retval[3] = new RealVector(3);
    retval[4] = new RealVector(num_torsions+1);
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Representation **generate_R()  done assigning each of the retval[0-5] elements...\n");
+#endif
 
    return(retval);
 }
 
 Genotype generate_Gtype(int num_torsions, double xlo, double xhi, double ylo, double yhi, double zlo, double zhi)
 {
-   Genotype temp(5, generate_R(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi));
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Genotype generate_Gtype() about to call Genotype temp(5, generate_R())...\n");
+#endif
+   Genotype temp((unsigned int)5, generate_R(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi));
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Genotype generate_Gtype() done calling  Genotype temp(5, generate_r())...\n");
+#endif
 
    return(temp);
 }
 
 Phenotype generate_Ptype(int num_torsions, double xlo, double xhi, double ylo, double yhi, double zlo, double zhi)
 {
-   Phenotype temp(5, generate_R(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi));
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Genotype generate_Ptype() about to call Phenotype temp(5, generate_R())...\n");
+#endif
+   Phenotype temp((unsigned int)5, generate_R(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi));
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Genotype generate_Ptype() done calling  Phenotype temp(5, generate_R())...\n");
+#endif
 
    return(temp);
 }
@@ -81,10 +139,26 @@ Individual random_ind(int num_torsions, double xlo, double xhi, double ylo, doub
    Genotype temp_Gtype;
    Phenotype temp_Ptype;
 
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Individual random_ind() about to generate_Gtype()...\n");
+#endif
    temp_Gtype = generate_Gtype(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi);
-   temp_Ptype = generate_Ptype(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi);
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Individual random_ind() about to generate_Ptype()...\n");
+#endif
+   temp_Ptype = generate_Ptype(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi); // differs on Linux gcc 2.96 and Mac OS X gcc 3.1
 
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Individual random_ind() about to Individual temp(temp_Gtype, temp_Ptype)...\n");
+#endif
    Individual temp(temp_Gtype, temp_Ptype);
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/Individual random_ind() done     Individual temp(temp_Gtype, temp_Ptype)...\n");
+#endif
 
    return(temp);
 }
@@ -122,8 +196,8 @@ Individual set_ind(int num_torsions, double xlo, double xhi, double ylo, double 
 
 State call_glss(Global_Search *global_method, Local_Search *local_method, 
                 State now, unsigned int num_evals, unsigned int pop_size, 
-                float xlo, float xhi, float ylo, 
-                float yhi, float zlo, float zhi,
+                FloatOrDouble xlo, FloatOrDouble xhi, FloatOrDouble ylo, 
+                FloatOrDouble yhi, FloatOrDouble zlo, FloatOrDouble zhi,
                 int outlev, unsigned int extOutputEveryNgens,
                 Molecule *mol, Boole B_template,
 		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0)
@@ -147,7 +221,15 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         ++numTries;
         // Create a population of pop_size random individuals...
         for (i=0; i<pop_size; i++) {
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/State call_glss(): Creating individual i= %d in thisPop[i];  about to call random_ind()...\n", i);
+#endif
             thisPop[i] = random_ind( now.ntor, double(xlo), double(xhi), double(ylo), double(yhi), double(zlo), double(zhi));
+#ifdef DEBUG
+    // gmm 20-FEB-2003
+    (void)fprintf(logFile,"call_glss.cc/State call_glss(): Created  individual i= %d in thisPop[i]\n", i);
+#endif
             thisPop[i].mol = mol;
             thisPop[i].age = 0L;
         }
