@@ -400,14 +400,14 @@ for (k = 0; k < MAX_RUNS; k++) {
 }
 
 for (i = 0; i < MAX_TORS;  i++ ) {
-    if ( (ltorfmt += 3) > LINE_LEN ) {
-        prStr( error_message, "ERROR: MAX_TORS = %d torsions declared in \"constants.h\";\n\t LINE_LEN = %d, Therefore you must change \"LINE_LEN\" to exceed %d...\n", MAX_TORS, LINE_LEN, 4+3*MAX_TORS );
+    if ( (ltorfmt += 4) > LINE_LEN ) {
+        prStr( error_message, "ERROR: MAX_TORS = %d torsions declared in \"constants.h\";\n\t LINE_LEN = %d, Therefore you must change \"LINE_LEN\" to exceed %d...\n", MAX_TORS, LINE_LEN, 4+4*MAX_TORS );
         stop( error_message );
         exit( -1 );
     } else {
-        (void) strcat( torfmt, " %f\0" );  /* add on 3 chars  for each new torsion... */
+        (void) strcat( torfmt, " %lf\0" );  /* add on 4 chars  for each new torsion... */
     }
-} /* len(torfmt) is 4+3*MAX_TORS chars */
+} /* len(torfmt) is 4+4*MAX_TORS chars */
 
 for (j = 0; j < MAX_NONBONDS; j++) {
     nonbondlist[j][ATM1] = nonbondlist[j][ATM2] = 0;
@@ -1770,7 +1770,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                           num_evals, pop_size, xlo, xhi, 
                                           ylo, yhi, zlo, zhi, outlev,
                                           extOutputEveryNgens, &mol,
-                                          B_template);
+                                          B_template, B_RandomTran0,
+					  B_RandomQuat0, B_RandomDihe0);
                                           // State of best individual at end
                                           // of GA-LS run is returned.
                 // Finished Lamarckian GA run
