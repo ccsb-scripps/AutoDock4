@@ -6,7 +6,7 @@
 
 				rsh 2/5/96
 ********************************************************************/
-#include <iostream.h>
+// possibly unnecessary // #include <iostream.h>
 #include "ls.h"
 #include "support.h"
 #include "eval.h"

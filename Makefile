@@ -137,8 +137,8 @@ ADLIB = libad.a
 ARFLAGS = r # SGI, Sun, Alpha, Linux, Mac OS X
 
 
-RANLIB = file # SGI.
-# RANLIB = ranlib # Linux, Mac OS X.
+# RANLIB = file # SGI.
+RANLIB = ranlib # Linux, Mac OS X.
 
 RANLIBFLAGS = # Linux, SGI
 # RANLIBFLAGS = -s # MacOS X.
@@ -248,7 +248,8 @@ CC = cc # MacOS X Gnu compiler
 # CC = cxx # Alpha.
 CC = gcc # use this if you have the Gnu compiler, as on Linux, MkLinux, LinuxPPC systems.
 
-LIB = -lm # SGI, Sun, Linux, MacOS X.
+LIB = -lm -lsupc++  # gcc 3.1 on MacOS X.
+# LIB = -lm # SGI, Sun, Linux, MacOS X.
 # LIB = -lm -lc # Alpha, Convex.
 # LIB = -lm -lg++ # HP, Gnu.
 
@@ -269,19 +270,19 @@ OPTLEVEL = -O3 # Agressive optimization.
 # OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.
 # OPTLEVEL = -O0 # Do not optimize.
 
-# OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.
+OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.
 # OPT_SGI_IPNUM = -Ofast=ip19 # SGI, 'uname -a' says 'IP19'
 # OPT_SGI_IPNUM = -Ofast=ip21 # SGI, 'uname -a' says 'IP21'
 # OPT_SGI_IPNUM = -Ofast=ip25 # SGI, 'uname -a' says 'IP25' PowerChallenge is R10000, IP25
 # OPT_SGI_IPNUM = -Ofast=ip27 # SGI, 'uname -a' says 'IP27'
-OPT_SGI_IPNUM = -Ofast=ip30 # SGI, 'uname -a' says 'IP30'
+# OPT_SGI_IPNUM = -Ofast=ip30 # SGI, 'uname -a' says 'IP30'
 # TSRI job = IP30
 # TSRI atlas = IP27
 
-# OPT_SGI_R000 = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.
+OPT_SGI_R000 = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.
 # OPT_SGI_R000 = -r4000 -mips2 # SGI, 'hinv' says MIPS Processor is R4000
 # OPT_SGI_R000 = -r8000 -mips4 # SGI, 'hinv' says MIPS Processor is R8000
-OPT_SGI_R000 = -r10000 -mips4 # SGI, 'hinv' says MIPS Processor is R10000
+# OPT_SGI_R000 = -r10000 -mips4 # SGI, 'hinv' says MIPS Processor is R10000
 # OPT_SGI_R000 = -r12000 -mips4 # SGI, 'hinv' says MIPS Processor is R12000
 # TSRI job = R10000
 # TSRI atlas = R12000

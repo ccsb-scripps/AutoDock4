@@ -4,7 +4,7 @@
                                 rsh 9/95
 *********************************************************************/
 
-#include <iostream.h>
+// possibly unnecessary // #include <iostream.h>
 #include <math.h>
 #include "gs.h"
 #include "ranlib.h"

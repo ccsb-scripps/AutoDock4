@@ -6,6 +6,14 @@
 ********************************************************************/
 /*
 ** $Log: call_glss.cc,v $
+** Revision 1.4  2002/10/30 01:49:15  garrett
+** Commented out the #include <iostream.h> lines, since these appeared
+** to conflict with <stdio.h>.  Also, added -lsupc++ to the linker
+** options for Mac OS X 10.2, which now uses GCC 3.1; this may be
+** necessary on GNU/Linux systems that use GCC 3.1.
+**
+** -- Lindy and Garrett
+**
 ** Revision 1.3  2002/04/17 06:04:01  garrett
 ** Introduced the int "indiv" which can later be used to set arbitrary
 ** individuals in a population, not just the first one.
@@ -25,7 +33,7 @@
 **
 */
 
-#include <iostream.h>
+// possibly unnecessary // #include <iostream.h>
 #include "gs.h"
 #include "ls.h"
 #include "support.h"

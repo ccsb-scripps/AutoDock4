@@ -6,6 +6,7 @@
 #ifndef _EVAL_H
 #define _EVAL_H
 
+#include "structs.h"
 #include "rep.h"
 
 #include <stdio.h>
@@ -13,7 +14,6 @@
 #include "cnv_state_to_coords.h"
 #include "trilinterp.h"
 #include "eintcal.h"
-#include "structs.h"
 #include "energy.h"
 
 void make_state_from_rep(Representation **rep, State *stateNow);

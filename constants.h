@@ -267,8 +267,10 @@
 #ifdef sgi
     #include <ieeefp.h>
     #define        ISNAN(n)        isnand(n)
+#elif defined(__ppc__)
+#define        ISNAN(n)        isnan(n)
 #else
-    #define        ISNAN(n)        isnan(n)
+    #define        ISNAN(n)        isnand(n)
 #endif /* !sgi */
 
 #define random_sign        ( (local_random() < 0.5) ?  (-1.0) : (+1.0) )

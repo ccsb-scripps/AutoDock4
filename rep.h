@@ -13,7 +13,7 @@
 #ifndef _REP_H
 #define _REP_H
 
-#include <iostream.h>
+// appears not to be used //  #include <iostream.h>
 
     #include <stdio.h>
     #include "structs.h"

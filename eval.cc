@@ -12,7 +12,6 @@ extern FILE *logFile;
 
 #include <stdio.h>
 #include <string.h>
-#include "structs.h"
 
 #ifdef sgi
     #include <ieeefp.h>

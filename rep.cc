@@ -6,7 +6,7 @@
 				rsh 9/95
 ********************************************************************/
 
-#include <iostream.h>
+// possibly unnecessary // #include <iostream.h>
 #include <stdio.h>
 #include <math.h>
 #include <limits.h>

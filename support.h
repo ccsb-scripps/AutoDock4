@@ -11,8 +11,16 @@
 
 /*
 ** $Log: support.h,v $
-** Revision 1.1  2001/08/13 22:05:53  gillet
-** *** empty log message ***
+** Revision 1.2  2002/10/30 01:49:15  garrett
+** Commented out the #include <iostream.h> lines, since these appeared
+** to conflict with <stdio.h>.  Also, added -lsupc++ to the linker
+** options for Mac OS X 10.2, which now uses GCC 3.1; this may be
+** necessary on GNU/Linux systems that use GCC 3.1.
+**
+** -- Lindy and Garrett
+**
+** Revision 1.1.1.1  2001/08/13 22:05:53  gillet
+**  import initial of autodock sources
 **
 */
 
@@ -146,7 +154,7 @@ class Population
       Population &operator=(const Population &);
       unsigned int num_individuals(void); /* returns the size of the pop. */
       void msort(int); /* sorts the first m individuals using heap properties */
-      void print(ostream &, int); /* prints top int energies */
+      // void print(ostream &, int); /* prints top int energies */
       void print(FILE *, int); /* like above */
       void printPopulationAsStates(FILE *, int, int); /*prints energies,states of top energies */
 };
