@@ -1,3 +1,13 @@
+/*
+
+ $Id: torsion.cc,v 1.2 2003/02/26 01:48:23 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* torsion.cc */
 
 #include <math.h>
@@ -9,8 +19,8 @@
 
 
 void torsion( State now,
-              float crd[MAX_ATOMS][SPACE],
-              float v[MAX_TORS][SPACE],
+              FloatOrDouble crd[MAX_ATOMS][SPACE],
+              FloatOrDouble v[MAX_TORS][SPACE],
               int   tlist[MAX_TORS][MAX_ATOMS],
               int   ntor )
 
@@ -50,9 +60,9 @@ void torsion( State now,
           vector, about which we are rotating...
           */
           atmnum = tlist[n][0];
-          crdtemp[X] = crd[atmnum][X];
-          crdtemp[Y] = crd[atmnum][Y];
-          crdtemp[Z] = crd[atmnum][Z];
+          crdtemp[X] = (double)crd[atmnum][X];
+          crdtemp[Y] = (double)crd[atmnum][Y];
+          crdtemp[Z] = (double)crd[atmnum][Z];
 
           sv[X] = s * (vni = v[n][X]);
           k[X][X] = (ov[X] = o * vni) * vni + c;
@@ -74,12 +84,12 @@ void torsion( State now,
           numatmmoved = tlist[n][NUM_ATM_MOVED] + 3; 
           for (a = 3;  a < numatmmoved;  a++ )  {        
               mvatm = tlist[n][a]; /* mvatm = Serial Num of Atom to be moved by this Torsion */
-              d[X] = crd[mvatm][X] - crdtemp[X];
-              d[Y] = crd[mvatm][Y] - crdtemp[Y];
-              d[Z] = crd[mvatm][Z] - crdtemp[Z];
-              crd[mvatm][X] = crdtemp[X] + d[X] * k[X][X] + d[Y] * k[X][Y] + d[Z] * k[X][Z]; 
-              crd[mvatm][Y] = crdtemp[Y] + d[X] * k[Y][X] + d[Y] * k[Y][Y] + d[Z] * k[Y][Z]; 
-              crd[mvatm][Z] = crdtemp[Z] + d[X] * k[Z][X] + d[Y] * k[Z][Y] + d[Z] * k[Z][Z]; 
+              d[X] = (double)crd[mvatm][X] - crdtemp[X];
+              d[Y] = (double)crd[mvatm][Y] - crdtemp[Y];
+              d[Z] = (double)crd[mvatm][Z] - crdtemp[Z];
+              crd[mvatm][X] = (double)crdtemp[X] + d[X] * k[X][X] + d[Y] * k[X][Y] + d[Z] * k[X][Z]; 
+              crd[mvatm][Y] = (double)crdtemp[Y] + d[X] * k[Y][X] + d[Y] * k[Y][Y] + d[Z] * k[Y][Z]; 
+              crd[mvatm][Z] = (double)crdtemp[Z] + d[X] * k[Z][X] + d[Y] * k[Z][Y] + d[Z] * k[Z][Z]; 
           }/*a*/
     } /*n*/
 }
