@@ -45,13 +45,24 @@
 #define APPROX_ZERO  1.0E-6 /* To avoid division-by-zero errors...            */
 #define BIG          1.0E12 /* Very large constant                            */
 #define MAX_CHARS    128    /* Number of characters in atom data & filenames  */
+
+#ifdef USE_XCODE
+#define LINE_LEN     140    /* Line length in characters                      */
+#else
 #define LINE_LEN     256    /* Line length in characters                      */
+#endif
+
 /* #if defined(__ppc__)
  * / * this was necessary for 10.0.1 since there was a problem linking with
  *   * the 128 setting for MAX_GRID_PTS * /
  * #define MAX_GRID_PTS 64     / * Maximum number of grid points in 1 dimension   * /
    #else */
+#ifdef USE_XCODE
+/* The stacksize limit within Xcode forces us to use smaller grids */
+#define MAX_GRID_PTS 61    /* Maximum number of grid points in 1 dimension   */
+#else
 #define MAX_GRID_PTS 128    /* Maximum number of grid points in 1 dimension   */
+#endif
 /* #endif / * __ppc__ */
 #define	EINTCLAMP    100000. /* Clamp pairwise internal energies (kcal/mol )  */
 #define MAX_MAPS     8      /* Maximum number of energy maps                  */

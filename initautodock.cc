@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.cc,v 1.2 2003/02/26 01:09:29 garrett Exp $
+ $Id: initautodock.cc,v 1.3 2004/02/12 04:32:15 garrett Exp $
 
 */
 
@@ -11,21 +11,17 @@
 /* initautodock.cc */
 
 #include <math.h>
-
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include "initautodock.h"
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "initautodock.h"
 
 #define TINYDELTA 0.001	 /* To nudge ligand into grid... */
 #define AddNewHardCon(iCon,low,upp)  F_TorConRange[i][iCon][LOWER]=low;F_TorConRange[i][iCon][UPPER]=upp
 
-
 extern int   keepresnum;
 extern FILE *logFile;
 extern char  *programname;
-
 
 void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 		    FloatOrDouble crd[MAX_ATOMS][SPACE],
@@ -246,9 +242,9 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 		prStr( note, ">>> Trying a new, randomly-generated rigid body rotation. (quat0 override)\n");
 		pr_2x( stderr, logFile, note );
 
-                s0->Q.nx  = random_range( -1., 1. );
-                s0->Q.nx  = random_range( -1., 1. );
-                s0->Q.nx  = random_range( -1., 1. );
+         s0->Q.nx  = random_range( -1., 1. );
+         s0->Q.ny  = random_range( -1., 1. );
+         s0->Q.nz  = random_range( -1., 1. );
 		s0->Q.ang = Rad( random_range( 0., 360. ) );  /*radians*/
 
 		mkUnitQuat( &(s0->Q) );

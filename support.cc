@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.5 2003/02/27 02:20:02 lindy Exp $
+ $Id: support.cc,v 1.6 2004/02/12 04:32:16 garrett Exp $
 
 */
 
@@ -210,7 +210,7 @@ init_rep_vector)
 : number_of_vectors(init_number_of_vectors), rep_vector(init_rep_vector),
   modified(0)
 {
-   register int i, j, k;
+   register unsigned int i, j, k;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype::Genotype(unsigned int init_number_of_vectors=%d, Representation **init_rep_vector)\n",init_number_of_vectors);
@@ -235,7 +235,7 @@ init_rep_vector)
 
 Genotype::Genotype(Genotype &original)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype::Genotype(Genotype &original)\n");
@@ -264,7 +264,7 @@ Genotype::Genotype(Genotype &original)
 
 Genotype::~Genotype(void)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype::~Genotype(void)\n");
@@ -282,7 +282,7 @@ Genotype::~Genotype(void)
 
 Genotype &Genotype::operator=(const Genotype &original)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype &Genotype::operator=(const Genotype &original)\n");
@@ -382,7 +382,7 @@ Phenotype::Phenotype(unsigned int init_number_of_dimensions, Representation **in
 : number_of_dimensions(init_number_of_dimensions), value_vector(init_value_vector),
   value(0.0), evalflag(0)
 {
-   register int i, j, k;
+   register unsigned int i, j, k;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Phenotype::Phenotype(unsigned int init_number_of_dimensions=%d, Representation **init_value_vector)\n",init_number_of_dimensions);
@@ -407,7 +407,7 @@ Phenotype::Phenotype(unsigned int init_number_of_dimensions, Representation **in
 
 Phenotype::Phenotype(const Phenotype &original)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Phenotype::Phenotype(const Phenotype &original)\n");
@@ -438,7 +438,7 @@ Phenotype::Phenotype(const Phenotype &original)
 
 Phenotype &Phenotype::operator=(const Phenotype &original)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Phenotype &Phenotype::operator=(const Phenotype &original)\n");
@@ -480,7 +480,7 @@ Phenotype &Phenotype::operator=(const Phenotype &original)
 
 Phenotype::~Phenotype(void)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Phenotype::~Phenotype(void)\n");

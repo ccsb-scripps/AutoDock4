@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.6 2003/02/27 02:00:40 lindy Exp $
+ $Id: call_glss.cc,v 1.7 2004/02/12 04:32:15 garrett Exp $
 
 */
 
@@ -154,7 +154,8 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
                 Molecule *mol, Boole B_template,
 		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0)
 {
-    register int i;
+    register unsigned int i;
+	register int j;
     int num_iterations = 0, num_loops = 0, allEnergiesEqual = 1, numTries = 0;
     int indiv = 0; // Number of Individual in Population to set initial state variables for.
     double firstEnergy = 0.0;
@@ -206,9 +207,9 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 	};
 	if (!B_RandomDihe0) {
           if (outlev > 1) { (void)fprintf(logFile, "Setting the initial torsions (dihe0) for individual number %d to ", indiv+1); }
-	  for (i=0;i<now.ntor; i++) {
-	    thisPop[indiv].genotyp.write( now.tor[i], 7+i);
-            if (outlev > 1) { (void)fprintf(logFile, "%lf ", Deg(now.tor[i])); }
+			for (j=0; j<now.ntor; j++) {
+				thisPop[indiv].genotyp.write( now.tor[j], 7+j);
+				if (outlev > 1) { (void)fprintf(logFile, "%lf ", Deg(now.tor[j])); }
 	  };
           if (outlev > 1) { (void)fprintf(logFile, " deg\n\n"); }
 	  // Remember to keep the phenotype up-to-date
@@ -242,6 +243,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         }
         if (outlev > 1) { (void)fprintf( logFile, "\tEnding local search.\n"); }
         if (outlev > 2) { thisPop.printPopulationAsStates(logFile, pop_size, now.ntor); }
+		(void)fflush(logFile);
     } while ((evaluate.evals() < num_evals) && (!global_method->terminate()));
 
     thisPop.msort(3);

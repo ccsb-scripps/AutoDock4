@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.2 2003/02/26 01:09:54 garrett Exp $
+ $Id: intnbtable.cc,v 1.3 2004/02/12 04:32:15 garrett Exp $
 
 */
 
@@ -44,14 +44,14 @@ extern FILE *logFile;
 
 
 void intnbtable(Boole *P_B_havenbp,
-	        int *P_a1,
-	        int *P_a2, 
-		int num_atm_maps,
-	        char atm_tyP_str[ATOM_MAPS],
-	        FloatOrDouble cA, 
-	        FloatOrDouble cB, 
-	        int xA, 
-	        int xB,
+                int *P_a1,
+                int *P_a2, 
+                int num_atm_maps,
+                char atm_tyP_str[ATOM_MAPS],
+                FloatOrDouble cA, 
+                FloatOrDouble cB, 
+                int xA, 
+                int xB,
                 FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS] ) 
 { 
     /* Local variables: */
@@ -85,35 +85,36 @@ void intnbtable(Boole *P_B_havenbp,
     dxA = (double) xA;
     dxB = (double) xB;
     if (xB == (2*xA)) {
-	Bis2A = TRUE;
-	Ais2B = FALSE;
+        Bis2A = TRUE;
+        Ais2B = FALSE;
     } else if (xA == (2*xB)) {
-	Ais2B = TRUE;
-	Bis2A = FALSE;
+        Ais2B = TRUE;
+        Bis2A = FALSE;
     } else {
-	Ais2B = FALSE;
-	Bis2A = FALSE;
+        Ais2B = FALSE;
+        Bis2A = FALSE;
     }
-    for ( i = 1;  i < NEINT;  i++ ) { 
-	r = LookUpProc( i );
-	if (Bis2A) {
-	    rA = pow( r, dxA );
-	    rB = rA * rA;
-	} else if (Ais2B) {
-	    rB = pow( r, dxB );
-	    rA = rB * rB;
-	} else {
-	    rA = pow( r, dxA );
-	    rB = pow( r, dxB );
-	}
-	e_internal[i][*P_a1][*P_a2] = e_internal[i][*P_a2][*P_a1] 
-				    = min( EINTCLAMP, (cA/rA - cB/rB) );
+    for ( i = 1;  i < NEINT;  i++ ) {
+        r = LookUpProc( i );
+        if (Bis2A) {
+            rA = pow( r, dxA );
+            rB = rA * rA;
+        } else if (Ais2B) {
+            rB = pow( r, dxB );
+            rA = rB * rB;
+        } else {
+            rA = pow( r, dxA );
+            rB = pow( r, dxB );
+        }
+        e_internal[i][*P_a1][*P_a2] = e_internal[i][*P_a2][*P_a1] 
+                        = min( EINTCLAMP, (cA/rA - cB/rB) );
+        // pr( logFile, "i=%6d  e_internal = %.3f,   r=%.4lf\n",i, e_internal[i][*P_a1][*P_a2], r ); // Xcode-gmm
     }
     nbeEnd = times( &tms_nbeEnd );
     pr( logFile, "Time taken: ");
     timesys( nbeEnd - nbeStart, &tms_nbeStart, &tms_nbeEnd );
     if (++(*P_a2) >= num_atm_maps) {
-	*P_a2 = ++(*P_a1);
+        *P_a2 = ++(*P_a1);
     }
 }
 /* EOF of intnbtable.c */

@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.4 2003/10/14 02:42:07 garrett Exp $
+ $Id: rep.cc,v 1.5 2004/02/12 04:32:16 garrett Exp $
 
 */
 
@@ -25,6 +25,7 @@
 #include "structs.h"
 
 extern FILE *logFile;
+extern int debug;
 
 //  Initializations
 FourByteLong IntVector::low = -INT_MAX/4;
@@ -94,7 +95,7 @@ IntVector::IntVector(const IntVector &original)
       vector = NULL;
    }
 
-   for (register int i=0; i<number_of_pts; i++) {
+   for (register unsigned int i=0; i<number_of_pts; i++) {
       vector[i] = original.vector[i];
    }
 }
@@ -223,7 +224,7 @@ const void *IntVector::internals(void) const
 
 Representation &IntVector::operator=(const Representation &original)
 {
-   register int i;
+   register unsigned int i;
    FourByteLong *array;
 
 #ifdef DEBUG
@@ -308,7 +309,7 @@ RealVector::RealVector(const RealVector &original)
       vector = NULL;
    }
 
-   for (register int i=0; i<original.number_of_pts; i++) {
+   for (register unsigned int i=0; i<original.number_of_pts; i++) {
       vector[i] = original.vector[i];
 #ifdef DEBUG
     (void)fprintf(logFile, "rep.cc/i=%d, original.number_of_pts=%d, vector[%d]= %.3f\n",i, original.number_of_pts, i, vector[i]);
@@ -346,10 +347,14 @@ void RealVector::write(double value, int gene)
 #endif /* DEBUG */
 
    if (value<low) {
-      (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too low (%lf)\n",value,low); // used to be "stderr"
+      if (debug > 0) {
+          (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too low (%lf)\n",value,low); // used to be "stderr"
+      }
       vector[gene] = low;
    } else if (value>high) {
-      (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too high (%lf)\n",value,high); // used to be "stderr"
+      if (debug > 0) {
+          (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too high (%lf)\n",value,high); // used to be "stderr"
+      }
       vector[gene] = high;
    } else {
       vector[gene] = value;
@@ -443,7 +448,7 @@ Representation &RealVector::operator=(const Representation &original)
     (void)fprintf(logFile, "rep.cc/Representation &RealVector::operator=(const Representation &original) \n");
 #endif /* DEBUG */
 
-   register int i;
+   register unsigned int i;
    double *array;
 
    if (original.type()==T_RealV) {
@@ -523,7 +528,7 @@ ConstrainedRealVector::ConstrainedRealVector(const ConstrainedRealVector &origin
       vector = NULL;
    }
 
-   for (register int i=0; i<original.number_of_pts; i++) {
+   for (register unsigned int i=0; i<original.number_of_pts; i++) {
       vector[i] = original.vector[i];
    }
 }
@@ -619,7 +624,7 @@ void ConstrainedRealVector::normalize(void) const
 
 //   kluge = &normalized;
    if (!normalized) {
-      register int i;
+      register unsigned int i;
       register double tempsum = 0.0, hypotenuse;
 
       for (i=0; i<number_of_pts; i++) {
@@ -688,7 +693,7 @@ const void *ConstrainedRealVector::internals(void) const
 
 Representation &ConstrainedRealVector::operator=(const Representation &original)
 {
-   register int i;
+   register unsigned int i;
    double *array;
 
 #ifdef DEBUG
@@ -770,7 +775,7 @@ BitVector::BitVector(const BitVector &original)
       vector = NULL;
    }
 
-   for (register int i=0; i<number_of_pts; i++) {
+   for (register unsigned int i=0; i<number_of_pts; i++) {
       vector[i] = original.vector[i];
    }
 }
@@ -877,7 +882,7 @@ const void *BitVector::internals(void) const
 
 Representation &BitVector::operator=(const Representation &original)
 {
-   register int i;
+   register unsigned int i;
    unsigned char *array;
 
 #ifdef DEBUG

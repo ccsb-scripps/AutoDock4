@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.2 2003/02/26 01:50:43 garrett Exp $
+ $Id: trilinterp.cc,v 1.3 2004/02/12 04:32:16 garrett Exp $
 
 */
 
@@ -26,16 +26,16 @@ extern FILE *logFile;
 #endif
 
 FloatOrDouble trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-		  CONST_FLOAT charge[MAX_ATOMS], 
-		  CONST_INT   type[MAX_ATOMS], 
-		  CONST_INT   total_atoms, 
-		  CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-		  CONST_FLOAT inv_spacing, 
-		  FloatOrDouble elec[MAX_ATOMS], 
-		  FloatOrDouble emap[MAX_ATOMS], 
-		  CONST_FLOAT xlo,	/**/
-		  CONST_FLOAT ylo,	/*   FloatOrDouble lo[SPACE] ) SLOWER */
-		  CONST_FLOAT zlo )	/**/
+          CONST_FLOAT charge[MAX_ATOMS], 
+          CONST_INT   type[MAX_ATOMS], 
+          CONST_INT   total_atoms, 
+          CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+          CONST_FLOAT inv_spacing, 
+          FloatOrDouble elec[MAX_ATOMS], 
+          FloatOrDouble emap[MAX_ATOMS], 
+          CONST_FLOAT xlo,	/**/
+          CONST_FLOAT ylo,	/*   FloatOrDouble lo[SPACE] ) SLOWER */
+          CONST_FLOAT zlo )	/**/
 
 /*
 ** FloatOrDouble tcoord[MAX_ATOMS][SPACE];	temporary coordinates
@@ -105,10 +105,10 @@ FloatOrDouble trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         p1w = 1. - (p0w = w - (double) w0);
 
 #ifdef MINPOINT
-	x = (p0u < p1u)? u0 : u1;				    /*MINPOINT*/
-	y = (p0v < p1v)? v0 : v1;				    /*MINPOINT*/
-	z = (p0w < p1w)? w0 : w1;				    /*MINPOINT*/
-								    /*MINPOINT*/
+    x = (p0u < p1u)? u0 : u1;				    /*MINPOINT*/
+    y = (p0v < p1v)? v0 : v1;				    /*MINPOINT*/
+    z = (p0w < p1w)? w0 : w1;				    /*MINPOINT*/
+        						    /*MINPOINT*/
         electotal += (elec[i] = map[z][y][x][ElecMap] * charge[i]); /*MINPOINT*/
         emaptotal += (emap[i] = map[z][y][x][AtomType]); 	    /*MINPOINT*/
 #else
@@ -153,14 +153,14 @@ FloatOrDouble trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 /* quicktrilinterp.c */
 
 FloatOrDouble quicktrilinterp(	CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-		  	CONST_FLOAT charge[MAX_ATOMS], 
-		  	CONST_INT   type[MAX_ATOMS], 
-		  	CONST_INT   total_atoms, 
-		  	CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-		  	CONST_FLOAT inv_spacing, 
-		  	CONST_FLOAT xlo,
-		  	CONST_FLOAT ylo,
-		  	CONST_FLOAT zlo )
+          	CONST_FLOAT charge[MAX_ATOMS], 
+          	CONST_INT   type[MAX_ATOMS], 
+          	CONST_INT   total_atoms, 
+          	CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+          	CONST_FLOAT inv_spacing, 
+          	CONST_FLOAT xlo,
+          	CONST_FLOAT ylo,
+          	CONST_FLOAT zlo )
 
 {
     double	 etotal;
@@ -218,10 +218,10 @@ FloatOrDouble quicktrilinterp(	CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 
         etotal += map[z][y][x][ElecMap] * charge[i] + map[z][y][x][AtomType]; 
 #else
-        e = m = 0.;
+        // e = m = 0.;
 
-        e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-        m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
+        e = p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
+        m = p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
 
 #ifdef DEBUG
     // gmm  19-FEB-2003
@@ -234,63 +234,55 @@ FloatOrDouble quicktrilinterp(	CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
         e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
 
-#ifdef DEBUG
-    // gmm  19-FEB-2003
+#ifdef DEBUG // gmm  19-FEB-2003
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  2  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
 #endif /* DEBUG */
 
         e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
         m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
 
-#ifdef DEBUG
-    // gmm  19-FEB-2003
+#ifdef DEBUG // gmm  19-FEB-2003
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  3  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
 #endif /* DEBUG */
 
-        m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-        e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
+        m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
+        e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
 
-#ifdef DEBUG
-    // gmm  19-FEB-2003
+#ifdef DEBUG // gmm  19-FEB-2003
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  4  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
 #endif /* DEBUG */
 
-        e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-        m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
+        e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
+        m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
 
-#ifdef DEBUG
-    // gmm  19-FEB-2003
+#ifdef DEBUG // gmm  19-FEB-2003
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  5  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
 #endif /* DEBUG */
 
-        m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-        e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-
-#ifdef DEBUG
-    // gmm  19-FEB-2003
+        m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
+        e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
+    
+#ifdef DEBUG // gmm  19-FEB-2003
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  6  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
 #endif /* DEBUG */
+    
+        e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
+        m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
 
-        e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-        m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-
-#ifdef DEBUG
-    // gmm  19-FEB-2003
+#ifdef DEBUG // gmm  19-FEB-2003
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  7  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
 #endif /* DEBUG */
 
         m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
         e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
 
-#ifdef DEBUG
-    // gmm  19-FEB-2003
+#ifdef DEBUG // gmm  19-FEB-2003
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  8  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
 #endif /* DEBUG */
 
         etotal += e * charge[i] + m; 
 
-#ifdef DEBUG
-    // gmm  19-FEB-2003
+#ifdef DEBUG // gmm  19-FEB-2003
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  9  etotal= %.9lf\n", etotal);
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  9  (FloatOrDouble)etotal= %.5f\n", (FloatOrDouble)etotal);
 #endif /* DEBUG */
@@ -306,26 +298,26 @@ FloatOrDouble quicktrilinterp(	CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 /*----------------------------------------------------------------------------*/
 
 FloatOrDouble outsidetrilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-		  	CONST_FLOAT charge[MAX_ATOMS], 
-		  	CONST_INT   type[MAX_ATOMS], 
-		  	CONST_INT   total_atoms, 
-		  	CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-		  	CONST_FLOAT inv_spacing, 
-		        // FloatOrDouble elec[MAX_ATOMS],
-			      // FloatOrDouble emap[MAX_ATOMS],
-		  	CONST_FLOAT xlo,
-		  	CONST_FLOAT ylo,
-		  	CONST_FLOAT zlo,
-		  	CONST_FLOAT xhi,
-		  	CONST_FLOAT yhi,
-		  	CONST_FLOAT zhi,
-		  	CONST_FLOAT xcen,
-		  	CONST_FLOAT ycen,
-		  	CONST_FLOAT zcen )
+          	CONST_FLOAT charge[MAX_ATOMS], 
+          	CONST_INT   type[MAX_ATOMS], 
+          	CONST_INT   total_atoms, 
+          	CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+          	CONST_FLOAT inv_spacing, 
+                // FloatOrDouble elec[MAX_ATOMS],
+        	      // FloatOrDouble emap[MAX_ATOMS],
+          	CONST_FLOAT xlo,
+          	CONST_FLOAT ylo,
+          	CONST_FLOAT zlo,
+          	CONST_FLOAT xhi,
+          	CONST_FLOAT yhi,
+          	CONST_FLOAT zhi,
+          	CONST_FLOAT xcen,
+          	CONST_FLOAT ycen,
+          	CONST_FLOAT zcen )
 
 {
     double	 etotal, epenalty;
-    double	 x, y, z;
+    CONST_FLOAT	 x, y, z; // Xcode-gmm was double 2004-02-03
     double	 u,   v,   w;
     double	 p0u, p0v, p0w;
     double	 p1u, p1v, p1w;
@@ -381,10 +373,10 @@ FloatOrDouble outsidetrilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
                       (map[i] = map[z][y][x][AtomType]); 
 
 #else
-            e = m = 0.;
+            // e = m = 0.;
      
-            e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-            m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
+            e = p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
+            m = p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
      
             m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
             e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
@@ -392,11 +384,11 @@ FloatOrDouble outsidetrilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
             m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
      
-            m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-            e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-     
-            e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
             m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
+            e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
+
+            e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
+            m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
      
             m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
             e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
@@ -618,7 +610,7 @@ FloatOrDouble template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
 
         m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-	    e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
+        e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
 
         diff = (m + e * charge[i] - template_energy[i]) / template_stddev[i]; 
         etotal += diff * diff;
@@ -633,20 +625,20 @@ FloatOrDouble template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 /*----------------------------------------------------------------------------*/
 
 FloatOrDouble outside_templ_trilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-		  	CONST_FLOAT charge[MAX_ATOMS], 
-		  	CONST_INT   type[MAX_ATOMS], 
-		  	CONST_INT   total_atoms, 
-		  	CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-		  	CONST_FLOAT inv_spacing, 
-		  	CONST_FLOAT xlo,
-		  	CONST_FLOAT ylo,
-		  	CONST_FLOAT zlo,
-		  	CONST_FLOAT xhi,
-		  	CONST_FLOAT yhi,
-		  	CONST_FLOAT zhi,
-		  	CONST_FLOAT xcen,
-		  	CONST_FLOAT ycen,
-		  	CONST_FLOAT zcen,
+          	CONST_FLOAT charge[MAX_ATOMS], 
+          	CONST_INT   type[MAX_ATOMS], 
+          	CONST_INT   total_atoms, 
+          	CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+          	CONST_FLOAT inv_spacing, 
+          	CONST_FLOAT xlo,
+          	CONST_FLOAT ylo,
+          	CONST_FLOAT zlo,
+          	CONST_FLOAT xhi,
+          	CONST_FLOAT yhi,
+          	CONST_FLOAT zhi,
+          	CONST_FLOAT xcen,
+          	CONST_FLOAT ycen,
+          	CONST_FLOAT zcen,
             CONST_FLOAT template_energy[MAX_ATOMS],
             CONST_FLOAT template_stddev[MAX_ATOMS])
 
@@ -746,16 +738,16 @@ FloatOrDouble outside_templ_trilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 /*----------------------------------------------------------------------------*/
 
 FloatOrDouble byatom_template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-		  	                      CONST_FLOAT charge[MAX_ATOMS], 
-		  	                      CONST_INT   type[MAX_ATOMS], 
-		  	                      CONST_INT   total_atoms, 
-		  	                      CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-		  	                      CONST_FLOAT inv_spacing, 
-		                          FloatOrDouble elec[MAX_ATOMS], 
-		                          FloatOrDouble emap[MAX_ATOMS], 
-		  	                      CONST_FLOAT xlo,
-		  	                      CONST_FLOAT ylo,
-		  	                      CONST_FLOAT zlo,
+          	                      CONST_FLOAT charge[MAX_ATOMS], 
+          	                      CONST_INT   type[MAX_ATOMS], 
+          	                      CONST_INT   total_atoms, 
+          	                      CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+          	                      CONST_FLOAT inv_spacing, 
+                                  FloatOrDouble elec[MAX_ATOMS], 
+                                  FloatOrDouble emap[MAX_ATOMS], 
+          	                      CONST_FLOAT xlo,
+          	                      CONST_FLOAT ylo,
+          	                      CONST_FLOAT zlo,
                                   CONST_FLOAT template_energy[MAX_ATOMS],
                                   CONST_FLOAT template_stddev[MAX_ATOMS])
 {
@@ -825,7 +817,7 @@ FloatOrDouble byatom_template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
 
         m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-	    e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
+        e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
 
         diff = ((emap[i] = m) + (elec[i] = e * charge[i]) - template_energy[i]) / template_stddev[i];
         etotal += diff * diff;

@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.5 2003/12/04 21:34:00 billhart Exp $
+ $Id: eval.cc,v 1.6 2004/02/12 04:32:15 garrett Exp $
 
 */
 
@@ -243,7 +243,7 @@ double Eval::eval()
 
 int Eval::write(FILE *out_file, Representation **rep)
 {
-    int i, retval;
+    int i=0, retval=0;
     //char rec14[14];
 
 #ifdef DEBUG

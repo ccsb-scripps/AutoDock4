@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.3 2003/02/26 01:09:17 garrett Exp $
+ $Id: gs.cc,v 1.4 2004/02/12 04:32:15 garrett Exp $
 
 */
 
@@ -104,7 +104,7 @@ double avg_in_window(double *window, int size)
 //  Also set avg
 double Genetic_Algorithm::worst_this_generation(Population &pop)
 {
-   register int i;
+   register unsigned int i;
    double worstval, avgval;
 
 #ifdef DEBUG2
@@ -165,8 +165,8 @@ beta(0.0),
 tranStep(2.0),
 quatStep(0.872664626),
 torsStep(0.872664626),
-low(-100.0),
-high(100.0),
+low(-100),
+high(100),
 generations(0),
 max_generations(init_max_generations),
 converged(0),
@@ -401,7 +401,8 @@ void Genetic_Algorithm::mutation(Population &pure)
 
 void Genetic_Algorithm::crossover(Population &original)
 {
-   int i, starting_point, temp_index, temp_ordering;
+   register unsigned int i;
+   int starting_point, temp_index, temp_ordering;
    
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover(Population &original)\n");
@@ -460,7 +461,7 @@ void Genetic_Algorithm::crossover(Population &original)
  */
 void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsigned int pt1, unsigned int pt2)
 {
-   int i;
+   register unsigned int i;
    Element temp;
 
 #ifdef DEBUG
@@ -525,8 +526,8 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
 
 void Genetic_Algorithm::selection_proportional(Population &original_pop, Individual *new_pop)
 {
-   register int i=0;
-   int temp_ordering, temp_index, start_index = 0;
+   register unsigned int i=0, start_index = 0;
+   int temp_ordering, temp_index;
 #ifdef DEBUG2
    FloatOrDouble debug_ranf;
    int allzero = 1;//debug
@@ -798,7 +799,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
  */
 void Genetic_Algorithm::selection_tournament(Population &original, Individual *new_pop)
 {
-   register int i = 0, start_index = 0;
+   register unsigned int i = 0, start_index = 0;
    int temp_ordering, temp_index;
 
 #ifdef DEBUG
@@ -866,7 +867,7 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
 //  For right now global search is taken to be a GA
 int Genetic_Algorithm::search(Population &solutions)
 {
-   int i;
+   register unsigned int i;
    unsigned int oldest = 0, oldestIndividual = 0, fittestIndividual = 0;
    double fittest = BIG;
 

@@ -3,6 +3,7 @@
 #define _STRUCTS_H
 
 #include "constants.h"
+#include "typedefs.h"
 
 /******************************************************************************
  *      Name: structs.h                                                       *
@@ -21,11 +22,6 @@
  * 02/28/95 GMM     This header added                                         *
  ******************************************************************************/
 
-/*____________________________________________________________________________*/
-
-#include "typedefs.h"
-
-/*____________________________________________________________________________*/
 
 typedef struct coord {
 	double	x;		/* Cartesian x-coordinate */
@@ -56,6 +52,7 @@ typedef struct energy {
     double FE;    /* estimated Free Energy of binding */
 } Energy;
 
+/*____________________________________________________________________________*/
 
 typedef struct state {
 	Coord	T;		/* coordinates of center of molecule */
@@ -130,8 +127,9 @@ typedef struct torsion {
     int 	IDmove[MAX_ATOMS];  /* atom serial-IDs of atoms moved by this */
     Coord	vt;		/* bond-vector of rotatable bond */
 } Torsion;
+
 /*______________________________________________________________________________
-** Molecular fragments, side-chains, even entire ligands */
+ * Molecular fragments, side-chains, even entire ligands						*/
 
 typedef struct group {
 	int	natom;			/* Number of atoms in fragment */

@@ -1,6 +1,6 @@
 /*
 
- $Id: output_state.cc,v 1.2 2003/02/26 01:24:26 garrett Exp $
+ $Id: output_state.cc,v 1.3 2004/02/12 04:32:15 garrett Exp $
 
 */
 
@@ -41,8 +41,11 @@ void output_state( FILE *fp,
 {
     int i;
 	/*int lockf_status;*/
+	
+#ifndef __ppc__
 	int FD_watch;
     FILE *FP_watch;
+#endif
 
     fprintf(fp, "state %d %c %f %f  %lf %lf %lf  %lf %lf %lf %lf\n",
         istep, lastmove, energy, eint, S.T.x, S.T.y, S.T.z,

@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.2 2003/02/26 01:40:37 garrett Exp $
+ $Id: simanneal.cc,v 1.3 2004/02/12 04:32:16 garrett Exp $
 
 */
 
@@ -119,6 +119,7 @@ void simanneal( int   *Addr_nconf,
 
 
     FILE *FP_trj;
+	FP_trj = NULL;
 
     State sNow; /* qtnNow, torNow */
     State sChange; /* qtnChange, torChange */
@@ -180,8 +181,9 @@ void simanneal( int   *Addr_nconf,
 
 /* Open the trajectory file for writing, =====================================*/
 
-    if ( B_writeTrj ) { 
-        if ( (FP_trj = fopen(FN_trj, "w")) == NULL ) {
+    if ( B_writeTrj ) {
+		FP_trj = fopen(FN_trj, "w");
+        if ( FP_trj == NULL ) {
             prStr( message, "\n%s: can't create trajectory file %s\n", programname, FN_trj);
             pr_2x( stderr, logFile, message );
             prStr( message, "\n%s: Unsuccessful Completion.\n\n", programname);

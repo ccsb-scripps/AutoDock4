@@ -11,6 +11,29 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.3  2004/02/12 04:32:16  garrett
+**
+** After a first round of compilation using Apple's IDE, Xcode, various
+** warnings have been eliminated (mainly unsigned ints and ints being
+** interchanged); and
+**
+** After using Apple's Shark tool for profiling source code, the
+** internal energy calculation has been optimized.
+**
+** The non-bonded cutoff used in the internal energy calculation has been
+** reduced from 64 Angstroms to 8 Angstroms.  Most contributions beyond
+** 8 Angstroms are very small, less than -0.001 kcal/mol, even for the
+** largest atoms. Also, the conversion from double to int used to
+** be done before the if to decide if we were within the cutoff; now
+** the square of the distance is used in the comparison, and only if
+** we are within the cutoff, do we convert from the double to int.
+**
+** The version checked in here still uses the type array to lookup
+** the energy of interaction for a nonbond; this level of indirection
+** can be pre-computed, and this should appear in my next round of checkins
+**
+** -- Garrett
+**
 ** Revision 1.2  2002/10/30 01:49:15  garrett
 ** Commented out the #include <iostream.h> lines, since these appeared
 ** to conflict with <stdio.h>.  Also, added -lsupc++ to the linker
@@ -81,9 +104,9 @@ class Phenotype
    //friend void debug(Phenotype &);
    protected:
       unsigned int number_of_dimensions, number_of_points;
-      double value;
       Lookup *lookup;
       Representation **value_vector;
+      double value;
       unsigned evalflag : 1;  //  =1 means that this is the current evaluation
       unsigned modified : 1;  //  =1 means that this has been modified
 
@@ -137,9 +160,9 @@ class Population
 {
    //friend void debug(Population &);
    protected:
-      Individual *heap; /* a heap of individuals -- special binary tree */
       int lhb;  //  These keep track of the lower & upper heap bounds
       int size; /* the number of individuals in the population */
+      Individual *heap; /* a heap of individuals -- special binary tree */
       void swap(Individual &, Individual &); /* for maintaining the heap order*/
       void SiftUp(void); /* for maintaining the heap order*/
       void SiftDown(void); /* for maintaining the heap order*/
@@ -265,7 +288,7 @@ inline double Individual::value(EvalMode mode)
 }
 
 inline Population::Population(void)
-:heap((Individual *)NULL), lhb(-1), size(0)
+:lhb(-1), size(0), heap((Individual *)NULL)
 {
 }
 

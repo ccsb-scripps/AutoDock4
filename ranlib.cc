@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.2 2003/02/26 01:31:45 garrett Exp $
+ $Id: ranlib.cc,v 1.3 2004/02/12 04:32:16 garrett Exp $
 
 */
 
@@ -773,7 +773,7 @@ S20:
     nsave = n;
     if(xnp < 30.0) goto S140;
     ffm = xnp+p;
-    m = ffm;
+    m = (FourByteLong) ffm;
     fm = m;
     xnpq = xnp*q;
     p1 = (FourByteLong) (2.195*sqrt(xnpq)-4.6*q)+0.5;
@@ -798,7 +798,7 @@ S30:
      TRIANGULAR REGION
 */
     if(u > p1) goto S40;
-    ix = xm-p1*v+u;
+    ix = (FourByteLong) (xm-p1*v+u);
     goto S170;
 S40:
 /*
@@ -808,14 +808,14 @@ S40:
     x = xl+(u-p1)/c;
     v = v*c+1.0-ABS(xm-x)/p1;
     if(v > 1.0 || v <= 0.0) goto S30;
-    ix = x;
+    ix = (FourByteLong) x;
     goto S70;
 S50:
 /*
      LEFT TAIL
 */
     if(u > p3) goto S60;
-    ix = xl+log(v)/xll;
+    ix = (FourByteLong) (xl+log(v)/xll);
     if(ix < 0) goto S30;
     v *= ((u-p2)*xll);
     goto S70;
@@ -823,7 +823,7 @@ S60:
 /*
      RIGHT TAIL
 */
-    ix = xr-log(v)/xlr;
+    ix = (FourByteLong) (xr-log(v)/xlr);
     if(ix > n) goto S30;
     v *= ((u-p3)*xlr);
 S70:

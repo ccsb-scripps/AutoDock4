@@ -3,6 +3,7 @@
 #include "constants.h"
 #include "usage.h"
 
-int  setflags( int   argc, 
-               char  **argv );
+int setflags( int I_argc, 
+              char * const PPC_argv[]);
+
 #endif

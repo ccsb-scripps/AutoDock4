@@ -9,7 +9,7 @@
  *      Name: constants.h                                                     *
  *  Function: Automated Docking of Small Molecule to Macromolecule            *
  *              Header file for Autodock modules.                             *
- * Copyright: (C) 1994, TSRI                                                  *
+ * Copyright: (C) 1994-2004, TSRI											  *
  *----------------------------------------------------------------------------*
  *    Author: Garrett Matthew Morris*                                         *
  *                                                                            *
@@ -107,14 +107,25 @@
 #define HI_NRG_JUMP_FACTOR 2. /* Scale up the range of random jumps by this when the 
                                  last energy was higher than ENERGY_CUTOFF. */
 
-#define NEINT  131072         /* Number of values in internal energy table */
-#define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
-#define A_DIV     100.00      /* Used in distance look-up table. */
-#define INV_A_DIV   0.01      /* Used in distance look-up table. */
-#define SQA_DIV    32.00      /* Used in square-distance look-up table. */
-#define INV_SQA_DIV 0.03125   /* INV_SQA_DIV = NBC2 / NEINT = 1 / SQA_DIV */
-#define NBC        64.00      /* Non-bonded cutoff for internal energy calc./Ang*/
-#define NBC2     4096.00      /* NBC^2, units: Angstrom^2 */
+#define NEINT      2048         /* Number of values in internal energy table */ // Xcode-gmm
+#define NEINT_1    (NEINT - 1)  /* index of last entry in internal energy table */
+#define A_DIV       100.0       /* Used in distance look-up table. */
+#define INV_A_DIV     0.01      /* Used in distance look-up table. */
+#define SQA_DIV      32.0       /* Used in square-distance look-up table. */
+#define INT_SQA_DIV  32         /* Xcode-gmm */
+#define INV_SQA_DIV   0.03125   /* INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
+#define NBC           8.0       /* Non-bonded cutoff for internal energy calc./Ang*/ // Xcode-gmm
+#define NBC2         64.0       /* NBC^2, units: Angstrom^2 */ // Xcode-gmm
+
+// #define NEINT  131072         /* Number of values in internal energy table */
+// #define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
+// #define A_DIV     100.00      /* Used in distance look-up table. */
+// #define INV_A_DIV   0.01      /* Used in distance look-up table. */
+// #define SQA_DIV    32.00      /* Used in square-distance look-up table. */
+// #define INT_SQA_DIV   32      /* Xcode-gmm */
+// #define INV_SQA_DIV 0.03125   /* INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
+// #define NBC        64.00      /* Non-bonded cutoff for internal energy calc./Ang*/
+// #define NBC2     4096.00      /* NBC^2, units: Angstrom^2 */
 
 /*
  * Alternate Scheme:-
@@ -221,6 +232,7 @@
 
 /* SqAng_to_index converts from the square of a distance to an array index */
 #define SqAng_to_index(r)        ( (int) ( (r) * SQA_DIV ) )
+#define SqAng_to_index_Int(r)        (INT_SQA_DIV * (int)(r))  /* Xcode-gmm */
 
 /* BoundedSqAng_to_index converts from the square of a distance to an array index, but never returns an index out of bounds. */
 #define BoundedSqAng_to_index(r)        ( (((int)((r)*SQA_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r)*SQA_DIV)) )
@@ -230,7 +242,7 @@
 
 #define sqminlookup(r)           ( (int) ( ( min( r, NBC2 ) ) * SQA_DIV ) )
 
-#define is_out_grid(x,y,z) (((x)<(xlo)) || ((x)>(xhi)) || ((y)<(ylo)) || ((y)>(yhi)) || ((z)<(zlo)) || ((z)>(zhi))) 
+#define is_out_grid(x,y,z) (((x)<=(xlo)) || ((x)>=(xhi)) || ((y)<=(ylo)) || ((y)>=(yhi)) || ((z)<=(zlo)) || ((z)>=(zhi))) 
 
 
 /*----------------------------------------------------------------------------* 
@@ -313,6 +325,9 @@
 #endif /* CLOCKS_PER_SEC */
 #endif /* sgi */
 
+#ifndef _CONST_INT
+#define _CONST_INT
+
 /*
  * const int and const FloatOrDouble are allowed by the SGI "CC" compiler
  */
@@ -325,6 +340,10 @@
 #define CONST_FLOAT FloatOrDouble
 #endif /*sgi*/
 
+#endif /* _CONST_INT */
+
+#ifndef _PDB_FORMATS
+#define _PDB_FORMATS
 
 /*----------------------------------------------------------------------------* 
  * Format for output                                                          * 
@@ -357,6 +376,8 @@
 
 #define FORMAT_PDBQ_ATOM_RANKRUN_STR      "ATOM  %5d  %.13s    %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f\n"
 #define FORMAT_PDBQ_ATOM_RUN_NUM          "ATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f\n"
+
+#endif /* _PDB_FORMATS */
 
 /*----------------------------------------------------------------------------* 
  * End of file                                                                * 

@@ -273,9 +273,10 @@ OLIMIT = $(CSTD) $(OPT) $(COLINY_INCLUDES) # SGI, Sun, HP, Convex, Linux, MacOS 
 # OLIMIT = $(CSTD) $(OPT) -OPT:Olimit=2500 # Alpha, Some SGIs.
 # OLIMIT = $(CFLAGS) # Do not optimize.
 
-# OPTLEVEL = -O3 # Agressive optimization.
+# OPTLEVEL = -fast # Agressive optimization for the G5 on Mac OS X.
+OPTLEVEL = -O3 # Agressive optimization.
 # OPTLEVEL = -O2 # High optimization.
-OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing.
+# OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing.
 # OPTLEVEL = -O0 # Do not optimize.
 
 OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.

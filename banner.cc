@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.2 2003/02/25 23:58:52 garrett Exp $
+ $Id: banner.cc,v 1.3 2004/02/12 04:32:14 garrett Exp $
 
 */
 
@@ -49,7 +49,7 @@ void banner( FloatOrDouble version_num )
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |            AutoDock %3.2f             |\n", version_num );
     (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 |            (c) 1991-2002             |\n");
+    (void) fprintf(logFile, "                 |            (c) 1991-2004             |\n");
     (void) fprintf(logFile, "                 |    The Scripps Research Institute    |\n");
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |       Garrett M. Morris, TSRI        |\n");

@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.6 2003/12/04 21:58:29 billhart Exp $
+ $Id: main.cc,v 1.7 2004/02/12 04:32:15 garrett Exp $
 
 */
 
@@ -56,14 +56,16 @@ int sel_prop_count = 0;
 
 extern Eval evaluate;
 
-int main( int argc, char **argv, char **envp )
+// int main( int argc, char **argv, char **envp )
+
+int main (int argc, char * const argv[], char * const envp[])
 
 /*******************************************************************************
 **      Name: main  (AutoDock)                                                **
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule **
-** Copyright: (C) 1994-1999 TSRI, Arthur J. Olson's Labortatory.              **
+** Copyright: (C) 1994-2004 TSRI, Arthur J. Olson's Labortatory.              **
 **____________________________________________________________________________**
-**   Authors: Garrett Matthew Morris, Current C/C++ version 3.0.5             **
+**   Authors: Garrett Matthew Morris, Current C/C++ version 3.0.7             **
 **                                       e-mail: garrett@scripps.edu          **
 **                                                                            **
 **            David Goodsell, Orignal FORTRAN version 1.0                     **
@@ -74,7 +76,7 @@ int main( int argc, char **argv, char **envp )
 **            10550 North Torrey Pines Road                                   **
 **            La Jolla, CA 92037.                                             **
 **                                                                            **
-**      Date: 03/04/99                                                        **
+**      Date: 02/10/04                                                        **
 **____________________________________________________________________________**
 **    Inputs: Control file, Small Molecule PDBQ file, macromolecular grid map **
 **            files.                                                          **
@@ -313,7 +315,7 @@ static FloatOrDouble F_lnH;
 static FloatOrDouble F_W;
 static FloatOrDouble F_hW;
 static FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
-static FloatOrDouble version = 3.05;
+static FloatOrDouble version = 3.07;
 static FourByteLong clktck = 0;
 
 struct tms tms_jobStart;
@@ -443,7 +445,8 @@ if (clktck == 0) {        /* fetch clock ticks per second first time */
     } else {
         idct = (FloatOrDouble)1. / (FloatOrDouble)clktck;
         if (debug) {
-          pr(logFile, "\n\nFYI:  Number of clock ticks per second = %d\nFYI:  Elapsed time per clock tick = %.3e seconds\n\n\n\n", clktck, idct);
+            pr(logFile, "\n\nFYI:  Number of clock ticks per second = %d\n", clktck);
+            pr(logFile, "FYI:  Elapsed time per clock tick = %.3e seconds\n\n\n\n", idct);
         }
     }
 }
@@ -2697,7 +2700,7 @@ pr( logFile, "\n\n\n" );
 success( hostnm, jobStart, tms_jobStart );
 (void) fclose( logFile );
 
-return(0);
+return 0;
 
 } /* END OF PROGRAM */
 /* EOF */

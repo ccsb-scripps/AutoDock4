@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.2 2003/02/26 01:11:03 garrett Exp $
+ $Id: ls.cc,v 1.3 2004/02/12 04:32:15 garrett Exp $
 
 */
 
@@ -24,7 +24,7 @@ extern FILE *logFile;
 Phenotype genPh(const Phenotype &original, FloatOrDouble *array1, FloatOrDouble *array2)
 {
    RepType genetype;
-   register int i, index = 0;
+   register unsigned int i, index = 0;
    Phenotype retval(original);
 
 #ifdef DEBUG
@@ -50,7 +50,7 @@ Phenotype genPh(const Phenotype &original, FloatOrDouble *array1, FloatOrDouble 
 //
 void Solis_Wets::SW(Phenotype &vector)
 {
-   register int i, j, num_successes = 0, num_failures = 0;
+   register unsigned int i, j, num_successes = 0, num_failures = 0;
    register FloatOrDouble temp_rho = rho;
    Phenotype newPh;
 
@@ -124,7 +124,7 @@ void Solis_Wets::SW(Phenotype &vector)
 //
 void Pseudo_Solis_Wets::SW(Phenotype &vector)
 {
-   register int i, j, num_successes = 0, num_failures = 0,  all_rho_stepsizes_too_small = 1;
+   register unsigned int i, j, num_successes = 0, num_failures = 0,  all_rho_stepsizes_too_small = 1;
     
    Phenotype newPh;
 

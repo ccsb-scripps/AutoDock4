@@ -31,23 +31,29 @@ class Genetic_Algorithm : public Global_Search
 {
 //   friend void debug(Genetic_Algorithm &, Population &);
    private:
-      unsigned int generations, max_generations;
-      unsigned int converged; // gmm 7-jan-98
-      unsigned int *ordering;
-      unsigned int outputEveryNgens; // gmm 2000.11.1,2003.08.18
-      FloatOrDouble *alloc, *mutation_table;
       EvalMode e_mode;
       Selection_Mode s_mode;
-      Worst_Mode w_mode;
-      int window_size, elitism;
       Xover_Mode c_mode;
-      unsigned int m_table_size;
-      FloatOrDouble m_rate, c_rate, tournament_prob;
-      FloatOrDouble alpha, beta;
+      Worst_Mode w_mode;
+      unsigned int elitism;
+	  FloatOrDouble c_rate;
+	  FloatOrDouble m_rate;
+      unsigned int window_size;
+      FloatOrDouble alpha;
+	  FloatOrDouble beta;
       FloatOrDouble tranStep, quatStep, torsStep;
-      int low, high;
-      double avg, worst;
+      int low, high; // should these be int or FloatOrDouble?
+      unsigned int generations; 
+	  unsigned int max_generations;
+      unsigned int converged; // gmm 7-jan-98
+ 	  FloatOrDouble *alloc;
+      FloatOrDouble *mutation_table;
+      unsigned int *ordering;	  
+      unsigned int m_table_size;
+      double worst, avg;
       double *worst_window;
+	  FloatOrDouble tournament_prob;
+      unsigned int outputEveryNgens; // gmm 2000.11.1,2003.08.18
 
       double worst_this_generation(Population &);
       void set_worst(Population &);
@@ -87,7 +93,7 @@ inline Global_Search::~Global_Search(void)
 
 // Default values set in this constructor.
 inline Genetic_Algorithm::Genetic_Algorithm(void)
-: m_table_size(0), mutation_table(NULL), ordering(NULL), alloc(NULL), worst_window(NULL)
+: alloc(NULL), mutation_table(NULL), ordering(NULL), m_table_size(0), worst_window(NULL)
 {
    generations = 0;
    elitism = window_size = low = high = 0;

@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQ.cc,v 1.3 2003/02/27 02:15:31 lindy Exp $
+ $Id: readPDBQ.cc,v 1.4 2004/02/12 04:32:16 garrett Exp $
 
 */
 
@@ -38,7 +38,7 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
               FloatOrDouble crdpdb[ MAX_ATOMS ][ NTRN ],
               FloatOrDouble charge[ MAX_ATOMS ],
               Boole *P_B_haveCharges,
-              int   atmType[ MAX_ATOMS ],
+              int   type[ MAX_ATOMS ],
               char  pdbaname[ MAX_ATOMS ][ 5 ],
               char  pdbqFileName[ MAX_CHARS ],
               char  atomstuff[ MAX_ATOMS ][ MAX_CHARS ],
@@ -57,7 +57,7 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
 
               int   *P_Nnb,
               int   Nnbonds[ MAX_ATOMS ],
-              int   nonbondlist[ MAX_NONBONDS ][ 2 ],
+              int   nonbondlist[MAX_NONBONDS][2],
 
               Clock jobStart,
               struct tms tms_jobStart,
@@ -166,13 +166,13 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
             strcpy(mol.atomstr[iatom], atomstuff[iatom]);
 
             sscanf( &thisline[ 12 ], "%s", pdbaname[ iatom ] );
-            atmType[ iatom ] = -1;
-            atmType[ iatom ] = get_atom_type( pdbaname[ iatom ], atm_typ_str );
-            if (atmType[ iatom ] == -1) {
+            type[ iatom ] = -1;
+            type[ iatom ] = get_atom_type( pdbaname[ iatom ], atm_typ_str );
+            if (type[ iatom ] == -1) {
                 pr( logFile, "%s: atom type error, using the default, atom type = 1\n", programname);
-                atmType[ iatom ] = 1;
+                type[ iatom ] = 1;
             }
-            ++ntype[ atmType[ iatom ] ]; /* count the number of this atomtype */
+            ++ntype[ type[ iatom ] ]; /* count the number of this atomtype */
 
             ++iatom;        /* count the number of atoms in PDBQ file */
         }
@@ -220,7 +220,7 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
         /*
         **  Create list of internal non-bond distances to check...
         */
-        nonbonds( crdpdb, nbmatrix_binary, iatom, Rec_atomnumber, nrecord, record, piece, Htype, atmType );
+        nonbonds( crdpdb, nbmatrix_binary, iatom, Rec_atomnumber, nrecord, record, piece, Htype, type );
         weedbonds( iatom, pdbaname, piece, ntor, tlist, P_Nnb, Nnbonds, nbmatrix_binary, nonbondlist, outlev );
         torNorVec( crdpdb, ntor, tlist, vt );
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.2 2003/02/26 01:37:14 garrett Exp $
+ $Id: setflags.cc,v 1.3 2004/02/12 04:32:16 garrett Exp $
 
 */
 
@@ -30,7 +30,7 @@ extern int  parse_tors_mode;
 extern int  keepresnum;
 
 
-int setflags( int I_argc, char **PPC_argv )
+int setflags( int I_argc, char * const PPC_argv[])
 
 /*
 ** naming convention: 
