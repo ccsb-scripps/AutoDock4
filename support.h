@@ -11,6 +11,32 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.5  2004/12/07 02:07:53  gillet
+** -- fix problem of compilation with g++ 3.3.2 on Linux:
+** 	added Genotype(Genotype const &); in support.h
+** 	it s definition in support.cc
+**
+** 	added Individual(Individual const &)
+**
+** Use the following message to resolve problem:
+** http://gcc.gnu.org/ml/gcc-help/2003-10/msg00121.html
+**
+** You should put a copy constructor in your Anton class.
+**
+** "Anton(Anton& a)" isn't a copy constructor.  You need an "Anton(Anton const& a)".
+**
+** If Anton objects cannot be used in a copy constructor, then there are certain operations which Anton objects cannot perform.
+**
+** It appears that you hit upon one of them.
+**
+** If the "some code which _needs_ to modify a" is doing so in such a way that the LOGICAL state of the object is not affected, then those data members which are being modified should be marked as "mutable" in the class itself.  For example, certain reference counting schemes.  Another example is the std::string's c_str() method, which is a const method.
+**
+** If the "some code which _needs_ to modify a" does modify the LOGICAL state of the Anton object being copied from, then that's not kosher for use in a copy constructor.  C'est la vie.
+**
+** The Standard C++ Library auto_ptr<> is an example of a template class which modifies the state of the copied-from object.  That's one of the reasons that auto_ptr<>'s and STL don't mix (by-and-large).
+**
+** Or to say it another way, auto_ptr<> doesn't satisfy the contract requirements of STL containers.  Generally speaking.  If someone is REALLY careful, they may be able to use auto_ptr<> in a STL container... but I tend to recommend against it.   The BOOST <www.boost.org> folks have some smart pointer classes that are STL friendly.
+**
 ** Revision 1.4  2004/11/16 23:42:56  garrett
 ** This is the result of merging the existing CVS respository with the AutoDock 4.0 code.  We have tested the code with a variety of problems: rigid ligand-rigid protein, rigid ligand-flexible protein, flexible ligand-rigid protein and flexible ligand-flexible protein: all four tests passed.  There was a bug fix regarding the flexible ligand-rigid protein case, to do with the absence of a BEGIN_RES record in the PDBQ file. -- GMM & RH
 **
@@ -84,6 +110,7 @@ class Genotype
    public:
       Genotype(void);
       Genotype(Genotype &); /* copy constructor */
+      Genotype(Genotype const &);
       Genotype(unsigned int, Representation **); /* creates a genotype from the
 					     representation & total # vectors */
       ~Genotype(void); /* destructor */
@@ -145,6 +172,7 @@ class Individual
 
       Individual(void);
       Individual(Individual &); /* copy constructor */
+      Individual(Individual const &);
       Individual(Genotype &, Phenotype &);
       ~Individual(void); /* destructor */
       Individual &operator=(const Individual &); /* assignment function for

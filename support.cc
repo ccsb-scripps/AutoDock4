@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.7 2004/11/16 23:42:54 garrett Exp $
+ $Id: support.cc,v 1.8 2004/12/07 02:07:54 gillet Exp $
 
 */
 
@@ -239,6 +239,35 @@ Genotype::Genotype(Genotype &original)
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype::Genotype(Genotype &original)\n");
+#endif /* DEBUG */
+
+
+   number_of_genes = original.number_of_genes;
+   number_of_vectors = original.number_of_vectors;
+   modified = original.modified;
+   if (original.rep_vector!=NULL) {
+      rep_vector = new Representation*[number_of_vectors];
+      lookup = new Lookup[number_of_genes];
+   } else {
+      rep_vector = NULL;
+      lookup = NULL;
+   }
+
+   for (i=0; i<number_of_vectors; i++) {
+      rep_vector[i] = original.rep_vector[i]->clone();
+   }
+
+   for (i=0; i<number_of_genes; i++) {
+      lookup[i] = original.lookup[i];
+   }
+}
+
+Genotype::Genotype(Genotype const &original)
+{
+   register unsigned int i;
+
+#ifdef DEBUG
+   (void)fprintf(logFile, "support.cc/Genotype::Genotype(Genotype const &original)\n");
 #endif /* DEBUG */
 
 
