@@ -1,3 +1,13 @@
+/*
+
+ $Id: eintcalPrint.cc,v 1.2 2003/02/26 00:56:26 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* eintcalPrint.cc */
 
 #include <math.h>
@@ -8,13 +18,13 @@
 
 extern FILE *logFile;
 
-float eintcalPrint( int nonbondlist[MAX_NONBONDS][2],
-	            float eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
-	            float tcoord[MAX_ATOMS][SPACE],
+FloatOrDouble eintcalPrint( int nonbondlist[MAX_NONBONDS][2],
+	            FloatOrDouble eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
+	            FloatOrDouble tcoord[MAX_ATOMS][SPACE],
 	            int type[MAX_ATOMS],
 	            int Nnb,
 		    Boole B_calcIntElec,
-		    float q1q2[MAX_NONBONDS])
+		    FloatOrDouble q1q2[MAX_NONBONDS])
 
 /******************************************************************************/
 /*      Name: eintcal                                                         */
@@ -84,6 +94,6 @@ float eintcalPrint( int nonbondlist[MAX_NONBONDS][2],
 
     pr( logFile, "\n\n Total internal non-bonded energy = %+8.3lf\n", (double)eint);
 
-    return (float)eint;
+    return (FloatOrDouble)eint;
 }
 /* EOF */

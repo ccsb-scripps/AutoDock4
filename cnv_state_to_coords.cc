@@ -1,3 +1,13 @@
+/*
+
+ $Id: cnv_state_to_coords.cc,v 1.2 2003/02/26 00:53:07 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* cnv_state_to_coords.cc */
 
 #include <math.h>
@@ -12,11 +22,11 @@
 extern FILE *logFile;
 
 void cnv_state_to_coords( State now,
-                          float vt[MAX_TORS][SPACE],
+                          FloatOrDouble vt[MAX_TORS][SPACE],
                           int   tlist[MAX_TORS][MAX_ATOMS],
                           int   ntor,
-                          float crdpdb[MAX_ATOMS][SPACE],
-                          float crd[MAX_ATOMS][SPACE],
+                          FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+                          FloatOrDouble crd[MAX_ATOMS][SPACE],
                           int   natom)
 
 {
@@ -32,7 +42,7 @@ void cnv_state_to_coords( State now,
     //  coordinates ensures that cumulative
     //  rounding errors do not occur.
     //  this memcpy call...
-    (void)memcpy(crd, crdpdb, natom*3*sizeof(float));
+    (void)memcpy(crd, crdpdb, natom*3*sizeof(FloatOrDouble));
 
     //  is about 100x faster than these nested for-loops...
     //for (i = 0;  i < natom;  i++) {

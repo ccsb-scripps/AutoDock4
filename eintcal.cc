@@ -1,3 +1,13 @@
+/*
+
+ $Id: eintcal.cc,v 1.2 2003/02/26 00:55:03 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* eintcal.cc */
 
 #include <math.h>
@@ -10,13 +20,13 @@
 
 #ifndef EINTCALPRINT        /*!EINTCALPRINT[*/
 
-float eintcal( int nonbondlist[MAX_NONBONDS][2],
-               float eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
-               float tcoord[MAX_ATOMS][SPACE],
+FloatOrDouble eintcal( int nonbondlist[MAX_NONBONDS][2],
+               FloatOrDouble eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
+               FloatOrDouble tcoord[MAX_ATOMS][SPACE],
                int type[MAX_ATOMS],
                int Nnb,
                Boole B_calcIntElec,
-               float q1q2[MAX_NONBONDS])
+               FloatOrDouble q1q2[MAX_NONBONDS])
 
 /******************************************************************************/
 /*      Name: eintcal                                                         */
@@ -46,13 +56,13 @@ float eintcal( int nonbondlist[MAX_NONBONDS][2],
 
 extern FILE *logFile;
 
-float eintcalPrint( int nonbondlist[MAX_NONBONDS][2],
-                    float eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
-                    float tcoord[MAX_ATOMS][SPACE],
+FloatOrDouble eintcalPrint( int nonbondlist[MAX_NONBONDS][2],
+                    FloatOrDouble eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
+                    FloatOrDouble tcoord[MAX_ATOMS][SPACE],
                     int type[MAX_ATOMS],
                     int Nnb,
                     Boole B_calcIntElec,
-                    float q1q2[MAX_NONBONDS])
+                    FloatOrDouble q1q2[MAX_NONBONDS])
 
 #endif                       /*EINTCALPRINT]*/
 
@@ -211,6 +221,6 @@ float eintcalPrint( int nonbondlist[MAX_NONBONDS][2],
     pr( logFile, "\n\nIntramolecular Interaction Energy = %+8.3lf\n", (double)eint);
 #endif                      /*EINTCALPRINT]*/
 
-    return (float)eint;
+    return (FloatOrDouble)eint;
 }
 /* EOF */
