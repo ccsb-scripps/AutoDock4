@@ -40,48 +40,48 @@
 #ifndef CONSTANTS
 #define CONSTANTS
 
-#define REJECT                0
-#define ACCEPT                1
+#define REJECT       0
+#define ACCEPT       1
 
-#define U                0 /* x-coordinate in trilinear interpolation. */
-#define V                1 /* y-coordinate in trilinear interpolation. */
-#define W                2 /* z-coordinate in trilinear interpolation. */
-#define QX                3 /* quaternion x-coordinate */
-#define QY                4 /* quaternion y-coordinate */
-#define QZ                5 /* quaternion z-coordinate */
-#define QW                6 /* quaternion w-rotation */
-#define QUAT                7 /* No. of translation & rotations in quaternion */
+#define U            0        /* x-coordinate in trilinear interpolation. */
+#define V            1        /* y-coordinate in trilinear interpolation. */
+#define W            2        /* z-coordinate in trilinear interpolation. */
+#define QX           3        /* quaternion x-coordinate */
+#define QY           4        /* quaternion y-coordinate */
+#define QZ           5        /* quaternion z-coordinate */
+#define QW           6        /* quaternion w-rotation */
+#define QUAT         7        /* No. of translation & rotations in quaternion */
 
-#define NTRN                3 /* Number of translation axes                 */
-#define NQTN                4 /* Number of quaternion components         */
+#define NTRN         3        /* Number of translation axes */
+#define NQTN         4        /* Number of quaternion components */
 
-#define LOWER 0 /* Lower limit of torsion constraint. */
-#define UPPER 1 /* Upper limit of torsion constraint. */
+#define LOWER 0               /* Lower limit of torsion constraint. */
+#define UPPER 1               /* Upper limit of torsion constraint. */
 
-#define NLIG                4 /* Max. num. of ligands to be docked         */
-#define NLIGTOR                32 /* Max. num. of torsions in each ligand         */
+#define NLIG         4        /* Max. num. of ligands to be docked */
+#define NLIGTOR      32       /* Max. num. of torsions in each ligand */
 
-#define NRES                32 /* Max. num. of flexible residue */
-#define NRESTOR                5 /* Max. num. of torsions in a residue */
+#define NRES         32       /* Max. num. of flexible residue */
+#define NRESTOR      5        /* Max. num. of torsions in a residue */
 
-#define NMOL                36 /* NMOL = NLIG + NRES, always!!! */
+#define NMOL         36       /* NMOL = NLIG + NRES, always!!! */
 
-#define WORDLEN                9 /* Length of coordinates in characters. */
+#define WORDLEN      9        /* Length of coordinates in characters. */
 
-#define MAX_RUNS        256 /* Maximum number of runs. */
-#define MAX_ATOMS        2048 /* Maximum number of atoms in Small Molecule. */
-#define MAX_RECORDS        2048 /* Maximum number of PDBQ records =~1.5*MAX_ATOMS */
-#define MAX_NONBONDS        524288 /* Maximum number of non-bonds in Small Molecule.*/
+#define MAX_RUNS     256      /* Maximum number of runs. */
+#define MAX_ATOMS    2048     /* Maximum number of atoms in Small Molecule. */
+#define MAX_RECORDS  2048     /* Maximum number of PDBQ records =~1.5*MAX_ATOMS */
+#define MAX_NONBONDS 524288 /* 1048576   Maximum number of non-bonds in Small Molecule.*/
 
-#define MAX_TREES        8 /* Maximum number of torsion trees */
-#define MAX_TORS        32 /* Maximum number of torsions in Small Molecule. */
-#define MAX_TORS_IN_ROTAMER        8 /* Maximum number of torsions in rotamer. */
-#define MAX_TOR_CON         8 /* Maximum number of constraints per torsion. */
+#define MAX_TREES    8        /* Maximum number of torsion trees */
+#define MAX_TORS     32       /* Maximum number of torsions in Small Molecule. */
+#define MAX_TORS_IN_ROTAMER 8 /* Maximum number of torsions in rotamer. */
+#define MAX_TOR_CON  8        /* Maximum number of constraints per torsion. */
 
-/* Note, torsion constraints will allocate (MAX_TORS *MAX_TOR_CON *2) floats */
+/* Note, torsion constraints will allocate (MAX_TORS *MAX_TOR_CON *2) FloatOrDoubles */
 
-#define NTORDIVS        256 /* Integer # angular divisions in torsion profiles*/
-#define NTORDIVS_2        128 /* Integer half of NTORDIVS */
+#define NTORDIVS     256      /* Integer # angular divisions in torsion profiles*/
+#define NTORDIVS_2   128      /* Integer half of NTORDIVS */
 #define ONE_RAD_IN_DIVS 40.74366543  /* 1 radian = NTORDIVS_2 / PI divisions */
 
 /* #define ONE_RAD_IN_DIVS 81.48733086 512,256,1 radian = NTORDIVS / (2*PI) divisions */
@@ -90,10 +90,10 @@
 #define Rad2Div(radians) ((int)((radians)*ONE_RAD_IN_DIVS) + NTORDIVS_2)
 
 /* Convert index to angle */
-#define Div2Rad(divs) (((float)((divs) - NTORDIVS_2))/ONE_RAD_IN_DIVS)
+#define Div2Rad(divs) (((FloatOrDouble)((divs) - NTORDIVS_2))/ONE_RAD_IN_DIVS)
 
-#define TORBARMAX        65535 /* Torsion barrier-energy maximum value */
-#define DEFHWDTH        10. /* Default half-width (deg)for torsion-constraints*/
+#define TORBARMAX    65535    /* Torsion barrier-energy maximum value */
+#define DEFHWDTH     10.      /* Default half-width (deg)for torsion-constraints*/
 
 /*
  * Number of &tor0 entries in TOR_ARG_LIST must equal MAX_TORS...
@@ -102,18 +102,19 @@
 #define TOR_ARG_LIST        &sInit.tor[0], &sInit.tor[1], &sInit.tor[2], &sInit.tor[3], &sInit.tor[4], &sInit.tor[5], &sInit.tor[6], &sInit.tor[7], &sInit.tor[8], &sInit.tor[9], &sInit.tor[10], &sInit.tor[11], &sInit.tor[12], &sInit.tor[13], &sInit.tor[14], &sInit.tor[15], &sInit.tor[16], &sInit.tor[17], &sInit.tor[18], &sInit.tor[19], &sInit.tor[20], &sInit.tor[21], &sInit.tor[22], &sInit.tor[23], &sInit.tor[24], &sInit.tor[25], &sInit.tor[26], &sInit.tor[27], &sInit.tor[28], &sInit.tor[29], &sInit.tor[30], &sInit.tor[31]
 
 
-#define ENERGY_CUTOFF                500. /* Arbitrary intermolecular cutoff, above 
-                               which intramolecular energy is not calculated. */
-#define HI_NRG_JUMP_FACTOR        2. /* Scale up the range of random jumps by this when the last energy was higher than ENERGY_CUTOFF. */
+#define ENERGY_CUTOFF 500.    /* Arbitrary intermolecular cutoff, above 
+                                 which intramolecular energy is not calculated. */
+#define HI_NRG_JUMP_FACTOR 2. /* Scale up the range of random jumps by this when the 
+                                 last energy was higher than ENERGY_CUTOFF. */
 
-#define NEINT  131072       /* Number of values in internal energy table */
-#define NEINT_1 (NEINT - 1) /* index of last entry in internal energy table */
-#define A_DIV     100.00    /* Used in distance look-up table. */
-#define INV_A_DIV   0.01    /* Used in distance look-up table. */
-#define SQA_DIV    32.00    /* Used in square-distance look-up table. */
-#define INV_SQA_DIV 0.03125 /* INV_SQA_DIV = NBC2 / NEINT = 1 / SQA_DIV */
-#define NBC        64.00    /* Non-bonded cutoff for internal energy calc./Ang*/
-#define NBC2     4096.00    /* NBC^2, units: Angstrom^2 */
+#define NEINT  131072         /* Number of values in internal energy table */
+#define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
+#define A_DIV     100.00      /* Used in distance look-up table. */
+#define INV_A_DIV   0.01      /* Used in distance look-up table. */
+#define SQA_DIV    32.00      /* Used in square-distance look-up table. */
+#define INV_SQA_DIV 0.03125   /* INV_SQA_DIV = NBC2 / NEINT = 1 / SQA_DIV */
+#define NBC        64.00      /* Non-bonded cutoff for internal energy calc./Ang*/
+#define NBC2     4096.00      /* NBC^2, units: Angstrom^2 */
 
 /*
  * Alternate Scheme:-
@@ -126,20 +127,21 @@
  * #define NBC2      64.00        NBC^2, units: Angstrom^2
  */
 
-#define ATM1                0 /* Index for the first atom in torsion A-B */
-#define ATM2                1 /* Index for the second atom in torsion A-B */
-#define NUM_ATM_MOVED   2 /* Index for the number of atoms moved by tor. */
+#define ATM1            0     /* Index for the first atom in torsion A-B */
+#define ATM2            1     /* Index for the second atom in torsion A-B */
+#define NUM_ATM_MOVED   2     /* Index for the number of atoms moved by tor. */
 
-#define TINYDELTA 0.001         /* To nudge ligand into grid... */
+#define TINYDELTA 0.001       /* To nudge ligand into grid... */
 
 /* Prevent internal electrostatic energy calculation from blowing up! */
 
-#define RMIN_ELEC 0.1          /* if atoms closer than this in Angstroms, clamp distance in internal elec. calc.*/
-#define RMIN_ELEC2  (RMIN_ELEC * RMIN_ELEC) /* if atoms closer than this, clamp square of distance in internal elec. calc.*/
+#define RMIN_ELEC 0.1         /* if atoms closer than this in Angstroms, clamp distance in internal elec. calc.*/
+#define RMIN_ELEC2  (RMIN_ELEC * RMIN_ELEC) /* if atoms closer than this, clamp square 
+                                               of distance in internal elec. calc.*/
 
 /* Number of cluster-energies per line of output. */
 
-#define OUTNUMCLUST     5  /* Number of cluster-energies per line of output. */
+#define OUTNUMCLUST     5     /* Number of cluster-energies per line of output. */
 
 /*
  * Number of columns for torsion profile output.
@@ -189,7 +191,7 @@
 /*
  * #define        RedFac(s0,sN,N)                expf( logf((sN)/(s0)) / ((N)-1))
  * N.B. You must compile with ANSI (-Aa on HPPA) in order to use expf 
- * and logf, otherwise floats are automatically promoted to doubles.
+ * and logf, otherwise FloatOrDoubles are automatically promoted to doubles.
  */
 #define        RedFac(s0,sN,N)                exp( log((sN)/(s0)) / ((N)-1))
 
@@ -206,7 +208,7 @@
 
 
 /* index_to_Ang converts from an array index to a distance */
-#define index_to_Ang(i)                ( ( (float) (i) ) * INV_A_DIV )
+#define index_to_Ang(i)                ( ( (FloatOrDouble) (i) ) * INV_A_DIV )
 
 /* Ang_to_index converts from a distance to an array index */
 #define Ang_to_index(r)                ( (int) ( (r) * A_DIV ) )
@@ -215,7 +217,7 @@
 #define BoundedAng_to_index(r)                ((((int)((r)*A_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r)*A_DIV))
 
 /* index_to_SqAng converts from an array index to the square of a distance */
-#define index_to_SqAng(i)        ( ( (float) (i) ) * INV_SQA_DIV )
+#define index_to_SqAng(i)        ( ( (FloatOrDouble) (i) ) * INV_SQA_DIV )
 
 /* SqAng_to_index converts from the square of a distance to an array index */
 #define SqAng_to_index(r)        ( (int) ( (r) * SQA_DIV ) )
@@ -235,23 +237,11 @@
  * Random numbers,                                                            * 
  *----------------------------------------------------------------------------*/
 
-#ifndef MAXIRAND
-#ifdef  HPPA
-#define MAXIRAND        32768
-#else
-#define MAXIRAND        65536
-#endif  /* HPPA */
-#endif  /* MAXIRAND */
 
-#define rannum()        (float)(random() % MAXIRAND) / ((float)(MAXIRAND-1))
-
+#ifdef HARDWARE_RNG // HARDWARE_RNG = hardware random number generator
 /* 
  *  local_random is >= 0.0 and <1.0
  */
-#ifdef __convexc__
-#define seed_random(t)      srand( (t) )
-#define local_random()      ( rand() / 2147483647.0 )
-#else 
 #ifdef __ppc__
 #include <stdlib.h>
 #include <limits.h>
@@ -262,15 +252,18 @@
 #define seed_random(t)      srand48( (FourByteLong)(t) )
 #define local_random()      drand48()
 #endif
-#endif  /* !__convexc__ */
+#else 
+// This is platform-independent RNG-based.
+#include "ranlib.h"
+#define seed_random(t)      setall( (FourByteLong)(t), (FourByteLong)(t) ); initgn(-1)
+#define local_random()      genunf(0., 1.)
+#endif
 
 #ifdef sgi
     #include <ieeefp.h>
     #define        ISNAN(n)        isnand(n)
-#elif defined(__ppc__)
-#define        ISNAN(n)        isnan(n)
 #else
-    #define        ISNAN(n)        isnand(n)
+    #define        ISNAN(n)        isnan(n)
 #endif /* !sgi */
 
 #define random_sign        ( (local_random() < 0.5) ?  (-1.0) : (+1.0) )
@@ -321,15 +314,15 @@
 #endif /* sgi */
 
 /*
- * const int and const float are allowed by the SGI "CC" compiler
+ * const int and const FloatOrDouble are allowed by the SGI "CC" compiler
  */
 
 #ifdef sgi
 #define CONST_INT const int
-#define CONST_FLOAT const float
+#define CONST_FLOAT const FloatOrDouble
 #else /* Not on an SGI */
 #define CONST_INT int
-#define CONST_FLOAT float
+#define CONST_FLOAT FloatOrDouble
 #endif /*sgi*/
 
 
