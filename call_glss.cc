@@ -6,6 +6,15 @@
 ********************************************************************/
 /*
 ** $Log: call_glss.cc,v $
+** Revision 1.3  2002/04/17 06:04:01  garrett
+** Introduced the int "indiv" which can later be used to set arbitrary
+** individuals in a population, not just the first one.
+**
+** Also added the mapping() to ensure the phenotype matches the genotype.
+** This was causing an erroneous report of the initial state variables
+** in the very first listing of the top %d individuals in the population
+** when outlev was set to 3.                                       (gmm)
+**
 ** Revision 1.2  2002/04/17 00:40:26  lindy
 ** added Booleans to call_glss for tran0, quat0, dihe0
 ** dpf parameters. Initilized the thisPop[0] to the
@@ -95,6 +104,7 @@ Individual set_ind(int num_torsions, double xlo, double xhi, double ylo, double 
    };
 
    Individual temp(temp_Gtype, temp_Ptype);   
+
    // use mapping to generate a Phenotype
    temp.phenotyp =  temp.mapping();
 
@@ -112,6 +122,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 {
     register int i;
     int num_iterations = 0, num_loops = 0, allEnergiesEqual = 1, numTries = 0;
+    int indiv = 0; // Number of Individual in Population to set initial state variables for.
     double firstEnergy = 0.0;
     EvalMode localEvalMode = Normal_Eval;
 
@@ -135,20 +146,31 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
 	// If initial values were supplied, put them in thisPop[0]
 	if (!B_RandomTran0) {
-	  thisPop[0].genotyp.write( now.T.x, 0);
-	  thisPop[0].genotyp.write( now.T.y, 1);
-	  thisPop[0].genotyp.write( now.T.z, 2);
+          if (outlev > 1) { (void)fprintf(logFile, "Setting the initial translation (tran0) for individual number %d to %lf %lf %lf\n\n", indiv+1, now.T.x, now.T.y, now.T.z); }
+	  thisPop[indiv].genotyp.write( now.T.x, 0);
+	  thisPop[indiv].genotyp.write( now.T.y, 1);
+	  thisPop[indiv].genotyp.write( now.T.z, 2);
+	  // Remember to keep the phenotype up-to-date
+	  thisPop[indiv].phenotyp = thisPop[indiv].mapping();
 	};
 	if (!B_RandomQuat0) {
-	  thisPop[0].genotyp.write( now.Q.nx, 3);
-	  thisPop[0].genotyp.write( now.Q.ny, 4);
-	  thisPop[0].genotyp.write( now.Q.nz, 5);
-	  thisPop[0].genotyp.write( now.Q.ang, 6);
+          if (outlev > 1) { (void)fprintf(logFile, "Setting the initial quaternion (quat0) for individual number %d to %lf %lf %lf  %lf deg\n\n", indiv+1, now.Q.nx, now.Q.ny, now.Q.nz, Deg(now.Q.ang)); }
+	  thisPop[indiv].genotyp.write( now.Q.nx, 3);
+	  thisPop[indiv].genotyp.write( now.Q.ny, 4);
+	  thisPop[indiv].genotyp.write( now.Q.nz, 5);
+	  thisPop[indiv].genotyp.write( now.Q.ang, 6);
+	  // Remember to keep the phenotype up-to-date
+	  thisPop[indiv].phenotyp = thisPop[indiv].mapping();
 	};
 	if (!B_RandomDihe0) {
+          if (outlev > 1) { (void)fprintf(logFile, "Setting the initial torsions (dihe0) for individual number %d to ", indiv+1); }
 	  for (i=0;i<now.ntor; i++) {
-	    thisPop[0].genotyp.write( now.tor[i], 7+i);
+	    thisPop[indiv].genotyp.write( now.tor[i], 7+i);
+            if (outlev > 1) { (void)fprintf(logFile, "%lf ", Deg(now.tor[i])); }
 	  };
+          if (outlev > 1) { (void)fprintf(logFile, " deg\n\n"); }
+	  // Remember to keep the phenotype up-to-date
+	  thisPop[indiv].phenotyp = thisPop[indiv].mapping();
 	};
 
         // Now ensure that there is some variation in the energies...
