@@ -67,7 +67,7 @@ void printState( FILE *fp,
             (void)fprintf( fp, "\nSTATE VARIABLES:\n________________\n\n" );
             (void)fprintf( fp, "Translation x,y,z         = %.3f %.3f %.3f\n", S.T.x, S.T.y, S.T.z );
             S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-            (void)fprintf( fp, "Quaternion nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, Rad(S.Q.ang) );
+            (void)fprintf( fp, "Quaternion nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, Deg(S.Q.ang) );
             (void)fprintf( fp, "Quaternion x,y,z,w        = %.3f %.3f %.3f %.3f\n", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
             //(void)fprintf( fp, "Quaternion qmag           = %.3f\n", S.Q.qmag );
             (void)fprintf( fp, "Number of Torsions        = %d\n", S.ntor );
