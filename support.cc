@@ -2,8 +2,12 @@
 
 /*
 ** $Log: support.cc,v $
-** Revision 1.1  2001/08/13 22:05:55  gillet
-** *** empty log message ***
+** Revision 1.2  2002/04/17 00:19:26  lindy
+** changed Normal_Eval to Always_Eval when printing
+** populations.
+**
+** Revision 1.1.1.1  2001/08/13 22:05:55  gillet
+**  import initial of autodock sources
 **
 */
 
@@ -160,7 +164,7 @@ void Population::print(FILE *output, int num) {
 
    (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
    for (i=0; i<num; i++) {
-      (void)fprintf( output, "(%d):\t %8.2f\n", i+1, heap[i].value(Normal_Eval));
+      (void)fprintf( output, "(%d):\t %8.2f\n", i+1, heap[i].value(Always_Eval));
    }
 }
 
@@ -177,7 +181,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
 
    (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
    for (i=0; i<num; i++) {
-      thisValue = heap[i].value(Normal_Eval);
+      thisValue = heap[i].value(Always_Eval);
       (void)fprintf( output, "(%d):\nEnergy= %8.2le\n", i+1, thisValue);
       heap[i].printIndividualsState(output, ntor);
 
