@@ -48,7 +48,7 @@ OBJS = \
     stateLibrary.o \
     readfield.o \
     readmap.o \
-    readPDBQ.o \
+    readPDBQT.o \
     dpftypes.o \
     eval.o \
     evaluate_energy.o \
@@ -73,8 +73,10 @@ OBJS = \
     output_state.o \
     parse_com_line.o \
     parse_dpf_line.o \
+    parse_param_line.o \
     parse_pdbq_line.o \
     parse_trj_line.o \
+	parsetypes.o \
     print_2x.o \
     print_atomic_energies.o \
     print_avsfld.o \
@@ -161,7 +163,7 @@ LNS = \
     stateLibrary.ln \
     readfield.ln \
     readmap.ln \
-    readPDBQ.ln \
+    readPDBQT.ln \
     dpftypes.ln \
     evaluate_energy.ln \
     getrms.ln \
@@ -180,8 +182,10 @@ LNS = \
     output_state.ln \
     parse_com_line.ln \
     parse_dpf_line.ln \
+    parse_param_line.ln \
     parse_pdbq_line.ln \
     parse_trj_line.ln \
+    parsetypes.ln \
     print_2x.ln \
     print_atomic_energies.ln \
     print_avsfld.ln \
@@ -258,6 +262,9 @@ CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
 # CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP.
 
 CFLAGS = $(CSTD) $(OPT) $(ACRO_INCLUDES) # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Optimize the object files, too.
+CFLAGS = $(CSTD) $(OPT) $(ACRO_INCLUDES) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
+# CFLAGS = $(CSTD) $(OPT) $(ACRO_INCLUDES) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; also use Double precision throughout
+# CFLAGS = $(CSTD) $(OPT) $(ACRO_INCLUDES) # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: More accurate, but slower
 
 OLIMIT = $(CSTD) $(OPT) $(ACRO_INCLUDES) # SGI, Sun, HP, Convex, Linux, MacOS X.
 # OLIMIT = $(CSTD) $(OPT) -OPT:Olimit=2500 # Alpha, Some SGIs.
@@ -433,13 +440,13 @@ check_header_int.o : check_header_int.cc check_header_int.h constants.h print_2x
 check_header_line.o : check_header_line.cc check_header_line.h constants.h
 	$(CC) $(CFLAGS) -c check_header_line.cc
 
-clmode.o : clmode.cc clmode.h constants.h openfile.h strindex.h readPDBQ.h get_atom_type.h getpdbcrds.h sort_enrg.h cluster_analysis.h prClusterHist.h bestpdb.h success.h
+clmode.o : clmode.cc clmode.h constants.h openfile.h strindex.h readPDBQT.h get_atom_type.h getpdbcrds.h sort_enrg.h cluster_analysis.h prClusterHist.h bestpdb.h success.h
 	$(CC) $(CFLAGS) -c clmode.cc
 
 cluster_analysis.o : cluster_analysis.cc cluster_analysis.h constants.h getrms.h
 	$(CC) $(CFLAGS) -c cluster_analysis.cc
 
-cmdmode.o : cmdmode.cc cmdtokens.h trjtokens.h cmdmode.h constants.h set_cmd_io_std.h print_2x.h parse_com_line.h strindex.h print_avsfld.h success.h openfile.h readPDBQ.h get_atom_type.h timesys.h eintcal.h trilinterp.h qmultiply.h cnv_state_to_coords.h parse_trj_line.h input_state.h autocomm.h
+cmdmode.o : cmdmode.cc cmdtokens.h trjtokens.h cmdmode.h constants.h set_cmd_io_std.h print_2x.h parse_com_line.h strindex.h print_avsfld.h success.h openfile.h readPDBQT.h get_atom_type.h timesys.h eintcal.h trilinterp.h qmultiply.h cnv_state_to_coords.h parse_trj_line.h input_state.h autocomm.h
 	$(CC) $(CFLAGS) -c -DEINTCALPRINT cmdmode.cc
 
 cnv_state_to_coords.o : cnv_state_to_coords.cc cnv_state_to_coords.h constants.h torsion.h qtransform.h stateLibrary.h
@@ -451,8 +458,8 @@ com.o : com.cc ranlib.h
 stateLibrary.o : stateLibrary.cc stateLibrary.h constants.h
 	$(CC) $(CFLAGS) -c stateLibrary.cc
 
-readPDBQ.o : readPDBQ.cc  readPDBQ.h constants.h openfile.h stop.h readPDBQ.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.h weedbonds.h torNorVec.h success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h
-	$(CC) $(OLIMIT) -c readPDBQ.cc
+readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.h weedbonds.h torNorVec.h success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h mdist.h
+	$(CC) $(OLIMIT) -c readPDBQT.cc
 
 dpftypes.o : dpftypes.cc dpftypes.h constants.h dpftoken.h stop.h
 	$(CC) $(CFLAGS) -c dpftypes.cc
@@ -505,7 +512,7 @@ linpack.o : linpack.cc
 ls.o : ls.cc ls.h support.h ranlib.h
 	$(CC) $(CFLAGS) -c ls.cc
 
-main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h
+main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h
 	$(CC) $(OLIMIT) -c -DWRITEPDBQSTATE main.cc
 
 mapping.o : mapping.cc support.h
@@ -526,7 +533,7 @@ mkRandomState.o : mkRandomState.cc mkRandomState.h constants.h
 nbe.o : nbe.cc nbe.h constants.h
 	$(CC) $(OLIMIT) -DNOSQRT -c nbe.cc
 
-nonbonds.o : nonbonds.cc nonbonds.h constants.h
+nonbonds.o : nonbonds.cc nonbonds.h constants.h mdist.h
 	$(CC) $(CFLAGS) -c nonbonds.cc
 
 openfile.o : openfile.cc openfile.h constants.h autocomm.h
@@ -541,11 +548,17 @@ parse_com_line.o : parse_com_line.cc cmdtokens.h parse_com_line.h constants.h
 parse_dpf_line.o : parse_dpf_line.cc parse_dpf_line.h constants.h dpftoken.h
 	$(CC) $(CFLAGS) -c parse_dpf_line.cc
 
+parse_param_line.o : parse_param_line.cc partokens.h  parse_param_line.h constants.h
+	$(CC) $(CFLAGS) -c parse_param_line.cc
+
 parse_pdbq_line.o : parse_pdbq_line.cc pdbqtokens.h  parse_pdbq_line.h constants.h
 	$(CC) $(CFLAGS) -c parse_pdbq_line.cc
 
 parse_trj_line.o : parse_trj_line.cc trjtokens.h parse_trj_line.h constants.h
 	$(CC) $(CFLAGS) -c parse_trj_line.cc
+
+parsetypes.o : parsetypes.cc parsetypes.h
+	$(CC) $(CFLAGS) -c parsetypes.cc
 
 prClusterHist.o : prClusterHist.cc prClusterHist.h constants.h
 	$(CC) $(CFLAGS) -c prClusterHist.cc
@@ -728,7 +741,7 @@ readfield.ln : readfield.cc
 readmap.ln : readmap.cc
 	$(LINT) $(LINTFLAGS) $?
 
-readPDBQ.ln : readPDBQ.cc
+readPDBQT.ln : readPDBQT.cc
 	$(LINT) $(LINTFLAGS) $?
 
 dpftypes.ln : dpftypes.cc
@@ -785,10 +798,16 @@ parse_com_line.ln : parse_com_line.cc
 parse_dpf_line.ln : parse_dpf_line.cc
 	$(LINT) $(LINTFLAGS) $?
 
+parse_param_line.ln : parse_param_line.cc
+	$(LINT) $(LINTFLAGS) $?
+
 parse_pdbq_line.ln : parse_pdbq_line.cc
 	$(LINT) $(LINTFLAGS) $?
 
 parse_trj_line.ln : parse_trj_line.cc
+	$(LINT) $(LINTFLAGS) $?
+
+parsetypes.ln : parsetypes.cc
 	$(LINT) $(LINTFLAGS) $?
 
 print_2x.ln : print_2x.cc

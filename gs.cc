@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.5 2004/11/16 23:42:52 garrett Exp $
+ $Id: gs.cc,v 1.6 2005/03/11 02:11:30 garrett Exp $
 
 */
 
@@ -14,7 +14,11 @@
                                 rsh 9/95
 *********************************************************************/
 
-// possibly unnecessary // #include <iostream.h>
+#include <stdio.h>
+#include <sys/types.h>      /*time_t time(time_t *tloc); */
+#include <time.h>           /*time_t time(time_t *tloc); */
+#include <sys/times.h>
+
 #include <math.h>
 #include "gs.h"
 #include "ranlib.h"
@@ -22,10 +26,6 @@
 #include "rep.h"
 #include "assert.h"
 
-    #include <stdio.h>
-    #include <sys/types.h>      /*time_t time(time_t *tloc); */
-    #include <time.h>           /*time_t time(time_t *tloc); */
-    #include <sys/times.h>
 #ifdef sgi
     #include <ieeefp.h>
 #endif
@@ -33,16 +33,17 @@
     #include <ieeefp.h>
 #endif
 
-    #include "constants.h"
-    #include "autocomm.h"
-    #include "timesyshms.h"
-    #include "writePDBQ.h"
+#include "constants.h"
+#include "autocomm.h"
+#include "timesyshms.h"
+#include "writePDBQ.h"
 
 
 extern FILE *logFile;
 extern class Eval evaluate;
 extern int sel_prop_count;//debug
 extern int global_ntor;//debug
+extern int debug;//debug
 
 
 double worst_in_window(double *window, int size)
@@ -169,6 +170,7 @@ low(-100),
 high(100),
 generations(0),
 max_generations(init_max_generations),
+outputEveryNgens(100),
 converged(0),
 alloc(NULL),
 mutation_table(NULL),
@@ -865,6 +867,9 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
 }
 
 //  For right now global search is taken to be a GA
+//
+//  This is where the action is... SEARCH!
+//
 int Genetic_Algorithm::search(Population &solutions)
 {
    register unsigned int i;
@@ -884,60 +889,71 @@ int Genetic_Algorithm::search(Population &solutions)
    genStart = times( &tms_genStart );
 
 #ifdef DEBUG3 /* DEBUG3 { */
-   (void)fprintf(logFile,"[Pre-Mapping] (solutions)\n");
+   (void)fprintf(logFile,"About to perform Mapping on the solutions.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%d ", solutions[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
+   //
+   // Map from genotype to phenotype
+   //
    for (i=0; i<solutions.num_individuals(); i++) {
       solutions[i].mapping();
    }
    
 #ifdef DEBUG3 /* DEBUG3 { */
-   (void)fprintf(logFile,"[Pre-Selection] (solutions)\n");
+   (void)fprintf(logFile,"About to perform Selection on the solutions.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", solutions[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   //  Perform selection
+   //
+   // Perform selection
+   //
    Population newPop(solutions.num_individuals(), selection(solutions));
 
 #ifdef DEBUG3 /* DEBUG3 { */
-   (void)fprintf(logFile,"[Pre-Crossover] (newPop)\n");
+   (void)fprintf(logFile,"About to perform Crossover on the population, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   //  Perform crossover
+   //
+   // Perform crossover
+   // 
    crossover(newPop);
 
 #ifdef DEBUG3 /* DEBUG3 } */
-   (void)fprintf(logFile,"[Pre-Mutation] (newPop)\n");
+   (void)fprintf(logFile,"About to perform mutation on the population, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   //  Perform mutation
+   //
+   // Perform mutation
+   // 
    mutation(newPop);
 
 #ifdef DEBUG3 /* DEBUG3 } */
-   (void)fprintf(logFile,"[Pre-Elitism] (newPop)\n");
+   (void)fprintf(logFile,"About to perform elitism, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   //  Copy the n best individuals to the next population, if the elitist flag is set.
-   if (elitism>0) {
+   //
+   // Copy the n best individuals to the next population, if the elitist flag is set, where n is the value of elitism.
+   //
+   if (elitism > 0) {
       solutions.msort(elitism);
       for (i=0; i<elitism; i++) {
          newPop[solutions.num_individuals()-1-i] = solutions[i];
@@ -945,22 +961,34 @@ int Genetic_Algorithm::search(Population &solutions)
    }
 
 #ifdef DEBUG3 /* DEBUG3 } */
-   (void)fprintf(logFile,"[Pre-UpdateCurrentGeneration] (newPop)\n");
+   (void)fprintf(logFile,"About to Update the Current Generation, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   // Update current generation...
+   //
+   // Update current generation 
+   //  
    solutions = newPop;
+
+   //
+   // Increase the number of generations
+   //
    generations++;
 
-   // Increment age of surviving individuals...
+   //
+   // Increment the age of surviving individuals...
+   // 
    for (i=0; i<solutions.num_individuals(); i++) {
        solutions[i].incrementAge();
    }
 
+   if (debug > 0) {
+       (void)fprintf(logFile,"DEBUG:  Generation: %3u, outputEveryNgens = %3u, generations%%outputEveryNgens = %u\n",
+                     generations, outputEveryNgens, generations%outputEveryNgens);
+   }
    if (generations%outputEveryNgens == 0) {
        oldest  = 0L;
        fittest = BIG;
@@ -976,7 +1004,7 @@ int Genetic_Algorithm::search(Population &solutions)
        }
        /* Only output if the output level is not 0. */
        if (outputEveryNgens != OUTLEV0_GENS) {
-           (void)fprintf(logFile, "___\noutputEveryNgens = %d, OUTLEV0_GENS=%d\n___\n", outputEveryNgens, OUTLEV0_GENS);
+           // (void)fprintf(logFile, "___\noutputEveryNgens = %d, OUTLEV0_GENS=%d\n___\n", outputEveryNgens, OUTLEV0_GENS);
            if (outputEveryNgens > 1) {
     #ifndef DEBUG3
                (void)fprintf(logFile,"Generation: %3u,  Oldest individual's energy: %.3f;   Lowest energy: %.3f;   Time taken for last %d generations: ", 
@@ -984,25 +1012,25 @@ int Genetic_Algorithm::search(Population &solutions)
                outputEveryNgens);
     #else
                (void)fprintf(logFile,"Generation: %3u,  Oldest individual: %u/%u, age: %uld, energy: %.3f;   Lowest energy individual: %u/%u, age: %uld, energy: %.3f;   Time taken for last %d generations: ", 
-               generations, oldestIndividual+1L, solutions.num_individuals(), solutions[oldestIndividual].age, 
-               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1L, solutions.num_individuals(), 
+               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
+               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
                solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), outputEveryNgens);
     #endif /* DEBUG3 */
-               } else {
+           } else {
     #ifndef DEBUG3
                (void)fprintf(logFile,"Generation: %3u,  Oldest individual's energy: %.3f;   Lowest energy: %.3f;   Time taken: ", 
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval));
     #else
                (void)fprintf(logFile,"Generation: %3u,  Oldest individual: %u/%u, age: %uld, energy: %.3f;   Lowest energy individual: %u/%u, age: %uld, energy: %.3f;   Time taken: ", 
-               generations, oldestIndividual+1L, solutions.num_individuals(), solutions[oldestIndividual].age, 
-               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1L, solutions.num_individuals(), 
+               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
+               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
                solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval));
     #endif /* DEBUG3 */
            }
        }
        genEnd = times( &tms_genEnd );
        timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd );
-       //genStart = times( &tms_genStart );
+       genStart = times( &tms_genStart );
    }
 
    return(0);

@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.8 2004/02/12 05:50:47 garrett Exp $
+ $Id: call_glss.cc,v 1.9 2005/03/11 02:11:29 garrett Exp $
 
 */
 
@@ -231,18 +231,18 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     (void)fprintf( logFile, "Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of %u\nenergy evaluations.\n\n", num_evals);
 
     do {
-        if (outlev > 1) { (void)fprintf( logFile, "Global-local search iteration %d,  Starting global search.\n", ++num_loops); }
+        if (outlev > 1) { (void)fprintf( logFile, "Global-local search iteration %d\n", ++num_loops); }
+        
         global_method->search(thisPop);
-        if (outlev > 1) { (void)fprintf( logFile, "\tEnding global search.\n"); }
+
         if (outlev > 2) { thisPop.printPopulationAsStates(logFile, pop_size, now.ntor); }
         if (outlev > 3) { minmeanmax( logFile, thisPop, ++num_iterations ); }
 
-        if (outlev > 1) { (void)fprintf( logFile, "\tStarting local search.\n"); }
         for (i=0; i<pop_size; i++) {
             local_method->search(thisPop[i]);
         }
-        if (outlev > 1) { (void)fprintf( logFile, "\tEnding local search.\n"); }
         if (outlev > 2) { thisPop.printPopulationAsStates(logFile, pop_size, now.ntor); }
+
 		(void)fflush(logFile);
     } while ((evaluate.evals() < num_evals) && (!global_method->terminate()));
 

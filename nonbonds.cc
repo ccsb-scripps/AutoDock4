@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.2 2003/02/26 01:22:11 garrett Exp $
+ $Id: nonbonds.cc,v 1.3 2005/03/11 02:11:30 garrett Exp $
 
 */
 
@@ -8,218 +8,167 @@
 #include <config.h>
 #endif
 
-/* nonbonds.cc */
-
+#include "nonbonds.h"
+#include "mdist.h"  /* mindist and maxdist are here */
 #include <math.h>
 
-    #include <stdio.h>
-    #include <string.h>
-    #include <ctype.h>
-    #include "nonbonds.h"
+#include <stdio.h>
+extern int debug;
+extern  FILE    *logFile;
 
 #ifdef DEBUG
+#include <stdio.h>
+extern int debug;
 extern  FILE    *logFile;
 #endif /* DEBUG */
 
-void nonbonds( FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-               int nbmatrix_binary[MAX_ATOMS][MAX_ATOMS],
-               int natom,
-               int atomnumber[MAX_RECORDS], 
-               int nrecord,
-               char record[MAX_RECORDS][LINE_LEN],
-               int piece[MAX_ATOMS],
-               int Htype,
-               int type[MAX_ATOMS] )
+using namespace std;
 
+void nonbonds(const float crdpdb[MAX_ATOMS][SPACE],
+		      int         nbmatrix[MAX_ATOMS][MAX_ATOMS],
+		      const int   natom, 
+              const int   bond_index[MAX_ATOMS],
+              int         B_include_1_4_interactions,
+              int         bonded[MAX_ATOMS][6])
 {
-    char rec5[5];
-    static FloatOrDouble d12max  = 2.101;
-    static FloatOrDouble d12min  = 1.000;
-    static FloatOrDouble d13max  = 2.650;
-    static FloatOrDouble d13min  = 2.100;
-    static FloatOrDouble d14max  = 3.970;
-    static FloatOrDouble d14min  = 2.651;
-    static FloatOrDouble dH12max = 1.437;
-    static FloatOrDouble dH12min = 0.900;
-    static FloatOrDouble dH13max = 2.200;
-    static FloatOrDouble dH13min = 1.700;
-    static FloatOrDouble dH14max = 3.310;
-    static FloatOrDouble dH14min = 2.201;
-    FloatOrDouble rij = 0.;
-    FloatOrDouble threshold = 4.0;
+	int i,j,k,l;
+    int nonbond_type;
 
-    int ii = 0;
-    int npiece = 0;
-    register int xyz = 0;
-    register int i = 0;
-    register int j = 0;
-
-    FloatOrDouble d[SPACE];
-
-/*
-** 
-** Create list of internal non-bond distances to check...
-** 
-*/
-
-#ifdef DEBUG
-    pr( logFile, "\n__A__              " );
-    for (j = 0;  j < natom;  j++) {
-	/*pr( logFile, " %c %-2d", atm_typ_str[type[j]], j);*/
-	pr( logFile, " ? %-2d", j);
+    if (debug>0) {
+        printbonds(natom, bonded, "\nDEBUG:  3. INSIDE nonbonds, bonded[][] array is:\n\n", 0);
     }
-    pr( logFile, "\n__A__              " );
-    for (j = 0;  j < natom;  j++) {
-	pr( logFile, " ____" );
-    }
-#endif /* DEBUG */
 
-    for (i = 0;  i < natom;  i++) {
+    //
+    // in "nbmatrix", the value 1 means this pair of atoms will be included in the internal, non-bonded list
+    //                          0                                  ignored
+ 
+    // set all nonbonds in nbmatrix to 1, except "1-1 interactions" (self interaction)
+    for (i = 0; i<MAX_ATOMS; i++) {
+        for (j = 0; j<MAX_ATOMS; j++){
+            nbmatrix[i][j] = 1;
+        } // j
+        nbmatrix[i][i] = 0; /* 2005-01-10 RH & GMM */
+    } // i
 
-#ifdef DEBUG
-        pr( logFile, "\n__A__ d[? %-2d][ ] = ",i);
-        /* pr( logFile, "\n__A__ d[%c %-2d][ ] = ",atm_typ_str[type[i]],i); */
-#endif /* DEBUG */
+	for (i = 0; i<natom; i++) {  // loop over atoms, "i", from 1 to natom
+        for (j=0; j<bonded[i][5]; j++) {  // loop over this atom's "j" bonds
+            // Ignore 1-2 Interactions
+            nbmatrix[ i            ][ bonded[i][j] ] = 0;
+            nbmatrix[ bonded[i][j] ][ i            ] = 0;
+        } // j
+    } // i
 
-        for (j = 0;  j < natom;  j++) {
-            nbmatrix_binary[i][j] = 1;    /*** MUST KEEP THIS LINE! ***/
-            for (xyz = 0;  xyz < SPACE;  xyz++) {
-                d[xyz] = crdpdb[i][xyz] - crdpdb[j][xyz] ;
-            }/*xyz*/
-            rij = sqhypotenuse( d[X], d[Y], d[Z] );
+	for (i=0; i<natom; i++) {  // loop over all atoms, "i"
+		for (j=0; j<bonded[i][5]; j++) {  // loop over each atom "j" bonded to the current atom, "i"
+			for (k=0; k<bonded[bonded[i][j]][5]; k++) {  // loop over each atom "k" bonded to the current atom "j"
 
-#ifdef DEBUG
-            pr( logFile, (rij < 100.)?"|%4.2f":"|%4.1f", sqrt(rij) );
-#endif /* DEBUG */
+				// Ignore "1-3 Interactions"
+				nbmatrix[bonded[bonded[i][j]][k]][i] = 0;
+				nbmatrix[i][bonded[bonded[i][j]][k]] = 0;
 
-            if (rij < threshold) {
-                nbmatrix_binary[i][j] = nbmatrix_binary[j][i] = 0;
-            }/*if*/
-        }/*j*/
-
-#ifdef DEBUG
-            pr( logFile, "\n__A__              " );
-#endif /* DEBUG */
-
-        for (j = 0;  j < natom;  j++) {
-            for (xyz = 0;  xyz < SPACE;  xyz++) {
-                d[xyz] = crdpdb[i][xyz] - crdpdb[j][xyz];
-            }/*xyz*/
-            rij = hypotenuse( d[X], d[Y], d[Z] );
-            if ((type[i] != Htype) && (type[j] != Htype)) {
-                if (rij < d12min) {
-
-#ifdef DEBUG
-                    pr( logFile, "|****" );
-#endif /* DEBUG */
-
-                    /* sep = 0; */
-                    nbmatrix_binary[i][j] = nbmatrix_binary[j][i] = 0;
-                } else if ((rij >= d12min) && (rij <= d12max)) {
-
-#ifdef DEBUG
-                    pr( logFile, "|_12_" );
-#endif /* DEBUG */
-
-                    /* sep = 2; */
-                    nbmatrix_binary[i][j] = nbmatrix_binary[j][i] = 0;
-                } else if ((rij >= d13min) && (rij <= d13max)) {
-
-#ifdef DEBUG
-                    pr( logFile, "|_13_" );
-#endif /* DEBUG */
-
-                    /* sep = 3; */
-                    nbmatrix_binary[i][j] = nbmatrix_binary[j][i] = 0;
-                } else if ((rij >= d14min) && (rij <= d14max)) {
-
-#ifdef DEBUG
-                    pr( logFile, "|_14_" );
-#endif /* DEBUG */
-
-                    /* sep = 4; */
-                } else if (rij>d14max) {
-
-#ifdef DEBUG
-                    pr( logFile, "|_15+" );
-#endif /* DEBUG */
-
-                    /* sep = 5; */
+                if (B_include_1_4_interactions == FALSE) {
+                    // include is FALSE,  i.e.: ignore
+                    // Ignore "1-4 Interactions"
+                    nonbond_type = 0;
                 } else {
+                    // remember that this is a 1-4 interaction so we can scale it later...
+                    // Remember "1-4 Interactions"
+                    nonbond_type = 4;
+                } //  end if we are ignoring "1-4 interactions"
 
-#ifdef DEBUG
-                    pr( logFile, "|_?__" );
-#endif /* DEBUG */
+                // Loop over each atom "l" bonded to the atom "k" bonded to the atom "j" bonded to the atom "i"...
+                for (l=0; l<bonded[bonded[bonded[i][j]][k]][5]; l++) { 
+                    nbmatrix[i][bonded[bonded[bonded[i][j]][k]][l]] = nonbond_type;
+                    nbmatrix[bonded[bonded[bonded[i][j]][k]][l]][i] = nonbond_type;
+                } //  l
 
-                    /* sep = 9; */
-                    nbmatrix_binary[i][j] = nbmatrix_binary[j][i] = 0;
-                }
-            } else {
-                if (rij < dH12min) {
 
-#ifdef DEBUG
-                    pr( logFile, "|H***" );
-#endif /* DEBUG */
+			} //  k
+		} //  j
+	} //  i
+	return;
+} // end of nonbonds
 
-                    /* sep = 0; */
-                    nbmatrix_binary[i][j] = nbmatrix_binary[j][i] = 0;
-                } else if ((rij >= dH12min) && (rij <= dH12max)) {
+/*----------------------------------------------------------------------------*/
 
-#ifdef DEBUG
-                    pr( logFile, "|H12_" );
-#endif /* DEBUG */
+void getbonds(const float crdpdb[MAX_ATOMS][SPACE], 
+              const int natom, 
+              const int bond_index[MAX_ATOMS],
+              int   bonded[MAX_ATOMS][6])
+{
+    /* 2005-01-10 */
+	int i,j,k,l;
+	double dist,dx,dy,dz;
 
-                    /* sep = 2; */
-                    nbmatrix_binary[i][j] = nbmatrix_binary[j][i] = 0;
-                } else if ((rij >= dH13min) && (rij <= dH13max)) {
+    // set up all the minimum and maximum possible distances for bonds
+	mdist();
 
-#ifdef DEBUG
-                    pr( logFile, "|H13_" );
-#endif /* DEBUG */
+    // determine the bonded atoms or "1-2 interactions"
+	for (i = 0; i<natom; i++) { // loop over atoms, "i", from 1 to natom
+		for (j = i+1; j<natom; j++) { // while on atom"i", loop over atoms "j", from i+1 to natom
+	
+			dx = crdpdb[i][X] - crdpdb[j][X];
+			dy = crdpdb[i][Y] - crdpdb[j][Y];
+			dz = crdpdb[i][Z] - crdpdb[j][Z];
+			dist = sqrt(dx*dx + dy*dy + dz*dz);  // calculate the distance from "i" to "j"
 
-                    /* sep = 3; */
-                    nbmatrix_binary[i][j] = nbmatrix_binary[j][i] = 0;
-                } else if ((rij >= dH14min) && (rij <= dH14max)) {
-                    /* sep = 4; */
+			if (dist >= mindist[bond_index[i]][bond_index[j]] && 
+                dist <= maxdist[bond_index[i]][bond_index[j]]) {  
+                // if distance from "i" to "j" is in range for their atom types, 
+                // set one of the atoms to which "i" is bonded to "j", and vice-versa.
+                //
+                // bonded[x][5] is the current number of bonds that atom "x" has.
+                // 
+	            // Remember:   int bonded[MAX_ATOMS][6];	
 
-#ifdef DEBUG
-                    pr( logFile, "|H14_" );
-#endif /* DEBUG */
+				bonded[i][ bonded[i][5] ] = j;
+				bonded[j][ bonded[j][5] ] = i;
+				bonded[i][5] += 1;
+				bonded[j][5] += 1;
+				
+			} //  dist is in bonding range for these atom types
+		} //  j
+ 	} //  i
+	return;
+} // end of get bonds
 
-                } else if (rij > dH14max) {
-                    /* sep = 5; */
+/*----------------------------------------------------------------------------*/
 
-#ifdef DEBUG
-                    pr( logFile, "|H15+" );
-#endif /* DEBUG */
-
-                } else {
-                    /* sep = 9; */
-
-#ifdef DEBUG
-                    pr( logFile, "| ?  " );
-#endif /* DEBUG */
-
-                    nbmatrix_binary[i][j] = nbmatrix_binary[j][i] = 0;
-                }/*endif*/
-            }/*endif*/
-        }/*j*/
-    }/*i*/
-
-#ifdef DEBUG
-    pr( logFile, "\n\n" );
-#endif /* DEBUG */
-
-    for (j = 0;  j < nrecord;  j++) {
-        i = atomnumber[j];
-        for (ii = 0; ii < 4; ii++)  {
-	    rec5[ii] = (char)tolower( (int)record[j][ii] ); 
-	}
-        if ( equal(rec5,"atom", 4) || equal(rec5,"heta", 4)) {
-            piece[i] = npiece;
+void printbonds(const int natom, const int bonded[MAX_ATOMS][6], const char *message, const int B_print_all_bonds)
+{
+    register int i, j;
+    pr(logFile, message);
+    for (i = 0; i<natom; i++) {  // loop over atoms, "i", from 1 to natom
+        pr(logFile, "DEBUG:  atom %d  bonded to ", i+1);
+        if (B_print_all_bonds == 1) {
+            for (j=0; j<6; j++) {  // loop over all the slots for this atom's "j" bonds
+                pr(logFile, "  %d", bonded[i][j]+1);
+            } // j
         } else {
-            ++npiece;
-        }/*if*/
-    }/*j*/
-}
+            for (j=0; j<bonded[i][5]; j++) {  // loop over this atom's "j" bonds
+                pr(logFile, "  %d", bonded[i][j]+1);
+            } // j
+        }
+        pr(logFile, "\n");
+    } // i
+} // end of printbonds
+
+/*----------------------------------------------------------------------------*/
+
+void print_1_4_message(FILE *file, Boole B_include_1_4_interactions,  FloatOrDouble scale_1_4)
+{
+    if (B_include_1_4_interactions == FALSE) {
+        pr(file, "1,4-interactions will be _ignored_ in the non-bonded internal energy calculation.\n\n");
+    } else {
+        pr(file, "1,4-interactions will be _included_ in the non-bonded internal energy calculation.\n\n");
+#ifdef USE_DOUBLE
+        pr(file, "1,4-interaction energies will be will be scaled by a factor of %.2lf .\n\n", scale_1_4);
+#else
+        pr(file, "1,4-interaction energies will be will be scaled by a factor of %.2f .\n\n", scale_1_4);
+#endif
+        pr(file,   "NOTE:  Computed internal energies will differ from the standard AutoDock free energy function.\n\n");
+    }
+    (void) fflush(file);
+} // end of print_1_4_message
+
 /* EOF */

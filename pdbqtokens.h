@@ -30,6 +30,7 @@
 #define PDBQ_ENDTORS 8      /* PDBQ-file token for "ENDTORS". */
 #define PDBQ_REMARK  9      /* PDBQ-file token for "REMARK". */
 #define PDBQ_CONSTRAINT 10  /* PDBQ-file token for "CONSTRAINT". */
-#define PDBQ_BEGIN_RES 11	/* PDBQ-file token for "BEGIN_RES". */
-#define PDBQ_END_RES 12		/* PDBQ-file token for "END_RES". */
-#define PDBQ_TORSDOF 14      /* PDBQ-file token for "TORSDOF". - torsional degrees of freedom */
+#define PDBQ_BEGIN_RES 11   /* PDBQ-file token for "BEGIN_RES". */
+#define PDBQ_END_RES 12     /* PDBQ-file token for "END_RES". */
+#define PDBQ_TORSDOF 14     /* PDBQ-file token for "TORSDOF" - torsional degrees of freedom. */
+#define PDBQ_CONECT  15     /* PDBQ-file token for "CONECT" - PDB connectivity record. */

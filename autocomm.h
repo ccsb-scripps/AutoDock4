@@ -60,10 +60,18 @@
 #endif
 
 #define	EINTCLAMP    100000. /* Clamp pairwise internal energies (kcal/mol )  */
-#define MAX_MAPS     8      /* Maximum number of energy maps                  */
-#define ATOM_MAPS    6      /* Number of atomic affinity grids                */
+
+#define MAX_ATOM_TYPES 14    /* Maximum number of atom types     */
+#define MAX_MAPS       (MAX_ATOM_TYPES + 2) /* Maximum number of energy maps */
+                            /* We add 2 because we have the electrostatic
+                             * potential map and the desolvation map */
+// Legacy definitions:
+#define NATOMTYPES	    7   /* Number of atom types for atomic interactions  */
+#define MAX_TYPES       8   /* Maximum number of atom types used. */
+#define ATOM_MAPS       6   /* Number of atomic affinity grids                */
                             /* 0,1,2,... are for atomic interactions          */
                             /* last is for electrostatics                     */
+
 #define VECLENMAX    16     /* For AVS fld files...                           */
 
 #define ATOMTYPE	"CNOSHXM"
@@ -83,9 +91,6 @@
 #define COVALENT 7
 #define COVALENT2 8
 
-#define NATOMTYPES	7    /* Number of atom types for atomic interactions  */
-
-#define MAX_TYPES       8 /* Maximum number of atom types used. */
 
 #define UnderLine "________________________________________________________________________________\n\n"
 

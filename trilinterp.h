@@ -2,26 +2,12 @@
 #define ENERGYPENALTY 500.0	/* Energy factor which is multiplied by distance
 				   from centre of grid, to penalize atoms
 				   outside grid */
-
-#ifndef QUICKTRILINTERP
-#define QUICKTRILINTERP
-#include "constants.h"
-FloatOrDouble  quicktrilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-            CONST_FLOAT charge[MAX_ATOMS], 
-            CONST_INT   type[MAX_ATOMS], 
-            CONST_INT   natom, 
-            CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo );
-#endif
-
 #ifndef TRILINTERP
 #define TRILINTERP
 #include "constants.h"
 FloatOrDouble  trilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
             CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_FLOAT abs_charge[MAX_ATOMS], 
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
@@ -33,11 +19,28 @@ FloatOrDouble  trilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             CONST_FLOAT zlo );
 #endif
 
+#ifndef QUICKTRILINTERP
+#define QUICKTRILINTERP
+#include "constants.h"
+FloatOrDouble  quicktrilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
+            CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_FLOAT abs_charge[MAX_ATOMS], 
+            CONST_INT   type[MAX_ATOMS], 
+            CONST_INT   natom, 
+            CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            CONST_FLOAT inv_spacing, 
+            CONST_FLOAT xlo, 
+            CONST_FLOAT ylo, 
+            CONST_FLOAT zlo );
+#endif
+
+
 #ifndef OUTSIDETRILINTERP
 #define OUTSIDETRILINTERP
 #include "constants.h"
 FloatOrDouble  outsidetrilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
             CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_FLOAT abs_charge[MAX_ATOMS], 
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
@@ -60,6 +63,7 @@ FloatOrDouble  outsidetrilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 #include "constants.h"
 FloatOrDouble  outsidetrilinterpbyatom( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
             CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_FLOAT abs_charge[MAX_ATOMS], 
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
@@ -82,6 +86,7 @@ FloatOrDouble  outsidetrilinterpbyatom( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 #include "constants.h"
 FloatOrDouble  template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
             CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_FLOAT abs_charge[MAX_ATOMS], 
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
@@ -98,6 +103,7 @@ FloatOrDouble  template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 #include "constants.h"
 FloatOrDouble  outside_templ_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
             CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_FLOAT abs_charge[MAX_ATOMS], 
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
@@ -120,6 +126,7 @@ FloatOrDouble  outside_templ_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 #include "constants.h"
 FloatOrDouble  byatom_template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
                                    CONST_FLOAT charge[MAX_ATOMS], 
+                                   CONST_FLOAT abs_charge[MAX_ATOMS], 
                                    CONST_INT   type[MAX_ATOMS], 
                                    CONST_INT   natom, 
                                    CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
@@ -138,6 +145,7 @@ FloatOrDouble  byatom_template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 #include "constants.h"
 FloatOrDouble  trilinterp4(CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
             CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_FLOAT abs_charge[MAX_ATOMS], 
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
@@ -155,6 +163,7 @@ FloatOrDouble  trilinterp4(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 #include "constants.h"
 FloatOrDouble  outsidetrilinterp4byatom( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
             CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_FLOAT abs_charge[MAX_ATOMS], 
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
@@ -178,6 +187,7 @@ FloatOrDouble  outsidetrilinterp4byatom( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 #include "constants.h"
 FloatOrDouble  outsidetrilinterp4( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
             CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_FLOAT abs_charge[MAX_ATOMS], 
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
@@ -199,6 +209,7 @@ FloatOrDouble  outsidetrilinterp4( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 #include "constants.h"
 FloatOrDouble  quicktrilinterp4( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
             CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_FLOAT abs_charge[MAX_ATOMS], 
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],

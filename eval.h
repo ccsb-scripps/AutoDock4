@@ -34,14 +34,13 @@ class Eval
       FloatOrDouble eval_emap[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
       State stateNow;
-      unsigned short *US_TorE, (*US_torProfile)[NTORDIVS]; 
-      int *type, (*nonbondlist)[4], (*tlist)[MAX_ATOMS];
-//      FloatOrDouble (*q1q2), *Addr_eintra, (*charge);
-      FloatOrDouble *q1q2, *charge;
-      FloatOrDouble (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE]; 
-      FloatOrDouble (*e_internal)[ATOM_MAPS][ATOM_MAPS]; 
+      unsigned short *US_TorE, (*US_torProfile)[NTORDIVS];
+      int *type, (*nonbondlist)[MAX_NBDATA], (*tlist)[MAX_ATOMS];
+      FloatOrDouble *q1q2, *charge, *abs_charge, *qsp_abs_charge;
+      FloatOrDouble (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE];
+      FloatOrDouble (*e_internal)[ATOM_MAPS][ATOM_MAPS];
       FloatOrDouble (*map)[MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
-      Boole *B_isTorConstrained; 
+      Boole *B_isTorConstrained;
       Molecule mol;
       Boole B_template; // Use the template-docking scoring function if true 15-jan-2001
       // FloatOrDouble template_energy[MAX_ATOMS]; // atomic template values
@@ -49,37 +48,48 @@ class Eval
       FloatOrDouble *template_energy; // atomic template values
       FloatOrDouble *template_stddev; // atomic template values
       int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
-   
+      Boole         B_include_1_4_interactions; // gmm 2005-01-8, for scaling 1-4 nonbonds
+      FloatOrDouble scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
+      FloatOrDouble  *sol_fn;
+      ParameterEntry *parameterArray;
+
    public:
       Eval(void);
-      void setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE], FloatOrDouble init_charge[MAX_ATOMS], 
-            int   init_type[MAX_ATOMS], int init_natom, 
-            FloatOrDouble init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-            FloatOrDouble init_inv_spacing, 
-            FloatOrDouble init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-            FloatOrDouble init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-            FloatOrDouble init_xlo, FloatOrDouble init_xhi, // added by GMM
-            FloatOrDouble init_ylo, FloatOrDouble init_yhi, // xhi,yhi,zhi
-            FloatOrDouble init_zlo, FloatOrDouble init_zhi, // ...
-//            FloatOrDouble init_Addr_eintra, int init_nonbondlist[MAX_NONBONDS][4], 
-            int init_nonbondlist[MAX_NONBONDS][4], 
-            FloatOrDouble init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], int init_Nnb, 
-            Boole init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS], 
-            Boole init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS], 
-            Boole init_B_ShowTorE, unsigned short init_US_TorE[MAX_TORS], 
-            unsigned short init_US_torProfile[MAX_TORS][NTORDIVS], 
-            FloatOrDouble init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], 
-            FloatOrDouble init_crdpdb[MAX_ATOMS][SPACE], State stateInit, Molecule molInit,
-            Boole init_B_template, 
-            FloatOrDouble init_template_energy[MAX_ATOMS], 
-            FloatOrDouble init_template_stddev[MAX_ATOMS],
-            int   init_ignore_inter[MAX_ATOMS]);
+      void setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
+          FloatOrDouble  init_charge[MAX_ATOMS],
+          FloatOrDouble  init_abs_charge[MAX_ATOMS],
+          FloatOrDouble  init_qsp_abs_charge[MAX_ATOMS],
+          int            init_type[MAX_ATOMS], int init_natom,
+          FloatOrDouble  init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+          FloatOrDouble  init_inv_spacing,
+          FloatOrDouble  init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+          FloatOrDouble  init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+          FloatOrDouble  init_xlo, FloatOrDouble init_xhi, // added by GMM
+          FloatOrDouble  init_ylo, FloatOrDouble init_yhi, // xhi,yhi,zhi
+          FloatOrDouble  init_zlo, FloatOrDouble init_zhi, // ...
+          int            init_nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+          FloatOrDouble  init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], int init_Nnb,
+          Boole          init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS],
+          Boole          init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS],
+          Boole          init_B_ShowTorE, unsigned short init_US_TorE[MAX_TORS],
+          unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
+          FloatOrDouble  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS],
+          FloatOrDouble  init_crdpdb[MAX_ATOMS][SPACE], State stateInit, Molecule molInit,
+          Boole          init_B_template,
+          FloatOrDouble  init_template_energy[MAX_ATOMS],
+          FloatOrDouble  init_template_stddev[MAX_ATOMS],
+          int            init_ignore_inter[MAX_ATOMS],
+          Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
+          FloatOrDouble  init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
+          FloatOrDouble  init_sol_fn[NEINT],
+          ParameterEntry init_parameterArray[MAX_MAPS]
+          );
+
       double operator()(Representation **);
 #if defined(USING_COLINY)
       double operator()(double*, int);
 #endif
-      double eval();			// WEH - a basic change that facilitates
-      					// the use of Coliny
+      double eval();			// WEH - a basic change that facilitates the use of Coliny
       UnsignedFourByteLong evals(void);
       void reset(void);
       int write(FILE *out_file, Representation **rep);
@@ -90,71 +100,97 @@ inline Eval::Eval(void)
 {
 }
 
-inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE], FloatOrDouble init_charge[MAX_ATOMS], 
-            int init_type[MAX_ATOMS], int init_natom, 
-            FloatOrDouble init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-            FloatOrDouble init_inv_spacing, 
-            FloatOrDouble init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-            FloatOrDouble init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-            FloatOrDouble init_xlo, FloatOrDouble init_xhi,   // gmm
-            FloatOrDouble init_ylo, FloatOrDouble init_yhi,   // gmm
-            FloatOrDouble init_zlo, FloatOrDouble init_zhi,   // gmm
-//            FloatOrDouble init_Addr_eintra, int init_nonbondlist[MAX_NONBONDS][4], 
-            int init_nonbondlist[MAX_NONBONDS][4], 
-            FloatOrDouble init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], int init_Nnb, 
-            Boole init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS], 
-            Boole init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS], 
-            Boole init_B_ShowTorE, unsigned short init_US_TorE[MAX_TORS], 
-            unsigned short init_US_torProfile[MAX_TORS][NTORDIVS], 
-            FloatOrDouble init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], 
-            FloatOrDouble init_crdpdb[MAX_ATOMS][SPACE], State stateInit,
-            Molecule molInit, 
-            Boole init_B_template, 
-            FloatOrDouble init_template_energy[MAX_ATOMS], 
-            FloatOrDouble init_template_stddev[MAX_ATOMS],
-            int   init_ignore_inter[MAX_ATOMS])
-{
-   register int i;
+inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
+                        FloatOrDouble init_charge[MAX_ATOMS],
+                        FloatOrDouble init_abs_charge[MAX_ATOMS],
+                        FloatOrDouble init_qsp_abs_charge[MAX_ATOMS],
+                        int init_type[MAX_ATOMS],
+                        int init_natom,
+                        FloatOrDouble init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                        FloatOrDouble init_inv_spacing,
+                        FloatOrDouble init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+                        FloatOrDouble init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+                        FloatOrDouble init_xlo, FloatOrDouble init_xhi,   // gmm
+                        FloatOrDouble init_ylo, FloatOrDouble init_yhi,   // gmm
+                        FloatOrDouble init_zlo, FloatOrDouble init_zhi,   // gmm
+                        int init_nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                        FloatOrDouble init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+                        int init_Nnb,
+                        Boole init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS],
+                        Boole init_B_isGaussTorCon,
+                        Boole init_B_isTorConstrained[MAX_TORS],
+                        Boole init_B_ShowTorE,
+                        unsigned short init_US_TorE[MAX_TORS],
+                        unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
+                        FloatOrDouble init_vt[MAX_TORS][SPACE],
+                        int init_tlist[MAX_TORS][MAX_ATOMS],
+                        FloatOrDouble init_crdpdb[MAX_ATOMS][SPACE],
+                        State stateInit,
+                        Molecule molInit,
 
-   crd = init_crd; 
-   charge = init_charge; 
-   type = init_type; 
-   natom = init_natom; 
-   map = init_map; 
-   inv_spacing = init_inv_spacing; 
-   xlo = init_xlo; 
-   xhi = init_xhi; // gmm
-   xcen = 0.5*(xhi+xlo); // gmm 14-jan-98
-   ylo = init_ylo; 
-   yhi = init_yhi; // gmm
-   ycen = 0.5*(yhi+ylo); // gmm 14-jan-98
-   zlo = init_zlo; 
-   zhi = init_zhi; // gmm
-   zcen = 0.5*(zhi+zlo); // gmm 14-jan-98
-//   Addr_eintra = init_Addr_eintra; 
-   nonbondlist = init_nonbondlist; 
-   e_internal = init_e_internal; 
-   Nnb = init_Nnb; 
-   B_calcIntElec = init_B_calcIntElec; 
-   q1q2 = init_q1q2; 
-   B_isGaussTorCon = init_B_isGaussTorCon;  
-   B_isTorConstrained = init_B_isTorConstrained; 
-   B_ShowTorE = init_B_ShowTorE; 
-   US_TorE = init_US_TorE; 
-   US_torProfile = init_US_torProfile; 
-   vt = init_vt; 
-   tlist = init_tlist; 
-   crdpdb = init_crdpdb; 
-   stateNow = stateInit;
-   num_evals = 0;
-   for (i=0; i<MAX_ATOMS; i++) {
+                        Boole init_B_template,
+                        FloatOrDouble init_template_energy[MAX_ATOMS],
+                        FloatOrDouble init_template_stddev[MAX_ATOMS],
+
+                        int   init_ignore_inter[MAX_ATOMS],
+
+                        Boole         init_B_include_1_4_interactions,
+                        FloatOrDouble init_scale_1_4,
+
+                        FloatOrDouble  init_sol_fn[NEINT],
+                        ParameterEntry init_parameterArray[MAX_MAPS]
+                       )
+
+{
+    register int i;
+
+    crd = init_crd;
+    charge = init_charge;
+    abs_charge = init_abs_charge;
+    qsp_abs_charge = init_qsp_abs_charge;
+    type = init_type;
+    natom = init_natom;
+    map = init_map;
+    inv_spacing = init_inv_spacing;
+    xlo = init_xlo;
+    xhi = init_xhi; // gmm
+    xcen = 0.5*(xhi+xlo); // gmm 14-jan-98
+    ylo = init_ylo;
+    yhi = init_yhi; // gmm
+    ycen = 0.5*(yhi+ylo); // gmm 14-jan-98
+    zlo = init_zlo;
+    zhi = init_zhi; // gmm
+    zcen = 0.5*(zhi+zlo); // gmm 14-jan-98
+
+    nonbondlist = init_nonbondlist;
+    e_internal = init_e_internal;
+    Nnb = init_Nnb;
+    B_calcIntElec = init_B_calcIntElec;
+    q1q2 = init_q1q2;
+    B_isGaussTorCon = init_B_isGaussTorCon;
+    B_isTorConstrained = init_B_isTorConstrained;
+    B_ShowTorE = init_B_ShowTorE;
+    US_TorE = init_US_TorE;
+    US_torProfile = init_US_torProfile;
+    vt = init_vt;
+    tlist = init_tlist;
+    crdpdb = init_crdpdb;
+    stateNow = stateInit;
+    num_evals = 0;
+    for (i=0; i<MAX_ATOMS; i++) {
        init_elec[i] = init_emap[i] = 0.0;
        ignore_inter[i] = init_ignore_inter[i];
-   }
-   mol = molInit;
-   B_template = init_B_template;
-   template_energy = init_template_energy;
-   template_stddev = init_template_stddev;
+    }
+    mol = molInit;
+    B_template = init_B_template;
+    template_energy = init_template_energy;
+    template_stddev = init_template_stddev;
+
+    B_include_1_4_interactions = init_B_include_1_4_interactions;
+    scale_1_4 = init_scale_1_4;
+
+    sol_fn = init_sol_fn;
+    parameterArray = init_parameterArray;
 }
 
 inline UnsignedFourByteLong Eval::evals(void)

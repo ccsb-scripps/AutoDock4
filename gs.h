@@ -142,10 +142,10 @@ inline unsigned int Genetic_Algorithm::num_generations(void)
 inline int Genetic_Algorithm::terminate(void)
 {
    if (max_generations>0) {
-      // before 7-jan-98, was: return(generations>=max_generations);
-      return((generations>=max_generations)||(converged==1)); // gmm 7-jan-98
+      // before 7-jan-98, was: return( generations >= max_generations );
+      return( (generations >= max_generations)  ||  (converged == 1)); // gmm 7-jan-98
    } else {
-      return(0);  //  Don't terminate
+      return( 0 );  //  Don't terminate
    }
 }
 

@@ -3,7 +3,7 @@
 #define CLMODE
 #include "constants.h"
 #include "strindex.h"
-#include "readPDBQ.h"
+#include "readPDBQT.h"
 #include "get_atom_type.h"
 #include "getpdbcrds.h"
 #include "sort_enrg.h"
@@ -13,8 +13,7 @@
 #include "success.h"
 #include "qmultiply.h"
 #include "openfile.h"
-void  clmode( char  atm_typ_str[ATOM_MAPS], 
-              int   num_atm_maps, 
+void  clmode( int   num_atm_maps, 
               FloatOrDouble clus_rms_tol, 
               char  hostnm[MAX_CHARS], 
               Clock jobStart,

@@ -17,7 +17,7 @@
 #include "readmap.h"
 #include "cmdmode.h"
 #include "success.h"
-#include "readPDBQ.h"
+#include "readPDBQT.h"
 #include "intnbtable.h"
 #include "nbe.h"
 #include "clmode.h"

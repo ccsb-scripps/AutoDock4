@@ -104,6 +104,12 @@
 #define DPF_TEMPL_ENERGY 79
 #define DPF_HOLLOW_OUT 80
 #define DPF_COLINY	81
+#define DPF_INCLUDE_1_4_INTERACTIONS	82
+#define DPF_PARAMETER_LIBRARY	83
+#define DPF_RECEPTOR_TYPES	    84
+#define DPF_LIGAND_TYPES	    85
+#define DPF_UNBOUND	    86
+#define DPF_EPDB	    87
 
 #endif
 /* EOF */

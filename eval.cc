@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.8 2004/11/16 23:42:52 garrett Exp $
+ $Id: eval.cc,v 1.9 2005/03/11 02:11:29 garrett Exp $
 
 */
 
@@ -140,19 +140,19 @@ double Eval::eval()
     *                              B_ShowTorE, US_TorE, US_torProfile);
     * --------------------------------------------------------------------------*/
 
-            energy = quicktrilinterp4( crd, charge, type, natom, map, inv_spacing,
+            energy = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing,
                                       xlo, ylo, zlo,
                              		 ignore_inter);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after quicktrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
+            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */
             /*
-            energy = trilinterp( crd, charge, type, natom, map, inv_spacing, eval_elec, eval_emap, xlo, ylo, zlo)
-                     + eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
+            energy = trilinterp( crd, charge, abs_charge, type, natom, map, inv_spacing, eval_elec, eval_emap, xlo, ylo, zlo)
+                     + eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
             */
          
             if (B_isGaussTorCon) {
@@ -182,11 +182,11 @@ double Eval::eval()
              * distance from centre of grid map, otherwise use the normal 
              * trilinear interpolation.
              */
-            energy = outsidetrilinterp4( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,  xcen, ycen, zcen, ignore_inter );
+            energy = outsidetrilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,  xcen, ycen, zcen, ignore_inter );
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after outsidetrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
+            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */
@@ -207,10 +207,10 @@ double Eval::eval()
     } else {
         // Use template scoring function
         if (!B_outside) {
-            energy = template_trilinterp( crd, charge, type, natom, map, inv_spacing,
+            energy = template_trilinterp( crd, charge, abs_charge, type, natom, map, inv_spacing,
                                   xlo, ylo, zlo, template_energy, template_stddev);
         } else {
-            energy = outside_templ_trilinterp( crd, charge, type, natom, map,
+            energy = outside_templ_trilinterp( crd, charge, abs_charge, type, natom, map,
                                                inv_spacing, 
                                                xlo, ylo, zlo,
                                                xhi, yhi, zhi,  xcen, ycen, zcen,

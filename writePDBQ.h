@@ -22,10 +22,17 @@ void  writePDBQ( int   irun,
                  FloatOrDouble emap[MAX_ATOMS],
                  FloatOrDouble elec[MAX_ATOMS],
                  FloatOrDouble charge[MAX_ATOMS],
+                 FloatOrDouble abs_charge[MAX_ATOMS],
+                 FloatOrDouble qsp_abs_charge[MAX_ATOMS],
                  int ligand_is_inhibitor,
                  FloatOrDouble torsFreeEnergy,
                  int outlev,
-                 int   ignore_inter[MAX_ATOMS]);
+                 int   ignore_inter[MAX_ATOMS],
+                 const Boole         B_include_1_4_interactions,
+                 const FloatOrDouble scale_1_4,
+                 const FloatOrDouble sol_fn[NEINT],
+                 const ParameterEntry parameterArray[MAX_MAPS]
+                 );
 #endif
 
 #else /* WRITEPDBQSTATE */
@@ -56,12 +63,14 @@ void writeStateOfPDBQ(int irun,
                     FloatOrDouble emap[MAX_ATOMS],
                     FloatOrDouble elec[MAX_ATOMS],
                     FloatOrDouble charge[MAX_ATOMS],
+                    FloatOrDouble abs_charge[MAX_ATOMS],
+                    FloatOrDouble qsp_abs_charge[MAX_ATOMS],
                     int ligand_is_inhibitor,
                     FloatOrDouble torsFreeEnergy,
                     FloatOrDouble vt[MAX_TORS][SPACE],
                     int   tlist[MAX_TORS][MAX_ATOMS],
                     FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-                    int   nonbondlist[MAX_NONBONDS][4],
+                    int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
                     FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
                     int   type[MAX_ATOMS],
                     int   Nnb,
@@ -79,7 +88,11 @@ void writeStateOfPDBQ(int irun,
                     FloatOrDouble template_energy[MAX_ATOMS],
                     FloatOrDouble template_stddev[MAX_ATOMS],
                     int outlev,
-                    int   ignore_inter[MAX_ATOMS]
+                    int   ignore_inter[MAX_ATOMS],
+                    const Boole         B_include_1_4_interactions,
+                    const FloatOrDouble scale_1_4,
+                    const FloatOrDouble sol_fn[NEINT],
+                    const ParameterEntry parameterArray[MAX_MAPS]
 		    );
 
 #endif

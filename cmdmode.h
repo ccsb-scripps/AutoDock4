@@ -9,7 +9,7 @@
 #include "print_avsfld.h"
 #include "printEnergies.h"
 #include "success.h"
-#include "readPDBQ.h"
+#include "readPDBQT.h"
 #include "get_atom_type.h"
 #include "timesys.h"
 #include "eintcal.h"
@@ -36,17 +36,24 @@ int   cmdmode( int natom,
              int   tlist[MAX_TORS][MAX_ATOMS],
              int   ntor,
              int   Nnb,
-             int   nonbondlist[MAX_NONBONDS][4],
+             int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
              char  atomstuff[MAX_ATOMS][MAX_CHARS],
              FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
              char  hostnm[MAX_CHARS],
              int   type[MAX_ATOMS],
              FloatOrDouble charge[MAX_ATOMS],
-	        Boole B_calcIntElec,
-	        FloatOrDouble q1q2[MAX_NONBONDS],
-	        char  atm_typ_str[ATOM_MAPS],
-	        FloatOrDouble torsFreeEnergy,
-            int ligand_is_inhibitor,
-            FloatOrDouble map_center[SPACE],
-            int ignore_inter[MAX_ATOMS]);
+             FloatOrDouble abs_charge[MAX_ATOMS],
+             FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+             Boole B_calcIntElec,
+             FloatOrDouble q1q2[MAX_NONBONDS],
+             char  atm_typ_str[ATOM_MAPS],
+             FloatOrDouble torsFreeEnergy,
+             int ligand_is_inhibitor,
+             FloatOrDouble map_center[SPACE],
+             int ignore_inter[MAX_ATOMS],
+             const Boole         B_include_1_4_interactions,
+             const FloatOrDouble scale_1_4,
+             const FloatOrDouble sol_fn[NEINT],
+             const ParameterEntry parameterArray[MAX_MAPS]
+             );
 #endif

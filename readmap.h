@@ -26,11 +26,12 @@ FloatOrDouble   mapc2f( char C_mapValue );
 #include "check_header_float.h"
 #include "check_header_int.h"
 #include "timesys.h"
-void    readmap( Boole *P_B_HaveMap, 
+#include "structs.h"
+void   readmap( Boole *P_B_HaveMap, 
                 int   *P_Imap,
                 int   *P_NumAtmMaps, 
                 FloatOrDouble *P_ExtSpacing, 
-                char  AtmTypStr[ATOM_MAPS], 
+                char  ligand_atom_types[MAX_MAPS][3],
                 char  ExtFldFileName[MAX_CHARS], 
                 int   ExtGridPts1[SPACE], 
                 int   ExtGridPts[SPACE], 
@@ -41,6 +42,9 @@ void    readmap( Boole *P_B_HaveMap,
                 FloatOrDouble MapCenter[SPACE], 
                 FloatOrDouble MapMax[MAX_MAPS], 
                 FloatOrDouble MapMin[MAX_MAPS], 
-		struct tms tmsJobStart,
-		Boole B_charMap);
+                struct tms tmsJobStart,
+                Boole B_charMap,
+                int outlev);
+                //GridMap grid_map);
+
 #endif

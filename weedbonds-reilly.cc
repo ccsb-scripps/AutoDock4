@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.5 2005/03/11 02:11:31 garrett Exp $
+ $Id: weedbonds-reilly.cc,v 1.1 2005/03/11 02:11:31 garrett Exp $
 
 */
 
@@ -24,16 +24,15 @@ void weedbonds( int natom,
                 int piece[MAX_ATOMS],
                 int ntor,
                 int tlist[MAX_TORS][MAX_ATOMS],
-                int nbmatrix[MAX_ATOMS][MAX_ATOMS],
                 int *Addr_Nnb,
+                int Nnbonds[MAX_ATOMS],
+                int nbmatrix[MAX_ATOMS][MAX_ATOMS],
                 int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
                 int outlev,
-                int type[MAX_ATOMS])
+				int type[MAX_ATOMS])
 
 {
     static int OUTNUMATM = 10;
-
-    int Nnbonds[MAX_ATOMS];
 
     int a11=0;
     int a12=0;
@@ -56,7 +55,6 @@ void weedbonds( int natom,
 
     char error_message[LINE_LEN];
 
-
 /*___________________________________________________________________________
 |    ENDBRANCH---TORS---BRANCH---R O O T---BRANCH---ENDBRANCH                |
 |                                  /              \                          |
@@ -72,100 +70,37 @@ void weedbonds( int natom,
 |____________________________________________________________________________|
 | Weed out bonds in rigid pieces,                                            |
 |____________________________________________________________________________|
-*/        
+*/
 
-    // Set the number of nonbonds of each atom "i" to 0
-    for (i = 0;  i < natom;  i++) {
-        Nnbonds[i] = 0;
+    if (debug>0) {
+        pr(logFile, "DEBUG: Inside weedbonds now; outlev is set to %d.\n\n", outlev);
     }
 
-    for (j = 0;  j < natom;  j++) {
-        for (i = 0;  i < natom;  i++) {
-            // Is atom "i" in the same rigid piece as atom "j"?
-            if (piece[i] == piece[j]) {
-                // Set the entry for atoms "i" and "j" in the
-                //    nonbond matrix to 0 ;
-                // 
-                // Later on, we will not calculate the interaction energy
-                //    between atoms "i" and "j"
-                nbmatrix[j][i] = nbmatrix[i][j] = 0;
-            }
-        } // i
-    } // j
-
-    /* 
-    \   Weed out bonds across torsions,
-     \______________________________________________________________
-    */
-    // Loop over all "ntor" torsions, "i"
-    for (i=0; i<ntor; i++) {
-        nbmatrix[ tlist[i][ATM2] ][ tlist[i][ATM1] ] = 0;
-
-        if (debug>0) {
-            pr(logFile, "DEBUG: Inside weedbonds now; torsion i=%d, outlev is set to %d.\n\n", i, outlev);
-        }
-#ifdef DEBUG
-/**/    pr( logFile, "__2__ i=%-2d: nbmatrix[tlist[%-2d][ATM2]=%-2d][tlist[%-2d][ATM1]=%-2d]=%d\n",i,i,tlist[i][ATM2],i,tlist[i][ATM1],nbmatrix[tlist[i][ATM2]][tlist[i][ATM1]]);
-#endif /* DEBUG */
-
-    } /* i */
-
-    /*
-    \  Weed out bonds from atoms directly connected to rigid pieces,
-     \______________________________________________________________
-    */
-    for (i=0; i<ntor; i++) {
-
-        a11 = tlist[i][ATM1];
-        a21 = tlist[i][ATM2];
-        p11 = piece[a11];
-        p21 = piece[a21];
-
-        for (j=0; j<ntor; j++) {
-
-            a12 = tlist[j][ATM1];
-            a22 = tlist[j][ATM2];
-            p12 = piece[a12];
-            p22 = piece[a22];
-
-            if (p11 == p12)  { nbmatrix[ a22 ][ a21 ] = nbmatrix[ a21 ][ a22 ] = 0; }
-            if (p11 == p22)  { nbmatrix[ a12 ][ a21 ] = nbmatrix[ a21 ][ a12 ] = 0; }
-            if (p21 == p12)  { nbmatrix[ a22 ][ a11 ] = nbmatrix[ a11 ][ a22 ] = 0; }
-            if (p21 == p22)  { nbmatrix[ a12 ][ a11 ] = nbmatrix[ a11 ][ a12 ] = 0; }
-
-        } /* j */
-
-        for (k = 0;  k < natom;  k++) {
-            p = piece[k];
-            if (p11 == p)  { nbmatrix[ k ][ a21 ] = nbmatrix[ a21 ][ k ] = 0; }
-            if (p21 == p)  { nbmatrix[ k ][ a11 ] = nbmatrix[ a11 ][ k ] = 0; }
-        } /* k */
-    } /* i */
-
     for ( i = 0;  i < (natom-1);  i++ ) {
+
 #ifdef DEBUG
 /**/        pr( logFile,"> i = %d (CHECKING SYMMETRY OF NBMATRIX)\n\n", i);
 #endif /* DEBUG */
 
         for ( j = i+1;  j < natom;  j++ ) {
+
 #ifdef DEBUG
-/**/        pr( logFile,"< i,j = %2d,%2d  nbmatrix[][] = %d/%d\n", i, j, nbmatrix[i][j], nbmatrix[j][i] );
+/**/            pr( logFile,"< i,j = %2d,%2d  nbmatrix[][] = %d/%d\n", i, j, nbmatrix[i][j], nbmatrix[j][i] );
 #endif /* DEBUG */
 
-            if ( ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1))
-                    ||
-                 ((nbmatrix[i][j] == 4) && (nbmatrix[j][i] == 4)) ) {
-
+            if ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1)) {
                 nonbondlist[Nnb][ATM1] = i;
                 nonbondlist[Nnb][ATM2] = j;
-                nonbondlist[Nnb][TYPE1] = type[i];
-                nonbondlist[Nnb][TYPE2] = type[j];
-                nonbondlist[Nnb][NBTYPE] = nbmatrix[i][j];
+				nonbondlist[Nnb][TYPE1] = type[i];
+				nonbondlist[Nnb][TYPE2] = type[j];
+				
 #ifdef DEBUG
 /**/                pr( logFile,"< nonbondlist[%2d][0,1] = %2d,%2d\n", Nnb, nonbondlist[Nnb][ATM1], nonbondlist[Nnb][ATM2] );
 #endif /* DEBUG */
+
                 ++Nnb;
-            } else if ( (nbmatrix[i][j] != 0) && (nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] != 0) ) {
+            } else if ( (nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 0)
+                     || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] == 1) ) {
                 pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
             }
         } /* j */
@@ -249,7 +184,6 @@ void weedbonds( int natom,
 #endif /* DEBUG */
 
     if (outlev > -1) {
-        // Print out a list of internal non-bonded interactions
         if (ntor > 0) {
             pr( logFile, "\n\nList of Internal Non-Bonded Interactions:\n" );
             pr( logFile, "_________________________________________\n\n" );
@@ -258,7 +192,7 @@ void weedbonds( int natom,
             pr( logFile, "_____ " );
         } /* endif */
 
-        for (i = 0;  i < natom;  i++) {
+        for (i = 0;  i < MAX_ATOMS;  i++) {
             if (Nnbonds[i] != 0) {
                 for ( j = 0;  j < OUTNUMATM;  j++ ) {
                     pr( logFile, "_____" );
@@ -270,30 +204,27 @@ void weedbonds( int natom,
         if (ntor > 0) {
             pr( logFile, "_\n" );
         }
+        flushLog;
 
-        for (i = 0;  i < natom;  i++) {
-            // loop over all atoms, "i"
+        for (i = 0;  i < MAX_ATOMS;  i++) {
             if (Nnbonds[i] != 0) {
-                // this atom "i" has some nonbonds
-                repflag = FALSE; // set the repeat(?) flag to FALSE.
-                n_a = 0;  // number of atoms output on this line so far.
+                repflag = FALSE;
+                n_a = 0;
                 pr( logFile, "%4s: ", pdbaname[i] );
                 for ( j = 0; j < Nnbonds[i]; j++) {
-                    // loop over all nonbonds "j" for this atom
-                    ++n_a;
+                    ++n_a; 
                     if (n_a >= OUTNUMATM) {
                         n_a = 0;
                         pr( logFile, "\n      " );
                     }
                     pr( logFile, "%s", pdbaname[ nbmatrix[j][i] ] );
                     for ( k = 0; k < j; k++ ) {
-                        // loop over all "k" less than "j", the current nonbond
                         if (nbmatrix[k][i] == nbmatrix[j][i]) {
                             repflag = TRUE;
                             break;
                         }
                     } /*  k  */
-                    if (repflag && (k != j)) {
+                    if (repflag&&(k != j)) {
                         pr( logFile,"(ERROR! %d & %d)", j, k );
                     }
                     pr( logFile, "%s", (j == (Nnbonds[i]-1))?".":", " );
@@ -301,11 +232,9 @@ void weedbonds( int natom,
                 pr( logFile,"\n\n");
             } /*  endif  */
         } /*  i  */
-    } // outlev > -1
 
-    pr( logFile, "\nInternal Non-bonded Interactions before,\t%d\n", (natom+1)*natom/2);
-    pr( logFile, "                       and after weeding =\t%d\n\n", Nnb);
-
-    flushLog;
+        pr( logFile, "\nInternal Non-bonded Interactions before,\t%d\n", (natom+1)*natom/2);
+        pr( logFile, "                       and after weeding =\t%d\n\n", Nnb);
+    }
 }
 /* EOF */

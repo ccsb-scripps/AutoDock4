@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_pdbq_line.cc,v 1.3 2004/11/16 23:42:53 garrett Exp $
+ $Id: parse_pdbq_line.cc,v 1.4 2005/03/11 02:11:30 garrett Exp $
 
 */
 
@@ -83,6 +83,8 @@ int parse_pdbq_line( char line[LINE_LEN] )
 	    token = PDBQ_BEGIN_RES;
 	} else if (strncmp(c,"end_res",7)==0) {
 	    token = PDBQ_END_RES;
+	} else if (strncmp(c,"conect",6)==0) {
+	    token = PDBQ_CONECT;
 	}
     } else {
 	token = PDBQ_NULL;

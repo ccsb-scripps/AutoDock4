@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.4 2004/11/16 23:42:52 garrett Exp $
+ $Id: getInitialState.cc,v 1.5 2005/03/11 02:11:30 garrett Exp $
 
 */
 
@@ -11,20 +11,19 @@
 /* getInitialState.cc */
 
 #include <math.h>
-
-    #include <stdio.h>
-    #include <sys/types.h>
-    #include <sys/times.h>
-    #include <sys/param.h>
-    #include <time.h>
-    #include "getInitialState.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/times.h>
+#include <sys/param.h>
+#include <time.h>
+#include "getInitialState.h"
 
 
 extern FILE *logFile;
 extern char *programname;
 
 
-void getInitialState(   
+void getInitialState(
 
             FloatOrDouble *Addr_e0total,
             FloatOrDouble e0max,
@@ -38,6 +37,8 @@ void getInitialState(
             Boole B_RandomDihe0,
 
             FloatOrDouble charge[MAX_ATOMS],
+            FloatOrDouble abs_charge[MAX_ATOMS],
+            FloatOrDouble qsp_abs_charge[MAX_ATOMS],
             FloatOrDouble q1q2[MAX_NONBONDS],
             FloatOrDouble crd[MAX_ATOMS][SPACE],
             FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
@@ -56,7 +57,7 @@ void getInitialState(
             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
-            int   nonbondlist[MAX_NONBONDS][4],
+            int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
             int   ntor,
             int   tlist[MAX_TORS][MAX_ATOMS],
             int   type[MAX_ATOMS],
@@ -64,9 +65,20 @@ void getInitialState(
             int   irun1,
             int   outlev,
             int   MaxRetries,
+
             FloatOrDouble torsFreeEnergy,
+
             int   ligand_is_inhibitor,
-            int   ignore_inter[MAX_ATOMS])
+
+            int   ignore_inter[MAX_ATOMS],
+
+            const Boole         B_include_1_4_interactions,
+            const FloatOrDouble scale_1_4,
+
+            const FloatOrDouble sol_fn[NEINT],
+            const ParameterEntry parameterArray[MAX_MAPS]
+
+           )
 
 {
     FloatOrDouble e0total = 0.;
@@ -142,8 +154,8 @@ void getInitialState(
         initautodock( atomstuff, crd, crdpdb, xhi, yhi, zhi, xlo, ylo, zlo, 
             natom, ntor, sInit, tlist, vt, outlev);
         
-        e0inter = trilinterp4( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
-        e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
+        e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
+        e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
         e0total = e0inter + e0intra;
 
         if (e0total < e0min) {
@@ -181,8 +193,8 @@ void getInitialState(
 
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
-    e0inter = trilinterp4( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
-    e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
+    e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
+    e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
     e0total = e0inter + e0intra;
 
     copyState( sMinm, *sInit );

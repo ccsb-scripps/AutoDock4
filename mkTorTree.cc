@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.3 2004/11/16 23:42:53 garrett Exp $
+ $Id: mkTorTree.cc,v 1.4 2005/03/11 02:11:30 garrett Exp $
 
 */
 
@@ -25,20 +25,20 @@ extern char  *programname;
     
 
 void mkTorTree( int   atomnumber[ MAX_RECORDS ],
-		char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
-		int   nrecord,
+                char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
+                int   nrecord,
 
-		int   tlist[ MAX_TORS ][ MAX_ATOMS ],
-		int   *P_ntor,
+                int   tlist[ MAX_TORS ][ MAX_ATOMS ],
+                int   *P_ntor,
 
-		char  smFileName[ MAX_CHARS ],
+                char  smFileName[ MAX_CHARS ],
 
-		char  pdbaname[ MAX_ATOMS ][ 5 ],
-		Boole *P_B_constrain,
-		int   *P_atomC1,
-		int   *P_atomC2,
-		FloatOrDouble *P_sqlower,
-		FloatOrDouble *P_squpper,
+                char  pdbaname[ MAX_ATOMS ][ 5 ],
+                Boole *P_B_constrain,
+                int   *P_atomC1,
+                int   *P_atomC2,
+                FloatOrDouble *P_sqlower,
+                FloatOrDouble *P_squpper,
          int   *P_ntorsdof,
          int   ignore_inter[MAX_ATOMS])
 
@@ -71,7 +71,6 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 #ifdef DEBUG
     int   oo = 0;
     char  C = 'A';
-    char  rec4[4];
 #endif /* DEBUG */
 
     /* ntor = *P_ntor; */
@@ -112,35 +111,35 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 
     for (i = 0;  i < nrecord;  i++) {
 
-	if ( (keyword_id = parse_pdbq_line( Rec_line[ i ] )) == -1) {
-	    pr( logFile, "%s: Unrecognized keyword found while parsing PDBQ file, line:\n|%s|\n", programname, Rec_line[ i ] );
-	    continue;
-	}
+        if ( (keyword_id = parse_pdbq_line( Rec_line[ i ] )) == -1) {
+            pr( logFile, "%s: Unrecognized keyword found while parsing PDBQ file, line:\n|%s|\n", programname, Rec_line[ i ] );
+            continue;
+        }
 
 #ifdef DEBUG
-	pr( logFile, "PDBQ-Line %d: %s", i+1, Rec_line[i] );
+        pr( logFile, "PDBQ-Line %d: %s", i+1, Rec_line[i] );
 #endif /* DEBUG */
 
-	switch( keyword_id ) {
+        switch( keyword_id ) {
 
     /*____________________________________________________________*/
-	    case PDBQ_REMARK:
+            case PDBQ_REMARK:
 
-		pr( logFile, "%s", Rec_line[ i ] );
-		break;
-
-    /*____________________________________________________________*/
-	    case PDBQ_NULL:
-
-		break;
+                pr( logFile, "%s", Rec_line[ i ] );
+                break;
 
     /*____________________________________________________________*/
-	    case PDBQ_ATOM: 
-	    case PDBQ_HETATM:
+            case PDBQ_NULL:
+
+                break;
+
+    /*____________________________________________________________*/
+            case PDBQ_ATOM: 
+            case PDBQ_HETATM:
 
              /* This is an ATOM or HETATM. */
 
-		    atomlast = atomnumber[ i ];
+                    atomlast = atomnumber[ i ];
 
              if (found_new_res) {
                     /* We are in a residue. */
@@ -176,112 +175,113 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
                 break;
 
     /*____________________________________________________________*/
-	    case PDBQ_BRANCH:
+            case PDBQ_BRANCH:
 
-		sscanf(Rec_line[ i ],"%*s %d %*d", &tlist[ ntor ][ ATM1 ] );
-		tlist[ ntor ][ ATM2 ] = atomnumber[ i+1 ];
-		--tlist[ ntor ][ ATM1 ];
-		if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
-		    prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
-		    stop( error_message );
-		    exit( -1 );
-		} /* endif */
-		nbranches = 0;
-
-#ifdef DEBUG
-		C = 'B';
-		PrintDebugTors;
-		PrintDebugTors2;
-		pr( logFile, "]\n" );
-#endif /* DEBUG */
-
-		for ( j = (i+2); j < nrecord; j++) {
-		    for ( ii = 0; ii < 4; ii++ ) {
-			rec5[ ii ] = (char)tolower( (int)Rec_line[ j ][ ii ] );
-		    }
-#ifdef DEBUG
-		    C = 'b';
-		    PrintDebugTors;
-		    PrintDebugTors2;
-		    pr( logFile, "]\n" );
-#endif /* DEBUG */
-
-		    if (equal(rec5,"endb", 4) && (nbranches == 0))  break;
-		    if (equal(rec5,"endb", 4) && (nbranches != 0))  --nbranches;
-		    if (equal(rec5,"bran", 4))                      ++nbranches;
-		    if (equal(rec5,"atom", 4) || equal(rec5,"heta", 4)) {
-			tlist[ ntor ][ tlist[ ntor ][ NUM_ATM_MOVED ] + 3 ] = atomnumber[ j ];
-			++tlist[ ntor ][ NUM_ATM_MOVED ];
-		    } /* endif */
-		} /* j */
-		++ntor;
+                sscanf(Rec_line[ i ],"%*s %d %*d", &tlist[ ntor ][ ATM1 ] );
+                tlist[ ntor ][ ATM2 ] = atomnumber[ i+1 ];
+                --tlist[ ntor ][ ATM1 ];
+                if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
+                    prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
+                    stop( error_message );
+                    exit( -1 );
+                } /* endif */
+                nbranches = 0;
 
 #ifdef DEBUG
-		PrintDebugTors;
-		PrintDebugTors2;
-		pr( logFile, "]\n" );
+                C = 'B';
+                PrintDebugTors;
+                PrintDebugTors2;
+                pr( logFile, "]\n" );
 #endif /* DEBUG */
 
-		break;
+                for ( j = (i+2); j < nrecord; j++) {
+                    for ( ii = 0; ii < 4; ii++ ) {
+                        rec5[ii] = (char)tolower( (int)Rec_line[ j ][ ii ] );
+                    }
+                    rec5[4] = '\0';
+#ifdef DEBUG
+                    C = 'b';
+                    PrintDebugTors;
+                    PrintDebugTors2;
+                    pr( logFile, "]\n" );
+#endif /* DEBUG */
+
+                    if (equal(rec5,"endb", 4) && (nbranches == 0))  break;
+                    if (equal(rec5,"endb", 4) && (nbranches != 0))  --nbranches;
+                    if (equal(rec5,"bran", 4))                      ++nbranches;
+                    if (equal(rec5,"atom", 4) || equal(rec5,"heta", 4)) {
+                        tlist[ ntor ][ tlist[ ntor ][ NUM_ATM_MOVED ] + 3 ] = atomnumber[ j ];
+                        ++tlist[ ntor ][ NUM_ATM_MOVED ];
+                    } /* endif */
+                } /* j */
+                ++ntor;
+
+#ifdef DEBUG
+                PrintDebugTors;
+                PrintDebugTors2;
+                pr( logFile, "]\n" );
+#endif /* DEBUG */
+
+                break;
 
     /*____________________________________________________________*/
-	    case PDBQ_TORS:
+            case PDBQ_TORS:
 
-		tlist[ ntor ][ ATM2 ] = atomnumber[ i+1 ];
-		tlist[ ntor ][ ATM1 ] = atomlast;
-		if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
-		    prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
-		    stop( error_message );
-		    exit( -1 );
-		}
-		nbranches = 0;
-
-#ifdef DEBUG
-		C = 'T';
-		PrintDebugTors;
-		PrintDebugTors2;
-		pr( logFile, "]\n" );
-#endif /* DEBUG */
-
-		for ( j = (i+2); j < nrecord; j++) {
-		    for (ii = 0; ii < 4; ii++) {
-			rec5[ ii ] = (char)tolower( (int)Rec_line[ j ][ ii ] );
-		    }
-#ifdef DEBUG
-		    C = 't';
-		    PrintDebugTors;
-		    PrintDebugTors2;
-		    pr( logFile, "]\n" );
-#endif /* DEBUG */
-
-		    if (equal(rec5,"endb", 4) && (nbranches == 0))  break;
-		    if (equal(rec5,"endb", 4) && (nbranches != 0))  --nbranches;
-		    if (equal(rec5,"bran", 4))                      ++nbranches;
-		    if (equal(rec5,"atom", 4) || equal(rec5,"heta", 4)) {
-			tlist[ ntor ][ tlist[ ntor ][ NUM_ATM_MOVED ] + 3 ] = atomnumber[ j ];
-			++tlist[ ntor ][ NUM_ATM_MOVED ];
-		    } /* endif */
+                tlist[ ntor ][ ATM2 ] = atomnumber[ i+1 ];
+                tlist[ ntor ][ ATM1 ] = atomlast;
+                if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
+                    prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
+                    stop( error_message );
+                    exit( -1 );
+                }
+                nbranches = 0;
 
 #ifdef DEBUG
-		    PrintDebugTors;
-		    PrintDebugTors2;
-		    pr( logFile, "]\n" );
+                C = 'T';
+                PrintDebugTors;
+                PrintDebugTors2;
+                pr( logFile, "]\n" );
 #endif /* DEBUG */
 
-		} /* j */
-		++ntor;
+                for ( j = (i+2); j < nrecord; j++) {
+                    for (ii = 0; ii < 4; ii++) {
+                        rec5[ ii ] = (char)tolower( (int)Rec_line[ j ][ ii ] );
+                    }
+#ifdef DEBUG
+                    C = 't';
+                    PrintDebugTors;
+                    PrintDebugTors2;
+                    pr( logFile, "]\n" );
+#endif /* DEBUG */
+
+                    if (equal(rec5,"endb", 4) && (nbranches == 0))  break;
+                    if (equal(rec5,"endb", 4) && (nbranches != 0))  --nbranches;
+                    if (equal(rec5,"bran", 4))                      ++nbranches;
+                    if (equal(rec5,"atom", 4) || equal(rec5,"heta", 4)) {
+                        tlist[ ntor ][ tlist[ ntor ][ NUM_ATM_MOVED ] + 3 ] = atomnumber[ j ];
+                        ++tlist[ ntor ][ NUM_ATM_MOVED ];
+                    } /* endif */
 
 #ifdef DEBUG
-		C = 't';
-		PrintDebugTors;
-		PrintDebugTors2;
-		pr( logFile, "]\n" );
+                    PrintDebugTors;
+                    PrintDebugTors2;
+                    pr( logFile, "]\n" );
 #endif /* DEBUG */
 
-		break;
+                } /* j */
+                ++ntor;
+
+#ifdef DEBUG
+                C = 't';
+                PrintDebugTors;
+                PrintDebugTors2;
+                pr( logFile, "]\n" );
+#endif /* DEBUG */
+
+                break;
 
     /*____________________________________________________________*/
-	    case PDBQ_CONSTRAINT:
+            case PDBQ_CONSTRAINT:
 
         #ifdef USE_DOUBLE
             sscanf(Rec_line[ i ],"%*s %d %d %lf %lf", P_atomC1, P_atomC2, &lower, &upper);
@@ -291,10 +291,10 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 
                 *P_B_constrain = TRUE;
 
-		upper = fabs( (double)upper );
-		lower = fabs( (double)lower );
+                upper = fabs( (double)upper );
+                lower = fabs( (double)lower );
 
-		pr( logFile, "Constrain the distance between atom %d and atom %d to be within %.3f and %.3f Angstroms.\n\n", *P_atomC1, *P_atomC2, lower, upper);
+                pr( logFile, "Constrain the distance between atom %d and atom %d to be within %.3f and %.3f Angstroms.\n\n", *P_atomC1, *P_atomC2, lower, upper);
 
                 if (lower > upper) {
                     pr( logFile, "WARNING!  The lower bound was larger than the upper bound. I will switch these around.\n\n");
@@ -324,16 +324,16 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
                 break;
 
     /*____________________________________________________________*/
-	    case PDBQ_TORSDOF:
+            case PDBQ_TORSDOF:
                 sscanf(Rec_line[i], "%*s %d", P_ntorsdof);
-                pr( logFile, "TDOF record detected: number of torsional degress of freedom, torsdof, set to %d.\n", *P_ntorsdof );
+                pr( logFile, "\nTDOF record detected: number of torsional degress of freedom, torsdof, set to %d.\n", *P_ntorsdof );
                 break;
 
     /*____________________________________________________________*/
-	    default:
-		break;
+            default:
+                break;
     /*____________________________________________________________*/
-	} /* switch -- finished parsing this line of PDBQ file*/
+        } /* switch -- finished parsing this line of PDBQ file*/
     } /* i --- do next record in PDBQ file... */
 
     /*
@@ -342,47 +342,47 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     */
 
     if (ntor > MAX_TORS) {
-	prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
-	stop( error_message );
-	exit( -1 );
+        prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
+        stop( error_message );
+        exit( -1 );
     } else {
-	*P_ntor = ntor;
+        *P_ntor = ntor;
     }
 
     itor = 0;
     for (i=0;  i<MAX_ATOMS;  i++) {
-	for ( j=0; j<ntor; j++ ) {
-	    if (tlist[ j ][ NUM_ATM_MOVED ] == i) {
-		for (k=0;  k<MAX_ATOMS;  k++) {
-		    tlistsort[ itor ][ k ] = tlist[ j ][ k ];
-		}
-		++itor;
-	    }
-	}
+        for ( j=0; j<ntor; j++ ) {
+            if (tlist[ j ][ NUM_ATM_MOVED ] == i) {
+                for (k=0;  k<MAX_ATOMS;  k++) {
+                    tlistsort[ itor ][ k ] = tlist[ j ][ k ];
+                }
+                ++itor;
+            }
+        }
     }
     for ( i=0; i<ntor; i++ ) {
-	for (j=0;  j<MAX_ATOMS;  j++) {
-	    tlist[ i ][ j ] = tlistsort[ i ][ j ];
-	}
+        for (j=0;  j<MAX_ATOMS;  j++) {
+            tlist[ i ][ j ] = tlistsort[ i ][ j ];
+        }
     }
     if (ntor > 0) {
-	pr( logFile, "\n\nNumber of Rotatable Bonds in Small Molecule =\t%d torsions\n", ntor);
-	pr( logFile, "\n\nTORSION TREE\n____________\n\nSorted in order of increasing number of atoms moved:\n\n" );
+        pr( logFile, "\n\nNumber of Rotatable Bonds in Small Molecule =\t%d torsions\n", ntor);
+        pr( logFile, "\n\nTORSION TREE\n____________\n\nSorted in order of increasing number of atoms moved:\n\n" );
      
-	pr( logFile, "Torsion		   #\n" );
-	pr( logFile, " #  Atom1--Atom2 Moved List of Atoms Moved\n" );
-	pr( logFile, "___ ____________ _____ ________________________________________________________\n");
-	for ( j=0; j<ntor; j++ ) {
-	    pr( logFile, "%2d  %5s--%-5s  %3d  ", j+1, pdbaname[ tlist[ j ][ ATM1 ] ], pdbaname[ tlist[ j ][ ATM2 ] ], tlist[ j ][ NUM_ATM_MOVED ] );
-	    imax = tlist[ j ][ NUM_ATM_MOVED ] + 2;
-	    for ( i = 3; i <= imax; i++ ) {
-		pr( logFile, "%s%c", pdbaname[ tlist[ j ][ i ]], (i<imax)?',':'.' );
-	    }
-	    pr( logFile, "\n" );
-	}
-	pr( logFile, "\n" );
+        pr( logFile, "Torsion                    #\n" );
+        pr( logFile, " #  Atom1--Atom2 Moved List of Atoms Moved\n" );
+        pr( logFile, "___ ____________ _____ ________________________________________________________\n");
+        for ( j=0; j<ntor; j++ ) {
+            pr( logFile, "%2d  %5s--%-5s  %3d  ", j+1, pdbaname[ tlist[ j ][ ATM1 ] ], pdbaname[ tlist[ j ][ ATM2 ] ], tlist[ j ][ NUM_ATM_MOVED ] );
+            imax = tlist[ j ][ NUM_ATM_MOVED ] + 2;
+            for ( i = 3; i <= imax; i++ ) {
+                pr( logFile, "%s%c", pdbaname[ tlist[ j ][ i ]], (i<imax)?',':'.' );
+            }
+            pr( logFile, "\n" );
+        }
+        pr( logFile, "\n" );
     } else { 
-	pr( logFile, "\n*** No Rotatable Bonds detected in Small Molecule. ***\n\n" );
+        pr( logFile, "\n*** No Rotatable Bonds detected in Small Molecule. ***\n\n" );
     }
 }
 /* EOF */

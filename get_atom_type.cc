@@ -1,6 +1,6 @@
 /*
 
- $Id: get_atom_type.cc,v 1.2 2003/02/26 01:05:24 garrett Exp $
+ $Id: get_atom_type.cc,v 1.3 2005/03/11 02:11:30 garrett Exp $
 
 */
 
@@ -10,58 +10,58 @@
 
 /* get_atom_type.cc */
 
-
-
-    #include <stdio.h>
-    #include "get_atom_type.h"
-
+#include <stdio.h>
+#include <search.h>
+#include "get_atom_type.h"
+#include "structs.h"
+#include "autocomm.h"
+#include "print_2x.h"
 
 extern char *programname;
 extern FILE *logFile;
+extern int debug;
 
 
-int get_atom_type( char aname[4], 
-		   char chtype[MAX_TYPES] )
-
+int get_atom_type( char aname[4] )
 {
-    char ch, ch1;
-    register int i; 
-    int type = -1;
+    ENTRY item, *found_item; /*see hsearch(3C)*/
+    ParameterEntry * found_parm;
+    ParameterEntry thisparm;
+    int map_index = -1;
+    int bond_index = -1;
+    char message[MAX_CHARS];
 
-    /* DEBUG (void) fprintf (stderr, "DEBUG: aname='%s', chtype='%s'\n", aname, chtype); */
 
-    ch1 = aname[0];
-    /* DEBUG (void) fprintf (stderr, "DEBUG: get_atom_type: ch1= '%c'\n", ch1); */
+    // "map_index" is used as an index into the "map" array,
+    // to look up the correct energies in the current grid cell,
+    // thus:  map[][][][map_index]
 
-    switch (ch1) {
-        case ' ':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-            ch = aname[1];
-            break;
-        default:
-            ch = ch1;
-            break;
-    }
-    /* ch = (ch1 == ' ') ? aname[1] : ch1; */
-
-    /* DEBUG (void) fprintf (stderr, "DEBUG: get_atom_type: ch= '%c'\n", ch); */
-    for ( i=0; i<MAX_TYPES; i++) {
-        /* DEBUG (void) fprintf (stderr, "DEBUG: get_atom_type: i= %d\n", i); */
-        if (ch == chtype[i]) {
-            type = i;
-            /* DEBUG (void) fprintf (stderr, "DEBUG: get_atom_type: type= %d\n", type); */
-            break; /* break out of this for i loop */
+    // AutoGrid 4 Typing --/
+    item.key = thisparm.autogrid_type;
+    if ((found_item = hsearch (item, FIND)) != NULL) {
+        found_parm = (ParameterEntry *)found_item->data;
+        map_index = found_parm->map_index;
+        bond_index = found_parm->bond_index;
+        if (debug > 0) {
+            (void) fprintf( logFile, "Found parameters for ligand atom named %s, atom type \"%s\", grid map index = %d\n",
+                    aname, found_parm->autogrid_type, found_parm->map_index );
         }
-    }    
-    if (type == -1) {
-        (void) fprintf(stderr, "\n%s: WARNING!  Atom type error, can't find type for \"%s\" in typelist \"%s\".\n", programname, aname, chtype );
-        (void) fprintf(logFile, "\n%s: WARNING!  Atom type error, can't find type for \"%s\" in typelist \"%s\".\n", programname, aname, chtype );
-        type = UNKNOWN;
+
+    } else {
+        // We could not find this parameter -- return error here
+         prStr( message, "\n%s: *** WARNING!  Unknown ligand atom type \"%s\" found.  You should add  parameters for it to the parameter library first! ***\n\n", programname, aname);
+         pr_2x( stderr, logFile, message );
+
     }
-    return (type);
+    // /--AutoGrid4 
+    
+    if (map_index == -1) {
+        pr( logFile, "%s: WARNING:  atom type not found, using the default, atom type = 1, instead.\n", programname);
+        map_index = 0;  // we are 0-based internally, 1-based in printed output, for human's sake
+        bond_index = 0;  // we are 0-based internally, 1-based in printed output, for human's sake
+    }
+    return (map_index);
 }
+
+
 /* EOF */

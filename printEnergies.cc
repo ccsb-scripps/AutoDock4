@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.2 2003/02/26 01:26:52 garrett Exp $
+ $Id: printEnergies.cc,v 1.3 2005/03/11 02:11:30 garrett Exp $
 
 */
 
@@ -11,15 +11,18 @@
 /* printEnergies.cc */
 
 #include <math.h>
-
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include "printEnergies.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "printEnergies.h"
 
 extern FILE *logFile;
 
 #define print1000(x) pr(logFile,  ((fabs((x)) >= 0.001) && ((fabs(x)) <= 1000.)) ? "%+7.2f" : "%+11.2e" , (x));
+
+void print1000_no_sign(double x) {
+    pr(logFile,  ((fabs((x)) >= 0.01) && ((fabs(x)) <= 1000.)) ? "%7.2f" : "%11.2e" , (x));
+}
 
 void printEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDouble torsFreeEnergy, char  *prefixString, int ligand_is_inhibitor )
 {
@@ -69,7 +72,7 @@ void printEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDouble to
         } else {
             pr( logFile, "%sEstimated Dissociation Constant, Kd = ", prefixString);
         }
-        print1000(Ki);
+        print1000_no_sign(Ki);
         pr( logFile, "       [Temperature = %.2f K]\n", TK);
     }
 

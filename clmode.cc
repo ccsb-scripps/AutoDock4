@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.2 2003/02/26 00:43:34 garrett Exp $
+ $Id: clmode.cc,v 1.3 2005/03/11 02:11:29 garrett Exp $
 
 */
 
@@ -24,8 +24,7 @@
 extern FILE *logFile;
 extern char *programname;
 
-void  clmode( char  atm_typ_str[ATOM_MAPS],
-              int   num_atm_maps,
+void  clmode( int   num_atm_maps,
               FloatOrDouble clus_rms_tol,
               char  hostnm[MAX_CHARS],
               Clock jobStart,
@@ -74,6 +73,7 @@ void  clmode( char  atm_typ_str[ATOM_MAPS],
     int   ref_natoms = -1;
     FloatOrDouble ref_rms[MAX_RUNS];
     Boole haveEnergy = FALSE;
+    ParameterEntry thisparm;
 
     for (j = 0; j < MAX_RUNS; j++) {
         num_in_clu[j] = 0;
@@ -155,10 +155,11 @@ void  clmode( char  atm_typ_str[ATOM_MAPS],
         } else if (equal( rec5,"atom", 4) || equal( rec5,"heta", 4)) {
 
             /* 
-             * This line contains coordinates and partial charge for one atom.
+             * This line should contain coordinates, partial charge & 
+             * atom type for one atom.
              * Let's save the coordinates for this atom, atomCounter.
              */
-            readPDBQLine( line, crdSave[confCounter][atomCounter], &q );
+            readPDBQTLine( line, crdSave[confCounter][atomCounter], &q, &thisparm );
 
             if ( ! haveAtoms ) {
                 /*
@@ -203,7 +204,8 @@ void  clmode( char  atm_typ_str[ATOM_MAPS],
                         /*
                          * Determine this atom's atom type:
                          */
-                        type[atomCounter] = get_atom_type(pdbaname[atomCounter], atm_typ_str);
+                        type[atomCounter] = get_atom_type(pdbaname[atomCounter]);
+
                         if (type[atomCounter] == -1) {
                             pr( logFile, "\nNOTE: Atom number %d, using default atom type 1...\n\n", atomCounter+1);
                             type[atomCounter] = 1;

@@ -18,6 +18,8 @@
 void  analysis( int   Nnb, 
                 char  atomstuff[MAX_ATOMS][MAX_CHARS], 
                 FloatOrDouble charge[MAX_ATOMS], 
+                FloatOrDouble abs_charge[MAX_ATOMS], 
+               FloatOrDouble qsp_abs_charge[MAX_ATOMS], 
 	              Boole B_calcIntElec,
 	              FloatOrDouble q1q2[MAX_NONBONDS],
                 FloatOrDouble clus_rms_tol, 
@@ -31,7 +33,7 @@ void  analysis( int   Nnb,
                 FloatOrDouble ylo, 
                 FloatOrDouble zlo, 
                 int   natom, 
-                int   nonbondlist[MAX_NONBONDS][4], 
+                int   nonbondlist[MAX_NONBONDS][MAX_NBDATA], 
                 int   nconf, 
                 int   ntor, 
                 State hist[MAX_RUNS], 
@@ -49,5 +51,10 @@ void  analysis( int   Nnb,
                 FloatOrDouble template_energy[MAX_ATOMS], // template energy value for each atom
                 FloatOrDouble template_stddev[MAX_ATOMS], // and standard deviation of this energy
                 int   outlev,
-                int   ignore_inter[MAX_ATOMS]);
+                int   ignore_inter[MAX_ATOMS],
+                const Boole   B_include_1_4_interactions,
+                const FloatOrDouble scale_1_4,
+                const FloatOrDouble sol_fn[NEINT],
+                const ParameterEntry parameterArray[MAX_MAPS]
+               );
 #endif

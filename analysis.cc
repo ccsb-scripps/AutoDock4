@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.5 2004/11/16 23:42:52 garrett Exp $
+ $Id: analysis.cc,v 1.6 2005/03/11 02:11:29 garrett Exp $
 
 */
 
@@ -38,6 +38,8 @@ extern char  *programname;
 void analysis( int   Nnb, 
                char  atomstuff[MAX_ATOMS][MAX_CHARS], 
                FloatOrDouble charge[MAX_ATOMS], 
+               FloatOrDouble abs_charge[MAX_ATOMS], 
+               FloatOrDouble qsp_abs_charge[MAX_ATOMS], 
                Boole B_calcIntElec,
                FloatOrDouble q1q2[MAX_NONBONDS],
                FloatOrDouble clus_rms_tol, 
@@ -51,7 +53,7 @@ void analysis( int   Nnb,
                FloatOrDouble ylo, 
                FloatOrDouble zlo, 
                int   natom, 
-               int   nonbondlist[MAX_NONBONDS][4], 
+               int   nonbondlist[MAX_NONBONDS][MAX_NBDATA], 
                int   nconf, 
                int   ntor, 
                State hist[MAX_RUNS], 
@@ -68,8 +70,13 @@ void analysis( int   Nnb,
                Boole B_template,
                FloatOrDouble template_energy[MAX_ATOMS],
                FloatOrDouble template_stddev[MAX_ATOMS],
-               int   outlev,
-			 int   ignore_inter[MAX_ATOMS])
+               int           outlev,
+			   int           ignore_inter[MAX_ATOMS],
+               const Boole   B_include_1_4_interactions,
+               const FloatOrDouble scale_1_4,
+               const FloatOrDouble sol_fn[NEINT],
+               const ParameterEntry parameterArray[MAX_MAPS]
+              )
 
 {
     /* register int   imol = 0; */
@@ -210,16 +217,15 @@ void analysis( int   Nnb,
             (void)memcpy(crd, crdSave[c], natom*3*sizeof(FloatOrDouble));
      
             if (ntor > 0) {
-                // eintra = eintcal( nonbondlist,e_internal,crd,Nnb,B_calcIntElec,q1q2 ) + torsFreeEnergy;
-                eintra = eintcal( nonbondlist,e_internal,crd,Nnb,B_calcIntElec,q1q2 );
+                eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
             } else {
                 // eintra = torsFreeEnergy;
                 eintra = 0.0;
             }
             if (!B_template) {
-                 einter = trilinterp4( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
+                 einter = trilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
             } else {
-                 einter = byatom_template_trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo,
+                 einter = byatom_template_trilinterp( crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo,
                                                       template_energy, template_stddev);
             }
 

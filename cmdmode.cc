@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.5 2004/11/16 23:42:52 garrett Exp $
+ $Id: cmdmode.cc,v 1.6 2005/03/11 02:11:29 garrett Exp $
 
 */
 
@@ -12,7 +12,6 @@
 
 
 #include <math.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -57,19 +56,27 @@ int cmdmode(int   natom,
              int   tlist[MAX_TORS][MAX_ATOMS],
              int   ntor,
              int   Nnb,
-             int   nonbondlist[MAX_NONBONDS][4],
+             int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
              char  atomstuff[MAX_ATOMS][MAX_CHARS],
              FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
              char  hostnm[MAX_CHARS],
              int   type[MAX_ATOMS],
              FloatOrDouble charge[MAX_ATOMS],
+             FloatOrDouble abs_charge[MAX_ATOMS],
+             FloatOrDouble qsp_abs_charge[MAX_ATOMS],
              Boole B_calcIntElec,
              FloatOrDouble q1q2[MAX_NONBONDS],
              char  atm_typ_str[ATOM_MAPS],
              FloatOrDouble torsFreeEnergy,
              int ligand_is_inhibitor,
              FloatOrDouble map_center[SPACE],
-             int ignore_inter[MAX_ATOMS])
+             int ignore_inter[MAX_ATOMS],
+             const Boole         B_include_1_4_interactions,
+             const FloatOrDouble scale_1_4,
+             const FloatOrDouble sol_fn[NEINT],
+             const ParameterEntry parameterArray[MAX_MAPS]
+            )
+
 {
     char message[LINE_LEN],
          command[LINE_LEN],
@@ -122,6 +129,7 @@ int cmdmode(int   natom,
 
     State S;
 
+    ParameterEntry thisparm;
 
     for (i = 0;  i < natom;  i++) {
         strncpy(rec8[i], &atomstuff[i][13], (size_t)8);
@@ -197,46 +205,38 @@ int cmdmode(int   natom,
 /*
             ____________________________________________________________________
 */
+
             case COM_EPDB:
 /*
                 EPDB filename flag
                 Return the energy of the Small Molecule.
-
                 filename must be in PDBQ-format;
-
                 flag can be:-
                 0 = NEW, or PDBQ-71, and
                 1 = OLD, or PDBQ-55 (old PDBq format).
 */
                 sscanf(command, "%*s %s %d", filename, &oldpdbq);
                 pr(logFile, "COMMAND: epdb %s %d\n\n", filename, oldpdbq);
-
+ 
                 nat = 0;
                 eintra = einter = etotal = 0.;
                 outside = FALSE;
-
+ 
                 if (openFile(filename, "r", &pdbFile, jobStart, tms_jobStart, FALSE)) {
                     while ((fgets(line, LINE_LEN, pdbFile)) != NULL) {
-
                         for (ii = 0; ii < 4; ii++) {
                             rec5[ii] = (char) tolower((int)line[ii]);
                         }
-
                         if (equal(rec5, "atom", 4) || equal(rec5, "heta", 4)) {
-
-                            readPDBQLine(line, crd[nat], &charge[nat]);
-
+                            readPDBQTLine(line, crd[nat], &charge[nat], &thisparm);
                             strncpy(pdbaname[natom], &line[12], (size_t)4);
-                            type[nat]=get_atom_type(pdbaname[natom], atm_typ_str);
-
+                            type[nat]=get_atom_type(pdbaname[natom]);
                             if (type[nat] == -1) {
                                 jobEnd = times(&tms_jobEnd);
                                 timesys(jobEnd - jobStart, &tms_jobStart, &tms_jobEnd);
                                 pr_2x(logFile, stderr, UnderLine);
-
                                 return -1;
                             } /* endif */
-
                             outside = is_out_grid(crd[nat][X],
                                                    crd[nat][Y],
                                                    crd[nat][Z]);
@@ -252,18 +252,17 @@ int cmdmode(int   natom,
                     fclose(pdbFile);
                     natom = nat;
                     if (ntor > 0) {
-                        eintra = eintcalPrint(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
+                        eintra = eintcalPrint(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, sol_fn, parameterArray);
                     } else {
                         eintra = 0.0;
                     }
                     /* gmm 2001.11.07
                     if (outside) {
-			etotal = (einter = outsidetrilinterp4byatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2], ignore_inter)) + eintra; // gmm 2001.11.07
+			etotal = (einter = outsidetrilinterp4byatom(crd, charge, abs_charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2], ignore_inter)) + eintra; // gmm 2001.11.07
                     } else {
-                        etotal = (einter = trilinterp4(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter)) + eintra;
+                        etotal = (einter = trilinterp4(crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter)) + eintra;
                     } / * endif */
-
-                    pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
+                    pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n", sol_fn, parameterArray);
                     pr(logFile,     "\t\t==============================\n\n\n");
                     pr(logFile, "Atom  NB.+ Elec.  Non-bonded  Electrosta  Partial          Coordinates         \n");
                     pr(logFile, "Type    Energy      Energy    tic Energy  Charge      x         y         z    \n");
@@ -286,12 +285,9 @@ int cmdmode(int   natom,
                         (emap_total + elec_total), emap_total, elec_total, charge_total);
                 
                     pr(command_out_fp, "%.2f\n", etotal);
-
                     pr(logFile, "    E_intermolecular_atomic-affinity = %.2f kcal/mol\n", emap_total);
                     pr(logFile, "    E_intermolecular_electrostatic   = %.2f kcal/mol\n", elec_total);
-
                     printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor);
-
 /*                     pr(logFile, "\n"); */
 /*                     pr(logFile, "    E_estimated_free_energy_binding  = %.2f kcal/mol  [=(1)+(3)]\n", einter + torsFreeEnergy); */
 /*                     pr(logFile, "\n"); */
@@ -305,6 +301,7 @@ int cmdmode(int   natom,
                     fflush(stderr);
                 } /* endif */
                 break;
+
 /*
             ____________________________________________________________________
 */
@@ -332,7 +329,7 @@ int cmdmode(int   natom,
                 }
                 cnv_state_to_coords(S,  vt, tlist, ntor,  crdpdb, crd, natom);
                 if (ntor > 0) {
-                    eintra = eintcalPrint(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
+                    eintra = eintcalPrint(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, sol_fn, parameterArray);
                 } else {
                     eintra = 0.0;
                 }
@@ -349,9 +346,9 @@ int cmdmode(int   natom,
                 } /*i*/
                 /*
                 if (outside) {
-                    etotal = (einter = outsidetrilinterp4byatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2], ignore_inter)) + eintra; // gmm 2001.11.07
+                    etotal = (einter = outsidetrilinterp4byatom(crd, charge, abs_charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2], ignore_inter)) + eintra; // gmm 2001.11.07
                 } else {
-                    etotal = (einter = trilinterp4(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter)) + eintra;
+                    etotal = (einter = trilinterp4(crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter)) + eintra;
                     / * lo) ...using lo array is slower * /
                 }
                 */
@@ -479,9 +476,9 @@ int cmdmode(int   natom,
                                     } /*i*/
                                     /* gmm 2001.11.07
                                     if (outside) {
-                                        etotal = (einter = outsidetrilinterp4byatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2], ignore_inter)) + Eint; // gmm 2001.11.07
+                                        etotal = (einter = outsidetrilinterp4byatom(crd, charge, abs_charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2], ignore_inter)) + Eint; // gmm 2001.11.07
                                     } else {
-                                        etotal = (einter = trilinterp4(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter)) + Eint;
+                                        etotal = (einter = trilinterp4(crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter)) + Eint;
                                             / * lo) + Eint; * /
                                     } / * endif */
                                     pr(logFile, "USER   Run %d  Cycle %d  Step %d  Temp %.2f K  %c  Etot %.2f  Eint   %.2f\n", irun, icycle, nstep, T, lastmove, E, Eint);

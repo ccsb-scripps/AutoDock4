@@ -4,6 +4,7 @@
 #include "autocomm.h" /* PI, TWOPI. */
 #endif
 #include "dpftoken.h"
+#include "partokens.h"
 
 /******************************************************************************
  *      Name: constants.h                                                     *
@@ -115,12 +116,14 @@
 #define HI_NRG_JUMP_FACTOR 2. /* Scale up the range of random jumps by this when the 
                                  last energy was higher than ENERGY_CUTOFF. */
 
-#ifdef USE_XCODE
+#ifdef USE_8A_NBCUTOFF
+
+// #ifdef USE_XCODE
 // Xcode-gmm
-#define NEINT  2048         /* Number of values in internal energy table */ // Xcode-gmm
+#define NEINT    2048         /* Number of values in internal energy table */ // Xcode-gmm
 #define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
 #define A_DIV     100.00      /* Used in distance look-up table. */
-#define INV_A_DIV   0.01      /* Used in distance look-up table. */
+#define INV_A_DIV   0.01      /* Used in distance look-up table. i.e. every 1/100-th of an Angstrom */
 #define SQA_DIV    32.00      /* Used in square-distance look-up table. */
 #define INT_SQA_DIV   32      /* Xcode-gmm */
 #define INV_SQA_DIV 0.03125   /* INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
@@ -132,22 +135,22 @@
 #define NEINT  131072         /* Number of values in internal energy table */
 #define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
 #define A_DIV     100.00      /* Used in distance look-up table. */
-#define INV_A_DIV   0.01      /* Used in distance look-up table. */
+#define INV_A_DIV   0.01      /* Used in distance look-up table. i.e. every 1/100-th of an Angstrom */
 #define SQA_DIV    32.00      /* Used in square-distance look-up table. */
 #define INT_SQA_DIV   32      /* Xcode-gmm */
 #define INV_SQA_DIV 0.03125   /* INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
 #define NBC        64.00      /* Non-bonded cutoff for internal energy calc./Ang*/
 #define NBC2     4096.00      /* NBC^2, units: Angstrom^2 */
+
 #endif
 
 /*
- * Alternate Scheme:-
- *                        (Uses less memory; for smaller ligands, < 8.0 Ang.)
+ * Alternate Scheme:-              (Uses less memory; for smaller ligands, < 8.0 Ang.)
  *
  * #define NEINT       8192        Number of values in internal energy table
  * #define NEINT_1 (NEINT - 1)     index of last entry in internal energy table
  * #define A_DIV    128.00         Used in look-up table.
- * #define INV_A_DIV  0.0078125    INV_A_DIV = NBC2 / NEINT
+ * #define INV_A_DIV  0.0078125    INV_A_DIV = NBC2 / NEINT, i.e. every 7.8125/1000-th of an Angstrom
  * #define NBC        8.00         Non-bonded cutoff for internal energy calc./Ang
  * #define NBC2      64.00         NBC^2, units: Angstrom^2
  */
@@ -159,14 +162,24 @@
 
 #define TYPE1			2     /* Index for the atom type of first atom - used in nonbondlist  Xcode-gmm */
 #define TYPE2			3     /* Index for the atom type of second atom - used in nonbondlist Xcode-gmm */
+#define NBTYPE			4     /* Index for the type of nonbond */
+#define MAX_NBDATA	    5     /* 5 elements of data for each nonbond: atm1, atm2, type1, type2 & whether 1,4 or other */
 
 #define TINYDELTA 0.001       /* To nudge ligand into grid... */
 
 /* Prevent internal electrostatic energy calculation from blowing up! */
 
-#define RMIN_ELEC 0.1         /* if atoms closer than this in Angstroms, clamp distance in internal elec. calc.*/
+#define RMIN_ELEC 0.5         /* if atoms closer than this in Angstroms, clamp distance in internal elec. calc.*/
 #define RMIN_ELEC2  (RMIN_ELEC * RMIN_ELEC) /* if atoms closer than this, clamp square 
                                                of distance in internal elec. calc.*/
+
+/* Set reasonable limits on Rij and epsilon-ij values*/
+
+#define RIJ_MIN 0.9
+#define RIJ_MAX 6.0
+#define EPSIJ_MIN 0.0
+#define EPSIJ_MAX 10.0
+
 
 /* Number of cluster-energies per line of output. */
 
@@ -224,8 +237,8 @@
  */
 #define        RedFac(s0,sN,N)                exp( log((sN)/(s0)) / ((N)-1))
 
-#define Reqm12( r1, r2 )        ((r1) + (r2))
-#define Epsilon12( e1, e2 )        sqrt((double)(e1) * (double)(e2))
+#define arithmetic_mean( r1, r2 )        (0.5L * ((r1) + (r2)))
+#define geometric_mean( e1, e2 )        sqrt((double)(e1) * (double)(e2))
 
 #define sq(a)                        ( (a) * (a) )
 #define SQ(a)                        ( (a) * (a) )
@@ -249,16 +262,16 @@
 #define index_to_SqAng(i)        ( ( (FloatOrDouble) (i) ) * INV_SQA_DIV )
 
 /* SqAng_to_index converts from the square of a distance to an array index */
-#define SqAng_to_index(r)        ( (int) ( (r) * SQA_DIV ) )
-#define SqAng_to_index_Int(r)        (INT_SQA_DIV * (int)(r))  /* Xcode-gmm */
+#define SqAng_to_index(r2)        ( (int) ( (r2) * SQA_DIV ) )
+#define SqAng_to_index_Int(r2)        (INT_SQA_DIV * (int)(r2))  /* Xcode-gmm */
 
 /* BoundedSqAng_to_index converts from the square of a distance to an array index, but never returns an index out of bounds. */
-#define BoundedSqAng_to_index(r)        ( (((int)((r)*SQA_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r)*SQA_DIV)) )
+#define BoundedSqAng_to_index(r2)        ( (((int)((r2)*SQA_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r2)*SQA_DIV)) )
 
 /* BoundedNeint never returns an index out of bounds. */
 #define BoundedNeint(i)                (((i) > NEINT_1) ? NEINT_1 : (i))
 
-#define sqminlookup(r)           ( (int) ( ( min( r, NBC2 ) ) * SQA_DIV ) )
+#define sqminlookup(r2)           ( (int) ( ( min( r2, NBC2 ) ) * SQA_DIV ) )
 
 #define is_out_grid(x,y,z) (((x)<=(xlo)) || ((x)>=(xhi)) || ((y)<=(ylo)) || ((y)>=(yhi)) || ((z)<=(zlo)) || ((z)>=(zhi))) 
 
@@ -323,7 +336,7 @@
 
 /*  For debugging torsions... */
 
-#define    PrintDebugTors    (void)fprintf(logFile, "%-2d %-2d %-4s %c %-8d %-9d %-2d %-4d      [%-2d] [ ", i, atomnumber[i],rec4,C,atomlast,nbranches,j, ntor, ntor )
+#define    PrintDebugTors    (void)fprintf(logFile, "%-2d %-2d %4s %c %-8d %-9d %-2d %-4d      [%-2d] [ ", i, atomnumber[i],rec5,C,atomlast,nbranches,j, ntor, ntor )
 #define    PrintDebugTors2   for(oo=0; oo<3+tlist[ntor][2]; oo++)  (void)fprintf(logFile, "%-2d ", tlist[ ntor ][ oo ] )
 
 #endif /* DEBUG */
@@ -372,11 +385,9 @@
  * 
  * Standard PDB v2.1 format with segID, element and charge: 
  */
+/* serial, name, altLoc, resName, chainID, resSeq, iCode, x, y, z, occupancy, tempFactor, segID, element, charge */
 #define FORMAT_PDB2_ATOM       "ATOM  %5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s%2s" 
-/*
- * , serial, name, altLoc, resName, chainID, resSeq, iCode, x, y, z, occupancy, tempFactor, segID, element, charge )
- */
- 
+
 /* 
  * PDBQ
  * 
@@ -387,13 +398,14 @@
  */
 #define FORMAT_PDBQ_ATOM_RESSTR         "%sATOM  %5d  %.13s    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f"
 #define FORMAT_PDBQ_ATOM_RESNUM         "%sATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f"
-
-/* #define FORMAT_PDBQ_ATOM_RANKRUN_STR      "ATOM  %5d  %.13s    %8.3f%8.3f%8.3f %3d %3d %+8.2f %8.3f\n"
- * #define FORMAT_PDBQ_ATOM_RUN_NUM          "ATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f %3d %+8.2f %8.3f\n"
- */
-
 #define FORMAT_PDBQ_ATOM_RANKRUN_STR      "ATOM  %5d  %.13s    %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f\n"
 #define FORMAT_PDBQ_ATOM_RUN_NUM          "ATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f\n"
+
+/* 
+ * PDBQT
+ */
+/* serial, name, altLoc, resName, chainID, resSeq, iCode, x, y, z, occupancy, tempFactor, segID, atom_type, "" */
+#define FORMAT_PDBQT_ATOM       "ATOM  %5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s%2s" 
 
 #endif /* _PDB_FORMATS */
 

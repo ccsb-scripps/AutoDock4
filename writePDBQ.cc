@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.4 2004/11/16 23:42:55 garrett Exp $
+ $Id: writePDBQ.cc,v 1.5 2005/03/11 02:11:31 garrett Exp $
 
 */
 
@@ -40,11 +40,11 @@ extern FILE *logFile;
 
 #ifndef WRITEPDBQSTATE
 
-void writePDBQ(  int irun,
+void writePDBQ ( int irun,
 
 #else /* WRITEPDBQSTATE */
 
-void writeStateOfPDBQ(  int   irun,
+void writeStateOfPDBQ (  int   irun,
 
 #endif /* WRITEPDBQSTATE */
                     char smFileName[MAX_CHARS],
@@ -69,18 +69,24 @@ void writeStateOfPDBQ(  int   irun,
                     FloatOrDouble emap[MAX_ATOMS],
                     FloatOrDouble elec[MAX_ATOMS],
                     FloatOrDouble charge[MAX_ATOMS],
+                    FloatOrDouble abs_charge[MAX_ATOMS],
+                    FloatOrDouble qsp_abs_charge[MAX_ATOMS],
                     int ligand_is_inhibitor,
 #ifndef WRITEPDBQSTATE
                     FloatOrDouble torsFreeEnergy,
                     int   outlev,
-                    int   ignore_inter[MAX_ATOMS]
+                    int   ignore_inter[MAX_ATOMS],
+                    const Boole         B_include_1_4_interactions,
+                    const FloatOrDouble scale_1_4,
+                    const FloatOrDouble sol_fn[NEINT],
+                    const ParameterEntry parameterArray[MAX_MAPS]
                     )
 #else /* WRITEPDBQSTATE */
                     FloatOrDouble torsFreeEnergy,
                     FloatOrDouble vt[MAX_TORS][SPACE],
                     int   tlist[MAX_TORS][MAX_ATOMS],
                     FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-                    int   nonbondlist[MAX_NONBONDS][4],
+                    int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
                     FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
                     int   type[MAX_ATOMS],
                     int   Nnb,
@@ -98,7 +104,12 @@ void writeStateOfPDBQ(  int   irun,
                     FloatOrDouble template_energy[MAX_ATOMS],
                     FloatOrDouble template_stddev[MAX_ATOMS],
                     int   outlev,
-                    int   ignore_inter[MAX_ATOMS])
+                    int   ignore_inter[MAX_ATOMS],
+                    const Boole         B_include_1_4_interactions,
+                    const FloatOrDouble scale_1_4,
+                    const FloatOrDouble sol_fn[NEINT],
+                    const ParameterEntry parameterArray[MAX_MAPS]
+                    )
 #endif /* WRITEPDBQSTATE */
 
 {
@@ -136,15 +147,15 @@ void writeStateOfPDBQ(  int   irun,
     }
     if (!B_outside) {
         if (ntor > 0) {
-            *Ptr_eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
+            *Ptr_eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
         } else {
             *Ptr_eintra = 0.0;
         }
         if (B_template) {
-            *Ptr_einter = byatom_template_trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo,
+            *Ptr_einter = byatom_template_trilinterp( crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo,
                                                template_energy, template_stddev);
         } else {
-            *Ptr_einter = trilinterp4( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter);
+            *Ptr_einter = trilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter);
         }
         
     } else {

@@ -24,6 +24,8 @@ void getInitialState(
             Boole B_RandomDihe0,
 
             FloatOrDouble charge[MAX_ATOMS],
+            FloatOrDouble abs_charge[MAX_ATOMS],
+            FloatOrDouble qsp_abs_charge[MAX_ATOMS],
             FloatOrDouble q1q2[MAX_NONBONDS],
             FloatOrDouble crd[MAX_ATOMS][SPACE],
             FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
@@ -42,15 +44,26 @@ void getInitialState(
             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
-            int   nonbondlist[MAX_NONBONDS][4],
+            int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
             int   ntor,
             int   tlist[MAX_TORS][MAX_ATOMS],
             int   type[MAX_ATOMS],
             FloatOrDouble vt[MAX_TORS][SPACE],
             int   irun1,
             int   outlev,
-	       int   MaxRetries,
-	       FloatOrDouble torsFreeEnergy,
+	        int   MaxRetries,
+
+	        FloatOrDouble torsFreeEnergy,
+
             int   ligand_is_inhibitor,
-            int ignore_inter[MAX_ATOMS]);
+
+            int ignore_inter[MAX_ATOMS],
+
+            const Boole         B_include_1_4_interactions,
+            const FloatOrDouble scale_1_4,
+
+            const FloatOrDouble sol_fn[NEINT],
+            const ParameterEntry parameterArray[MAX_MAPS]
+
+           );
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.4 2004/11/16 23:42:52 garrett Exp $
+ $Id: banner.cc,v 1.5 2005/03/11 02:11:29 garrett Exp $
 
 */
 
@@ -57,9 +57,6 @@ void banner( FloatOrDouble version_num )
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |            Ruth Huey, TSRI           |\n");
     (void) fprintf(logFile, "                 |           rhuey@scripps.edu          |\n");
-    (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 |          Michel Sanner, TSRI         |\n");
-    (void) fprintf(logFile, "                 |          sanner@scripps.edu          |\n");
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |       David S. Goodsell, TSRI        |\n");
     (void) fprintf(logFile, "                 |         goodsell@scripps.edu         |\n");
