@@ -1,6 +1,6 @@
 /* readPDBQ.cc */
 
-/* $Id: readPDBQ.cc,v 1.1 2001/08/13 22:05:54 gillet Exp $ */
+/* $Id: readPDBQ.cc,v 1.1.1.1 2001/08/13 22:05:54 gillet Exp $ */
 
 #include <math.h>
 

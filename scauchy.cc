@@ -2,11 +2,11 @@
 
 /***** RCS INFO **********************************************************
 
-$Id: scauchy.cc,v 1.1 2001/08/13 22:05:53 gillet Exp $
+$Id: scauchy.cc,v 1.1.1.1 2001/08/13 22:05:53 gillet Exp $
 $Source: /Users/mp/facil/autodock/git-luna/autodock-cvstar/scauchy.cc,v $
 $Log: scauchy.cc,v $
-Revision 1.1  2001/08/13 22:05:53  gillet
-*** empty log message ***
+Revision 1.1.1.1  2001/08/13 22:05:53  gillet
+ import initial of autodock sources
 
 // Revision 3.0  1996/03/11  05:40:00  halliday
 // The function definition for the GA/LS hybrid.

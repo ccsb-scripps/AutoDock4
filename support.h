@@ -11,8 +11,8 @@
 
 /*
 ** $Log: support.h,v $
-** Revision 1.1  2001/08/13 22:05:53  gillet
-** *** empty log message ***
+** Revision 1.1.1.1  2001/08/13 22:05:53  gillet
+**  import initial of autodock sources
 **
 */
 

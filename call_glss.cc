@@ -6,8 +6,8 @@
 ********************************************************************/
 /*
 ** $Log: call_glss.cc,v $
-** Revision 1.1  2001/08/13 22:05:52  gillet
-** *** empty log message ***
+** Revision 1.1.1.1  2001/08/13 22:05:52  gillet
+**  import initial of autodock sources
 **
 */
 

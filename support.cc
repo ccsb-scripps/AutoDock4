@@ -2,8 +2,8 @@
 
 /*
 ** $Log: support.cc,v $
-** Revision 1.1  2001/08/13 22:05:55  gillet
-** *** empty log message ***
+** Revision 1.1.1.1  2001/08/13 22:05:55  gillet
+**  import initial of autodock sources
 **
 */
 
