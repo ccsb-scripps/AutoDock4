@@ -260,6 +260,7 @@ LIB = $(COLINY_LINK) -lm # SGI, Sun, Linux, MacOS X.
 # LIB = -lm -lg++ # HP, Gnu.
 
 CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
+# CSTD = $(DBUG) $(PROF) $(WARN) -DUSE_XCODE # Smaller memory footprint, good for Xcode
 # CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
 # CSTD = $(DBUG) $(PROF) $(WARN) -I/opt/sfw/include # Sun Soliaris 8
 # CSTD = $(DBUG) $(PROF) $(WARN) -std # Convex.
