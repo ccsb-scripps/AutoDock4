@@ -1,3 +1,13 @@
+/*
+
+ $Id: set_cmd_io_std.cc,v 1.2 2003/02/26 01:37:02 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* set_cmd_io_std.cc */
 
     #include <stdio.h>
