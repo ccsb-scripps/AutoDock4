@@ -1,0 +1,225 @@
+/* investigate.cc */
+
+#include <math.h>
+#include <assert.h>
+
+#define RANDOM_MODE 1
+#define CHANGE_MODE 2
+
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <string.h>
+    #include <sys/types.h>
+    #include <sys/times.h>
+    #include <sys/param.h>
+    #include <time.h>
+    #include "structs.h"
+    #include "investigate.h"
+
+
+
+extern FILE *logFile;
+extern char *programname;
+
+
+void investigate( int   Nnb,
+		float charge[MAX_ATOMS],
+		Boole B_calcIntElec,
+		float q1q2[MAX_NONBONDS],
+		float crd[MAX_ATOMS][SPACE],
+		float crdpdb[MAX_ATOMS][SPACE],
+		float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+		float xhi,
+		float yhi,
+		float zhi,
+		float inv_spacing,
+		int   maxTests,
+		float xlo,
+		float ylo,
+		float zlo,
+		float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+		int   natom,
+		int   nonbondlist[MAX_NONBONDS][2],
+		int   ntor,
+		int   outlev,
+		int   tlist[MAX_TORS][MAX_ATOMS],
+		int   type[MAX_ATOMS],
+		float vt[MAX_TORS][SPACE],
+		Boole B_isGaussTorCon,
+       unsigned short US_torProfile[MAX_TORS][NTORDIVS],
+		Boole B_isTorConstrained[MAX_TORS],
+		Boole B_ShowTorE,
+       unsigned short US_TorE[MAX_TORS],
+		float F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		int   N_con[MAX_TORS],
+		Boole B_symmetry_flag,
+		char  FN_rms_ref_crds[MAX_CHARS],
+                int   OutputEveryNTests,
+		int   NumLocalTests,
+		float trnStep,
+		float torStep)
+
+{
+    Boole B_outside = FALSE;
+
+    int Itor = 0;
+    register int Test = -1;
+    int indx;
+    int ref_natoms = -1;
+    register int i = 0;
+    //register int XYZ = 0;
+
+    float e = 0.;
+    float ref_crds[MAX_ATOMS][SPACE];
+    float rms;
+    float MaxRms = 20.0;
+    float RmsBinSize = 0.25;
+    float MinEnergyInRmsBin[NUMRMSBINS];
+    int   NumberInRmsBin[NUMRMSBINS];
+    int   NumberRandomInRmsBin[NUMRMSBINS];
+    int   NumberChangeInRmsBin[NUMRMSBINS];
+    int   RmsBinNum = 0;
+    //int   NumMaxRms = 0;
+    register int NumOutside = 0;
+    register int LocalTest = 0;
+    int   mode;
+
+    time_t time_seed;
+
+    State sNow; /* qtnNow, torNow */
+
+
+/*  Initialize
+*/
+    for (i=0; i<NUMRMSBINS; i++) {
+	MinEnergyInRmsBin[i] = BIG;
+	NumberInRmsBin[i] = 0;
+    }
+    sNow.ntor = ntor;
+
+/*  Read in reference coordinates
+*/
+    if (strncmp(FN_rms_ref_crds,"unspecified filename",20) != 0) {
+        if ((ref_natoms = getpdbcrds( FN_rms_ref_crds, ref_crds)) == -1) {
+            fprintf( logFile, "%s: Problems while reading \"%s\".\n", programname, FN_rms_ref_crds);
+            fprintf( logFile, "Will attempt to use the input PDBQ file coordinates as reference.\n");
+        } else if (ref_natoms != natom) {
+            pr( logFile, "%s: ERROR!  Wrong number of atoms in reference structure.\n", programname);
+            pr( logFile, "Input PDBQ structure has %d atoms, but reference structure has %d atoms.\n\n", natom, ref_natoms);
+            ref_natoms = -1;
+	    exit(-1);
+        }
+    }
+
+/* Begin investigating the force field,
+   by recording the lowest energy for this rmsd
+   from the crystal structure
+   and from the minimized crystal structure.
+*/
+
+    pr( logFile, "\n\n\t\tBEGINNING INVESTIGATION OF FORCE FIELD\n");
+    pr( logFile,     "\t\t_____________________________________\n\n\n\n" );
+
+/*  Initialize random number generator with a time-dependent seed...  */
+
+    time_seed = time( &time_seed );
+    seed_random( time_seed );
+
+    for ( Test = 0;  Test < maxTests;  Test++ ) {
+
+	for (LocalTest = 0; LocalTest < NumLocalTests; LocalTest++, Test++ ) {
+
+	    if (LocalTest == 0) {
+		mode = RANDOM_MODE;
+	    } else {
+		mode = CHANGE_MODE;
+	    }
+
+	    do { /* while (rms > MaxRms); */
+		do { /* while (B_outside); */
+		    if (mode == RANDOM_MODE) {
+			sNow = mkRandomState( xlo, xhi, ylo, yhi, zlo, zhi,
+					      ntor, F_TorConRange, N_con);
+			if (outlev > 2) {
+			    fprintf(logFile, "mkRandomState:  ");
+			    writeState(logFile, sNow);
+			    fflush(logFile);
+			}
+		    } else {
+			sNow = changeState( sNow, trnStep, torStep,
+					      ntor, F_TorConRange, N_con);
+			if (outlev > 2) {
+			    fprintf(logFile, "changeState:  ");
+			    writeState(logFile, sNow);
+			    fflush(logFile);
+			}
+		    }
+		    cnv_state_to_coords( sNow, vt, tlist, ntor, crdpdb, crd, natom );
+     
+		    /* Check to see if any atom is outside the grid...  */
+		    for (i = 0;  i < natom;  i++) {
+			B_outside= is_out_grid(crd[i][X], crd[i][Y], crd[i][Z]);
+			if ( B_outside ) {  /* Outside grid! */
+			    ++NumOutside;
+			    if (mode == CHANGE_MODE) {
+				/* changing pushes out of grid, so switch mode*/
+				mode = RANDOM_MODE;
+			    }
+			    break;/*...out of i*/
+			}/*outside*/
+		    }/*for atoms i*/
+		    /* If an atom is outside, do again */
+		} while (B_outside);
+		/* Now, ligand is inside grid */
+		/* Calculate RMSD from reference structure */
+		rms = getrms( crd, ref_crds, B_symmetry_flag, natom, type);
+	    } while (rms > MaxRms);
+	    /* Calculate Energy of System, */
+	    e = quicktrilinterp( crd, charge, type, natom, map, 
+				 inv_spacing, xlo, ylo, zlo) 
+		+ eintcal( nonbondlist, e_internal, crd, 
+				     type, Nnb, B_calcIntElec, q1q2);
+	    if (B_isGaussTorCon) {
+		for (Itor = 0; Itor < ntor; Itor++) {
+		    if (B_isTorConstrained[Itor] == 1) {
+			indx = Rad2Div( sNow.tor[Itor] );
+			if (B_ShowTorE) {
+			    e += (float)( US_TorE[Itor] 
+					  = US_torProfile[Itor][indx] );
+			} else {
+			    e += (float)US_torProfile[Itor][indx];
+			}
+		    }
+		}
+	    }
+	    /* Update minimum energy for this RMSD bin */
+	    RmsBinNum = (int)(rms / RmsBinSize);
+	    ++NumberInRmsBin[RmsBinNum];
+	    if (mode == RANDOM_MODE) {
+		++NumberRandomInRmsBin[RmsBinNum];
+	    } else if (mode == CHANGE_MODE) {
+		++NumberChangeInRmsBin[RmsBinNum];
+	    }
+	    if (e <= MinEnergyInRmsBin[RmsBinNum]) {
+		MinEnergyInRmsBin[RmsBinNum] = e;
+	    }
+	    /* Output if it is time, */
+	    if (outlev > 0) {
+		if ((Test+1)%OutputEveryNTests == 0) {
+		    fprintf(logFile, "NumberOfTests= %d\n", Test+1);
+		    fprintf(logFile, "-------------\n");
+		    for (i=0; i<NUMRMSBINS; i++) {
+			fprintf(logFile, "%2d %5.2f-%5.2f:  %9.2f\t%7d\t%7d\t%7d\n", i+1, i*RmsBinSize, (i+1)*RmsBinSize, MinEnergyInRmsBin[i], NumberInRmsBin[i], NumberRandomInRmsBin[i], NumberChangeInRmsBin[i]);
+		    }
+		    fprintf(logFile, "\n");
+		    fprintf(logFile, "NumOutside= %d\n", NumOutside);
+		    fprintf(logFile, "\n");
+		    fprintf(logFile, "\n");
+		    fflush(logFile);
+		}
+	    }
+
+	} /*LocalTest*/
+    } /* Loop over Test */
+}
+/* EOF */

@@ -1,0 +1,267 @@
+/* initautodock.cc */
+
+#include <math.h>
+
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <string.h>
+    #include "initautodock.h"
+
+
+#define TINYDELTA 0.001	 /* To nudge ligand into grid... */
+#define AddNewHardCon(iCon,low,upp)  F_TorConRange[i][iCon][LOWER]=low;F_TorConRange[i][iCon][UPPER]=upp
+
+
+extern int   keepresnum;
+extern FILE *logFile;
+extern char  *programname;
+
+
+void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
+		    float crd[MAX_ATOMS][SPACE],
+		    float crdpdb[MAX_ATOMS][SPACE],
+		    float xhi,
+		    float yhi,
+		    float zhi,
+		    float xlo,
+		    float ylo,
+		    float zlo,
+		    int   natom,
+		    int   ntor,
+		    State *s0,
+		    int   tlist[MAX_TORS][MAX_ATOMS],
+		    float vt[MAX_TORS][SPACE],
+		    int   outlev)
+
+{
+    Boole B_change = FALSE;
+    Boole B_eq_and_opp = TRUE;
+    Boole B_move_inside = FALSE;
+    Boole B_outside;
+
+    char  note[LINE_LEN];
+    char  rec8[10];
+    char  axis[5];
+
+    float delta[MAX_ATOMS][SPACE];
+    float delta_max[SPACE];
+    float delta_min[SPACE];
+    float last_delta[SPACE];
+    float hi[SPACE];
+    float lo[SPACE];
+
+    int   ip[SPACE];
+    int   ip_max[SPACE];
+    int   ip_min[SPACE];
+
+    register int   xyz = 0;
+    register int   i = 0;
+
+/*
+**  Initialize the automated docking simulation,
+*/
+    strcpy( axis, "xyz\0" );
+
+    lo[X] = xlo;
+    lo[Y] = ylo;
+    lo[Z] = zlo;
+
+    hi[X] = xhi; 
+    hi[Y] = yhi; 
+    hi[Z] = zhi;
+
+    /* Initialize the delta arrays... */
+    for (xyz = 0;  xyz < SPACE;  xyz++) {
+	delta_min[xyz] =  BIG;
+	delta_max[xyz] = -BIG;
+	ip[xyz] = ip_min[xyz] = ip_max[xyz] = 0;
+    }
+    for (i = 0;  i < natom;  i++) {
+	for (xyz = 0;  xyz < SPACE;  xyz++) {
+	    delta[i][xyz] = 0.;
+	}
+    }
+
+    if (outlev > 1) {
+	pr(logFile, "Allowable atom-coordinates are within these grid extents:\n\n");
+	pr(logFile, "\t%7.3f < x <%7.3f\n\t%7.3f < y <%7.3f\n\t%7.3f < z <%7.3f\n\n", (double)xlo, (double)xhi, (double)ylo, (double)yhi, (double)zlo, (double)zhi);
+    }
+
+    do {
+/*
+** Re-position the Small Molecule *until* it is inside grid...
+*/
+	/* Assume inside, until proved otherwise */
+        B_outside = FALSE;
+
+	/* if inside, there's no need to move inside. */
+	B_move_inside = FALSE;	
+
+	for (xyz = 0;  xyz < SPACE;  xyz++) {
+	    last_delta[xyz] =  delta[ip[xyz]][xyz];
+	}
+
+	if (outlev > 1) {
+	    pr( logFile, "Initializing the correction vectors and pointers.\n");
+	}
+
+	/* Initialize the delta arrays... */
+
+	for (xyz = 0;  xyz < SPACE;  xyz++) {
+	    delta_min[xyz] =  BIG;
+	    delta_max[xyz] = -BIG;
+	    ip[xyz] = ip_min[xyz] = ip_max[xyz] = 0;
+	}
+	for (i = 0;  i < natom;  i++) {
+	    for (xyz = 0;  xyz < SPACE;  xyz++) {
+		delta[i][xyz] = 0.;
+	    }
+	}
+
+	if (outlev > 1) {
+	    pr( logFile, "Undoing all previous ligand transformations.\n");
+	    pr( logFile, "Resetting ligand to input PDBQ coordinates centred on \"about\" coordinates.\n" );
+	    if (ntor > 0) {
+		pr( logFile, "Applying initial (relative) torsions... (\"0.0\" implies unchanged)\n" );
+		pr( logFile,"\ndihe0 ");
+		for (i=0; i<ntor; i++) {
+		    pr( logFile," %+.1f", s0->tor[i]);
+		}
+	    }
+	    pr( logFile, "\nApplying initial translation...\n");
+	    pr( logFile, "Ligand translated to:  %+.3f  %+.3f  %+.3f\n\n", s0->T.x, s0->T.y, s0->T.z );
+	    pr( logFile, "Applying initial quaternion...\n");
+	    pr( logFile, "Ligand rigid-body-rotated by: %+.1f degrees,   about unit vector: %+.3f %+.3f %+.3f.\n\n", Deg(s0->Q.ang), s0->Q.nx, s0->Q.ny, s0->Q.nz );
+	    flushLog;
+	}
+
+	mkUnitQuat( &(s0->Q) );
+	cnv_state_to_coords( *s0,  vt, tlist, ntor,  crdpdb, crd, natom);
+
+        for (i = 0;  i < natom;  i++) {
+            B_outside = is_out_grid( crd[i][X], crd[i][Y], crd[i][Z] );
+            if ( B_outside ) {
+
+                strncpy( rec8, &atomstuff[i][13], (size_t)8);
+		rec8[8]='\0';
+		if (outlev > 1) {
+		    pr( logFile, "WARNING: Atom %s is outside grid!\n", rec8);
+		}
+/*
+** Remember to move ligand inside grid...
+*/
+		B_move_inside = TRUE;
+/*
+** Figure out the deltas needed to move back into grid,
+*/
+                for (xyz = 0;  xyz < SPACE;  xyz++) {
+                    if ( crd[i][xyz] < lo[xyz] )  {
+                        delta[i][xyz] = lo[xyz] - crd[i][xyz] + TINYDELTA;
+			if (outlev > 1) {
+			    pr( logFile,"%s: atom %d, %c=%.3f, is too low, since grid-min=%.3f; ", programname, i+1, axis[xyz], crd[i][xyz], lo[xyz] );
+			    pr( logFile,"increase %c by at least %.3f A\n", axis[xyz], (double)delta[i][xyz] );
+			}
+                    } else if ( crd[i][xyz] ==  lo[xyz] )  {
+			if (outlev > 1) {
+			    pr( logFile,"%s: \"is_out_grid\"//lo macro failure on atom %d, %c-axis. Overriding move_inside instruction.\n", programname,i+1,axis[xyz]);
+			}
+			B_move_inside = FALSE;
+		    }
+                    if ( crd[i][xyz] > hi[xyz] )  {
+                        delta[i][xyz] = hi[xyz] - crd[i][xyz] - TINYDELTA;
+			if (outlev > 1) {
+			    pr( logFile,"%s: atom %d, %c=%.3f, is too high, since grid-max=%.3f;", programname, i+1, axis[xyz], crd[i][xyz], hi[xyz] );
+			    pr( logFile,"decrease %c by at least %.3f A\n", axis[xyz], -(double)delta[i][xyz] );
+			}
+                    } else if ( crd[i][xyz] ==  hi[xyz] )  {
+			if (outlev > 1) {
+			    pr( logFile,"%s: \"is_out_grid\"//hi macro failure on atom %d, %c-axis. Overriding move_inside instruction.\n", programname,i+1,axis[xyz]);
+			}
+			B_move_inside = FALSE;
+		    }
+                }/*xyz*/
+		if (outlev > 1) {
+		    pr( logFile,"\n" );
+		}
+            }/*if B_outside*/
+        }/*i*/
+        flushLog;
+
+        if ( B_move_inside ) {
+	    if (outlev > 1) {
+		pr(logFile,"Axis Atom delta   delta_max ip_max delta_min ip_min axis\n");
+		pr(logFile,"____ ____ _______ _________ ______ _________ ______ ____\n");
+	    }
+            for (i = 0;  i < natom;  i++) {
+                for (xyz = 0;  xyz < SPACE;  xyz++) {
+		    B_change = FALSE;
+                    if (delta[i][xyz] > delta_max[xyz]) {
+                        delta_max[xyz] = delta[i][xyz]; 
+                        ip_max[xyz] = i;
+			B_change = TRUE;
+                    }
+                    if (delta[i][xyz] < delta_min[xyz]) {
+                        delta_min[xyz] = delta[i][xyz]; 
+                        ip_min[xyz] = i;
+			B_change = TRUE;
+                    }
+		    if ((i>0) && B_change && (outlev > 1)) {
+			pr(logFile," %c   %3d %7.3f %7.3f    %3d   %7.3f    %3d\n", axis[xyz], (i+1), delta[i][xyz], delta_max[xyz], ip_max[xyz], delta_min[xyz], ip_min[xyz]);
+		    }
+                } /*xyz*/
+            } /*i*/
+
+            for (xyz = 0;  xyz < SPACE;  xyz++) {
+                if ( fabs((double)delta_min[xyz]) > fabs((double)delta_max[xyz]) ) {
+                    ip[xyz] = ip_min[xyz];
+                } else {
+                    ip[xyz] = ip_max[xyz];
+		}
+            } /*xyz*/
+
+	    if (outlev > 1) {
+		pr( logFile, "\n%s:\nLast tran0 correction vector was:\t(%.3f, %.3f, %.3f) \n", programname, (double)last_delta[X], (double)last_delta[Y], (double)last_delta[Z] );
+		pr( logFile, "tran0 correction vector is now:\t(%.3f, %.3f, %.3f) \n", (double)delta[ip[X]][X], (double)delta[ip[Y]][Y], (double)delta[ip[Z]][Z] );
+	    }
+
+	    /*Assume*/ B_eq_and_opp = TRUE;
+	    for (xyz = 0;  xyz < SPACE;  xyz++) {
+		B_eq_and_opp = (delta[ip[xyz]][xyz] == -last_delta[xyz]) 
+			       && B_eq_and_opp;
+	    }
+	    if (B_eq_and_opp) {
+
+		prStr( note, "\n>>> Ligand does not fit within grid, while in this orientation!\n");
+		pr_2x( stderr, logFile, note );
+		prStr( note, ">>> Trying a new, randomly-generated rigid body rotation. (quat0 override)\n");
+		pr_2x( stderr, logFile, note );
+
+                s0->Q.nx  = random_range( -1., 1. );
+                s0->Q.nx  = random_range( -1., 1. );
+                s0->Q.nx  = random_range( -1., 1. );
+		s0->Q.ang = Rad( random_range( 0., 360. ) );  /*radians*/
+
+		mkUnitQuat( &(s0->Q) );
+
+	    }/*if (B_eq_and_opp)*/
+
+	    if (outlev > 1) {
+		pr( logFile, "\n%s:\n*** Changing initial-translation (tran0 override):\n", programname );
+		pr( logFile, "from:\ttran0  %.3f %.3f %.3f \n", s0->T.x, s0->T.y, s0->T.z );
+	    }
+
+	    s0->T.x +=  delta[ip[X]][X];
+	    s0->T.y +=  delta[ip[Y]][Y];
+	    s0->T.z +=  delta[ip[Z]][Z];
+
+	    if (outlev > 1) {
+		pr( logFile, "to:\ttran0  %.3f %.3f %.3f \n\n", s0->T.x, s0->T.y, s0->T.z );
+	    }
+
+        }/*if B_move_inside*/
+
+    } while ( B_move_inside );
+
+    flushLog;
+}
+/* EOF */

@@ -1,0 +1,65 @@
+/* prInitialState.cc */
+
+#include <math.h>
+
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <string.h>
+    #include "prInitialState.h"
+
+
+extern int keepresnum;
+extern FILE *logFile;
+extern char *programname;
+
+
+void prInitialState(
+
+    float einter,
+    float eintra,
+    float torsFreeEnergy,
+    int natom,
+    float crd[MAX_ATOMS][SPACE],
+    char atomstuff[MAX_ATOMS][MAX_CHARS],
+    int type[MAX_ATOMS],
+    float emap[MAX_ATOMS],
+    float elec[MAX_ATOMS],
+    float charge[MAX_ATOMS],
+    int ligand_is_inhibitor)
+
+{
+    char rec8[10];
+    char rec13[15];
+    char descriptor[17];
+    register int i = 0;
+
+    strncpy(descriptor, "INITIAL STATE:  ", (size_t)16);
+
+    pr( logFile, "\n\t\t%s\n\t\t______________\n\n\n", descriptor );
+
+    pr( logFile, "%sUSER    Transformed Initial Coordinates\n", descriptor );
+    for (i = 0;  i < natom;  i++) {
+        pr( logFile, "%s", descriptor);
+	if (keepresnum > 0) {
+	    strncpy( rec13, &atomstuff[i][13], (size_t)13);
+	    pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, rec13,   crd[i][X], crd[i][Y], crd[i][Z], 1.0, 0.0, charge[i]);
+	    pr(logFile, "\n");
+	} else {
+	    strncpy( rec8, &atomstuff[i][13], (size_t)8);
+	    pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, "", i+1, rec8, 0, crd[i][X], crd[i][Y], crd[i][Z], 1.0, 0.0, charge[i]);
+	    pr(logFile, "\n");
+	}
+    } /* i */
+    pr( logFile, "%sTER\n\n\n", descriptor );
+
+    pr( logFile, "\t\tINITIAL ENERGY BREAKDOWN\n" );
+    pr( logFile, "\t\t________________________\n" );
+    pr( logFile, "\n\nEnergy of starting position of Small Molecule by atom: \n\n" );
+
+    print_atomic_energies( natom, atomstuff, type, emap, elec, charge );
+
+    printEnergies( einter, eintra, torsFreeEnergy, "Initial ", ligand_is_inhibitor);
+
+    flushLog;
+}
+/* EOF */

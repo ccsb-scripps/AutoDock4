@@ -1,0 +1,65 @@
+/*******************************************************************************
+	Due to the fact that *.c files are compiled differently than *.cc
+	(because of the mangled C++ names), this is a separate header file
+	that serves much the same purpose as other prototypes headers.
+
+			2/6/96  rsh
+    
+        Can get rid of the individual #if-#endif brackets around the fcns.
+*******************************************************************************/
+#include "constants.h"
+#ifndef _STRUCTS_H
+#include "structs.h"
+#endif
+#include "gs.h"
+#include "ls.h"
+#include "support.h"
+
+#ifndef CALL_GLSS
+#define CALL_GLSS
+
+State call_glss(Global_Search *global_method, Local_Search *local_method, 
+		State now, unsigned int num_evals, unsigned int pop_size, 
+		float xlo, float xhi, float ylo, 
+		float yhi, float zlo, float zhi,
+		int outlev, unsigned int extOutputEveryNgens, Molecule *mol,
+        Boole B_template);
+
+Representation **generate_R(int num_torsions, double xlo, double xhi, double ylo, 
+                            double yhi, double zlo, double zhi);
+
+Genotype generate_Gtype(int num_torsions, double xlo, double xhi, double ylo, 
+                        double yhi, double zlo, double zhi);
+
+Phenotype generate_Ptype(int num_torsions, double xlo, double xhi, double ylo, 
+                         double yhi, double zlo, double zhi);
+
+Individual random_ind(int num_torsions, double xlo, double xhi, double ylo, 
+                      double yhi, double zlo, double zhi);
+
+
+#endif
+
+#ifndef CALL_LS
+#define CALL_LS
+
+State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Molecule *mol);
+
+#endif
+
+
+#ifndef CALL_GS
+#define CALL_GS
+
+State call_gs(Global_Search *global_method, State now, unsigned int num_evals, unsigned int pop_size,
+              float xlo, float xhi, float ylo, float yhi, float zlo, float zhi, Molecule *mol);
+
+#endif
+
+
+#ifndef MMM
+#define MMM
+
+void minmeanmax( FILE *fp, Population &pop, int num_its);
+
+#endif
