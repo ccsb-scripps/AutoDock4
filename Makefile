@@ -257,9 +257,9 @@ CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
 # CSTD = -std arm -verbose $(PROF) $(DBUG) $(WARN) # Alpha. sarah
 # CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP.
 
-CFLAGS = $(CSTD) $(OPT) $(COLINY_INCLUDES) # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Optimize the object files, too.
+CFLAGS = $(CSTD) $(OPT) $(ACRO_INCLUDES) # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Optimize the object files, too.
 
-OLIMIT = $(CSTD) $(OPT) $(COLINY_INCLUDES) # SGI, Sun, HP, Convex, Linux, MacOS X.
+OLIMIT = $(CSTD) $(OPT) $(ACRO_INCLUDES) # SGI, Sun, HP, Convex, Linux, MacOS X.
 # OLIMIT = $(CSTD) $(OPT) -OPT:Olimit=2500 # Alpha, Some SGIs.
 # OLIMIT = $(CFLAGS) # Do not optimize.
 
@@ -337,14 +337,16 @@ WARN = # Default warning level.
 ##
 ## To use coliny and utilib, uncomment the following
 ##
-### COLINY_FLAGS= -DUNIX -DLINUX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES # Linux
-### COLINY_INCLUDES= -I../coliny -I../coliny/packages/include -I../utilib -DUSING_COLINY $(COLINY_FLAGS)
-### COLINY_LINK= -L../coliny/lib/current -L../utilib/lib/current -lcoliny -lutilib -lg2c # Linux
+### ACRO_INCLUDES= -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
+### ACRO_FLAGS= -DUNIX -DLINUX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES # Linux
+### ACRO_LINK= -L../acro/lib -lcoliny -lutilib -lg2c # Linux
 ##
-## To Not Use coliny, uncomment these lines:
-COLINY_FLAGS=
-COLINY_INCLUDES=
-COLINY_LINK=
+## To Not Use Acro, uncomment these lines:
+ACRO_INCLUDES=
+ACRO_FLAGS=
+ACRO_LINK=
+
+LIB= $(ACRO_LINK)
 
 autodock4 : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
