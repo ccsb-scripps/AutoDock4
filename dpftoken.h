@@ -102,4 +102,7 @@
 #define	DPF_INVESTIGATE	77
 #define DPF_LIG_NOT_INHIB 78
 #define DPF_TEMPL_ENERGY 79
+#define DPF_HOLLOW_OUT 80
+
 #endif
+/* EOF */
