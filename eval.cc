@@ -1,3 +1,13 @@
+/*
+
+ $Id: eval.cc,v 1.3 2003/02/26 01:01:20 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
      These are the functions associated with the evaluation object.
 
@@ -12,6 +22,7 @@ extern FILE *logFile;
 
 #include <stdio.h>
 #include <string.h>
+#include "structs.h"
 
 #ifdef sgi
     #include <ieeefp.h>
@@ -127,15 +138,17 @@ double Eval::operator()(Representation **rep)
     * --------------------------------------------------------------------------*/
 
             energy = quicktrilinterp( crd, charge, type, natom, map, inv_spacing,
-                                      xlo, ylo, zlo)
-                     + eintcal( nonbondlist, e_internal, crd, type, Nnb, 
-                                B_calcIntElec, q1q2);
+                                      xlo, ylo, zlo);
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::operator()(Representation **rep) after quicktrilinterp, energy= %.5lf\n",energy);
+#endif /* DEBUG */
+            energy += eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::operator()(Representation **rep) after eintcal, energy= %.5lf\n",energy);
+#endif /* DEBUG */
             /*
-            energy = trilinterp(      crd, charge, type, natom, map, inv_spacing, 
-                                      eval_elec, eval_emap, 
-                                      xlo, ylo, zlo)
-                     + eintcal( nonbondlist, e_internal, crd, type, Nnb, 
-                                B_calcIntElec, q1q2);
+            energy = trilinterp( crd, charge, type, natom, map, inv_spacing, eval_elec, eval_emap, xlo, ylo, zlo)
+                     + eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
             */
          
             if (B_isGaussTorCon) {
@@ -165,12 +178,14 @@ double Eval::operator()(Representation **rep)
              * distance from centre of grid map, otherwise use the normal 
              * trilinear interpolation.
              */
-            energy = outsidetrilinterp( crd, charge, type, natom, map,
-                                        inv_spacing, // eval_elec, eval_emap, 
-                                        xlo, ylo, zlo,
-                                        xhi, yhi, zhi,  xcen, ycen, zcen )
-                     + eintcal( nonbondlist, e_internal, crd, type, Nnb,
-                                B_calcIntElec, q1q2);
+            energy = outsidetrilinterp( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,  xcen, ycen, zcen );
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::operator()(Representation **rep) after outsidetrilinterp, energy= %.5lf\n",energy);
+#endif /* DEBUG */
+            energy += eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::operator()(Representation **rep) after eintcal, energy= %.5lf\n",energy);
+#endif /* DEBUG */
             if (B_isGaussTorCon) {
                 for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
                     if (B_isTorConstrained[I_tor] == 1) {
@@ -217,6 +232,9 @@ double Eval::operator()(Representation **rep)
           (void)fprintf(logFile, "\n");
       } // i
    }
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::operator()(Representation **rep) returns energy= %.5lf\n",energy);
+#endif /*DEBUG*/
    return(energy);
 }
 
