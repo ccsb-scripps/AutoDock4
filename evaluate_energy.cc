@@ -1,6 +1,6 @@
 /*
 
- $Id: evaluate_energy.cc,v 1.4 2005/03/11 02:11:29 garrett Exp $
+ $Id: evaluate_energy.cc,v 1.5 2005/03/23 00:31:07 garrett Exp $
 
 */
 
@@ -43,7 +43,8 @@ FloatOrDouble evaluate_energy(
     const Boole         B_include_1_4_interactions,
     const FloatOrDouble scale_1_4,
     const FloatOrDouble sol_fn[NEINT],
-    const ParameterEntry parameterArray[MAX_MAPS]
+    const ParameterEntry parameterArray[MAX_MAPS],
+    const FloatOrDouble unbound_internal_FE
 
    )
 
@@ -56,7 +57,7 @@ FloatOrDouble evaluate_energy(
 
     /* pr(logFile,"e(tril)=%10.2f,  ",e); / *###*/
 
-    e += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
+    e += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
 
     /* pr(logFile,"e(eintcal)=%10.2f\n",e); / *###*/
 
@@ -70,7 +71,7 @@ FloatOrDouble evaluate_energy(
     ** if ( (e = quicktrilinterp( crd, charge, abs_charge, type, natom,
     ** map, inv_spacing, xlo,ylo,zlo)) <
     ** ENERGY_CUTOFF) {
-    **   e += (*Addr_eintra = eintcal( nonbondlist,e_internal,crd,Nnb,B_calcIntElec,q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, sol_fn, parameterArray));
+    **   e += (*Addr_eintra = eintcal( nonbondlist,e_internal,crd,Nnb,B_calcIntElec,q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, sol_fn, parameterArray, unbound_internal_FE));
     ** }
     */
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.5 2005/03/11 02:11:30 garrett Exp $
+ $Id: investigate.cc,v 1.6 2005/03/23 00:31:07 garrett Exp $
 
 */
 
@@ -74,7 +74,9 @@ void investigate( int   Nnb,
                     const FloatOrDouble scale_1_4,
 
                     const FloatOrDouble sol_fn[NEINT],
-                    const ParameterEntry parameterArray[MAX_MAPS]
+                    const ParameterEntry parameterArray[MAX_MAPS],
+
+                    const FloatOrDouble unbound_internal_FE
                 )
 
 {
@@ -196,7 +198,7 @@ void investigate( int   Nnb,
             } while (rms > MaxRms);
             /* Calculate Energy of System, */
             e = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, xlo, ylo, zlo, ignore_inter) 
-                    + eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
+                    + eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
             if (B_isGaussTorCon) {
                 for (Itor = 0; Itor < ntor; Itor++) {
                     if (B_isTorConstrained[Itor] == 1) {

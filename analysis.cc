@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.6 2005/03/11 02:11:29 garrett Exp $
+ $Id: analysis.cc,v 1.7 2005/03/23 00:31:06 garrett Exp $
 
 */
 
@@ -9,26 +9,25 @@
 #endif
 
 #include <math.h>
-
-    #include <stdio.h>
-    #include <string.h>
-    #include <sys/types.h>
-    #include "constants.h"
-    #include "structs.h"
-    #include "getpdbcrds.h"
-    #include "stateLibrary.h"
-    #include "cnv_state_to_coords.h"
-    #include "sort_enrg.h"
-    #include "cluster_analysis.h"
-    #include "prClusterHist.h"
-    #include "getrms.h"
-    #include "eintcal.h"
-    #include "trilinterp.h"
-    #include "print_rem.h"
-    #include "strindex.h"
-    #include "print_avsfld.h"
-    #include "printEnergies.h"
-    #include "analysis.h"
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include "constants.h"
+#include "structs.h"
+#include "getpdbcrds.h"
+#include "stateLibrary.h"
+#include "cnv_state_to_coords.h"
+#include "sort_enrg.h"
+#include "cluster_analysis.h"
+#include "prClusterHist.h"
+#include "getrms.h"
+#include "eintcal.h"
+#include "trilinterp.h"
+#include "print_rem.h"
+#include "strindex.h"
+#include "print_avsfld.h"
+#include "printEnergies.h"
+#include "analysis.h"
 
 extern FILE *logFile;
 extern int   keepresnum;
@@ -75,7 +74,8 @@ void analysis( int   Nnb,
                const Boole   B_include_1_4_interactions,
                const FloatOrDouble scale_1_4,
                const FloatOrDouble sol_fn[NEINT],
-               const ParameterEntry parameterArray[MAX_MAPS]
+               const ParameterEntry parameterArray[MAX_MAPS],
+               const FloatOrDouble unbound_internal_FE
               )
 
 {
@@ -217,7 +217,7 @@ void analysis( int   Nnb,
             (void)memcpy(crd, crdSave[c], natom*3*sizeof(FloatOrDouble));
      
             if (ntor > 0) {
-                eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
+                eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
             } else {
                 // eintra = torsFreeEnergy;
                 eintra = 0.0;

@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.9 2005/03/11 02:11:29 garrett Exp $
+ $Id: eval.cc,v 1.10 2005/03/23 00:31:07 garrett Exp $
 
 */
 
@@ -89,7 +89,7 @@ double Eval::eval()
    int   B_outside = 0;
    int   I_tor = 0;
    int   indx = 0;
-   double energy = 0.0;
+   double energy = 0.0L;
 
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval()\n");
@@ -146,14 +146,13 @@ double Eval::eval()
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after quicktrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
+            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, 
+                               B_include_1_4_interactions, scale_1_4, 
+                               qsp_abs_charge, sol_fn, parameterArray, 
+                               unbound_internal_FE);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            /*
-            energy = trilinterp( crd, charge, abs_charge, type, natom, map, inv_spacing, eval_elec, eval_emap, xlo, ylo, zlo)
-                     + eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
-            */
          
             if (B_isGaussTorCon) {
                 for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
@@ -186,7 +185,7 @@ double Eval::eval()
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after outsidetrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
+            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */
@@ -274,9 +273,9 @@ double Eval::operator()(double* vec, int len)
 
 void make_state_from_rep(double *rep, int n, State *now)
 {
-#ifdef DEBUG
+#   ifdef DEBUG
 (void)fprintf(logFile, "eval.cc/make_state_from_rep(double *rep, int n, State *now)\n");
-#endif /* DEBUG */
+#   endif /* DEBUG */
 
 //  Do the translations
 now->T.x = rep[0];
@@ -314,7 +313,7 @@ if (x[5] < 0.0) x[5] = 1e-16;
 */
 double sum = sqrt(x[3]*x[3]+x[4]*x[4]+x[5]*x[5]);
 if (sum < 1e-8)
-   x[3]=x[4]=x[5]=1.0/sqrt(3.0);
+   x[3]=x[4]=x[5]=1.0L/sqrt(3.0L);
    else {
       x[3] /= sum;
       x[4] /= sum;
@@ -328,4 +327,4 @@ for (int i=6; i<n; i++)
 return ::evaluate(x,n);
 }
 //
-#endif
+#endif // USING_COLINY

@@ -19,9 +19,9 @@ void  analysis( int   Nnb,
                 char  atomstuff[MAX_ATOMS][MAX_CHARS], 
                 FloatOrDouble charge[MAX_ATOMS], 
                 FloatOrDouble abs_charge[MAX_ATOMS], 
-               FloatOrDouble qsp_abs_charge[MAX_ATOMS], 
-	              Boole B_calcIntElec,
-	              FloatOrDouble q1q2[MAX_NONBONDS],
+                FloatOrDouble qsp_abs_charge[MAX_ATOMS], 
+	            Boole B_calcIntElec,
+	            FloatOrDouble q1q2[MAX_NONBONDS],
                 FloatOrDouble clus_rms_tol, 
                 FloatOrDouble crdpdb[MAX_ATOMS][SPACE], 
                 FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], 
@@ -55,6 +55,6 @@ void  analysis( int   Nnb,
                 const Boole   B_include_1_4_interactions,
                 const FloatOrDouble scale_1_4,
                 const FloatOrDouble sol_fn[NEINT],
-                const ParameterEntry parameterArray[MAX_MAPS]
-               );
+                const ParameterEntry parameterArray[MAX_MAPS],
+                const FloatOrDouble unbound_internal_FE);
 #endif

@@ -52,6 +52,7 @@ class Eval
       FloatOrDouble scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
       FloatOrDouble  *sol_fn;
       ParameterEntry *parameterArray;
+      FloatOrDouble  unbound_internal_FE;
 
    public:
       Eval(void);
@@ -82,7 +83,8 @@ class Eval
           Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
           FloatOrDouble  init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
           FloatOrDouble  init_sol_fn[NEINT],
-          ParameterEntry init_parameterArray[MAX_MAPS]
+          ParameterEntry init_parameterArray[MAX_MAPS],
+          FloatOrDouble  init_unbound_internal_FE
           );
 
       double operator()(Representation **);
@@ -138,7 +140,9 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
                         FloatOrDouble init_scale_1_4,
 
                         FloatOrDouble  init_sol_fn[NEINT],
-                        ParameterEntry init_parameterArray[MAX_MAPS]
+                        ParameterEntry init_parameterArray[MAX_MAPS],
+
+                        FloatOrDouble init_unbound_internal_FE
                        )
 
 {
@@ -191,6 +195,8 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
 
     sol_fn = init_sol_fn;
     parameterArray = init_parameterArray;
+
+    unbound_internal_FE = init_unbound_internal_FE;
 }
 
 inline UnsignedFourByteLong Eval::evals(void)

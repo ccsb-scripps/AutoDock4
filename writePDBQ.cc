@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.6 2005/03/15 23:49:26 gillet Exp $
+ $Id: writePDBQ.cc,v 1.7 2005/03/23 00:31:08 garrett Exp $
 
 */
 
@@ -16,10 +16,8 @@
 /* writePDBQState.cc */
 #endif /* WRITEPDBQSTATE */
 
-#ifndef WRITEPDBQSTATE
-#include <math.h>
-#endif /* not WRITEPDBQSTATE */
 
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include "structs.h"
@@ -80,7 +78,8 @@ void writeStateOfPDBQ(  int   irun,FourByteLong seed[2],
                     const Boole         B_include_1_4_interactions,
                     const FloatOrDouble scale_1_4,
                     const FloatOrDouble sol_fn[NEINT],
-                    const ParameterEntry parameterArray[MAX_MAPS]
+                    const ParameterEntry parameterArray[MAX_MAPS],
+                    const FloatOrDouble unbound_internal_FE
                     )
 #else /* WRITEPDBQSTATE */
                     FloatOrDouble torsFreeEnergy,
@@ -109,7 +108,8 @@ void writeStateOfPDBQ(  int   irun,FourByteLong seed[2],
                     const Boole         B_include_1_4_interactions,
                     const FloatOrDouble scale_1_4,
                     const FloatOrDouble sol_fn[NEINT],
-                    const ParameterEntry parameterArray[MAX_MAPS]
+                    const ParameterEntry parameterArray[MAX_MAPS],
+                    const FloatOrDouble unbound_internal_FE
                     )
 #endif /* WRITEPDBQSTATE */
 
@@ -148,7 +148,7 @@ void writeStateOfPDBQ(  int   irun,FourByteLong seed[2],
     }
     if (!B_outside) {
         if (ntor > 0) {
-            *Ptr_eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
+            *Ptr_eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
         } else {
             *Ptr_eintra = 0.0;
         }
@@ -175,8 +175,7 @@ void writeStateOfPDBQ(  int   irun,FourByteLong seed[2],
         pr( logFile, "DOCKED: MODEL     %4d\n", irun+1 );
         pr( logFile, "DOCKED: USER    Run = %d\n", irun+1 );
         pr( logFile, "DOCKED: USER    DPF = %s\n", dpfFN );
-	
-	
+
 #ifndef WRITEPDBQSTATE
         printEnergies( einter, eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor);
 #else /* WRITEPDBQSTATE */
@@ -196,10 +195,10 @@ void writeStateOfPDBQ(  int   irun,FourByteLong seed[2],
         (void)fprintf( logFile, "DOCKED: USER    NEWDPF about %f %f %f\n", sml_center[X],sml_center[Y],sml_center[Z]);
 #ifndef WRITEPDBQSTATE
         (void)fprintf( logFile, "DOCKED: USER    NEWDPF tran0 %f %f %f\n", state.T.x, state.T.y, state.T.z );
-        (void)fprintf( logFile, "DOCKED: USER    NEWDPF quat0 %f %f %f %f\n", state.Q.nx, state.Q.ny, state.Q.nz, Deg( state.Q.ang ) );
+        (void)fprintf( logFile, "DOCKED: USER    NEWDPF quat0 %f %f %f %f\n", state.Q.nx, state.Q.ny, state.Q.nz, Deg(WrpRad(ModRad(state.Q.ang))) );
 #else /* WRITEPDBQSTATE */
         (void)fprintf( logFile, "DOCKED: USER    NEWDPF tran0 %f %f %f\n", (*Ptr_state).T.x, (*Ptr_state).T.y, (*Ptr_state).T.z );
-        (void)fprintf( logFile, "DOCKED: USER    NEWDPF quat0 %f %f %f %f\n", (*Ptr_state).Q.nx, (*Ptr_state).Q.ny, (*Ptr_state).Q.nz, Deg( (*Ptr_state).Q.ang ) );
+        (void)fprintf( logFile, "DOCKED: USER    NEWDPF quat0 %f %f %f %f\n", (*Ptr_state).Q.nx, (*Ptr_state).Q.ny, (*Ptr_state).Q.nz, Deg(WrpRad(ModRad((*Ptr_state).Q.ang))));
 #endif /* WRITEPDBQSTATE */
 	if (ntor > 0) {
 	  (void)fprintf( logFile, "DOCKED: USER    NEWDPF ndihe %d\n", ntor );
@@ -222,23 +221,24 @@ void writeStateOfPDBQ(  int   irun,FourByteLong seed[2],
 
 #ifndef WRITEPDBQSTATE
 	      pr( stateFile, "\t\t<tran0>%f %f %f</tran0>\n", state.T.x, state.T.y, state.T.z);
-	      pr( stateFile, "\t\t<quat0>%f %f %f %f</quat0>\n", state.Q.nx, state.Q.ny, state.Q.nz, Deg( state.Q.ang ));
+	      pr( stateFile, "\t\t<quat0>%f %f %f %f</quat0>\n", state.Q.nx, state.Q.ny, state.Q.nz, Deg(WrpRad(ModRad(state.Q.ang))));
 
 #else /* WRITEPDBQSTATE */
 	      pr( stateFile,"\t\t<tran0>%f %f %f</tran0>\n", (*Ptr_state).T.x, (*Ptr_state).T.y, (*Ptr_state).T.z );
-	      pr( stateFile,"\t\t<quat0>%f %f %f %f</quat0>\n",(*Ptr_state).Q.nx, (*Ptr_state).Q.ny, (*Ptr_state).Q.nz, Deg( (*Ptr_state).Q.ang ) );
+	      pr( stateFile,"\t\t<quat0>%f %f %f %f</quat0>\n",(*Ptr_state).Q.nx, (*Ptr_state).Q.ny, (*Ptr_state).Q.nz, Deg(WrpRad(ModRad((*Ptr_state).Q.ang))) );
 #endif /* WRITEPDBQSTATE */
 	      if (ntor > 0) {
 		pr( stateFile,"\t\t<ndihe>%d</ndihe>\n",ntor);
 		pr( stateFile,"\t\t<dihe0>");
 		for (i=0; i<ntor; i++) {
 #ifndef WRITEPDBQSTATE
-		  pr( stateFile,"%.2f ", Deg(state.tor[i]) );
+                (void)fprintf( logFile, "%.2f ", Deg(WrpRad(ModRad(state.tor[i]))) );
 #else /* WRITEPDBQSTATE */
-		  pr( stateFile, "%.2f ", Deg((*Ptr_state).tor[i]) );
+                (void)fprintf( logFile, "%.2f ", Deg(WrpRad(ModRad((*Ptr_state).tor[i]))));
 #endif /* WRITEPDBQSTATE */
-		}/*i*/
-		pr( stateFile, "</dihe0>\n" );
+            }/*i*/
+            (void)fprintf( logFile, "\n" );
+		   pr( stateFile, "</dihe0>\n" );
 	      }/*endif*/
 	      pr( stateFile, "\t</run>\n");
 	} /* end write state file */
@@ -247,7 +247,7 @@ void writeStateOfPDBQ(  int   irun,FourByteLong seed[2],
         (void)fprintf( logFile, "DOCKED: USER                              x       y       z     vdW  Elec       q\n" );
         (void)fprintf( logFile, "DOCKED: USER                           _______ _______ _______ _____ _____    ______\n" );
         if (keepresnum > 0) {
-	  for (i = 0;  i < natom;  i++) {
+            for (i = 0;  i < natom;  i++) {
 #ifndef WRITEPDBQSTATE
                 strncpy( rec14, &atomstuff[i][13], (size_t)13);
                 (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "DOCKED: ", i+1, rec14, crd[i][X], crd[i][Y], crd[i][Z], min(emap[i], MaxValue), min(elec[i], MaxValue), charge[i]);
@@ -282,7 +282,6 @@ void writeStateOfPDBQ(  int   irun,FourByteLong seed[2],
         // output of coordinates // gmm 2001-11-01
     }
 }
-
 
 #else /* WRITEMOLASPDBQFUNC */
 
@@ -332,17 +331,4 @@ void writeMolAsPDBQ(Molecule *mol, FILE *output)
 }
 
 #endif /* WRITEMOLASPDBQFUNC */
-
-
-
-
-
-
-
-
-
 /* EOF */
-
-
-
-

@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.5 2005/03/11 02:11:29 garrett Exp $
+ $Id: banner.cc,v 1.6 2005/03/23 00:31:06 garrett Exp $
 
 */
 
@@ -53,16 +53,12 @@ void banner( FloatOrDouble version_num )
     (void) fprintf(logFile, "                 |    The Scripps Research Institute    |\n");
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |       Garrett M. Morris, TSRI        |\n");
-    (void) fprintf(logFile, "                 |         garrett@scripps.edu          |\n");
-    (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |            Ruth Huey, TSRI           |\n");
-    (void) fprintf(logFile, "                 |           rhuey@scripps.edu          |\n");
-    (void) fprintf(logFile, "                 |                                      |\n");
+    (void) fprintf(logFile, "                 |        William E. Hart, Sandia       |\n");
+    (void) fprintf(logFile, "                 |        William Lindstrom, TSRI       |\n");
+    (void) fprintf(logFile, "                 |        Alexander Gillet, TSRI        |\n");
     (void) fprintf(logFile, "                 |       David S. Goodsell, TSRI        |\n");
-    (void) fprintf(logFile, "                 |         goodsell@scripps.edu         |\n");
-    (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |        Arthur J. Olson, TSRI         |\n");
-    (void) fprintf(logFile, "                 |           olson@scripps.edu          |\n");
     (void) fprintf(logFile, "                 |______________________________________|\n");
     (void) fprintf(logFile, "\n");
     (void) fprintf(logFile, "                  ______________________________________ \n");

@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.6 2005/03/11 02:11:29 garrett Exp $
+ $Id: eintcal.cc,v 1.7 2005/03/23 00:31:07 garrett Exp $
 
 */
 
@@ -33,7 +33,8 @@ FloatOrDouble eintcal( const int           nonbondlist[MAX_NONBONDS][MAX_NBDATA]
                        const FloatOrDouble scale_1_4,
                        const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
                        const FloatOrDouble sol_fn[NEINT],
-                       const ParameterEntry parameterArray[MAX_MAPS]
+                       const ParameterEntry parameterArray[MAX_MAPS],
+                       const FloatOrDouble unbound_internal_FE
                        )
 
 #else
@@ -51,7 +52,8 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
                             const FloatOrDouble scale_1_4,
                             const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
                             const FloatOrDouble sol_fn[NEINT],
-                            const ParameterEntry parameterArray[MAX_MAPS]
+                            const ParameterEntry parameterArray[MAX_MAPS],
+                            const FloatOrDouble unbound_internal_FE
                             )
 
 // eintcalPrint ]
@@ -101,7 +103,7 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
 
     register int inb;
     register double eint=0.0L, dx, dy, dz;
-    register double dint=0.0L;
+    register double dpair=0.0L;
     register double r2 = 0.0L;
     register int a1, a2;
     register int t1, t2; // Xcode-gmm
@@ -110,7 +112,7 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
 
 
 #ifdef EINTCALPRINT
-    pr( logFile, "Non-bond  Atom1-Atom2  Distance  Energy\n"); // eintcalPrint 
+    pr( logFile, "Non-bond  Atom1-Atom2  Distance  TotalEnrg  vdW+Hb    Desolv    Sol_fn   Non-bond Type\n"); // eintcalPrint 
 #endif
 
     // Loop over all the non-bonds, "inb",
@@ -171,7 +173,7 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
             //| rec.vol    = parameterArray[t2].vol;
             //| rec.charge = qsp_abs_charge[a2]/qsolpar;
             
-            dint = sol_fn[index] * ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[a1]) 
+            dpair = sol_fn[index] * ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[a1]) 
                                     + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[a2]) );
 
 #   ifndef EINTCALPRINT
@@ -179,18 +181,18 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
             //| Xcode-gmm -- only do the double-to-int conversion if within nonbond cutoff
             if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
                 //| Compute a scaled 1-4 interaction, multiply by scale_1_4
-                eint += scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dint);
+                eint += scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair);
             } else {
-                eint += e_internal[SqAng_to_index_Int(r2)][t2][t1] + dint;
+                eint += e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair;
             }
             //  eintcal ]
 #   else
             // eintcalPrint [
             if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
                 // Compute a scaled 1-4 interaction, multiply by scale_1_4
-                epair = scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dint);
+                epair = scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair);
             } else {
-                epair = e_internal[SqAng_to_index_Int(r2)][t2][t1] + dint;
+                epair = e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair;
             }
             // eintcalPrint ]
 #   endif
@@ -257,7 +259,7 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
             //| rec.vol    = parameterArray[t2].vol;
             //| rec.charge = qsp_abs_charge[a2]/qsolpar;
             
-            dint = sol_fn[index] * ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[a1]) 
+            dpair = sol_fn[index] * ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[a1]) 
                                     + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[a2]) );
 
 #   ifndef EINTCALPRINT
@@ -265,18 +267,18 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
             //| Xcode-gmm -- only do the double-to-int conversion if within nonbond cutoff
             if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
                 //| Compute a scaled 1-4 interaction, multiply by scale_1_4
-                eint += scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dint);
+                eint += scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair);
             } else {
-                eint += e_internal[SqAng_to_index_Int(r2)][t2][t1] + dint;
+                eint += e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair;
             }
             //  eintcal ]
 #   else
             // eintcalPrint [
             if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
                 // Compute a scaled 1-4 interaction, multiply by scale_1_4
-                epair = scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dint);
+                epair = scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair);
             } else {
-                epair = e_internal[SqAng_to_index_Int(r2)][t2][t1] + dint;
+                epair = e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair;
             }
             // eintcalPrint ]
 #   endif
@@ -291,17 +293,22 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
 #ifdef EINTCALPRINT
 // eintcalPrint [
         eint += epair;
-        pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf\n", 
-                (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), (double)epair);
+        pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d\n", 
+                (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
+                (double)epair, (double)(epair-dpair), (double)dpair, 
+                (double)sol_fn[index], (int)nonbond_type);
 // eintcalPrint ]
 #endif
 
     } //  inb -- next non-bond interaction
 
+    // Subtract the internal free energy of the unbound state
+    eint = eint - unbound_internal_FE;
+
 #ifdef EINTCALPRINT
     pr( logFile, "\n\nIntramolecular Interaction Energy = %+8.3lf\n", (double)eint); // eintcalPrint
 #endif
 
-    return (FloatOrDouble)eint;
+    return (FloatOrDouble) eint;
 }
 /*  EOF */

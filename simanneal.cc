@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.6 2005/03/11 02:11:31 garrett Exp $
+ $Id: simanneal.cc,v 1.7 2005/03/23 00:31:08 garrett Exp $
 
 */
 
@@ -124,8 +124,9 @@ void simanneal ( int   *Addr_nconf,
         const FloatOrDouble scale_1_4,
         
         const FloatOrDouble sol_fn[NEINT],
-        const ParameterEntry parameterArray[MAX_MAPS]
+        const ParameterEntry parameterArray[MAX_MAPS],
 
+        const FloatOrDouble unbound_internal_FE
         )
 
 {
@@ -247,7 +248,9 @@ void simanneal ( int   *Addr_nconf,
 			 ntor, tlist, type, vt, irun1, outlev, MaxRetries,
 			 torsFreeEnergy, ligand_is_inhibitor,
 			 ignore_inter,
-             B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
+             B_include_1_4_interactions, scale_1_4, 
+             sol_fn, parameterArray, 
+             unbound_internal_FE);
 
         RT = RT0;		/* Initialize the "annealing" temperature */
 	if (RT <= APPROX_ZERO) { RT = 616.; }
@@ -363,7 +366,7 @@ void simanneal ( int   *Addr_nconf,
 			** MORE ACCURATE METHOD, (SLOWER):
 			*/
 			e = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, xlo, ylo, zlo, ignore_inter) + 
-				(eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray));
+				(eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE));
 
 			/*
 			** LESS ACCURATE  METHOD (FASTER):
@@ -375,7 +378,7 @@ void simanneal ( int   *Addr_nconf,
 			** if ( (e = quicktrilinterp( crd, charge, abs_charge, type, natom, 
 			** map, inv_spacing, xlo, ylo, zlo)) < 
 			** ENERGY_CUTOFF) { 
-			**   e += (eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray));
+			**   e += (eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE));
 			** }
 			*/
 
@@ -486,7 +489,8 @@ void simanneal ( int   *Addr_nconf,
 			 ntor, tlist, type, vt, irun1, outlev, MaxRetries,
 			 torsFreeEnergy, ligand_is_inhibitor,
 			 ignore_inter,
-             B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
+             B_include_1_4_interactions, scale_1_4, 
+             sol_fn, parameterArray, unbound_internal_FE);
 
 	    } else {
 
@@ -592,7 +596,7 @@ void simanneal ( int   *Addr_nconf,
 	cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
 
 	if (ntor > 0) {
-	    eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
+	    eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
 	} else {
 	    eintra = 0.0;
 	}
@@ -603,7 +607,7 @@ void simanneal ( int   *Addr_nconf,
 	  eintra, einter, natom, atomstuff, crd, emap, elec, 
       charge, abs_charge, qsp_abs_charge,
 	  ligand_is_inhibitor, torsFreeEnergy, outlev, ignore_inter,
-      B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray);
+      B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray, unbound_internal_FE);
 
         econf[(*Addr_nconf)] = eLast;
         ++(*Addr_nconf);

@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.6 2005/03/11 02:11:29 garrett Exp $
+ $Id: cmdmode.cc,v 1.7 2005/03/23 00:31:07 garrett Exp $
 
 */
 
@@ -74,7 +74,8 @@ int cmdmode(int   natom,
              const Boole         B_include_1_4_interactions,
              const FloatOrDouble scale_1_4,
              const FloatOrDouble sol_fn[NEINT],
-             const ParameterEntry parameterArray[MAX_MAPS]
+             const ParameterEntry parameterArray[MAX_MAPS],
+             const FloatOrDouble unbound_internal_FE
             )
 
 {
@@ -252,7 +253,7 @@ int cmdmode(int   natom,
                     fclose(pdbFile);
                     natom = nat;
                     if (ntor > 0) {
-                        eintra = eintcalPrint(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, sol_fn, parameterArray);
+                        eintra = eintcalPrint(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, sol_fn, parameterArray, unbound_internal_FE);
                     } else {
                         eintra = 0.0;
                     }
@@ -329,7 +330,7 @@ int cmdmode(int   natom,
                 }
                 cnv_state_to_coords(S,  vt, tlist, ntor,  crdpdb, crd, natom);
                 if (ntor > 0) {
-                    eintra = eintcalPrint(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, sol_fn, parameterArray);
+                    eintra = eintcalPrint(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, sol_fn, parameterArray, unbound_internal_FE);
                 } else {
                     eintra = 0.0;
                 }

@@ -31,7 +31,8 @@ void  writePDBQ( int   irun,
                  const Boole         B_include_1_4_interactions,
                  const FloatOrDouble scale_1_4,
                  const FloatOrDouble sol_fn[NEINT],
-                 const ParameterEntry parameterArray[MAX_MAPS]
+                 const ParameterEntry parameterArray[MAX_MAPS],
+                 const FloatOrDouble unbound_internal_FE
                  );
 #endif
 
@@ -92,7 +93,8 @@ void writeStateOfPDBQ(int irun,FourByteLong seed[2],
                     const Boole         B_include_1_4_interactions,
                     const FloatOrDouble scale_1_4,
                     const FloatOrDouble sol_fn[NEINT],
-                    const ParameterEntry parameterArray[MAX_MAPS]
+                    const ParameterEntry parameterArray[MAX_MAPS],
+                    const FloatOrDouble unbound_internal_FE
 		    );
 
 #endif

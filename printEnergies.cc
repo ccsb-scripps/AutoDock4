@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.4 2005/03/15 23:49:26 gillet Exp $
+ $Id: printEnergies.cc,v 1.5 2005/03/23 00:31:08 garrett Exp $
 
 */
 
@@ -59,14 +59,14 @@ void printEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDouble to
     // lose the minus-sign:  deltaG = R*T*lnKi,  _not_ -R*T*lnKi
     // => deltaG/(R*T) = lnKi
     // => Ki = exp(deltaG/(R*T))
-    deltaG = einter + torsFreeEnergy;
+    deltaG = einter + eintra + torsFreeEnergy;
     if (deltaG < 0.0) {
         Ki = exp((deltaG*1000.)/(Rcal*TK));
     }
 
     pr( logFile, "%sEstimated Free Energy of Binding    = ", prefixString);
-    print1000(logFile,deltaG);
-    pr( logFile, " kcal/mol  [=(1)+(3)]\n");
+    print1000(logFile, deltaG);
+    pr( logFile, " kcal/mol  [=(1)+(2)+(3)]\n");
 
     if (deltaG < 0.0) {
         if (ligand_is_inhibitor == 1) {
@@ -80,11 +80,11 @@ void printEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDouble to
 
     pr( logFile, "%s\n", prefixString);
 
-    pr( logFile, "%sFinal Docked Energy                 = ", prefixString);
-    print1000(logFile,edocked);
-    pr( logFile, " kcal/mol  [=(1)+(2)]\n");
+    //pr( logFile, "%sFinal Docked Energy                 = ", prefixString);
+    //print1000(logFile,edocked);
+    //pr( logFile, " kcal/mol  [=(1)+(2)]\n");
 
-    pr( logFile, "%s\n", prefixString);
+    //pr( logFile, "%s\n", prefixString);
 
     pr( logFile, "%s(1) Final Intermolecular Energy     = ", prefixString);
     print1000(logFile,einter);

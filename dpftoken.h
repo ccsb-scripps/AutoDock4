@@ -110,6 +110,7 @@
 #define DPF_LIGAND_TYPES	    85
 #define DPF_UNBOUND	    86
 #define DPF_EPDB	    87
+#define DPF_TERMINATION	    88
 
 #endif
 /* EOF */

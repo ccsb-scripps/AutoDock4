@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.5 2005/03/11 02:11:30 garrett Exp $
+ $Id: getInitialState.cc,v 1.6 2005/03/23 00:31:07 garrett Exp $
 
 */
 
@@ -76,7 +76,9 @@ void getInitialState(
             const FloatOrDouble scale_1_4,
 
             const FloatOrDouble sol_fn[NEINT],
-            const ParameterEntry parameterArray[MAX_MAPS]
+            const ParameterEntry parameterArray[MAX_MAPS],
+
+            const FloatOrDouble unbound_internal_FE
 
            )
 
@@ -155,7 +157,7 @@ void getInitialState(
             natom, ntor, sInit, tlist, vt, outlev);
         
         e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
-        e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
+        e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
         e0total = e0inter + e0intra;
 
         if (e0total < e0min) {
@@ -194,7 +196,7 @@ void getInitialState(
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
     e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
-    e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray);
+    e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
     e0total = e0inter + e0intra;
 
     copyState( sMinm, *sInit );

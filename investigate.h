@@ -66,6 +66,8 @@ void investigate(
                 const FloatOrDouble scale_1_4,
                 
                 const FloatOrDouble sol_fn[NEINT],
-                const ParameterEntry parameterArray[MAX_MAPS]
+                const ParameterEntry parameterArray[MAX_MAPS],
+
+                const FloatOrDouble unbound_internal_FE
               );
 #endif
