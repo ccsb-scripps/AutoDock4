@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.4 2003/02/26 01:46:21 garrett Exp $
+ $Id: support.cc,v 1.5 2003/02/27 02:20:02 lindy Exp $
 
 */
 
@@ -10,39 +10,13 @@
 
 //  These are the member functions for the support classes.
 
-/*
-** $Log: support.cc,v $
-** Revision 1.4  2003/02/26 01:46:21  garrett
-**
-** #ifdef DEBUG statements have been modified, to print individuals' PDB-
-** formatted coordinates as MODEL/ENDMDLs ... (GMM,WML)
-**
-** Lindy added the HAVE_CONFIG_H compile-time switch with "config.h"
-** in preparation for "autoconf" and "configure"... (WML)
-**
-** Other changes specific to this file:
-**
-** Also added "math.h". Possibly needed by some compilers. (GMM)
-**
-** Revision 1.3  2002/04/17 05:59:02  garrett
-** Improved the readability of the printPopulationAsStates output.
-**
-** Revision 1.2  2002/04/17 00:19:26  lindy
-** changed Normal_Eval to Always_Eval when printing
-** populations.
-**
-** Revision 1.1.1.1  2001/08/13 22:05:55  gillet
-**  import initial of autodock sources
-**
-*/
 
 #include "eval.h"
 
-    #include <math.h>
     #include <stdio.h>
     #include "support.h"
     #include "stateLibrary.h"
-    #include "structs.h"
+
 
 extern FILE *logFile;
 
