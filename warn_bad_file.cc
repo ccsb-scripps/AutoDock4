@@ -1,6 +1,6 @@
 /*
 
- $Id: warn_bad_file.cc,v 1.2 2003/02/26 01:50:58 garrett Exp $
+ $Id: warn_bad_file.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
 
 */
 
@@ -11,8 +11,8 @@
 /* warn_bad_file.cc */
 
 
-    #include <stdio.h>
-    #include "warn_bad_file.h"
+#include <stdio.h>
+#include "warn_bad_file.h"
 
 
 extern char *programname;

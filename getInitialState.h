@@ -49,7 +49,8 @@ void getInitialState(
             FloatOrDouble vt[MAX_TORS][SPACE],
             int   irun1,
             int   outlev,
-	    int   MaxRetries,
-	    FloatOrDouble torsFreeEnergy,
-      int   ligand_is_inhibitor);
+	       int   MaxRetries,
+	       FloatOrDouble torsFreeEnergy,
+            int   ligand_is_inhibitor,
+            int ignore_inter[MAX_ATOMS]);
 #endif

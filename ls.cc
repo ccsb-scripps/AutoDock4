@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.3 2004/02/12 04:32:15 garrett Exp $
+ $Id: ls.cc,v 1.4 2004/11/16 23:42:53 garrett Exp $
 
 */
 
@@ -43,7 +43,7 @@ Phenotype genPh(const Phenotype &original, FloatOrDouble *array1, FloatOrDouble 
    return(retval);
 }
 
-//  Solis & Wetts adds a random deviate to every
+//  What Solis & Wetts does is add random deviates to every
 //  real number in the Phenotype.
 //  
 //  This has only one value of rho, for all genes.
@@ -116,8 +116,7 @@ void Solis_Wets::SW(Phenotype &vector)
 } // void Solis_Wets::SW(Phenotype &vector)
 
 
-//  pseudo-Solis & Wets 
-//  This adds a random deviate to each dimension
+//  This is pseudo-Solis & Wets in that it adds random deviates to every dimension
 //  of the current solution, but the variances vary across dimensions.
 //
 //  This has a different value of rho for each gene.

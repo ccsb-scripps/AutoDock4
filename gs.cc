@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.4 2004/02/12 04:32:15 garrett Exp $
+ $Id: gs.cc,v 1.5 2004/11/16 23:42:52 garrett Exp $
 
 */
 
@@ -248,7 +248,7 @@ M_mode Genetic_Algorithm::m_type(RepType type)
 void Genetic_Algorithm::make_table(int size, FloatOrDouble prob)
 {
    register int i, j;
-   double L = 0.;
+   double L = 0.0L;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::make_table(int size=%d, FloatOrDouble prob=%f)\n",size, prob);

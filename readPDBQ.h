@@ -51,6 +51,9 @@ Molecule readPDBQ( char  line[LINE_LEN],
               Clock jobStart,
               struct tms tms_jobStart,
               char  hostnm[MAX_CHARS],
+
               int   *P_ntorsdof,
-              int   outlev);
+              int   outlev,
+
+              int ignore_inter[MAX_ATOMS]);
 #endif

@@ -24,7 +24,8 @@ void  writePDBQ( int   irun,
                  FloatOrDouble charge[MAX_ATOMS],
                  int ligand_is_inhibitor,
                  FloatOrDouble torsFreeEnergy,
-                 int outlev);
+                 int outlev,
+                 int   ignore_inter[MAX_ATOMS]);
 #endif
 
 #else /* WRITEPDBQSTATE */
@@ -77,7 +78,9 @@ void writeStateOfPDBQ(int irun,
                     Boole B_template,
                     FloatOrDouble template_energy[MAX_ATOMS],
                     FloatOrDouble template_stddev[MAX_ATOMS],
-                    int outlev);
+                    int outlev,
+                    int   ignore_inter[MAX_ATOMS]
+		    );
 
 #endif
 

@@ -48,6 +48,7 @@ class Eval
       // FloatOrDouble template_stddev[MAX_ATOMS]; // atomic template values
       FloatOrDouble *template_energy; // atomic template values
       FloatOrDouble *template_stddev; // atomic template values
+      int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
    
    public:
       Eval(void);
@@ -71,7 +72,8 @@ class Eval
             FloatOrDouble init_crdpdb[MAX_ATOMS][SPACE], State stateInit, Molecule molInit,
             Boole init_B_template, 
             FloatOrDouble init_template_energy[MAX_ATOMS], 
-            FloatOrDouble init_template_stddev[MAX_ATOMS]);
+            FloatOrDouble init_template_stddev[MAX_ATOMS],
+            int   init_ignore_inter[MAX_ATOMS]);
       double operator()(Representation **);
 #if defined(USING_COLINY)
       double operator()(double*, int);
@@ -109,7 +111,8 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE], FloatOrDouble 
             Molecule molInit, 
             Boole init_B_template, 
             FloatOrDouble init_template_energy[MAX_ATOMS], 
-            FloatOrDouble init_template_stddev[MAX_ATOMS])
+            FloatOrDouble init_template_stddev[MAX_ATOMS],
+            int   init_ignore_inter[MAX_ATOMS])
 {
    register int i;
 
@@ -146,6 +149,7 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE], FloatOrDouble 
    num_evals = 0;
    for (i=0; i<MAX_ATOMS; i++) {
        init_elec[i] = init_emap[i] = 0.0;
+       ignore_inter[i] = init_ignore_inter[i];
    }
    mol = molInit;
    B_template = init_B_template;

@@ -1,6 +1,6 @@
 /*
 
- $Id: timesys.cc,v 1.2 2003/02/26 01:47:47 garrett Exp $
+ $Id: timesys.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
 
 */
 
@@ -11,9 +11,9 @@
 /* timesys.cc */
 
 
-    #include <stdio.h>
-    #include <unistd.h>
-    #include "timesys.h"
+#include <stdio.h>
+#include <unistd.h>
+#include "timesys.h"
 
 extern  FILE    *logFile;
 extern	FloatOrDouble	idct;

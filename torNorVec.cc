@@ -1,6 +1,6 @@
 /*
 
- $Id: torNorVec.cc,v 1.2 2003/02/26 01:48:12 garrett Exp $
+ $Id: torNorVec.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
 
 */
 
@@ -11,14 +11,12 @@
 /* torNorVec.cc */
 
 #include <math.h>
-
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include "torNorVec.h"
-    #ifdef DEBUG
-	#include <ctype.h>
-    #endif /* DEBUG */
-
+#include <stdio.h>
+#include <stdlib.h>
+#include "torNorVec.h"
+#ifdef DEBUG
+#include <ctype.h>
+#endif /* DEBUG */
 
 extern FILE *logFile;
 

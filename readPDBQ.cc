@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQ.cc,v 1.5 2004/02/12 05:50:49 garrett Exp $
+ $Id: readPDBQ.cc,v 1.6 2004/11/16 23:42:53 garrett Exp $
 
 */
 
@@ -10,15 +10,16 @@
 
 #include <math.h>
 
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include <sys/types.h>
-    #include <sys/times.h>
-    #include <sys/param.h>
-    #include <time.h>
-    #include <ctype.h> /* tolower */
-    #include "readPDBQ.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/times.h>
+#include <sys/param.h>
+#include <time.h>
+#include <ctype.h> /* tolower */
+#include "readPDBQ.h"
+#include "pdbqtokens.h"
 
 /*----------------------------------------------------------------------------*/
 
@@ -26,6 +27,7 @@ extern int    debug;
 extern int    parse_tors_mode;
 extern FILE  *logFile;
 extern char  *programname;
+extern int    true_ligand_atoms;
 extern int    oldpdbq;
 
 /*----------------------------------------------------------------------------*/
@@ -38,7 +40,7 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
               FloatOrDouble crdpdb[ MAX_ATOMS ][ NTRN ],
               FloatOrDouble charge[ MAX_ATOMS ],
               Boole *P_B_haveCharges,
-              int   type[ MAX_ATOMS ],
+              int   atmType[ MAX_ATOMS ],
               char  pdbaname[ MAX_ATOMS ][ 5 ],
               char  pdbqFileName[ MAX_CHARS ],
               char  atomstuff[ MAX_ATOMS ][ MAX_CHARS ],
@@ -63,30 +65,36 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
               struct tms tms_jobStart,
               char  hostnm[ MAX_CHARS ],
               int   *P_ntorsdof,
-              int   outlev)
+              int   outlev,
+              int   ignore_inter[MAX_ATOMS])
 
 {
     FILE *pdbqFile;
-    char  dummy[ LINE_LEN ];
-    char  error_message[ LINE_LEN ];
-    char  message[ LINE_LEN ];
-    char  rec5[ 5 ];
-    char  record[ MAX_RECORDS ][ LINE_LEN ];
+    static char  dummy[ LINE_LEN ];
+    static char  error_message[ LINE_LEN ];
+    static char  message[ LINE_LEN ];
+    static char  record[ MAX_RECORDS ][ LINE_LEN ];
+    static char  rec5[ 5 ];
 
     FloatOrDouble aq = 0.;
     FloatOrDouble lq = 0.;
     FloatOrDouble total_charge = 0.;
+    FloatOrDouble total_charge_ligand = 0.;
+    FloatOrDouble total_charge_residues = 0.;
     FloatOrDouble uq = 0.;
 
-    int   Rec_atomnumber[ MAX_RECORDS ];
+    static int Rec_atomnumber[ MAX_RECORDS ];
     int   ii = 0;
     int   iq = 0;
     int   iatom = 0;
-    int   nbmatrix_binary[ MAX_ATOMS ][ MAX_ATOMS ];
+    static int   nbmatrix_binary[ MAX_ATOMS ][ MAX_ATOMS ];
     int   nrecord = 0;
     int   ntor = 0;
-    int   ntype[ MAX_ATOMS ];
-    int   piece[ MAX_ATOMS ];
+    static int   ntype[ MAX_ATOMS ];
+    static int   piece[ MAX_ATOMS ];
+    int   found_begin_res = 0;
+    int   keyword_id = -1;
+    int   nres = 0;
 
     register int   i = 0;
     register int   j = 0;
@@ -94,6 +102,10 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
     static FloatOrDouble QTOL = 0.005;
 
     Molecule mol;
+
+    for (i=0; i<MAX_RECORDS; i++) {
+        Rec_atomnumber[i] = 0;
+    }
 
     for (j = 0;  j < MAX_ATOMS;  j++ ) {
         ntype[ j ] = 0;
@@ -108,11 +120,11 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
         pr( logFile, "Atomic coordinate, partial charge, PDBQ file = \"%s\"\n\n", pdbqFileName );
     }
 
+    /*
+    **  Count the number of records in the PDBQ file first...
+    */
     nrecord = 0;
     while( fgets( dummy, LINE_LEN, pdbqFile ) != NULL ) {
-        /*
-        **  Count the number of records first...
-        */
         ++nrecord;
     }
     (void)fclose( pdbqFile );
@@ -122,9 +134,10 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
         stop( error_message );
         exit( -1 );
     } else {
+        /*
+         * Read in the input PDBQ file...
+         */
         if ( openFile( pdbqFileName,"r",&pdbqFile,jobStart,tms_jobStart,TRUE )) {
-            /* Read in PDBQ file */
-
             pr( logFile, "\nINPUT PDBQ FILE:" );
             pr( logFile, "\n________________\n\n\n" );
             for (i=0; i<nrecord; i++) {
@@ -138,17 +151,16 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
     } /*if*/
 
     /*
-    **  Read in the atoms/hetatms, count them; store the (x,y,z) coordinates...
-    */
-
+     *  Read in the ATOMs and HETATMs, count them; store the (x,y,z) coordinates...
+     *  
+     *  Also, check for any BEGIN_RES records, for receptor flexibility...
+     */
     iatom = 0;
     for (i = 0;  i < nrecord;  i++) {
         strncpy( thisline, record[ i ], (size_t)LINE_LEN );
-        for (ii = 0; ii < 4; ii++) {
-            rec5[ ii ] = (char)tolower( (int)thisline[ ii ] );
-        }
+        keyword_id = parse_pdbq_line(thisline);
 
-        if (equal(rec5,"atom", 4) || equal(rec5,"heta", 4)   ) {
+        if ((keyword_id == PDBQ_ATOM) || (keyword_id == PDBQ_HETATM)) {
             Rec_atomnumber[ i ] = iatom;
              
             readPDBQLine( thisline, crdpdb[ iatom ], &charge[ iatom ] );
@@ -158,7 +170,11 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
             mol.crd[iatom][X]    = crdpdb[iatom][X];
             mol.crd[iatom][Y]    = crdpdb[iatom][Y];
             mol.crd[iatom][Z]    = crdpdb[iatom][Z];
-            total_charge += charge[ iatom ];
+            if (found_begin_res) {
+                total_charge_residues += charge[ iatom ];
+            } else {
+                total_charge_ligand += charge[ iatom ];
+            }
             *P_B_haveCharges = TRUE;
 
             strncpy( atomstuff[ iatom ], thisline, (size_t)30 );
@@ -166,19 +182,37 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
             strcpy(mol.atomstr[iatom], atomstuff[iatom]);
 
             sscanf( &thisline[ 12 ], "%s", pdbaname[ iatom ] );
-            type[ iatom ] = -1;
-            type[ iatom ] = get_atom_type( pdbaname[ iatom ], atm_typ_str );
-            if (type[ iatom ] == -1) {
+            atmType[ iatom ] = -1;
+            atmType[ iatom ] = get_atom_type( pdbaname[ iatom ], atm_typ_str );
+            if (atmType[ iatom ] == -1) {
                 pr( logFile, "%s: atom type error, using the default, atom type = 1\n", programname);
-                type[ iatom ] = 1;
+                atmType[ iatom ] = 1;
             }
-            ++ntype[ type[ iatom ] ]; /* count the number of this atomtype */
+            ++ntype[ atmType[ iatom ] ]; /* count the number of atoms with this atomtype */
+            ++iatom; /* count the number of atoms in PDBQ file */
 
-            ++iatom;        /* count the number of atoms in PDBQ file */
+        } else if (!found_begin_res) {
+            /* No BEGIN_RES found yet. */
+            /*
+             * Keep updating "true_ligand_atoms" until we find a "BEGIN_RES",
+             */
+            true_ligand_atoms = iatom; /* Set number of atoms in ligand now. */
+            if (keyword_id == PDBQ_BEGIN_RES) {
+                /* then a flexible receptor sidechain was found in the PDBQ file. */
+                found_begin_res = 1; /* flag that we've found a BEGIN_RES record. */
+                pr( logFile, "\nNumber of atoms in movable ligand = %d\n\n", true_ligand_atoms );
+            }
         }
-    } /* i */
+        if (keyword_id == PDBQ_BEGIN_RES) {
+            nres++;
+        }
+    } /* i, next record in PDBQ file */
 
-    pr( logFile, "Number of atoms found in molecule =\t%d atoms\n\n", iatom);
+    pr( logFile, "Number of atoms found in flexible receptor sidechains =\t%d atoms\n\n", iatom - true_ligand_atoms);
+
+    pr( logFile, "Total number of atoms found in PDBQ file =\t%d atoms\n\n", iatom);
+
+    pr( logFile, "Number of flexible receptor sidechains found =\t%d residues\n\n", nres);
 
     if (iatom > MAX_ATOMS) {
         prStr( error_message, "ERROR: Too many atoms found (i.e. %d); maximum allowed is %d.\nChange the \"#define MAX_ATOMS\" line in \"constants.h\"\n.", iatom, MAX_ATOMS );
@@ -189,27 +223,63 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
         mol.natom = iatom;
     }
 
+    pr( logFile, "Summary of number of atoms with a given atom type:\n");
+    pr( logFile, "--------------------------------------------------\n\n");
     for (i=0; i<num_atm_maps; i++) {
-        pr( logFile, "Number of atoms with type %d = %d\n", i+1, ntype[ i ]);
+        pr( logFile, "Number of atoms with atom type %d = %d\n", i+1, ntype[ i ]);
     }
 
-    pr( logFile, "\nTotal charge on molecule =\t\t%+.3f e\n\n", total_charge );
-    iq = (int) ( ( aq = fabs( total_charge ) ) + 0.5 );
+    pr( logFile, "\nSummary of total charge on ligand, residues and PDBQ:\n");
+    pr( logFile, "-----------------------------------------------------\n\n");
+    /*
+     * Check total charge on ligand
+     */
+    pr( logFile, "\nTotal charge on ligand =\t\t%+.3f e\n", total_charge_ligand );
+    iq = (int) ( ( aq = fabs( total_charge_ligand ) ) + 0.5 );
     lq = iq - QTOL;
     uq = iq + QTOL;
     if ( ! ((aq >= lq) && (aq <= uq)) ) {
-        prStr( message, "\n%s: *** WARNING!  Non-integral total charge (%.3f e) on molecule! ***\n\n", programname, total_charge);
+        prStr( message, "\n%s: *** WARNING!  Non-integral total charge (%.3f e) on ligand! ***\n\n", programname, total_charge_ligand);
+        pr_2x( stderr, logFile, message );
+    }
+
+    /*
+     * Check total charge on residues
+     */
+    pr( logFile, "\nTotal charge on residues =\t\t%+.3f e\n", total_charge_residues );
+    iq = (int) ( ( aq = fabs( total_charge_residues ) ) + 0.5 );
+    lq = iq - QTOL;
+    uq = iq + QTOL;
+    if ( ! ((aq >= lq) && (aq <= uq)) ) {
+        prStr( message, "\n%s: *** WARNING!  Non-integral total charge (%.3f e) on residues! ***\n\n", programname, total_charge_residues);
+        pr_2x( stderr, logFile, message );
+    }
+
+    /*
+     * Check total charge on all PDBQ atoms
+     */
+    total_charge = total_charge_ligand + total_charge_residues;
+    pr( logFile, "\nTotal charge on all PDBQ atoms (ligand + residues) =\t\t%+.3f e\n", total_charge);
+    iq = (int) ( ( aq = fabs( total_charge) ) + 0.5 );
+    lq = iq - QTOL;
+    uq = iq + QTOL;
+    if ( ! ((aq >= lq) && (aq <= uq)) ) {
+        prStr( message, "\n%s: *** WARNING!  Non-integral total charge (%.3f e) on all PDBQ atoms! ***\n\n", programname, total_charge);
         pr_2x( stderr, logFile, message );
     }
 
     /* 
-    **  Work out where the torsions are; and what they move...
-    */
+     *  Work out where the torsions are; and what they move...
+     *
+     *  Also, detect which atoms we should ignore in the intermolecular energy
+     *  calculation (ignore_inter[MAX_ATOMS] array)
+     */
     mkTorTree( Rec_atomnumber, record, nrecord, 
                 tlist, &ntor, 
                 pdbqFileName, pdbaname, 
                 P_B_constrain, P_atomC1, P_atomC2,
-                P_sqlower, P_squpper, P_ntorsdof);
+                P_sqlower, P_squpper, P_ntorsdof,
+                ignore_inter);
     
     *P_ntor  = ntor;
     *P_ntor1 = ntor - 1;
@@ -220,8 +290,8 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
         /*
         **  Create list of internal non-bond distances to check...
         */
-        nonbonds( crdpdb, nbmatrix_binary, iatom, Rec_atomnumber, nrecord, record, piece, Htype, type );
-        weedbonds( iatom, pdbaname, piece, ntor, tlist, P_Nnb, Nnbonds, nbmatrix_binary, nonbondlist, outlev, type );
+        nonbonds( crdpdb, nbmatrix_binary, iatom, Rec_atomnumber, nrecord, record, piece, Htype, atmType );
+        weedbonds( iatom, pdbaname, piece, ntor, tlist, P_Nnb, Nnbonds, nbmatrix_binary, nonbondlist, outlev, atmType );
         torNorVec( crdpdb, ntor, tlist, vt );
 
         for ( i=0; i<MAX_TORS; i++) {

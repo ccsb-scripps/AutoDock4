@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.3 2004/02/12 05:50:48 garrett Exp $
+ $Id: investigate.cc,v 1.4 2004/11/16 23:42:53 garrett Exp $
 
 */
 
@@ -56,18 +56,19 @@ void investigate( int   Nnb,
 		int   type[MAX_ATOMS],
 		FloatOrDouble vt[MAX_TORS][SPACE],
 		Boole B_isGaussTorCon,
-       unsigned short US_torProfile[MAX_TORS][NTORDIVS],
+         unsigned short US_torProfile[MAX_TORS][NTORDIVS],
 		Boole B_isTorConstrained[MAX_TORS],
 		Boole B_ShowTorE,
-       unsigned short US_TorE[MAX_TORS],
+         unsigned short US_TorE[MAX_TORS],
 		FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		int   N_con[MAX_TORS],
 		Boole B_symmetry_flag,
 		char  FN_rms_ref_crds[MAX_CHARS],
-                int   OutputEveryNTests,
+         int   OutputEveryNTests,
 		int   NumLocalTests,
 		FloatOrDouble trnStep,
-		FloatOrDouble torStep)
+		FloatOrDouble torStep,
+         int   ignore_inter[MAX_ATOMS])
 
 {
     Boole B_outside = FALSE;
@@ -185,10 +186,8 @@ void investigate( int   Nnb,
 		rms = getrms( crd, ref_crds, B_symmetry_flag, natom, type);
 	    } while (rms > MaxRms);
 	    /* Calculate Energy of System, */
-	    e = quicktrilinterp( crd, charge, type, natom, map, 
-				 inv_spacing, xlo, ylo, zlo) 
-		+ eintcal( nonbondlist, e_internal, crd, 
-				      Nnb, B_calcIntElec, q1q2);
+	    e = quicktrilinterp4( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo, ignore_inter) 
+		    + eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
 	    if (B_isGaussTorCon) {
 		for (Itor = 0; Itor < ntor; Itor++) {
 		    if (B_isTorConstrained[Itor] == 1) {

@@ -1,6 +1,6 @@
 /*
 
- $Id: timesyshms.cc,v 1.2 2003/02/26 01:47:59 garrett Exp $
+ $Id: timesyshms.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
 
 */
 
@@ -10,12 +10,12 @@
 
 /* timesyshms.cc */
 
-    #include <stdio.h>
-    #include <sys/types.h>
-    #include <sys/times.h>
-    #include <time.h>
-    #include <unistd.h>
-    #include "timesyshms.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/times.h>
+#include <time.h>
+#include <unistd.h>
+#include "timesyshms.h"
 
 
 extern  FILE    *logFile;

@@ -11,6 +11,9 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.4  2004/11/16 23:42:56  garrett
+** This is the result of merging the existing CVS respository with the AutoDock 4.0 code.  We have tested the code with a variety of problems: rigid ligand-rigid protein, rigid ligand-flexible protein, flexible ligand-rigid protein and flexible ligand-flexible protein: all four tests passed.  There was a bug fix regarding the flexible ligand-rigid protein case, to do with the absence of a BEGIN_RES record in the PDBQ file. -- GMM & RH
+**
 ** Revision 1.3  2004/02/12 04:32:16  garrett
 **
 ** After a first round of compilation using Apple's IDE, Xcode, various
@@ -83,7 +86,7 @@ class Genotype
       Genotype(Genotype &); /* copy constructor */
       Genotype(unsigned int, Representation **); /* creates a genotype from the
 					     representation & total # vectors */
-      ~Genotype(void);
+      ~Genotype(void); /* destructor */
       Genotype &operator=(const Genotype &);
       unsigned int num_vectors(void); /* e.g. "real,bit,bit,int" would = 4 */
       unsigned int num_genes(void); /* returns number_of_genes (see above) */

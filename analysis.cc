@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.4 2004/02/12 05:50:47 garrett Exp $
+ $Id: analysis.cc,v 1.5 2004/11/16 23:42:52 garrett Exp $
 
 */
 
@@ -68,34 +68,36 @@ void analysis( int   Nnb,
                Boole B_template,
                FloatOrDouble template_energy[MAX_ATOMS],
                FloatOrDouble template_stddev[MAX_ATOMS],
-               int   outlev)
+               int   outlev,
+			 int   ignore_inter[MAX_ATOMS])
 
 {
     /* register int   imol = 0; */
-    char  filename[MAX_CHARS];
-    char  label[MAX_CHARS];
-    char  rec14[14];
-    char  rec9[9];
+    static char  filename[MAX_CHARS];
+    static char  label[MAX_CHARS];
+    static char  rec14[14];
+    static char  rec9[9];
 
-    FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS];
-    FloatOrDouble crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
-    FloatOrDouble crd[MAX_ATOMS][SPACE];
+    static FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS];
+    static FloatOrDouble crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
+    static FloatOrDouble crd[MAX_ATOMS][SPACE];
     FloatOrDouble einter = 0.;
     FloatOrDouble eintra = 0.;
-    FloatOrDouble elec[MAX_ATOMS];
-    FloatOrDouble emap[MAX_ATOMS];
-    FloatOrDouble ref_crds[MAX_ATOMS][SPACE];
-    FloatOrDouble ref_rms[MAX_RUNS];
+    static FloatOrDouble elec[MAX_ATOMS];
+    static FloatOrDouble emap[MAX_ATOMS];
+    // FloatOrDouble lo[3];
+    static FloatOrDouble ref_crds[MAX_ATOMS][SPACE];
+    static FloatOrDouble ref_rms[MAX_RUNS];
     FloatOrDouble torDeg = 0.;
     FloatOrDouble modtorDeg = 0.;
     FloatOrDouble MaxValue = 99.99;
 
     int   c = 0;
     int   c1 = 0;
-    int   cluster[MAX_RUNS][MAX_RUNS];
+    static int   cluster[MAX_RUNS][MAX_RUNS];
     int   i1=1;
     int   indpf = 0;
-    int   isort[MAX_RUNS];
+    static int   isort[MAX_RUNS];
     int   ncluster = 1;
     int   num_in_clu[MAX_RUNS];
     int   off[VECLENMAX];
@@ -215,7 +217,7 @@ void analysis( int   Nnb,
                 eintra = 0.0;
             }
             if (!B_template) {
-                 einter = trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo );
+                 einter = trilinterp4( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
             } else {
                  einter = byatom_template_trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo,
                                                       template_energy, template_stddev);

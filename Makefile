@@ -1,9 +1,9 @@
 #
-# Makefile to build AutoDock from Object files.
+# Makefile to build AutoDock 4 from Object files.
 #
 # NOTE: Must be run in the $(AUTODOCK_DEV) directory.
 #
-# Copyright (C) 1994-2001,  Garrett Matthew Morris,  TSRI.
+# Copyright (C) 1994-2005,  Garrett Matthew Morris,  TSRI.
 #
 #
 # Edit this Makefile to reflect your machine architecture.
@@ -141,8 +141,8 @@ ARFLAGS = r # SGI, Sun, Alpha, Linux, Mac OS X
 # RANLIB = file # SGI.
 RANLIB = ranlib # Linux, Mac OS X.
 
-# RANLIBFLAGS = # Linux, SGI
-RANLIBFLAGS = -s # MacOS X.
+RANLIBFLAGS = # Linux, SGI
+# RANLIBFLAGS = -s # MacOS X.
 
 # Define lint files:
 
@@ -244,20 +244,9 @@ LNSSQRT = \
 # C++ compiler
 #
 
-# CC = cc # MacOS X
 # CC = CC # SGI.
 # CC = cxx # Alpha.
-CC = g++ # use this if you have the Gnu compiler, as on Linux, MkLinux, LinuxPPC systems.
-# #  portland compiler setup #
-# PGI = /usr/pgi #                       Portland compiler
-# LM_LICENSE_FILE = $(PGI)/license.dat # Portland compiler
-# LD_LIBRARY_PATH = $(PGI)/linux86/lib # Portland compiler
-# CC = pgCC #                            Portland Compiler
-
-# LIB = -lm -lsupc++  # gcc 3.1 on MacOS X.
-LIB = $(COLINY_LINK) -lm # SGI, Sun, Linux, MacOS X.
-# LIB = -lm -lc # Alpha, Convex.
-# LIB = -lm -lg++ # HP, Gnu.
+CC = g++ # HP, Gnu.
 
 CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
 # CSTD = $(DBUG) $(PROF) $(WARN) -DUSE_XCODE # Smaller memory footprint, good for Xcode
@@ -312,8 +301,8 @@ OPT = $(OPTLEVEL) # Alpha, HP, Sun, Convex, Linux, MacOS X.
 LNO_OPT = # SGI, no special optimization at link time; Sun; Linux; MacOS X
 # LNO_OPT = -LNO:auto_dist=ON:gather_scatter=2 # SGI
 
-# LINKOPT = $(CSTD) $(OPT) # 
-LINKOPT = $(CSTD) $(OPT) -fno-stack-limit # Cygwin, 32MB stacksize
+LINKOPT = $(CSTD) $(OPT) # 
+# LINKOPT = $(CSTD) $(OPT) -fno-stack-limit # Cygwin, 32MB stacksize
 # LINKOPT = $(CSTD) $(OPT) -Wl,--stack=0x2000000 # Cygwin, 32MB stacksize
 # LINKOPT = $(CSTD) $(OPT) -L/opt/sfw/lib # Sun
 
@@ -325,7 +314,7 @@ LINT = lint # lint C code checking.
 LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X.
 # LINTFLAGS = $(LIB) -MA -c # Alpha.
 # LINTFLAGS = -DHPPA -D_HPUX_SOURCE $(LIB) -c # HP.
-LINTFLAGS = -u -n -lm # Sun.
+# LINTFLAGS = -u -n -lm # Sun.
 
 DBUG = -DNDEBUG # No debugging and no assert code.
 # DBUG = # Use assert code.
@@ -348,32 +337,37 @@ WARN = # Default warning level.
 ##
 ## To use coliny and utilib, uncomment the following
 ##
-#COLINY_FLAGS= -DUNIX -DLINUX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES # Linux
-#COLINY_INCLUDES= -I../coliny -I../coliny/packages/include -I../utilib -DUSING_COLINY $(COLINY_FLAGS)
-#COLINY_LINK= -L../coliny/lib/current -L../utilib/lib/current -lcoliny -lutilib -lg2c # Linux
+### COLINY_FLAGS= -DUNIX -DLINUX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES # Linux
+### COLINY_INCLUDES= -I../coliny -I../coliny/packages/include -I../utilib -DUSING_COLINY $(COLINY_FLAGS)
+### COLINY_LINK= -L../coliny/lib/current -L../utilib/lib/current -lcoliny -lutilib -lg2c # Linux
+##
+## To Not Use coliny, uncomment these lines:
+COLINY_FLAGS=
+COLINY_INCLUDES=
+COLINY_LINK=
 
-autodock3 : main.o $(ADLIB)
+autodock4 : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
-	@echo Making autodock3
+	@echo Making autodock4
 	@echo " "
 	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock3sqrt : main.o $(ADLIB)
+autodock4sqrt : main.o $(ADLIB)
 	$(CC) $(CFLAGS) -o $@ main.o -L. -lad $(LIB)
 
-autodock3minpt : main.o $(ADLIB)
+autodock4minpt : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', using '`hostname` >> LATEST_MAKE
 	$(CC) $(CFLAGS) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock3alt : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+autodock4alt : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
 	echo $(EXE)'  on  '`date`', using '`hostname` >> LATEST_MAKE
 	$(CC) $(LINK) -DNOSQRT -o $@ $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT) $(LIB)
 
 install :
 	@echo " "
-	@echo Moving autodock3 to $(AUTODOCK_BIN)
+	@echo Moving autodock4 to $(AUTODOCK_BIN)
 	@echo " "
 	mv autodock3 $(AUTODOCK_BIN)
 
@@ -455,7 +449,7 @@ com.o : com.cc ranlib.h
 stateLibrary.o : stateLibrary.cc stateLibrary.h constants.h
 	$(CC) $(CFLAGS) -c stateLibrary.cc
 
-readPDBQ.o : readPDBQ.cc  readPDBQ.h constants.h openfile.h stop.h readPDBQ.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.h weedbonds.h torNorVec.h success.h autocomm.h
+readPDBQ.o : readPDBQ.cc  readPDBQ.h constants.h openfile.h stop.h readPDBQ.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.h weedbonds.h torNorVec.h success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h
 	$(CC) $(OLIMIT) -c readPDBQ.cc
 
 dpftypes.o : dpftypes.cc dpftypes.h constants.h dpftoken.h stop.h
@@ -931,7 +925,7 @@ nbe.sqrt.ln : nbe.cc
 #
 
 clean :
-	/bin/rm -f *.o *.s *.ln a.out mon.out autodock3 autodock3sqrt autodock3minpt dualmap libad.a
+	/bin/rm -f *.o *.s *.ln a.out mon.out autodock4 autodock4sqrt autodock4minpt dualmap libad.a
 
 cleanlcheck :
 	/bin/rm -f *.ln

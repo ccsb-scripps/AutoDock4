@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.3 2004/02/12 05:50:49 garrett Exp $
+ $Id: writePDBQ.cc,v 1.4 2004/11/16 23:42:55 garrett Exp $
 
 */
 
@@ -11,9 +11,9 @@
 /* writePDBQ.cc */
 
 #ifndef WRITEPDBQSTATE
-                      /* writePDBQ.cc */
+/* writePDBQ.cc */
 #else /* WRITEPDBQSTATE */
-                      /* writeStateOfPDBQ.cc */
+/* writePDBQState.cc */
 #endif /* WRITEPDBQSTATE */
 
 #ifndef WRITEPDBQSTATE
@@ -27,10 +27,10 @@
 #include "writePDBQ.h"
 
 #ifdef WRITEPDBQSTATE
-    #include "printEnergies.h"
-    #include "assert.h"
+#include "stateLibrary.h"
+#include "printEnergies.h"
+#include "assert.h"
 #endif /* WRITEPDBQSTATE */
-
 
 
 extern int keepresnum;
@@ -72,7 +72,9 @@ void writeStateOfPDBQ(  int   irun,
                     int ligand_is_inhibitor,
 #ifndef WRITEPDBQSTATE
                     FloatOrDouble torsFreeEnergy,
-                    int   outlev)
+                    int   outlev,
+                    int   ignore_inter[MAX_ATOMS]
+                    )
 #else /* WRITEPDBQSTATE */
                     FloatOrDouble torsFreeEnergy,
                     FloatOrDouble vt[MAX_TORS][SPACE],
@@ -95,7 +97,8 @@ void writeStateOfPDBQ(  int   irun,
                     Boole B_template,
                     FloatOrDouble template_energy[MAX_ATOMS],
                     FloatOrDouble template_stddev[MAX_ATOMS],
-                    int   outlev)
+                    int   outlev,
+                    int   ignore_inter[MAX_ATOMS])
 #endif /* WRITEPDBQSTATE */
 
 {
@@ -141,8 +144,9 @@ void writeStateOfPDBQ(  int   irun,
             *Ptr_einter = byatom_template_trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo,
                                                template_energy, template_stddev);
         } else {
-            *Ptr_einter = trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo);
+            *Ptr_einter = trilinterp4( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter);
         }
+        
     } else {
         *Ptr_eintra = *Ptr_einter = BIG;  // defined in constants.h
     }

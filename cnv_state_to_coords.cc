@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.cc,v 1.2 2003/02/26 00:53:07 garrett Exp $
+ $Id: cnv_state_to_coords.cc,v 1.3 2004/11/16 23:42:52 garrett Exp $
 
 */
 
@@ -20,6 +20,7 @@
 #include "stateLibrary.h"
 
 extern FILE *logFile;
+extern int true_ligand_atoms;
 
 void cnv_state_to_coords( State now,
                           FloatOrDouble vt[MAX_TORS][SPACE],
@@ -56,7 +57,7 @@ void cnv_state_to_coords( State now,
     if (ntor > 0) {
       torsion( now, crd, vt, tlist, ntor );
     }
-    qtransform( now.T, now.Q, crd, natom );
+    qtransform( now.T, now.Q, crd, true_ligand_atoms );
 
 #ifdef DEBUG
     } else {

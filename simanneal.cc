@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.4 2004/02/12 05:50:49 garrett Exp $
+ $Id: simanneal.cc,v 1.5 2004/11/16 23:42:53 garrett Exp $
 
 */
 
@@ -12,15 +12,15 @@
 
 #include <math.h>
 
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include <sys/types.h>
-    #include <sys/times.h>
-    #include <sys/param.h>
-    #include <time.h>
-    #include "simanneal.h"
-    #include "energy.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/times.h>
+#include <sys/param.h>
+#include <time.h>
+#include "simanneal.h"
+#include "energy.h"
 
 
 
@@ -112,7 +112,8 @@ void simanneal( int   *Addr_nconf,
 		FloatOrDouble e0max,
 		FloatOrDouble torsFreeEnergy,
 		int   MaxRetries,
-    int   ligand_is_inhibitor)
+		int   ligand_is_inhibitor,
+		int   ignore_inter[MAX_ATOMS])
 
 {
     char message[LINE_LEN];
@@ -231,7 +232,8 @@ void simanneal( int   *Addr_nconf,
 			 xhi, yhi, zhi, xlo, ylo, zlo,
 			 inv_spacing, map, natom, Nnb, nonbondlist,
 			 ntor, tlist, type, vt, irun1, outlev, MaxRetries,
-			 torsFreeEnergy, ligand_is_inhibitor);
+			 torsFreeEnergy, ligand_is_inhibitor,
+			 ignore_inter);
 
         RT = RT0;		/* Initialize the "annealing" temperature */
 	if (RT <= APPROX_ZERO) { RT = 616.; }
@@ -346,7 +348,7 @@ void simanneal( int   *Addr_nconf,
 			/*
 			** MORE ACCURATE METHOD, (SLOWER):
 			*/
-			e = quicktrilinterp( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo) +
+			e = quicktrilinterp4( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo, ignore_inter) + 
 				(eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2));
 
 			/*
@@ -469,7 +471,8 @@ void simanneal( int   *Addr_nconf,
 			 xhi, yhi, zhi, xlo, ylo, zlo,
 			 inv_spacing, map, natom, Nnb, nonbondlist,
 			 ntor, tlist, type, vt, irun1, outlev, MaxRetries,
-			 torsFreeEnergy, ligand_is_inhibitor);
+			 torsFreeEnergy, ligand_is_inhibitor,
+			 ignore_inter);
 
 	    } else {
 
@@ -579,12 +582,12 @@ void simanneal( int   *Addr_nconf,
 	} else {
 	    eintra = 0.0;
 	}
-        einter = trilinterp( crd, charge, type, natom, map, inv_spacing, 
-	    elec, emap, xlo, ylo, zlo);
+        einter = trilinterp4( crd, charge, type, natom, map, inv_spacing, 
+	    elec, emap, xlo, ylo, zlo, ignore_inter);
 
 	writePDBQ( irun, FN_ligand, FN_dpf, sml_center, sSave, ntor,
 	  eintra, einter, natom, atomstuff, crd, emap, elec, charge,
-	  ligand_is_inhibitor, torsFreeEnergy, outlev);
+	  ligand_is_inhibitor, torsFreeEnergy, outlev, ignore_inter);
 
         econf[(*Addr_nconf)] = eLast;
         ++(*Addr_nconf);

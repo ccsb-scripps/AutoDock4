@@ -132,3 +132,80 @@ FloatOrDouble  byatom_template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
                                    CONST_FLOAT template_energy[MAX_ATOMS],
                                    CONST_FLOAT template_stddev[MAX_ATOMS]);
 #endif
+
+#ifndef TRILINTERP4
+#define TRILINTERP4
+#include "constants.h"
+FloatOrDouble  trilinterp4(CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
+            CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_INT   type[MAX_ATOMS], 
+            CONST_INT   natom, 
+            CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            CONST_FLOAT inv_spacing, 
+                  FloatOrDouble elec[MAX_ATOMS],
+                  FloatOrDouble evdW[MAX_ATOMS],
+            CONST_FLOAT xlo, 
+            CONST_FLOAT ylo, 
+            CONST_FLOAT zlo,
+            int ignore_inter[MAX_ATOMS]);
+#endif
+
+#ifndef OUTSIDETRILINTERP4BYATOM
+#define OUTSIDETRILINTERP4BYATOM
+#include "constants.h"
+FloatOrDouble  outsidetrilinterp4byatom( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
+            CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_INT   type[MAX_ATOMS], 
+            CONST_INT   natom, 
+            CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            CONST_FLOAT inv_spacing, 
+	    FloatOrDouble elec[MAX_ATOMS],
+	    FloatOrDouble emap[MAX_ATOMS],
+            CONST_FLOAT xlo, 
+            CONST_FLOAT ylo, 
+            CONST_FLOAT zlo,
+            CONST_FLOAT xhi, 
+            CONST_FLOAT yhi, 
+            CONST_FLOAT zhi,
+            CONST_FLOAT xcen, 
+            CONST_FLOAT ycen, 
+            CONST_FLOAT zcen,
+            int ignore_inter[MAX_ATOMS]);
+#endif
+
+#ifndef OUTSIDETRILINTERP4
+#define OUTSIDETRILINTERP4
+#include "constants.h"
+FloatOrDouble  outsidetrilinterp4( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
+            CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_INT   type[MAX_ATOMS], 
+            CONST_INT   natom, 
+            CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            CONST_FLOAT inv_spacing, 
+            CONST_FLOAT xlo, 
+            CONST_FLOAT ylo, 
+            CONST_FLOAT zlo,
+            CONST_FLOAT xhi, 
+            CONST_FLOAT yhi, 
+            CONST_FLOAT zhi,
+            CONST_FLOAT xcen, 
+            CONST_FLOAT ycen, 
+            CONST_FLOAT zcen,
+            int ignore_inter[MAX_ATOMS]);
+#endif
+
+#ifndef QUICKTRILINTERP4
+#define QUICKTRILINTERP4
+#include "constants.h"
+FloatOrDouble  quicktrilinterp4( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
+            CONST_FLOAT charge[MAX_ATOMS], 
+            CONST_INT   type[MAX_ATOMS], 
+            CONST_INT   natom, 
+            CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            CONST_FLOAT inv_spacing, 
+            CONST_FLOAT xlo, 
+            CONST_FLOAT ylo, 
+            CONST_FLOAT zlo,
+            int ignore_inter[MAX_ATOMS]);
+#endif
+

@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.8 2004/02/12 05:50:48 garrett Exp $
+ $Id: main.cc,v 1.9 2004/11/16 23:42:53 garrett Exp $
 
 */
 
@@ -42,6 +42,15 @@
 #include "cnv_state_to_coords.h"
 #include "structs.h"
 #include "assert.h"
+#include "qmultiply.h"
+
+#ifdef sun
+    extern "C"
+    {
+        /* Needed on Sun */
+        int gethostname(char *name,int namelen);
+    }
+#endif
 
 #define RIJ_MIN 1.0
 #define RIJ_MAX 6.0
@@ -63,9 +72,9 @@ int main (int argc, char * const argv[], char * const envp[])
 /*******************************************************************************
 **      Name: main  (AutoDock)                                                **
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule **
-** Copyright: (C) 1994-2004 TSRI, Arthur J. Olson's Labortatory.              **
+** Copyright: (C) 1994-2005 TSRI, Arthur J. Olson's Labortatory.              **
 **____________________________________________________________________________**
-**   Authors: Garrett Matthew Morris, Current C/C++ version 3.0.7             **
+**   Authors: Garrett Matthew Morris, Current C/C++ version 4.0               **
 **                                       e-mail: garrett@scripps.edu          **
 **                                                                            **
 **            David Goodsell, Orignal FORTRAN version 1.0                     **
@@ -105,6 +114,7 @@ int main (int argc, char * const argv[], char * const envp[])
 ** 09/26/94 GMM     Cluster analysis now outputs RMS deviations.              **
 ** 09/28/94 GMM     Modularized code.                                         **
 ** 10/02/94 GMM     Distance constraints added, for Ed Moret. Accelerated.    **
+** 09/06/95 RSH     Incorporation of GA/SW tokens                             **
 *******************************************************************************/
 
 {
@@ -281,9 +291,10 @@ int I_tor;
 int I_torBarrier;
 int N_con[MAX_TORS];
 int MaxRetries = 1000; /* Default maximum number of retries for ligand init. */
-int   OutputEveryNTests = 1000;
-int   NumLocalTests = 10;
-int   maxTests = 10000;
+int OutputEveryNTests = 1000;
+int NumLocalTests = 10;
+int maxTests = 10000;
+int ignore_inter[MAX_ATOMS];
 /* int beg; */
 /* int end; */
 /* int imol = 0; */
@@ -315,7 +326,7 @@ static FloatOrDouble F_lnH;
 static FloatOrDouble F_W;
 static FloatOrDouble F_hW;
 static FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
-static FloatOrDouble version = 3.07;
+static FloatOrDouble version = 4.00;
 static FourByteLong clktck = 0;
 
 struct tms tms_jobStart;
@@ -384,6 +395,7 @@ for (j = 0;  j < MAX_ATOMS;  j++ ) {
     Nnbonds[j] = type[j] = 0;
     template_energy[j] = 0.0;
     template_stddev[j] = 1.0;
+    ignore_inter[j] = 0;
 } 
 
 for (i = 0; i  < MAX_TORS;  i++ ) {
@@ -611,7 +623,26 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
              &sqlower, &squpper,
              &ntor1, &ntor, tlist, vt, 
              &Nnb, Nnbonds, nonbondlist,
-             jobStart, tms_jobStart, hostnm, &ntorsdof, outlev);
+             jobStart, tms_jobStart, hostnm, &ntorsdof, outlev,
+             ignore_inter);
+
+        pr(logFile, "Number of \"true\" ligand atoms:  %d\n", true_ligand_atoms+1);
+
+        for (i=0;i<natom;i++) {
+            if (ignore_inter[i] == 1) {
+                pr(logFile, "Special Boundary Conditions:\n");
+                pr(logFile, "----------------------------\n\n");
+                pr(logFile, "AutoDock will ignore the following atoms in the input PDBQ file \nin intermolecular energy calculations:\n");
+                pr(logFile, "\n(This is because these residue atoms are at the boundary between \nflexible and rigid, and since they cannot move \nthey will not affect the total energy.)\n\n");
+                break;
+            }
+        }
+        for (i=0;i<natom;i++) {
+            if (ignore_inter[i] == 1) {
+                pr(logFile, "Atom number %d:  %s\n", i+1, atomstuff[i] );
+            }
+        }
+        pr(logFile, "\n");
 
         sInit.ntor = mol.S.ntor;
         ++nmol;
@@ -758,7 +789,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     type, Nnb, B_calcIntElec, q1q2,
                     map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
                     B_template, template_energy, template_stddev,
-                    outlev);
+                    outlev, 
+					ignore_inter);
 
 	      econf[nconf] = eintra + einter; // new2
 		
@@ -809,7 +841,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             */
             maxrad = -1.;
             
-            for ( i=0; i<natom; i++ ) {
+            /* was: for ( i=0; i<natom; i++ ) { */
+            for ( i=0; i<true_ligand_atoms; i++ ) { /*new, gmm, 6-23-1998*/
                 r2sum=0.;
                 for (xyz = 0;  xyz < SPACE;  xyz++) {
                     c = crd[i][xyz] = (crdpdb[i][xyz] -= lig_center[xyz]);
@@ -1970,7 +2003,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     B_isGaussTorCon, US_torProfile, B_isTorConstrained,
                     B_ShowTorE, US_TorE, F_TorConRange, N_con, 
                     B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
-                    e0max, torsFreeEnergy, MaxRetries, ligand_is_inhibitor);
+                    e0max, torsFreeEnergy, MaxRetries, ligand_is_inhibitor,
+                    ignore_inter);
             (void) fflush(logFile);
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so simulated annealing cannot be performed.\n\n");
@@ -2076,7 +2110,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist, e_internal, Nnb, 
               B_calcIntElec, q1q2, B_isGaussTorCon, B_isTorConstrained,
               B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol, 
-              B_template, template_energy, template_stddev);
+              B_template, template_energy, template_stddev,
+              ignore_inter);
 
             for (j=0; j<nruns; j++) {
                 j1 = j + 1;
@@ -2114,7 +2149,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                           ylo, yhi, zlo, zhi, outlev,
                                           extOutputEveryNgens, &mol,
                                           B_template, B_RandomTran0,
-					  B_RandomQuat0, B_RandomDihe0);
+					                   B_RandomQuat0, B_RandomDihe0);
                                           // State of best individual at end
                                           // of GA-LS run is returned.
                 // Finished Lamarckian GA run
@@ -2141,8 +2176,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     type, Nnb, B_calcIntElec, q1q2,
                     map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
                     B_template, template_energy, template_stddev,
-                    outlev);
-
+                    outlev,
+                    ignore_inter);
                 econf[nconf] = eintra + einter; // new2
 
                 ++nconf;
@@ -2182,7 +2217,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
               e_internal, Nnb, B_calcIntElec, q1q2,B_isGaussTorCon,B_isTorConstrained,
               B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol,
-              B_template, template_energy, template_stddev);
+              B_template, template_energy, template_stddev,
+              ignore_inter);
 
            for (j=0; j<nruns; j++) {
 
@@ -2222,7 +2258,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     type, Nnb, B_calcIntElec, q1q2,
                     map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
                     B_template, template_energy, template_stddev,
-                    outlev);
+                    outlev,
+                    ignore_inter);
 
                econf[nconf] = eintra + einter; // new2
                
@@ -2264,7 +2301,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
              xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
              e_internal, Nnb, B_calcIntElec, q1q2, B_isGaussTorCon,B_isTorConstrained,
              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol,
-             B_template, template_energy, template_stddev);
+             B_template, template_energy, template_stddev,
+             ignore_inter);
 
           for (j=0; j<nruns; j++) {
 
@@ -2312,7 +2350,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     type, Nnb, B_calcIntElec, q1q2,
                     map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
                     B_template, template_energy, template_stddev,
-                    outlev);
+                    outlev,
+                    ignore_inter);
 
               econf[nconf] = eintra + einter; // new2
                 
@@ -2511,7 +2550,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   natom, nonbondlist, nconf, ntor, sHist, FN_ligand,
                   lig_center, B_symmetry_flag, tlist, type, vt, FN_rms_ref_crds,
                   torsFreeEnergy, B_write_all_clusmem, ligand_is_inhibitor,
-                  B_template, template_energy, template_stddev, outlev);
+                  B_template, template_energy, template_stddev, outlev,
+                  ignore_inter);
             (void) fflush(logFile);
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so cluster analysis cannot be performed.\n\n");
@@ -2584,7 +2624,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 OutputEveryNTests,
                 NumLocalTests,
                 trnStep0,
-                torStep0);
+                torStep0,
+                ignore_inter);
 
         (void) fflush(logFile);
         break;
@@ -2684,7 +2725,8 @@ if (command_mode) {
               Nnb, nonbondlist, atomstuff, crdpdb, 
               hostnm, type, charge, B_calcIntElec, q1q2,
               atm_typ_str, torsFreeEnergy,
-              ligand_is_inhibitor, map_center);
+              ligand_is_inhibitor, map_center,
+              ignore_inter);
     exit( status );  /* "command_mode" exits here... */
 }
 

@@ -42,10 +42,11 @@ int   cmdmode( int natom,
              char  hostnm[MAX_CHARS],
              int   type[MAX_ATOMS],
              FloatOrDouble charge[MAX_ATOMS],
-	     Boole B_calcIntElec,
-	     FloatOrDouble q1q2[MAX_NONBONDS],
-	     char  atm_typ_str[ATOM_MAPS],
-	     FloatOrDouble torsFreeEnergy,
-       int ligand_is_inhibitor,
-       FloatOrDouble map_center[SPACE]);
+	        Boole B_calcIntElec,
+	        FloatOrDouble q1q2[MAX_NONBONDS],
+	        char  atm_typ_str[ATOM_MAPS],
+	        FloatOrDouble torsFreeEnergy,
+            int ligand_is_inhibitor,
+            FloatOrDouble map_center[SPACE],
+            int ignore_inter[MAX_ATOMS]);
 #endif

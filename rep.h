@@ -15,8 +15,8 @@
 
 // appears not to be used //  #include <iostream.h>
 
-    #include <stdio.h>
-    #include "structs.h"
+#include <stdio.h>
+#include "structs.h"
 
 #define ACCURACY 0.001
 #define REALV_LOW -999.999 //gmm, 2003-11-11

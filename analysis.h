@@ -48,5 +48,6 @@ void  analysis( int   Nnb,
                 Boole B_template,
                 FloatOrDouble template_energy[MAX_ATOMS], // template energy value for each atom
                 FloatOrDouble template_stddev[MAX_ATOMS], // and standard deviation of this energy
-                int   outlev);
+                int   outlev,
+                int   ignore_inter[MAX_ATOMS]);
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.3 2004/02/12 05:50:48 garrett Exp $
+ $Id: getInitialState.cc,v 1.4 2004/11/16 23:42:52 garrett Exp $
 
 */
 
@@ -65,7 +65,8 @@ void getInitialState(
             int   outlev,
             int   MaxRetries,
             FloatOrDouble torsFreeEnergy,
-            int   ligand_is_inhibitor)
+            int   ligand_is_inhibitor,
+            int   ignore_inter[MAX_ATOMS])
 
 {
     FloatOrDouble e0total = 0.;
@@ -141,7 +142,7 @@ void getInitialState(
         initautodock( atomstuff, crd, crdpdb, xhi, yhi, zhi, xlo, ylo, zlo, 
             natom, ntor, sInit, tlist, vt, outlev);
         
-        e0inter = trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo );
+        e0inter = trilinterp4( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
         e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
         e0total = e0inter + e0intra;
 
@@ -180,7 +181,7 @@ void getInitialState(
 
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
-    e0inter = trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo );
+    e0inter = trilinterp4( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
     e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
     e0total = e0inter + e0intra;
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.cc,v 1.2 2003/02/26 01:30:39 garrett Exp $
+ $Id: qtransform.cc,v 1.3 2004/11/16 23:42:53 garrett Exp $
 
 */
 
@@ -43,6 +43,7 @@ void qtransform( const Coord T,
 /* Date     Inits   Comments                                                  */
 /* 05/15/92 GMM     Translated into C.                                        */
 /* 11/23/92 GMM     Introduced (15+,9*) version, replacing (12+,36*) version. */
+/* 11/23/92 GMM     Introduced h and inv_qmag, since * is faster than /.      */
 /******************************************************************************/
 {
     register int a;

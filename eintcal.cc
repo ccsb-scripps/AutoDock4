@@ -1,6 +1,6 @@
 /* 
 
- $Id: eintcal.cc,v 1.4 2004/02/12 05:50:48 garrett Exp $
+ $Id: eintcal.cc,v 1.5 2004/11/16 23:42:52 garrett Exp $
 
 */
 
@@ -92,7 +92,7 @@ FloatOrDouble eintcalPrint( int           nonbondlist[MAX_NONBONDS][4],
 
     for (inb = 0;  inb < Nnb;  inb++) {
 
-#pragma function_align 32
+/* #pragma function_align 32 */
 		
         a1 = nonbondlist[inb][ATM1];
         a2 = nonbondlist[inb][ATM2];

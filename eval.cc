@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.7 2004/02/12 05:50:48 garrett Exp $
+ $Id: eval.cc,v 1.8 2004/11/16 23:42:52 garrett Exp $
 
 */
 
@@ -140,8 +140,9 @@ double Eval::eval()
     *                              B_ShowTorE, US_TorE, US_torProfile);
     * --------------------------------------------------------------------------*/
 
-            energy = quicktrilinterp( crd, charge, type, natom, map, inv_spacing,
-                                      xlo, ylo, zlo);
+            energy = quicktrilinterp4( crd, charge, type, natom, map, inv_spacing,
+                                      xlo, ylo, zlo,
+                             		 ignore_inter);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after quicktrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
@@ -181,7 +182,7 @@ double Eval::eval()
              * distance from centre of grid map, otherwise use the normal 
              * trilinear interpolation.
              */
-            energy = outsidetrilinterp( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,  xcen, ycen, zcen );
+            energy = outsidetrilinterp4( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,  xcen, ycen, zcen, ignore_inter );
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after outsidetrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */

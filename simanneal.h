@@ -96,6 +96,7 @@ void simanneal( int   *P_nconf,
                 FloatOrDouble e0max,
                 FloatOrDouble torsFreeEnergy,
                 int   MaxRetries,
-                int   ligand_is_inhibitor);
+                int   ligand_is_inhibitor,
+                int   ignore_inter[MAX_ATOMS]);
 
 #endif

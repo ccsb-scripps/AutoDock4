@@ -1,6 +1,6 @@
 /*
 
- $Id: swap.cc,v 1.2 2003/02/26 01:46:44 garrett Exp $
+ $Id: swap.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
 
 */
 
@@ -10,11 +10,11 @@
 
 /* swap.cc */
 
-    #include "swap.h"
-    #ifdef DEBUG
-	#include <stdio.h>
-	#include <string.h>
-    #endif /* DEBUG */
+#include "swap.h"
+#ifdef DEBUG
+#include <stdio.h>
+#include <string.h>
+#endif /* DEBUG */
 
 
 #ifdef DEBUG

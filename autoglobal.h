@@ -52,6 +52,8 @@ int     keepresnum = 1;
 int     oldpdbq = FALSE;
 int     parse_tors_mode = FALSE;
 
+int	true_ligand_atoms = 0;
+
 FloatOrDouble	idct = 1.;
 
 FILE    *command_in_fp;

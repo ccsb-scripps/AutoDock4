@@ -55,6 +55,7 @@ void investigate(
 		char  FN_rms_ref_crds[MAX_CHARS],
 		int   OutputEveryNTests,
 		int   NumLocalTests,
-                FloatOrDouble trnStep,
-                FloatOrDouble torStep);
+          FloatOrDouble trnStep,
+          FloatOrDouble torStep,
+          int   ignore_inter[MAX_ATOMS]);
 #endif

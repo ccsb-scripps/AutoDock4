@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.4 2004/02/12 05:50:47 garrett Exp $
+ $Id: cmdmode.cc,v 1.5 2004/11/16 23:42:52 garrett Exp $
 
 */
 
@@ -68,7 +68,8 @@ int cmdmode(int   natom,
              char  atm_typ_str[ATOM_MAPS],
              FloatOrDouble torsFreeEnergy,
              int ligand_is_inhibitor,
-             FloatOrDouble map_center[SPACE])
+             FloatOrDouble map_center[SPACE],
+             int ignore_inter[MAX_ATOMS])
 {
     char message[LINE_LEN],
          command[LINE_LEN],
@@ -257,9 +258,9 @@ int cmdmode(int   natom,
                     }
                     /* gmm 2001.11.07
                     if (outside) {
-			etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + eintra; // gmm 2001.11.07
+			etotal = (einter = outsidetrilinterp4byatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2], ignore_inter)) + eintra; // gmm 2001.11.07
                     } else {
-                        etotal = (einter = trilinterp(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo)) + eintra;
+                        etotal = (einter = trilinterp4(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter)) + eintra;
                     } / * endif */
 
                     pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
@@ -348,9 +349,9 @@ int cmdmode(int   natom,
                 } /*i*/
                 /*
                 if (outside) {
-                    etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + eintra; // gmm 2001.11.07
+                    etotal = (einter = outsidetrilinterp4byatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2], ignore_inter)) + eintra; // gmm 2001.11.07
                 } else {
-                    etotal = (einter = trilinterp(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo)) + eintra;
+                    etotal = (einter = trilinterp4(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter)) + eintra;
                     / * lo) ...using lo array is slower * /
                 }
                 */
@@ -478,9 +479,9 @@ int cmdmode(int   natom,
                                     } /*i*/
                                     /* gmm 2001.11.07
                                     if (outside) {
-                                        etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + Eint; // gmm 2001.11.07
+                                        etotal = (einter = outsidetrilinterp4byatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2], ignore_inter)) + Eint; // gmm 2001.11.07
                                     } else {
-                                        etotal = (einter = trilinterp(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo)) + Eint;
+                                        etotal = (einter = trilinterp4(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter)) + Eint;
                                             / * lo) + Eint; * /
                                     } / * endif */
                                     pr(logFile, "USER   Run %d  Cycle %d  Step %d  Temp %.2f K  %c  Etot %.2f  Eint   %.2f\n", irun, icycle, nstep, T, lastmove, E, Eint);

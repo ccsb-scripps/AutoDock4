@@ -1,6 +1,6 @@
 /*
 
- $Id: sort_enrg.cc,v 1.2 2003/02/26 01:42:06 garrett Exp $
+ $Id: sort_enrg.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
 
 */
 
@@ -10,7 +10,7 @@
 
 /* sort_enrg.cc */
 
-    #include "sort_enrg.h"
+#include "sort_enrg.h"
 
 
 extern FILE *logFile;

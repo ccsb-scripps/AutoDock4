@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.6 2004/02/12 04:32:16 garrett Exp $
+ $Id: support.cc,v 1.7 2004/11/16 23:42:54 garrett Exp $
 
 */
 
@@ -16,7 +16,7 @@
     #include <stdio.h>
     #include "support.h"
     #include "stateLibrary.h"
-
+    #include "structs.h"
 
 extern FILE *logFile;
 

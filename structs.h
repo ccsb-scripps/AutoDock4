@@ -22,6 +22,17 @@
  * 02/28/95 GMM     This header added                                         *
  ******************************************************************************/
 
+/*____________________________________________________________________________*/
+
+#ifdef USE_INT_AS_LONG
+    typedef int  FourByteLong;
+    typedef unsigned int UnsignedFourByteLong;
+#else
+    typedef long FourByteLong;
+    typedef unsigned long UnsignedFourByteLong;
+#endif
+
+/*____________________________________________________________________________*/
 
 typedef struct coord {
 	double	x;		/* Cartesian x-coordinate */
@@ -129,7 +140,7 @@ typedef struct torsion {
 } Torsion;
 
 /*______________________________________________________________________________
- * Molecular fragments, side-chains, even entire ligands						*/
+** Molecular fragments, side-chains, even entire ligands */
 
 typedef struct group {
 	int	natom;			/* Number of atoms in fragment */
