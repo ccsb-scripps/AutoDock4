@@ -1,3 +1,13 @@
+/*
+
+ $Id: simanneal.cc,v 1.2 2003/02/26 01:40:37 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* simanneal.cc */
 
 #include <math.h>
@@ -20,30 +30,30 @@ extern char *programname;
 
 void simanneal( int   *Addr_nconf,
 		int   Nnb,
-		float WallEnergy,
+		FloatOrDouble WallEnergy,
 		char  atomstuff[MAX_ATOMS][MAX_CHARS],
-		float charge[MAX_ATOMS],
+		FloatOrDouble charge[MAX_ATOMS],
 		Boole B_calcIntElec,
-		float q1q2[MAX_NONBONDS],
-		float crd[MAX_ATOMS][SPACE],
-		float crdpdb[MAX_ATOMS][SPACE],
+		FloatOrDouble q1q2[MAX_NONBONDS],
+		FloatOrDouble crd[MAX_ATOMS][SPACE],
+		FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
 		char  FN_dpf[MAX_CHARS],
-		float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
-		float econf[MAX_RUNS],
+		FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+		FloatOrDouble econf[MAX_RUNS],
 		Boole B_either,
-		float elec[MAX_ATOMS],
-		float emap[MAX_ATOMS],
-		float xhi,
-		float yhi,
-		float zhi,
+		FloatOrDouble elec[MAX_ATOMS],
+		FloatOrDouble emap[MAX_ATOMS],
+		FloatOrDouble xhi,
+		FloatOrDouble yhi,
+		FloatOrDouble zhi,
 		int   NcycMax,
-		float inv_spacing,
+		FloatOrDouble inv_spacing,
 		int   irunmax,
 		Clock jobStart,
-		float xlo,
-		float ylo,
-		float zlo,
-		float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+		FloatOrDouble xlo,
+		FloatOrDouble ylo,
+		FloatOrDouble zlo,
+		FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 		int   naccmax,
 		int   natom,
 		int   nonbondlist[MAX_NONBONDS][2],
@@ -55,38 +65,38 @@ void simanneal( int   *Addr_nconf,
 		State sInit, /* tor0, qtn0 */
 		State sHist[MAX_RUNS], /* was qtnHist, torHist */
 
-		float qtwFac,
+		FloatOrDouble qtwFac,
 		Boole B_qtwReduc,
-		float qtwStep0,
+		FloatOrDouble qtwStep0,
 		Boole B_selectmin,
 		char  FN_ligand[MAX_CHARS],
-		float sml_center[SPACE],
-		float RT0,
+		FloatOrDouble sml_center[SPACE],
+		FloatOrDouble RT0,
 		Boole B_RTChange,
-		float RTFac,
+		FloatOrDouble RTFac,
 		struct tms tms_jobStart,
 		int   tlist[MAX_TORS][MAX_ATOMS],
-		float torFac,
+		FloatOrDouble torFac,
 		Boole B_torReduc,
-		float torStep0,
+		FloatOrDouble torStep0,
 		char  FN_trj[MAX_CHARS],
 		int   trj_cyc_max,
 		int   trj_cyc_min,
 		int   trj_freq,
-		float trnFac,
+		FloatOrDouble trnFac,
 		Boole B_trnReduc,
-		float trnStep0,
+		FloatOrDouble trnStep0,
 		int   type[MAX_ATOMS],
-		float vt[MAX_TORS][SPACE],
+		FloatOrDouble vt[MAX_TORS][SPACE],
 		Boole B_writeTrj,
 		Boole B_constrain,
 		int   atomC1,
 		int   atomC2,
-		float sqlower,
-		float squpper,
+		FloatOrDouble sqlower,
+		FloatOrDouble squpper,
 		Boole B_linear_schedule,
-		float RTreduc,
-		/*float maxrad,*/
+		FloatOrDouble RTreduc,
+		/*FloatOrDouble maxrad,*/
 		Boole B_watch,
 		char  FN_watch[MAX_CHARS],
 		Boole B_isGaussTorCon,
@@ -94,13 +104,13 @@ void simanneal( int   *Addr_nconf,
 		Boole B_isTorConstrained[MAX_TORS],
 		Boole B_ShowTorE,
 		unsigned short US_TorE[MAX_TORS],
-		float F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		int N_con[MAX_TORS],
 		Boole B_RandomTran0,
 		Boole B_RandomQuat0,
 		Boole B_RandomDihe0,
-		float e0max,
-		float torsFreeEnergy,
+		FloatOrDouble e0max,
+		FloatOrDouble torsFreeEnergy,
 		int   MaxRetries,
     int   ligand_is_inhibitor)
 
@@ -116,22 +126,22 @@ void simanneal( int   *Addr_nconf,
     State sMin; /* qtnMin, torMin */
     State sSave; /* qtnSave, torSave */
 
-    float d[SPACE];
-    float e = 0.;
-    float e0 = 0.;
-    float einter = 0.;
-    float eintra = 0.;
-    float eLast = 0.;
-    float eMin = BIG_ENERGY;
-    float etot = 0.0;
-    float inv_RT = 0.;
-    float qtwStep;
-    float rsqC1C2;
-    float RT = 616.;
-    float torTmp;
-    float torStep;
-    float trnStep;
-    /* ** float xloTrn; ** float xhiTrn; ** float yloTrn; ** float yhiTrn; ** float zloTrn; ** float zhiTrn; ** float lo[SPACE]; ** float trnStepHi; ** float qtwStepHi; ** float torStepHi; */
+    FloatOrDouble d[SPACE];
+    FloatOrDouble e = 0.;
+    FloatOrDouble e0 = 0.;
+    FloatOrDouble einter = 0.;
+    FloatOrDouble eintra = 0.;
+    FloatOrDouble eLast = 0.;
+    FloatOrDouble eMin = BIG_ENERGY;
+    FloatOrDouble etot = 0.0;
+    FloatOrDouble inv_RT = 0.;
+    FloatOrDouble qtwStep;
+    FloatOrDouble rsqC1C2;
+    FloatOrDouble RT = 616.;
+    FloatOrDouble torTmp;
+    FloatOrDouble torStep;
+    FloatOrDouble trnStep;
+    /* ** FloatOrDouble xloTrn; ** FloatOrDouble xhiTrn; ** FloatOrDouble yloTrn; ** FloatOrDouble yhiTrn; ** FloatOrDouble zloTrn; ** FloatOrDouble zhiTrn; ** FloatOrDouble lo[SPACE]; ** FloatOrDouble trnStepHi; ** FloatOrDouble qtwStepHi; ** FloatOrDouble torStepHi; */
 
     Boole B_inRange = FALSE;
     Boole B_outside = FALSE;
@@ -357,10 +367,10 @@ void simanneal( int   *Addr_nconf,
 				if (B_isTorConstrained[Itor] == 1) {
 				    indx = Rad2Div( sNow.tor[Itor] );
 				    if (B_ShowTorE) {
-					e += (float)( US_TorE[Itor] 
+					e += (FloatOrDouble)( US_TorE[Itor] 
 						  = US_torProfile[Itor][indx] );
 				    } else {
-					e += (float)US_torProfile[Itor][indx];
+					e += (FloatOrDouble)US_torProfile[Itor][indx];
 				    }
 				}
 			    }
@@ -468,7 +478,7 @@ void simanneal( int   *Addr_nconf,
 		*/
 		if (outlev > 0) {
 		    /*pr(logFile, "\n"); / *###*/
-		    pr( logFile, "%d /%d\t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", irun1, irunmax, icycle1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (float)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
+		    pr( logFile, "%d /%d\t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", irun1, irunmax, icycle1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (FloatOrDouble)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
 		    cycEnd = times( &tms_cycEnd );
 		    timesys( cycEnd - cycStart, &tms_cycStart, &tms_cycEnd );
 		    if (outlev > 1) {
@@ -572,7 +582,7 @@ void simanneal( int   *Addr_nconf,
 
 	writePDBQ( irun, FN_ligand, FN_dpf, sml_center, sSave, ntor,
 	  eintra, einter, natom, atomstuff, crd, emap, elec, charge,
-	  ligand_is_inhibitor, torsFreeEnergy);
+	  ligand_is_inhibitor, torsFreeEnergy, outlev);
 
         econf[(*Addr_nconf)] = eLast;
         ++(*Addr_nconf);
