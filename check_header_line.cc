@@ -1,3 +1,13 @@
+/*
+
+ $Id: check_header_line.cc,v 1.2 2003/02/26 00:37:28 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* check_header_line.cc */
 
     #include <stdio.h>
