@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.11.2.1 2005/03/01 00:01:29 gillet Exp $
+ $Id: main.cc,v 1.11.2.2 2005/03/07 18:45:53 gillet Exp $
 
 */
 
@@ -796,7 +796,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 	  utilib::BasicArray<double> initvec, finalpt;
 	  coliny_init(algname, domain, initvec);
-	  
+	  if(write_stateFile){fprintf(stateFile,'\t<runs>\n')};
 	  for (j=0; j<nruns; j++) {
 
 	      fprintf( logFile, "\n\n\tBEGINNING Coliny %s DOCKING\n",algname);
@@ -842,7 +842,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	      pr( logFile, "\n\n\tFINAL Coliny %s DOCKED STATE\n",algname );
 	      pr( logFile,     "\t____________________________________\n\n\n" );
 
-              writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center, 
+              writeStateOfPDBQ( j, seed,  FN_ligand, dock_param_fn, lig_center, 
                     &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff, 
                     crd, emap, elec, charge, 
                     ligand_is_inhibitor,
@@ -852,13 +852,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
                     B_template, template_energy, template_stddev,
                     outlev, 
-					ignore_inter);
+		    ignore_inter);
 
 	      econf[nconf] = eintra + einter; // new2
 		
 	      ++nconf;
 
 	  } // Next run
+	  if(write_stateFile){
+	    fprintf(stateFile,'\t</runs>\n');
+	    (void) fflush(stateFile);
+	  }
 	  (void) fflush(logFile);
 	  }
 	catch (std::exception& err) {
@@ -2175,6 +2179,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               B_template, template_energy, template_stddev,
               ignore_inter);
 
+	    if(write_stateFile){
+	      fprintf(stateFile,"\t<runs>\n");
+	    }
             for (j=0; j<nruns; j++) {
                 j1 = j + 1;
 
@@ -2229,7 +2236,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "\n\n\tFINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE\n" );
                 pr( logFile,     "\t_______________________________________________\n\n\n" );
 
-                writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center, 
+                writeStateOfPDBQ( j,seed,  FN_ligand, dock_param_fn, lig_center, 
                     &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff, 
                     crd, emap, elec, charge, 
                     ligand_is_inhibitor,
@@ -2246,6 +2253,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                 pr( logFile, UnderLine );
             } // Next LGA run
+	    if(write_stateFile){
+	       fprintf(stateFile,"\t</runs>\n");
+	       (void) fflush(stateFile);
+	    }
             (void) fflush(logFile);
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set.  Sorry, genetic algorithm-local search cannot be performed.\n\n");
@@ -2281,7 +2292,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol,
               B_template, template_energy, template_stddev,
               ignore_inter);
-
+	   if(write_stateFile){
+	     fprintf(stateFile,"\t<runs>\n");
+	   }
            for (j=0; j<nruns; j++) {
 
                pr( logFile, "\nDoing Local Search run: %d / %d.\n", j+1, nruns );
@@ -2311,7 +2324,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                pr( logFile, "\n\n\tFINAL LOCAL SEARCH DOCKED STATE\n" );
                pr( logFile,     "\t_______________________________\n\n\n" );
                
-               writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center, 
+               writeStateOfPDBQ( j,seed, FN_ligand, dock_param_fn, lig_center, 
                     &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff, 
                     crd, emap, elec, charge, 
                     ligand_is_inhibitor,
@@ -2330,6 +2343,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                pr( logFile, UnderLine );
 
            } // Next run
+	   if(write_stateFile){
+	     fprintf(stateFile,"\t</runs>\n");
+	     (void) fflush(stateFile);
+	   }
            (void) fflush(logFile);
        } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so local search cannot be performed.\n\n");
@@ -2365,7 +2382,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol,
              B_template, template_energy, template_stddev,
              ignore_inter);
-
+	  if(write_stateFile){
+	    fprintf(stateFile,"\t<runs>\n");
+	  }
           for (j=0; j<nruns; j++) {
 
               fprintf( logFile, "\n\n\tBEGINNING GENETIC ALGORITHM DOCKING\n");
@@ -2403,7 +2422,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               pr( logFile, "\n\n\tFINAL GENETIC ALGORITHM DOCKED STATE\n" );
               pr( logFile,     "\t____________________________________\n\n\n" );
 
-              writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center, 
+              writeStateOfPDBQ( j,seed,  FN_ligand, dock_param_fn, lig_center, 
                     &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff, 
                     crd, emap, elec, charge, 
                     ligand_is_inhibitor,
@@ -2422,6 +2441,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               pr( logFile, UnderLine );
 
           } // Next run
+	  if(write_stateFile){
+	    fprintf(stateFile,"\t</runs>\n");
+	    (void) fflush(stateFile);
+	  }
           (void) fflush(logFile);
       } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so global search cannot be performed.\n\n");
@@ -2802,7 +2825,13 @@ printdate( logFile, 1 );
 pr( logFile, "\n\n\n" );
 
 success( hostnm, jobStart, tms_jobStart );
+
+ if(write_stateFile){
+   fprintf(stateFile,"</autodock>\n");
+   (void) fclose( stateFile );
+ }
 (void) fclose( logFile );
+
 
 //________________________________________________________________________________
 /*
