@@ -338,7 +338,7 @@ WARN = # Default warning level.
 ## To use coliny and utilib, uncomment the following
 ##
 ### ACRO_INCLUDES= -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
-### ACRO_FLAGS= -DUNIX -DLINUX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES # Linux
+### ACRO_FLAGS= -DDEBUGGING -DUNIX -DLINUX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES # Linux
 ### ACRO_LINK= -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -lg2c # Linux
 ##
 ## To Not Use Acro, uncomment these lines:
