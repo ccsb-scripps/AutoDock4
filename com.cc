@@ -1,3 +1,13 @@
+/*
+
+ $Id: com.cc,v 1.2 2003/02/26 00:53:25 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* com.cc */
 
 #include <stdio.h>

@@ -1,3 +1,13 @@
+/*
+
+ $Id: dpftypes.cc,v 1.2 2003/02/26 00:53:44 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* dpftypes.cc */
 
     #include <stdio.h>
