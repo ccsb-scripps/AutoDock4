@@ -19,10 +19,10 @@
     #include "structs.h"
 
 #define ACCURACY 0.001
-//#define REALV_LOW -100.0 //gmm, 1998-07-08
-//#define REALV_HIGH 100.0 //gmm, 1998-07-08
-#define REALV_LOW -3.14159265358979323846 //gmm, 1998-07-08
-#define REALV_HIGH 3.14159265358979323846 //gmm, 1998-07-08
+#define REALV_LOW -100.0 //gmm, 2003-10-13
+#define REALV_HIGH 100.0 //gmm, 2003-10-13
+// #define REALV_LOW -3.14159265358979323846 //gmm, 1998-07-08
+// #define REALV_HIGH 3.14159265358979323846 //gmm, 1998-07-08
 
 enum RepType {T_BASE, T_IntV, T_RealV, T_CRealV, T_BitV};
 
