@@ -92,19 +92,23 @@
 #define prStr           (void) sprintf
 #define flushLog        (void) fflush(logFile)
 
-#define dist(x1,y1,z1,x2,y2,z2,r) _dx=((x2)-(x1));_dy=((y2)-(y1));_dz=((z2)-(z1));r=sqrt(_dx*_dx + _dy*_dy + _dz*_dz)
+#define dist(x1,y1,z1,x2,y2,z2,r) _dx=((x2)-(x1)),_dy=((y2)-(y1)),_dz=((z2)-(z1)),r=sqrt(_dx*_dx + _dy*_dy + _dz*_dz)
 
 /*
 ** New types...
 */
+
+
+#include "typedefs.h"
+
 
 typedef char Boole;
 
 
 typedef struct AtomDesc {
 
-	float crd[XYZ];
-	float q;
+	FloatOrDouble crd[XYZ];
+	FloatOrDouble q;
 	int   type;
 
 	} AtomDesc;
