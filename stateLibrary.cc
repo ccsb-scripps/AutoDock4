@@ -1,3 +1,13 @@
+/*
+
+ $Id: stateLibrary.cc,v 1.4 2003/02/26 01:42:17 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* stateLibrary.cc */
 
 #include <math.h>
@@ -59,7 +69,7 @@ void printState( FILE *fp,
                  int detail )
 {
     register int i;
-    float torDegTmp;
+    FloatOrDouble torDegTmp;
 
     switch( detail ) {
         case 2:
@@ -100,7 +110,7 @@ void printState( FILE *fp,
 void writeState( FILE *fp, State S )
 {
     register int i;
-    float torDegTmp;
+    FloatOrDouble torDegTmp;
 
     (void)fprintf( fp, "State= " );
     (void)fprintf( fp, "%.3f %.3f %.3f  ", S.T.x, S.T.y, S.T.z );
