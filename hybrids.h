@@ -23,7 +23,8 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 		float xlo, float xhi, float ylo, 
 		float yhi, float zlo, float zhi,
 		int outlev, unsigned int extOutputEveryNgens, Molecule *mol,
-        Boole B_template);
+		Boole B_template,
+		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0);
 
 Representation **generate_R(int num_torsions, double xlo, double xhi, double ylo, 
                             double yhi, double zlo, double zhi);
