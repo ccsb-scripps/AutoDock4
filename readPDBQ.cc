@@ -1,16 +1,12 @@
 /*
 
- $Id: readPDBQ.cc,v 1.2 2003/02/26 01:35:28 garrett Exp $
+ $Id: readPDBQ.cc,v 1.3 2003/02/27 02:15:31 lindy Exp $
 
 */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
-/* readPDBQ.cc */
-
-/* $Id: readPDBQ.cc,v 1.2 2003/02/26 01:35:28 garrett Exp $ */
 
 #include <math.h>
 
