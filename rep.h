@@ -19,8 +19,10 @@
     #include "structs.h"
 
 #define ACCURACY 0.001
-#define REALV_LOW -100.0 //gmm, 2003-10-13
-#define REALV_HIGH 100.0 //gmm, 2003-10-13
+#define REALV_LOW -999.999 //gmm, 2003-11-11
+#define REALV_HIGH 999.999 //gmm, 2003-11-11
+// #define REALV_LOW -100.0 //gmm, 2003-10-13
+// #define REALV_HIGH 100.0 //gmm, 2003-10-13
 // #define REALV_LOW -3.14159265358979323846 //gmm, 1998-07-08
 // #define REALV_HIGH 3.14159265358979323846 //gmm, 1998-07-08
 
