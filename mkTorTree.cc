@@ -1,3 +1,13 @@
+/*
+
+ $Id: mkTorTree.cc,v 1.2 2003/02/26 01:21:46 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* mkTorTree.cc */
 
 #include <math.h>
@@ -27,8 +37,8 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 		Boole *P_B_constrain,
 		int   *P_atomC1,
 		int   *P_atomC2,
-		float *P_sqlower,
-		float *P_squpper,
+		FloatOrDouble *P_sqlower,
+		FloatOrDouble *P_squpper,
                 int   *P_ntorsdof )
 
 {
@@ -49,9 +59,9 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     char  error_message[ LINE_LEN ];
     char  rec5[ 5 ];
 
-    float lower = 0.;
-    float temp  = 0.;
-    float upper = 0.01;
+    FloatOrDouble lower = 0.;
+    FloatOrDouble temp  = 0.;
+    FloatOrDouble upper = 0.01;
 
 #ifdef DEBUG
     int   oo = 0;
@@ -240,7 +250,11 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     /*____________________________________________________________*/
 	    case PDBQ_CONSTRAINT:
 
-		sscanf(Rec_line[ i ],"%*s %d %d %f %f", P_atomC1, P_atomC2, &lower, &upper);
+        #ifdef USE_DOUBLE
+            sscanf(Rec_line[ i ],"%*s %d %d %lf %lf", P_atomC1, P_atomC2, &lower, &upper);
+        #else
+            sscanf(Rec_line[ i ],"%*s %d %d %f %f", P_atomC1, P_atomC2, &lower, &upper);
+        #endif
 
                 *P_B_constrain = TRUE;
 
