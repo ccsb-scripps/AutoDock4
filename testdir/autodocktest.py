@@ -1,13 +1,13 @@
 #
-# Last modified on Thu Dec 19 16:35:36 PST 2002 by lindy
+# Last modified on Wed Jan 22 15:17:57 PST 2003 by lindy
 #
-# $Id: autodocktest.py,v 1.1 2003/01/22 22:36:33 lindy Exp $
+# $Id: autodocktest.py,v 1.2 2003/01/22 23:21:42 lindy Exp $
 #
 """
 
 """
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 #__test_for__ = '../autodock3"
 
 import os
@@ -75,13 +75,15 @@ class BasicTestCase(AutodockTestCase):
         # compare resulting docking log with saved dlg
         self.compare_dlgs(dlg_filename, old_dlg_filename)
 
-    def test_1phd(self):
-        """1phd test case"""
-        self.assertEqual(0, 1)
-
-    def test_1stp(self):
-        """1stp test case"""
-        self.assertEqual(0, 1)
+#
+# These tests aren't ready yet...
+#
+##     def test_1phd(self):
+##         """1phd test case"""
+##         self.assertEqual(0, 1)
+##     def test_1stp(self):
+##         """1stp test case"""
+##         self.assertEqual(0, 1)
 
     def test_2cpp(self):
         """2cpp test case"""
