@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.2 2003/02/26 01:52:12 garrett Exp $
+ $Id: weedbonds.cc,v 1.3 2004/02/12 05:50:49 garrett Exp $
 
 */
 
@@ -26,8 +26,9 @@ void weedbonds( int natom,
                 int *Addr_Nnb,
                 int Nnbonds[MAX_ATOMS],
                 int nbmatrix_binary[MAX_ATOMS][MAX_ATOMS],
-                int nonbondlist[MAX_NONBONDS][2],
-                int outlev)
+                int nonbondlist[MAX_NONBONDS][4],
+                int outlev,
+				int type[MAX_ATOMS])
 
 {
     static int OUTNUMATM = 10;
@@ -137,7 +138,9 @@ void weedbonds( int natom,
             if ((nbmatrix_binary[i][j] == 1) && (nbmatrix_binary[j][i] == 1)) {
                 nonbondlist[Nnb][ATM1] = i;
                 nonbondlist[Nnb][ATM2] = j;
-
+				nonbondlist[Nnb][TYPE1] = type[i];
+				nonbondlist[Nnb][TYPE2] = type[j];
+				
 #ifdef DEBUG
 /**/                pr( logFile,"< nonbondlist[%2d][0,1] = %2d,%2d\n", Nnb, nonbondlist[Nnb][ATM1], nonbondlist[Nnb][ATM2] );
 #endif /* DEBUG */

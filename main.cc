@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.7 2004/02/12 04:32:15 garrett Exp $
+ $Id: main.cc,v 1.8 2004/02/12 05:50:48 garrett Exp $
 
 */
 
@@ -251,7 +251,7 @@ int nruns = 0;
 int nstepmax = -1;
 int naccmax = 0;
 int natom = 0;
-int nonbondlist[MAX_NONBONDS][2];
+int nonbondlist[MAX_NONBONDS][4];
 int nconf = 0;
 int ncycm1 = 1;
 int ndihed = 0;
@@ -446,7 +446,7 @@ if (clktck == 0) {        /* fetch clock ticks per second first time */
         idct = (FloatOrDouble)1. / (FloatOrDouble)clktck;
         if (debug) {
             pr(logFile, "\n\nFYI:  Number of clock ticks per second = %d\n", clktck);
-            pr(logFile, "FYI:  Elapsed time per clock tick = %.3e seconds\n\n\n\n", idct);
+			pr(logFile, "FYI:  Elapsed time per clock tick = %.3e seconds\n\n\n\n", idct);
         }
     }
 }

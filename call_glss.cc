@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.7 2004/02/12 04:32:15 garrett Exp $
+ $Id: call_glss.cc,v 1.8 2004/02/12 05:50:47 garrett Exp $
 
 */
 
@@ -210,7 +210,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 			for (j=0; j<now.ntor; j++) {
 				thisPop[indiv].genotyp.write( now.tor[j], 7+j);
 				if (outlev > 1) { (void)fprintf(logFile, "%lf ", Deg(now.tor[j])); }
-	  };
+			};
           if (outlev > 1) { (void)fprintf(logFile, " deg\n\n"); }
 	  // Remember to keep the phenotype up-to-date
 	  thisPop[indiv].phenotyp = thisPop[indiv].mapping();

@@ -141,8 +141,8 @@ ARFLAGS = r # SGI, Sun, Alpha, Linux, Mac OS X
 # RANLIB = file # SGI.
 RANLIB = ranlib # Linux, Mac OS X.
 
-RANLIBFLAGS = # Linux, SGI
-# RANLIBFLAGS = -s # MacOS X.
+# RANLIBFLAGS = # Linux, SGI
+RANLIBFLAGS = -s # MacOS X.
 
 # Define lint files:
 

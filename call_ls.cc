@@ -1,6 +1,6 @@
 /*
 
- $Id: call_ls.cc,v 1.3 2003/02/26 00:28:06 garrett Exp $
+ $Id: call_ls.cc,v 1.4 2004/02/12 05:50:47 garrett Exp $
 
 */
 
@@ -82,7 +82,7 @@ Individual cnv_state_to_ind(const State &original)
 
 State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Molecule *mol) 
 {
-   int i;
+   register unsigned int i;
 
    evaluate.reset();
    local_method->reset();

@@ -33,7 +33,7 @@
 #define FALSE        0      /* Logical constant                               */
 #define TRUE         1      /* Logical constant                               */
 
-#define PI	     3.14159265358979323846   /* Mathematical constant, pi    */
+#define PI	         3.14159265358979323846   /* Mathematical constant, pi    */
 #define TWOPI	     6.28318530717958647692
 
 #define X            0      /* x-coordinate                                   */
@@ -52,18 +52,13 @@
 #define LINE_LEN     256    /* Line length in characters                      */
 #endif
 
-/* #if defined(__ppc__)
- * / * this was necessary for 10.0.1 since there was a problem linking with
- *   * the 128 setting for MAX_GRID_PTS * /
- * #define MAX_GRID_PTS 64     / * Maximum number of grid points in 1 dimension   * /
-   #else */
 #ifdef USE_XCODE
 /* The stacksize limit within Xcode forces us to use smaller grids */
-#define MAX_GRID_PTS 61    /* Maximum number of grid points in 1 dimension   */
+#define MAX_GRID_PTS 61     /* Maximum number of grid points in 1 dimension   */
 #else
-#define MAX_GRID_PTS 128    /* Maximum number of grid points in 1 dimension   */
+#define MAX_GRID_PTS 128	/* Maximum number of grid points in 1 dimension   */
 #endif
-/* #endif / * __ppc__ */
+
 #define	EINTCLAMP    100000. /* Clamp pairwise internal energies (kcal/mol )  */
 #define MAX_MAPS     8      /* Maximum number of energy maps                  */
 #define ATOM_MAPS    6      /* Number of atomic affinity grids                */

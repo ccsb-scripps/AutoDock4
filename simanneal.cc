@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.3 2004/02/12 04:32:16 garrett Exp $
+ $Id: simanneal.cc,v 1.4 2004/02/12 05:50:49 garrett Exp $
 
 */
 
@@ -56,7 +56,7 @@ void simanneal( int   *Addr_nconf,
 		FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 		int   naccmax,
 		int   natom,
-		int   nonbondlist[MAX_NONBONDS][2],
+		int   nonbondlist[MAX_NONBONDS][4],
 		int   nrejmax,
 		int   ntor1,
 		int   ntor,
@@ -346,7 +346,8 @@ void simanneal( int   *Addr_nconf,
 			/*
 			** MORE ACCURATE METHOD, (SLOWER):
 			*/
-			e = quicktrilinterp( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo) + (eintra = eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2));
+			e = quicktrilinterp( crd, charge, type, natom, map, inv_spacing, xlo, ylo, zlo) +
+				(eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2));
 
 			/*
 			** LESS ACCURATE  METHOD (FASTER):
@@ -359,7 +360,7 @@ void simanneal( int   *Addr_nconf,
 			** map, inv_spacing, xlo, ylo, zlo)) < 
 			** ENERGY_CUTOFF) { 
 			**   e += (eintra = eintcal( nonbondlist, e_internal,
-			**   crd, type, Nnb, B_calcIntElec, q1q2 ));
+			**   crd, Nnb, B_calcIntElec, q1q2 ));
 			** }
 			*/
 
@@ -574,8 +575,7 @@ void simanneal( int   *Addr_nconf,
 	cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
 
 	if (ntor > 0) {
-	    eintra = eintcal( nonbondlist, e_internal, crd, type, Nnb, 
-		B_calcIntElec, q1q2);
+	    eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
 	} else {
 	    eintra = 0.0;
 	}

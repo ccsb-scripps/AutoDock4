@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.2 2003/02/26 01:53:02 garrett Exp $
+ $Id: writePDBQ.cc,v 1.3 2004/02/12 05:50:49 garrett Exp $
 
 */
 
@@ -78,7 +78,7 @@ void writeStateOfPDBQ(  int   irun,
                     FloatOrDouble vt[MAX_TORS][SPACE],
                     int   tlist[MAX_TORS][MAX_ATOMS],
                     FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-                    int   nonbondlist[MAX_NONBONDS][2],
+                    int   nonbondlist[MAX_NONBONDS][4],
                     FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
                     int   type[MAX_ATOMS],
                     int   Nnb,
@@ -133,7 +133,7 @@ void writeStateOfPDBQ(  int   irun,
     }
     if (!B_outside) {
         if (ntor > 0) {
-            *Ptr_eintra = eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+            *Ptr_eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
         } else {
             *Ptr_eintra = 0.0;
         }

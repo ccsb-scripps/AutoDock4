@@ -35,7 +35,7 @@ class Eval
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
       State stateNow;
       unsigned short *US_TorE, (*US_torProfile)[NTORDIVS]; 
-      int *type, (*nonbondlist)[2], (*tlist)[MAX_ATOMS];
+      int *type, (*nonbondlist)[4], (*tlist)[MAX_ATOMS];
 //      FloatOrDouble (*q1q2), *Addr_eintra, (*charge);
       FloatOrDouble *q1q2, *charge;
       FloatOrDouble (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE]; 
@@ -60,8 +60,8 @@ class Eval
             FloatOrDouble init_xlo, FloatOrDouble init_xhi, // added by GMM
             FloatOrDouble init_ylo, FloatOrDouble init_yhi, // xhi,yhi,zhi
             FloatOrDouble init_zlo, FloatOrDouble init_zhi, // ...
-//            FloatOrDouble init_Addr_eintra, int init_nonbondlist[MAX_NONBONDS][2], 
-            int init_nonbondlist[MAX_NONBONDS][2], 
+//            FloatOrDouble init_Addr_eintra, int init_nonbondlist[MAX_NONBONDS][4], 
+            int init_nonbondlist[MAX_NONBONDS][4], 
             FloatOrDouble init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], int init_Nnb, 
             Boole init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS], 
             Boole init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS], 
@@ -97,8 +97,8 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE], FloatOrDouble 
             FloatOrDouble init_xlo, FloatOrDouble init_xhi,   // gmm
             FloatOrDouble init_ylo, FloatOrDouble init_yhi,   // gmm
             FloatOrDouble init_zlo, FloatOrDouble init_zhi,   // gmm
-//            FloatOrDouble init_Addr_eintra, int init_nonbondlist[MAX_NONBONDS][2], 
-            int init_nonbondlist[MAX_NONBONDS][2], 
+//            FloatOrDouble init_Addr_eintra, int init_nonbondlist[MAX_NONBONDS][4], 
+            int init_nonbondlist[MAX_NONBONDS][4], 
             FloatOrDouble init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], int init_Nnb, 
             Boole init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS], 
             Boole init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS], 

@@ -1,6 +1,6 @@
 /*
 
- $Id: evaluate_energy.cc,v 1.2 2003/02/26 01:02:12 garrett Exp $
+ $Id: evaluate_energy.cc,v 1.3 2004/02/12 05:50:48 garrett Exp $
 
 */
 
@@ -27,7 +27,7 @@ FloatOrDouble evaluate_energy(
     FloatOrDouble xlo,
     FloatOrDouble ylo,
     FloatOrDouble zlo,
-    int   nonbondlist[MAX_NONBONDS][2],
+    int   nonbondlist[MAX_NONBONDS][4],
     FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
     int   Nnb,
     Boole B_calcIntElec,
@@ -49,9 +49,9 @@ FloatOrDouble evaluate_energy(
 
     /* pr(logFile,"e(tril)=%10.2f,  ",e); / *###*/
 
-/*    e += (*Addr_eintra = eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2) ); */
+/*    e += (*Addr_eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2) ); */
 
-    e += eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+    e += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
 
     /* pr(logFile,"e(eintcal)=%10.2f\n",e); / *###*/
 
@@ -66,7 +66,7 @@ FloatOrDouble evaluate_energy(
     ** map, inv_spacing, xlo,ylo,zlo)) <
     ** ENERGY_CUTOFF) {
     **   e += (*Addr_eintra = eintcal( nonbondlist,e_internal,
-    **   crd,type,Nnb,B_calcIntElec,q1q2 ));
+    **   crd,Nnb,B_calcIntElec,q1q2 ));
     ** }
     */
 

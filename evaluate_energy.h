@@ -16,7 +16,7 @@ FloatOrDouble evaluate_energy(
     FloatOrDouble xlo,
     FloatOrDouble ylo,
     FloatOrDouble zlo,
-    int   nonbondlist[MAX_NONBONDS][2],
+    int   nonbondlist[MAX_NONBONDS][4],
     FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
     int   Nnb,
     Boole B_calcIntElec,
@@ -40,7 +40,7 @@ FloatOrDouble evaluate_energy(
     FloatOrDouble ylo,
     FloatOrDouble zlo,
 / *    FloatOrDouble *Addr_eintra, * /
-    int   nonbondlist[MAX_NONBONDS][2],
+    int   nonbondlist[MAX_NONBONDS][4],
     FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
     int   Nnb,
     Boole B_calcIntElec,

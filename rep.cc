@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.5 2004/02/12 04:32:16 garrett Exp $
+ $Id: rep.cc,v 1.6 2004/02/12 05:50:49 garrett Exp $
 
 */
 
@@ -348,12 +348,12 @@ void RealVector::write(double value, int gene)
 
    if (value<low) {
       if (debug > 0) {
-          (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too low (%lf)\n",value,low); // used to be "stderr"
+      (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too low (%lf)\n",value,low); // used to be "stderr"
       }
       vector[gene] = low;
    } else if (value>high) {
       if (debug > 0) {
-          (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too high (%lf)\n",value,high); // used to be "stderr"
+      (void)fprintf(logFile,"WARNING:  Writing out of bounds Real!  value (%lf) too high (%lf)\n",value,high); // used to be "stderr"
       }
       vector[gene] = high;
    } else {

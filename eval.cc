@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.6 2004/02/12 04:32:15 garrett Exp $
+ $Id: eval.cc,v 1.7 2004/02/12 05:50:48 garrett Exp $
 
 */
 
@@ -145,13 +145,13 @@ double Eval::eval()
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after quicktrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */
             /*
             energy = trilinterp( crd, charge, type, natom, map, inv_spacing, eval_elec, eval_emap, xlo, ylo, zlo)
-                     + eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+                     + eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
             */
          
             if (B_isGaussTorCon) {
@@ -185,7 +185,7 @@ double Eval::eval()
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after outsidetrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */

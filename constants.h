@@ -68,10 +68,18 @@
 
 #define WORDLEN      9        /* Length of coordinates in characters. */
 
+#ifdef USE_XCODE
+// Xcode-gmm
+#define MAX_RUNS     16      /* Maximum number of runs. */
+#define MAX_ATOMS    128     /* Maximum number of atoms in Small Molecule. */
+#define MAX_RECORDS  128     /* Maximum number of PDBQ records =~1.5*MAX_ATOMS */
+#define MAX_NONBONDS 16384   /* 1048576   Maximum number of non-bonds in Small Molecule.*/
+#else
 #define MAX_RUNS     256      /* Maximum number of runs. */
 #define MAX_ATOMS    2048     /* Maximum number of atoms in Small Molecule. */
 #define MAX_RECORDS  2048     /* Maximum number of PDBQ records =~1.5*MAX_ATOMS */
 #define MAX_NONBONDS 524288 /* 1048576   Maximum number of non-bonds in Small Molecule.*/
+#endif
 
 #define MAX_TREES    8        /* Maximum number of torsion trees */
 #define MAX_TORS     32       /* Maximum number of torsions in Small Molecule. */
@@ -107,40 +115,50 @@
 #define HI_NRG_JUMP_FACTOR 2. /* Scale up the range of random jumps by this when the 
                                  last energy was higher than ENERGY_CUTOFF. */
 
-#define NEINT      2048         /* Number of values in internal energy table */ // Xcode-gmm
-#define NEINT_1    (NEINT - 1)  /* index of last entry in internal energy table */
-#define A_DIV       100.0       /* Used in distance look-up table. */
-#define INV_A_DIV     0.01      /* Used in distance look-up table. */
-#define SQA_DIV      32.0       /* Used in square-distance look-up table. */
-#define INT_SQA_DIV  32         /* Xcode-gmm */
-#define INV_SQA_DIV   0.03125   /* INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
-#define NBC           8.0       /* Non-bonded cutoff for internal energy calc./Ang*/ // Xcode-gmm
-#define NBC2         64.0       /* NBC^2, units: Angstrom^2 */ // Xcode-gmm
+#ifdef USE_XCODE
+// Xcode-gmm
+#define NEINT  2048         /* Number of values in internal energy table */ // Xcode-gmm
+#define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
+#define A_DIV     100.00      /* Used in distance look-up table. */
+#define INV_A_DIV   0.01      /* Used in distance look-up table. */
+#define SQA_DIV    32.00      /* Used in square-distance look-up table. */
+#define INT_SQA_DIV   32      /* Xcode-gmm */
+#define INV_SQA_DIV 0.03125   /* INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
+#define NBC         8.00      /* Non-bonded cutoff for internal energy calc./Ang*/ // Xcode-gmm
+#define NBC2       64.00      /* NBC^2, units: Angstrom^2 */ // Xcode-gmm
 
-// #define NEINT  131072         /* Number of values in internal energy table */
-// #define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
-// #define A_DIV     100.00      /* Used in distance look-up table. */
-// #define INV_A_DIV   0.01      /* Used in distance look-up table. */
-// #define SQA_DIV    32.00      /* Used in square-distance look-up table. */
-// #define INT_SQA_DIV   32      /* Xcode-gmm */
-// #define INV_SQA_DIV 0.03125   /* INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
-// #define NBC        64.00      /* Non-bonded cutoff for internal energy calc./Ang*/
-// #define NBC2     4096.00      /* NBC^2, units: Angstrom^2 */
+#else
+
+#define NEINT  131072         /* Number of values in internal energy table */
+#define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
+#define A_DIV     100.00      /* Used in distance look-up table. */
+#define INV_A_DIV   0.01      /* Used in distance look-up table. */
+#define SQA_DIV    32.00      /* Used in square-distance look-up table. */
+#define INT_SQA_DIV   32      /* Xcode-gmm */
+#define INV_SQA_DIV 0.03125   /* INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
+#define NBC        64.00      /* Non-bonded cutoff for internal energy calc./Ang*/
+#define NBC2     4096.00      /* NBC^2, units: Angstrom^2 */
+#endif
 
 /*
  * Alternate Scheme:-
  *                        (Uses less memory; for smaller ligands, < 8.0 Ang.)
  *
  * #define NEINT       8192        Number of values in internal energy table
- * #define A_DIV    128.00        Used in look-up table.
- * #define INV_A_DIV  0.0078125        INV_A_DIV = NBC2 / NEINT
- * #define NBC        8.00        Non-bonded cutoff for internal energy calc./Ang
- * #define NBC2      64.00        NBC^2, units: Angstrom^2
+ * #define NEINT_1 (NEINT - 1)     index of last entry in internal energy table
+ * #define A_DIV    128.00         Used in look-up table.
+ * #define INV_A_DIV  0.0078125    INV_A_DIV = NBC2 / NEINT
+ * #define NBC        8.00         Non-bonded cutoff for internal energy calc./Ang
+ * #define NBC2      64.00         NBC^2, units: Angstrom^2
  */
 
-#define ATM1            0     /* Index for the first atom in torsion A-B */
-#define ATM2            1     /* Index for the second atom in torsion A-B */
-#define NUM_ATM_MOVED   2     /* Index for the number of atoms moved by tor. */
+#define ATM1            0     /* Index for the first atom in a bond or non-bond */
+#define ATM2            1     /* Index for the second atom in a bond or non-bond */
+
+#define NUM_ATM_MOVED   2     /* Index for the number of atoms moved by a torsion-rotation */
+
+#define TYPE1			2     /* Index for the atom type of first atom - used in nonbondlist  Xcode-gmm */
+#define TYPE2			3     /* Index for the atom type of second atom - used in nonbondlist Xcode-gmm */
 
 #define TINYDELTA 0.001       /* To nudge ligand into grid... */
 

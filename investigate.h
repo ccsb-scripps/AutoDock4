@@ -38,7 +38,7 @@ void investigate(
 		FloatOrDouble zlo,
 		FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 		int   natom,
-		int   nonbondlist[MAX_NONBONDS][2],
+		int   nonbondlist[MAX_NONBONDS][4],
 		int   ntor,
 		int   outlev,
 		int   tlist[MAX_TORS][MAX_ATOMS],

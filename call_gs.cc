@@ -1,6 +1,6 @@
 /*
 
- $Id: call_gs.cc,v 1.3 2003/02/26 00:27:20 garrett Exp $
+ $Id: call_gs.cc,v 1.4 2004/02/12 05:50:47 garrett Exp $
 
 */
 
@@ -30,7 +30,7 @@ State call_gs(Global_Search *global_method, State now, unsigned int num_evals, u
               FloatOrDouble xlo, FloatOrDouble xhi, FloatOrDouble ylo, FloatOrDouble yhi, FloatOrDouble zlo, FloatOrDouble zhi, Molecule *mol,
               int extOutputEveryNgens)
 {
-   int i;
+   register unsigned int i;
 
    evaluate.reset();
    global_method->reset(extOutputEveryNgens);

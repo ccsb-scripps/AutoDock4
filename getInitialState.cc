@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.2 2003/02/26 01:03:43 garrett Exp $
+ $Id: getInitialState.cc,v 1.3 2004/02/12 05:50:48 garrett Exp $
 
 */
 
@@ -56,7 +56,7 @@ void getInitialState(
             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
-            int   nonbondlist[MAX_NONBONDS][2],
+            int   nonbondlist[MAX_NONBONDS][4],
             int   ntor,
             int   tlist[MAX_TORS][MAX_ATOMS],
             int   type[MAX_ATOMS],
@@ -142,7 +142,7 @@ void getInitialState(
             natom, ntor, sInit, tlist, vt, outlev);
         
         e0inter = trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo );
-        e0intra = eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+        e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
         e0total = e0inter + e0intra;
 
         if (e0total < e0min) {
@@ -181,7 +181,7 @@ void getInitialState(
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
     e0inter = trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo );
-    e0intra = eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+    e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
     e0total = e0inter + e0intra;
 
     copyState( sMinm, *sInit );

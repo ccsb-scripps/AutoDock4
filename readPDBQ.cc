@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQ.cc,v 1.4 2004/02/12 04:32:16 garrett Exp $
+ $Id: readPDBQ.cc,v 1.5 2004/02/12 05:50:49 garrett Exp $
 
 */
 
@@ -57,7 +57,7 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
 
               int   *P_Nnb,
               int   Nnbonds[ MAX_ATOMS ],
-              int   nonbondlist[MAX_NONBONDS][2],
+              int   nonbondlist[MAX_NONBONDS][4],
 
               Clock jobStart,
               struct tms tms_jobStart,
@@ -221,7 +221,7 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
         **  Create list of internal non-bond distances to check...
         */
         nonbonds( crdpdb, nbmatrix_binary, iatom, Rec_atomnumber, nrecord, record, piece, Htype, type );
-        weedbonds( iatom, pdbaname, piece, ntor, tlist, P_Nnb, Nnbonds, nbmatrix_binary, nonbondlist, outlev );
+        weedbonds( iatom, pdbaname, piece, ntor, tlist, P_Nnb, Nnbonds, nbmatrix_binary, nonbondlist, outlev, type );
         torNorVec( crdpdb, ntor, tlist, vt );
 
         for ( i=0; i<MAX_TORS; i++) {

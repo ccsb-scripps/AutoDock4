@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.2 2003/02/26 01:10:14 garrett Exp $
+ $Id: investigate.cc,v 1.3 2004/02/12 05:50:48 garrett Exp $
 
 */
 
@@ -49,7 +49,7 @@ void investigate( int   Nnb,
 		FloatOrDouble zlo,
 		FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 		int   natom,
-		int   nonbondlist[MAX_NONBONDS][2],
+		int   nonbondlist[MAX_NONBONDS][4],
 		int   ntor,
 		int   outlev,
 		int   tlist[MAX_TORS][MAX_ATOMS],
@@ -188,7 +188,7 @@ void investigate( int   Nnb,
 	    e = quicktrilinterp( crd, charge, type, natom, map, 
 				 inv_spacing, xlo, ylo, zlo) 
 		+ eintcal( nonbondlist, e_internal, crd, 
-				     type, Nnb, B_calcIntElec, q1q2);
+				      Nnb, B_calcIntElec, q1q2);
 	    if (B_isGaussTorCon) {
 		for (Itor = 0; Itor < ntor; Itor++) {
 		    if (B_isTorConstrained[Itor] == 1) {

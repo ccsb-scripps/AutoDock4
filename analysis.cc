@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.3 2003/02/27 01:58:12 lindy Exp $
+ $Id: analysis.cc,v 1.4 2004/02/12 05:50:47 garrett Exp $
 
 */
 
@@ -51,7 +51,7 @@ void analysis( int   Nnb,
                FloatOrDouble ylo, 
                FloatOrDouble zlo, 
                int   natom, 
-               int   nonbondlist[MAX_NONBONDS][2], 
+               int   nonbondlist[MAX_NONBONDS][4], 
                int   nconf, 
                int   ntor, 
                State hist[MAX_RUNS], 
@@ -208,8 +208,8 @@ void analysis( int   Nnb,
             (void)memcpy(crd, crdSave[c], natom*3*sizeof(FloatOrDouble));
      
             if (ntor > 0) {
-                // eintra = eintcal( nonbondlist,e_internal,crd,type,Nnb,B_calcIntElec,q1q2 ) + torsFreeEnergy;
-                eintra = eintcal( nonbondlist,e_internal,crd,type,Nnb,B_calcIntElec,q1q2 );
+                // eintra = eintcal( nonbondlist,e_internal,crd,Nnb,B_calcIntElec,q1q2 ) + torsFreeEnergy;
+                eintra = eintcal( nonbondlist,e_internal,crd,Nnb,B_calcIntElec,q1q2 );
             } else {
                 // eintra = torsFreeEnergy;
                 eintra = 0.0;

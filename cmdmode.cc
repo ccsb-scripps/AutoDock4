@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.3 2003/02/26 02:55:40 garrett Exp $
+ $Id: cmdmode.cc,v 1.4 2004/02/12 05:50:47 garrett Exp $
 
 */
 
@@ -23,6 +23,7 @@
 #include "cmdmode.h"
 #include "cmdtokens.h"
 #include "trjtokens.h"
+#include "eintcal.h"
 
 
 extern FILE *logFile;
@@ -56,7 +57,7 @@ int cmdmode(int   natom,
              int   tlist[MAX_TORS][MAX_ATOMS],
              int   ntor,
              int   Nnb,
-             int   nonbondlist[MAX_NONBONDS][2],
+             int   nonbondlist[MAX_NONBONDS][4],
              char  atomstuff[MAX_ATOMS][MAX_CHARS],
              FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
              char  hostnm[MAX_CHARS],
@@ -250,7 +251,7 @@ int cmdmode(int   natom,
                     fclose(pdbFile);
                     natom = nat;
                     if (ntor > 0) {
-                        eintra = eintcalPrint(nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+                        eintra = eintcalPrint(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
                     } else {
                         eintra = 0.0;
                     }
@@ -330,7 +331,7 @@ int cmdmode(int   natom,
                 }
                 cnv_state_to_coords(S,  vt, tlist, ntor,  crdpdb, crd, natom);
                 if (ntor > 0) {
-                    eintra = eintcalPrint(nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+                    eintra = eintcalPrint(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2);
                 } else {
                     eintra = 0.0;
                 }
