@@ -1,3 +1,13 @@
+/*
+
+ $Id: openfile.cc,v 1.2 2003/02/26 01:22:37 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* openfile.cc */
 
     #include <stdio.h>
