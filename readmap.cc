@@ -1,3 +1,13 @@
+/*
+
+ $Id: readmap.cc,v 1.2 2003/02/26 01:35:43 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* readmap.cc */
 
 
@@ -16,11 +26,11 @@ extern int ignore_errors;
 extern int ElecMap;
 extern FILE *logFile;
 
-char mapf2c(float);
+char mapf2c(FloatOrDouble);
 
-float mapc2f(char numin)
+FloatOrDouble mapc2f(char numin)
 {
-    float numout;
+    FloatOrDouble numout;
 
     if (numin == 0) {
         numout = 0.;
@@ -34,7 +44,7 @@ float mapc2f(char numin)
 }
 
 /*
-    char mapf2c(float numin)
+    char mapf2c(FloatOrDouble numin)
     {
         char numout;
         if (numin == 0.) {
@@ -54,7 +64,7 @@ float mapc2f(char numin)
 void readmap( Boole *P_B_HaveMap, 
              int *P_Imap, 
              int *P_NumAtmMaps, 
-             float *P_ExtSpacing, 
+             FloatOrDouble *P_ExtSpacing, 
              char AtmTypStr[ATOM_MAPS], 
              char ExtFldFileName[MAX_CHARS],
              int ExtGridPts1[SPACE],
@@ -62,10 +72,10 @@ void readmap( Boole *P_B_HaveMap,
              Clock jobStart,
              char line[LINE_LEN],
              char ExtMacromolFileName[MAX_CHARS],
-             float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-             float MapCenter[SPACE],
-             float MapMax[MAX_MAPS],
-             float MapMin[MAX_MAPS],
+             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+             FloatOrDouble MapCenter[SPACE],
+             FloatOrDouble MapMax[MAX_MAPS],
+             FloatOrDouble MapMin[MAX_MAPS],
              struct tms tmsJobStart,
              Boole B_charMap )
 
@@ -83,8 +93,8 @@ void readmap( Boole *P_B_HaveMap,
     char mapline[LINE_LEN];
     char inputline[LINE_LEN];
 
-    float cen[SPACE];
-    float spacing = 0.;
+    FloatOrDouble cen[SPACE];
+    FloatOrDouble spacing = 0.;
 
     int indpf = 0;
     int nel[SPACE];
@@ -170,7 +180,11 @@ void readmap( Boole *P_B_HaveMap,
         if (fgets(inputline, LINE_LEN, mapFilePtr) == NULL) {
             warn_bad_file( FileName,"Could not read SPACING line." );
         } else {
-            (void) sscanf(inputline,"%*s %f", &spacing);
+            #ifdef USE_DOUBLE
+                (void) sscanf(inputline,"%*s %lf", &spacing);
+            #else
+                (void) sscanf(inputline,"%*s %f", &spacing);
+            #endif
             check_header_float(spacing, *P_ExtSpacing, "grid point spacing", FileName );
         } /* endif */
          /*
@@ -190,7 +204,11 @@ void readmap( Boole *P_B_HaveMap,
         if (fgets(inputline, LINE_LEN, mapFilePtr) == NULL) {
             warn_bad_file( FileName,"Could not read CENTER line." );
         } else {
-            (void) sscanf(inputline,"%*s %f %f %f", &cen[X], &cen[Y], &cen[Z]);
+            #ifdef USE_DOUBLE
+                (void) sscanf(inputline,"%*s %lf %lf %lf", &cen[X], &cen[Y], &cen[Z]);
+            #else
+                (void) sscanf(inputline,"%*s %f %f %f", &cen[X], &cen[Y], &cen[Z]);
+            #endif
             for (xyz = 0;  xyz < SPACE;  xyz++) {
                 check_header_float(cen[xyz], MapCenter[xyz], "grid-map center", FileName );
             } /* xyz */
@@ -223,7 +241,11 @@ void readmap( Boole *P_B_HaveMap,
                     }
                 } else {
                     if (fgets( mapline, LINE_LEN, mapFilePtr) != NULL) { /*new*/
-                        (void) sscanf( mapline,  "%f",  &map[k][j][i][*P_Imap] );
+                        #ifdef USE_DOUBLE
+                            (void) sscanf( mapline,  "%lf",  &map[k][j][i][*P_Imap] );
+                        #else
+                            (void) sscanf( mapline,  "%f",  &map[k][j][i][*P_Imap] );
+                        #endif
                         nv++;
                     }
                 }

@@ -1,3 +1,13 @@
+/*
+
+ $Id: rep.cc,v 1.3 2003/02/26 01:35:55 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* rep.cc */
 
 /********************************************************************
@@ -19,17 +29,17 @@ extern FILE *logFile;
 //  Initializations
 FourByteLong IntVector::low = -INT_MAX/4;
 FourByteLong IntVector::high = INT_MAX/4;
-//float RealVector::low = -100.0;
-//float RealVector::high = 100.0;
+//FloatOrDouble RealVector::low = -100.0;
+//FloatOrDouble RealVector::high = 100.0;
 //  For now assume that normalize handles this constraint
-//float ConstrainedRealVector::low = -100.0;
-//float ConstrainedRealVector::high = 100.0;
-//float RealVector::low = -PI;
-//float RealVector::high = PI;
-float ConstrainedRealVector::low = -PI;
-float ConstrainedRealVector::high = PI;
+//FloatOrDouble ConstrainedRealVector::low = -100.0;
+//FloatOrDouble ConstrainedRealVector::high = 100.0;
+//FloatOrDouble RealVector::low = -PI;
+//FloatOrDouble RealVector::high = PI;
+FloatOrDouble ConstrainedRealVector::low = -PI;
+FloatOrDouble ConstrainedRealVector::high = PI;
 double ConstrainedRealVector::sum = 1.0;
-float BitVector::one_prob = 0.5;
+FloatOrDouble BitVector::one_prob = 0.5;
 
 //  The member functions for the canonical base classes
 
@@ -729,12 +739,12 @@ BitVector::BitVector(int num_els)
    }
 }
 
-BitVector::BitVector(int num_els, float prob)
+BitVector::BitVector(int num_els, FloatOrDouble prob)
 : Representation(num_els)
 {
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/BitVector::BitVector(int num_els=%d, float prob=%f) \n",num_els,prob);
+    (void)fprintf(logFile, "rep.cc/BitVector::BitVector(int num_els=%d, FloatOrDouble prob=%f) \n",num_els,prob);
 #endif /* DEBUG */
 
    mytype = T_BitV;
