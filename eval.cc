@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.3 2003/02/26 01:01:20 garrett Exp $
+ $Id: eval.cc,v 1.4 2003/02/27 02:08:21 lindy Exp $
 
 */
 
@@ -22,7 +22,6 @@ extern FILE *logFile;
 
 #include <stdio.h>
 #include <string.h>
-#include "structs.h"
 
 #ifdef sgi
     #include <ieeefp.h>
