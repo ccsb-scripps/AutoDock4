@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.11.2.2 2005/03/07 18:45:53 gillet Exp $
+ $Id: main.cc,v 1.11.2.3 2005/03/14 21:32:45 gillet Exp $
 
 */
 
@@ -796,7 +796,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 	  utilib::BasicArray<double> initvec, finalpt;
 	  coliny_init(algname, domain, initvec);
-	  if(write_stateFile){fprintf(stateFile,'\t<runs>\n')};
+	  if(write_stateFile){
+	    fprintf(stateFile,'\t<run_requested>%d</run_requested>\n',nruns);
+	    fprintf(stateFile,'\t<runs>\n');
+	  }
 	  for (j=0; j<nruns; j++) {
 
 	      fprintf( logFile, "\n\n\tBEGINNING Coliny %s DOCKING\n",algname);
@@ -2180,6 +2183,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               ignore_inter);
 
 	    if(write_stateFile){
+	      fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
 	      fprintf(stateFile,"\t<runs>\n");
 	    }
             for (j=0; j<nruns; j++) {
@@ -2293,6 +2297,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               B_template, template_energy, template_stddev,
               ignore_inter);
 	   if(write_stateFile){
+	     fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
 	     fprintf(stateFile,"\t<runs>\n");
 	   }
            for (j=0; j<nruns; j++) {
@@ -2383,6 +2388,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
              B_template, template_energy, template_stddev,
              ignore_inter);
 	  if(write_stateFile){
+	    fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
 	    fprintf(stateFile,"\t<runs>\n");
 	  }
           for (j=0; j<nruns; j++) {

@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.4.2.1 2005/03/02 20:46:01 gillet Exp $
+ $Id: writePDBQ.cc,v 1.4.2.2 2005/03/14 21:32:45 gillet Exp $
 
 */
 
@@ -172,8 +172,7 @@ void writeStateOfPDBQ(  int   irun,FourByteLong seed[2],
 		
 	if (write_stateFile){
 	  pr( stateFile, "\n" );
-	  pr( stateFile, "\t<run>\n");
-	  pr( stateFile, "\t\t<runnb>%4d</runnb>\n", irun+1 );
+	  pr( stateFile, "\t<run id=\"%4d\">\n",irun+1);
 	  pr( stateFile, "\t\t<seed>%ld %ld</seed>\n", seed[0],seed[1] );
 	  pr( stateFile, "\t\t<dpf>%s</dpf>\n",dpfFN  );
 	  printStateEnergies( *Ptr_einter, *Ptr_eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor);
