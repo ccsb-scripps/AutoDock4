@@ -34,7 +34,7 @@ class Genetic_Algorithm : public Global_Search
       unsigned int generations, max_generations;
       unsigned int converged; // gmm 7-jan-98
       unsigned int *ordering;
-      unsigned int outputEveryNgens; // gmm 2000.11.1
+      unsigned int outputEveryNgens = OUTLEV1_GENS; // gmm 2000.11.1,2003.08.18
       FloatOrDouble *alloc, *mutation_table;
       EvalMode e_mode;
       Selection_Mode s_mode;
