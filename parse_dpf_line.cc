@@ -1,3 +1,13 @@
+/*
+
+ $Id: parse_dpf_line.cc,v 1.2 2003/02/26 01:24:42 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* parse_dpf_line.cc */
 
     #include <stdio.h>
