@@ -8,7 +8,7 @@ int input_state( State *S,
                  char  line[LINE_LEN], 
                  int   ntor, 
 		 int   *P_istep, 
-                 float *P_energy, 
-		 float *P_eint, 
+                 FloatOrDouble *P_energy, 
+		 FloatOrDouble *P_eint, 
                  char  *P_lastmove );
 #endif

@@ -35,24 +35,24 @@ class Genetic_Algorithm : public Global_Search
       unsigned int converged; // gmm 7-jan-98
       unsigned int *ordering;
       unsigned int outputEveryNgens; // gmm 2000.11.1
-      float *alloc, *mutation_table;
+      FloatOrDouble *alloc, *mutation_table;
       EvalMode e_mode;
       Selection_Mode s_mode;
       Worst_Mode w_mode;
       int window_size, elitism;
       Xover_Mode c_mode;
       unsigned int m_table_size;
-      float m_rate, c_rate, tournament_prob;
-      float alpha, beta;
-      float tranStep, quatStep, torsStep;
+      FloatOrDouble m_rate, c_rate, tournament_prob;
+      FloatOrDouble alpha, beta;
+      FloatOrDouble tranStep, quatStep, torsStep;
       int low, high;
       double avg, worst;
       double *worst_window;
 
       double worst_this_generation(Population &);
       void set_worst(Population &);
-      void make_table(int, float);
-      int check_table(float);
+      void make_table(int, FloatOrDouble);
+      int check_table(FloatOrDouble);
       M_mode m_type(RepType);
       void mutate(Genotype &, int);
       void mutation(Population &);
@@ -64,11 +64,11 @@ class Genetic_Algorithm : public Global_Search
 
    public:
       Genetic_Algorithm(void);
-      // Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, float, float, int, unsigned int); // before 2000.11.1
-      Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, float, float, int, unsigned int, unsigned int); // after 2000.11.1
+      // Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, FloatOrDouble, FloatOrDouble, int, unsigned int); // before 2000.11.1
+      Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, FloatOrDouble, FloatOrDouble, int, unsigned int, unsigned int); // after 2000.11.1
       ~Genetic_Algorithm(void);
       void initialize(unsigned int, unsigned int);
-      void mutation_values(int, int, float, float);
+      void mutation_values(int, int, FloatOrDouble, FloatOrDouble);
       unsigned int num_generations(void);
       void reset(void);
       void reset(unsigned int);
@@ -120,7 +120,7 @@ inline Genetic_Algorithm::~Genetic_Algorithm(void)
    }
 }
 
-inline void Genetic_Algorithm::mutation_values(int init_low, int init_high, float init_alpha, float init_beta)
+inline void Genetic_Algorithm::mutation_values(int init_low, int init_high, FloatOrDouble init_alpha, FloatOrDouble init_beta)
 {
    low = init_low;
    high = init_high;
