@@ -110,7 +110,8 @@ OBJS = \
     torsion.o \
     usage.o \
     weedbonds.o \
-    warn_bad_file.o
+    warn_bad_file.o \
+    coliny.o
 
 OBJNOSQRT = \
     eintcal.o \
@@ -243,22 +244,22 @@ LNSSQRT = \
 # C++ compiler
 #
 
-CC = cc # MacOS X
+# CC = cc # MacOS X
 # CC = CC # SGI.
 # CC = cxx # Alpha.
-# CC = gcc # use this if you have the Gnu compiler, as on Linux, MkLinux, LinuxPPC systems.
+CC = g++ # use this if you have the Gnu compiler, as on Linux, MkLinux, LinuxPPC systems.
 # #  portland compiler setup #
 # PGI = /usr/pgi #                       Portland compiler
 # LM_LICENSE_FILE = $(PGI)/license.dat # Portland compiler
 # LD_LIBRARY_PATH = $(PGI)/linux86/lib # Portland compiler
 # CC = pgCC #                            Portland Compiler
 
-LIB = -lm -lsupc++  # gcc 3.1 on MacOS X.
-# LIB = -lm # SGI, Sun, Linux, MacOS X.
+# LIB = -lm -lsupc++  # gcc 3.1 on MacOS X.
+LIB = $(COLINY_LINK) -lm # SGI, Sun, Linux, MacOS X.
 # LIB = -lm -lc # Alpha, Convex.
 # LIB = -lm -lg++ # HP, Gnu.
 
-CSTD = -DUSE_DOUBLE $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
+CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
 # CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
 # CSTD = $(DBUG) $(PROF) $(WARN) -I/opt/sfw/include # Sun Soliaris 8
 # CSTD = $(DBUG) $(PROF) $(WARN) -std # Convex.
@@ -266,9 +267,9 @@ CSTD = -DUSE_DOUBLE $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
 # CSTD = -std arm -verbose $(PROF) $(DBUG) $(WARN) # Alpha. sarah
 # CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP.
 
-CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Optimize the object files, too.
+CFLAGS = $(CSTD) $(OPT) $(COLINY_INCLUDES) # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Optimize the object files, too.
 
-OLIMIT = $(CSTD) $(OPT) # SGI, Sun, HP, Convex, Linux, MacOS X.
+OLIMIT = $(CSTD) $(OPT) $(COLINY_INCLUDES) # SGI, Sun, HP, Convex, Linux, MacOS X.
 # OLIMIT = $(CSTD) $(OPT) -OPT:Olimit=2500 # Alpha, Some SGIs.
 # OLIMIT = $(CFLAGS) # Do not optimize.
 
@@ -306,8 +307,8 @@ OPT = $(OPTLEVEL) # Alpha, HP, Sun, Convex, Linux, MacOS X.
 # OPT = $(OPTLEVEL) -n32 $(OPT_SGI_IPNUM) $(OPT_SGI_R000) -IPA $(LNO_OPT) -DUSE_INT_AS_LONG # SGI (long is 8bytes).
 # OPT = $(OPTLEVEL) $(OPT_SGI_IPNUM) $(OPT_SGI_R000) $(LNO_OPT) # SGI, not new 32-bit
 
-# LNO_OPT = # SGI, no special optimization at link time; Sun; Linux; MacOS X
-LNO_OPT = -LNO:auto_dist=ON:gather_scatter=2 # SGI
+LNO_OPT = # SGI, no special optimization at link time; Sun; Linux; MacOS X
+# LNO_OPT = -LNO:auto_dist=ON:gather_scatter=2 # SGI
 
 # LINKOPT = $(CSTD) $(OPT) # 
 LINKOPT = $(CSTD) $(OPT) -fno-stack-limit # Cygwin, 32MB stacksize
@@ -319,7 +320,7 @@ LINK = $(LINKOPT) # Linking flags.
 
 LINT = lint # lint C code checking.
 
-# LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X.
+LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X.
 # LINTFLAGS = $(LIB) -MA -c # Alpha.
 # LINTFLAGS = -DHPPA -D_HPUX_SOURCE $(LIB) -c # HP.
 LINTFLAGS = -u -n -lm # Sun.
@@ -342,6 +343,12 @@ WARN = # Default warning level.
 # WARN = -woff all # For no warnings.
 # WARN = -fullwarn -ansiE -ansiW # For full warnings during compilation.
 
+##
+## To use coliny and utilib, uncomment the following
+##
+#COLINY_FLAGS= -DUNIX -DLINUX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES # Linux
+#COLINY_INCLUDES= -I../coliny -I../coliny/packages/include -I../utilib -DUSING_COLINY $(COLINY_FLAGS)
+#COLINY_LINK= -L../coliny/lib/current -L../utilib/lib/current -lcoliny -lutilib -lg2c # Linux
 
 autodock3 : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
@@ -384,6 +391,15 @@ lchecksqrt : $(LNS) $(LNSSQRT)
 
 dualmap : dualmap.c
 	$(CC) $(CFLAGS) -lm dualmap.c -o $@
+
+.SUFFIXES: .cc .c .i
+
+.cc.i:
+	$(CC) $(OLIMIT) -E $< > $*.i
+
+.c.i:
+	$(CC) $(CFLAGS) -E $< > $*.i
+
 
 #
 # Object dependencies:
@@ -664,6 +680,9 @@ intnbtable.sqrt.o : intnbtable.cc intnbtable.h constants.h
 
 nbe.sqrt.o : nbe.cc nbe.h constants.h
 	$(CC) $(CFLAGS) -c nbe.cc -o nbe.sqrt.o
+
+coliny.o : coliny.h
+	$(CC) $(CFLAGS) -c coliny.cc -o coliny.o
 
 #
 # lcheck dependencies...

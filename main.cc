@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.4 2003/02/26 01:19:28 garrett Exp $
+ $Id: main.cc,v 1.5 2003/12/04 21:34:00 billhart Exp $
 
 */
 
@@ -13,6 +13,7 @@
 // possibly unnecessary // #include <iostream.h>
 #include <math.h>
 
+#include "coliny.h"
 #include "hybrids.h"
 #include "ranlib.h"
 #include "gs.h"
@@ -616,6 +617,157 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) fflush(logFile);
         break;
 
+
+#ifdef USING_COLINY
+/*____________________________________________________________________________*/
+
+    case DPF_COLINY:
+      {
+      //ostdiostream fstr(logFile);
+      //ostdiostream fstr(logFile->_file);
+      //CommonIO::set_streams(&fstr,&fstr,&cin);
+
+	struct tms tms_colinyStart;
+	struct tms tms_colinyEnd;
+	
+	Clock  colinyStart;
+	Clock  colinyEnd;
+
+      char algname[64];
+      (void) sscanf(line, "%*s %s %d", algname, &nruns);
+
+      if (strcmp(algname,"help")==0) {
+	 utilib::BasicArray<double> initvec;
+	 coliny_init(algname, "", initvec);
+	 prStr(error_message, "ERROR:  no optimizer type specified.");
+	 stop(error_message);
+	 exit(-1);
+	 }
+
+      if (!command_mode) {
+	  if (nruns>MAX_RUNS) {
+
+	      prStr(error_message, "ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", nruns, MAX_RUNS);
+	      stop(error_message);
+	      exit(-1);
+
+	  } 
+
+	  /*
+	  evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
+			 elec, emap,
+			 xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
+			 e_internal, Nnb, B_calcIntElec, q1q2, B_isGaussTorCon,
+			 B_isTorConstrained, B_ShowTorE, US_TorE, US_torProfile,
+			 vt, tlist, crdpdb, sInit);
+			 */
+          evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
+              		elec, emap,
+              		xlo, xhi, ylo, yhi, zlo, zhi, nonbondlist,
+			e_internal, Nnb, B_calcIntElec, q1q2, B_isGaussTorCon,
+			B_isTorConstrained, B_ShowTorE, US_TorE, US_torProfile,
+			vt, tlist, crdpdb, sInit, mol, 
+              		B_template, template_energy, template_stddev);
+
+	  char domain[1024];
+          // NOTE: Coliny enforces the bound constraints, but since the 
+	  // torsion angles are periodic, we simply prevent the optimizer 
+	  // from going too far.
+          if (sInit.ntor > 0)
+	     sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-6.2832,12.5664] [-6.2832,12.5664]^%d",(double)xlo, (double)xhi, (double)ylo, (double)yhi, (double)zlo, (double)zhi, sInit.ntor);
+          else 
+	     sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-3.1416,3.1416]",(double)xlo, (double)xhi, (double)ylo, (double)yhi, (double)zlo, (double)zhi);
+	  ucout << domain << endl;
+	  ucout << Flush;
+
+	  pr(logFile, "Number of Coliny %s dockings = %d run%c\n", algname,
+			nruns, (nruns>1)?'s':' ');
+
+	  //
+	  // COLINY-SPECIFIC LOGIC - BEGIN
+	  //
+
+	  try {
+
+	  utilib::BasicArray<double> initvec, finalpt;
+	  coliny_init(algname, domain, initvec);
+	  
+	  for (j=0; j<nruns; j++) {
+
+	      fprintf( logFile, "\n\n\tBEGINNING Coliny %s DOCKING\n",algname);
+	      pr(logFile, "\nDoing %s run:  %d/%d.\n", algname, j+1, nruns);
+
+	      if (timeSeedIsSet[0] == 'T') {
+		  seed[0] = (FourByteLong)time( &time_seed );
+	      }
+	      if (timeSeedIsSet[1] == 'T') {
+		  seed[1] = (FourByteLong)time( &time_seed );
+	      }
+	      setall(seed[0], seed[1]);
+	      initgn(-1); // Reinitializes the state of the current generator
+
+	      pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
+	      (void) fflush(logFile);
+
+	      colinyStart = times(&tms_colinyStart);
+
+	      finalpt.resize( initvec.size() );
+	      int neval, niters;
+	      coliny_minimize( seed[0]+seed[1]*j+j, initvec, finalpt, neval,
+				niters );
+	      //fstr.flush();
+
+	      make_state_from_rep( finalpt, finalpt.size(), &sHist[nconf]);
+
+	      pr(logFile, "\nFinal docked state:\n");
+	      pr(logFile, "\nTotal Num Evals: %d\n", neval);
+	      printState(logFile, sHist[nconf], 2);
+
+	      colinyEnd = times(&tms_colinyEnd);
+	      pr(logFile, "Time taken for this %s run:\n", algname);
+	      timesyshms(colinyEnd-colinyStart, &tms_colinyStart, &tms_colinyEnd);
+	      pr(logFile, "\n");
+	      (void) fflush(logFile);
+ 
+	      pr(logFile, "Total number of Energy Evaluations: %d\n", evaluate.evals() );
+	      pr(logFile, "Total number of Iterations:        %d\n", niters);
+ 
+
+	      pr( logFile, UnderLine );
+	      pr( logFile, "\n\n\tFINAL Coliny %s DOCKED STATE\n",algname );
+	      pr( logFile,     "\t____________________________________\n\n\n" );
+
+              writeStateOfPDBQ( j, FN_ligand, dock_param_fn, lig_center, 
+                    &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff, 
+                    crd, emap, elec, charge, 
+                    ligand_is_inhibitor,
+                    torsFreeEnergy,
+                    vt, tlist, crdpdb, nonbondlist, e_internal,
+                    type, Nnb, B_calcIntElec, q1q2,
+                    map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
+                    B_template, template_energy, template_stddev,
+                    outlev);
+
+	      econf[nconf] = eintra + einter; // new2
+		
+	      ++nconf;
+
+	  } // Next run
+	  (void) fflush(logFile);
+	  }
+	catch (std::exception& err) {
+	    (void)fprintf(logFile, "Caught Exception: %s\n", err.what());
+	    exit(1);
+	  }
+
+      } else {
+	    (void)fprintf(logFile, "NOTE: Command mode has been set, so optimization cannot be performed.\n\n");
+      }
+      }
+      break;
+#endif
+
+ 
 //______________________________________________________________________________
 
     case DPF_ABOUT:

@@ -16,6 +16,11 @@
 #include "eintcal.h"
 #include "energy.h"
 
+
+#if defined(USING_COLINY)
+void make_state_from_rep(double *x, int n, State *now);
+#endif
+
 void make_state_from_rep(Representation **rep, State *stateNow);
 
 class Eval
@@ -68,6 +73,11 @@ class Eval
             FloatOrDouble init_template_energy[MAX_ATOMS], 
             FloatOrDouble init_template_stddev[MAX_ATOMS]);
       double operator()(Representation **);
+#if defined(USING_COLINY)
+      double operator()(double*, int);
+#endif
+      double eval();			// WEH - a basic change that facilitates
+      					// the use of Coliny
       UnsignedFourByteLong evals(void);
       void reset(void);
       int write(FILE *out_file, Representation **rep);

@@ -103,6 +103,7 @@
 #define DPF_LIG_NOT_INHIB 78
 #define DPF_TEMPL_ENERGY 79
 #define DPF_HOLLOW_OUT 80
+#define DPF_COLINY	81
 
 #endif
 /* EOF */
