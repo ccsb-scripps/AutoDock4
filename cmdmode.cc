@@ -1,3 +1,13 @@
+/*
+
+ $Id: cmdmode.cc,v 1.2 2003/02/26 00:52:37 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* cmdmode.cc */
 
 
@@ -32,31 +42,32 @@ extern int parse_tors_mode;
 int cmdmode(int   natom,
              Clock jobStart,
              struct tms tms_jobStart,
-             float xlo,
-             float ylo,
-             float zlo,
-             float xhi,
-             float yhi,
-             float zhi,
-             float inv_spacing,
-             float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-             float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
-             float WallEnergy,
-             float vt[MAX_TORS][SPACE],
+             FloatOrDouble xlo,
+             FloatOrDouble ylo,
+             FloatOrDouble zlo,
+             FloatOrDouble xhi,
+             FloatOrDouble yhi,
+             FloatOrDouble zhi,
+             FloatOrDouble inv_spacing,
+             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+             FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+             FloatOrDouble WallEnergy,
+             FloatOrDouble vt[MAX_TORS][SPACE],
              int   tlist[MAX_TORS][MAX_ATOMS],
              int   ntor,
              int   Nnb,
              int   nonbondlist[MAX_NONBONDS][2],
              char  atomstuff[MAX_ATOMS][MAX_CHARS],
-             float crdpdb[MAX_ATOMS][SPACE],
+             FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
              char  hostnm[MAX_CHARS],
              int   type[MAX_ATOMS],
-             float charge[MAX_ATOMS],
+             FloatOrDouble charge[MAX_ATOMS],
              Boole B_calcIntElec,
-             float q1q2[MAX_NONBONDS],
+             FloatOrDouble q1q2[MAX_NONBONDS],
              char  atm_typ_str[ATOM_MAPS],
-             float torsFreeEnergy,
-             int ligand_is_inhibitor)
+             FloatOrDouble torsFreeEnergy,
+             int ligand_is_inhibitor,
+             FloatOrDouble map_center[SPACE])
 {
     char message[LINE_LEN],
          command[LINE_LEN],
@@ -91,7 +102,7 @@ int cmdmode(int   natom,
 
     struct tms tms_jobEnd;
 
-    float eintra = 0.,
+    FloatOrDouble eintra = 0.,
           einter = 0.,
           etotal = 0.,
           etot   = 0.,
@@ -202,7 +213,7 @@ int cmdmode(int   natom,
                 eintra = einter = etotal = 0.;
                 outside = FALSE;
 
-                if (openFile(filename,"r",&pdbFile,jobStart,tms_jobStart,FALSE)) {
+                if (openFile(filename, "r", &pdbFile, jobStart, tms_jobStart, FALSE)) {
                     while ((fgets(line, LINE_LEN, pdbFile)) != NULL) {
 
                         for (ii = 0; ii < 4; ii++) {
@@ -228,6 +239,12 @@ int cmdmode(int   natom,
                                                    crd[nat][Y],
                                                    crd[nat][Z]);
                             nat++;
+                            if (outside) {
+                                (void) sprintf( message, "%s: WARNING: Atom %d is outside the grid!\n(%s)\n", programname, nat, line);
+                                print_2x( logFile, stderr, message );
+                                /* Reset outside */
+                                outside = FALSE;
+                            }
                         } /* endif atom or hetatm */
                     } /* endwhile */
                     fclose(pdbFile);
@@ -237,11 +254,13 @@ int cmdmode(int   natom,
                     } else {
                         eintra = 0.0;
                     }
+                    /* gmm 2001.11.07
                     if (outside) {
                         etotal = (einter = WallEnergy) + eintra;
                     } else {
                         etotal = (einter = trilinterp(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo)) + eintra;
-                    } /* endif */
+                    } / * endif */
+                    etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + eintra; // gmm 2001.11.07
 
                     pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
                     pr(logFile,     "\t\t==============================\n\n\n");
@@ -320,15 +339,22 @@ int cmdmode(int   natom,
                 for (i = 0;  i < natom;  i++) {
                     outside = is_out_grid(crd[i][X], crd[i][Y], crd[i][Z]);
                     if (outside) {
-                        break;
+                        // break; // gmm 2001.11.07
+                        (void) sprintf( message, "%s: WARNING: Atom %d is outside the grid!\n", programname, i+1);
+                        print_2x( logFile, stderr, message );
+                        /* Reset outside */
+                        outside = FALSE;
                     }
                 } /*i*/
+                /*
                 if (outside) {
                     etotal = (einter = WallEnergy) + eintra;
                 } else {
                     etotal = (einter = trilinterp(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo)) + eintra;
-                    /* lo) ...using lo array is slower */
+                    / * lo) ...using lo array is slower * /
                 }
+                */
+                etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + eintra; // gmm 2001.11.07
                 prStr(message, "%f\n", etotal);
                 pr_2x(command_out_fp, logFile, message);
                 fflush(logFile);
@@ -426,7 +452,11 @@ int cmdmode(int   natom,
                         ________________________________________________________
 */
                             case TRJ_TEMP:
-                                sscanf(trjline, "%*s %f", &T);
+                                #ifdef USE_DOUBLE
+                                    sscanf(trjline, "%*s %lf", &T);
+                                #else
+                                    sscanf(trjline, "%*s %f", &T);
+                                #endif
                                 break;
 /*
                         ________________________________________________________
@@ -435,22 +465,26 @@ int cmdmode(int   natom,
                                 if (input_state(&S, trjFile, trjline, ntor, 
                                     &nstep, &E, &Eint, &lastmove) != (int)0) {
                                     /*...input_state ensures tor is in radians*/
-                                    cnv_state_to_coords(S, vt, tlist, ntor, 
-                                        crdpdb, crd, natom);
+                                    cnv_state_to_coords(S, vt, tlist, ntor, crdpdb, crd, natom);
                                     outside = FALSE;
                                     for (i = 0;  i < natom;  i++) {
-                                        outside = is_out_grid(crd[i][X], 
-                                            crd[i][Y], crd[i][Z]);
+                                        outside = is_out_grid(crd[i][X], crd[i][Y], crd[i][Z]);
                                         if (outside) {
-                                            break;
+                                            // break; // gmm 2001.11.07
+                                            (void) sprintf( message, "%s: WARNING: Atom %d is outside the grid!\n", programname, i+1);
+                                            print_2x( logFile, stderr, message );
+                                            /* Reset outside */
+                                            outside = FALSE;
                                         }
                                     } /*i*/
+                                    /* gmm 2001.11.07
                                     if (outside) {
                                         etotal = (einter = WallEnergy) + Eint;
                                     } else {
                                         etotal = (einter = trilinterp(crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo)) + Eint;
-                                            /* lo) + Eint; */
-                                    } /* endif */
+                                            / * lo) + Eint; * /
+                                    } / * endif */
+                                    etotal = (einter = outsidetrilinterpbyatom(crd, charge, type, natom, map, inv_spacing, elec,emap, xlo,ylo,zlo, xhi,yhi,zhi, map_center[0], map_center[1], map_center[2])) + Eint; // gmm 2001.11.07
                                     pr(logFile, "USER   Run %d  Cycle %d  Step %d  Temp %.2f K  %c  Etot %.2f  Eint   %.2f\n", irun, icycle, nstep, T, lastmove, E, Eint);
                                     switch (lastmove) {
                                         case 'A':
