@@ -6,8 +6,13 @@
 ********************************************************************/
 /*
 ** $Log: call_glss.cc,v $
-** Revision 1.1  2001/08/13 22:05:52  gillet
-** *** empty log message ***
+** Revision 1.2  2002/04/17 00:40:26  lindy
+** added Booleans to call_glss for tran0, quat0, dihe0
+** dpf parameters. Initilized the thisPop[0] to the
+** values placed in the State now.
+**
+** Revision 1.1.1.1  2001/08/13 22:05:52  gillet
+**  import initial of autodock sources
 **
 */
 
@@ -67,12 +72,43 @@ Individual random_ind(int num_torsions, double xlo, double xhi, double ylo, doub
    return(temp);
 }
 
+#ifdef FALSE
+Individual set_ind(int num_torsions, double xlo, double xhi, double ylo, double yhi, double zlo, double zhi, State state)
+{
+   Genotype temp_Gtype;
+   Phenotype temp_Ptype;
+   int i;
+
+   temp_Gtype = generate_Gtype(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi);
+   temp_Ptype = generate_Ptype(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi);
+
+   // use the state to generate a Genotype
+   temp_Gtype.write(state.T.x, 0);
+   temp_Gtype.write(state.T.y, 1);
+   temp_Gtype.write(state.T.z, 2);
+   temp_Gtype.write(state.Q.nx, 3);
+   temp_Gtype.write(state.Q.ny, 4);
+   temp_Gtype.write(state.Q.nz, 5);
+   temp_Gtype.write(state.Q.ang, 6);
+   for (i=0;i<state.ntor; i++) {
+       temp_Gtype.write(state.tor[i], 7+i);
+   };
+
+   Individual temp(temp_Gtype, temp_Ptype);   
+   // use mapping to generate a Phenotype
+   temp.phenotyp =  temp.mapping();
+
+   return(temp);
+}
+#endif
+
 State call_glss(Global_Search *global_method, Local_Search *local_method, 
                 State now, unsigned int num_evals, unsigned int pop_size, 
                 float xlo, float xhi, float ylo, 
                 float yhi, float zlo, float zhi,
                 int outlev, unsigned int extOutputEveryNgens,
-                Molecule *mol, Boole B_template)
+                Molecule *mol, Boole B_template,
+		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0)
 {
     register int i;
     int num_iterations = 0, num_loops = 0, allEnergiesEqual = 1, numTries = 0;
@@ -96,6 +132,25 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
             thisPop[i].mol = mol;
             thisPop[i].age = 0L;
         }
+
+	// If initial values were supplied, put them in thisPop[0]
+	if (!B_RandomTran0) {
+	  thisPop[0].genotyp.write( now.T.x, 0);
+	  thisPop[0].genotyp.write( now.T.y, 1);
+	  thisPop[0].genotyp.write( now.T.z, 2);
+	};
+	if (!B_RandomQuat0) {
+	  thisPop[0].genotyp.write( now.Q.nx, 3);
+	  thisPop[0].genotyp.write( now.Q.ny, 4);
+	  thisPop[0].genotyp.write( now.Q.nz, 5);
+	  thisPop[0].genotyp.write( now.Q.ang, 6);
+	};
+	if (!B_RandomDihe0) {
+	  for (i=0;i<now.ntor; i++) {
+	    thisPop[0].genotyp.write( now.tor[i], 7+i);
+	  };
+	};
+
         // Now ensure that there is some variation in the energies...
         firstEnergy = thisPop[0].value(localEvalMode);
         for (i=1; i<pop_size; i++) {
