@@ -45,7 +45,7 @@
 #define APPROX_ZERO  1.0E-6 /* To avoid division-by-zero errors...            */
 #define BIG          1.0E12 /* Very large constant                            */
 #define MAX_CHARS    128    /* Number of characters in atom data & filenames  */
-#define LINE_LEN     128    /* Line length in characters                      */
+#define LINE_LEN     256    /* Line length in characters                      */
 #if defined(__ppc__)
 #define MAX_GRID_PTS 64     /* Maximum number of grid points in 1 dimension   */
 #else
