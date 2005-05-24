@@ -39,6 +39,7 @@ EXE = .  # Change this to the directory path holding binaries for your platform
 
 OBJS = \
     analysis.o \
+	atom_parameter_manager.o \
     banner.o \
     bestpdb.o \
     call_glss.o \
@@ -145,6 +146,7 @@ OBJMINPT = \
 
 LNS = \
     analysis.ln \
+    atom_parameter_manager.ln \
     banner.ln \
     bestpdb.ln \
     changeState.ln \
@@ -230,7 +232,8 @@ LNSSQRT = \
 # Libraries
 
 ADLIB = libad.a
-COLINYLIB = libcoliny.a
+COLINYLIB = libcoliny.a # Using Coliny
+# COLINYLIB = # Not using Coliny
 
 ARFLAGS = r # SGI, Sun, Alpha, Linux, Darwin, Mac OS X
 
@@ -345,7 +348,7 @@ ACRO_LINK= -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw
 
 LIB= $(ACRO_LINK)
 
-autodock4 : main.o $(ADLIB)
+autodock4 : main.o $(ADLIB) $(COLINYLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -353,7 +356,7 @@ autodock4 : main.o $(ADLIB)
 	@echo " "
 	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock4sqrt : main.o $(ADLIB)
+autodock4sqrt : main.o $(ADLIB) $(COLINYLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -361,7 +364,7 @@ autodock4sqrt : main.o $(ADLIB)
 	@echo " "
 	$(CC) $(CFLAGS) -o $@ main.o -L. -lad $(LIB)
 
-autodock4minpt : main.o $(ADLIB)
+autodock4minpt : main.o $(ADLIB) $(COLINYLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -425,6 +428,8 @@ dualmap : dualmap.c
 analysis.o : analysis.cc analysis.h constants.h getpdbcrds.h stateLibrary.h cnv_state_to_coords.h sort_enrg.h cluster_analysis.h prClusterHist.h getrms.h eintcal.h trilinterp.h print_rem.h strindex.h print_avsfld.h
 	$(CC) $(CFLAGS) -c analysis.cc
 
+atom_parameter_manager.o : atom_parameter_manager.cc structs.h
+
 banner.o : banner.cc banner.h
 	$(CC) $(CFLAGS) -c banner.cc
 
@@ -470,7 +475,7 @@ com.o : com.cc ranlib.h
 stateLibrary.o : stateLibrary.cc stateLibrary.h constants.h
 	$(CC) $(CFLAGS) -c stateLibrary.cc
 
-readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.h weedbonds.h torNorVec.h success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h mdist.h
+readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h mdist.h
 	$(CC) $(OLIMIT) -c readPDBQT.cc
 
 dpftypes.o : dpftypes.cc dpftypes.h constants.h dpftoken.h stop.h
