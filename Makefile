@@ -16,6 +16,8 @@
 # modified appropriately:
 # 	DBUG & PROF
 #
+# If you want to use the Coliny solver library, uncomment the following:
+# COLINY = yes
 
 # Abbreviations:
 #
@@ -39,7 +41,6 @@ EXE = .  # Change this to the directory path holding binaries for your platform
 
 OBJS = \
     analysis.o \
-	atom_parameter_manager.o \
     banner.o \
     bestpdb.o \
     call_glss.o \
@@ -230,18 +231,15 @@ LNSSQRT = \
     nbe.sqrt.ln
 
 # Libraries
-
 ADLIB = libad.a
-COLINYLIB = libcoliny.a # Using Coliny
-# COLINYLIB = # Not using Coliny
 
 ARFLAGS = r # SGI, Sun, Alpha, Linux, Darwin, Mac OS X
 
 # RANLIB = file # SGI
 RANLIB = ranlib # Linux, Darwin, Mac OS X
 
-# RANLIBFLAGS = # Linux, SGI
-RANLIBFLAGS = -s # MacOS X
+RANLIBFLAGS = # Linux, SGI
+# RANLIBFLAGS = -s # MacOS X
 
 
 # C++ compiler
@@ -259,15 +257,15 @@ CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X
 # CSTD = -std arm -verbose $(PROF) $(DBUG) $(WARN) # Alpha. sarah
 # CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP
 
-CFLAGS = $(CSTD) $(OPT) $(ACRO_INCLUDES) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
-# CFLAGS = $(CSTD) $(OPT) $(ACRO_INCLUDES) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; also use Double precision throughout
-# CFLAGS = $(CSTD) $(OPT) $(ACRO_INCLUDES) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X`
+CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; also use Double precision throughout
+# CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X`
 
-OLIMIT = $(CSTD) $(OPT) $(ACRO_INCLUDES) # SGI, Sun, HP, Convex, Cygwin, Linux, MacOS X
+OLIMIT = $(CSTD) $(OPT) # SGI, Sun, HP, Convex, Cygwin, Linux, MacOS X
 # OLIMIT = $(CSTD) $(OPT) -OPT:Olimit=2500 # Alpha, Some SGIs
 # OLIMIT = $(CFLAGS) # Do not optimize
 
-OPTLEVEL = -O3 # Agressive optimization
+# OPTLEVEL = -O3 # Agressive optimization
 # OPTLEVEL = -fast # Agressive optimization for the G5 on Mac OS X
 # OPTLEVEL = -O2 # High optimization
 # OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing
@@ -315,9 +313,9 @@ LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X
 
 # DBUG = -DNDEBUG # No debugging and no assert code
 # DBUG = # Use assert code
-# DBUG = -g # dbx, or Gnu gdb
+DBUG = -g # dbx, or Gnu gdb
 # DBUG = -g -DDEBUG # dbx + DEBUG-specific code
-DBUG = -g3 # dbx + optimization
+# DBUG = -g3 # dbx + optimization
 # DBUG = -g3 -DDEBUG # dbx + optimization, + DEBUG-specific code
 # DBUG = -DDEBUG # Just DEBUG-specific code
 # DBUG = -DDEBUG2 # Just DEBUG2-specific code for tracking prop.selection
@@ -331,24 +329,20 @@ WARN = # Default warning level
 # WARN = -woff all # For no warnings
 # WARN = -fullwarn -ansiE -ansiW # For full warnings during compilation
 
-##
-## To use coliny and utilib, uncomment the next ACRO_INCLUDES, ACRO_FLAGS, ACRO_LINK lines
-##
-ACRO_INCLUDES= -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
-ACRO_FLAGS= -DDEBUGGING -DUNIX -DDARWIN -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES # Darwin, Mac OS X
-ACRO_LINK= -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw/lib -lg2c # Darwin, Mac OS X (Fink needed)
-## ACRO_FLAGS= -DDEBUGGING -DUNIX -DLINUX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES # Linux
-## ACRO_LINK= -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -lg2c # Linux
-##
-## To Not Use Acro, uncomment the empty ACRO_INCLUDES, ACRO_FLAGS, ACRO_LINK lines
-##
-## ACRO_INCLUDES=
-## ACRO_FLAGS=
-## ACRO_LINK=
+ifeq ($(COLINY),yes)
+  # ACRO_OS= -DDARWIN # Darwin, Mac OS X
+  ACRO_OS= -DLINUX # Linux
 
-LIB= $(ACRO_LINK)
+  ACRO_LINK= -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -lg2c # Linux
+  # ACRO_LINK= -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw/lib -lg2c # Darwin, Mac OS X (Fink needed)
 
-autodock4 : main.o $(ADLIB) $(COLINYLIB)
+  ACRO_INCLUDES= -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
+  ACRO_FLAGS= -DDEBUGGING -DUNIX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES $(ACRO_OS)
+  LIB= $(ACRO_LINK)
+  ACRO= acro
+endif
+
+autodock4 : coliny main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -356,7 +350,7 @@ autodock4 : main.o $(ADLIB) $(COLINYLIB)
 	@echo " "
 	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock4sqrt : main.o $(ADLIB) $(COLINYLIB)
+autodock4sqrt : coliny main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -364,7 +358,7 @@ autodock4sqrt : main.o $(ADLIB) $(COLINYLIB)
 	@echo " "
 	$(CC) $(CFLAGS) -o $@ main.o -L. -lad $(LIB)
 
-autodock4minpt : main.o $(ADLIB) $(COLINYLIB)
+autodock4minpt : coliny main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -395,13 +389,18 @@ $(ADLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
 	$(AR) $(ARFLAGS) $(ADLIB) $(?:.cc=.o)
 	$(RANLIB) $(RANLIBFLAGS) $(ADLIB)
 
-#$(COLINYLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
-#	@echo " "
-#	@echo Making the Coliny library
-#	@echo " "
-#	$(AR) $(ARFLAGS) $(COLINYLIB) $(?:.cc=.o)
-#	$(RANLIB) $(RANLIBFLAGS) $(COLINYLIB)
+coliny: $(ACRO)
+	
 
+acro:
+	@echo " "
+	@echo Making the Coliny library
+	@echo " "
+	@(cd ../acro;\
+	if [ ! -e Makefile ]; then\
+	   ./setup configure;\
+	fi;\
+	$(MAKE))
 
 lcheck : $(LNS) $(LNSNOSQRT)
 	$(LINT) $(LIB) $(LNS) $(LNSNOSQRT)
@@ -710,7 +709,7 @@ nbe.sqrt.o : nbe.cc nbe.h constants.h
 	$(CC) $(CFLAGS) -c nbe.cc -o nbe.sqrt.o
 
 coliny.o : coliny.h
-	$(CC) $(CFLAGS) -c coliny.cc -o coliny.o
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c coliny.cc -o coliny.o
 
 #
 # lcheck dependencies...
