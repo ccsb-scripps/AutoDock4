@@ -13,7 +13,6 @@
 
 #if USING_COLINY
 
-#define DEBUGGING
 #include "coliny.h"
 #include <coliny/coliny.h>
 
