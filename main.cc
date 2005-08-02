@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.17 2005/03/28 19:45:51 rhuey Exp $
+ $Id: main.cc,v 1.18 2005/08/02 23:02:54 garrett Exp $
 
 */
 
@@ -38,21 +38,6 @@
 #include <unistd.h> // sysconf
 
 #include "main.h"
-#include "autoglobal.h"
-#include "printdate.h"
-#include "parse_dpf_line.h"
-#include "parse_param_line.h"
-#include "print_2x.h"
-#include "strindex.h"
-#include "stop.h"
-#include "stateLibrary.h"
-#include "timesyshms.h"
-#include "cnv_state_to_coords.h"
-#include "structs.h"
-#include "assert.h"
-#include "qmultiply.h"
-#include "parsetypes.h"
-#include "eintcal.h"
 
 #ifdef sun
     extern "C"
@@ -134,6 +119,7 @@ char FN_watch[MAX_CHARS];
 char FN_gdfld[MAX_CHARS];
 char FN_gpf[MAX_CHARS];
 char FN_ligand[MAX_CHARS];
+char dummy_FN_ligand[MAX_CHARS];
 char FN_template_energy_file[MAX_CHARS];
 char FN_trj[MAX_CHARS];
 char FN_receptor[MAX_CHARS];
@@ -149,14 +135,10 @@ char pdbaname[MAX_ATOMS][5];
 char selminpar = 'm';
 char S_contype[8];
 char torfmt[LINE_LEN];
-char *commentbegin;
 char ligand_atom_types[MAX_MAPS][3];
 
-
-ENTRY item, *found_item; /* hash-table search routine -- see hsearch(3C)*/
-static ParameterEntry thisParameter;
+static ParameterEntry * foundParameter;
 ParameterEntry parameterArray[MAX_MAPS];
-
 
 FILE *template_energy_file;
 
@@ -339,8 +321,6 @@ Boole B_CalcTorRF = FALSE;
 Boole B_charMap = FALSE;
 Boole B_include_1_4_interactions = FALSE;  // This was the default behaviour in previous AutoDock versions (1 to 3).
 Boole B_found_move_keyword = FALSE;
-Boole B_hash_table_created = FALSE;
-
 
 int atm1=0;
 int atm2=0;
@@ -350,9 +330,9 @@ int atomC1;
 int atomC2;
 int curatm=0;
 int dpf_keyword = -1;
+int dummy_oldpdbq;
 int gridpts1[SPACE];
 int gridpts[SPACE];
-int hbond = 0;
 int Htype = 0;
 int ncycles = -1;
 int iCon=0;
@@ -365,7 +345,6 @@ int nstepmax = -1;
 int naccmax = 0;
 int natom = 0;
 int nonbondlist[MAX_NONBONDS][MAX_NBDATA];
-int nonbond14list[MAX_NONBONDS][4];
 int nconf = 0;
 int ncycm1 = 1;
 int ndihed = 0;
@@ -373,7 +352,6 @@ int nlig = 0;
 int nres = 0;
 int nmol = 0;
 int Nnb = 0;
-int Nnb14 = 0;
 int nrejmax = 0;
 int ntor;
 int ntor1;
@@ -400,9 +378,7 @@ int OutputEveryNTests = 1000;
 int NumLocalTests = 10;
 int maxTests = 10000;
 int ignore_inter[MAX_ATOMS];
-int nfields;
 int par_lib_FN_found = 0;
-int param_keyword = -1;
 /* int beg; */
 /* int end; */
 /* int imol = 0; */
@@ -472,7 +448,15 @@ EvalMode e_mode = Normal_Eval;
 Global_Search *GlobalSearchMethod = NULL;
 Local_Search *LocalSearchMethod = NULL;
 
-GridMap grid_map;
+// GridMap grid_map;
+
+//______________________________________________________________________________
+/*
+** Get the time at the start of the run...
+*/
+
+jobStart = times( &tms_jobStart );
+
 
 //_____________________________________________________________________________
 /*
@@ -513,13 +497,6 @@ GridMap grid_map;
     }
 #endif
 #endif
-
-//______________________________________________________________________________
-/*
-** Get the time at the start of the run...
-*/
-
-jobStart = times( &tms_jobStart );
 
 //______________________________________________________________________________
 /*
@@ -604,7 +581,7 @@ if (clktck == 0) {        /* fetch clock ticks per second first time */
         idct = (FloatOrDouble)1.0 / (FloatOrDouble)clktck;
         if (debug) {
             pr(logFile, "N.B. debug is on and set to %d\n\n", debug);
-            pr(logFile, "\n\nFYI:  Number of clock ticks per second = %d\n", clktck);
+            pr(logFile, "\n\nFYI:  Number of clock ticks per second = %d\n", (int)clktck);
             pr(logFile, "FYI:  Elapsed time per clock tick = %.3e milli-seconds\n\n\n\n", idct * 1000. );
         }
     }
@@ -613,27 +590,17 @@ if (clktck == 0) {        /* fetch clock ticks per second first time */
 (void) strcpy(FN_rms_ref_crds,"unspecified filename\0");
 
 //______________________________________________________________________________
+//
+// Read in default parameters
+
+// read_parameter_library(FN_parameter_library, outlev);
+
+//______________________________________________________________________________
 /*
 ** log(x): compute the natural (base e) logarithm of x,
 */
 
 F_lnH = ((FloatOrDouble)log(0.5));
-
-//______________________________________________________________________________
-//
-// Create a hash search table for the Rij,epsij parameter dictionary,
-// using hsearch and <search.h>
-//
-
-if (hcreate(MAX_NUM_AUTOGRID_TYPES) == 0) {
-    prStr( error_message,"%s: ERROR:  Could not create the hash table needed to store the AutoDock parameters.\n", programname );
-    pr_2x( logFile, stderr, error_message );
-    B_hash_table_created = FALSE;
-    exit(-1);
-} else {
-    B_hash_table_created = TRUE;
-};
-
 
 //______________________________________________________________________________
 /*
@@ -696,7 +663,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 line[ indcom ] = '\0'; /* Truncate "line" at the comment */
             }
             (void) fflush(logFile);
-        break;
+            break;
     } /* switch */
 
     switch( dpf_keyword ) {
@@ -862,7 +829,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             abs_charge[i] = fabs(charge[i]);
             qsp_abs_charge[i] = qsolpar * abs_charge[i];
         }
-        pr(logFile, "Number of \"true\" ligand atoms:  %d\n", true_ligand_atoms+1);
+        pr(logFile, "Number of \"true\" ligand atoms:  %d\n", true_ligand_atoms);
  
         for (i=0;i<natom;i++) {
             if (ignore_inter[i] == 1) {
@@ -1019,8 +986,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   pr(logFile, "\n");
                   (void) fflush(logFile);
 
-                  pr(logFile, "Total number of Energy Evaluations: %d\n", evaluate.evals() );
-                  pr(logFile, "Total number of Iterations:        %d\n", niters);
+                  pr(logFile, "Total number of Energy Evaluations: %d\n", (int)evaluate.evals() );
+                  pr(logFile, "Total number of Iterations:        %d\n", (int)niters);
 
                   pr( logFile, UnderLine );
                   pr( logFile, "\n\n\tFINAL Coliny %s DOCKED STATE\n",algname );
@@ -1894,13 +1861,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             retval = sscanf( line, "%*s %f", &AD3_FE_coeff_estat );
         #endif
         if (retval == 1) {
-            //if (outlev >= 0) {
-                // pr(logFile, "Internal electrostatics will be scaled by a factor of %.4f\n", AD3_FE_coeff_estat);
-            //}
+            if (outlev >= 0) {
+                pr(logFile, "WARNING!  Internal electrostatics will NOT be scaled by a factor of %.4f -- this coefficient is ignored in AutoDock 4;\n", AD3_FE_coeff_estat);
+                pr(logFile, "          the coefficient that will actually be used should be set in the parameter library file, \"%s\".\n", FN_parameter_library);
+                pr(logFile, "          In this case, the coefficient for the electrostatics term is %.4f\n", AD4.coeff_estat);
+            }
         } else {
             AD3_FE_coeff_estat = 1.0;
         }
-
 
         (void) fflush(logFile);
         break;
@@ -2558,7 +2526,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	  }
           for (j=0; j<nruns; j++) {
 
-              fprintf( logFile, "\n\n\tBEGINNING GENETIC ALGORITHM DOCKING\n", sol_fn, parameterArray);
+              fprintf( logFile, "\n\n\tBEGINNING GENETIC ALGORITHM DOCKING\n");
               pr(logFile, "\nDoing Genetic Algorithm run:  %d/%d.\n", j+1, nruns);
 
               if (timeSeedIsSet[0] == 'T') {
@@ -2645,7 +2613,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case GA_num_evals:
        (void) sscanf(line, "%*s %u", &num_evals);
-       pr(logFile, "There will be at most %lu function evaluations used.\n", num_evals);
+       pr(logFile, "There will be at most %u function evaluations used.\n", num_evals);
         (void) fflush(logFile);
        break;
 
@@ -2825,15 +2793,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** torsdof %d %f
         */
         #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %d %lf", &ntorsdof, &torsdoffac );
+            retval = sscanf( line, "%*s %d %lf", &ntorsdof, &torsdoffac );
+            if (retval == 2) {
+                pr( logFile, "WARNING:  The torsional DOF coefficient is now read in from the parameter file; the value specified here (%.4lf) will be ignored.\n\n", torsdoffac);
+            }
         #else
-            (void) sscanf( line, "%*s %d %f", &ntorsdof, &torsdoffac );
+            retval = sscanf( line, "%*s %d %f", &ntorsdof, &torsdoffac );
+            if (retval == 2) {
+                pr( logFile, "WARNING:  The torsional DOF coefficient is now read in from the parameter file; the value specified here (%.4f) will be ignored.\n\n", torsdoffac);
+            }
         #endif
-        pr( logFile, "Number of torsional degrees of freedom = %d\n\n", ntorsdof);
+        pr( logFile, "Number of torsional degrees of freedom = %d\n", ntorsdof);
         pr( logFile, "Note: this must exclude any torsions involving -OH and -NH2 groups.\n\n");
-        pr( logFile, "Free energy coefficient for torsional degrees of freedom = %.4f\n\n", torsdoffac);
+        pr( logFile, "Free energy coefficient for torsional degrees of freedom = %.4f  (from \"%s\")\n\n", AD4.coeff_tors, FN_parameter_library);
 
-        torsFreeEnergy = (FloatOrDouble)ntorsdof * torsdoffac;
+        torsFreeEnergy = (FloatOrDouble)ntorsdof * AD4.coeff_tors;
 
         pr( logFile, "Estimated loss of torsional free energy upon binding = %+.4f kcal/mol\n\n", torsFreeEnergy);
         (void) fflush(logFile);
@@ -2942,156 +2916,18 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case DPF_PARAMETER_LIBRARY:
         /*
-        ** parameter_file parm_data.dat
+        ** parameter_file AD4_parameters.dat
         **  or
-        ** parameter_library parm_data.dat
+        ** parameter_library AD4_parameters.dat
         **
-        ** initial implementation suggested by Mike Pique &
-        **                        implemented by Ruth Huey
+        ** initial implementation based on hsearch was suggested by Mike Pique
         */
+
         par_lib_FN_found = sscanf( line, "%*s %s", FN_parameter_library );
         (void) fflush(logFile);
 
-        /* Open and read the parm_data.dat file */
-        FILE *parameter_library_file;
-        char parameter_library_line[MAX_CHARS];
-        if ((parameter_library_file = ad_fopen(FN_parameter_library, "r")) == NULL) {
-             fprintf(stderr,"Sorry, I can't find or open %s\n", FN_parameter_library);
-             exit(-1);
-        }
+        read_parameter_library(FN_parameter_library, outlev);
 
-        if (B_hash_table_created == TRUE) {
-            // We must have called hcreate successfully before we can use hsearch...
-
-            // local variables
-            char thisAtomTypeStr[MAX_LEN_AUTOGRID_TYPE+1];
-            ParameterEntry *newParameter;
-
-
-            while (fgets(parameter_library_line, sizeof(parameter_library_line), parameter_library_file) != NULL) {
-
-                // terminate line at beginning of comment
-                // commentbegin = strchr(parameter_library_line, '#');
-                // if (commentbegin != NULL) {
-                    // *commentbegin = '\0';
-                // }
-
-                param_keyword = parse_param_line( parameter_library_line );
-                if (debug > 0) {
-                    pr(logFile, "DEBUG: parameter_library_line=\"%s\"\n\nDEBUG: param_keyword= %d\n\n", parameter_library_line, param_keyword);
-                }
-
-                switch( param_keyword ) {
-
-                    case PAR_:
-                    case PAR_NULL:
-                    case PAR_COMMENT:
-                        break;
-
-                    case PAR_VDW:
-                        nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_vdW);
-                        if (nfields < 1) {
-                            pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                            continue; // skip any parameter_library_line without enough info
-                        }
-                        pr( logFile, "Free energy coefficient for the van der Waals term = \t%.4lf\n\n", AD4.coeff_vdW);
-                        break;
-
-                    case PAR_HBOND:
-                        nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_hbond);
-                        if (nfields < 1) {
-                            pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                            continue; // skip any parameter_library_line without enough info
-                        }
-                        pr( logFile, "Free energy coefficient for the H-bonding term     = \t%.4lf\n\n", AD4.coeff_hbond);
-                        break;
-
-                    case PAR_ESTAT:
-                        nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_estat);
-                        if (nfields < 1) {
-                            pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                            continue; // skip any parameter_library_line without enough info
-                        }
-                        pr( logFile, "Free energy coefficient for the electrostatic term = \t%.4lf\n\n", AD4.coeff_estat);
-                        break;
-
-                    case PAR_DESOLV:
-                        nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_desolv);
-                        if (nfields < 1) {
-                            pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                            continue; // skip any parameter_library_line without enough info
-                        }
-                        pr( logFile, "Free energy coefficient for the desolvation term   = \t%.4lf\n\n", AD4.coeff_desolv);
-                        break;
-
-                    case PAR_TORS:
-                        nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_tors);
-                        if (nfields < 1) {
-                            pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                            continue; // skip any parameter_library_line without enough info
-                        }
-                        pr( logFile, "Free energy coefficient for the torsional term     = \t%.4lf\n\n", AD4.coeff_tors);
-                        break;
-
-                    case PAR_ATOM_PAR:
-                        // Read in 1 line of atom parameters
-                        // NB: scanf doesn't try to write missing fields
-                        nfields = sscanf(parameter_library_line, "%*s %s %lf %lf %lf %lf %lf %lf %d %d %d %d",
-                                            thisAtomTypeStr,
-                                            &thisParameter.Rij,
-                                            &thisParameter.epsij,
-                                            &thisParameter.vol,
-                                            &thisParameter.solpar,
-                                            &thisParameter.Rij_hb,
-                                            &thisParameter.epsij_hb,
-                                            &thisParameter.hbond,
-                                            &thisParameter.rec_index,
-                                            &thisParameter.map_index,
-                                            &thisParameter.bond_index);
-                        if (nfields < 2) {
-                            continue; // skip any parameter_library_line without enough info
-                        }
-                        thisParameter.epsij    *= AD4.coeff_vdW;
-                        thisParameter.epsij_hb *= AD4.coeff_hbond;
-                        // thisParameter.vol   *= AD4.coeff_desolv;
-         
-                        // Read autogrid_type into a temporary string and test that it's not too long.
-                        if (strlen(thisAtomTypeStr) < MAX_LEN_AUTOGRID_TYPE+1) {
-                            (void)strcpy(thisParameter.autogrid_type, thisAtomTypeStr);
-                        }
-                        newParameter = (ParameterEntry *) calloc(1, sizeof(ParameterEntry));
-                        // newParameter->rec_index = -1;
-                        // newParameter->map_index = -1;
-                        *newParameter = thisParameter;
-         
-                        item.key = newParameter->autogrid_type; // ptr to string
-                        item.data = newParameter;               // ptr to entire record
-                        // Try to enter this item into the hsearch table...
-                        if (hsearch(item, ENTER) == NULL) {
-                            prStr( error_message, "%s: WARNING:  I'm sorry, I could not add this entry to my parameter library:\n\n", programname);
-                            pr_2x( logFile, stderr, error_message );
-                            prStr( error_message, "%s: WARNING:  %s\n", programname, parameter_library_line);
-                            pr_2x( logFile, stderr, error_message );
-                        } else {
-                            pr(logFile, "Parameters for the atom type named \"%s\" were read in from the parameter library.\n", newParameter->autogrid_type);
-                            if (outlev == 2) {
-                                pr(logFile, "\tRij = %.2f, WEIGHTED epsij = %.3f, At.frag.vol. = %.3f, At.solv.par. = %.3f, \n\tHb Rij = %.3f, WEIGHTED Hb epsij = %.3f, Hb type = %d,  bond index = %d\n\n",
-                                        newParameter->Rij, newParameter->epsij, newParameter->vol, newParameter->solpar,
-                                        newParameter->Rij_hb, newParameter->epsij_hb, newParameter->hbond, newParameter->bond_index );
-                            } else if (outlev > 2) {
-                                pr(logFile, "\tRij = %5.2f\n\tepsij = %5.3f\n\tAtomic fragmental volume = %5.3f\n\tAtomic solvation parameter = %5.3f\n\tH-bonding Rij = %5.3f\n\tH-bonding epsij = %5.3f\n\tH-bonding type = %d,  bond index = %d\n\n",
-                                        newParameter->Rij, newParameter->epsij, newParameter->vol, newParameter->solpar,
-                                        newParameter->Rij_hb, newParameter->epsij_hb, newParameter->hbond, newParameter->bond_index );
-                            }
-                        } // hsearch enter
-                        break;
-
-                    default:
-                        break;
-
-                } // switch
-            } // while there is another line of parameters to read in
-        } // if empty hsearch table was created
         break;
 
 /*____________________________________________________________________________*/
@@ -3118,7 +2954,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         for (i=0; i<num_atom_types; i++) {
             strcpy(ligand_atom_types[i], ligand_atom_type_ptrs[i]);
 #ifdef DEBUG
-            (void) fprintf(stderr, "%d %s ->%s\n",i, ligand_atom_type_ptrs[i], ligand_atom_types[i]);
+            (void) fprintf(logFile, "%d %s ->%s\n",i, ligand_atom_type_ptrs[i], ligand_atom_types[i]);
 #endif
         }
 
@@ -3136,33 +2972,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
         }
 
-        // For all ligand atom types...
-        // set up the map_index
+        // For all ligand atom types... set up the map_index
         // "ligand_types"
-        // 
         for (i=0; i<num_atom_types; i++) {
-            
-            // To search for this atom type's parameters in the
-            // parameter dictionary, we need to construct a
-            // dummy parameter with the ligand_atom_type string
-            // set.  We'll use thisParameter as the dummy.
-            strcpy(thisParameter.autogrid_type, ligand_atom_types[i]);
-
-            // Now search the parameter dictionary:
-            item.key = thisParameter.autogrid_type; // "autogrid_type", the atom type name, is what we will search on:
-            if ((found_item = hsearch (item, FIND)) != NULL ) {
+            foundParameter = apm_find(ligand_atom_types[i]);
+            if (foundParameter != NULL ) {
                 // We have found this atom type's parameters
-                ParameterEntry *found_parm;
-                // Get the data
-                found_parm = (ParameterEntry *)found_item->data;
                 // Now we can set the ParameterEntry's map_index to the
                 // 0-based index it had in the list of ligand types supplied
                 // in this DPF line:
-                found_parm->map_index = i;
-                parameterArray[i] = *found_parm;
+                foundParameter->map_index = i;
+                parameterArray[i] = *(foundParameter);
                 if (outlev > 0) {
-                    (void) fprintf( logFile, "Parameters found for ligand type \"%s\" (grid map index = %d, WEIGHTED epsii=%6.4f)",
-                                    found_parm->autogrid_type, found_parm->map_index, found_parm->epsij );
+                    (void) fprintf( logFile, "Parameters found for ligand type \"%s\" (grid map index = %d, weighted epsilon = %6.4f)", foundParameter->autogrid_type, foundParameter->map_index, foundParameter->epsij );
                     if (par_lib_FN_found == 1) {
                         pr( logFile, " in parameter library \"%s\".\n", FN_parameter_library );
                     } else {
@@ -3178,7 +3000,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     pr_2x( logFile, stderr, error_message );
                 }
                 exit(-1);
-            } // if hsearch FIND
+            } // if / else apm_find
         } // for i
         pr( logFile, "\n\n");
 
@@ -3190,7 +3012,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         // Calculate the internal energy table
 
         // loop over atom types, i, from 1 to number of atom types
-        //     loop over atom types, j, from i to number of atom types
         for (i=0; i<num_atom_types; i++) {
 
             //  Find internal energy parameters, i.e.  epsilon and r-equilibrium values...
@@ -3202,6 +3023,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             epsi_hb = parameterArray[i].epsij_hb;
             hbondi = parameterArray[i].hbond;
 
+            // loop over atom types, j, from i to number of atom types
             for (j=i; j<num_atom_types; j++) {
                 
                 //  Find internal energy parameters, i.e.  epsilon and r-equilibrium values...
@@ -3219,24 +3041,29 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                 if ( ((hbondi == DS) || (hbondi == D1)) && ((hbondj == AS) || (hbondj == A1) || (hbondj == A2)) ) {
                     // i is a donor and j is an acceptor.
-                    // we need to calculate the arithmetic mean of Ri_hb and Rj_hb, etc.
-                    Rij = arithmetic_mean(Ri_hb, Rj_hb);
-                    // we need to calculate the geometric mean of epsi_hb and epsj_hb, etc.
-                    epsij = geometric_mean(epsi_hb, epsj_hb);
+                    // i is a hydrogen, j is a heteroatom
+                    // we need to calculate the arithmetic mean of Ri_hb and Rj_hb  // not in this Universe...  :-(
+                    //Rij = arithmetic_mean(Ri_hb, Rj_hb);// not in this Universe...  :-(
+                    Rij = Rj_hb;
+                    // we need to calculate the geometric mean of epsi_hb and epsj_hb  // not in this Universe...  :-(
+                    //epsij = geometric_mean(epsi_hb, epsj_hb);// not in this Universe...  :-(
+                    epsij = epsj_hb;
                     xB = 10;
                 } else if ( ((hbondi == AS) || (hbondi == A1) || (hbondi == A2)) && ((hbondj == DS) || (hbondj == D1))) {
-                    // i is an acceptor and j is a donor.
-                    // we need to calculate the arithmetic mean of Ri_hb and Rj_hb, etc.
-                    Rij = arithmetic_mean(Ri_hb, Rj_hb);
-                    // we need to calculate the geometric mean of epsi_hb and epsj_hb, etc.
-                    epsij = geometric_mean(epsi_hb, epsj_hb);
+                    // i is an acceptor and j is a donor. 
+                    // i is a heteroatom, j is a hydrogen
+                    // we need to calculate the arithmetic mean of Ri_hb and Rj_hb// not in this Universe...  :-(
+                    //Rij = arithmetic_mean(Ri_hb, Rj_hb);// not in this Universe...  :-(
+                    Rij = Ri_hb;
+                    // we need to calculate the geometric mean of epsi_hb and epsj_hb// not in this Universe...  :-(
+                    //epsij = geometric_mean(epsi_hb, epsj_hb);// not in this Universe...  :-(
+                    epsij = epsi_hb;
                     xB = 10;
                 } else {
-                    // we need to calculate the arithmetic mean of Ri and Rj, etc.
+                    // we need to calculate the arithmetic mean of Ri and Rj
                     Rij = arithmetic_mean(Ri, Rj);
-                    // we need to calculate the geometric mean of epsi and epsj, etc.
+                    // we need to calculate the geometric mean of epsi and epsj
                     epsij = geometric_mean(epsi, epsj);
-                    
                 }
 
                 /* Check that the Rij is reasonable */
@@ -3290,9 +3117,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case DPF_EPDB:
         /*
-         * epdb
+         *  epdb
          *
-         * computes the energy of the ligand specified by the "move lig.pdbqt" command.
+         *  Computes the energy of the ligand specified by the "move lig.pdbqt" command.
          *  Return the energy of the Small Molecule.
          *  FN_ligand must be in   PDBQT-format;
          *  flag can be:-
@@ -3305,6 +3132,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         eintra = 0.0L;
         einter = 0.0L;
         etotal = 0.0L;
+
+        pr(logFile, "WARNING This command, \"epdb\", currently computes the energy of the ligand specified by the \"move lig.pdbqt\" command.\n");
+        retval = sscanf(line, "%*s %s %d", dummy_FN_ligand, &dummy_oldpdbq);
+        if (retval >= 1) {
+            pr(logFile, "WARNING  -- it will not read in the PDBQT file specified on the \"epdb\" command line.\n");
+        }
 
         /*
         (void) sscanf(line, "%*s %s %d", FN_ligand, &oldpdbq);
@@ -3352,7 +3185,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 outside = FALSE; /* Reset outside */
             }
         }
-        pr(logFile, "Number of \"true\" ligand atoms:  %d\n", true_ligand_atoms+1);
+        pr(logFile, "Number of \"true\" ligand atoms:  %d\n", true_ligand_atoms);
         //
         for (i=0;i<natom;i++) {
             if (ignore_inter[i] == 1) {
@@ -3386,9 +3219,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile,     "\t\t==============================\n\n\n");
         pr(logFile, "Atom  NB.+ Elec.  Non-bonded  Electrosta  Partial          Coordinates         \n");
         pr(logFile, "Type    Energy      Energy    tic Energy  Charge      x         y         z    \n");
-        pr(logFile, "____  __________  __________  __________  _______  ________  ________  ________\n");
-        /*            1234  0123456789  0123456789  0123456789  1234567  12345678  12345678  12345678"*/
-        /*           " ---  ----------  ----------  ----------  -------  --------  --------  --------"*/
+        pr(logFile, "----  ----------  ----------  ----------  -------  --------  --------  --------\n");
+        /*          "1234  0123456789  0123456789  0123456789  1234567  12345678  12345678  12345678"*/
+        /*          "----  ----------  ----------  ----------  -------  --------  --------  --------"*/
         emap_total = 0.;
         elec_total = 0.;
         charge_total = 0.;
@@ -3401,19 +3234,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             elec_total += elec[i];
             charge_total += charge[i];
         } /*i*/
-        pr(logFile, "      __________  __________  __________  _______\n\n");
+        pr(logFile, "      ----------  ----------  ----------  -------\n");
 #ifdef USE_DOUBLE
         pr(logFile, "Total %10.2lf  %10.2lf  %10.2lf  %7.3lf\n\n", (emap_total + elec_total), emap_total, elec_total, charge_total);
         pr(logFile, "    E_total                          = %.2lf kcal/mol\n\n", etotal);
-        pr(logFile, "    E_intermolecular_atomic-affinity = %.2lf kcal/mol\n", emap_total);
+        pr(logFile, "    E_intermolecular_atomic-affinity = %.2lf kcal/mol\n",   emap_total);
         pr(logFile, "    E_intermolecular_electrostatic   = %.2lf kcal/mol\n\n", elec_total);
 #else
         pr(logFile, "Total %10.2f  %10.2f  %10.2f  %7.3f\n\n", (emap_total + elec_total), emap_total, elec_total, charge_total);
         pr(logFile, "    E_total                          = %.2f kcal/mol\n\n", etotal);
-        pr(logFile, "    E_intermolecular_atomic-affinity = %.2f kcal/mol\n", emap_total);
+        pr(logFile, "    E_intermolecular_atomic-affinity = %.2f kcal/mol\n",   emap_total);
         pr(logFile, "    E_intermolecular_electrostatic   = %.2f kcal/mol\n\n", elec_total);
 #endif
-        printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor);
+        printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor, elec_total, emap_total);
         pr(logFile, "\n");
         for ( i=0; i<true_ligand_atoms; i++ ) {
             for (xyz = 0;  xyz < SPACE;  xyz++) {
