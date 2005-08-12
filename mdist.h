@@ -82,4 +82,13 @@ void mdist() {
     mindist[H][S] = 1.316;
     maxdist[H][S] = 1.356;
 
+    mindist[P][H] = 1.35;
+    maxdist[P][H] = 1.40;
+    mindist[H][P] = 1.35;
+    maxdist[H][P] = 1.40;
+
+    mindist[O][N] = 0.9;
+    maxdist[O][N] = 1.90; // maxdist[O][H] = 0.98;
+    mindist[N][O] = 0.9;
+    maxdist[N][O] = 1.90; // maxdist[H][O] = 0.98;
 }; 
