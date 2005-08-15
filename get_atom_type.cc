@@ -1,6 +1,6 @@
 /*
 
- $Id: get_atom_type.cc,v 1.3 2005/03/11 02:11:30 garrett Exp $
+ $Id: get_atom_type.cc,v 1.4 2005/08/15 23:00:09 garrett Exp $
 
 */
 
@@ -11,11 +11,12 @@
 /* get_atom_type.cc */
 
 #include <stdio.h>
-#include <search.h>
+#include <string.h>
 #include "get_atom_type.h"
 #include "structs.h"
 #include "autocomm.h"
 #include "print_2x.h"
+#include "atom_parameter_manager.h"
 
 extern char *programname;
 extern FILE *logFile;
@@ -24,22 +25,20 @@ extern int debug;
 
 int get_atom_type( char aname[4] )
 {
-    ENTRY item, *found_item; /*see hsearch(3C)*/
     ParameterEntry * found_parm;
     ParameterEntry thisparm;
     int map_index = -1;
     int bond_index = -1;
     char message[MAX_CHARS];
 
-
     // "map_index" is used as an index into the "map" array,
     // to look up the correct energies in the current grid cell,
     // thus:  map[][][][map_index]
 
-    // AutoGrid 4 Typing --/
-    item.key = thisparm.autogrid_type;
-    if ((found_item = hsearch (item, FIND)) != NULL) {
-        found_parm = (ParameterEntry *)found_item->data;
+    // AutoGrid 4 Typing
+    strcpy(thisparm.autogrid_type, aname);
+    found_parm = apm_find(thisparm.autogrid_type);
+    if (found_parm != NULL) {
         map_index = found_parm->map_index;
         bond_index = found_parm->bond_index;
         if (debug > 0) {
