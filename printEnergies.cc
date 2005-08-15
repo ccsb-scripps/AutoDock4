@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.5 2005/03/23 00:31:08 garrett Exp $
+ $Id: printEnergies.cc,v 1.6 2005/08/15 22:41:30 garrett Exp $
 
 */
 
@@ -20,13 +20,21 @@ extern FILE *logFile;
 extern FILE *stateFile;
 extern int write_stateFile;
 
-#define print1000(file,x) pr(file,  ((fabs((x)) >= 0.001) && ((fabs(x)) <= 1000.)) ? "%+7.2f" : "%+11.2e" , (x));
+#define print1000(file, x) pr(file,  ((fabs((x)) >= 0.001) && ((fabs(x)) <= 1000.)) ? "%+7.2f" : "%+11.2e" , (x));
 
-void print1000_no_sign(FILE* file,double x) {
+void print1000_no_sign(FILE* file, double x) {
     pr(file,  ((fabs((x)) >= 0.01) && ((fabs(x)) <= 1000.)) ? "%7.2f" : "%11.2e" , (x));
 }
 
-void printEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDouble torsFreeEnergy, char  *prefixString, int ligand_is_inhibitor )
+void printEnergies( 
+        FloatOrDouble einter, 
+        FloatOrDouble eintra, 
+        FloatOrDouble torsFreeEnergy, 
+        char  *prefixString, 
+        int ligand_is_inhibitor,
+        FloatOrDouble emap_total,
+        FloatOrDouble elec_total
+        )
 {
     FloatOrDouble deltaG = 0.0;
     FloatOrDouble Ki = 1.0;
@@ -74,30 +82,37 @@ void printEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDouble to
         } else {
             pr( logFile, "%sEstimated Dissociation Constant, Kd = ", prefixString);
         }
-        print1000_no_sign(logFile,Ki);
+        print1000_no_sign(logFile, Ki);
         pr( logFile, "       [Temperature = %.2f K]\n", TK);
     }
 
     pr( logFile, "%s\n", prefixString);
 
     //pr( logFile, "%sFinal Docked Energy                 = ", prefixString);
-    //print1000(logFile,edocked);
+    //print1000(logFile, edocked);
     //pr( logFile, " kcal/mol  [=(1)+(2)]\n");
 
     //pr( logFile, "%s\n", prefixString);
 
     pr( logFile, "%s(1) Final Intermolecular Energy     = ", prefixString);
-    print1000(logFile,einter);
+    print1000(logFile, einter);
+    pr( logFile, " kcal/mol\n");
+    pr( logFile, "%s     Intermol. vdW + Hbond Energy   = ", prefixString);
+    print1000(logFile, emap_total);
+    pr( logFile, " kcal/mol\n");
+    pr( logFile, "%s     Intermol. Electrostatic Energy = ", prefixString);
+    print1000(logFile, elec_total);
     pr( logFile, " kcal/mol\n");
 
     pr( logFile, "%s(2) Final Internal Energy of Ligand = ", prefixString);
-    print1000(logFile,eintra);
+    print1000(logFile, eintra);
     pr( logFile, " kcal/mol\n");
 
     pr( logFile, "%s(3) Torsional Free Energy           = ", prefixString);
-    print1000(logFile,torsFreeEnergy);
+    print1000(logFile, torsFreeEnergy);
     pr( logFile, " kcal/mol\n");
 
+    pr( logFile, "%s\n", prefixString);
     pr( logFile, "%s\n", prefixString);
 }
 
@@ -139,35 +154,35 @@ void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDoub
         Ki = exp((deltaG*1000.)/(Rcal*TK));
     }
 
-    pr(stateFile,"\t\t<free_NRG_binding>");
-    print1000(stateFile,deltaG);
-    pr(stateFile,"</free_NRG_binding>\n");
+    pr(stateFile, "\t\t<free_NRG_binding>");
+    print1000(stateFile, deltaG);
+    pr(stateFile, "</free_NRG_binding>\n");
     if (deltaG < 0.0) {
       if (ligand_is_inhibitor == 1) {
-	pr(stateFile,"\t\t<Ki>");
-	print1000_no_sign(stateFile,Ki);
-	pr(stateFile,"</Ki>\n");
+	pr(stateFile, "\t\t<Ki>");
+	print1000_no_sign(stateFile, Ki);
+	pr(stateFile, "</Ki>\n");
       } else {
-	pr(stateFile,"\t\t<Kd>");
-	print1000_no_sign(stateFile,Ki);
-	pr(stateFile,"</Kd>\n");
+	pr(stateFile, "\t\t<Kd>");
+	print1000_no_sign(stateFile, Ki);
+	pr(stateFile, "</Kd>\n");
       }
-      pr(stateFile,"\t\t<Temp>%.2f</Temp>\n",TK); //temperature in K
+      pr(stateFile, "\t\t<Temp>%.2f</Temp>\n", TK); //temperature in K
     } 
-      pr(stateFile,"\t\t<final_dock_NRG>");
-      print1000(stateFile,edocked);
-      pr(stateFile,"</final_dock_NRG>\n");
+      pr(stateFile, "\t\t<final_dock_NRG>");
+      print1000(stateFile, edocked);
+      pr(stateFile, "</final_dock_NRG>\n");
       
-      pr(stateFile,"\t\t<final_intermol_NRG>");
-      print1000(stateFile,einter);
-      pr(stateFile,"</final_intermol_NRG>\n");
+      pr(stateFile, "\t\t<final_intermol_NRG>");
+      print1000(stateFile, einter);
+      pr(stateFile, "</final_intermol_NRG>\n");
 
-      pr(stateFile,"\t\t<internal_ligand_NRG>");
-      print1000(stateFile,eintra);
-      pr(stateFile,"</internal_ligand_NRG>\n");
+      pr(stateFile, "\t\t<internal_ligand_NRG>");
+      print1000(stateFile, eintra);
+      pr(stateFile, "</internal_ligand_NRG>\n");
       
-      pr(stateFile,"\t\t<torsonial_free_NRG>");
-      print1000(stateFile,torsFreeEnergy);
-      pr(stateFile,"</torsonial_free_NRG>\n"); 
+      pr(stateFile, "\t\t<torsonial_free_NRG>");
+      print1000(stateFile, torsFreeEnergy);
+      pr(stateFile, "</torsonial_free_NRG>\n"); 
       
 }
