@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.7 2005/03/23 00:31:07 garrett Exp $
+ $Id: cmdmode.cc,v 1.8 2005/08/15 22:50:20 garrett Exp $
 
 */
 
@@ -263,7 +263,7 @@ int cmdmode(int   natom,
                     } else {
                         etotal = (einter = trilinterp4(crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter)) + eintra;
                     } / * endif */
-                    pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n", sol_fn, parameterArray);
+                    pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
                     pr(logFile,     "\t\t==============================\n\n\n");
                     pr(logFile, "Atom  NB.+ Elec.  Non-bonded  Electrosta  Partial          Coordinates         \n");
                     pr(logFile, "Type    Energy      Energy    tic Energy  Charge      x         y         z    \n");
@@ -288,7 +288,7 @@ int cmdmode(int   natom,
                     pr(command_out_fp, "%.2f\n", etotal);
                     pr(logFile, "    E_intermolecular_atomic-affinity = %.2f kcal/mol\n", emap_total);
                     pr(logFile, "    E_intermolecular_electrostatic   = %.2f kcal/mol\n", elec_total);
-                    printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor);
+                    printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total);
 /*                     pr(logFile, "\n"); */
 /*                     pr(logFile, "    E_estimated_free_energy_binding  = %.2f kcal/mol  [=(1)+(3)]\n", einter + torsFreeEnergy); */
 /*                     pr(logFile, "\n"); */
@@ -380,7 +380,7 @@ int cmdmode(int   natom,
 */
             case COM_OUTE:
                 pr(logFile, "COMMAND: oute\n\n");
-                printEnergies(einter, eintra, torsFreeEnergy, "oute: USER    ", ligand_is_inhibitor);
+                printEnergies(einter, eintra, torsFreeEnergy, "oute: USER    ", ligand_is_inhibitor, emap_total, elec_total);
 /*                 prStr(message, "USER    Total Internal Energy of Small Molecule = %.2f\n", eintra); */
 /*                 pr_2x(command_out_fp, logFile, message); */
 /*                 prStr(message, "USER    Total Docked Energy of Complex = %.2f\n", etotal); */
