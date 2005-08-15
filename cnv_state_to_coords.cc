@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.cc,v 1.3 2004/11/16 23:42:52 garrett Exp $
+ $Id: cnv_state_to_coords.cc,v 1.4 2005/08/15 22:53:33 garrett Exp $
 
 */
 
@@ -19,6 +19,10 @@
 #include "cnv_state_to_coords.h"
 #include "stateLibrary.h"
 
+#ifdef LSQFIT
+#include "rotlsqfit.h"
+#endif
+
 extern FILE *logFile;
 extern int true_ligand_atoms;
 
@@ -31,32 +35,36 @@ void cnv_state_to_coords( State now,
                           int   natom)
 
 {
-    // register int i;
-    //register int XYZ;
-
 #ifdef DEBUG
-    if (checkState(&now)) {
-        // only if the state is valid can we proceed...
+    if (checkState(&now)) { // only if the state is valid can we proceed...
 #endif
 
     //  Setting back to the original PDB
     //  coordinates ensures that cumulative
     //  rounding errors do not occur.
-    //  this memcpy call...
-    (void)memcpy(crd, crdpdb, natom*3*sizeof(FloatOrDouble));
 
-    //  is about 100x faster than these nested for-loops...
-    //for (i = 0;  i < natom;  i++) {
-        //for (XYZ = 0;  XYZ < SPACE;  XYZ++) {
-            //crd[i][XYZ] = crdpdb[i][XYZ];
-        //} //XYZ
-    //} //i
+    (void) memcpy( crd, crdpdb,  natom * 3 * sizeof(FloatOrDouble));
 
-    //  Apply torsions, quaternion rigid-body rotation
-    //  and translation...
+    //  memcpy is about 100x faster than these nested for-loops...
+    //  for (i = 0;  i < natom;  i++) for (XYZ = 0;  XYZ < SPACE;  XYZ++) crd[i][XYZ] = crdpdb[i][XYZ];
+
+    //  Apply torsions, if any
     if (ntor > 0) {
-      torsion( now, crd, vt, tlist, ntor );
+        torsion( now, crd, vt, tlist, ntor );
     }
+
+#ifdef LSQFIT
+    //  Optionally, least-squares fit the current conformation on the original input conformation
+    static double crdfit[MAX_ATOMS][SPACE];
+    // double weights[MAX_ATOMS];
+    // double vector[3];
+    // double matrix[3][3];
+    // rotlsqfit(crd, crdpdb, crdfit, weights, natom, matrix, vector)
+    (void) rotlsqfit( crd, crdpdb, crdfit, NULL, natom, NULL, NULL);
+    (void) memcpy( crd, crdfit,  natom * 3 * sizeof(FloatOrDouble));
+#endif
+
+    //  Apply quaternion rigid-body rotation and translation...
     qtransform( now.T, now.Q, crd, true_ligand_atoms );
 
 #ifdef DEBUG
