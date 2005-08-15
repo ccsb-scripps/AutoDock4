@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.5 2005/03/23 00:31:07 garrett Exp $
+ $Id: parse_dpf_line.cc,v 1.6 2005/08/15 23:40:55 garrett Exp $
 
 */
 
@@ -41,9 +41,9 @@ int parse_dpf_line( char line[LINE_LEN] )
     // tokentablesize should be set to the length of the tokentable
     // 
 #if defined(USING_COLINY)
-    const int tokentablesize = 97; // this is 1 more than without USING_COLING
+    const int tokentablesize = 98; // this is 1 more than without USING_COLING
 #else
-    const int tokentablesize = 96; // this is without USING_COLINY
+    const int tokentablesize = 97; // this is without USING_COLINY
 #endif
 
     const struct {
@@ -145,10 +145,11 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"epdb", DPF_EPDB}      // 94
               , {"termination_criterion", DPF_TERMINATION}      // 95
               , {"termination", DPF_TERMINATION}      // 96
+              , {"ga_crossover_mode", GA_CROSSOVER_MODE}      // 97
 #if defined(USING_COLINY)
-              , {"coliny", DPF_COLINY}  // 97       // remember to set tokentablesize earlier
+              , {"coliny", DPF_COLINY}  // 98       // remember to set tokentablesize earlier
 #endif
-              }; // 96, or 97 if USING_COLINY      // remember to set tokentablesize earlier
+              }; // 97, or 98 if USING_COLINY      // remember to set tokentablesize earlier
 
     c[0] = '\0';
     for (j=0; ((line[j]!='\0')&&(line[j]!=' ')&&(line[j]!='\t')&&(line[j]!='\n')); j++) {
