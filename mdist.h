@@ -64,31 +64,31 @@ void mdist() {
      */
     mindist[C][H] = 1.07;
     maxdist[C][H] = 1.15;
-    mindist[H][C] = 1.07;
-    maxdist[H][C] = 1.15;
+    mindist[H][C] = mindist[C][H];
+    maxdist[H][C] = maxdist[C][H];
 
     mindist[N][H] = 0.99;
-    maxdist[N][H] = 1.10; // maxdist[N][H] = 1.03;
-    mindist[H][N] = 0.99;
-    maxdist[H][N] = 1.10; // maxdist[H][N] = 1.03;
+    maxdist[N][H] = 1.10;
+    mindist[H][N] = mindist[N][H];
+    maxdist[H][N] = maxdist[N][H];
 
     mindist[O][H] = 0.94;
-    maxdist[O][H] = 1.10; // maxdist[O][H] = 0.98;
-    mindist[H][O] = 0.94;
-    maxdist[H][O] = 1.10; // maxdist[H][O] = 0.98;
+    maxdist[O][H] = 1.10;
+    mindist[H][O] = mindist[O][H];
+    maxdist[H][O] = maxdist[O][H];
 
     mindist[S][H] = 1.316;
     maxdist[S][H] = 1.356;
-    mindist[H][S] = 1.316;
-    maxdist[H][S] = 1.356;
+    mindist[H][S] = mindist[S][H];
+    maxdist[H][S] = maxdist[S][H];
 
     mindist[P][H] = 1.35;
     maxdist[P][H] = 1.40;
-    mindist[H][P] = 1.35;
-    maxdist[H][P] = 1.40;
+    mindist[H][P] = mindist[P][H];
+    maxdist[H][P] = maxdist[P][H];
 
-    mindist[O][N] = 0.9;
-    maxdist[O][N] = 1.90; // maxdist[O][H] = 0.98;
-    mindist[N][O] = 0.9;
-    maxdist[N][O] = 1.90; // maxdist[H][O] = 0.98;
+    mindist[N][O] = 1.11;  // N=O is ~ 1.21 Å, minus 0.1Å error
+    maxdist[N][O] = 1.50;  // N-O is ~ 1.40 Å, plus 0.1 Å error
+    mindist[O][N] = mindist[N][O];  // N=O is ~ 1.21 Å, minus 0.1Å error
+    maxdist[O][N] = maxdist[N][O];  // N-O is ~ 1.40 Å, plus 0.1 Å error
 }; 
