@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.5 2005/03/11 02:11:31 garrett Exp $
+ $Id: weedbonds.cc,v 1.6 2005/08/15 23:57:37 garrett Exp $
 
 */
 
@@ -15,8 +15,9 @@
 #include "weedbonds.h"
 
 
-extern int    debug;
+extern int debug;
 extern FILE *logFile;
+
 
 
 void weedbonds( int natom,
@@ -31,10 +32,6 @@ void weedbonds( int natom,
                 int type[MAX_ATOMS])
 
 {
-    static int OUTNUMATM = 10;
-
-    int Nnbonds[MAX_ATOMS];
-
     int a11=0;
     int a12=0;
     int a21=0;
@@ -43,11 +40,7 @@ void weedbonds( int natom,
     int p12 = 0;
     int p21 = 0;
     int p22 = 0;
-    int i_atmnum = 0;
-    int j_atmnum = 0;
-    int n_a = 0;
     int p = 0;
-    int repflag = FALSE;
     int Nnb = 0;
 
     register int i = 0;
@@ -74,10 +67,6 @@ void weedbonds( int natom,
 |____________________________________________________________________________|
 */        
 
-    // Set the number of nonbonds of each atom "i" to 0
-    for (i = 0;  i < natom;  i++) {
-        Nnbonds[i] = 0;
-    }
 
     for (j = 0;  j < natom;  j++) {
         for (i = 0;  i < natom;  i++) {
@@ -177,6 +166,39 @@ void weedbonds( int natom,
         exit( -1 );
     } else {
         *Addr_Nnb = Nnb;
+    }
+
+    flushLog;
+
+} // weedbonds
+
+
+void print_nonbonds(
+                int natom,
+                char pdbaname[MAX_ATOMS][5],
+                int piece[MAX_ATOMS],
+                int ntor,
+                int tlist[MAX_TORS][MAX_ATOMS],
+                int nbmatrix[MAX_ATOMS][MAX_ATOMS],
+                int Nnb,
+                int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                int outlev,
+                int type[MAX_ATOMS])
+
+{
+    register int i = 0;
+    register int j = 0;
+    register int k = 0;
+    int i_atmnum = 0;
+    int j_atmnum = 0;
+    int Nnbonds[MAX_ATOMS];
+    static int OUTNUMATM = 10;
+    int repflag = FALSE;
+    int n_a = 0;
+
+    // Set the number of nonbonds of each atom "i" to 0
+    for (i = 0;  i < natom;  i++) {
+        Nnbonds[i] = 0;
     }
 
     if (outlev > -1) {
