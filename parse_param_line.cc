@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_param_line.cc,v 1.1 2005/03/11 02:11:30 garrett Exp $
+ $Id: parse_param_line.cc,v 1.2 2005/08/15 23:42:34 garrett Exp $
 
 */
 
@@ -63,7 +63,7 @@ int parse_param_line( char line[LINE_LEN] )
         }
     }
     if (debug > 0) {
-        (void)fprintf(logFile,"\n,j = %d\n",j);
+        (void)fprintf(logFile,"\nj = %d\n",j);
     }
 
     /*  Recognize one character tokens  */
