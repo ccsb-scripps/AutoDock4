@@ -41,6 +41,7 @@ EXE = .  # Change this to the directory path holding binaries for your platform
 
 OBJS = \
     analysis.o \
+	atom_parameter_manager.o \
     banner.o \
     bestpdb.o \
     call_glss.o \
@@ -59,6 +60,7 @@ OBJS = \
     readfield.o \
     readmap.o \
     readPDBQT.o \
+	read_parameter_library.o \
     dpftypes.o \
     eval.o \
     evaluate_energy.o \
@@ -92,7 +94,94 @@ OBJS = \
     print_avsfld.o \
     writeMolAsPDBQ.o \
     writePDBQ.o \
-    writePDBQState.o \
+    writeStateOfPDBQ.o \
+    print_rem.o \
+    printdate.o \
+    printEnergies.o \
+    printhms.o \
+    prClusterHist.o \
+    prInitialState.o \
+    prTorConList.o \
+    qmultiply.o \
+    qtransform.o \
+    quicksort.o \
+    ranlib.o \
+    rep.o \
+    scauchy.o \
+    set_cmd_io_std.o \
+    setflags.o \
+    simanneal.o \
+    sort_enrg.o \
+    stop.o \
+    strindex.o \
+    success.o \
+    summarizegrids.o \
+    support.o \
+    swap.o \
+    timesys.o \
+    timesyshms.o \
+    torNorVec.o \
+    torsion.o \
+    usage.o \
+    weedbonds.o \
+    warn_bad_file.o \
+    coliny.o
+
+OBJS_LSFIT = \
+    analysis.o \
+	atom_parameter_manager.o \
+    banner.o \
+    bestpdb.o \
+    call_glss.o \
+    call_gs.o \
+    call_ls.o \
+    changeState.o \
+    check_header_float.o \
+    check_header_int.o \
+    check_header_line.o \
+    cluster_analysis.o \
+    clmode.o \
+    cmdmode.o \
+    com.o \
+    stateLibrary.o \
+    readfield.o \
+    readmap.o \
+    readPDBQT.o \
+	read_parameter_library.o \
+    dpftypes.o \
+    eval.o \
+    evaluate_energy.o \
+    gencau.o \
+    getrms.o \
+    get_atom_type.o \
+    getInitialState.o \
+    getpdbcrds.o \
+    gs.o \
+    initautodock.o \
+    input_state.o \
+    investigate.o \
+    linpack.o \
+    ls.o \
+    mapping.o \
+    minmeanmax.o \
+    mkNewState.o \
+    mkTorTree.o \
+    mkRandomState.o \
+    nonbonds.o \
+    openfile.o \
+    output_state.o \
+    parse_com_line.o \
+    parse_dpf_line.o \
+    parse_param_line.o \
+    parse_pdbq_line.o \
+    parse_trj_line.o \
+	parsetypes.o \
+    print_2x.o \
+    print_atomic_energies.o \
+    print_avsfld.o \
+    writeMolAsPDBQ.o \
+    writePDBQ.o \
+    writeStateOfPDBQ.o \
     print_rem.o \
     printdate.o \
     printEnergies.o \
@@ -162,6 +251,7 @@ LNS = \
     readfield.ln \
     readmap.ln \
     readPDBQT.ln \
+	read_parameter_library.ln \
     dpftypes.ln \
     evaluate_energy.ln \
     getrms.ln \
@@ -189,7 +279,7 @@ LNS = \
     print_avsfld.ln \
     writeMolAsPDBQ.ln \
     writePDBQ.ln \
-    writePDBQState.ln \
+    writeStateOfPDBQ.ln \
     print_rem.ln \
     printdate.ln \
     printEnergies.ln \
@@ -231,15 +321,15 @@ LNSSQRT = \
     nbe.sqrt.ln
 
 # Libraries
-ADLIB = libad.a
 
+ADLIB = libad.a
 ARFLAGS = r # SGI, Sun, Alpha, Linux, Darwin, Mac OS X
 
 # RANLIB = file # SGI
 RANLIB = ranlib # Linux, Darwin, Mac OS X
 
-RANLIBFLAGS = # Linux, SGI
-# RANLIBFLAGS = -s # MacOS X
+# RANLIBFLAGS = # Linux, SGI
+RANLIBFLAGS = -s # MacOS X
 
 
 # C++ compiler
@@ -265,7 +355,7 @@ OLIMIT = $(CSTD) $(OPT) # SGI, Sun, HP, Convex, Cygwin, Linux, MacOS X
 # OLIMIT = $(CSTD) $(OPT) -OPT:Olimit=2500 # Alpha, Some SGIs
 # OLIMIT = $(CFLAGS) # Do not optimize
 
-# OPTLEVEL = -O3 # Agressive optimization
+OPTLEVEL = -O3 # Agressive optimization
 # OPTLEVEL = -fast # Agressive optimization for the G5 on Mac OS X
 # OPTLEVEL = -O2 # High optimization
 # OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing
@@ -311,9 +401,9 @@ LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X
 # LINTFLAGS = -DHPPA -D_HPUX_SOURCE $(LIB) -c # HP
 # LINTFLAGS = -u -n -lm # Sun
 
+DBUG = # Use assert code
 # DBUG = -DNDEBUG # No debugging and no assert code
-# DBUG = # Use assert code
-DBUG = -g # dbx, or Gnu gdb
+# DBUG = -g # dbx, or Gnu gdb
 # DBUG = -g -DDEBUG # dbx + DEBUG-specific code
 # DBUG = -g3 # dbx + optimization
 # DBUG = -g3 -DDEBUG # dbx + optimization, + DEBUG-specific code
@@ -325,24 +415,32 @@ DBUG = -g # dbx, or Gnu gdb
 PROF = # No profiling
 # PROF = -p # Profiling
 
-WARN = # Default warning level
+# WARN = # Default warning level
 # WARN = -woff all # For no warnings
+WARN = -Wall # All warnings, gcc -- Recommended for developers
 # WARN = -fullwarn -ansiE -ansiW # For full warnings during compilation
 
 ifeq ($(COLINY),yes)
-  # ACRO_OS= -DDARWIN # Darwin, Mac OS X
-  ACRO_OS= -DLINUX # Linux
+  ACRO_OS = -DDARWIN # Darwin, Mac OS X
+  # ACRO_OS = -DLINUX # Linux
 
-  ACRO_LINK= -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -lg2c # Linux
-  # ACRO_LINK= -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw/lib -lg2c # Darwin, Mac OS X (Fink needed)
+  # ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -lg2c # Linux
+  ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw/lib -lg2c # Darwin, Mac OS X (Fink needed)
 
-  ACRO_INCLUDES= -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
-  ACRO_FLAGS= -DDEBUGGING -DUNIX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES $(ACRO_OS)
-  LIB= $(ACRO_LINK)
-  ACRO= acro
+  ACRO_INCLUDES = -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
+  ACRO_FLAGS = -DDEBUGGING -DUNIX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES $(ACRO_OS)
+  LIB = $(ACRO_LINK)
+  ACRO = acro
+  COLINYLIB = libcoliny.a # Using Coliny
+else
+  COLINYLIB = # Not using Coliny
 endif
 
-autodock4 : coliny main.o $(ADLIB)
+#
+# Makefile targets
+#
+
+autodock4 : main.o $(ADLIB) $(COLINYLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -350,7 +448,7 @@ autodock4 : coliny main.o $(ADLIB)
 	@echo " "
 	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock4sqrt : coliny main.o $(ADLIB)
+autodock4sqrt : main.o $(ADLIB) $(COLINYLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -358,7 +456,7 @@ autodock4sqrt : coliny main.o $(ADLIB)
 	@echo " "
 	$(CC) $(CFLAGS) -o $@ main.o -L. -lad $(LIB)
 
-autodock4minpt : coliny main.o $(ADLIB)
+autodock4minpt : main.o $(ADLIB) $(COLINYLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -382,15 +480,50 @@ install :
 	@echo " "
 	mv autodock4 $(AUTODOCK_BIN)
 
+autodock4.html :
+	@echo " "
+	@echo "Creating a colour-coded HTML report of the AutoDock source code"
+	@echo " "
+	enscript -E --color -Whtml --toc -p$@ *.h *.cc
+
 $(ADLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
 	@echo " "
 	@echo Making the AutoDock library
 	@echo " "
+	@echo "Running ar"
 	$(AR) $(ARFLAGS) $(ADLIB) $(?:.cc=.o)
+	@echo "Running ranlib"
 	$(RANLIB) $(RANLIBFLAGS) $(ADLIB)
 
-coliny: $(ACRO)
-	
+OFILES= eigen.o matvec.o rot.o rotate.o rotlsqfit.o
+
+lsfit: lsfit.o $(OFILES)
+	gcc $(CFLAGS) lsfit.o $(OFILES) -lm -o lsfit
+
+testdriver: testdriver.o $(OFILES)
+	gcc $(CFLAGS) testdriver.o $(OFILES) -lm -o testdriver
+
+lsfitclean:
+	rm -f $(OFILES) lsfit.o lsfit testdriver.o testdriver
+
+autodock4lsfit : main.o cnv_state_to_coords_lsfit.o $(OBJS_LSFIT) $(COLINYLIB) $(OFILES)
+	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4lsfit
+	@echo " "
+	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
+
+#$(COLINYLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+#	@echo " "
+#	@echo Making the Coliny library
+#	@echo " "
+#	$(AR) $(ARFLAGS) $(COLINYLIB) $(?:.cc=.o)
+#	$(RANLIB) $(RANLIBFLAGS) $(COLINYLIB)
+###
+### competing alternative from another CVS user
+###
+# coliny: $(ACRO)
 
 acro:
 	@echo " "
@@ -427,7 +560,8 @@ dualmap : dualmap.c
 analysis.o : analysis.cc analysis.h constants.h getpdbcrds.h stateLibrary.h cnv_state_to_coords.h sort_enrg.h cluster_analysis.h prClusterHist.h getrms.h eintcal.h trilinterp.h print_rem.h strindex.h print_avsfld.h
 	$(CC) $(CFLAGS) -c analysis.cc
 
-atom_parameter_manager.o : atom_parameter_manager.cc structs.h
+atom_parameter_manager.o : atom_parameter_manager.cc atom_parameter_manager.h structs.h
+	$(CC) $(CFLAGS) -c atom_parameter_manager.cc
 
 banner.o : banner.cc banner.h
 	$(CC) $(CFLAGS) -c banner.cc
@@ -468,14 +602,15 @@ cmdmode.o : cmdmode.cc cmdtokens.h trjtokens.h cmdmode.h constants.h set_cmd_io_
 cnv_state_to_coords.o : cnv_state_to_coords.cc cnv_state_to_coords.h constants.h torsion.h qtransform.h stateLibrary.h
 	$(CC) $(CFLAGS) -c cnv_state_to_coords.cc
 
+cnv_state_to_coords_lsfit.o : cnv_state_to_coords.cc cnv_state_to_coords.h constants.h torsion.h qtransform.h stateLibrary.h rotlsqfit.c rotate.c rot.c eigen.c matvec.c useful.h q.h mymacs.h graph.h frac.h
+	$(CC) $(CFLAGS) -DLSQFIT -c cnv_state_to_coords.cc
+
 com.o : com.cc ranlib.h
 	$(CC) $(CFLAGS) -c com.cc
 
 stateLibrary.o : stateLibrary.cc stateLibrary.h constants.h
 	$(CC) $(CFLAGS) -c stateLibrary.cc
 
-readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h mdist.h
-	$(CC) $(OLIMIT) -c readPDBQT.cc
 
 dpftypes.o : dpftypes.cc dpftypes.h constants.h dpftoken.h stop.h
 	$(CC) $(CFLAGS) -c dpftypes.cc
@@ -528,7 +663,7 @@ linpack.o : linpack.cc
 ls.o : ls.cc ls.h support.h ranlib.h
 	$(CC) $(CFLAGS) -c ls.cc
 
-main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcal.h 
+main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcal.cc eintcal.h atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h
 	$(CC) $(OLIMIT) -c -DEINTCALPRINT -DWRITEPDBQSTATE main.cc
 
 mapping.o : mapping.cc support.h
@@ -594,14 +729,14 @@ print_atomic_energies.o : print_atomic_energies.cc print_atomic_energies.h const
 print_avsfld.o : print_avsfld.cc print_avsfld.h
 	$(CC) $(CFLAGS) -c print_avsfld.cc 
 
-writeMolAsPDBQ.o : writePDBQ.cc writePDBQ.h constants.h autocomm.h
-	$(CC) $(CFLAGS) -c -DWRITEMOLASPDBQFUNC writePDBQ.cc -o writeMolAsPDBQ.o
+writeMolAsPDBQ.o : writeMolAsPDBQ.cc writeMolAsPDBQ.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c writeMolAsPDBQ.cc -o writeMolAsPDBQ.o
 
 writePDBQ.o : writePDBQ.cc writePDBQ.h constants.h autocomm.h
 	$(CC) $(CFLAGS) -c writePDBQ.cc -o writePDBQ.o
 
-writePDBQState.o : writePDBQ.cc writePDBQ.h constants.h autocomm.h
-	$(CC) $(CFLAGS) -c -DWRITEPDBQSTATE writePDBQ.cc -o writePDBQState.o
+writeStateOfPDBQ.o : writeStateOfPDBQ.cc writeStateOfPDBQ.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c writeStateOfPDBQ.cc -o writeStateOfPDBQ.o
 
 print_rem.o : print_rem.cc print_rem.h
 	$(CC) $(CFLAGS) -c print_rem.cc
@@ -632,6 +767,17 @@ readfield.o : readfield.cc readfield.h constants.h openfile.h stop.h
 
 readmap.o : readmap.cc readmap.h constants.h openfile.h warn_bad_file.h strindex.h print_2x.h check_header_line.h warn_bad_file.h check_header_float.h check_header_int.h timesys.h autocomm.h
 	$(CC) $(CFLAGS) -c readmap.cc
+
+readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h mdist.h atom_parameter_manager.cc atom_parameter_manager.h 
+	$(CC) $(OLIMIT) -c readPDBQT.cc
+
+default_parameters.h : AD4_parameters.dat paramdat2h.csh
+	rm -f $@
+	paramdat2h.csh > tmp-paramdat
+	mv -f tmp-paramdat $@
+
+read_parameter_library.o : read_parameter_library.cc autocomm.h default_parameters.h
+	$(CC) $(CFLAGS) -c read_parameter_library.cc
 
 rep.o: rep.cc rep.h ranlib.h
 	$(CC) $(CFLAGS) -c rep.cc
@@ -835,14 +981,14 @@ print_atomic_energies.ln : print_atomic_energies.cc
 print_avsfld.ln : print_avsfld.cc
 	$(LINT) $(LINTFLAGS) $?
 
-writeMolAsPDBQ.ln : writePDBQ.cc
-	$(LINT) $(LINTFLAGS) -DWRITEMOLASPDBQFUNC $?
+writeMolAsPDBQ.ln : writeMolAsPDBQ.cc
+	$(LINT) $(LINTFLAGS) $?
 
 writePDBQ.ln : writePDBQ.cc
 	$(LINT) $(LINTFLAGS) $?
 
-writePDBQState.ln : writePDBQ.cc
-	$(LINT) $(LINTFLAGS) -DWRITEPDBQSTATE $?
+writeStateOfPDBQ.ln : writeStateOfPDBQ.cc
+	$(LINT) $(LINTFLAGS) $?
 
 print_rem.ln : print_rem.cc
 	$(LINT) $(LINTFLAGS) $?
@@ -962,7 +1108,7 @@ nbe.sqrt.ln : nbe.cc
 #
 
 clean :
-	/bin/rm -f *.o *.s *.ln a.out mon.out autodock4 autodock4sqrt autodock4minpt dualmap libad.a
+	/bin/rm -f *.o *.s *.ln a.out mon.out autodock4 autodock4sqrt autodock4minpt dualmap libad.a default_parameters.h
 
 cleanlcheck :
 	/bin/rm -f *.ln
