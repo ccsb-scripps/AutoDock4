@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.18 2005/08/02 23:02:54 garrett Exp $
+ $Id: main.cc,v 1.19 2005/08/15 23:11:47 garrett Exp $
 
 */
 
@@ -136,6 +136,7 @@ char selminpar = 'm';
 char S_contype[8];
 char torfmt[LINE_LEN];
 char ligand_atom_types[MAX_MAPS][3];
+char c_mode_str[MAX_CHARS];
 
 static ParameterEntry * foundParameter;
 ParameterEntry parameterArray[MAX_MAPS];
@@ -429,10 +430,10 @@ time_t time_seed;
 
 //  The GA Stuff
 FourByteLong seed[2];
-unsigned int pop_size = 50;
+unsigned int pop_size = 200;
 unsigned int num_generations = 0;  //  Don't terminate on the basis of number of generations
-unsigned int num_evals = 150000;
-unsigned int max_its = 30;
+unsigned int num_evals = 250000;
+unsigned int max_its = 300;
 unsigned int max_succ = 4;
 unsigned int max_fail = 4;
 int window_size = 10;
@@ -442,7 +443,7 @@ int elitism = 1;
 
 
 Selection_Mode s_mode = Proportional;
-Xover_Mode c_mode = TwoPt;
+Xover_Mode c_mode = TwoPt;  //  can be: OnePt, TwoPt, Uniform or Arithmetic
 Worst_Mode w_mode = AverageOfN;
 EvalMode e_mode = Normal_Eval;
 Global_Search *GlobalSearchMethod = NULL;
@@ -589,11 +590,6 @@ if (clktck == 0) {        /* fetch clock ticks per second first time */
 
 (void) strcpy(FN_rms_ref_crds,"unspecified filename\0");
 
-//______________________________________________________________________________
-//
-// Read in default parameters
-
-// read_parameter_library(FN_parameter_library, outlev);
 
 //______________________________________________________________________________
 /*
@@ -608,6 +604,7 @@ F_lnH = ((FloatOrDouble)log(0.5));
 */
 
 banner( version );
+
 
 //______________________________________________________________________________
 /*
@@ -624,6 +621,20 @@ if (gethostname( hostnm, MAX_CHARS ) == 0) {
 }
 
 pr( logFile, "\nNOTE: \"rus\" stands for:\n\n      r = Real, wall-clock or elapsed time;\n      u = User or cpu-usage time;\n      s = System time\n\nAll timings are in seconds, unless otherwise stated.\n\n\n" );
+
+//______________________________________________________________________________
+
+(void) fprintf(logFile, "      ________________________________________________________________\n\n");
+
+//______________________________________________________________________________
+//
+// Read in default parameters
+//
+setup_parameter_library(outlev);
+
+//______________________________________________________________________________
+
+(void) fprintf(logFile, "      ________________________________________________________________\n\n");
 
 //______________________________________________________________________________
 /*
@@ -3268,6 +3279,36 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         (void) sscanf( line, "%*s %d", &i );
         */
+        (void) fflush(logFile);
+        break;
+
+/*____________________________________________________________________________*/
+
+    case GA_CROSSOVER_MODE:
+        /*
+         * crossover_mode OnePt
+         * crossover_mode TwoPt
+         * crossover_mode Uniform
+         * crossover_mode Arithmetic
+         *
+         * Xover_Mode c_mode = OnePt;  //  can be: OnePt, TwoPt, Uniform or Arithmetic
+         */
+        (void) sscanf( line, "%*s %s", c_mode_str );
+        if (strcmp(c_mode_str, "onept") == 0) {
+            c_mode = OnePt;
+            pr(logFile, "One-point crossover will be used in GA and LGA searches.\n");
+        } else if (strcmp(c_mode_str, "twopt") == 0) {
+            c_mode = TwoPt;
+            pr(logFile, "Two-point crossover will be used in GA and LGA searches.\n");
+        } else if (strcmp(c_mode_str, "uniform") == 0) {
+            c_mode = Uniform;
+            pr(logFile, "Uniform crossover will be used in GA and LGA searches.\n");
+        } else if (strcmp(c_mode_str, "arithmetic") == 0) {
+            c_mode = Arithmetic;
+            pr(logFile, "Arithmetic crossover will be used in GA and LGA searches.\n");
+        } else {
+            c_mode = Uniform; // default
+        }
         (void) fflush(logFile);
         break;
 
