@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.3 2005/03/11 02:11:30 garrett Exp $
+ $Id: nonbonds.cc,v 1.4 2005/08/15 23:39:38 garrett Exp $
 
 */
 
@@ -97,7 +97,7 @@ void getbonds(const float crdpdb[MAX_ATOMS][SPACE],
               int   bonded[MAX_ATOMS][6])
 {
     /* 2005-01-10 */
-	int i,j,k,l;
+	int i,j;
 	double dist,dx,dy,dz;
 
     // set up all the minimum and maximum possible distances for bonds
