@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.7 2005/03/23 00:31:06 garrett Exp $
+ $Id: analysis.cc,v 1.8 2005/08/15 22:44:41 garrett Exp $
 
 */
 
@@ -91,7 +91,9 @@ void analysis( int   Nnb,
     FloatOrDouble einter = 0.;
     FloatOrDouble eintra = 0.;
     static FloatOrDouble elec[MAX_ATOMS];
+    static FloatOrDouble elec_total;
     static FloatOrDouble emap[MAX_ATOMS];
+    static FloatOrDouble emap_total;
     // FloatOrDouble lo[3];
     static FloatOrDouble ref_crds[MAX_ATOMS][SPACE];
     static FloatOrDouble ref_rms[MAX_RUNS];
@@ -99,6 +101,7 @@ void analysis( int   Nnb,
     FloatOrDouble modtorDeg = 0.;
     FloatOrDouble MaxValue = 99.99;
 
+    int   a = 0;
     int   c = 0;
     int   c1 = 0;
     static int   cluster[MAX_RUNS][MAX_RUNS];
@@ -211,7 +214,7 @@ void analysis( int   Nnb,
 
         // For each member, k, of this cluster
         for (k = 0;  k < kmax;  k++) {
-            c = cluster[i][k];
+            // c = cluster[i][k];
             c1 = c + 1;
 
             (void)memcpy(crd, crdSave[c], natom*3*sizeof(FloatOrDouble));
@@ -229,8 +232,15 @@ void analysis( int   Nnb,
                                                       template_energy, template_stddev);
             }
 
+            emap_total = 0.0;
+            elec_total = 0.0;
+            for (a=0; a<natom; a++) {
+                emap_total += emap[a];
+                elec_total += elec[a];
+            }
+
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
-            printEnergies( einter, eintra, torsFreeEnergy, "USER    ", ligand_is_inhibitor );
+            printEnergies( einter, eintra, torsFreeEnergy, "USER    ", ligand_is_inhibitor, emap_total, elec_total );
      
             pr( logFile, "USER  \n");
             pr( logFile, "USER    DPF = %s\n", dock_param_fn);
