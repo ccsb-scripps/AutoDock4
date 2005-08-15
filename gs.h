@@ -11,7 +11,7 @@
 
 enum M_mode {ERR = -1, BitFlip, CauchyDev, IUniformSub};
 enum Selection_Mode {Proportional=0, Tournament=1, Boltzmann=2};
-enum Xover_Mode {TwoPt=0, OnePt=1, Uniform=2};
+enum Xover_Mode {TwoPt=0, OnePt=1, Uniform=2, Arithmetic=3};
 enum Worst_Mode {AverageOfN, OfN, Ever};
 
 class Global_Search
@@ -45,6 +45,7 @@ class Genetic_Algorithm : public Global_Search
       int low, high; // should these be int or FloatOrDouble?
       unsigned int generations; 
 	  unsigned int max_generations;
+      unsigned int outputEveryNgens; // gmm 2000.11.1,2003.08.18
       unsigned int converged; // gmm 7-jan-98
  	  FloatOrDouble *alloc;
       FloatOrDouble *mutation_table;
@@ -53,7 +54,6 @@ class Genetic_Algorithm : public Global_Search
       double worst, avg;
       double *worst_window;
 	  FloatOrDouble tournament_prob;
-      unsigned int outputEveryNgens; // gmm 2000.11.1,2003.08.18
 
       double worst_this_generation(Population &);
       void set_worst(Population &);
@@ -64,6 +64,8 @@ class Genetic_Algorithm : public Global_Search
       void mutation(Population &);
       void crossover(Population &);
       void crossover_2pt(Genotype &, Genotype &, unsigned int, unsigned int);
+      void crossover_uniform(Genotype &, Genotype &, unsigned int);
+      void crossover_arithmetic(Genotype &, Genotype &, FloatOrDouble);
       void selection_proportional(Population &, Individual *);
       void selection_tournament(Population &, Individual *);
       Individual *selection(Population &);
@@ -142,10 +144,10 @@ inline unsigned int Genetic_Algorithm::num_generations(void)
 inline int Genetic_Algorithm::terminate(void)
 {
    if (max_generations>0) {
-      // before 7-jan-98, was: return( generations >= max_generations );
-      return( (generations >= max_generations)  ||  (converged == 1)); // gmm 7-jan-98
+      // before 7-jan-98, was: return(generations>=max_generations);
+      return((generations>=max_generations)||(converged==1)); // gmm 7-jan-98
    } else {
-      return( 0 );  //  Don't terminate
+      return(0);  //  Don't terminate
    }
 }
 
