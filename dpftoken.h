@@ -111,6 +111,7 @@
 #define DPF_UNBOUND	    86
 #define DPF_EPDB	    87
 #define DPF_TERMINATION	    88
+#define GA_CROSSOVER_MODE	    89
 
 #endif
 /* EOF */
