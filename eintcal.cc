@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.8 2005/03/28 19:47:22 rhuey Exp $
+ $Id: eintcal.cc,v 1.9 2005/08/15 22:57:49 garrett Exp $
 
 */
 
@@ -87,28 +87,29 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
 {
 
 #ifndef  EINTCALPRINT
-//  eintcal [
-#ifndef  NOSQRT
-    register double r; //  SQRT
-#endif
-//  eintcal ]
+    //  eintcal [
+#   ifndef  NOSQRT
+        register double r=0.0L; //  SQRT
+#   endif
+    //  eintcal ]
 #else
-// eintcalPrint [
+    // eintcalPrint [
     register double epair=0.0L;
-#ifndef  NOSQRT
-    register double d; //  SQRT 
-#endif
-// eintcalPrint ]
+#   ifndef  NOSQRT
+        register double d=0.0L; //  SQRT 
+    #endif
+    // eintcalPrint ]
 #endif
 
-    register int inb;
-    register double eint=0.0L, dx, dy, dz;
+    register double eint=0.0L, dx=0.0L, dy=0.0L, dz=0.0L;
     register double dpair=0.0L;
-    register double r2 = 0.0L;
-    register int a1, a2;
-    register int t1, t2; // Xcode-gmm
-    register int nonbond_type; // if = 4, it is a 1_4;  otherwise it is another kind of nonbond
-    register int index;
+    register double r2=0.0L;
+
+    register int inb=0;
+    register int a1=0, a2=0;
+    register int t1=0, t2=0; // Xcode-gmm
+    register int nonbond_type=0; // if = 4, it is a 1_4;  otherwise it is another kind of nonbond
+    register int index=0;
 
 
 #ifdef EINTCALPRINT
@@ -194,9 +195,9 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
             // eintcalPrint [
             if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
                 // Compute a scaled 1-4 interaction, multiply by scale_1_4
-                epair+= scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair);
+                epair += scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair);
             } else {
-                epair+= e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair;
+                epair += e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair;
             }
             // eintcalPrint ]
 #   endif
@@ -280,9 +281,9 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
             // eintcalPrint [
             if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
                 // Compute a scaled 1-4 interaction, multiply by scale_1_4
-                epair+= scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair);
+                epair += scale_1_4 * (e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair);
             } else {
-                epair+= e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair;
+                epair += e_internal[SqAng_to_index_Int(r2)][t2][t1] + dpair;
             }
             // eintcalPrint ]
 #   endif
@@ -317,7 +318,7 @@ FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NB
     eint = eint - unbound_internal_FE;
 
 #ifdef EINTCALPRINT
-    pr( logFile, "\n\nIntramolecular Interaction Energy = %+8.3lf\n", (double)eint); // eintcalPrint
+    pr( logFile, "\n\nIntramolecular Interaction Energy = %+.3lf kcal/mol\n", (double)eint); // eintcalPrint
 #endif
 
     return (FloatOrDouble) eint;
