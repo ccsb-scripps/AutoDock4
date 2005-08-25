@@ -20,7 +20,7 @@ about 22.894 28.598 40.259           # small molecule center
 tran0 22.894 28.598 40.259           # small molecule center
 quat0 1 0 0 0                        # initial quaternion
 ndihe 11                             # number of active torsions
-dihe0 0                              # initial dihedrals (relative) or random
+dihe0 0 0 0 0 0 0 0 0 0 0 0          # initial dihedrals (relative) or random
 tstep 0.0                            # translation step/A
 qstep 0.0                            # quaternion step/deg
 dstep 0.0                            # torsion step/deg
