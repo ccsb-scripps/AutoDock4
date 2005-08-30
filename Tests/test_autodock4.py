@@ -1,7 +1,7 @@
 #
 # 
 #
-# $Id: test_autodock4.py,v 1.2 2005/08/25 15:08:05 rhuey Exp $
+# $Id: test_autodock4.py,v 1.3 2005/08/30 17:32:44 rhuey Exp $
 #
 """
 
@@ -10,10 +10,12 @@
 
 import os
 import unittest
-from AutoDockTools.Docking import Docking
+from DlgParser import DlgParser
 
 computed_dlg = False
+computed_dlg_no_parameter_library = False
 expected_value = -7.13
+expected_internal_energy_value = 1.19e-07
 
 
 class Autodock4_1pgp_test(unittest.TestCase):
@@ -26,24 +28,20 @@ class Autodock4_1pgp_test(unittest.TestCase):
         Locate the autodock binary now during setUp.
         """
         global computed_dlg
-        self.autodock = "../autodock4"
-        dpf_filename = "1pgp.dpf"
         self.dlg_filename = "test_1pgp.dlg"
-        command = "rm -f " + self.dlg_filename
-        os.system(command)
-        cmd_str = "%s -p %s -l %s" % \
-                  (self.autodock, dpf_filename, self.dlg_filename)
-        #print "\ncomputing new " + self.dlg_filename + ":\n"
-        (i,o,e) = os.popen3(cmd_str) # trap all the outputs
-        #print 'waiting...'
-        os.wait() # for the child process to finish
-        #print "after wait\n"
-        computed_dlg = True
-
-
-    def tearDown(self):
-        #??do something here??
-        computed_dlg = False
+        if computed_dlg is False:
+            self.autodock = "../autodock4"
+            dpf_filename = "1pgp.dpf"
+            command = "rm -f " + self.dlg_filename
+            os.system(command)
+            cmd_str = "%s -p %s -l %s" % \
+                      (self.autodock, dpf_filename, self.dlg_filename)
+            print "\ncomputing new " + self.dlg_filename + ":"
+            (i,o,e) = os.popen3(cmd_str) # trap all the outputs
+            #print 'waiting...'
+            os.wait() # for the child process to finish
+            #print "after wait\n"
+            computed_dlg = True
 
 
     def test_check_result_exists(self):
@@ -53,12 +51,19 @@ class Autodock4_1pgp_test(unittest.TestCase):
 
     def test_check_result_energy(self):
         """ check the final energy is expected value """
-        global expected_value
-        d = Docking()
-        d.readDlg(self.dlg_filename)
-        c = d.ch.conformations[0]
-        self.assertAlmostEqual(c.intermol_energy, expected_value)
+        global expected_value, expected_internal_energy_value
+        parser = DlgParser()
+        parser.parse(self.dlg_filename)
+        docked = parser.clist[0]  #dictionary of results
+        intermol_energy = docked['intermol_energy']  #-7.13
+        #d = Docking()
+        #d.readDlg(self.dlg_filename)
+        #c = d.ch.conformations[0]
         #self.assertAlmostEqual(c.intermol_energy, -7.13)
+        #self.assertAlmostEqual(c.intermol_energy, expected_value)
+        self.assertAlmostEqual(intermol_energy, expected_value)
+        internal_energy = docked['internal_energy']  #1.19e-07
+        self.assertAlmostEqual(internal_energy, expected_internal_energy_value)
 
 
 class Autodock4_1pgp_no_parameter_file_test(unittest.TestCase):
@@ -71,24 +76,20 @@ class Autodock4_1pgp_no_parameter_file_test(unittest.TestCase):
         Locate the autodock binary now during setUp.
         """
         global computed_dlg_no_parameter_library
-        self.autodock = "../autodock4"
-        dpf_filename = "1pgp_no_parameter_file.dpf"
         self.dlg_filename = "test_1pgp_no_parameter_file.dlg"
-        command = "rm -f " + self.dlg_filename
-        os.system(command)
-        cmd_str = "%s -p %s -l %s" % \
-                  (self.autodock, dpf_filename, self.dlg_filename)
-        #print "\ncomputing new " + self.dlg_filename + ":\n"
-        (i,o,e) = os.popen3(cmd_str) # trap all the outputs
-        #print 'waiting...'
-        os.wait() # for the child process to finish
-        #print "after wait\n"
-        computed_dlg_no_parameter_library = True
-
-
-    def tearDown(self):
-        #??do something here??
-        computed_dlg_no_parameter_library = False
+        if computed_dlg_no_parameter_library is False:
+            self.autodock = "../autodock4"
+            dpf_filename = "1pgp_no_parameter_file.dpf"
+            command = "rm -f " + self.dlg_filename
+            os.system(command)
+            cmd_str = "%s -p %s -l %s" % \
+                      (self.autodock, dpf_filename, self.dlg_filename)
+            print "\ncomputing new " + self.dlg_filename + ":"
+            (i,o,e) = os.popen3(cmd_str) # trap all the outputs
+            #print 'no_parameterfile: waiting...'
+            os.wait() # for the child process to finish
+            #print "no_parameterfile: after wait\n"
+            computed_dlg_no_parameter_library = True
 
 
     def test_check_result_exists_default_parameter_file(self):
@@ -97,13 +98,20 @@ class Autodock4_1pgp_no_parameter_file_test(unittest.TestCase):
 
 
     def test_check_result_energy_default_parameter_file(self):
-        """ using default parameter file: check the final energy is expected value """
-        global expected_value
-        d = Docking()
-        d.readDlg(self.dlg_filename)
-        c = d.ch.conformations[0]
-        self.assertAlmostEqual(c.intermol_energy, expected_value)
+        """ check the final energy is expected value """
+        global expected_value, expected_internal_energy_value
+        parser = DlgParser()
+        parser.parse(self.dlg_filename)
+        docked = parser.clist[0]  #dictionary of results
+        intermol_energy = docked['intermol_energy']  #-7.13
+        #d = Docking()
+        #d.readDlg(self.dlg_filename)
+        #c = d.ch.conformations[0]
         #self.assertAlmostEqual(c.intermol_energy, -7.13)
+        #self.assertAlmostEqual(c.intermol_energy, expected_value)
+        self.assertAlmostEqual(intermol_energy, expected_value)
+        internal_energy = docked['internal_energy']  #1.19e-07
+        self.assertAlmostEqual(internal_energy, expected_internal_energy_value)
 
 
 if __name__ == '__main__':
