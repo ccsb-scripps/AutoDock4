@@ -7,9 +7,9 @@
 #############################################################################
 
 
-# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/AutoDockTools/Attic/DlgParser.py,v 1.1 2005/08/30 16:46:35 rhuey Exp $
+# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/AutoDockTools/Attic/DlgParser.py,v 1.2 2005/08/30 16:52:59 rhuey Exp $
 #
-# $Id: DlgParser.py,v 1.1 2005/08/30 16:46:35 rhuey Exp $
+# $Id: DlgParser.py,v 1.2 2005/08/30 16:52:59 rhuey Exp $
 #
 #
 #
@@ -26,7 +26,6 @@ import os
 from string import find, join, replace, split, rfind, strip
 import re
 import Numeric
-from MolKit.pdbParser import PdbqParser
 
 from AutoDockTools.ResultParser import ResultParser
 
