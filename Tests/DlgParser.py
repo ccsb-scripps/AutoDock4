@@ -7,9 +7,9 @@
 #############################################################################
 
 
-# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.1 2005/08/30 17:16:48 rhuey Exp $
+# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.2 2005/08/30 17:19:18 rhuey Exp $
 #
-# $Id: DlgParser.py,v 1.1 2005/08/30 17:16:48 rhuey Exp $
+# $Id: DlgParser.py,v 1.2 2005/08/30 17:19:18 rhuey Exp $
 #
 #
 #
@@ -185,11 +185,11 @@ class DlgParser(ResultParser):
             lines = d['lines']
             if lines==[]:
                 input_key = 'INPUT-PDBQ: '
-                if k==input_key:
-                    if self.version!=4.0:
-                        print "!!no lines found for key=", k, "!!"
-                else:
-                    print "!!no lines found for key=", k, "!!"
+                #if k==input_key:
+                #    if self.version!=4.0:
+                #        print "!!no lines found for key=", k, "!!"
+                #else:
+                #    print "!!no lines found for key=", k, "!!"
             else:
                 apply(d['func'], (lines,), {})
 
