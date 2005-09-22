@@ -440,7 +440,7 @@ endif
 # Makefile targets
 #
 
-autodock4 : main.o $(ADLIB) $(COLINYLIB)
+autodock4 : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -448,7 +448,7 @@ autodock4 : main.o $(ADLIB) $(COLINYLIB)
 	@echo " "
 	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock4sqrt : main.o $(ADLIB) $(COLINYLIB)
+autodock4sqrt : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -456,7 +456,7 @@ autodock4sqrt : main.o $(ADLIB) $(COLINYLIB)
 	@echo " "
 	$(CC) $(CFLAGS) -o $@ main.o -L. -lad $(LIB)
 
-autodock4minpt : main.o $(ADLIB) $(COLINYLIB)
+autodock4minpt : main.o $(ADLIB)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -506,7 +506,7 @@ testdriver: testdriver.o $(OFILES)
 lsfitclean:
 	rm -f $(OFILES) lsfit.o lsfit testdriver.o testdriver
 
-autodock4lsfit : main.o cnv_state_to_coords_lsfit.o $(OBJS_LSFIT) $(COLINYLIB) $(OFILES)
+autodock4lsfit : main.o cnv_state_to_coords_lsfit.o $(OBJS_LSFIT) $(OFILES)
 	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
@@ -622,7 +622,7 @@ eintcalPrint.o : eintcal.cc eintcal.h constants.h
 	$(CC) $(CFLAGS) -DNOSQRT -DBOUNDED -DEINTCALPRINT -c eintcal.cc -o eintcalPrint.o
 
 eval.o : eval.cc eval.h structs.h constants.h autocomm.h 
-	$(CC) $(CFLAGS) -c eval.cc
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c eval.cc
 
 evaluate_energy.o : evaluate_energy.cc evaluate_energy.h constants.h trilinterp.h eintcal.h
 	$(CC) $(CFLAGS) -c evaluate_energy.cc
@@ -664,7 +664,7 @@ ls.o : ls.cc ls.h support.h ranlib.h
 	$(CC) $(CFLAGS) -c ls.cc
 
 main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcal.cc eintcal.h atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h
-	$(CC) $(OLIMIT) -c -DEINTCALPRINT -DWRITEPDBQSTATE main.cc
+	$(CC) $(OLIMIT) $(ACRO_INCLUDES) -c -DEINTCALPRINT -DWRITEPDBQSTATE main.cc
 
 mapping.o : mapping.cc support.h
 	$(CC) $(CFLAGS) -c mapping.cc
@@ -697,7 +697,7 @@ parse_com_line.o : parse_com_line.cc cmdtokens.h parse_com_line.h constants.h
 	$(CC) $(CFLAGS) -c parse_com_line.cc
 
 parse_dpf_line.o : parse_dpf_line.cc parse_dpf_line.h constants.h dpftoken.h
-	$(CC) $(CFLAGS) -c parse_dpf_line.cc
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c parse_dpf_line.cc
 
 parse_param_line.o : parse_param_line.cc partokens.h  parse_param_line.h constants.h
 	$(CC) $(CFLAGS) -c parse_param_line.cc
