@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.19 2005/08/15 23:11:47 garrett Exp $
+ $Id: main.cc,v 1.20 2005/09/22 00:17:34 garrett Exp $
 
 */
 
@@ -513,41 +513,12 @@ if ( setflags(argc,argv) == -1) {
 ** Initialize torsion arrays and constants.
 */
 
-(void) strcpy( torfmt, "%*s\0" ); /* len(torfmt) is 4 chars */
-
-for (j = 0;  j < MAX_ATOMS;  j++ ) {
-    type[j] = 0;
-    template_energy[j] = 0.0;
-    template_stddev[j] = 1.0;
-    ignore_inter[j] = 0;
-}
-
-for (i = 0; i  < MAX_TORS;  i++ ) {
-    for (j = 0;  j < MAX_ATOMS;  j++ ) {
-        tlist[i][j] = 0;
-    }
-}
-
-for (i = 0; i  < MAX_TORS;  i++ ) {
-    B_isTorConstrained[i] = 0;
-    US_torProfile[i][0] = 0;
-    N_con[i] = 0;
-}
-
-initialiseState( &sInit );
-initialiseState( &(mol.S) );
-
 F_W      =  360.0 / NTORDIVS;
 F_hW     =  F_W  / 2.0;
 F_A_from = -360.0 + F_hW;
 F_A_to   =  360.0 + F_hW;
 
-for (k = 0; k < MAX_RUNS; k++) {
-    for (i = 0; i  < MAX_TORS;  i++ ) {
-        sHist[k].tor[i] = 0.0;
-    }
-}
-
+(void) strcpy( torfmt, "%*s\0" ); /* len(torfmt) is 4 chars */
 for (i = 0; i < MAX_TORS;  i++ ) {
     if ( (ltorfmt += 4) > LINE_LEN ) {
         prStr( error_message, "ERROR: MAX_TORS = %d torsions declared in \"constants.h\";\n\t LINE_LEN = %d, Therefore you must change \"LINE_LEN\" to exceed %d...\n", MAX_TORS, LINE_LEN, 4+4*MAX_TORS );
@@ -558,18 +529,6 @@ for (i = 0; i < MAX_TORS;  i++ ) {
     }
 } /* len(torfmt) is 4+4*MAX_TORS chars */
 
-for (j = 0; j < MAX_NONBONDS; j++) {
-    nonbondlist[j][ATM1] = nonbondlist[j][ATM2] = 0;
-}
-
-for (j = 0; j < MAX_RUNS; j++) {
-    // isort[j] = j;
-    econf[j] = 0.0;
-}
-
-B_constrain_dist = B_haveCharges = FALSE;
-ntor1 = ntor = atomC1 = atomC2 = 0;
-sqlower = squpper = 0.0;
 
 timeSeedIsSet[0] = 'F';
 timeSeedIsSet[1] = 'F';
@@ -813,8 +772,45 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_MOVE:
         /*
         ** move
-        ** Movable ligand,
+        ** Specify the movable ligand, and sidechains in the protein if desired
         */
+        //
+        // Initialisations that must be done before reading in a new ligand...
+        //
+        nconf = 0;
+        for (k = 0; k < MAX_RUNS; k++) {
+            for (i = 0; i  < MAX_TORS;  i++ ) {
+                sHist[k].tor[i] = 0.0;
+            }
+        }
+        for (j = 0; j < MAX_NONBONDS; j++) {
+            nonbondlist[j][ATM1] = nonbondlist[j][ATM2] = 0;
+        }
+        for (j = 0; j < MAX_RUNS; j++) {
+            // isort[j] = j;
+            econf[j] = 0.0;
+        }
+        for (j = 0;  j < MAX_ATOMS;  j++ ) {
+            type[j] = 0;
+            template_energy[j] = 0.0;
+            template_stddev[j] = 1.0;
+            ignore_inter[j] = 0;
+        }
+        for (i = 0; i  < MAX_TORS;  i++ ) {
+            for (j = 0;  j < MAX_ATOMS;  j++ ) {
+                tlist[i][j] = 0;
+            }
+        }
+        for (i = 0; i  < MAX_TORS;  i++ ) {
+            B_isTorConstrained[i] = 0;
+            US_torProfile[i][0] = 0;
+            N_con[i] = 0;
+        }
+        initialiseState( &sInit );
+        initialiseState( &(mol.S) );
+        B_constrain_dist = B_haveCharges = FALSE;
+        ntor1 = ntor = atomC1 = atomC2 = 0;
+        sqlower = squpper = 0.0;
         B_found_move_keyword = TRUE;
 
         print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
@@ -972,9 +968,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   if (timeSeedIsSet[1] == 'T') {
                       seed[1] = (FourByteLong)time( &time_seed );
                   }
-                  setall(seed[0], seed[1]);
-                  initgn(-1); // Reinitializes the state of the current generator
-
+                  if (timeSeedIsSet[0] == 'T' || timeSeedIsSet[1] == 'T') {
+                      setall(seed[0], seed[1]);
+                      initgn(-1); // Reinitializes the state of the current generator
+                  } else {
+                      pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
+                  }
                   pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
                   (void) fflush(logFile);
 
@@ -2200,6 +2199,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       if (GlobalSearchMethod != NULL) {
           pr(logFile, "Deleting the previous settings for the Genetic Algorithm.\n");
           delete GlobalSearchMethod;
+          GlobalSearchMethod = NULL;
       }
 
       pr(logFile, "Creating a new Genetic Algorithm object with the current parameters.\n\n");
@@ -2234,6 +2234,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       if (LocalSearchMethod != NULL) {
           pr(logFile, "Deleting the previous settings for the local search Solis-Wets algorithm (SW1 object).\n");
           delete LocalSearchMethod;
+          LocalSearchMethod = NULL;
       }
 
       pr(logFile, "Creating a new Local Search object using the Solis-Wets algorithm (SW1) with the current settings.\n\n");
@@ -2248,6 +2249,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       if (LocalSearchMethod != NULL) {
           pr(logFile, "Deleting the previous settings for the local search pseudo-Solis-Wets algorithm (pSW1 object).\n");
           delete LocalSearchMethod;
+          LocalSearchMethod = NULL;
       }
 
       pr(logFile, "Creating a new Local Search object using the pseudo-Solis-Wets algorithm (pSW1) with the current settings.\n\n");
@@ -2334,9 +2336,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     pr(logFile, "Updating Second Time-dependent Seed Now.\n");
                     seed[1] = (FourByteLong)time( &time_seed );
                 }
-                setall(seed[0], seed[1]);
-                initgn(-1); // Reinitializes the state of the current random number generator
-                pr(logFile, "Seeds:\t%ld %ld\nDate:\t", seed[0], seed[1]);
+                if (timeSeedIsSet[0] == 'T' || timeSeedIsSet[1] == 'T') {
+                    setall(seed[0], seed[1]);
+                    initgn(-1); // Reinitializes the state of the current generator
+                } else {
+                    pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
+                }
+                pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
+                pr(logFile, "Date:\t");
                 printdate( logFile, 2 );
                 (void) fflush( logFile );
 
@@ -2449,11 +2456,18 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                if (timeSeedIsSet[1] == 'T') {
                    seed[1] = (FourByteLong)time( &time_seed );
                }
-               setall(seed[0], seed[1]);
-               initgn(-1); // Reinitializes the state of the current generator
 
-               pr(logFile, "Seeds: %ld %ld\n", seed[0], seed[1]);
+               if (timeSeedIsSet[0] == 'T' || timeSeedIsSet[1] == 'T') {
+                   setall(seed[0], seed[1]);
+                   initgn(-1); // Reinitializes the state of the current generator
+               } else {
+                   pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
+               }
+               pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
+               pr(logFile, "Date:\t");
+               printdate( logFile, 2 );
                (void) fflush( logFile );
+
                gaStart = times( &tms_gaStart );
 
                sHist[nconf] = call_ls(LocalSearchMethod, sInit, pop_size, &mol);
@@ -2546,11 +2560,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               if (timeSeedIsSet[1] == 'T') {
                   seed[1] = (FourByteLong)time( &time_seed );
               }
-              setall(seed[0], seed[1]);
-              initgn(-1); // Reinitializes the state of the current generator
 
+              if (timeSeedIsSet[0] == 'T' || timeSeedIsSet[1] == 'T') {
+                  setall(seed[0], seed[1]);
+                  initgn(-1); // Reinitializes the state of the current generator
+              } else {
+                  pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
+              }
               pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
-              (void) fflush(logFile);
+              pr(logFile, "Date:\t");
+              printdate( logFile, 2 );
+              (void) fflush( logFile );
 
               gaStart = times(&tms_gaStart);
 
