@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.8 2005/08/15 22:44:41 garrett Exp $
+ $Id: analysis.cc,v 1.9 2005/09/23 17:48:44 mchang Exp $
 
 */
 
@@ -214,7 +214,7 @@ void analysis( int   Nnb,
 
         // For each member, k, of this cluster
         for (k = 0;  k < kmax;  k++) {
-            // c = cluster[i][k];
+            c = cluster[i][k];
             c1 = c + 1;
 
             (void)memcpy(crd, crdSave[c], natom*3*sizeof(FloatOrDouble));
