@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.20 2005/09/22 00:17:34 garrett Exp $
+ $Id: main.cc,v 1.21 2005/09/23 17:55:12 mchang Exp $
 
 */
 
@@ -982,12 +982,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   finalpt.resize( initvec.size() );
                   int neval, niters;
                   coliny_minimize( seed[0]+seed[1]*j+j, initvec, finalpt, neval, niters );
+                  make_state_from_rep( (double *)finalpt.data(), int(finalpt.size()), &sHist[nconf]);
                   //fstr.flush();
 
-                  make_state_from_rep( (double *)&finalpt, int(finalpt.size()), &sHist[nconf]);
 
                   pr(logFile, "\nFinal docked state:\n");
-                  pr(logFile, "\nTotal Num Evals: %d\n", neval);
+                  //pr(logFile, "\nTotal Num Evals: %d\n", neval);
                   printState(logFile, sHist[nconf], 2);
 
                   colinyEnd = times(&tms_colinyEnd);
@@ -997,7 +997,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   (void) fflush(logFile);
 
                   pr(logFile, "Total number of Energy Evaluations: %d\n", (int)evaluate.evals() );
-                  pr(logFile, "Total number of Iterations:        %d\n", (int)niters);
+                  //pr(logFile, "Total number of Iterations:        %d\n", (int)niters);
 
                   pr( logFile, UnderLine );
                   pr( logFile, "\n\n\tFINAL Coliny %s DOCKED STATE\n",algname );
