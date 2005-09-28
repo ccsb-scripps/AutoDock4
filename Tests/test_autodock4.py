@@ -1,7 +1,7 @@
 #
 # 
 #
-# $Id: test_autodock4.py,v 1.3 2005/08/30 17:32:44 rhuey Exp $
+# $Id: test_autodock4.py,v 1.4 2005/09/28 22:58:06 garrett Exp $
 #
 """
 
@@ -59,11 +59,11 @@ class Autodock4_1pgp_test(unittest.TestCase):
         #d = Docking()
         #d.readDlg(self.dlg_filename)
         #c = d.ch.conformations[0]
-        #self.assertAlmostEqual(c.intermol_energy, -7.13)
-        #self.assertAlmostEqual(c.intermol_energy, expected_value)
-        self.assertAlmostEqual(intermol_energy, expected_value)
+        #self.assertAlmostEqual(c.intermol_energy, -7.13, places=6)
+        #self.assertAlmostEqual(c.intermol_energy, expected_value, places=6)
+        self.assertAlmostEqual(intermol_energy, expected_value, places=6)
         internal_energy = docked['internal_energy']  #1.19e-07
-        self.assertAlmostEqual(internal_energy, expected_internal_energy_value)
+        self.assertAlmostEqual(internal_energy, expected_internal_energy_value, places=6)
 
 
 class Autodock4_1pgp_no_parameter_file_test(unittest.TestCase):
@@ -107,11 +107,11 @@ class Autodock4_1pgp_no_parameter_file_test(unittest.TestCase):
         #d = Docking()
         #d.readDlg(self.dlg_filename)
         #c = d.ch.conformations[0]
-        #self.assertAlmostEqual(c.intermol_energy, -7.13)
-        #self.assertAlmostEqual(c.intermol_energy, expected_value)
-        self.assertAlmostEqual(intermol_energy, expected_value)
+        #self.assertAlmostEqual(c.intermol_energy, -7.13, places=6)
+        #self.assertAlmostEqual(c.intermol_energy, expected_value, places=6)
+        self.assertAlmostEqual(intermol_energy, expected_value, places=6)
         internal_energy = docked['internal_energy']  #1.19e-07
-        self.assertAlmostEqual(internal_energy, expected_internal_energy_value)
+        self.assertAlmostEqual(internal_energy, expected_internal_energy_value, places=6)
 
 
 if __name__ == '__main__':
