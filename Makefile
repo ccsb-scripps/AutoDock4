@@ -10,7 +10,7 @@
 # Edit this Makefile to reflect your machine architecture and OS
 #
 # Specifically, change these variables:
-# 	LIB, CSTD, CFLAGS, OPT, OLIMIT, LINT, LINTFLAGS, LINK, WARN, & CC
+# 	LIB, CSTD, CFLAGS, OPT, LINT, LINTFLAGS, LINK, WARN, & CC
 #
 # If you need to use debugging or profiling, these should also be 
 # modified appropriately:
@@ -56,6 +56,7 @@ OBJS = \
     cmdmode.o \
     cnv_state_to_coords.o \
     com.o \
+	distdepdiel.o \
     stateLibrary.o \
     readfield.o \
     readmap.o \
@@ -143,6 +144,7 @@ OBJS_LSFIT = \
     clmode.o \
     cmdmode.o \
     com.o \
+	distdepdiel.o \
     stateLibrary.o \
     readfield.o \
     readmap.o \
@@ -351,10 +353,6 @@ CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, 
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; also use Double precision throughout
 # CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X`
 
-OLIMIT = $(CSTD) $(OPT) # SGI, Sun, HP, Convex, Cygwin, Linux, MacOS X
-# OLIMIT = $(CSTD) $(OPT) -OPT:Olimit=2500 # Alpha, Some SGIs
-# OLIMIT = $(CFLAGS) # Do not optimize
-
 OPTLEVEL = -O3 # Agressive optimization
 # OPTLEVEL = -fast # Agressive optimization for the G5 on Mac OS X
 # OPTLEVEL = -O2 # High optimization
@@ -401,11 +399,11 @@ LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X
 # LINTFLAGS = -DHPPA -D_HPUX_SOURCE $(LIB) -c # HP
 # LINTFLAGS = -u -n -lm # Sun
 
-DBUG = # Use assert code
+# DBUG = # Use assert code
 # DBUG = -DNDEBUG # No debugging and no assert code
 # DBUG = -g # dbx, or Gnu gdb
 # DBUG = -g -DDEBUG # dbx + DEBUG-specific code
-# DBUG = -g3 # dbx + optimization
+DBUG = -g3 # dbx + optimization
 # DBUG = -g3 -DDEBUG # dbx + optimization, + DEBUG-specific code
 # DBUG = -DDEBUG # Just DEBUG-specific code
 # DBUG = -DDEBUG2 # Just DEBUG2-specific code for tracking prop.selection
@@ -547,7 +545,7 @@ dualmap : dualmap.c
 .SUFFIXES: .cc .c .i
 
 .cc.i:
-	$(CC) $(OLIMIT) -E $< > $*.i
+	$(CC) $(CFLAGS) -E $< > $*.i
 
 .c.i:
 	$(CC) $(CFLAGS) -E $< > $*.i
@@ -608,6 +606,9 @@ cnv_state_to_coords_lsfit.o : cnv_state_to_coords.cc cnv_state_to_coords.h const
 com.o : com.cc ranlib.h
 	$(CC) $(CFLAGS) -c com.cc
 
+distdepdiel.o : distdepdiel.cc distdepdiel.h
+	$(CC) $(CFLAGS) -c distdepdiel.cc
+
 stateLibrary.o : stateLibrary.cc stateLibrary.h constants.h
 	$(CC) $(CFLAGS) -c stateLibrary.cc
 
@@ -655,7 +656,7 @@ investigate.o : investigate.cc investigate.h constants.h changeState.h mkRandomS
 	$(CC) $(CFLAGS) -c investigate.cc
 
 intnbtable.o : intnbtable.cc intnbtable.h constants.h
-	$(CC) $(OLIMIT) -DNOSQRT -c intnbtable.cc
+	$(CC) $(CFLAGS) -DNOSQRT -c intnbtable.cc
 
 linpack.o : linpack.cc
 	$(CC) $(CFLAGS) -c linpack.cc
@@ -664,7 +665,7 @@ ls.o : ls.cc ls.h support.h ranlib.h
 	$(CC) $(CFLAGS) -c ls.cc
 
 main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcal.cc eintcal.h atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h
-	$(CC) $(OLIMIT) $(ACRO_INCLUDES) -c -DEINTCALPRINT -DWRITEPDBQSTATE main.cc
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c -DEINTCALPRINT -DWRITEPDBQSTATE main.cc
 
 mapping.o : mapping.cc support.h
 	$(CC) $(CFLAGS) -c mapping.cc
@@ -682,7 +683,7 @@ mkRandomState.o : mkRandomState.cc mkRandomState.h constants.h
 	$(CC) $(CFLAGS) -c mkRandomState.cc
 
 nbe.o : nbe.cc nbe.h constants.h
-	$(CC) $(OLIMIT) -DNOSQRT -c nbe.cc
+	$(CC) $(CFLAGS) -DNOSQRT -c nbe.cc
 
 nonbonds.o : nonbonds.cc nonbonds.h constants.h mdist.h
 	$(CC) $(CFLAGS) -c nonbonds.cc
@@ -769,7 +770,7 @@ readmap.o : readmap.cc readmap.h constants.h openfile.h warn_bad_file.h strindex
 	$(CC) $(CFLAGS) -c readmap.cc
 
 readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h mdist.h atom_parameter_manager.cc atom_parameter_manager.h 
-	$(CC) $(OLIMIT) -c readPDBQT.cc
+	$(CC) $(CFLAGS) -c readPDBQT.cc
 
 default_parameters.h : AD4_parameters.dat paramdat2h.csh
 	rm -f $@
@@ -792,7 +793,7 @@ setflags.o : setflags.cc setflags.h
 	$(CC) $(CFLAGS) -c setflags.cc
 
 simanneal.o : simanneal.cc simanneal.h constants.h autocomm.h
-	$(CC) $(OLIMIT) -c simanneal.cc
+	$(CC) $(CFLAGS) -c simanneal.cc
 
 sort_enrg.o : sort_enrg.cc sort_enrg.h constants.h
 	$(CC) $(CFLAGS) -c sort_enrg.cc
@@ -849,7 +850,7 @@ eintcalPrint.sqrt.o : eintcal.cc eintcal.h constants.h
 	$(CC) $(CFLAGS) -c -DBOUNDED -DEINTCALPRINT eintcal.cc -o eintcalPrint.sqrt.o
 
 intnbtable.sqrt.o : intnbtable.cc intnbtable.h constants.h
-	$(CC) $(OLIMIT) -c intnbtable.cc -o intnbtable.sqrt.o
+	$(CC) $(CFLAGS) -c intnbtable.cc -o intnbtable.sqrt.o
 
 nbe.sqrt.o : nbe.cc nbe.h constants.h
 	$(CC) $(CFLAGS) -c nbe.cc -o nbe.sqrt.o
@@ -895,7 +896,7 @@ cnv_state_to_coords.ln : cnv_state_to_coords.cc
 	$(LINT) $(LINTFLAGS) $?
 
 stateLibrary.ln : stateLibrary.cc
-	$(CC) $(CFLAGS) -c $?
+	$(LINT) $(LINTFLAGS) $?
 
 readfield.ln : readfield.cc
 	$(LINT) $(LINTFLAGS) $?
@@ -1071,6 +1072,7 @@ weedbonds.ln : weedbonds.cc
 warn_bad_file.ln : warn_bad_file.cc
 	$(LINT) $(LINTFLAGS) $?
 
+
 #
 # NOSQRT conditionals activated:
 #
@@ -1086,6 +1088,7 @@ intnbtable.ln : intnbtable.cc
 
 nbe.ln : nbe.cc
 	$(LINT) $(LINTFLAGS) -DNOSQRT $?
+
 
 #
 # NOSQRT conditionals NOT activated:
