@@ -54,16 +54,13 @@ int     ignore_errors = FALSE;
 int     keepresnum = 1;
 int     oldpdbq = FALSE;
 int     parse_tors_mode = FALSE;
-
-int	true_ligand_atoms = 0;
-
+int	    true_ligand_atoms = 0;
 
 FILE    *command_in_fp;
 FILE    *command_out_fp;
 FILE    *parFile;
 FILE    *GPF;
 FILE    *logFile;
-
 
 #ifdef USE_DOUBLE
 FloatOrDouble	idct = 1.0L;

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "autocomm.h"
+#include "constants.h"
 #include "parameters.h"
 #include "openfile.h"
 #include "parse_param_line.h"
@@ -285,3 +286,4 @@ void setup_parameter_library( int outlev )
     } // while there is another line of parameters to read in
 }
 
+/* EOF */

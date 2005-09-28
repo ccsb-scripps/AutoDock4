@@ -57,5 +57,8 @@ Molecule readPDBQT( char  line[LINE_LEN],
 
               int   ignore_inter[MAX_ATOMS],
               
-              int   B_include_1_4_interactions);
+              int   B_include_1_4_interactions,
+              
+              Atom  atoms[MAX_ATOMS]
+              );
 #endif

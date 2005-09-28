@@ -1,6 +1,6 @@
 /*
 
- $Id: timesyshms.cc,v 1.4 2005/03/11 02:11:31 garrett Exp $
+ $Id: timesyshms.cc,v 1.5 2005/09/28 22:54:21 garrett Exp $
 
 */
 
@@ -12,10 +12,16 @@
 
 #include <stdio.h>
 #include <sys/types.h>
+
+#ifndef _WIN32
 #include <sys/times.h>
-#include <time.h>
 #include <unistd.h>
+#else
+#include "times.h"
+#endif
 #include "timesyshms.h"
+
+#include <time.h>
 
 
 extern  FILE    *logFile;
@@ -23,9 +29,9 @@ extern	FloatOrDouble	idct;
 
 /*----------------------------------------------------------------------------*/
 
-void timesyshms( Clock  duration,
-		 struct tms *start,
-		 struct tms *end )
+void timesyshms( Clock     duration,
+                 struct tms  *start,
+                 struct tms  *end)
 
 /*----------------------------------------------------------------------------*/
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: call_gs.cc,v 1.4 2004/02/12 05:50:47 garrett Exp $
+ $Id: call_gs.cc,v 1.5 2005/09/28 22:54:19 garrett Exp $
 
 */
 
@@ -27,8 +27,9 @@
 extern Eval evaluate;
 
 State call_gs(Global_Search *global_method, State now, unsigned int num_evals, unsigned int pop_size,
-              FloatOrDouble xlo, FloatOrDouble xhi, FloatOrDouble ylo, FloatOrDouble yhi, FloatOrDouble zlo, FloatOrDouble zhi, Molecule *mol,
-              int extOutputEveryNgens)
+              Molecule *mol,
+              int extOutputEveryNgens,
+              GridMapSetInfo *info)
 {
    register unsigned int i;
 
@@ -37,14 +38,12 @@ State call_gs(Global_Search *global_method, State now, unsigned int num_evals, u
 
    Population thisPop(pop_size);
 
-   for (i=0; i<pop_size; i++)
-   {
-      thisPop[i] = random_ind(now.ntor, double(xlo), double(xhi), double(ylo), double(yhi), double(zlo), double(zhi));
+   for (i=0; i<pop_size; i++) {
+      thisPop[i] = random_ind(now.ntor, info);
       thisPop[i].mol = mol;
    }
 
-   do
-   {
+   do {
       global_method->search(thisPop);
    } while ((evaluate.evals() < num_evals) && (!global_method->terminate()));
 

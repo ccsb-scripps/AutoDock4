@@ -27,24 +27,21 @@ FloatOrDouble   mapc2f( char C_mapValue );
 #include "check_header_int.h"
 #include "timesys.h"
 #include "structs.h"
-void   readmap( Boole *P_B_HaveMap, 
-                int   *P_Imap,
-                int   *P_NumAtmMaps, 
-                FloatOrDouble *P_ExtSpacing, 
-                char  ligand_atom_types[MAX_MAPS][3],
-                char  ExtFldFileName[MAX_CHARS], 
-                int   ExtGridPts1[SPACE], 
-                int   ExtGridPts[SPACE], 
-                Clock jobStart, 
-                char  line[LINE_LEN], 
-                char  ExtMacromolFileName[MAX_CHARS], 
-                FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                FloatOrDouble MapCenter[SPACE], 
-                FloatOrDouble MapMax[MAX_MAPS], 
-                FloatOrDouble MapMin[MAX_MAPS], 
-                struct tms tmsJobStart,
-                Boole B_charMap,
-                int outlev);
-                //GridMap grid_map);
+
+void readmap( char line[LINE_LEN],
+             int outlev,
+
+             Clock jobStart,
+             struct tms tmsJobStart,
+        
+             Boole B_charMap,
+
+             Boole *P_B_HaveMap, 
+             int *P_imap, 
+             
+             GridMapSetInfo *info,
+             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
+             // double *maps 
+             );
 
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.8 2005/08/15 23:59:51 garrett Exp $
+ $Id: writePDBQ.cc,v 1.9 2005/09/28 22:54:21 garrett Exp $
 
 */
 
@@ -46,7 +46,7 @@ writePDBQ(int irun,
 	  int ignore_inter[MAX_ATOMS],
 	  const Boole B_include_1_4_interactions,
 	  const FloatOrDouble scale_1_4,
-	  const FloatOrDouble sol_fn[NEINT],
+
 	  const ParameterEntry parameterArray[MAX_MAPS],
 	  const FloatOrDouble unbound_internal_FE)
 {

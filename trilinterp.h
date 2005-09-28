@@ -4,19 +4,19 @@
 				   outside grid */
 #ifndef TRILINTERP
 #define TRILINTERP
+
 #include "constants.h"
+#include "structs.h"
+
 FloatOrDouble  trilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
             CONST_FLOAT charge[MAX_ATOMS], 
             CONST_FLOAT abs_charge[MAX_ATOMS], 
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
                   FloatOrDouble elec[MAX_ATOMS],
                   FloatOrDouble evdW[MAX_ATOMS],
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo );
+            GridMapSetInfo *info );
 #endif
 
 #ifndef QUICKTRILINTERP
@@ -28,10 +28,7 @@ FloatOrDouble  quicktrilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo );
+            GridMapSetInfo *info );
 #endif
 
 
@@ -44,18 +41,9 @@ FloatOrDouble  outsidetrilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
 	    // FloatOrDouble elec[MAX_ATOMS],
 	    // FloatOrDouble emap[MAX_ATOMS],
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo,
-            CONST_FLOAT xhi, 
-            CONST_FLOAT yhi, 
-            CONST_FLOAT zhi,
-            CONST_FLOAT xcen, 
-            CONST_FLOAT ycen, 
-            CONST_FLOAT zcen );
+            GridMapSetInfo *info );
 #endif
 
 #ifndef OUTSIDETRILINTERPBYATOM
@@ -67,18 +55,9 @@ FloatOrDouble  outsidetrilinterpbyatom( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
 	        FloatOrDouble elec[MAX_ATOMS],
 	        FloatOrDouble emap[MAX_ATOMS],
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo,
-            CONST_FLOAT xhi, 
-            CONST_FLOAT yhi, 
-            CONST_FLOAT zhi,
-            CONST_FLOAT xcen, 
-            CONST_FLOAT ycen, 
-            CONST_FLOAT zcen );
+            GridMapSetInfo *info );
 #endif
 
 #ifndef TEMPLATETRILINTERP
@@ -90,12 +69,9 @@ FloatOrDouble  template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo,
             CONST_FLOAT template_energy[MAX_ATOMS],
-            CONST_FLOAT template_stddev[MAX_ATOMS]);
+            CONST_FLOAT template_stddev[MAX_ATOMS],
+            GridMapSetInfo *info );
 #endif
 
 #ifndef OUTSIDETEMPLTRILINTERP
@@ -107,18 +83,9 @@ FloatOrDouble  outside_templ_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo,
-            CONST_FLOAT xhi, 
-            CONST_FLOAT yhi, 
-            CONST_FLOAT zhi,
-            CONST_FLOAT xcen, 
-            CONST_FLOAT ycen, 
-            CONST_FLOAT zcen,
             CONST_FLOAT template_energy[MAX_ATOMS],
-            CONST_FLOAT template_stddev[MAX_ATOMS]);
+            CONST_FLOAT template_stddev[MAX_ATOMS],
+            GridMapSetInfo *info );
 #endif
 
 #ifndef BYATOM_TEMPLATE_TRILINTERP
@@ -130,14 +97,11 @@ FloatOrDouble  byatom_template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
                                    CONST_INT   type[MAX_ATOMS], 
                                    CONST_INT   natom, 
                                    CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-                                   CONST_FLOAT inv_spacing, 
 		                           FloatOrDouble elec[MAX_ATOMS], 
 		                           FloatOrDouble emap[MAX_ATOMS], 
-                                   CONST_FLOAT xlo, 
-                                   CONST_FLOAT ylo, 
-                                   CONST_FLOAT zlo,
                                    CONST_FLOAT template_energy[MAX_ATOMS],
-                                   CONST_FLOAT template_stddev[MAX_ATOMS]);
+                                   CONST_FLOAT template_stddev[MAX_ATOMS],
+                                   GridMapSetInfo *info );
 #endif
 
 #ifndef TRILINTERP4
@@ -149,13 +113,10 @@ FloatOrDouble  trilinterp4(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
                   FloatOrDouble elec[MAX_ATOMS],
                   FloatOrDouble evdW[MAX_ATOMS],
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo,
-            int ignore_inter[MAX_ATOMS]);
+            int ignore_inter[MAX_ATOMS],
+            GridMapSetInfo *info );
 #endif
 
 #ifndef OUTSIDETRILINTERP4BYATOM
@@ -167,19 +128,10 @@ FloatOrDouble  outsidetrilinterp4byatom( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
 	    FloatOrDouble elec[MAX_ATOMS],
 	    FloatOrDouble emap[MAX_ATOMS],
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo,
-            CONST_FLOAT xhi, 
-            CONST_FLOAT yhi, 
-            CONST_FLOAT zhi,
-            CONST_FLOAT xcen, 
-            CONST_FLOAT ycen, 
-            CONST_FLOAT zcen,
-            int ignore_inter[MAX_ATOMS]);
+            int ignore_inter[MAX_ATOMS],
+            GridMapSetInfo *info );
 #endif
 
 #ifndef OUTSIDETRILINTERP4
@@ -191,17 +143,8 @@ FloatOrDouble  outsidetrilinterp4( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo,
-            CONST_FLOAT xhi, 
-            CONST_FLOAT yhi, 
-            CONST_FLOAT zhi,
-            CONST_FLOAT xcen, 
-            CONST_FLOAT ycen, 
-            CONST_FLOAT zcen,
-            int ignore_inter[MAX_ATOMS]);
+            int ignore_inter[MAX_ATOMS],
+            GridMapSetInfo *info );
 #endif
 
 #ifndef QUICKTRILINTERP4
@@ -213,10 +156,7 @@ FloatOrDouble  quicktrilinterp4( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             CONST_INT   type[MAX_ATOMS], 
             CONST_INT   natom, 
             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-            CONST_FLOAT inv_spacing, 
-            CONST_FLOAT xlo, 
-            CONST_FLOAT ylo, 
-            CONST_FLOAT zlo,
-            int ignore_inter[MAX_ATOMS]);
+            int ignore_inter[MAX_ATOMS],
+            GridMapSetInfo *info );
 #endif
 

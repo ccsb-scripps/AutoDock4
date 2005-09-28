@@ -1,6 +1,6 @@
 /*
 
- $Id: nbe.cc,v 1.2 2003/02/26 01:21:57 garrett Exp $
+ $Id: nbe.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
 
 */
 
@@ -40,8 +40,8 @@
 extern FILE *logFile;
 
 void nbe( char atm_typ_str[ATOM_MAPS],
-	  FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
-	  int num_atm_maps )
+          EnergyTables *ptr_ad_energy_tables,
+          int num_atm_maps )
 
 {
  
@@ -79,7 +79,7 @@ void nbe( char atm_typ_str[ATOM_MAPS],
 	pr( logFile, "%6.3f\t%5d\t", r, k );
 	for ( i = 0;  i < num_atm_maps; i++) {
 	    for ( j = i;  j < num_atm_maps; j++) {
-		pr( logFile, "%7.2f", e_internal[k][j][i] );
+		pr( logFile, "%7.2f", ptr_ad_energy_tables->e_vdW_Hb[k][j][i] );
 	    } /*  j  */
 	} /*  i  */
 	pr( logFile, "\n" );

@@ -1,6 +1,6 @@
 /*
 
- $Id: printhms.cc,v 1.2 2003/02/26 01:30:20 garrett Exp $
+ $Id: printhms.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
 
 */
 
@@ -38,3 +38,4 @@ void printhms( FloatOrDouble t )
             fprintf(logFile, "%dh %02dm %05.2fs", h, m, s );
     }
 }
+/* EOF */

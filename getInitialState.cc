@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.6 2005/03/23 00:31:07 garrett Exp $
+ $Id: getInitialState.cc,v 1.7 2005/09/28 22:54:20 garrett Exp $
 
 */
 
@@ -45,15 +45,10 @@ void getInitialState(
             char  atomstuff[MAX_ATOMS][MAX_CHARS],
             FloatOrDouble elec[MAX_ATOMS],
             FloatOrDouble emap[MAX_ATOMS],
-            FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+
+            EnergyTables *ptr_ad_energy_tables,
+
             Boole B_calcIntElec,
-            FloatOrDouble xhi,
-            FloatOrDouble yhi,
-            FloatOrDouble zhi,
-            FloatOrDouble xlo,
-            FloatOrDouble ylo,
-            FloatOrDouble zlo,
-            FloatOrDouble inv_spacing,
             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
@@ -75,10 +70,11 @@ void getInitialState(
             const Boole         B_include_1_4_interactions,
             const FloatOrDouble scale_1_4,
 
-            const FloatOrDouble sol_fn[NEINT],
             const ParameterEntry parameterArray[MAX_MAPS],
 
-            const FloatOrDouble unbound_internal_FE
+            const FloatOrDouble unbound_internal_FE,
+
+            GridMapSetInfo *info
 
            )
 
@@ -109,9 +105,9 @@ void getInitialState(
         ** Initialize all state variables...
         */
         if (B_RandomTran0) {
-            sInit->T.x = random_range( xlo, xhi );
-            sInit->T.y = random_range( ylo, yhi );
-            sInit->T.z = random_range( zlo, zhi );
+            sInit->T.x = random_range( info->lo[X], info->hi[X] );
+            sInit->T.y = random_range( info->lo[Y], info->hi[Y] );
+            sInit->T.z = random_range( info->lo[Z], info->hi[Z] );
             if (outlev > 1) {
                 pr( logFile, "Random initial translation,  tran0 %.3f %.3f %.3f\n", sInit->T.x, sInit->T.y, sInit->T.z);
             }
@@ -153,11 +149,11 @@ void getInitialState(
 ** Initialize the automated docking simulation,
 ** _________________________________________________________________________
 */
-        initautodock( atomstuff, crd, crdpdb, xhi, yhi, zhi, xlo, ylo, zlo, 
-            natom, ntor, sInit, tlist, vt, outlev);
+        initautodock( atomstuff, crd, crdpdb, 
+            natom, ntor, sInit, tlist, vt, outlev, info);
         
-        e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
-        e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
+        e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+        e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
         e0total = e0inter + e0intra;
 
         if (e0total < e0min) {
@@ -195,8 +191,8 @@ void getInitialState(
 
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
-    e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter );
-    e0intra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
+    e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+    e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
     e0total = e0inter + e0intra;
 
     copyState( sMinm, *sInit );

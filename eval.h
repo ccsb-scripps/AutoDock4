@@ -28,8 +28,7 @@ class Eval
    private:
       UnsignedFourByteLong num_evals;
       int natom, Nnb;
-      FloatOrDouble inv_spacing, xlo, xhi, ylo, yhi, zlo, zhi;  // gmm added new private members xhi,yhi,zhi
-      FloatOrDouble xcen, ycen, zcen; // gmm added 14-Jan-1998, center of grid
+      GridMapSetInfo *info;
       FloatOrDouble eval_elec[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
       FloatOrDouble eval_emap[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
@@ -38,7 +37,7 @@ class Eval
       int *type, (*nonbondlist)[MAX_NBDATA], (*tlist)[MAX_ATOMS];
       FloatOrDouble *q1q2, *charge, *abs_charge, *qsp_abs_charge;
       FloatOrDouble (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE];
-      FloatOrDouble (*e_internal)[ATOM_MAPS][ATOM_MAPS];
+      EnergyTables *ptr_ad_energy_tables;
       FloatOrDouble (*map)[MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
       Boole *B_isTorConstrained;
       Molecule mol;
@@ -50,7 +49,6 @@ class Eval
       int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
       Boole         B_include_1_4_interactions; // gmm 2005-01-8, for scaling 1-4 nonbonds
       FloatOrDouble scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
-      FloatOrDouble  *sol_fn;
       ParameterEntry *parameterArray;
       FloatOrDouble  unbound_internal_FE;
 
@@ -62,14 +60,13 @@ class Eval
           FloatOrDouble  init_qsp_abs_charge[MAX_ATOMS],
           int            init_type[MAX_ATOMS], int init_natom,
           FloatOrDouble  init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-          FloatOrDouble  init_inv_spacing,
+
           FloatOrDouble  init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
           FloatOrDouble  init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-          FloatOrDouble  init_xlo, FloatOrDouble init_xhi, // added by GMM
-          FloatOrDouble  init_ylo, FloatOrDouble init_yhi, // xhi,yhi,zhi
-          FloatOrDouble  init_zlo, FloatOrDouble init_zhi, // ...
+
           int            init_nonbondlist[MAX_NONBONDS][MAX_NBDATA],
-          FloatOrDouble  init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS], int init_Nnb,
+          EnergyTables   *init_ptr_ad_energy_tables,
+          int init_Nnb,
           Boole          init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS],
           Boole          init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS],
           Boole          init_B_ShowTorE, unsigned short init_US_TorE[MAX_TORS],
@@ -82,9 +79,9 @@ class Eval
           int            init_ignore_inter[MAX_ATOMS],
           Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
           FloatOrDouble  init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
-          FloatOrDouble  init_sol_fn[NEINT],
           ParameterEntry init_parameterArray[MAX_MAPS],
-          FloatOrDouble  init_unbound_internal_FE
+          FloatOrDouble  init_unbound_internal_FE,
+          GridMapSetInfo *init_info
           );
 
       double operator()(Representation **);
@@ -109,14 +106,11 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
                         int init_type[MAX_ATOMS],
                         int init_natom,
                         FloatOrDouble init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-                        FloatOrDouble init_inv_spacing,
+
                         FloatOrDouble init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
                         FloatOrDouble init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-                        FloatOrDouble init_xlo, FloatOrDouble init_xhi,   // gmm
-                        FloatOrDouble init_ylo, FloatOrDouble init_yhi,   // gmm
-                        FloatOrDouble init_zlo, FloatOrDouble init_zhi,   // gmm
                         int init_nonbondlist[MAX_NONBONDS][MAX_NBDATA],
-                        FloatOrDouble init_e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+                        EnergyTables   *init_ptr_ad_energy_tables,
                         int init_Nnb,
                         Boole init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS],
                         Boole init_B_isGaussTorCon,
@@ -139,10 +133,10 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
                         Boole         init_B_include_1_4_interactions,
                         FloatOrDouble init_scale_1_4,
 
-                        FloatOrDouble  init_sol_fn[NEINT],
                         ParameterEntry init_parameterArray[MAX_MAPS],
 
-                        FloatOrDouble init_unbound_internal_FE
+                        FloatOrDouble init_unbound_internal_FE,
+                        GridMapSetInfo *init_info
                        )
 
 {
@@ -155,19 +149,9 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
     type = init_type;
     natom = init_natom;
     map = init_map;
-    inv_spacing = init_inv_spacing;
-    xlo = init_xlo;
-    xhi = init_xhi; // gmm
-    xcen = 0.5*(xhi+xlo); // gmm 14-jan-98
-    ylo = init_ylo;
-    yhi = init_yhi; // gmm
-    ycen = 0.5*(yhi+ylo); // gmm 14-jan-98
-    zlo = init_zlo;
-    zhi = init_zhi; // gmm
-    zcen = 0.5*(zhi+zlo); // gmm 14-jan-98
 
     nonbondlist = init_nonbondlist;
-    e_internal = init_e_internal;
+    ptr_ad_energy_tables = init_ptr_ad_energy_tables;
     Nnb = init_Nnb;
     B_calcIntElec = init_B_calcIntElec;
     q1q2 = init_q1q2;
@@ -193,10 +177,11 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
     B_include_1_4_interactions = init_B_include_1_4_interactions;
     scale_1_4 = init_scale_1_4;
 
-    sol_fn = init_sol_fn;
     parameterArray = init_parameterArray;
 
     unbound_internal_FE = init_unbound_internal_FE;
+
+    info = init_info;
 }
 
 inline UnsignedFourByteLong Eval::evals(void)

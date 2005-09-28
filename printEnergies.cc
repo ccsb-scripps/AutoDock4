@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.6 2005/08/15 22:41:30 garrett Exp $
+ $Id: printEnergies.cc,v 1.7 2005/09/28 22:54:20 garrett Exp $
 
 */
 
@@ -27,10 +27,10 @@ void print1000_no_sign(FILE* file, double x) {
 }
 
 void printEnergies( 
-        FloatOrDouble einter, 
-        FloatOrDouble eintra, 
-        FloatOrDouble torsFreeEnergy, 
-        char  *prefixString, 
+        FloatOrDouble einter,
+        FloatOrDouble eintra,
+        FloatOrDouble torsFreeEnergy,
+        char  *prefixString,
         int ligand_is_inhibitor,
         FloatOrDouble emap_total,
         FloatOrDouble elec_total
@@ -157,32 +157,33 @@ void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDoub
     pr(stateFile, "\t\t<free_NRG_binding>");
     print1000(stateFile, deltaG);
     pr(stateFile, "</free_NRG_binding>\n");
-    if (deltaG < 0.0) {
-      if (ligand_is_inhibitor == 1) {
-	pr(stateFile, "\t\t<Ki>");
-	print1000_no_sign(stateFile, Ki);
-	pr(stateFile, "</Ki>\n");
-      } else {
-	pr(stateFile, "\t\t<Kd>");
-	print1000_no_sign(stateFile, Ki);
-	pr(stateFile, "</Kd>\n");
-      }
-      pr(stateFile, "\t\t<Temp>%.2f</Temp>\n", TK); //temperature in K
-    } 
-      pr(stateFile, "\t\t<final_dock_NRG>");
-      print1000(stateFile, edocked);
-      pr(stateFile, "</final_dock_NRG>\n");
-      
-      pr(stateFile, "\t\t<final_intermol_NRG>");
-      print1000(stateFile, einter);
-      pr(stateFile, "</final_intermol_NRG>\n");
 
-      pr(stateFile, "\t\t<internal_ligand_NRG>");
-      print1000(stateFile, eintra);
-      pr(stateFile, "</internal_ligand_NRG>\n");
-      
-      pr(stateFile, "\t\t<torsonial_free_NRG>");
-      print1000(stateFile, torsFreeEnergy);
-      pr(stateFile, "</torsonial_free_NRG>\n"); 
-      
+    if (deltaG < 0.0) {
+        if (ligand_is_inhibitor == 1) {
+            pr(stateFile, "\t\t<Ki>");
+            print1000_no_sign(stateFile, Ki);
+            pr(stateFile, "</Ki>\n");
+        } else {
+            pr(stateFile, "\t\t<Kd>");
+            print1000_no_sign(stateFile, Ki);
+            pr(stateFile, "</Kd>\n");
+        }
+        pr(stateFile, "\t\t<Temp>%.2f</Temp>\n", TK); //temperature in K
+    } 
+    pr(stateFile, "\t\t<final_dock_NRG>");
+    print1000(stateFile, edocked);
+    pr(stateFile, "</final_dock_NRG>\n");
+
+    pr(stateFile, "\t\t<final_intermol_NRG>");
+    print1000(stateFile, einter);
+    pr(stateFile, "</final_intermol_NRG>\n");
+
+    pr(stateFile, "\t\t<internal_ligand_NRG>");
+    print1000(stateFile, eintra);
+    pr(stateFile, "</internal_ligand_NRG>\n");
+
+    pr(stateFile, "\t\t<torsonial_free_NRG>");
+    print1000(stateFile, torsFreeEnergy);
+    pr(stateFile, "</torsonial_free_NRG>\n"); 
+
 }

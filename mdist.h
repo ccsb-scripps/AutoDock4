@@ -10,25 +10,27 @@
 void mdist();
 
 enum {C,N,O,H,XX,P,S};
+//    0 1 2 3 4  5 6
+#define NUM_ENUM_ATOMTYPES 7 // this should be the length of the enumerated atom types above
 	
-double mindist[ATOM_MAPS][ATOM_MAPS];
-double maxdist[ATOM_MAPS][ATOM_MAPS];
+double mindist[NUM_ENUM_ATOMTYPES][NUM_ENUM_ATOMTYPES];
+double maxdist[NUM_ENUM_ATOMTYPES][NUM_ENUM_ATOMTYPES];
 
 void mdist() {
 
 	register int i,j;
 
     // Zero all the mindist and maxdist elements.
-	for (i=0; i<ATOM_MAPS; i++) {
-		for (j=0; j<ATOM_MAPS; j++) {
+	for (i=0; i<   NUM_ENUM_ATOMTYPES; i++) {
+		for (j=0; j<   NUM_ENUM_ATOMTYPES; j++) {
 			mindist[i][j] = 0.0L;
 			maxdist[i][j] = 0.0L;
 		}
 	}
 
     // Set all the mindist and maxdist elements to the defaults for AutoDock versions 1 - 3...
-	for (i=0; i<ATOM_MAPS; i++) {
-		for (j=0; j<ATOM_MAPS; j++) {
+	for (i=0; i<   NUM_ENUM_ATOMTYPES; i++) {
+		for (j=0; j<   NUM_ENUM_ATOMTYPES; j++) {
 			mindist[i][j] = 0.9;
 			maxdist[i][j] = 2.1;
 		}

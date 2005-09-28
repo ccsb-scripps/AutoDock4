@@ -10,16 +10,11 @@ void initautodock(
 	    char  atomstuff[MAX_ATOMS][MAX_CHARS],
 	    FloatOrDouble crd[MAX_ATOMS][SPACE],
 	    FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-	    FloatOrDouble xhi,
-	    FloatOrDouble yhi,
-	    FloatOrDouble zhi,
-	    FloatOrDouble xlo,
-	    FloatOrDouble ylo,
-	    FloatOrDouble zlo,
 	    int   natom,
 	    int   ntor,
 	    State *s0,
 	    int   tlist[MAX_TORS][MAX_ATOMS],
 	    FloatOrDouble vt[MAX_TORS][SPACE],
-	    int   outlev);
+	    int   outlev,
+            GridMapSetInfo *info );
 #endif

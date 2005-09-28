@@ -1,21 +1,23 @@
 /*
 
- $Id: printdate.cc,v 1.2 2003/02/26 01:30:11 garrett Exp $
+ $Id: printdate.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
 
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
+#include <stdio.h>
+#include <sys/types.h>
+
+#ifndef _WIN32
+#   include <sys/time.h>
+#else
+#   include "times.h"
 #endif
 
-/* printdate.cc */
+#ifdef HAVE_CONFIG_H
+#   include <config.h>
+#endif
 
-    #include <stdio.h>
-    #include <sys/types.h>
-    #include <sys/time.h>
-    #include <time.h>
-    #include "printdate.h"
-
+#include "printdate.h"
 
 void printdate( FILE *fp, int flag )
 {

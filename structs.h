@@ -82,13 +82,13 @@ typedef struct state
 
 typedef struct molecule
 {
-  FloatOrDouble crdpdb[MAX_ATOMS][SPACE];	/* original coordinates of atoms */
-  FloatOrDouble crd[MAX_ATOMS][SPACE];	/* current coordinates of atoms */
-  char atomstr[MAX_ATOMS][MAX_CHARS];	/* strings describing atoms, from PDB file, cols,1-30. */
-  int natom;			/* number of atoms in molecule */
-  FloatOrDouble vt[MAX_TORS][SPACE];	/* vectors  of torsions */
-  int tlist[MAX_TORS][MAX_ATOMS];	/* torsion list of movable atoms */
-  State S;			/* state of molecule */
+  FloatOrDouble     crdpdb[MAX_ATOMS][SPACE];	    /* original coordinates of atoms */
+  FloatOrDouble     crd[MAX_ATOMS][SPACE];      	/* current coordinates of atoms */
+  char              atomstr[MAX_ATOMS][MAX_CHARS];	/* strings describing atoms, from PDB file, cols,1-30. */
+  int               natom;			                /* number of atoms in molecule */
+  FloatOrDouble     vt[MAX_TORS][SPACE];        	/* vectors  of torsions */
+  int               tlist[MAX_TORS][MAX_ATOMS];	    /* torsion list of movable atoms */
+  State             S;		                    	/* state of molecule */
 } Molecule;
 
 /* ____________________________________________________________________________ */
@@ -101,18 +101,37 @@ typedef struct rotamer
 
 /* ____________________________________________________________________________ */
 
+typedef struct charge
+{
+    double charge;
+    double abs_charge;
+    double qsp_abs_charge;
+} Charge;
+
+/* ____________________________________________________________________________ */
+
 typedef struct atom
 {
-  Coord pt;			/* transformed point */
-  Coord pt0;			/* untransformed point, original PDB coords */
-  double q;			/* partial atomic charge */
-  Boole Bq;			/* TRUE if the atom has a charge */
-  int type;			/* atom type */
-  Boole isH;			/* TRUE if atom is a hydrogen */
-  int id;			/* serial ID */
-  char name[5];			/* PDB atom name; formerly "pdbaname" */
-  char str[MAX_CHARS];		/* PDB atom string; formerly "atomstuff" */
-  int nnb;			/* number of non-bonds for this atom */
+  /* Coord  coords;			        / * transformed point */
+  /* Coord  coords0;			    / * untransformed point, original PDB coords */
+  double    coords[3];			    /* transformed point */
+  double    coords0[0];			    /* untransformed point, original PDB coords */
+  Boole     has_charge;			    /* TRUE if the atom has a charge */
+  /* Charge q;			            /  * partial atomic charge */
+
+  double    charge;
+  double    abs_charge;
+  double    qsp_abs_charge;
+
+  int       type;			        /* atom type as integer */
+  char      type_string[MAX_CHARS]; /* atom type as string */
+  Boole     is_hydrogen;		    /* TRUE if atom is a hydrogen */
+
+  int       serial;			        /* serial ID */
+  char      name[5];			    /* PDB atom name; formerly "pdbaname" */
+  char      stuff[MAX_CHARS];       /* PDB atom string; formerly "atomstuff" */
+
+  int       nnb;			        /* number of non-bonds for this atom */
 } Atom;
 /* ____________________________________________________________________________ */
 
@@ -166,20 +185,7 @@ typedef struct group
   char pdbqfilnam[MAX_CHARS];	/* PDBQ filename holding these data */
 } Group;
 
-/* ______________________________________________________________________________
-** Grid Map */
-
-typedef struct grid_map
-{
-    double map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS];
-    Coord center;
-    Coord max;
-    Coord min;
-    double spacing;
-    int atom_type;
-    int num_points[3];
-    int num_points_1[3];
-} GridMap;
+#include "grid.h"
 
 /* ______________________________________________________________________________
 ** Parameter Dictionary */
@@ -201,6 +207,18 @@ typedef struct linear_FE_model
     double stderr_desolv;             // Free energy standard error for desolvation term
     double stderr_tors;               // Free energy standard error for torsional term
 } Linear_FE_Model;
+
+/* ______________________________________________________________________________ */
+/* Energy Lookup Tables */
+
+typedef struct energy_tables
+{
+    FloatOrDouble e_vdW_Hb[NEINT][ATOM_MAPS][ATOM_MAPS];  // vdW & Hb energies
+    FloatOrDouble sol_fn[NEINT];                            // distance-dependent desolvation function
+    FloatOrDouble epsilon_fn[NDIEL];                        // distance-dependent dielectric function
+    FloatOrDouble r_epsilon_fn[NDIEL];                      // r * distance-dependent dielectric function
+} EnergyTables;
+
 
 #endif
 /* EOF */

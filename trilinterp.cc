@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.5 2005/03/11 02:11:31 garrett Exp $
+ $Id: trilinterp.cc,v 1.6 2005/09/28 22:54:21 garrett Exp $
 
 */
 
@@ -27,17 +27,14 @@ extern FILE *logFile;
 #endif
 
 FloatOrDouble trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-          CONST_FLOAT charge[MAX_ATOMS], 
-          CONST_FLOAT abs_charge[MAX_ATOMS], 
-          CONST_INT   type[MAX_ATOMS], 
-          CONST_INT   total_atoms, 
-          CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-          CONST_FLOAT inv_spacing, 
-          FloatOrDouble elec[MAX_ATOMS], 
-          FloatOrDouble emap[MAX_ATOMS], 
-          CONST_FLOAT xlo,	/**/
-          CONST_FLOAT ylo,	/*   FloatOrDouble lo[SPACE] ) SLOWER */
-          CONST_FLOAT zlo )	/**/
+                          CONST_FLOAT charge[MAX_ATOMS], 
+                          CONST_FLOAT abs_charge[MAX_ATOMS], 
+                          CONST_INT   type[MAX_ATOMS], 
+                          CONST_INT   total_atoms, 
+                          CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                          FloatOrDouble elec[MAX_ATOMS], 
+                          FloatOrDouble emap[MAX_ATOMS], 
+                          GridMapSetInfo *info )	/**/
 
 /*
 ** FloatOrDouble tcoord[MAX_ATOMS][SPACE];	temporary coordinates
@@ -49,7 +46,7 @@ FloatOrDouble trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 ** FloatOrDouble inv_spacing;  			= 1/(grid point spacing, in Angstroms) 
 ** FloatOrDouble elec[MAX_ATOMS];  		electrostatic energies, atom by atom
 ** FloatOrDouble emap[MAX_ATOMS];  		intermolecular energies
-** FloatOrDouble xlo,ylo,zlo;			minimum coordinates in x,y,z
+** FloatOrDouble info->lo[X],info->lo[Y],info->lo[Z];			minimum coordinates in x,y,z
 */
 
 /* { */
@@ -98,13 +95,13 @@ FloatOrDouble trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 
         AtomType = type[i];
 
-        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)xlo) * (double)inv_spacing)) + 1;
+        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
         p1u = 1.0L - (p0u = u - (double) u0);
 
-        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)ylo) * (double)inv_spacing)) + 1;
+        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
         p1v = 1.0L - (p0v = v - (double) v0);
 
-        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)zlo) * (double)inv_spacing)) + 1;
+        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
         p1w = 1.0L - (p0w = w - (double) w0);
 
 #ifdef MINPOINT
@@ -172,10 +169,7 @@ FloatOrDouble quicktrilinterp(    CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
                           CONST_INT   type[MAX_ATOMS], 
                           CONST_INT   total_atoms, 
                           CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                          CONST_FLOAT inv_spacing, 
-                          CONST_FLOAT xlo,
-                          CONST_FLOAT ylo,
-                          CONST_FLOAT zlo )
+                          GridMapSetInfo *info )
 
 {
     register double etotal;
@@ -204,20 +198,20 @@ FloatOrDouble quicktrilinterp(    CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 
         AtomType = type[i];
 
-        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)xlo) * (double)inv_spacing)) + 1;
+        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
         p1u = 1.0L - (p0u = u - (double) u0);
 
-        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)ylo) * (double)inv_spacing)) + 1;
+        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
         p1v = 1.0L - (p0v = v - (double) v0);
 
-        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)zlo) * (double)inv_spacing)) + 1;
+        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
         p1w = 1.0L - (p0w = w - (double) w0);
 
 #ifdef DEBUG
     // gmm  19-FEB-2003
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\ttcoord[i][X]= %.9f\n\t\t\t\t\ttcoord[i][Y]= %.9f\n\t\t\t\t\ttcoord[i][Z]= %.9f\n", tcoord[i][X], tcoord[i][Y], tcoord[i][Z]);
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\txlo= %.9f\n\t\t\t\t\tylo= %.9f\n\t\t\t\t\tzlo= %.9f\n", xlo, ylo, zlo);
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\tinv_spacing= %.9f\n", inv_spacing);
+    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\tinfo->lo[X]= %.9f\n\t\t\t\t\tinfo->lo[Y]= %.9f\n\t\t\t\t\tinfo->lo[Z]= %.9f\n", info->lo[X], info->lo[Y], info->lo[Z]);
+    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\tinfo->inv_spacing= %.9f\n", info->inv_spacing);
 
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\tu= %.9lf\n\t\t\t\t\tu0= %d\n\t\t\t\t\tu1= %d\n\t\t\t\t\tp0u= %.9lf\n\t\t\t\t\tp1u= %.9lf\n", u, u0, u1, p0u, p1u);
     (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\tv= %.9lf\n\t\t\t\t\tv0= %d\n\t\t\t\t\tv1= %d\n\t\t\t\t\tp0v= %.9lf\n\t\t\t\t\tp1v= %.9lf\n", v, v0, v1, p0v, p1v);
@@ -326,16 +320,7 @@ FloatOrDouble outsidetrilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
           	CONST_INT   type[MAX_ATOMS], 
           	CONST_INT   total_atoms, 
           	CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-          	CONST_FLOAT inv_spacing, 
-          	CONST_FLOAT xlo,
-          	CONST_FLOAT ylo,
-          	CONST_FLOAT zlo,
-          	CONST_FLOAT xhi,
-          	CONST_FLOAT yhi,
-          	CONST_FLOAT zhi,
-          	CONST_FLOAT xcen,
-          	CONST_FLOAT ycen,
-          	CONST_FLOAT zcen )
+            GridMapSetInfo *info )
 
 {
     double	 etotal, epenalty;
@@ -363,10 +348,10 @@ FloatOrDouble outsidetrilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         y = tcoord[i][Y];
         z = tcoord[i][Z];
 
-        if (is_out_grid(x,y,z)) {
-            x -= xcen;
-            y -= ycen;
-            z -= zcen;
+        if (is_out_grid_info(x,y,z)) {
+            x -= info->center[X];
+            y -= info->center[Y];
+            z -= info->center[Z];
             // sqhypotenuse(x,y,z) is the square of the distance 
             // from grid's centre to atom
             epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
@@ -375,13 +360,13 @@ FloatOrDouble outsidetrilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         } else {
             AtomType = type[i];
      
-            u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)xlo) * (double)inv_spacing)) + 1;
+            u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
             p1u = 1.0L - (p0u = u - (double) u0);
      
-            v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)ylo) * (double)inv_spacing)) + 1;
+            v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
             p1v = 1.0L - (p0v = v - (double) v0);
      
-            w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)zlo) * (double)inv_spacing)) + 1;
+            w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
             p1w = 1.0L - (p0w = w - (double) w0);
      
 #ifdef MINPOINT
@@ -450,18 +435,9 @@ FloatOrDouble outsidetrilinterpbyatom(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
                           CONST_INT   type[MAX_ATOMS], 
                           CONST_INT   total_atoms, 
                           CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                          CONST_FLOAT inv_spacing, 
                           FloatOrDouble elec[MAX_ATOMS],
                           FloatOrDouble emap[MAX_ATOMS],
-                          CONST_FLOAT xlo,
-                          CONST_FLOAT ylo,
-                          CONST_FLOAT zlo,
-                          CONST_FLOAT xhi,
-                          CONST_FLOAT yhi,
-                          CONST_FLOAT zhi,
-                          CONST_FLOAT xcen,
-                          CONST_FLOAT ycen,
-                          CONST_FLOAT zcen )
+                          GridMapSetInfo *info )
 
 {
     register double etotal, epenalty;
@@ -487,10 +463,10 @@ FloatOrDouble outsidetrilinterpbyatom(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         y = tcoord[i][Y];
         z = tcoord[i][Z];
 
-        if (is_out_grid(x,y,z)) {
-            x -= xcen;
-            y -= ycen;
-            z -= zcen;
+        if (is_out_grid_info(x,y,z)) {
+            x -= info->center[X];
+            y -= info->center[Y];
+            z -= info->center[Z];
             // sqhypotenuse(x,y,z) is the square of the distance 
             // from grid's centre to atom
             epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
@@ -498,13 +474,13 @@ FloatOrDouble outsidetrilinterpbyatom(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         } else {
             AtomType = type[i];
      
-            u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)xlo) * (double)inv_spacing)) + 1;
+            u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
             p1u = 1.0L - (p0u = u - (double) u0);
      
-            v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)ylo) * (double)inv_spacing)) + 1;
+            v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
             p1v = 1.0L - (p0v = v - (double) v0);
      
-            w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)zlo) * (double)inv_spacing)) + 1;
+            w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
             p1w = 1.0L - (p0w = w - (double) w0);
      
 #ifdef MINPOINT
@@ -572,12 +548,9 @@ FloatOrDouble template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
                              CONST_INT   type[MAX_ATOMS], 
                              CONST_INT   total_atoms, 
                              CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                             CONST_FLOAT inv_spacing, 
-                             CONST_FLOAT xlo,
-                             CONST_FLOAT ylo,
-                             CONST_FLOAT zlo,
                            CONST_FLOAT template_energy[MAX_ATOMS],
-                           CONST_FLOAT template_stddev[MAX_ATOMS])
+                           CONST_FLOAT template_stddev[MAX_ATOMS],
+                           GridMapSetInfo *info )
 
 {
     double	 etotal;
@@ -606,13 +579,13 @@ FloatOrDouble template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 
         AtomType = type[i];
 
-        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)xlo) * (double)inv_spacing)) + 1;
+        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
         p1u = 1.0L - (p0u = u - (double) u0);
 
-        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)ylo) * (double)inv_spacing)) + 1;
+        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
         p1v = 1.0L - (p0v = v - (double) v0);
 
-        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)zlo) * (double)inv_spacing)) + 1;
+        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
         p1w = 1.0L - (p0w = w - (double) w0);
 
 #ifdef MINPOINT
@@ -675,18 +648,9 @@ FloatOrDouble outside_templ_trilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
           	CONST_INT   type[MAX_ATOMS], 
           	CONST_INT   total_atoms, 
           	CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-          	CONST_FLOAT inv_spacing, 
-          	CONST_FLOAT xlo,
-          	CONST_FLOAT ylo,
-          	CONST_FLOAT zlo,
-          	CONST_FLOAT xhi,
-          	CONST_FLOAT yhi,
-          	CONST_FLOAT zhi,
-          	CONST_FLOAT xcen,
-          	CONST_FLOAT ycen,
-          	CONST_FLOAT zcen,
             CONST_FLOAT template_energy[MAX_ATOMS],
-            CONST_FLOAT template_stddev[MAX_ATOMS])
+            CONST_FLOAT template_stddev[MAX_ATOMS],
+            GridMapSetInfo *info )
 
 {
     double	 etotal, epenalty;
@@ -715,10 +679,10 @@ FloatOrDouble outside_templ_trilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         y = tcoord[i][Y];
         z = tcoord[i][Z];
 
-        if (is_out_grid(x,y,z)) {
-            x -= xcen;
-            y -= ycen;
-            z -= zcen;
+        if (is_out_grid_info(x,y,z)) {
+            x -= info->center[X];
+            y -= info->center[Y];
+            z -= info->center[Z];
             // sqhypotenuse(x,y,z) is the square of the distance 
             // from grid's centre to atom
             epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
@@ -727,13 +691,13 @@ FloatOrDouble outside_templ_trilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         } else {
             AtomType = type[i];
      
-            u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)xlo) * (double)inv_spacing)) + 1;
+            u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
             p1u = 1.0L - (p0u = u - (double) u0);
      
-            v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)ylo) * (double)inv_spacing)) + 1;
+            v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
             p1v = 1.0L - (p0v = v - (double) v0);
      
-            w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)zlo) * (double)inv_spacing)) + 1;
+            w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
             p1w = 1.0L - (p0w = w - (double) w0);
      
 #ifdef MINPOINT
@@ -797,14 +761,11 @@ FloatOrDouble byatom_template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
           	                      CONST_INT   type[MAX_ATOMS], 
           	                      CONST_INT   total_atoms, 
           	                      CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-          	                      CONST_FLOAT inv_spacing, 
                                   FloatOrDouble elec[MAX_ATOMS], 
                                   FloatOrDouble emap[MAX_ATOMS], 
-          	                      CONST_FLOAT xlo,
-          	                      CONST_FLOAT ylo,
-          	                      CONST_FLOAT zlo,
                                   CONST_FLOAT template_energy[MAX_ATOMS],
-                                  CONST_FLOAT template_stddev[MAX_ATOMS])
+                                  CONST_FLOAT template_stddev[MAX_ATOMS],
+                                  GridMapSetInfo *info )
 {
     double	 etotal;
     double	 u,   v,   w;
@@ -832,13 +793,13 @@ FloatOrDouble byatom_template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 
         AtomType = type[i];
 
-        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)xlo) * (double)inv_spacing)) + 1;
+        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
         p1u = 1.0L - (p0u = u - (double) u0);
 
-        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)ylo) * (double)inv_spacing)) + 1;
+        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
         p1v = 1.0L - (p0v = v - (double) v0);
 
-        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)zlo) * (double)inv_spacing)) + 1;
+        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
         p1w = 1.0L - (p0w = w - (double) w0);
 
 #ifdef MINPOINT
@@ -898,18 +859,15 @@ FloatOrDouble byatom_template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 /* { */
 
 FloatOrDouble trilinterp4( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-                  CONST_FLOAT charge[MAX_ATOMS], 
-                  CONST_FLOAT abs_charge[MAX_ATOMS], 
-                  CONST_INT   type[MAX_ATOMS], 
-                  CONST_INT   total_atoms, 
-                  CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-                  CONST_FLOAT inv_spacing, 
-                  FloatOrDouble elec[MAX_ATOMS], 
-                  FloatOrDouble emap[MAX_ATOMS], 
-                  CONST_FLOAT xlo,
-                  CONST_FLOAT ylo,
-                  CONST_FLOAT zlo,
-                  int ignore_inter[MAX_ATOMS])
+                              CONST_FLOAT charge[MAX_ATOMS], 
+                              CONST_FLOAT abs_charge[MAX_ATOMS], 
+                              CONST_INT   type[MAX_ATOMS], 
+                              CONST_INT   total_atoms, 
+                              CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                              FloatOrDouble elec[MAX_ATOMS], 
+                              FloatOrDouble emap[MAX_ATOMS], 
+                              int ignore_inter[MAX_ATOMS],
+                              GridMapSetInfo *info)
 
 {
     register double emaptotal, electotal;
@@ -935,13 +893,13 @@ FloatOrDouble trilinterp4( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 
             AtomType = type[i];
 
-            u1  = (u0 = (int) (u = (tcoord[i][X]-xlo) * inv_spacing)) + 1;
+            u1  = (u0 = (int) (u = (tcoord[i][X]-info->lo[X]) * info->inv_spacing)) + 1;
             p1u = 1.0L - (p0u = u - (double) u0);
 
-            v1  = (v0 = (int) (v = (tcoord[i][Y]-ylo) * inv_spacing)) + 1;
+            v1  = (v0 = (int) (v = (tcoord[i][Y]-info->lo[Y]) * info->inv_spacing)) + 1;
             p1v = 1.0L - (p0v = v - (double) v0);
 
-            w1  = (w0 = (int) (w = (tcoord[i][Z]-zlo) * inv_spacing)) + 1;
+            w1  = (w0 = (int) (w = (tcoord[i][Z]-info->lo[Z]) * info->inv_spacing)) + 1;
             p1w = 1.0L - (p0w = w - (double) w0);
 
     #ifdef MINPOINT
@@ -1013,17 +971,8 @@ FloatOrDouble outsidetrilinterp4(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
                           CONST_INT   type[MAX_ATOMS], 
                           CONST_INT   total_atoms, 
                           CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                          CONST_FLOAT inv_spacing, 
-                          CONST_FLOAT xlo,
-                          CONST_FLOAT ylo,
-                          CONST_FLOAT zlo,
-                          CONST_FLOAT xhi,
-                          CONST_FLOAT yhi,
-                          CONST_FLOAT zhi,
-                          CONST_FLOAT xcen,
-                          CONST_FLOAT ycen,
-                          CONST_FLOAT zcen,
-                          int ignore_inter[MAX_ATOMS])
+                          int ignore_inter[MAX_ATOMS],
+                          GridMapSetInfo *info )
 
 {
     register double etotal, epenalty;
@@ -1052,10 +1001,10 @@ FloatOrDouble outsidetrilinterp4(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             y = tcoord[i][Y];
             z = tcoord[i][Z];
 
-            if (is_out_grid(x,y,z)) {
-                x -= xcen;
-                y -= ycen;
-                z -= zcen;
+            if (is_out_grid_info(x,y,z)) {
+                x -= info->center[X];
+                y -= info->center[Y];
+                z -= info->center[Z];
                 // sqhypotenuse(x,y,z) is the square of the distance 
                 // from grid's centre to atom
                 epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
@@ -1063,13 +1012,13 @@ FloatOrDouble outsidetrilinterp4(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             } else {
                 AtomType = type[i];
          
-                u1  = (u0 = (int) (u = (tcoord[i][X]-xlo) * inv_spacing)) + 1;
+                u1  = (u0 = (int) (u = (tcoord[i][X]-info->lo[X]) * info->inv_spacing)) + 1;
                 p1u = 1.0L - (p0u = u - (double) u0);
          
-                v1  = (v0 = (int) (v = (tcoord[i][Y]-ylo) * inv_spacing)) + 1;
+                v1  = (v0 = (int) (v = (tcoord[i][Y]-info->lo[Y]) * info->inv_spacing)) + 1;
                 p1v = 1.0L - (p0v = v - (double) v0);
          
-                w1  = (w0 = (int) (w = (tcoord[i][Z]-zlo) * inv_spacing)) + 1;
+                w1  = (w0 = (int) (w = (tcoord[i][Z]-info->lo[Z]) * info->inv_spacing)) + 1;
                 p1w = 1.0L - (p0w = w - (double) w0);
          
     #ifdef MINPOINT
@@ -1139,19 +1088,10 @@ FloatOrDouble outsidetrilinterp4byatom(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
                           CONST_INT   type[MAX_ATOMS], 
                           CONST_INT   total_atoms, 
                           CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                          CONST_FLOAT inv_spacing, 
                         FloatOrDouble elec[MAX_ATOMS],
                         FloatOrDouble emap[MAX_ATOMS],
-                          CONST_FLOAT xlo,
-                          CONST_FLOAT ylo,
-                          CONST_FLOAT zlo,
-                          CONST_FLOAT xhi,
-                          CONST_FLOAT yhi,
-                          CONST_FLOAT zhi,
-                          CONST_FLOAT xcen,
-                          CONST_FLOAT ycen,
-                          CONST_FLOAT zcen,
-                          int ignore_inter[MAX_ATOMS])
+                          int ignore_inter[MAX_ATOMS],
+                          GridMapSetInfo *info )
 
 {
     register double etotal, epenalty;
@@ -1180,10 +1120,10 @@ FloatOrDouble outsidetrilinterp4byatom(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             y = tcoord[i][Y];
             z = tcoord[i][Z];
 
-            if (is_out_grid(x,y,z)) {
-                x -= xcen;
-                y -= ycen;
-                z -= zcen;
+            if (is_out_grid_info(x,y,z)) {
+                x -= info->center[X];
+                y -= info->center[Y];
+                z -= info->center[Z];
                 // sqhypotenuse(x,y,z) is the square of the distance 
                 // from grid's centre to atom
                 epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
@@ -1191,13 +1131,13 @@ FloatOrDouble outsidetrilinterp4byatom(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
             } else {
                 AtomType = type[i];
          
-                u1  = (u0 = (int) (u = (tcoord[i][X]-xlo) * inv_spacing)) + 1;
+                u1  = (u0 = (int) (u = (tcoord[i][X]-info->lo[X]) * info->inv_spacing)) + 1;
                 p1u = 1.0L - (p0u = u - (double) u0);
          
-                v1  = (v0 = (int) (v = (tcoord[i][Y]-ylo) * inv_spacing)) + 1;
+                v1  = (v0 = (int) (v = (tcoord[i][Y]-info->lo[Y]) * info->inv_spacing)) + 1;
                 p1v = 1.0L - (p0v = v - (double) v0);
          
-                w1  = (w0 = (int) (w = (tcoord[i][Z]-zlo) * inv_spacing)) + 1;
+                w1  = (w0 = (int) (w = (tcoord[i][Z]-info->lo[Z]) * info->inv_spacing)) + 1;
                 p1w = 1.0L - (p0w = w - (double) w0);
          
     #ifdef MINPOINT
@@ -1270,11 +1210,8 @@ FloatOrDouble quicktrilinterp4(    CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
                           CONST_INT   type[MAX_ATOMS], 
                           CONST_INT   total_atoms, 
                           CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                          CONST_FLOAT inv_spacing, 
-                          CONST_FLOAT xlo,
-                          CONST_FLOAT ylo,
-                          CONST_FLOAT zlo,
-                          int ignore_inter[MAX_ATOMS])
+                          int ignore_inter[MAX_ATOMS],
+                          GridMapSetInfo *info )
 
 {
     register double etotal;
@@ -1300,13 +1237,13 @@ FloatOrDouble quicktrilinterp4(    CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 
             AtomType = type[i];
 
-            u1  = (u0 = (int) (u = (tcoord[i][X]-xlo) * inv_spacing)) + 1;
+            u1  = (u0 = (int) (u = (tcoord[i][X]-info->lo[X]) * info->inv_spacing)) + 1;
             p1u = 1.0L - (p0u = u - (double) u0);
 
-            v1  = (v0 = (int) (v = (tcoord[i][Y]-ylo) * inv_spacing)) + 1;
+            v1  = (v0 = (int) (v = (tcoord[i][Y]-info->lo[Y]) * info->inv_spacing)) + 1;
             p1v = 1.0L - (p0v = v - (double) v0);
 
-            w1  = (w0 = (int) (w = (tcoord[i][Z]-zlo) * inv_spacing)) + 1;
+            w1  = (w0 = (int) (w = (tcoord[i][Z]-info->lo[Z]) * info->inv_spacing)) + 1;
             p1w = 1.0L - (p0w = w - (double) w0);
 
     #ifdef MINPOINT

@@ -1,6 +1,6 @@
 /*
 
- $Id: strindex.cc,v 1.2 2003/02/26 01:42:36 garrett Exp $
+ $Id: strindex.cc,v 1.3 2005/09/28 22:54:21 garrett Exp $
 
 */
 
@@ -8,9 +8,9 @@
 #include <config.h>
 #endif
 
-/* strindex.cc */
 
-    #include "strindex.h"
+
+#include "strindex.h"
 
 
 int strindex( char s[], char t[] )

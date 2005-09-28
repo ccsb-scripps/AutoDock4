@@ -32,15 +32,10 @@ void getInitialState(
             char  atomstuff[MAX_ATOMS][MAX_CHARS],
             FloatOrDouble elec[MAX_ATOMS],
             FloatOrDouble emap[MAX_ATOMS],
-            FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+
+            EnergyTables *ptr_ad_energy_tables,
+
             Boole B_calcIntElec,
-            FloatOrDouble xhi,
-            FloatOrDouble yhi,
-            FloatOrDouble zhi,
-            FloatOrDouble xlo,
-            FloatOrDouble ylo,
-            FloatOrDouble zlo,
-            FloatOrDouble inv_spacing,
             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
@@ -62,9 +57,11 @@ void getInitialState(
             const Boole         B_include_1_4_interactions,
             const FloatOrDouble scale_1_4,
 
-            const FloatOrDouble sol_fn[NEINT],
             const ParameterEntry parameterArray[MAX_MAPS],
 
-            const FloatOrDouble unbound_internal_FE
+            const FloatOrDouble unbound_internal_FE,
+
+            GridMapSetInfo *info
            );
+
 #endif

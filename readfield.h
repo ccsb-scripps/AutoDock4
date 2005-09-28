@@ -4,6 +4,8 @@
 #include "constants.h"
 #include "openfile.h"
 #include "stop.h"
+#include "structs.h"
+/*
 void    readfield( FloatOrDouble *P_inv_spacing, 
                 FloatOrDouble *P_spacing, 
                 char  gdfldFileName[MAX_CHARS], 
@@ -21,4 +23,12 @@ void    readfield( FloatOrDouble *P_inv_spacing,
                 char  macromolFileName[MAX_CHARS], 
                 FloatOrDouble maP_center[SPACE], 
 		struct tms tms_jobStart );
+*/
+
+void readfield( GridMapSetInfo *info, // *ptr_map_set_info
+                char line[LINE_LEN],
+                Clock jobStart,
+                struct tms tms_jobStart );
+
+
 #endif

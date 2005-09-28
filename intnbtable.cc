@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.4 2005/03/11 02:11:30 garrett Exp $
+ $Id: intnbtable.cc,v 1.5 2005/09/28 22:54:20 garrett Exp $
 
 */
 
@@ -16,28 +16,16 @@
 #include <sys/types.h>
 #include <sys/times.h>
 #include "intnbtable.h"
+#include "structs.h"
+#include "distdepdiel.h"
 
 #ifdef NOSQRT
-
-/*  ACCELERATED NON SQUARE-ROOTING VERSION;
- *  Look-up internal non-bond energy based on square-of-the-distance,
- *  in square Angstroms. This saves a square-root operation for each
- *  non-bonded interaction.
- */
-
-#define        LookUpProc(i)        sqrt( index_to_SqAng( i ) )
+    /*  ACCELERATED NON-SQUARE-ROOTING VERSION  *  Look-up internal non-bond energy based on square-of-the-distance, in square Angstroms. */
+#   define IndexToDistance(i) sqrt( index_to_SqAng( i ) )
 
 #else
-
-/*  SQUARE-ROOTING VERSION;
- *  Look-up internal non-bond energy based on distance,
- *  in Angstroms.
- */
-
-#define        LookUpProc(i)        index_to_Ang( i )
-
-// #define index_to_Ang(i)         (( (FloatOrDouble) (i) ) * INV_A_DIV)
-// constants.h:#define INV_A_DIV   0.01      // every 1/100-th of an Angstrom
+    /*  SQUARE-ROOTING VERSION  *  Look-up internal non-bond energy based on distance, in Angstroms.  */
+#   define IndexToDistance(i) index_to_Ang( i )
 
 #endif
 
@@ -47,16 +35,14 @@ extern int debug;
 void intnbtable( Boole *P_B_havenbp,
                  int *P_a1,
                  int *P_a2, 
-                 int num_atm_maps,
-                 char ligand_atom_types[MAX_MAPS][3],
+                 GridMapSetInfo *info,
                  FloatOrDouble cA, 
                  FloatOrDouble cB, 
                  int xA, 
                  int xB,
-                 FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
-                 FloatOrDouble sol_fn[NEINT],
                  double coeff_desolv,
-                 double sigma)
+                 double sigma,
+                 EnergyTables *ad_tables)
 {
     /* Local variables: */
 
@@ -80,17 +66,19 @@ void intnbtable( Boole *P_B_havenbp,
     *P_B_havenbp = TRUE;
 
     if (*P_a1 != *P_a2) {
-        pr( logFile, "\nNon-bonded parameters for %s-%s and %s-%s interactions, used in internal energy calculations:\n", ligand_atom_types[*P_a1], ligand_atom_types[*P_a2], ligand_atom_types[*P_a2], ligand_atom_types[*P_a1] );
+        pr( logFile, "\nNon-bonded parameters for %s-%s and %s-%s interactions, used in internal energy calculations:\n", info->atom_type_name[*P_a1], info->atom_type_name[*P_a2], info->atom_type_name[*P_a2], info->atom_type_name[*P_a1] );
     } else {
-        pr( logFile, "\nNon-bonded parameters for %s-%s interactions, used in internal energy calculations:\n", ligand_atom_types[*P_a1], ligand_atom_types[*P_a2] );
+        pr( logFile, "\nNon-bonded parameters for %s-%s interactions, used in internal energy calculations:\n", info->atom_type_name[*P_a1], info->atom_type_name[*P_a2] );
     }
     pr( logFile, "\n               %9.1lf       %9.1lf \n", cA, cB );
     pr( logFile, "    E      =  -----------  -  -----------\n");
-    pr( logFile, "     %2s,%-2s         %2d              %2d\n", ligand_atom_types[*P_a1], ligand_atom_types[*P_a2], xA, xB );
+    pr( logFile, "     %2s,%-2s         %2d              %2d\n", info->atom_type_name[*P_a1], info->atom_type_name[*P_a2], xA, xB );
     pr( logFile, "                  r               r \n\n");
-    pr( logFile, "Calculating %s-%-s interaction energy versus atomic separation (%d data points).\n", ligand_atom_types[*P_a1], ligand_atom_types[*P_a2], NEINT );
+    pr( logFile, "Calculating %s-%-s interaction energy versus atomic separation (%d data points).\n", info->atom_type_name[*P_a1], info->atom_type_name[*P_a2], NEINT );
     flushLog;
+
     nbeStart = times( &tms_nbeStart );
+
     dxA = (double) xA;
     dxB = (double) xB;
     if (xB == (2*xA)) {
@@ -103,17 +91,19 @@ void intnbtable( Boole *P_B_havenbp,
         Ais2B = FALSE;
         Bis2A = FALSE;
     }
+
     // loop up to a maximum distance of  (NEINT * INV_A_DIV), 
     //                          usually    2048 * 0.01,       or 20.48 Angstroms
 
     for ( i = 1;  i < NEINT;  i++ ) {
-        // i is essentially the distance (in integer form)
+        // i is the lookup-table index that corresponds to the distance
 
-        r = LookUpProc(i); // r is the distance
+        r = IndexToDistance(i); // r is the distance that corresponds to index
 
-        // Compute the distance-dependent gaussian component of the desolvation energy, sol_fn
-        // Weight this by the coefficient for desolvation
-        sol_fn[i] = coeff_desolv * exp( minus_inv_two_sigma_sqd * sq(r) );
+        // Compute the distance-dependent gaussian component of the desolvation energy, sol_fn[i];
+        // Weight this by the coefficient for desolvation, coeff_desolv.
+
+        ad_tables->sol_fn[i] = coeff_desolv * exp( minus_inv_two_sigma_sqd * sq(r) );
 
         if (Bis2A) {
             rA = pow( r, dxA );
@@ -126,10 +116,10 @@ void intnbtable( Boole *P_B_havenbp,
             rB = pow( r, dxB );
         }
 
-        e_internal[i][*P_a1][*P_a2] = e_internal[i][*P_a2][*P_a1] = min( EINTCLAMP, (cA/rA - cB/rB) );
+        ad_tables->e_vdW_Hb[i][*P_a1][*P_a2]  =  ad_tables->e_vdW_Hb[i][*P_a2][*P_a1]  =  min( EINTCLAMP, (cA/rA - cB/rB) );
 
         if (debug > 1) {
-            pr( logFile, "i=%6d  e_internal = %.3f,   r=%.4lf\n",i, e_internal[i][*P_a1][*P_a2], r ); // Xcode-gmm
+            pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %.3f,   r=%.4lf\n",i, ad_tables->e_vdW_Hb[i][*P_a1][*P_a2], r ); // Xcode-gmm
         }
 
     } // 1 <= i < NEINT
@@ -138,8 +128,39 @@ void intnbtable( Boole *P_B_havenbp,
     pr( logFile, "Time taken: ");
     timesys( nbeEnd - nbeStart, &tms_nbeStart, &tms_nbeEnd );
 
-    if (++(*P_a2) >= num_atm_maps) {
+    if (++(*P_a2) >= info->num_atom_types) {
         *P_a2 = ++(*P_a1);
     }
 }
-/* EOF of intnbtable.c */
+/* end of intnbtable */
+
+
+void setup_distdepdiel( int outlev, 
+                        EnergyTables *ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables
+                      )
+{
+    register int i=0;
+    register double distance=0.0L;
+
+    if (outlev > 0) {
+        pr(logFile, "Calculating distance-dependent dielectric function using the method of Mehler & Solmajer\n\n\n");
+    }
+
+    ptr_ad_energy_tables->epsilon_fn[0] = 1.0L;
+    if (outlev > 1) {
+        pr(logFile, "i, ptr_ad_energy_tables->epsilon_fn[i] = %d, %8.4lf\n", i, ptr_ad_energy_tables->epsilon_fn[i]);
+    }
+    for (i = 1;  i < NDIEL;  i++) {
+        distance = IndexToDistance(i);
+        ptr_ad_energy_tables->epsilon_fn[i] = calc_ddd_Mehler_Solmajer( distance, APPROX_ZERO );
+        ptr_ad_energy_tables->r_epsilon_fn[i] = distance * calc_ddd_Mehler_Solmajer( distance, APPROX_ZERO );
+        if (outlev > 1) {
+            if (i%10 == 0) {
+                pr(logFile, "i, ptr_ad_energy_tables->epsilon_fn[i] = %d, %8.4lf\n", i, ptr_ad_energy_tables->epsilon_fn[i]);
+            }
+        }
+    } // next i
+}
+/* end of setup_distdepdiel */
+
+/* EOF */

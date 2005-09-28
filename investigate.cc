@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.6 2005/03/23 00:31:07 garrett Exp $
+ $Id: investigate.cc,v 1.7 2005/09/28 22:54:20 garrett Exp $
 
 */
 
@@ -37,15 +37,10 @@ void investigate( int   Nnb,
                     FloatOrDouble q1q2[MAX_NONBONDS],
                     FloatOrDouble crd[MAX_ATOMS][SPACE],
                     FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-                    FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
-                    FloatOrDouble xhi,
-                    FloatOrDouble yhi,
-                    FloatOrDouble zhi,
-                    FloatOrDouble inv_spacing,
+
+                    EnergyTables *ptr_ad_energy_tables,
+
                     int   maxTests,
-                    FloatOrDouble xlo,
-                    FloatOrDouble ylo,
-                    FloatOrDouble zlo,
                     FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
                     int   natom,
                     int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
@@ -73,11 +68,10 @@ void investigate( int   Nnb,
                     const Boole         B_include_1_4_interactions,
                     const FloatOrDouble scale_1_4,
 
-                    const FloatOrDouble sol_fn[NEINT],
                     const ParameterEntry parameterArray[MAX_MAPS],
 
-                    const FloatOrDouble unbound_internal_FE
-                )
+                    const FloatOrDouble unbound_internal_FE,
+                    GridMapSetInfo *info )
 
 {
     Boole B_outside = FALSE;
@@ -160,8 +154,7 @@ void investigate( int   Nnb,
             do { /* while (rms > MaxRms); */
                 do { /* while (B_outside); */
                     if (mode == RANDOM_MODE) {
-                        sNow = mkRandomState( xlo, xhi, ylo, yhi, zlo, zhi,
-                                              ntor, F_TorConRange, N_con);
+                        sNow = mkRandomState( ntor, F_TorConRange, N_con, info );
                         if (outlev > 2) {
                             fprintf(logFile, "mkRandomState:  ");
                             writeState(logFile, sNow);
@@ -180,7 +173,7 @@ void investigate( int   Nnb,
      
                     /* Check to see if any atom is outside the grid...  */
                     for (i = 0;  i < natom;  i++) {
-                        B_outside= is_out_grid(crd[i][X], crd[i][Y], crd[i][Z]);
+                        B_outside= is_out_grid_info(crd[i][X], crd[i][Y], crd[i][Z]);
                         if ( B_outside ) {  /* Outside grid! */
                             ++NumOutside;
                             if (mode == CHANGE_MODE) {
@@ -197,8 +190,8 @@ void investigate( int   Nnb,
                 rms = getrms( crd, ref_crds, B_symmetry_flag, natom, type);
             } while (rms > MaxRms);
             /* Calculate Energy of System, */
-            e = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, xlo, ylo, zlo, ignore_inter) 
-                    + eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
+            e = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, ignore_inter, info) 
+                    + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
             if (B_isGaussTorCon) {
                 for (Itor = 0; Itor < ntor; Itor++) {
                     if (B_isTorConstrained[Itor] == 1) {

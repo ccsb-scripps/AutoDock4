@@ -11,4 +11,10 @@ void read_parameter_library(
 void setup_parameter_library(
         int outlev
         );
+
+void setup_distdepdiel( int outlev, 
+                        EnergyTables *ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables
+                      );
+
+
 #endif

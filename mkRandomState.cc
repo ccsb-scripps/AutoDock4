@@ -1,6 +1,6 @@
 /*
 
- $Id: mkRandomState.cc,v 1.2 2003/02/26 01:20:47 garrett Exp $
+ $Id: mkRandomState.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
 
 */
 
@@ -17,15 +17,10 @@
     #include "mkRandomState.h"
 
 
-State mkRandomState( FloatOrDouble xlo,
-		     FloatOrDouble xhi,
-		     FloatOrDouble ylo,
-		     FloatOrDouble yhi,
-		     FloatOrDouble zlo,
-		     FloatOrDouble zhi,
-		     int   ntor,
+State mkRandomState( int   ntor,
 		     FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-		     int   N_con[MAX_TORS])
+		     int   N_con[MAX_TORS],
+                     GridMapSetInfo *info)
 
 {
     State now;
@@ -40,9 +35,9 @@ State mkRandomState( FloatOrDouble xlo,
     /*
     ** Translation
     */
-    now.T.x = random_range( xlo, xhi);
-    now.T.y = random_range( ylo, yhi);
-    now.T.z = random_range( zlo, zhi);
+    now.T.x = random_range( info->lo[X], info->hi[X]);
+    now.T.y = random_range( info->lo[Y], info->hi[Y]);
+    now.T.z = random_range( info->lo[Z], info->hi[Z]);
 
     /*
     ** Quaternion angular displacement

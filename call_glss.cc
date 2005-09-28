@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.10 2005/03/23 00:31:07 garrett Exp $
+ $Id: call_glss.cc,v 1.11 2005/09/28 22:54:19 garrett Exp $
 
 */
 
@@ -30,7 +30,7 @@ int global_ntor;
 
 Eval evaluate;
 
-Representation **generate_R(int num_torsions, double xlo, double xhi, double ylo, double yhi, double zlo, double zhi)
+Representation **generate_R(int num_torsions, GridMapSetInfo *info)
 {
    Representation **retval;
 
@@ -43,9 +43,9 @@ Representation **generate_R(int num_torsions, double xlo, double xhi, double ylo
     // gmm 20-FEB-2003
     (void)fprintf(logFile,"call_glss.cc/Representation **generate_R()  done creating   a new Representation with 5 elements, retval...\n");
 #endif
-   retval[0] = new RealVector(1, xlo, xhi);
-   retval[1] = new RealVector(1, ylo, yhi);
-   retval[2] = new RealVector(1, zlo, zhi);
+   retval[0] = new RealVector(1, info->lo[X], info->hi[X]);
+   retval[1] = new RealVector(1, info->lo[Y], info->hi[Y]);
+   retval[2] = new RealVector(1, info->lo[Z], info->hi[Z]);
    retval[3] = new RealVector(3);
    retval[4] = new RealVector(num_torsions+1);
 #ifdef DEBUG
@@ -56,13 +56,13 @@ Representation **generate_R(int num_torsions, double xlo, double xhi, double ylo
    return(retval);
 }
 
-Genotype generate_Gtype(int num_torsions, double xlo, double xhi, double ylo, double yhi, double zlo, double zhi)
+Genotype generate_Gtype(int num_torsions, GridMapSetInfo *info)
 {
 #ifdef DEBUG
     // gmm 20-FEB-2003
     (void)fprintf(logFile,"call_glss.cc/Genotype generate_Gtype() about to call Genotype temp(5, generate_R())...\n");
 #endif
-   Genotype temp((unsigned int)5, generate_R(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi));
+   Genotype temp((unsigned int)5, generate_R(num_torsions, info));
 #ifdef DEBUG
     // gmm 20-FEB-2003
     (void)fprintf(logFile,"call_glss.cc/Genotype generate_Gtype() done calling  Genotype temp(5, generate_r())...\n");
@@ -71,13 +71,13 @@ Genotype generate_Gtype(int num_torsions, double xlo, double xhi, double ylo, do
    return(temp);
 }
 
-Phenotype generate_Ptype(int num_torsions, double xlo, double xhi, double ylo, double yhi, double zlo, double zhi)
+Phenotype generate_Ptype(int num_torsions, GridMapSetInfo *info) 
 {
 #ifdef DEBUG
     // gmm 20-FEB-2003
     (void)fprintf(logFile,"call_glss.cc/Genotype generate_Ptype() about to call Phenotype temp(5, generate_R())...\n");
 #endif
-   Phenotype temp((unsigned int)5, generate_R(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi));
+   Phenotype temp((unsigned int)5, generate_R(num_torsions, info));
 #ifdef DEBUG
     // gmm 20-FEB-2003
     (void)fprintf(logFile,"call_glss.cc/Genotype generate_Ptype() done calling  Phenotype temp(5, generate_R())...\n");
@@ -86,7 +86,7 @@ Phenotype generate_Ptype(int num_torsions, double xlo, double xhi, double ylo, d
    return(temp);
 }
 
-Individual random_ind(int num_torsions, double xlo, double xhi, double ylo, double yhi, double zlo, double zhi)
+Individual random_ind(int num_torsions,  GridMapSetInfo *info) 
 {
    Genotype temp_Gtype;
    Phenotype temp_Ptype;
@@ -95,12 +95,12 @@ Individual random_ind(int num_torsions, double xlo, double xhi, double ylo, doub
     // gmm 20-FEB-2003
     (void)fprintf(logFile,"call_glss.cc/Individual random_ind() about to generate_Gtype()...\n");
 #endif
-   temp_Gtype = generate_Gtype(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi);
+   temp_Gtype = generate_Gtype(num_torsions, info);
 #ifdef DEBUG
     // gmm 20-FEB-2003
     (void)fprintf(logFile,"call_glss.cc/Individual random_ind() about to generate_Ptype()...\n");
 #endif
-   temp_Ptype = generate_Ptype(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi); // differs on Linux gcc 2.96 and Mac OS X gcc 3.1
+   temp_Ptype = generate_Ptype(num_torsions, info); // differs on Linux gcc 2.96 and Mac OS X gcc 3.1
 
 #ifdef DEBUG
     // gmm 20-FEB-2003
@@ -116,14 +116,14 @@ Individual random_ind(int num_torsions, double xlo, double xhi, double ylo, doub
 }
 
 #ifdef FALSE
-Individual set_ind(int num_torsions, double xlo, double xhi, double ylo, double yhi, double zlo, double zhi, State state)
+Individual set_ind(int num_torsions,  GridMapSetInfo *info, State state)
 {
    Genotype temp_Gtype;
    Phenotype temp_Ptype;
    int i;
 
-   temp_Gtype = generate_Gtype(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi);
-   temp_Ptype = generate_Ptype(num_torsions, xlo, xhi, ylo, yhi, zlo, zhi);
+   temp_Gtype = generate_Gtype(num_torsions, info);
+   temp_Ptype = generate_Ptype(num_torsions, info);
 
    // use the state to generate a Genotype
    temp_Gtype.write(state.T.x, 0);
@@ -147,12 +147,13 @@ Individual set_ind(int num_torsions, double xlo, double xhi, double ylo, double 
 #endif
 
 State call_glss(Global_Search *global_method, Local_Search *local_method, 
-                State now, unsigned int num_evals, unsigned int pop_size, 
-                FloatOrDouble xlo, FloatOrDouble xhi, FloatOrDouble ylo, 
-                FloatOrDouble yhi, FloatOrDouble zlo, FloatOrDouble zhi,
-                int outlev, unsigned int extOutputEveryNgens,
-                Molecule *mol, Boole B_template,
-		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0)
+                State now, 
+                unsigned int num_evals, unsigned int pop_size, 
+                int outlev, 
+                unsigned int extOutputEveryNgens, Molecule *mol, 
+                Boole B_template,
+		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
+                GridMapSetInfo *info )
 {
     register unsigned int i;
 	register int j;
@@ -178,7 +179,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     // gmm 20-FEB-2003
     (void)fprintf(logFile,"call_glss.cc/State call_glss(): Creating individual i= %d in thisPop[i];  about to call random_ind()...\n", i);
 #endif
-            thisPop[i] = random_ind( now.ntor, double(xlo), double(xhi), double(ylo), double(yhi), double(zlo), double(zhi));
+            thisPop[i] = random_ind( now.ntor, info);
 #ifdef DEBUG
     // gmm 20-FEB-2003
     (void)fprintf(logFile,"call_glss.cc/State call_glss(): Created  individual i= %d in thisPop[i]\n", i);

@@ -1,6 +1,6 @@
 /*
 
- $Id: writeStateOfPDBQ.cc,v 1.1 2005/08/16 00:07:49 garrett Exp $
+ $Id: writeStateOfPDBQ.cc,v 1.2 2005/09/28 22:54:21 garrett Exp $
 
 */
 
@@ -46,19 +46,12 @@ writeStateOfPDBQ(int irun, FourByteLong seed[2],
 		 int tlist[MAX_TORS][MAX_ATOMS],
 		 FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
 		 int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
-		 FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+         EnergyTables *ptr_ad_energy_tables,
 		 int type[MAX_ATOMS],
 		 int Nnb,
 		 Boole B_calcIntElec,
 		 FloatOrDouble q1q2[MAX_NONBONDS],
          FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-		 FloatOrDouble inv_spacing,
-		 FloatOrDouble xlo,
-		 FloatOrDouble ylo,
-		 FloatOrDouble zlo,
-		 FloatOrDouble xhi,
-		 FloatOrDouble yhi,
-		 FloatOrDouble zhi,
 		 Boole B_template,
 		 FloatOrDouble template_energy[MAX_ATOMS],
 		 FloatOrDouble template_stddev[MAX_ATOMS],
@@ -66,9 +59,10 @@ writeStateOfPDBQ(int irun, FourByteLong seed[2],
 		 int ignore_inter[MAX_ATOMS],
 		 const Boole B_include_1_4_interactions,
 		 const FloatOrDouble scale_1_4,
-		 const FloatOrDouble sol_fn[NEINT],
 		 const ParameterEntry parameterArray[MAX_MAPS],
-		 const FloatOrDouble unbound_internal_FE
+		 const FloatOrDouble unbound_internal_FE,
+
+         GridMapSetInfo *info
 )
 {
 	int             i = 0;
@@ -100,19 +94,19 @@ writeStateOfPDBQ(int irun, FourByteLong seed[2],
 
 	B_outside = FALSE;
 	for (i = 0; (i < natom) && (!B_outside); i++) {
-		B_outside = is_out_grid(crd[i][0], crd[i][1], crd[i][2]);
+		B_outside = is_out_grid_info(crd[i][0], crd[i][1], crd[i][2]);
 	}
 	if (!B_outside) {
 		if (ntor > 0) {
-			*Ptr_eintra = eintcal(nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
+			*Ptr_eintra = eintcal(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
 		} else {
 			*Ptr_eintra = 0.0;
 		}
 		if (B_template) {
-			*Ptr_einter = byatom_template_trilinterp(crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo,
-					  template_energy, template_stddev);
+			*Ptr_einter = byatom_template_trilinterp(crd, charge, abs_charge, type, natom, map, elec, emap, 
+					  template_energy, template_stddev, info );
 		} else {
-			*Ptr_einter = trilinterp4(crd, charge, abs_charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo, ignore_inter);
+			*Ptr_einter = trilinterp4(crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
 		}
 
 	} else {

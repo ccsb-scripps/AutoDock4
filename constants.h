@@ -118,8 +118,8 @@
 
 #ifdef USE_8A_NBCUTOFF
 
-// #ifdef USE_XCODE
-// Xcode-gmm
+// #ifdef USE_XCODE // Xcode-gmm
+
 #define NEINT    2048         /* Number of values in internal energy table */ // Xcode-gmm
 #define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
 #define A_DIV     100.00      /* Used in distance look-up table. */
@@ -143,6 +143,11 @@
 #define NBC2     4096.00      /* NBC^2, units: Angstrom^2 */
 
 #endif
+
+#define NDIEL 16384           /* Number of dielectric values in lookup table.
+                                 NDIEL is bigger than NEINT because electrostatic interactions are much
+                                 longer-range than van der Waals interactions. */
+#define NDIEL_1 (NDIEL - 1)   /* The last valid index in dielectric lookup table, NDIEL minus 1 */
 
 /*
  * Alternate Scheme:-              (Uses less memory; for smaller ligands, < 8.0 Ang.)
@@ -213,73 +218,76 @@
 #ifndef MACROS
 #define MACROS
 
-#define equal(a,b,n)    ( strncmp(a,b,(size_t)(n)) == (int)0 )
+#define equal(a,b,n) ( strncmp(a,b,(size_t)(n)) == (int)0 )
 
-#define max(x,y)        ( ((x) > (y)) ? (x) : (y) )
-#define min(x,y)        ( ((x) < (y)) ? (x) : (y) )
+#define max(x,y)     ( ((x) > (y)) ? (x) : (y) )
+#define min(x,y)     ( ((x) < (y)) ? (x) : (y) )
 #define clamp(x,lowerbound)        ( ((x) < (lowerbound)) ? (lowerbound) : (x) )
 
-#define Rad(deg)        ( (deg) * 0.01745329252 )
-#define Deg(rad)        ( (rad) * 57.29577951 )
+#define Rad(deg)     ( (deg) * 0.01745329252 )
+#define Deg(rad)     ( (rad) * 57.29577951 )
 
-#define ModDeg(a)        fmod((double)(a),(double)360.)
-#define ModRad(a)        fmod((double)(a),(double)TWOPI)
+#define ModDeg(a)    fmod((double)(a),(double)360.)
+#define ModRad(a)    fmod((double)(a),(double)TWOPI)
 
-#define Wrp(a)            (((a)>180.)? ((a)-360.) :(((a)<-180.)? ((a)+360.) :(a)))
-#define WrpDeg(a)   (((a)>180.)? ((a)-360.) :(((a)<-180.)? ((a)+360.) :(a)))
-#define WrpRad(a)   (((a)> PI)? ((a)-TWOPI) :(((a)< -PI)?  ((a)+TWOPI) :(a)))
-#define WrpModRad(a)   (((a)> PI)? (ModRad(a)-TWOPI) :(((a)< -PI)?  (ModRad(a)+TWOPI) :(a)))
+#define Wrp(a)       (((a)>180.)? ((a)-360.) :(((a)<-180.)? ((a)+360.) :(a)))
+#define WrpDeg(a)    (((a)>180.)? ((a)-360.) :(((a)<-180.)? ((a)+360.) :(a)))
+#define WrpRad(a)    (((a)> PI)? ((a)-TWOPI) :(((a)< -PI)?  ((a)+TWOPI) :(a)))
+#define WrpModRad(a) (((a)> PI)? (ModRad(a)-TWOPI) :(((a)< -PI)?  (ModRad(a)+TWOPI) :(a)))
 
 /*
  * #define        RedFac(s0,sN,N)                expf( logf((sN)/(s0)) / ((N)-1))
  * N.B. You must compile with ANSI (-Aa on HPPA) in order to use expf 
  * and logf, otherwise FloatOrDoubles are automatically promoted to doubles.
  */
-#define        RedFac(s0,sN,N)                exp( log((sN)/(s0)) / ((N)-1))
+#define        RedFac(s0,sN,N)    exp( log((sN)/(s0)) / ((N)-1))
 
-#define arithmetic_mean( r1, r2 )        (0.5L * ((r1) + (r2)))
-#define geometric_mean( e1, e2 )        sqrt((double)(e1) * (double)(e2))
+#define arithmetic_mean( r1, r2 ) (0.5L * ((r1) + (r2)))
+#define geometric_mean( e1, e2 )  sqrt((double)(e1) * (double)(e2))
 
-#define sq(a)                        ( (a) * (a) )
-#define SQ(a)                        ( (a) * (a) )
-#define sqhypotenuse(x,y,z)        ( sq(x) + sq(y) + sq(z) )
-#define hypotenuse(x,y,z)        (sqrt((double)(sq(x) + sq(y) + sq(z)) )  )
-#define hypotenuse_F(x,y,z)        (sqrtf( sq(x) + sq(y) + sq(z) )  )
-#define hypotenuse4(x,y,z,w)        (sqrt((double)(sq(x) + sq(y) + sq(z) + sq(w))))
-#define hypotenuse4_F(x,y,z,w)        (sqrtf( sq(x) + sq(y) + sq(z) + sq(w) )  )
+#define sq(a)                     ( (a) * (a) )
+#define SQ(a)                     ( (a) * (a) )
+#define sqhypotenuse(x,y,z)       ( sq(x) + sq(y) + sq(z) )
+#define hypotenuse(x,y,z)         (sqrt((double)(sq(x) + sq(y) + sq(z)) )  )
+#define hypotenuse_F(x,y,z)       (sqrtf( sq(x) + sq(y) + sq(z) )  )
+#define hypotenuse4(x,y,z,w)      (sqrt((double)(sq(x) + sq(y) + sq(z) + sq(w))))
+#define hypotenuse4_F(x,y,z,w)    (sqrtf( sq(x) + sq(y) + sq(z) + sq(w) )  )
 
 
 /* index_to_Ang converts from an array index to a distance */
-#define index_to_Ang(i)                ( ( (FloatOrDouble) (i) ) * INV_A_DIV )
+#define index_to_Ang(i)           ( ( (FloatOrDouble) (i) ) * INV_A_DIV )
 
 /* Ang_to_index converts from a distance to an array index */
-#define Ang_to_index(r)                ( (int) ( (r) * A_DIV ) )
+#define Ang_to_index(r)           ( (int) ( (r) * A_DIV ) )
 
 /* BoundedAng_to_index converts from a distance to an array index, but never returns an index out of bounds. */
-#define BoundedAng_to_index(r)                ((((int)((r)*A_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r)*A_DIV))
+#define BoundedAng_to_index(r)    ((((int)((r)*A_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r)*A_DIV))
 
 /* index_to_SqAng converts from an array index to the square of a distance */
-#define index_to_SqAng(i)        ( ( (FloatOrDouble) (i) ) * INV_SQA_DIV )
+#define index_to_SqAng(i)         ( ( (FloatOrDouble) (i) ) * INV_SQA_DIV )
 
 /* SqAng_to_index converts from the square of a distance to an array index */
 #define SqAng_to_index(r2)        ( (int) ( (r2) * SQA_DIV ) )
-#define SqAng_to_index_Int(r2)        (INT_SQA_DIV * (int)(r2))  /* Xcode-gmm */
+#define SqAng_to_index_NBC2(r2)   ( (int) ( ( min( r2, NBC2 ) ) * SQA_DIV ) )
+#define SqAng_to_index_Int(r2)    (INT_SQA_DIV * (int)(r2))  /* Xcode-gmm */
 
 /* BoundedSqAng_to_index converts from the square of a distance to an array index, but never returns an index out of bounds. */
-#define BoundedSqAng_to_index(r2)        ( (((int)((r2)*SQA_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r2)*SQA_DIV)) )
+#define BoundedSqAng_to_index(r2) ( (((int)((r2)*SQA_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r2)*SQA_DIV)) )
 
-/* BoundedNeint never returns an index out of bounds. */
-#define BoundedNeint(i)                (((i) > NEINT_1) ? NEINT_1 : (i))
+/* BoundedNeint never returns an index greater than (NEINT - 1). */
+#define BoundedNeint(i)           (((i) > NEINT_1) ? NEINT_1 : (i))
 
-#define sqminlookup(r2)           ( (int) ( ( min( r2, NBC2 ) ) * SQA_DIV ) )
+/* BoundedNdiel never returns an index greater than (NDIEL - 1). */
+#define BoundedNdiel(i)           (((i) > NDIEL_1) ? NDIEL_1 : (i))
 
 #define is_out_grid(x,y,z) (((x)<=(xlo)) || ((x)>=(xhi)) || ((y)<=(ylo)) || ((y)>=(yhi)) || ((z)<=(zlo)) || ((z)>=(zhi))) 
+
+#define is_out_grid_info(x,y,z) (((x)<=(info->lo[X])) || ((x)>=(info->hi[X])) || ((y)<=(info->lo[Y])) || ((y)>=(info->hi[Y])) || ((z)<=(info->lo[Z])) || ((z)>=(info->hi[Z])))
 
 
 /*----------------------------------------------------------------------------* 
  * Random numbers,                                                            * 
  *----------------------------------------------------------------------------*/
-
 
 #ifdef HARDWARE_RNG // HARDWARE_RNG = hardware random number generator
 /* 
@@ -375,6 +383,7 @@
 
 #ifndef _PDB_FORMATS
 #define _PDB_FORMATS
+
 
 /*----------------------------------------------------------------------------* 
  * Format for output                                                          * 

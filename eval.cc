@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.10 2005/03/23 00:31:07 garrett Exp $
+ $Id: eval.cc,v 1.11 2005/09/28 22:54:19 garrett Exp $
 
 */
 
@@ -117,7 +117,7 @@ double Eval::eval()
 
    //  Check to see if crd is valid
    for (i=0; (i<natom)&&(!B_outside); i++) {
-      B_outside = is_out_grid(crd[i][0], crd[i][1], crd[i][2]);
+      B_outside = is_out_grid_info(crd[i][0], crd[i][1], crd[i][2]);
    } // i
 
    if (!B_template) {
@@ -128,27 +128,14 @@ double Eval::eval()
 (void)fprintf(logFile,"eval.cc/All coordinates are inside grid...\n");
 #endif /* DEBUG */
 
-    /*---------------------------------------------------------------------------
-    * I have removed this call to save a stack-push, and inlined the code 
-    * instead...
-    *                 -- Garrett
-    *
-    *    energy = evaluate_energy(crd, charge, type, natom, map, inv_spacing, 
-    *                              xlo, ylo, zlo, nonbondlist, 
-    *                              e_internal, Nnb, B_calcIntElec, q1q2, 
-    *                              B_isGaussTorCon, B_isTorConstrained, stateNow, 
-    *                              B_ShowTorE, US_TorE, US_torProfile);
-    * --------------------------------------------------------------------------*/
-
-            energy = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing,
-                                      xlo, ylo, zlo,
-                             		 ignore_inter);
+            energy = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, 
+                             		   ignore_inter, info);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after quicktrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, 
+            energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, 
                                B_include_1_4_interactions, scale_1_4, 
-                               qsp_abs_charge, sol_fn, parameterArray, 
+                               qsp_abs_charge, parameterArray, 
                                unbound_internal_FE);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
@@ -181,11 +168,11 @@ double Eval::eval()
              * distance from centre of grid map, otherwise use the normal 
              * trilinear interpolation.
              */
-            energy = outsidetrilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,  xcen, ycen, zcen, ignore_inter );
+            energy = outsidetrilinterp4( crd, charge, abs_charge, type, natom, map, ignore_inter, info );
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after outsidetrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
+            energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */
@@ -206,14 +193,11 @@ double Eval::eval()
     } else {
         // Use template scoring function
         if (!B_outside) {
-            energy = template_trilinterp( crd, charge, abs_charge, type, natom, map, inv_spacing,
-                                  xlo, ylo, zlo, template_energy, template_stddev);
+            energy = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
+                                  template_energy, template_stddev, info);
         } else {
             energy = outside_templ_trilinterp( crd, charge, abs_charge, type, natom, map,
-                                               inv_spacing, 
-                                               xlo, ylo, zlo,
-                                               xhi, yhi, zhi,  xcen, ycen, zcen,
-                                               template_energy, template_stddev);
+                                               template_energy, template_stddev, info);
         }
     }
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.7 2005/03/23 00:31:08 garrett Exp $
+ $Id: simanneal.cc,v 1.8 2005/09/28 22:54:21 garrett Exp $
 
 */
 
@@ -39,21 +39,16 @@ void simanneal ( int   *Addr_nconf,
 		FloatOrDouble crd[MAX_ATOMS][SPACE],
 		FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
 		char  FN_dpf[MAX_CHARS],
-		FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+        
+                    EnergyTables *ptr_ad_energy_tables,
+
 		FloatOrDouble econf[MAX_RUNS],
 		Boole B_either,
 		FloatOrDouble elec[MAX_ATOMS],
 		FloatOrDouble emap[MAX_ATOMS],
-		FloatOrDouble xhi,
-		FloatOrDouble yhi,
-		FloatOrDouble zhi,
 		int   NcycMax,
-		FloatOrDouble inv_spacing,
 		int   irunmax,
 		Clock jobStart,
-		FloatOrDouble xlo,
-		FloatOrDouble ylo,
-		FloatOrDouble zlo,
 		FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 		int   naccmax,
 		int   natom,
@@ -123,10 +118,11 @@ void simanneal ( int   *Addr_nconf,
         const Boole         B_include_1_4_interactions,
         const FloatOrDouble scale_1_4,
         
-        const FloatOrDouble sol_fn[NEINT],
         const ParameterEntry parameterArray[MAX_MAPS],
 
-        const FloatOrDouble unbound_internal_FE
+        const FloatOrDouble unbound_internal_FE,
+
+        GridMapSetInfo *info
         )
 
 {
@@ -242,15 +238,14 @@ void simanneal ( int   *Addr_nconf,
 			 &sInit, &sMin, &sLast, 
 			 B_RandomTran0, B_RandomQuat0, B_RandomDihe0, 
 			 charge, abs_charge, qsp_abs_charge, q1q2, crd, crdpdb, atomstuff,
-			 elec, emap, e_internal, B_calcIntElec,
-			 xhi, yhi, zhi, xlo, ylo, zlo,
-			 inv_spacing, map, natom, Nnb, nonbondlist,
+			 elec, emap, ptr_ad_energy_tables, B_calcIntElec,
+			 map, natom, Nnb, nonbondlist,
 			 ntor, tlist, type, vt, irun1, outlev, MaxRetries,
 			 torsFreeEnergy, ligand_is_inhibitor,
 			 ignore_inter,
-             B_include_1_4_interactions, scale_1_4, 
-             sol_fn, parameterArray, 
-             unbound_internal_FE);
+                         B_include_1_4_interactions, scale_1_4, 
+                         parameterArray, 
+                         unbound_internal_FE, info);
 
         RT = RT0;		/* Initialize the "annealing" temperature */
 	if (RT <= APPROX_ZERO) { RT = 616.; }
@@ -324,7 +319,7 @@ void simanneal ( int   *Addr_nconf,
 		    */
 
 		    for (i = 0;  i < natom;  i++) {
-			B_outside= is_out_grid(crd[i][X], crd[i][Y], crd[i][Z]);
+			B_outside= is_out_grid_info(crd[i][X], crd[i][Y], crd[i][Z]);
 			if ( B_outside ) {
 			    /*
 			    ** Outside grid!
@@ -365,8 +360,8 @@ void simanneal ( int   *Addr_nconf,
 			/*
 			** MORE ACCURATE METHOD, (SLOWER):
 			*/
-			e = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, xlo, ylo, zlo, ignore_inter) + 
-				(eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE));
+			e = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, ignore_inter, info ) + 
+				(eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE));
 
 			/*
 			** LESS ACCURATE  METHOD (FASTER):
@@ -378,7 +373,7 @@ void simanneal ( int   *Addr_nconf,
 			** if ( (e = quicktrilinterp( crd, charge, abs_charge, type, natom, 
 			** map, inv_spacing, xlo, ylo, zlo)) < 
 			** ENERGY_CUTOFF) { 
-			**   e += (eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE));
+			**   e += (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE));
 			** }
 			*/
 
@@ -483,14 +478,14 @@ void simanneal ( int   *Addr_nconf,
 			 &sInit, &sMin, &sLast, 
 			 TRUE, TRUE, TRUE, 
 			 charge, abs_charge, qsp_abs_charge, q1q2, crd, crdpdb, atomstuff,
-			 elec, emap, e_internal, B_calcIntElec,
-			 xhi, yhi, zhi, xlo, ylo, zlo,
-			 inv_spacing, map, natom, Nnb, nonbondlist,
+			 elec, emap, ptr_ad_energy_tables, B_calcIntElec,
+			 map, natom, Nnb, nonbondlist,
 			 ntor, tlist, type, vt, irun1, outlev, MaxRetries,
 			 torsFreeEnergy, ligand_is_inhibitor,
 			 ignore_inter,
-             B_include_1_4_interactions, scale_1_4, 
-             sol_fn, parameterArray, unbound_internal_FE);
+                         B_include_1_4_interactions, scale_1_4, 
+                         parameterArray, unbound_internal_FE,
+                         info );
 
 	    } else {
 
@@ -596,18 +591,17 @@ void simanneal ( int   *Addr_nconf,
 	cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
 
 	if (ntor > 0) {
-	    eintra = eintcal( nonbondlist, e_internal, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, sol_fn, parameterArray, unbound_internal_FE);
+	    eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
 	} else {
 	    eintra = 0.0;
 	}
-        einter = trilinterp4( crd, charge, abs_charge, type, natom, map, inv_spacing, 
-	    elec, emap, xlo, ylo, zlo, ignore_inter);
+        einter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
 
 	writePDBQ( irun, FN_ligand, FN_dpf, sml_center, sSave, ntor,
 	  eintra, einter, natom, atomstuff, crd, emap, elec, 
       charge, abs_charge, qsp_abs_charge,
 	  ligand_is_inhibitor, torsFreeEnergy, outlev, ignore_inter,
-      B_include_1_4_interactions, scale_1_4, sol_fn, parameterArray, unbound_internal_FE);
+      B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE);
 
         econf[(*Addr_nconf)] = eLast;
         ++(*Addr_nconf);

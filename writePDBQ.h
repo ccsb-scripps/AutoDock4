@@ -24,7 +24,7 @@ void  writePDBQ( int   irun,
                  int   ignore_inter[MAX_ATOMS],
                  const Boole         B_include_1_4_interactions,
                  const FloatOrDouble scale_1_4,
-                 const FloatOrDouble sol_fn[NEINT],
+
                  const ParameterEntry parameterArray[MAX_MAPS],
                  const FloatOrDouble unbound_internal_FE
                  );

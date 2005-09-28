@@ -1,18 +1,21 @@
 /*
 
- $Id: timesys.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
+ $Id: timesys.cc,v 1.4 2005/09/28 22:54:21 garrett Exp $
 
-*/
+ */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
+#ifndef _WIN32
+#   include <sys/times.h>
+#   include <unistd.h>
+#else
+#   include "times.h"
 #endif
 
-/* timesys.cc */
-
+#ifdef HAVE_CONFIG_H
+#   include <config.h>
+#endif
 
 #include <stdio.h>
-#include <unistd.h>
 #include "timesys.h"
 
 extern  FILE    *logFile;
@@ -20,9 +23,9 @@ extern	FloatOrDouble	idct;
 
 /*----------------------------------------------------------------------------*/
 
-void timesys( Clock  duration,
-	      struct tms *start,
-	      struct tms *end )
+void timesys( Clock       duration,
+              struct tms  *start,
+              struct tms  *end)
 
 /*----------------------------------------------------------------------------*/
 

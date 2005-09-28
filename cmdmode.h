@@ -22,15 +22,10 @@
 int   cmdmode( int natom,
              Clock jobStart,
              struct tms tms_jobStart,
-             FloatOrDouble xlo,
-             FloatOrDouble ylo,
-             FloatOrDouble zlo,
-             FloatOrDouble xhi,
-             FloatOrDouble yhi,
-             FloatOrDouble zhi,
-             FloatOrDouble inv_spacing,
              FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-             FloatOrDouble e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+
+             EnergyTables *ptr_ad_energy_tables,
+
              FloatOrDouble WallEnergy,
              FloatOrDouble vt[MAX_TORS][SPACE],
              int   tlist[MAX_TORS][MAX_ATOMS],
@@ -49,12 +44,13 @@ int   cmdmode( int natom,
              char  atm_typ_str[ATOM_MAPS],
              FloatOrDouble torsFreeEnergy,
              int ligand_is_inhibitor,
-             FloatOrDouble map_center[SPACE],
              int ignore_inter[MAX_ATOMS],
              const Boole         B_include_1_4_interactions,
              const FloatOrDouble scale_1_4,
-             const FloatOrDouble sol_fn[NEINT],
+
              const ParameterEntry parameterArray[MAX_MAPS],
-             const FloatOrDouble unbound_internal_FE
+             const FloatOrDouble unbound_internal_FE,
+
+             GridMapSetInfo *info
              );
 #endif
