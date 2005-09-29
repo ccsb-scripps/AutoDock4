@@ -14,4 +14,4 @@ map 1pgp_rec.OA.map                  # atom-specific affinity map
 map 1pgp_rec.P.map                   # atom-specific affinity map
 elecmap 1pgp_rec.e.map               # electrostatic potential map
 dsolvmap 1pgp_rec.d.map              # desolvation potential map
-dielectric -0.1146                   # <0, distance-dep.diel;>0, constant
+dielectric -0.1465                   # <0, distance-dep.diel;>0, constant

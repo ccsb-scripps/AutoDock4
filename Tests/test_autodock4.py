@@ -1,7 +1,7 @@
 #
 # 
 #
-# $Id: test_autodock4.py,v 1.4 2005/09/28 22:58:06 garrett Exp $
+# $Id: test_autodock4.py,v 1.5 2005/09/29 22:48:43 rhuey Exp $
 #
 """
 
@@ -14,7 +14,8 @@ from DlgParser import DlgParser
 
 computed_dlg = False
 computed_dlg_no_parameter_library = False
-expected_value = -7.13
+expected_value = -6.17
+#expected_value = -7.13
 expected_internal_energy_value = 1.19e-07
 
 
