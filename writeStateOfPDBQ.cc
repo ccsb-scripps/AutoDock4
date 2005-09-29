@@ -1,6 +1,6 @@
 /*
 
- $Id: writeStateOfPDBQ.cc,v 1.2 2005/09/28 22:54:21 garrett Exp $
+ $Id: writeStateOfPDBQ.cc,v 1.3 2005/09/29 03:26:28 garrett Exp $
 
 */
 
@@ -195,4 +195,66 @@ writeStateOfPDBQ(int irun, FourByteLong seed[2],
 	}
 }
 
+void write_emap_elec( State *Ptr_state,
+                     int ntor,
+                     int natom,
+                     FloatOrDouble crd[MAX_ATOMS][SPACE],
+                     FloatOrDouble charge[MAX_ATOMS],
+                     FloatOrDouble abs_charge[MAX_ATOMS],
+                     FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+                     FloatOrDouble vt[MAX_TORS][SPACE],
+                     int tlist[MAX_TORS][MAX_ATOMS],
+                     FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+                     int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                     EnergyTables *ptr_ad_energy_tables,
+                     int type[MAX_ATOMS],
+                     int Nnb,
+                     Boole B_calcIntElec,
+                     FloatOrDouble q1q2[MAX_NONBONDS],
+                     FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                     Boole B_template,
+                     FloatOrDouble template_energy[MAX_ATOMS],
+                     FloatOrDouble template_stddev[MAX_ATOMS],
+                     int ignore_inter[MAX_ATOMS],
+                     const Boole B_include_1_4_interactions,
+                     const FloatOrDouble scale_1_4,
+                     const ParameterEntry parameterArray[MAX_MAPS],
+                     const FloatOrDouble unbound_internal_FE,
+                     GridMapSetInfo *info )
+
+{
+	int           i = 0;
+	FloatOrDouble emap_total = 0.0L;
+	FloatOrDouble elec_total = 0.0L;
+	FloatOrDouble emap[MAX_ATOMS];
+	FloatOrDouble elec[MAX_ATOMS];
+
+
+	cnv_state_to_coords((*Ptr_state), vt, tlist, ntor, crdpdb, crd, natom);
+
+	Boole B_outside = FALSE;
+	for (i = 0; (i < natom) && (!B_outside); i++) {
+		B_outside = is_out_grid_info(crd[i][0], crd[i][1], crd[i][2]);
+	}
+	if (!B_outside) {
+		if (ntor > 0) {
+			(void) eintcal(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
+		}
+		if (B_template) {
+			(void) byatom_template_trilinterp(crd, charge, abs_charge, type, natom, map, elec, emap, 
+					  template_energy, template_stddev, info );
+		} else {
+			(void) trilinterp4(crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+		}
+	}
+
+	//Sum the non - bonded energies(emap[i]) and the electrostatic energies(elec[i])
+    emap_total = 0.0L;
+	elec_total = 0.0L;
+	for (i = 0; i < natom; i++) {
+		emap_total += emap[i];
+		elec_total += elec[i];
+	}
+    pr( logFile, "%9.2e %9.2e", emap_total, elec_total );
+}
 /* EOF */

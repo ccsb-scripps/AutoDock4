@@ -46,7 +46,34 @@ void writeStateOfPDBQ(int irun,FourByteLong seed[2],
                     const FloatOrDouble scale_1_4,
                     const ParameterEntry parameterArray[MAX_MAPS],
                     const FloatOrDouble unbound_internal_FE,
-                    GridMapSetInfo *info
-		    );
+                    GridMapSetInfo *info);
+
+
+void write_emap_elec( State *Ptr_state,
+                     int ntor,
+                     int natom,
+                     FloatOrDouble crd[MAX_ATOMS][SPACE],
+                     FloatOrDouble charge[MAX_ATOMS],
+                     FloatOrDouble abs_charge[MAX_ATOMS],
+                     FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+                     FloatOrDouble vt[MAX_TORS][SPACE],
+                     int tlist[MAX_TORS][MAX_ATOMS],
+                     FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+                     int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                     EnergyTables *ptr_ad_energy_tables,
+                     int type[MAX_ATOMS],
+                     int Nnb,
+                     Boole B_calcIntElec,
+                     FloatOrDouble q1q2[MAX_NONBONDS],
+                     FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                     Boole B_template,
+                     FloatOrDouble template_energy[MAX_ATOMS],
+                     FloatOrDouble template_stddev[MAX_ATOMS],
+                     int ignore_inter[MAX_ATOMS],
+                     const Boole B_include_1_4_interactions,
+                     const FloatOrDouble scale_1_4,
+                     const ParameterEntry parameterArray[MAX_MAPS],
+                     const FloatOrDouble unbound_internal_FE,
+                     GridMapSetInfo *info );
 
 #endif
