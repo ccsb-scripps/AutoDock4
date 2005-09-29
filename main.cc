@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.22 2005/09/28 22:54:20 garrett Exp $
+ $Id: main.cc,v 1.23 2005/09/29 03:27:09 garrett Exp $
 
 */
 
@@ -186,6 +186,7 @@ char FN_parameter_library[MAX_CHARS];
 char hostnm[MAX_CHARS];
 char param[2][MAX_CHARS];
 char c_mode_str[MAX_CHARS];
+char FN_pop_file[MAX_CHARS];
 
 //   SPACE
 //
@@ -2735,14 +2736,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr(logFile, "Output level is set to %d.\n\n", outlev);
 
                 // Start Lamarckian GA run
-                sHist[nconf] = call_glss( GlobalSearchMethod, LocalSearchMethod, 
+                sHist[nconf] = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                           sInit,
-                                          num_evals, pop_size, 
+                                          num_evals, pop_size,
                                           outlev,
                                           outputEveryNgens, &ligand,
-                                          B_template, 
-                                          B_RandomTran0, B_RandomQuat0, B_RandomDihe0, 
-                                          info);
+                                          B_template,
+                                          B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
+                                          info, FN_pop_file);
                 // State of best individual at end
                 // of GA-LS run is returned.
                 // Finished Lamarckian GA run
@@ -3529,6 +3530,20 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             c_mode = Uniform; // default
         }
         (void) fflush(logFile);
+        break;
+
+/*____________________________________________________________________________*/
+
+    case DPF_POPFILE:
+        /*
+         *  output_pop_file
+         *
+         *  Used to write out the population to a file at the end of 
+         *  every GA.
+         */
+        (void) sscanf( line, "%*s %s", FN_pop_file);
+        (void) fflush(logFile);
+        pr( logFile, "The population will be output to the file \"%s\" at the end of every generation.\n", FN_pop_file);
         break;
 
 /*_12yy_______________________________________________________________________*/
