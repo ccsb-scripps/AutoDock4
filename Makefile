@@ -493,6 +493,12 @@ $(ADLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
 	@echo "Running ranlib"
 	$(RANLIB) $(RANLIBFLAGS) $(ADLIB)
 
+testad : autodock4 Tests/test_autodock4.py
+	@echo " "
+	@echo "Running the unit tests on autodock4"
+	@echo " "
+	cd Tests ; python ./test_autodock4.py
+
 OFILES= eigen.o matvec.o rot.o rotate.o rotlsqfit.o
 
 lsfit: lsfit.o $(OFILES)
