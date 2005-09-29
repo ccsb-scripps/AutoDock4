@@ -23,7 +23,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 		int outlev, unsigned int extOutputEveryNgens, Molecule *mol,
 		Boole B_template,
 		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
-        GridMapSetInfo *info );
+        GridMapSetInfo *info, char FN_pop_file[MAX_CHARS] );
 
 Representation **generate_R(int num_torsions, GridMapSetInfo *info );
 

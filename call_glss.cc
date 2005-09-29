@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.11 2005/09/28 22:54:19 garrett Exp $
+ $Id: call_glss.cc,v 1.12 2005/09/29 03:31:03 garrett Exp $
 
 */
 
@@ -15,16 +15,17 @@
                                 rsh 9/95
 ********************************************************************/
 
-// possibly unnecessary // #include <iostream.h>
 #include "gs.h"
 #include "ls.h"
 #include "support.h"
 #include "eval.h"
 #include "hybrids.h"
+#include "constants.h"
+#include "structs.h"
+#include "openfile.h"
 
-   #include "constants.h"
-   #include "structs.h"
-   extern FILE *logFile;
+extern FILE *logFile;
+extern char *programname;
 
 int global_ntor;
 
@@ -152,15 +153,16 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
                 int outlev, 
                 unsigned int extOutputEveryNgens, Molecule *mol, 
                 Boole B_template,
-		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
-                GridMapSetInfo *info )
+                Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
+                GridMapSetInfo *info, char FN_pop_file[MAX_CHARS] )
 {
     register unsigned int i;
-	register int j;
+    register int j;
     int num_iterations = 0, num_loops = 0, allEnergiesEqual = 1, numTries = 0;
     int indiv = 0; // Number of Individual in Population to set initial state variables for.
     double firstEnergy = 0.0;
     EvalMode localEvalMode = Normal_Eval;
+    FILE *pop_fileptr;
 
     global_method->reset(extOutputEveryNgens);
     local_method->reset();
@@ -188,34 +190,34 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
             thisPop[i].age = 0L;
         }
 
-	// If initial values were supplied, put them in thisPop[0]
-	if (!B_RandomTran0) {
+    // If initial values were supplied, put them in thisPop[0]
+    if (!B_RandomTran0) {
           if (outlev > 1) { (void)fprintf(logFile, "Setting the initial translation (tran0) for individual number %d to %.2lf %.2lf %.2lf\n\n", indiv+1, now.T.x, now.T.y, now.T.z); }
-	  thisPop[indiv].genotyp.write( now.T.x, 0);
-	  thisPop[indiv].genotyp.write( now.T.y, 1);
-	  thisPop[indiv].genotyp.write( now.T.z, 2);
-	  // Remember to keep the phenotype up-to-date
-	  thisPop[indiv].phenotyp = thisPop[indiv].mapping();
-	};
-	if (!B_RandomQuat0) {
+      thisPop[indiv].genotyp.write( now.T.x, 0);
+      thisPop[indiv].genotyp.write( now.T.y, 1);
+      thisPop[indiv].genotyp.write( now.T.z, 2);
+      // Remember to keep the phenotype up-to-date
+      thisPop[indiv].phenotyp = thisPop[indiv].mapping();
+    };
+    if (!B_RandomQuat0) {
           if (outlev > 1) { (void)fprintf(logFile, "Setting the initial quaternion (quat0) for individual number %d to %.2lf %.2lf %.2lf  %.2lf deg\n\n", indiv+1, now.Q.nx, now.Q.ny, now.Q.nz, Deg(now.Q.ang)); }
-	  thisPop[indiv].genotyp.write( now.Q.nx, 3);
-	  thisPop[indiv].genotyp.write( now.Q.ny, 4);
-	  thisPop[indiv].genotyp.write( now.Q.nz, 5);
-	  thisPop[indiv].genotyp.write( now.Q.ang, 6);
-	  // Remember to keep the phenotype up-to-date
-	  thisPop[indiv].phenotyp = thisPop[indiv].mapping();
-	};
-	if (!B_RandomDihe0) {
+      thisPop[indiv].genotyp.write( now.Q.nx, 3);
+      thisPop[indiv].genotyp.write( now.Q.ny, 4);
+      thisPop[indiv].genotyp.write( now.Q.nz, 5);
+      thisPop[indiv].genotyp.write( now.Q.ang, 6);
+      // Remember to keep the phenotype up-to-date
+      thisPop[indiv].phenotyp = thisPop[indiv].mapping();
+    };
+    if (!B_RandomDihe0) {
           if (outlev > 1) { (void)fprintf(logFile, "Setting the initial torsions (dihe0) for individual number %d to ", indiv+1); }
-			for (j=0; j<now.ntor; j++) {
-				thisPop[indiv].genotyp.write( now.tor[j], 7+j);
-				if (outlev > 1) { (void)fprintf(logFile, "%.2lf ", Deg(now.tor[j])); }
-			};
+            for (j=0; j<now.ntor; j++) {
+                thisPop[indiv].genotyp.write( now.tor[j], 7+j);
+                if (outlev > 1) { (void)fprintf(logFile, "%.2lf ", Deg(now.tor[j])); }
+            };
           if (outlev > 1) { (void)fprintf(logFile, " deg\n\n"); }
-	  // Remember to keep the phenotype up-to-date
-	  thisPop[indiv].phenotyp = thisPop[indiv].mapping();
-	};
+      // Remember to keep the phenotype up-to-date
+      thisPop[indiv].phenotyp = thisPop[indiv].mapping();
+    };
 
         // Now ensure that there is some variation in the energies...
         firstEnergy = thisPop[0].value(localEvalMode);
@@ -236,15 +238,24 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         
         global_method->search(thisPop);
 
-        if (outlev > 2) { thisPop.printPopulationAsStates(logFile, pop_size, now.ntor); }
+        if (outlev > 2) { thisPop.printPopulationAsStates( logFile, pop_size, now.ntor); }
         if (outlev > 3) { minmeanmax( logFile, thisPop, ++num_iterations ); }
 
         for (i=0; i<pop_size; i++) {
             local_method->search(thisPop[i]);
         }
-        if (outlev > 2) { thisPop.printPopulationAsStates(logFile, pop_size, now.ntor); }
+        if (outlev > 2) { thisPop.printPopulationAsStates( logFile, pop_size, now.ntor); }
 
-		(void)fflush(logFile);
+        if (outlev < -9) { 
+            if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
+                pr(logFile, "\n%s: ERROR:  I'm sorry, I cannot create\"%s\".\n\n", programname, FN_pop_file);
+            } else {
+                thisPop.printPopulationAsCoordsEnergies( pop_fileptr, pop_size, now.ntor); 
+                fclose( pop_fileptr );
+            }
+        }
+
+        (void)fflush(logFile);
     } while ((evaluate.evals() < num_evals) && (!global_method->terminate()));
 
     thisPop.msort(3);
