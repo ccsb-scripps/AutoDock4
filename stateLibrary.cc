@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.4 2003/02/26 01:42:17 garrett Exp $
+ $Id: stateLibrary.cc,v 1.5 2005/09/29 03:32:25 garrett Exp $
 
 */
 
@@ -72,6 +72,11 @@ void printState( FILE *fp,
     FloatOrDouble torDegTmp;
 
     switch( detail ) {
+        case 3:
+            // Writes only the translation component of the state
+            (void)fprintf( fp, "%.3f %.3f %.3f", S.T.x, S.T.y, S.T.z );
+            break;
+
         case 2:
         default:
             (void)fprintf( fp, "\nSTATE VARIABLES:\n________________\n\n" );
@@ -90,7 +95,10 @@ void printState( FILE *fp,
                     torDegTmp = Deg( S.tor[i] );
                     torDegTmp = ModDeg( torDegTmp );
                     torDegTmp = WrpDeg( torDegTmp );
-                    pr( fp, " %.2f%c", torDegTmp, (i==(S.ntor-1) ? '.' : ','));
+                    // Commented out next line to make format more consistent, now all
+                    // numbers are space-delimited.
+                    //pr( fp, " %.2f%c", torDegTmp, (i==(S.ntor-1) ? '.' : ',')); 
+                    pr( fp, " %.2f", torDegTmp );
                     //if ((B_isTorConstrained[i] == 1) && B_ShowTorE) {
                         //pr( fp, ", Energetic penalty = %uhd\n", US_TorE[i]);
                     //} else {
@@ -126,7 +134,10 @@ void writeState( FILE *fp, State S )
             torDegTmp = Deg( S.tor[i] );
             torDegTmp = ModDeg( torDegTmp );
             torDegTmp = WrpDeg( torDegTmp );
-            pr( fp, " %.2f%c", torDegTmp, (i==(S.ntor-1) ? '.' : ','));
+            // Commented out next line to make format more consistent, now all
+            // numbers are space-delimited.
+            //pr( fp, " %.2f%c", torDegTmp, (i==(S.ntor-1) ? '.' : ','));
+            pr( fp, " %.2f", torDegTmp );
         }
     }
     (void)fprintf( fp, "\n");
