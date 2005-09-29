@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.10 2005/09/28 22:54:19 garrett Exp $
+ $Id: analysis.cc,v 1.11 2005/09/29 03:28:27 garrett Exp $
 
 */
 
@@ -263,7 +263,7 @@ void analysis( int   Nnb,
             flushLog;
      
             if (keepresnum > 0) {
-                if (outlev > -1) {
+                if (outlev > -11) {
                     // Log File PDBQ coordinates [
                     if (!B_template) {
                         pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
@@ -279,7 +279,7 @@ void analysis( int   Nnb,
                     //]
                 }
             } else {
-                if (outlev > -1) {
+                if (outlev > -11) {
                     // Log File PDBQ coordinates [
                     if (!B_template) {
                         pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
