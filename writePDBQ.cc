@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.9 2005/09/28 22:54:21 garrett Exp $
+ $Id: writePDBQ.cc,v 1.10 2005/09/29 20:42:43 garrett Exp $
 
 */
 
@@ -93,9 +93,9 @@ writePDBQ(int irun,
 				pr(stateFile, "\t\t<ndihe>%d</ndihe>\n", ntor);
 				pr(stateFile, "\t\t<dihe0>");
 				for (i = 0; i < ntor; i++) {
-					(void) fprintf(logFile, "%.2f ", Deg(WrpRad(ModRad(state.tor[i]))));
+					(void) fprintf(stateFile, "%.2f ", Deg(WrpRad(ModRad(state.tor[i]))));
 				}
-				(void) fprintf(logFile, "\n");
+				(void) fprintf(stateFile, "\n");
 				pr(stateFile, "</dihe0>\n");
 			}
 			pr(stateFile, "\t</run>\n");

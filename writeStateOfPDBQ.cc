@@ -1,6 +1,6 @@
 /*
 
- $Id: writeStateOfPDBQ.cc,v 1.3 2005/09/29 03:26:28 garrett Exp $
+ $Id: writeStateOfPDBQ.cc,v 1.4 2005/09/29 20:42:43 garrett Exp $
 
 */
 
@@ -162,9 +162,9 @@ writeStateOfPDBQ(int irun, FourByteLong seed[2],
 				pr(stateFile, "\t\t<ndihe>%d</ndihe>\n", ntor);
 				pr(stateFile, "\t\t<dihe0>");
 				for (i = 0; i < ntor; i++) {
-					(void) fprintf(logFile, "%.2f ", Deg(WrpRad(ModRad((*Ptr_state).tor[i]))));
+					(void) fprintf(stateFile, "%.2f ", Deg(WrpRad(ModRad((*Ptr_state).tor[i]))));
 				}
-				(void) fprintf(logFile, "\n");
+				(void) fprintf(stateFile, "\n");
 				pr(stateFile, "</dihe0>\n");
 			}
 			pr(stateFile, "\t</run>\n");
