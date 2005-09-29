@@ -112,6 +112,7 @@
 #define DPF_EPDB	    87
 #define DPF_TERMINATION	    88
 #define GA_CROSSOVER_MODE	    89
+#define DPF_POPFILE 90
 
 #endif
 /* EOF */
