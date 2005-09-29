@@ -11,6 +11,9 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.6  2005/09/29 03:34:42  garrett
+** Added a new method to the Population class, called "printPopulationAsCoordsEnergies", which is used to print out the translation of the centre of each individual and its total interaction energy.
+**
 ** Revision 1.5  2004/12/07 02:07:53  gillet
 ** -- fix problem of compilation with g++ 3.3.2 on Linux:
 ** 	added Genotype(Genotype const &); in support.h
@@ -183,7 +186,7 @@ class Individual
       double value(EvalMode); /* evaluation of the individual gives its value */
       State state(int); /* state variables in AutoDock */
       void  getMol(Molecule *); /* converts phenotype to mol's state and returns this individual's mol data */
-      void printIndividualsState(FILE *, int); /* print out the state of this individual */
+      void printIndividualsState(FILE *, int, int); /* print out the state of this individual */
       void incrementAge(); /* make individual grow 1 generation older */
 };
 
@@ -211,6 +214,7 @@ class Population
       // void print(ostream &, int); /* prints top int energies */
       void print(FILE *, int); /* like above */
       void printPopulationAsStates(FILE *, int, int); /*prints energies,states of top energies */
+      void printPopulationAsCoordsEnergies(FILE *, int, int); /*prints energies,states of top energies */
 };
 
 /**************************************************************************

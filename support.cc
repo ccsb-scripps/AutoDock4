@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.8 2004/12/07 02:07:54 gillet Exp $
+ $Id: support.cc,v 1.9 2005/09/29 03:34:42 garrett Exp $
 
 */
 
@@ -184,22 +184,49 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    for (i=0; i<num; i++) {
       thisValue = heap[i].value(Always_Eval);
       (void)fprintf( output, "(%d):\tEnergy= %8.2le\n\t", i+1, thisValue);
-      heap[i].printIndividualsState(output, ntor);
+      heap[i].printIndividualsState(output, ntor, 0);
 
 #ifdef DEBUG2
       // to print only infinite or NaN structures // if (!finite(thisValue) || ISNAN(thisValue)) {//debug
-	  // Convert state to coords and print it out...//debug
-	  cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);//debug
+      // Convert state to coords and print it out...//debug
+      cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);//debug
       (void)fprintf(logFile, "MODEL     %4d\n", i+1);
-	  for (j=0; j<heap[i].mol->natom; j++) {//debug
+      for (j=0; j<heap[i].mol->natom; j++) {//debug
         (void)sprintf(resstr, "C   RES  %4d", 1); // replace 1 with i+1 for incrementing residue numbers.
-	    (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "" , j+1, resstr, heap[i].mol->crd[j][X], heap[i].mol->crd[j][Y], heap[i].mol->crd[j][Z], 0.0, 0.0, 0.0); //debug
-	    (void)fprintf(logFile, "\n"); //debug
-	  }/*j*///debug
+        (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "" , j+1, resstr, heap[i].mol->crd[j][X], heap[i].mol->crd[j][Y], heap[i].mol->crd[j][Z], 0.0, 0.0, 0.0); //debug
+        (void)fprintf(logFile, "\n"); //debug
+      }/*j*///debug
       (void)fprintf(logFile, "ENDMDL\n");
       // to print only infinite or NaN structures // }// thisValue is either infinite or not-a-number.//debug
 #endif /* DEBUG2 */
 
+   }// i
+   (void)fprintf( output, "\n");
+}
+
+void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor) {
+   register int i;
+#ifdef DEBUG2
+   register int j;
+   char resstr[LINE_LEN];
+#endif /* DEBUG2 */
+   double thisValue;
+
+#ifdef DEBUG
+   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsCoordsEnergies(FILE *output, int num=%d, int ntor=%d)\n",num,ntor);
+#endif /* DEBUG */
+
+   //(void)fprintf( output, "The top %d individuals in the population:\n\n", num);
+   for (i=0; i<num; i++) {
+      // print the number of this individual in the population (counting from 1, not 0)
+      (void)fprintf( output, "%d\t", i+1);
+      // print the translation
+      heap[i].printIndividualsState(output, ntor, 3);  // 3 means print just the translation
+      // print the energy
+      thisValue = heap[i].value(Always_Eval);
+      (void)fprintf( output, "\t%9.2le\n", thisValue);
+      // we need the coordinates of this individual to compute the electrostatic and nonbond energies
+      cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);
    }// i
    (void)fprintf( output, "\n");
 }
@@ -662,13 +689,13 @@ void Individual::getMol(Molecule *returnedMol)
     returnedMol = &molcopy;
 }
 
-void Individual::printIndividualsState(FILE *filePtr, int ntor) 
+void Individual::printIndividualsState(FILE *filePtr, int ntor, int detail) 
 {
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Individual::printIndividualsState(FILE *filePtr, int ntor=%d)\n",ntor);
+   (void)fprintf(logFile, "support.cc/void Individual::printIndividualsState(FILE *filePtr, int ntor=%d, int detaiil=%d)\n", ntor, detail);
 #endif /* DEBUG */
 
-    printState( filePtr, state(ntor), 0 ); 
+    printState( filePtr, state(ntor), detail ); 
 }
 
 void Individual::incrementAge(void)
