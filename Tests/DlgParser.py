@@ -7,9 +7,9 @@
 #############################################################################
 
 
-# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.2 2005/08/30 17:19:18 rhuey Exp $
+# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.3 2005/09/30 15:36:36 rhuey Exp $
 #
-# $Id: DlgParser.py,v 1.2 2005/08/30 17:19:18 rhuey Exp $
+# $Id: DlgParser.py,v 1.3 2005/09/30 15:36:36 rhuey Exp $
 #
 #
 #
@@ -27,13 +27,31 @@ from string import find, join, replace, split, rfind, strip
 import re
 import Numeric
 
-from AutoDockTools.ResultParser import ResultParser
+#from AutoDockTools.ResultParser import ResultParser
 
 
-class DlgParser(ResultParser):
+class DlgParser:
     """ reads log from a AutoDock docking and return structured data"""
 
-    keywords = ResultParser.keywords + [
+    keywords = [
+        'cluster',            # number of cluster
+        'cluster_rank',       # rank within cluster
+        'rmsd_ref',           # distance to reference structure
+        'rmsd_seed',          # distance to lowest energy conf. in cluster
+        'binding_energy',     # estimated free energy of binding
+        'docking_energy',     # final docked energy
+        'internal_energy',
+        'trn_x',              # translation x, y, z
+        'trn_y',
+        'trn_z',
+        'qtn_nx',             # quaternion unit vector x, y, z
+        'qtn_ny',
+        'qtn_nz',
+        'qtn_ang_deg',        # quaternion rotation angle
+        'num_torsions',
+        'torsion_values',
+        'rseed1',             # the random number seeds for this conformation
+        'rseed2',
         'coords',
         'vdw_energies',
         'estat_energies',
@@ -50,8 +68,8 @@ class DlgParser(ResultParser):
 
     def __init__(self, dlgFile=None):
         """selected dlgFile,ok sets which docked conformations to show"""
-        ResultParser.__init__(self)
         self.filename = dlgFile
+        self.clist = []
         #set up dict here
         self.getReDict()
         if dlgFile:
