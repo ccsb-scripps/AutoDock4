@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.5 2005/09/29 03:32:25 garrett Exp $
+ $Id: stateLibrary.cc,v 1.6 2005/10/03 23:49:39 garrett Exp $
 
 */
 
@@ -72,9 +72,8 @@ void printState( FILE *fp,
     FloatOrDouble torDegTmp;
 
     switch( detail ) {
-        case 3:
-            // Writes only the translation component of the state
-            (void)fprintf( fp, "%.3f %.3f %.3f", S.T.x, S.T.y, S.T.z );
+        case 0:
+            writeState(fp,S);
             break;
 
         case 2:
@@ -109,8 +108,9 @@ void printState( FILE *fp,
             (void)fprintf( fp, "\n\n");
             break;
 
-        case 0:
-            writeState(fp,S);
+        case 3:
+            // Writes only the translation component of the state
+            (void)fprintf( fp, "%.3f %.3f %.3f", S.T.x, S.T.y, S.T.z );
             break;
     }
 }
