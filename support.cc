@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.9 2005/09/29 03:34:42 garrett Exp $
+ $Id: support.cc,v 1.10 2005/10/04 00:01:18 garrett Exp $
 
 */
 
@@ -218,14 +218,15 @@ void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor
 
    //(void)fprintf( output, "The top %d individuals in the population:\n\n", num);
    for (i=0; i<num; i++) {
-      // print the number of this individual in the population (counting from 1, not 0)
+      // Print the number of this individual in the population (counting from 1, not 0)
       (void)fprintf( output, "%d\t", i+1);
-      // print the translation
-      heap[i].printIndividualsState(output, ntor, 3);  // 3 means print just the translation
-      // print the energy
+      // Print the translation
+      //heap[i].printIndividualsState(output, ntor, 3);  // 3 means print just the translation
+      heap[i].printIndividualsState(output, ntor, 0);  // 0 means print the whole state
+      // Print the energy
       thisValue = heap[i].value(Always_Eval);
       (void)fprintf( output, "\t%9.2le\n", thisValue);
-      // we need the coordinates of this individual to compute the electrostatic and nonbond energies
+      // We need the coordinates of this individual to compute the electrostatic and nonbond energies
       cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);
    }// i
    (void)fprintf( output, "\n");
