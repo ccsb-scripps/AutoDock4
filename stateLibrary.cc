@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.6 2005/10/03 23:49:39 garrett Exp $
+ $Id: stateLibrary.cc,v 1.7 2005/10/06 22:31:06 lindy Exp $
 
 */
 
@@ -120,7 +120,7 @@ void writeState( FILE *fp, State S )
     register int i;
     FloatOrDouble torDegTmp;
 
-    (void)fprintf( fp, "State= " );
+    //    (void)fprintf( fp, "State= " );
     (void)fprintf( fp, "%.3f %.3f %.3f  ", S.T.x, S.T.y, S.T.z );
     
     S.Q.ang = WrpRad( ModRad( S.Q.ang ));
