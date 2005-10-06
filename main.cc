@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.23 2005/09/29 03:27:09 garrett Exp $
+ $Id: main.cc,v 1.24 2005/10/06 22:27:06 lindy Exp $
 
 */
 
@@ -740,6 +740,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         retval = sscanf( line, "%*s %d", &outlev );
         switch ( outlev ) {
+	case -10:
+            pr( logFile, "Output Level = -10.  NO STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
+            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            break;
         case -1:
             pr( logFile, "Output Level = -1.  ONLY STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
             outputEveryNgens = (unsigned int) OUTLEV0_GENS;
@@ -2579,22 +2583,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
           GlobalSearchMethod = NULL;
       }
 
-      pr(logFile, "Creating a new Genetic Algorithm object with the current parameters.\n\n");
-      switch ( outlev ) {
-        case -1:
-            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
-            break;
-        case 0:
-            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
-            break;
-        case 1:
-            outputEveryNgens = (unsigned int) OUTLEV1_GENS;
-            break;
-        case 2:
-        default:
-            outputEveryNgens = (unsigned int) OUTLEV2_GENS;
-            break;
-      }
       if (debug > 0) {
           pr( logFile, "\n\tOutput every %u generations.\n", outputEveryNgens );
       }
