@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.7 2005/10/06 22:31:06 lindy Exp $
+ $Id: stateLibrary.cc,v 1.8 2005/10/06 22:52:49 lindy Exp $
 
 */
 
@@ -121,11 +121,16 @@ void writeState( FILE *fp, State S )
     FloatOrDouble torDegTmp;
 
     //    (void)fprintf( fp, "State= " );
+
+    // Write translation.
     (void)fprintf( fp, "%.3f %.3f %.3f  ", S.T.x, S.T.y, S.T.z );
-    
+
+    // Write quaternion.
     S.Q.ang = WrpRad( ModRad( S.Q.ang ));
     (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q.nx, S.Q.ny, S.Q.nz,
 		   Deg(S.Q.ang) );
+    
+    // Write torsion angles.
     if (S.ntor > 0) {
         for (i=0; i<S.ntor; i++) {
             S.tor[i] = WrpRad( ModRad( S.tor[i] ) );
@@ -140,7 +145,8 @@ void writeState( FILE *fp, State S )
             pr( fp, " %.2f", torDegTmp );
         }
     }
-    (void)fprintf( fp, "\n");
+    // Leave fp on this line for energies which follow....
+    //    (void)fprintf( fp, "\n");
 }
 
 int checkState(State *D)

@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.10 2005/10/04 00:01:18 garrett Exp $
+ $Id: support.cc,v 1.11 2005/10/06 22:52:49 lindy Exp $
 
 */
 
@@ -221,8 +221,8 @@ void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor
       // Print the number of this individual in the population (counting from 1, not 0)
       (void)fprintf( output, "%d\t", i+1);
       // Print the translation
-      //heap[i].printIndividualsState(output, ntor, 3);  // 3 means print just the translation
-      heap[i].printIndividualsState(output, ntor, 0);  // 0 means print the whole state
+      heap[i].printIndividualsState(output, ntor, 3);  // 3 means print just the translation
+      //heap[i].printIndividualsState(output, ntor, 0);  // 0 means print the whole state
       // Print the energy
       thisValue = heap[i].value(Always_Eval);
       (void)fprintf( output, "\t%9.2le\n", thisValue);
