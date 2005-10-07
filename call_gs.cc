@@ -1,3 +1,13 @@
+/*
+
+ $Id: call_gs.cc,v 1.5 2005/09/28 22:54:19 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
      Call_gs:  Invokes a Global Searcher object on a randomly
                generated population of solution to the docking 
@@ -5,7 +15,7 @@
 
 				rsh 3/12/96
 ********************************************************************/
-#include <iostream.h>
+// possibly unnecessary // #include <iostream.h>
 #include "gs.h"
 #include "support.h"
 #include "eval.h"
@@ -17,23 +27,23 @@
 extern Eval evaluate;
 
 State call_gs(Global_Search *global_method, State now, unsigned int num_evals, unsigned int pop_size,
-              float xlo, float xhi, float ylo, float yhi, float zlo, float zhi, Molecule *mol)
+              Molecule *mol,
+              int extOutputEveryNgens,
+              GridMapSetInfo *info)
 {
-   int i;
+   register unsigned int i;
 
    evaluate.reset();
-   global_method->reset();
+   global_method->reset(extOutputEveryNgens);
 
    Population thisPop(pop_size);
 
-   for (i=0; i<pop_size; i++)
-   {
-      thisPop[i] = random_ind(now.ntor, double(xlo), double(xhi), double(ylo), double(yhi), double(zlo), double(zhi));
+   for (i=0; i<pop_size; i++) {
+      thisPop[i] = random_ind(now.ntor, info);
       thisPop[i].mol = mol;
    }
 
-   do
-   {
+   do {
       global_method->search(thisPop);
    } while ((evaluate.evals() < num_evals) && (!global_method->terminate()));
 

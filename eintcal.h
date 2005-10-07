@@ -3,27 +3,40 @@
 #define EINTCAL
 
 #include "constants.h"
+#include "structs.h"
 
 #ifndef EINTCALPRINT
 
-float  eintcal( int   nonbondlist[MAX_NONBONDS][2], 
-                float eint_table[NEINT][ATOM_MAPS][ATOM_MAPS], 
-                float tcoord[MAX_ATOMS][SPACE], 
-                int   atmtyp[MAX_ATOMS], 
-                int   Nnb,
-		Boole B_calcIntElec,
-		float q1q2[MAX_NONBONDS]);
+FloatOrDouble  eintcal( 
+                        const int           nonbondlist[MAX_NONBONDS][MAX_NBDATA], 
+                        const EnergyTables  *ad_energy_tables,
+                        const FloatOrDouble tcoord[MAX_ATOMS][SPACE], 
+                        const int           Nnb,
+                        const Boole         B_calcIntElec,
+                        const FloatOrDouble q1q2[MAX_NONBONDS],
+                        const Boole         B_include_1_4_interactions,
+                        const FloatOrDouble scale_1_4,
+                        const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+                        const ParameterEntry parameterArray[MAX_MAPS],
+                        const FloatOrDouble unbound_internal_FE
+                      );
 
-#else	/*EINTCALPRINT*/
+#else        /*EINTCALPRINT*/
 
-float  eintcalPrint( int   nonbondlist[MAX_NONBONDS][2],
-                float eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
-                float tcoord[MAX_ATOMS][SPACE],
-                int   atmtyp[MAX_ATOMS],
-                int   Nnb,
-                Boole B_calcIntElec,
-                float q1q2[MAX_NONBONDS]);
+FloatOrDouble  eintcalPrint( 
+                             const int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                             const EnergyTables  *ad_energy_tables,
+                             const FloatOrDouble tcoord[MAX_ATOMS][SPACE],
+                             const int   Nnb,
+                             const Boole B_calcIntElec,
+                             const FloatOrDouble q1q2[MAX_NONBONDS],
+                             const Boole B_include_1_4_interactions,
+                             const FloatOrDouble scale_1_4,
+                             const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+                             const ParameterEntry parameterArray[MAX_MAPS],
+                             const FloatOrDouble unbound_internal_FE
+                           );
 
-#endif	/*EINTCALPRINT*/
+#endif        /*EINTCALPRINT*/
 
-#endif	/*!EINTCAL*/
+#endif        /*!EINTCAL*/

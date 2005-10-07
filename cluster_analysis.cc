@@ -1,3 +1,13 @@
+/*
+
+ $Id: cluster_analysis.cc,v 1.2 2003/02/26 00:44:49 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* cluster_analysis.cc */
 
 
@@ -6,21 +16,21 @@
     #include "cluster_analysis.h"
 
 
-int cluster_analysis( float clus_rms_tol, 
+int cluster_analysis( FloatOrDouble clus_rms_tol, 
 		      int cluster[MAX_RUNS][MAX_RUNS], 
 		      int num_in_clus[MAX_RUNS], 
 		      int isort[MAX_RUNS], 
 		      int nconf, 
 		      int natom, 
 		      int type[MAX_ATOMS],
-		      float crd[MAX_RUNS][MAX_ATOMS][SPACE], 
-		      float crdpdb[MAX_ATOMS][SPACE], 
-		      float sml_center[SPACE], 
-		      float clu_rms[MAX_RUNS][MAX_RUNS], 
+		      FloatOrDouble crd[MAX_RUNS][MAX_ATOMS][SPACE], 
+		      FloatOrDouble crdpdb[MAX_ATOMS][SPACE], 
+		      FloatOrDouble sml_center[SPACE], 
+		      FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS], 
 		      Boole B_symmetry_flag,
-		      float ref_crds[MAX_ATOMS][SPACE],
+		      FloatOrDouble ref_crds[MAX_ATOMS][SPACE],
 		      int ref_natoms,
-		      float ref_rms[MAX_RUNS])
+		      FloatOrDouble ref_rms[MAX_RUNS])
 {
 /* __________________________________________________________________________
   | Cluster Analysis                                                         |
@@ -36,7 +46,7 @@ int cluster_analysis( float clus_rms_tol,
 	  thisconf = 0,
 	  new_conf = FALSE;
 
-    float rms = 0.;
+    FloatOrDouble rms = 0.;
 
     if (ref_natoms == -1) {
 

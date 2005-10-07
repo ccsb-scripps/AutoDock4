@@ -2,11 +2,12 @@
 #ifndef EINTCALPRINT
 #define EINTCALPRINT
 #include "constants.h"
-float  eintcalPrint( int   nonbondlist[MAX_NONBONDS][2], 
-                float eint_table[NEINT][ATOM_MAPS][ATOM_MAPS], 
-                float tcoord[MAX_ATOMS][SPACE], 
-                int   atmtyp[MAX_ATOMS], 
-                int   Nnb,
-		Boole B_calcIntElec,
-		float q1q2[MAX_NONBONDS]);
+FloatOrDouble  eintcalPrint( int   nonbondlist[MAX_NONBONDS][2], 
+                             EnergyTables *ptr_ad_energy_tables,
+                             FloatOrDouble tcoord[MAX_ATOMS][SPACE], 
+                             int   atmtyp[MAX_ATOMS], 
+                             int   Nnb,
+                             Boole B_calcIntElec,
+                             FloatOrDouble q1q2[MAX_NONBONDS],
+                             FloatOrDouble abs_charge[MAX_ATOMS]);
 #endif

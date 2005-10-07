@@ -1,3 +1,13 @@
+/*
+
+ $Id: print_atomic_energies.cc,v 1.2 2003/02/26 01:28:36 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* print_atomic_energies.cc */
 
     #include <stdio.h>
@@ -11,9 +21,9 @@ extern FILE *logFile;
 void print_atomic_energies( int natom, 
 			    char atomstuff[MAX_ATOMS][MAX_CHARS],
 			    int type[MAX_ATOMS],
-			    float emap[MAX_ATOMS],
-			    float elec[MAX_ATOMS],
-			    float charge[MAX_ATOMS] )
+			    FloatOrDouble emap[MAX_ATOMS],
+			    FloatOrDouble elec[MAX_ATOMS],
+			    FloatOrDouble charge[MAX_ATOMS] )
 
 /*----------------------------------------------------------------------------*/
 {

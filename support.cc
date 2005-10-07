@@ -1,11 +1,15 @@
+/*
+
+ $Id: support.cc,v 1.9 2005/09/29 03:34:42 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 //  These are the member functions for the support classes.
 
-/*
-** $Log: support.cc,v $
-** Revision 1.1.1.1  2001/08/13 22:05:55  gillet
-**  import initial of autodock sources
-**
-*/
 
 #include "eval.h"
 
@@ -160,7 +164,7 @@ void Population::print(FILE *output, int num) {
 
    (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
    for (i=0; i<num; i++) {
-      (void)fprintf( output, "(%d):\t %8.2f\n", i+1, heap[i].value(Normal_Eval));
+      (void)fprintf( output, "(%d):\t %8.2f\n", i+1, heap[i].value(Always_Eval));
    }
 }
 
@@ -168,6 +172,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    register int i;
 #ifdef DEBUG2
    register int j;
+   char resstr[LINE_LEN];
 #endif /* DEBUG2 */
    double thisValue;
 
@@ -177,22 +182,53 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
 
    (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
    for (i=0; i<num; i++) {
-      thisValue = heap[i].value(Normal_Eval);
-      (void)fprintf( output, "(%d):\nEnergy= %8.2le\n", i+1, thisValue);
-      heap[i].printIndividualsState(output, ntor);
+      thisValue = heap[i].value(Always_Eval);
+      (void)fprintf( output, "(%d):\tEnergy= %8.2le\n\t", i+1, thisValue);
+      heap[i].printIndividualsState(output, ntor, 0);
 
 #ifdef DEBUG2
-      if (!finite(thisValue) || ISNAN(thisValue)) {//debug
-	  // Convert state to coords and print it out...//debug
-	  cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);//debug
-	  for (j=0; j<heap[i].mol->natom; j++) {//debug
-	    (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "" , i+1, "C   RES     1", heap[i].mol->crd[i][X], heap[i].mol->crd[i][Y], heap[i].mol->crd[i][Z], 0.0, 0.0, 0.0); //debug
-	    (void)fprintf(logFile, "\n"); //debug
-	  }/*j*///debug
-      }// thisValue is either infinite or not-a-number.//debug
+      // to print only infinite or NaN structures // if (!finite(thisValue) || ISNAN(thisValue)) {//debug
+      // Convert state to coords and print it out...//debug
+      cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);//debug
+      (void)fprintf(logFile, "MODEL     %4d\n", i+1);
+      for (j=0; j<heap[i].mol->natom; j++) {//debug
+        (void)sprintf(resstr, "C   RES  %4d", 1); // replace 1 with i+1 for incrementing residue numbers.
+        (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "" , j+1, resstr, heap[i].mol->crd[j][X], heap[i].mol->crd[j][Y], heap[i].mol->crd[j][Z], 0.0, 0.0, 0.0); //debug
+        (void)fprintf(logFile, "\n"); //debug
+      }/*j*///debug
+      (void)fprintf(logFile, "ENDMDL\n");
+      // to print only infinite or NaN structures // }// thisValue is either infinite or not-a-number.//debug
 #endif /* DEBUG2 */
 
    }// i
+   (void)fprintf( output, "\n");
+}
+
+void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor) {
+   register int i;
+#ifdef DEBUG2
+   register int j;
+   char resstr[LINE_LEN];
+#endif /* DEBUG2 */
+   double thisValue;
+
+#ifdef DEBUG
+   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsCoordsEnergies(FILE *output, int num=%d, int ntor=%d)\n",num,ntor);
+#endif /* DEBUG */
+
+   //(void)fprintf( output, "The top %d individuals in the population:\n\n", num);
+   for (i=0; i<num; i++) {
+      // print the number of this individual in the population (counting from 1, not 0)
+      (void)fprintf( output, "%d\t", i+1);
+      // print the translation
+      heap[i].printIndividualsState(output, ntor, 3);  // 3 means print just the translation
+      // print the energy
+      thisValue = heap[i].value(Always_Eval);
+      (void)fprintf( output, "\t%9.2le\n", thisValue);
+      // we need the coordinates of this individual to compute the electrostatic and nonbond energies
+      cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);
+   }// i
+   (void)fprintf( output, "\n");
 }
 
 
@@ -201,7 +237,7 @@ init_rep_vector)
 : number_of_vectors(init_number_of_vectors), rep_vector(init_rep_vector),
   modified(0)
 {
-   register int i, j, k;
+   register unsigned int i, j, k;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype::Genotype(unsigned int init_number_of_vectors=%d, Representation **init_rep_vector)\n",init_number_of_vectors);
@@ -226,7 +262,7 @@ init_rep_vector)
 
 Genotype::Genotype(Genotype &original)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype::Genotype(Genotype &original)\n");
@@ -253,9 +289,38 @@ Genotype::Genotype(Genotype &original)
    }
 }
 
+Genotype::Genotype(Genotype const &original)
+{
+   register unsigned int i;
+
+#ifdef DEBUG
+   (void)fprintf(logFile, "support.cc/Genotype::Genotype(Genotype const &original)\n");
+#endif /* DEBUG */
+
+
+   number_of_genes = original.number_of_genes;
+   number_of_vectors = original.number_of_vectors;
+   modified = original.modified;
+   if (original.rep_vector!=NULL) {
+      rep_vector = new Representation*[number_of_vectors];
+      lookup = new Lookup[number_of_genes];
+   } else {
+      rep_vector = NULL;
+      lookup = NULL;
+   }
+
+   for (i=0; i<number_of_vectors; i++) {
+      rep_vector[i] = original.rep_vector[i]->clone();
+   }
+
+   for (i=0; i<number_of_genes; i++) {
+      lookup[i] = original.lookup[i];
+   }
+}
+
 Genotype::~Genotype(void)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype::~Genotype(void)\n");
@@ -273,7 +338,7 @@ Genotype::~Genotype(void)
 
 Genotype &Genotype::operator=(const Genotype &original)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype &Genotype::operator=(const Genotype &original)\n");
@@ -373,7 +438,7 @@ Phenotype::Phenotype(unsigned int init_number_of_dimensions, Representation **in
 : number_of_dimensions(init_number_of_dimensions), value_vector(init_value_vector),
   value(0.0), evalflag(0)
 {
-   register int i, j, k;
+   register unsigned int i, j, k;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Phenotype::Phenotype(unsigned int init_number_of_dimensions=%d, Representation **init_value_vector)\n",init_number_of_dimensions);
@@ -398,7 +463,7 @@ Phenotype::Phenotype(unsigned int init_number_of_dimensions, Representation **in
 
 Phenotype::Phenotype(const Phenotype &original)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Phenotype::Phenotype(const Phenotype &original)\n");
@@ -429,7 +494,7 @@ Phenotype::Phenotype(const Phenotype &original)
 
 Phenotype &Phenotype::operator=(const Phenotype &original)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Phenotype &Phenotype::operator=(const Phenotype &original)\n");
@@ -471,7 +536,7 @@ Phenotype &Phenotype::operator=(const Phenotype &original)
 
 Phenotype::~Phenotype(void)
 {
-   register int i;
+   register unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Phenotype::~Phenotype(void)\n");
@@ -624,13 +689,13 @@ void Individual::getMol(Molecule *returnedMol)
     returnedMol = &molcopy;
 }
 
-void Individual::printIndividualsState(FILE *filePtr, int ntor) 
+void Individual::printIndividualsState(FILE *filePtr, int ntor, int detail) 
 {
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Individual::printIndividualsState(FILE *filePtr, int ntor=%d)\n",ntor);
+   (void)fprintf(logFile, "support.cc/void Individual::printIndividualsState(FILE *filePtr, int ntor=%d, int detaiil=%d)\n", ntor, detail);
 #endif /* DEBUG */
 
-    printState( filePtr, state(ntor), 0 ); 
+    printState( filePtr, state(ntor), detail ); 
 }
 
 void Individual::incrementAge(void)

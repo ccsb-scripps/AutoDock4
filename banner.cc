@@ -1,3 +1,13 @@
+/*
+
+ $Id: banner.cc,v 1.6 2005/03/23 00:31:06 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* banner.cc */
 
     #include <stdio.h>
@@ -5,7 +15,7 @@
 
 extern FILE *logFile;
 
-void banner( float version_num )
+void banner( FloatOrDouble version_num )
 
 {
 
@@ -39,23 +49,22 @@ void banner( float version_num )
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |            AutoDock %3.2f             |\n", version_num );
     (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 |            (c) 1991-2000             |\n");
+    (void) fprintf(logFile, "                 |            (c) 1991-2005             |\n");
     (void) fprintf(logFile, "                 |    The Scripps Research Institute    |\n");
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |       Garrett M. Morris, TSRI        |\n");
-    (void) fprintf(logFile, "                 |         garrett@scripps.edu          |\n");
-    (void) fprintf(logFile, "                 |                                      |\n");
+    (void) fprintf(logFile, "                 |            Ruth Huey, TSRI           |\n");
+    (void) fprintf(logFile, "                 |        William E. Hart, Sandia       |\n");
+    (void) fprintf(logFile, "                 |        William Lindstrom, TSRI       |\n");
+    (void) fprintf(logFile, "                 |        Alexander Gillet, TSRI        |\n");
     (void) fprintf(logFile, "                 |       David S. Goodsell, TSRI        |\n");
-    (void) fprintf(logFile, "                 |         goodsell@scripps.edu         |\n");
-    (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |        Arthur J. Olson, TSRI         |\n");
-    (void) fprintf(logFile, "                 |           olson@scripps.edu          |\n");
     (void) fprintf(logFile, "                 |______________________________________|\n");
     (void) fprintf(logFile, "\n");
     (void) fprintf(logFile, "                  ______________________________________ \n");
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 | Automated Docking of Flexible Ligand |\n");
-    (void) fprintf(logFile, "                 |     to Macromolecular Receptor       |\n");
+    (void) fprintf(logFile, "                 |  to Flexible Macromolecular Receptor |\n");
     (void) fprintf(logFile, "                 |______________________________________|\n");
     (void) fprintf(logFile, "\n\n\n");
 

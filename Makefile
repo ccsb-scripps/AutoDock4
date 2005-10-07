@@ -1,36 +1,47 @@
 #
-# Makefile to build AutoDock from Object files.
+# Makefile to build AutoDock 4
 #
-# NOTE: Must be run in the $(AUTODOCK_DEV) directory.
+# NOTE: Must be run in the $(AUTODOCK_DEV) directory
 #
-# Copyright (C) 1994-2001,  Garrett Matthew Morris,  TSRI.
+# Copyright (C) 1994-2005,  Garrett Matthew Morris,  TSRI
 #
+
 #
-# Edit this Makefile to reflect your machine architecture.
+# Edit this Makefile to reflect your machine architecture and OS
 #
 # Specifically, change these variables:
-# LIB, CSTD, CFLAGS, OPT, OLIMIT, LINT, LINTFLAGS, LINK, WARN, & CC.
+# 	LIB, CSTD, CFLAGS, OPT, LINT, LINTFLAGS, LINK, WARN, & CC
 #
 # If you need to use debugging or profiling, these should also be 
 # modified appropriately:
-# DBUG & PROF
+# 	DBUG & PROF
 #
+# If you want to use the Coliny solver library, uncomment the following:
+# COLINY = yes
 
+# Abbreviations:
 #
-# Edit the line defining "EXE" to your binaries directory for 
-# your machine architecture.
-#
+# SGI     = Silicon Graphics Inc., sgi4D
+# Alpha   = Compaq/Digital Equipment Corp., Alpha
+# Sun     = Sun Microsystems, sun4
+# HP      = Hewlett Packard Precision Architecture, hppa
+# Convex  = Convex, c2
+# Linux   = Any platform that runs Linux, Linux
+# MacOS X = Apple Mac OS X 10.0 & higher, MacOS X
+# Darwin  = Darwin
+# Cygwin  = Cygwin running on Microsoft Windows
+
+
 # Define the destination directory for the executables:
-#
 
-EXE = . # Default destination
+EXE = .  # Change this to the directory path holding binaries for your platform
 
-#
+
 # Define the object files:
-#
 
 OBJS = \
     analysis.o \
+	atom_parameter_manager.o \
     banner.o \
     bestpdb.o \
     call_glss.o \
@@ -45,10 +56,12 @@ OBJS = \
     cmdmode.o \
     cnv_state_to_coords.o \
     com.o \
+	distdepdiel.o \
     stateLibrary.o \
     readfield.o \
     readmap.o \
-    readPDBQ.o \
+    readPDBQT.o \
+	read_parameter_library.o \
     dpftypes.o \
     eval.o \
     evaluate_energy.o \
@@ -73,14 +86,16 @@ OBJS = \
     output_state.o \
     parse_com_line.o \
     parse_dpf_line.o \
+    parse_param_line.o \
     parse_pdbq_line.o \
     parse_trj_line.o \
+	parsetypes.o \
     print_2x.o \
     print_atomic_energies.o \
     print_avsfld.o \
     writeMolAsPDBQ.o \
     writePDBQ.o \
-    writePDBQState.o \
+    writeStateOfPDBQ.o \
     print_rem.o \
     printdate.o \
     printEnergies.o \
@@ -110,7 +125,96 @@ OBJS = \
     torsion.o \
     usage.o \
     weedbonds.o \
-    warn_bad_file.o
+    warn_bad_file.o \
+    coliny.o
+
+OBJS_LSFIT = \
+    analysis.o \
+	atom_parameter_manager.o \
+    banner.o \
+    bestpdb.o \
+    call_glss.o \
+    call_gs.o \
+    call_ls.o \
+    changeState.o \
+    check_header_float.o \
+    check_header_int.o \
+    check_header_line.o \
+    cluster_analysis.o \
+    clmode.o \
+    cmdmode.o \
+    com.o \
+	distdepdiel.o \
+    stateLibrary.o \
+    readfield.o \
+    readmap.o \
+    readPDBQT.o \
+	read_parameter_library.o \
+    dpftypes.o \
+    eval.o \
+    evaluate_energy.o \
+    gencau.o \
+    getrms.o \
+    get_atom_type.o \
+    getInitialState.o \
+    getpdbcrds.o \
+    gs.o \
+    initautodock.o \
+    input_state.o \
+    investigate.o \
+    linpack.o \
+    ls.o \
+    mapping.o \
+    minmeanmax.o \
+    mkNewState.o \
+    mkTorTree.o \
+    mkRandomState.o \
+    nonbonds.o \
+    openfile.o \
+    output_state.o \
+    parse_com_line.o \
+    parse_dpf_line.o \
+    parse_param_line.o \
+    parse_pdbq_line.o \
+    parse_trj_line.o \
+	parsetypes.o \
+    print_2x.o \
+    print_atomic_energies.o \
+    print_avsfld.o \
+    writeMolAsPDBQ.o \
+    writePDBQ.o \
+    writeStateOfPDBQ.o \
+    print_rem.o \
+    printdate.o \
+    printEnergies.o \
+    printhms.o \
+    prClusterHist.o \
+    prInitialState.o \
+    prTorConList.o \
+    qmultiply.o \
+    qtransform.o \
+    quicksort.o \
+    ranlib.o \
+    rep.o \
+    scauchy.o \
+    set_cmd_io_std.o \
+    setflags.o \
+    simanneal.o \
+    sort_enrg.o \
+    stop.o \
+    strindex.o \
+    success.o \
+    summarizegrids.o \
+    support.o \
+    swap.o \
+    timesys.o \
+    timesyshms.o \
+    torNorVec.o \
+    torsion.o \
+    usage.o \
+    weedbonds.o \
+    warn_bad_file.o \
+    coliny.o
 
 OBJNOSQRT = \
     eintcal.o \
@@ -124,29 +228,17 @@ OBJSQRT = \
     intnbtable.sqrt.o \
     nbe.sqrt.o
 
-
 OBJNOMINPT = \
     trilinterp.o
 
 OBJMINPT = \
     trilinterp.MINPT.o
 
-
-ADLIB = libad.a
-
-ARFLAGS = r # SGI, Sun, Alpha, Linux, Mac OS X
-
-
-RANLIB = file # SGI.
-# RANLIB = ranlib # Linux, Mac OS X.
-
-RANLIBFLAGS = # Linux, SGI
-# RANLIBFLAGS = -s # MacOS X.
-
 # Define lint files:
 
 LNS = \
     analysis.ln \
+    atom_parameter_manager.ln \
     banner.ln \
     bestpdb.ln \
     changeState.ln \
@@ -160,7 +252,8 @@ LNS = \
     stateLibrary.ln \
     readfield.ln \
     readmap.ln \
-    readPDBQ.ln \
+    readPDBQT.ln \
+	read_parameter_library.ln \
     dpftypes.ln \
     evaluate_energy.ln \
     getrms.ln \
@@ -179,14 +272,16 @@ LNS = \
     output_state.ln \
     parse_com_line.ln \
     parse_dpf_line.ln \
+    parse_param_line.ln \
     parse_pdbq_line.ln \
     parse_trj_line.ln \
+    parsetypes.ln \
     print_2x.ln \
     print_atomic_energies.ln \
     print_avsfld.ln \
     writeMolAsPDBQ.ln \
     writePDBQ.ln \
-    writePDBQState.ln \
+    writeStateOfPDBQ.ln \
     print_rem.ln \
     printdate.ln \
     printEnergies.ln \
@@ -227,127 +322,222 @@ LNSSQRT = \
     intnbtable.sqrt.ln \
     nbe.sqrt.ln
 
-#
-# Abbreviations of machine architectures:
-#
-# SGI     = Silicon Graphics Inc., sgi4D.
-# Alpha   = Compaq/Digital Equipment Corp., Alpha.
-# Sun     = Sun Microsystems, sun4.
-# HP      = Hewlett Packard Precision Architecture, hppa.
-# Convex  = Convex, c2.
-# Linux   = Any platform that runs Linux, Linux
-# MacOS X = Apple Mac OS X 10.0 & higher, MacOS X
-#
+# Libraries
 
-#
+ADLIB = libad.a
+ARFLAGS = r # SGI, Sun, Alpha, Linux, Darwin, Mac OS X
+
+# RANLIB = file # SGI
+RANLIB = ranlib # Linux, Darwin, Mac OS X
+
+# RANLIBFLAGS = # Linux, SGI
+RANLIBFLAGS = -s # MacOS X
+
+
 # C++ compiler
-#
 
-CC = cc # MacOS X Gnu compiler
-# CC = CC # SGI, Sun.
-# CC = cxx # Alpha.
-CC = gcc # use this if you have the Gnu compiler, as on Linux, MkLinux, LinuxPPC systems.
+CC = g++ # HP, Gnu, Cygwin, Linux, Darwin, Mac OS X
+# CC = CC # SGI
+# CC = cxx # Alpha
 
-LIB = -lm # SGI, Sun, Linux, MacOS X.
-# LIB = -lm -lc # Alpha, Convex.
-# LIB = -lm -lg++ # HP, Gnu.
-
-CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X.
-# CSTD = $(DBUG) $(PROF) $(WARN) -std # Convex.
+CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X
+# CSTD = $(DBUG) $(PROF) $(WARN) -DUSE_XCODE # Smaller memory footprint, good for Xcode
+# CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X
+# CSTD = $(DBUG) $(PROF) $(WARN) -I/opt/sfw/include # Sun Soliaris 8
+# CSTD = $(DBUG) $(PROF) $(WARN) -std # Convex
 # CSTD = -std -verbose $(PROF) $(DBUG) $(WARN) # Alpha. Not sarah
 # CSTD = -std arm -verbose $(PROF) $(DBUG) $(WARN) # Alpha. sarah
-# CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP.
+# CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP
 
-CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Optimize the object files, too.
+CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; also use Double precision throughout
+# CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X`
 
-OLIMIT = $(CSTD) $(OPT) # SGI, Sun, HP, Convex, Linux, MacOS X.
-# OLIMIT = $(CSTD) $(OPT) -OPT:Olimit=2500 # Alpha, Some SGIs.
-# OLIMIT = $(CFLAGS) # Do not optimize.
+OPTLEVEL = -O3 # Agressive optimization
+# OPTLEVEL = -fast # Agressive optimization for the G5 on Mac OS X
+# OPTLEVEL = -O2 # High optimization
+# OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing
+# OPTLEVEL = -O0 # Do not optimize
 
-OPTLEVEL = -O3 # Agressive optimization.
-# OPTLEVEL = -O2 # High optimization.
-# OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.
-# OPTLEVEL = -O0 # Do not optimize.
-
-# OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.
+OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOS X
 # OPT_SGI_IPNUM = -Ofast=ip19 # SGI, 'uname -a' says 'IP19'
 # OPT_SGI_IPNUM = -Ofast=ip21 # SGI, 'uname -a' says 'IP21'
 # OPT_SGI_IPNUM = -Ofast=ip25 # SGI, 'uname -a' says 'IP25' PowerChallenge is R10000, IP25
 # OPT_SGI_IPNUM = -Ofast=ip27 # SGI, 'uname -a' says 'IP27'
-OPT_SGI_IPNUM = -Ofast=ip30 # SGI, 'uname -a' says 'IP30'
-# TSRI job = IP30
-# TSRI atlas = IP27
+# OPT_SGI_IPNUM = -Ofast=ip30 # SGI, 'uname -a' says 'IP30'
+# OPT_SGI_IPNUM = `uname -m | sed 's/IP/-Ofast=ip/'` # SGI, dynamic
 
-# OPT_SGI_R000 = # Alpha, HP, Sun, Convex, SGI, Linux, MacOS X.
+OPT_SGI_R000 = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOS X
 # OPT_SGI_R000 = -r4000 -mips2 # SGI, 'hinv' says MIPS Processor is R4000
 # OPT_SGI_R000 = -r8000 -mips4 # SGI, 'hinv' says MIPS Processor is R8000
-OPT_SGI_R000 = -r10000 -mips4 # SGI, 'hinv' says MIPS Processor is R10000
+# OPT_SGI_R000 = -r10000 -mips4 # SGI, 'hinv' says MIPS Processor is R10000
 # OPT_SGI_R000 = -r12000 -mips4 # SGI, 'hinv' says MIPS Processor is R12000
-# TSRI job = R10000
-# TSRI atlas = R12000
+# OPT_SGI_R000 = -r14000 -mips4 # SGI, 'hinv' says MIPS Processor is R14000
+# OPT_SGI_R000 = `hinv | grep '^CPU:' | awk '{print $3}' | sed 's/R/-r/'` -mips4 # SGI, dynamic, -mips4 (works with -r8000 to -r14000, not -r4000)
 
+OPT = $(OPTLEVEL) # Alpha, HP, Sun, Convex, Cygwin, Linux, MacOS X
+# OPT = $(OPTLEVEL) -ffast-math # Gnu cc, fast-math is dangerous!
 # OPT = $(OPTLEVEL) -n32 $(OPT_SGI_IPNUM) $(OPT_SGI_R000) -IPA $(LNO_OPT) # SGI
-# OPT = $(OPTLEVEL) -n32 $(OPT_SGI_IPNUM) $(OPT_SGI_R000) -IPA $(LNO_OPT) -DUSE_INT_AS_LONG # SGI (long is 8bytes).
+# OPT = $(OPTLEVEL) -n32 $(OPT_SGI_IPNUM) $(OPT_SGI_R000) -IPA $(LNO_OPT) -DUSE_INT_AS_LONG # SGI (long is 8bytes)
 # OPT = $(OPTLEVEL) $(OPT_SGI_IPNUM) $(OPT_SGI_R000) $(LNO_OPT) # SGI, not new 32-bit
-OPT = $(OPTLEVEL) # Alpha, HP, Sun, Convex, Linux, MacOS X.
 
-LNO_OPT = # SGI, no special optimization at link time; MacOS X
+LNO_OPT = # SGI, no special optimization at link time; Sun, Cygwin, Linux, MacOS X
 # LNO_OPT = -LNO:auto_dist=ON:gather_scatter=2 # SGI
 
-LINKOPT = $(CSTD) $(OPT) # SGI
+LINKOPT = $(CSTD) $(OPT) # 
+# LINKOPT = $(CSTD) $(OPT) -fno-stack-limit # Cygwin, 32MB stacksize
+# LINKOPT = $(CSTD) $(OPT) -Wl,--stack=0x2000000 # Cygwin, 32MB stacksize
+# LINKOPT = $(CSTD) $(OPT) -L/opt/sfw/lib # Sun
 
-LINK = $(LINKOPT) # Linking flags.
-# LINK = $(LINKOPT) -cord # Procedure rearranger on SGI.
+LINK = $(LINKOPT) # Linking flags
+# LINK = $(LINKOPT) -cord # Procedure rearranger on SGI
 
-LINT = lint # lint C code checking.
+LINT = lint # lint C code checking
 
-LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X.
-# LINTFLAGS = $(LIB) -MA -c # Alpha.
-# LINTFLAGS = -DHPPA -D_HPUX_SOURCE $(LIB) -c # HP.
-# LINTFLAGS = -u -n -lm # Sun.
+LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X
+# LINTFLAGS = $(LIB) -MA -c # Alpha
+# LINTFLAGS = -DHPPA -D_HPUX_SOURCE $(LIB) -c # HP
+# LINTFLAGS = -u -n -lm # Sun
 
-DBUG = -DNDEBUG # No debugging and no assert code.
-# DBUG = # Use assert code.
-# DBUG = -g # dbx.
-# DBUG = -g -DDEBUG # dbx + DEBUG-specific code.
-# DBUG = -g3 # dbx + optimization.
-# DBUG = -g3 -DDEBUG # dbx + optimization, + DEBUG-specific code.
-# DBUG = -DDEBUG # Just DEBUG-specific code.
-# DBUG = -DDEBUG2 # Just DEBUG2-specific code for tracking prop.selection.
-# DBUG = -DDEBUG3 # Just DEBUG3-specific code for print age of individuals.
+# DBUG = # Use assert code
+# DBUG = -DNDEBUG # No debugging and no assert code
+# DBUG = -g # dbx, or Gnu gdb
+# DBUG = -g -DDEBUG # dbx + DEBUG-specific code
+DBUG = -g3 # dbx + optimization
+# DBUG = -g3 -DDEBUG # dbx + optimization, + DEBUG-specific code
+# DBUG = -DDEBUG # Just DEBUG-specific code
+# DBUG = -DDEBUG2 # Just DEBUG2-specific code for tracking prop.selection
+# DBUG = -DDEBUG3 # Just DEBUG3-specific code for print age of individuals
+# DBUG = -g -DDEBUG -DDEBUG2 -DDEBUG3 # Debug everything
 
-PROF = # No profiling.
-# PROF = -p # Profiling.
+PROF = # No profiling
+# PROF = -p # Profiling
 
-WARN = # Default warning level.
-# WARN = -woff all # For no warnings.
-# WARN = -fullwarn -ansiE -ansiW # For full warnings during compilation.
+# WARN = # Default warning level
+# WARN = -woff all # For no warnings
+WARN = -Wall # All warnings, gcc -- Recommended for developers
+# WARN = -fullwarn -ansiE -ansiW # For full warnings during compilation
 
+ifeq ($(COLINY),yes)
+  ACRO_OS = -DDARWIN # Darwin, Mac OS X
+  # ACRO_OS = -DLINUX # Linux
 
-autodock3 : main.o $(ADLIB)
-	echo $(EXE)'  on  '`date`', using '`hostname` >> LATEST_MAKE
+  # ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -lg2c # Linux
+  ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw/lib -lg2c # Darwin, Mac OS X (Fink needed)
+
+  ACRO_INCLUDES = -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
+  ACRO_FLAGS = -DDEBUGGING -DUNIX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES $(ACRO_OS)
+  LIB = $(ACRO_LINK)
+  ACRO = acro
+  COLINYLIB = libcoliny.a # Using Coliny
+else
+  COLINYLIB = # Not using Coliny
+endif
+
+#
+# Makefile targets
+#
+
+autodock4 : main.o $(ADLIB)
+	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4
+	@echo " "
 	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock3sqrt : main.o $(ADLIB)
+autodock4sqrt : main.o $(ADLIB)
+	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	echo 'Flags: '$(CC) $(LINK) -L. -lad $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4sqrt
+	@echo " "
 	$(CC) $(CFLAGS) -o $@ main.o -L. -lad $(LIB)
 
-autodock3minpt : main.o $(ADLIB)
+autodock4minpt : main.o $(ADLIB)
+	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4minpt
+	@echo " "
 	echo $(EXE)'  on  '`date`', using '`hostname` >> LATEST_MAKE
 	$(CC) $(CFLAGS) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
-autodock3alt : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+autodock4alt : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	echo 'Flags: '$(CC) $(LINK) -DNOSQRT $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT) $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4alt
+	@echo " "
 	echo $(EXE)'  on  '`date`', using '`hostname` >> LATEST_MAKE
 	$(CC) $(LINK) -DNOSQRT -o $@ $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT) $(LIB)
 
 install :
-	echo Moving autodock3 to $(AUTODOCK_BIN)
-	mv autodock3 $(AUTODOCK_BIN)
+	@echo " "
+	@echo Moving autodock4 to $(AUTODOCK_BIN)
+	@echo " "
+	mv autodock4 $(AUTODOCK_BIN)
+
+autodock4.html :
+	@echo " "
+	@echo "Creating a colour-coded HTML report of the AutoDock source code"
+	@echo " "
+	enscript -E --color -Whtml --toc -p$@ *.h *.cc
 
 $(ADLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+	@echo " "
+	@echo Making the AutoDock library
+	@echo " "
+	@echo "Running ar"
 	$(AR) $(ARFLAGS) $(ADLIB) $(?:.cc=.o)
+	@echo "Running ranlib"
 	$(RANLIB) $(RANLIBFLAGS) $(ADLIB)
 
+testad : autodock4 Tests/test_autodock4.py
+	@echo " "
+	@echo "Running the unit tests on autodock4"
+	@echo " "
+	cd Tests ; python ./test_autodock4.py
+
+OFILES= eigen.o matvec.o rot.o rotate.o rotlsqfit.o
+
+lsfit: lsfit.o $(OFILES)
+	gcc $(CFLAGS) lsfit.o $(OFILES) -lm -o lsfit
+
+testdriver: testdriver.o $(OFILES)
+	gcc $(CFLAGS) testdriver.o $(OFILES) -lm -o testdriver
+
+lsfitclean:
+	rm -f $(OFILES) lsfit.o lsfit testdriver.o testdriver
+
+autodock4lsfit : main.o cnv_state_to_coords_lsfit.o $(OBJS_LSFIT) $(OFILES)
+	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4lsfit
+	@echo " "
+	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
+
+#$(COLINYLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+#	@echo " "
+#	@echo Making the Coliny library
+#	@echo " "
+#	$(AR) $(ARFLAGS) $(COLINYLIB) $(?:.cc=.o)
+#	$(RANLIB) $(RANLIBFLAGS) $(COLINYLIB)
+###
+### competing alternative from another CVS user
+###
+# coliny: $(ACRO)
+
+acro:
+	@echo " "
+	@echo Making the Coliny library
+	@echo " "
+	@(cd ../acro;\
+	if [ ! -e Makefile ]; then\
+	   ./setup configure;\
+	fi;\
+	$(MAKE))
 
 lcheck : $(LNS) $(LNSNOSQRT)
 	$(LINT) $(LIB) $(LNS) $(LNSNOSQRT)
@@ -358,12 +548,24 @@ lchecksqrt : $(LNS) $(LNSSQRT)
 dualmap : dualmap.c
 	$(CC) $(CFLAGS) -lm dualmap.c -o $@
 
+.SUFFIXES: .cc .c .i
+
+.cc.i:
+	$(CC) $(CFLAGS) -E $< > $*.i
+
+.c.i:
+	$(CC) $(CFLAGS) -E $< > $*.i
+
+
 #
 # Object dependencies:
 #
 
 analysis.o : analysis.cc analysis.h constants.h getpdbcrds.h stateLibrary.h cnv_state_to_coords.h sort_enrg.h cluster_analysis.h prClusterHist.h getrms.h eintcal.h trilinterp.h print_rem.h strindex.h print_avsfld.h
 	$(CC) $(CFLAGS) -c analysis.cc
+
+atom_parameter_manager.o : atom_parameter_manager.cc atom_parameter_manager.h structs.h
+	$(CC) $(CFLAGS) -c atom_parameter_manager.cc
 
 banner.o : banner.cc banner.h
 	$(CC) $(CFLAGS) -c banner.cc
@@ -392,26 +594,30 @@ check_header_int.o : check_header_int.cc check_header_int.h constants.h print_2x
 check_header_line.o : check_header_line.cc check_header_line.h constants.h
 	$(CC) $(CFLAGS) -c check_header_line.cc
 
-clmode.o : clmode.cc clmode.h constants.h openfile.h strindex.h readPDBQ.h get_atom_type.h getpdbcrds.h sort_enrg.h cluster_analysis.h prClusterHist.h bestpdb.h success.h
+clmode.o : clmode.cc clmode.h constants.h openfile.h strindex.h readPDBQT.h get_atom_type.h getpdbcrds.h sort_enrg.h cluster_analysis.h prClusterHist.h bestpdb.h success.h
 	$(CC) $(CFLAGS) -c clmode.cc
 
 cluster_analysis.o : cluster_analysis.cc cluster_analysis.h constants.h getrms.h
 	$(CC) $(CFLAGS) -c cluster_analysis.cc
 
-cmdmode.o : cmdmode.cc cmdtokens.h trjtokens.h cmdmode.h constants.h set_cmd_io_std.h print_2x.h parse_com_line.h strindex.h print_avsfld.h success.h openfile.h readPDBQ.h get_atom_type.h timesys.h eintcal.h trilinterp.h qmultiply.h cnv_state_to_coords.h parse_trj_line.h input_state.h autocomm.h
+cmdmode.o : cmdmode.cc cmdtokens.h trjtokens.h cmdmode.h constants.h set_cmd_io_std.h print_2x.h parse_com_line.h strindex.h print_avsfld.h success.h openfile.h readPDBQT.h get_atom_type.h timesys.h eintcal.h trilinterp.h qmultiply.h cnv_state_to_coords.h parse_trj_line.h input_state.h autocomm.h
 	$(CC) $(CFLAGS) -c -DEINTCALPRINT cmdmode.cc
 
 cnv_state_to_coords.o : cnv_state_to_coords.cc cnv_state_to_coords.h constants.h torsion.h qtransform.h stateLibrary.h
 	$(CC) $(CFLAGS) -c cnv_state_to_coords.cc
 
+cnv_state_to_coords_lsfit.o : cnv_state_to_coords.cc cnv_state_to_coords.h constants.h torsion.h qtransform.h stateLibrary.h rotlsqfit.c rotate.c rot.c eigen.c matvec.c useful.h q.h mymacs.h graph.h frac.h
+	$(CC) $(CFLAGS) -DLSQFIT -c cnv_state_to_coords.cc
+
 com.o : com.cc ranlib.h
 	$(CC) $(CFLAGS) -c com.cc
+
+distdepdiel.o : distdepdiel.cc distdepdiel.h
+	$(CC) $(CFLAGS) -c distdepdiel.cc
 
 stateLibrary.o : stateLibrary.cc stateLibrary.h constants.h
 	$(CC) $(CFLAGS) -c stateLibrary.cc
 
-readPDBQ.o : readPDBQ.cc  readPDBQ.h constants.h openfile.h stop.h readPDBQ.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.h weedbonds.h torNorVec.h success.h autocomm.h
-	$(CC) $(OLIMIT) -c readPDBQ.cc
 
 dpftypes.o : dpftypes.cc dpftypes.h constants.h dpftoken.h stop.h
 	$(CC) $(CFLAGS) -c dpftypes.cc
@@ -423,7 +629,7 @@ eintcalPrint.o : eintcal.cc eintcal.h constants.h
 	$(CC) $(CFLAGS) -DNOSQRT -DBOUNDED -DEINTCALPRINT -c eintcal.cc -o eintcalPrint.o
 
 eval.o : eval.cc eval.h structs.h constants.h autocomm.h 
-	$(CC) $(CFLAGS) -c eval.cc
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c eval.cc
 
 evaluate_energy.o : evaluate_energy.cc evaluate_energy.h constants.h trilinterp.h eintcal.h
 	$(CC) $(CFLAGS) -c evaluate_energy.cc
@@ -456,7 +662,7 @@ investigate.o : investigate.cc investigate.h constants.h changeState.h mkRandomS
 	$(CC) $(CFLAGS) -c investigate.cc
 
 intnbtable.o : intnbtable.cc intnbtable.h constants.h
-	$(CC) $(OLIMIT) -DNOSQRT -c intnbtable.cc
+	$(CC) $(CFLAGS) -DNOSQRT -c intnbtable.cc
 
 linpack.o : linpack.cc
 	$(CC) $(CFLAGS) -c linpack.cc
@@ -464,8 +670,8 @@ linpack.o : linpack.cc
 ls.o : ls.cc ls.h support.h ranlib.h
 	$(CC) $(CFLAGS) -c ls.cc
 
-main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h
-	$(CC) $(OLIMIT) -c -DWRITEPDBQSTATE main.cc
+main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcal.cc eintcal.h atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c -DEINTCALPRINT -DWRITEPDBQSTATE main.cc
 
 mapping.o : mapping.cc support.h
 	$(CC) $(CFLAGS) -c mapping.cc
@@ -483,9 +689,9 @@ mkRandomState.o : mkRandomState.cc mkRandomState.h constants.h
 	$(CC) $(CFLAGS) -c mkRandomState.cc
 
 nbe.o : nbe.cc nbe.h constants.h
-	$(CC) $(OLIMIT) -DNOSQRT -c nbe.cc
+	$(CC) $(CFLAGS) -DNOSQRT -c nbe.cc
 
-nonbonds.o : nonbonds.cc nonbonds.h constants.h
+nonbonds.o : nonbonds.cc nonbonds.h constants.h mdist.h
 	$(CC) $(CFLAGS) -c nonbonds.cc
 
 openfile.o : openfile.cc openfile.h constants.h autocomm.h
@@ -498,13 +704,19 @@ parse_com_line.o : parse_com_line.cc cmdtokens.h parse_com_line.h constants.h
 	$(CC) $(CFLAGS) -c parse_com_line.cc
 
 parse_dpf_line.o : parse_dpf_line.cc parse_dpf_line.h constants.h dpftoken.h
-	$(CC) $(CFLAGS) -c parse_dpf_line.cc
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c parse_dpf_line.cc
+
+parse_param_line.o : parse_param_line.cc partokens.h  parse_param_line.h constants.h
+	$(CC) $(CFLAGS) -c parse_param_line.cc
 
 parse_pdbq_line.o : parse_pdbq_line.cc pdbqtokens.h  parse_pdbq_line.h constants.h
 	$(CC) $(CFLAGS) -c parse_pdbq_line.cc
 
 parse_trj_line.o : parse_trj_line.cc trjtokens.h parse_trj_line.h constants.h
 	$(CC) $(CFLAGS) -c parse_trj_line.cc
+
+parsetypes.o : parsetypes.cc parsetypes.h
+	$(CC) $(CFLAGS) -c parsetypes.cc
 
 prClusterHist.o : prClusterHist.cc prClusterHist.h constants.h
 	$(CC) $(CFLAGS) -c prClusterHist.cc
@@ -524,14 +736,14 @@ print_atomic_energies.o : print_atomic_energies.cc print_atomic_energies.h const
 print_avsfld.o : print_avsfld.cc print_avsfld.h
 	$(CC) $(CFLAGS) -c print_avsfld.cc 
 
-writeMolAsPDBQ.o : writePDBQ.cc writePDBQ.h constants.h autocomm.h
-	$(CC) $(CFLAGS) -c -DWRITEMOLASPDBQFUNC writePDBQ.cc -o writeMolAsPDBQ.o
+writeMolAsPDBQ.o : writeMolAsPDBQ.cc writeMolAsPDBQ.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c writeMolAsPDBQ.cc -o writeMolAsPDBQ.o
 
 writePDBQ.o : writePDBQ.cc writePDBQ.h constants.h autocomm.h
 	$(CC) $(CFLAGS) -c writePDBQ.cc -o writePDBQ.o
 
-writePDBQState.o : writePDBQ.cc writePDBQ.h constants.h autocomm.h
-	$(CC) $(CFLAGS) -c -DWRITEPDBQSTATE writePDBQ.cc -o writePDBQState.o
+writeStateOfPDBQ.o : writeStateOfPDBQ.cc writeStateOfPDBQ.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c writeStateOfPDBQ.cc -o writeStateOfPDBQ.o
 
 print_rem.o : print_rem.cc print_rem.h
 	$(CC) $(CFLAGS) -c print_rem.cc
@@ -563,6 +775,17 @@ readfield.o : readfield.cc readfield.h constants.h openfile.h stop.h
 readmap.o : readmap.cc readmap.h constants.h openfile.h warn_bad_file.h strindex.h print_2x.h check_header_line.h warn_bad_file.h check_header_float.h check_header_int.h timesys.h autocomm.h
 	$(CC) $(CFLAGS) -c readmap.cc
 
+readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h mdist.h atom_parameter_manager.cc atom_parameter_manager.h 
+	$(CC) $(CFLAGS) -c readPDBQT.cc
+
+default_parameters.h : AD4_parameters.dat paramdat2h.csh
+	rm -f $@
+	paramdat2h.csh > tmp-paramdat
+	mv -f tmp-paramdat $@
+
+read_parameter_library.o : read_parameter_library.cc autocomm.h default_parameters.h
+	$(CC) $(CFLAGS) -c read_parameter_library.cc
+
 rep.o: rep.cc rep.h ranlib.h
 	$(CC) $(CFLAGS) -c rep.cc
 
@@ -576,7 +799,7 @@ setflags.o : setflags.cc setflags.h
 	$(CC) $(CFLAGS) -c setflags.cc
 
 simanneal.o : simanneal.cc simanneal.h constants.h autocomm.h
-	$(CC) $(OLIMIT) -c simanneal.cc
+	$(CC) $(CFLAGS) -c simanneal.cc
 
 sort_enrg.o : sort_enrg.cc sort_enrg.h constants.h
 	$(CC) $(CFLAGS) -c sort_enrg.cc
@@ -633,10 +856,13 @@ eintcalPrint.sqrt.o : eintcal.cc eintcal.h constants.h
 	$(CC) $(CFLAGS) -c -DBOUNDED -DEINTCALPRINT eintcal.cc -o eintcalPrint.sqrt.o
 
 intnbtable.sqrt.o : intnbtable.cc intnbtable.h constants.h
-	$(CC) $(OLIMIT) -c intnbtable.cc -o intnbtable.sqrt.o
+	$(CC) $(CFLAGS) -c intnbtable.cc -o intnbtable.sqrt.o
 
 nbe.sqrt.o : nbe.cc nbe.h constants.h
 	$(CC) $(CFLAGS) -c nbe.cc -o nbe.sqrt.o
+
+coliny.o : coliny.h
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c coliny.cc -o coliny.o
 
 #
 # lcheck dependencies...
@@ -676,7 +902,7 @@ cnv_state_to_coords.ln : cnv_state_to_coords.cc
 	$(LINT) $(LINTFLAGS) $?
 
 stateLibrary.ln : stateLibrary.cc
-	$(CC) $(CFLAGS) -c $?
+	$(LINT) $(LINTFLAGS) $?
 
 readfield.ln : readfield.cc
 	$(LINT) $(LINTFLAGS) $?
@@ -684,7 +910,7 @@ readfield.ln : readfield.cc
 readmap.ln : readmap.cc
 	$(LINT) $(LINTFLAGS) $?
 
-readPDBQ.ln : readPDBQ.cc
+readPDBQT.ln : readPDBQT.cc
 	$(LINT) $(LINTFLAGS) $?
 
 dpftypes.ln : dpftypes.cc
@@ -741,10 +967,16 @@ parse_com_line.ln : parse_com_line.cc
 parse_dpf_line.ln : parse_dpf_line.cc
 	$(LINT) $(LINTFLAGS) $?
 
+parse_param_line.ln : parse_param_line.cc
+	$(LINT) $(LINTFLAGS) $?
+
 parse_pdbq_line.ln : parse_pdbq_line.cc
 	$(LINT) $(LINTFLAGS) $?
 
 parse_trj_line.ln : parse_trj_line.cc
+	$(LINT) $(LINTFLAGS) $?
+
+parsetypes.ln : parsetypes.cc
 	$(LINT) $(LINTFLAGS) $?
 
 print_2x.ln : print_2x.cc
@@ -756,14 +988,14 @@ print_atomic_energies.ln : print_atomic_energies.cc
 print_avsfld.ln : print_avsfld.cc
 	$(LINT) $(LINTFLAGS) $?
 
-writeMolAsPDBQ.ln : writePDBQ.cc
-	$(LINT) $(LINTFLAGS) -DWRITEMOLASPDBQFUNC $?
+writeMolAsPDBQ.ln : writeMolAsPDBQ.cc
+	$(LINT) $(LINTFLAGS) $?
 
 writePDBQ.ln : writePDBQ.cc
 	$(LINT) $(LINTFLAGS) $?
 
-writePDBQState.ln : writePDBQ.cc
-	$(LINT) $(LINTFLAGS) -DWRITEPDBQSTATE $?
+writeStateOfPDBQ.ln : writeStateOfPDBQ.cc
+	$(LINT) $(LINTFLAGS) $?
 
 print_rem.ln : print_rem.cc
 	$(LINT) $(LINTFLAGS) $?
@@ -846,6 +1078,7 @@ weedbonds.ln : weedbonds.cc
 warn_bad_file.ln : warn_bad_file.cc
 	$(LINT) $(LINTFLAGS) $?
 
+
 #
 # NOSQRT conditionals activated:
 #
@@ -861,6 +1094,7 @@ intnbtable.ln : intnbtable.cc
 
 nbe.ln : nbe.cc
 	$(LINT) $(LINTFLAGS) -DNOSQRT $?
+
 
 #
 # NOSQRT conditionals NOT activated:
@@ -883,7 +1117,7 @@ nbe.sqrt.ln : nbe.cc
 #
 
 clean :
-	/bin/rm -f *.o *.s *.ln a.out mon.out autodock3 autodock3sqrt autodock3minpt dualmap libad.a
+	/bin/rm -f *.o *.s *.ln a.out mon.out autodock4 autodock4sqrt autodock4minpt dualmap libad.a default_parameters.h
 
 cleanlcheck :
 	/bin/rm -f *.ln

@@ -1,76 +1,50 @@
+/*
+
+ $Id: readmap.cc,v 1.4 2005/09/28 22:54:21 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* readmap.cc */
 
-
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include <sys/types.h>
-    #include <sys/times.h>
-    #include <time.h>
-    #include "readmap.h"
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/times.h>
+#include <time.h>
+#include "readmap.h"
 
 extern char dock_param_fn[];
 extern char *programname;
 extern int ignore_errors;
 extern int ElecMap;
 extern FILE *logFile;
+extern int debug;
 
-char mapf2c(float);
+char mapf2c(FloatOrDouble);
 
-float mapc2f(char numin)
-{
-    float numout;
+void readmap( char           line[LINE_LEN],
+              int            outlev,
+ 
+              Clock          jobStart,
+              struct tms     tmsJobStart,
+        
+              Boole          B_charMap,
 
-    if (numin == 0) {
-        numout = 0.;
-    } else if (numin > 0) {
-        numout = numin * 10.;
-    } else {
-        numout = numin /10.;
-    }
-
-    return numout;
-}
-
-/*
-    char mapf2c(float numin)
-    {
-        char numout;
-        if (numin == 0.) {
-            numout = 0;
-        } else if ((-12.8 < numin) && (numin < 0.)) {
-            numout = numin * 10.;
-        } else if ((0. < numin) && (numin < 1280.)) {
-            numout = numin / 10.;
-        } else if (numin >= 1280.) {
-            numout = 127;
-        } else {
-            numout = -128;
-        }
-        return numout;
-    }
-*/
-void readmap( Boole *P_B_HaveMap, 
-             int *P_Imap, 
-             int *P_NumAtmMaps, 
-             float *P_ExtSpacing, 
-             char AtmTypStr[ATOM_MAPS], 
-             char ExtFldFileName[MAX_CHARS],
-             int ExtGridPts1[SPACE],
-             int ExtGridPts[SPACE],
-             Clock jobStart,
-             char line[LINE_LEN],
-             char ExtMacromolFileName[MAX_CHARS],
-             float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-             float MapCenter[SPACE],
-             float MapMax[MAX_MAPS],
-             float MapMin[MAX_MAPS],
-             struct tms tmsJobStart,
-             Boole B_charMap )
+              Boole          *P_B_HaveMap, 
+              int            *P_imap, 
+ 
+              GridMapSetInfo *info,
+              FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
+              // double *maps 
+             )
 
 {
-    FILE *mapFilePtr;
+    FILE *map_file;
 
     char FileName[MAX_CHARS];
     char FldFileName[MAX_CHARS];
@@ -80,11 +54,15 @@ void readmap( Boole *P_B_HaveMap,
     char mmFileName[MAX_CHARS];
     char xyz_str[4];
     char C_mapValue;
-    char mapline[LINE_LEN];
+    char map_line[LINE_LEN];
     char inputline[LINE_LEN];
+    char atom_type_name[MAX_CHARS];
+    char map_type = '?';
 
-    float cen[SPACE];
-    float spacing = 0.;
+    FloatOrDouble cen[SPACE];
+    FloatOrDouble spacing = 0.;
+    double max[MAX_MAPS];
+    double min[MAX_MAPS];
 
     int indpf = 0;
     int nel[SPACE];
@@ -106,6 +84,8 @@ void readmap( Boole *P_B_HaveMap,
 
     strcpy( xyz_str, "xyz\0" );
 
+    //maps->atom_type = *P_imap;
+
     /*
     \  ATOMIC AFFINITY or ELECTROSTATIC GRID MAP
      \  Read in active site grid map...
@@ -113,10 +93,23 @@ void readmap( Boole *P_B_HaveMap,
      */
 
     (void) sscanf( line, "%*s %s", FileName );
-    if ( openFile( FileName, "r", &mapFilePtr, jobStart,tmsJobStart,TRUE )) {
+    if ( openFile( FileName, "r", &map_file, jobStart,tmsJobStart,TRUE )) {
         *P_B_HaveMap = TRUE;
-        pr( logFile, "Opened Grid Map %d (%c):\t\t\t\t%s\n", 
-            (*P_Imap)+1, ((*P_Imap)==(*P_NumAtmMaps))?'e':AtmTypStr[*P_Imap], FileName );
+        if (debug > 0) {
+            for (i=0; i < info->num_atom_types; i++) {
+                (void) fprintf(logFile, "info->atom_type_name[%d] = \"%s\"\n", i, info->atom_type_name[i] );
+            }
+        }
+        if ((*P_imap) == info->num_atom_types) {
+            strcpy(atom_type_name, "e\0");
+            map_type = 'e';
+        } else if ( (*P_imap) == (info->num_atom_types + 1)) {
+            strcpy(atom_type_name, "d\0");
+            map_type = 'd';
+        } else {
+            strcpy(atom_type_name, info->atom_type_name[*P_imap]);
+        }
+        pr( logFile, "Opened Grid Map %d (%s):\t\t\t\t%s\n", (*P_imap)+1, atom_type_name, FileName );
         if (!ignore_errors) {
             pr( logFile, "Checking header information.\n" );
         }
@@ -125,7 +118,7 @@ void readmap( Boole *P_B_HaveMap,
          /
          \ :Line 1  GRID_PARAMETER_FILE 
         */
-        if (fgets(inputline, LINE_LEN, mapFilePtr) == NULL) {
+        if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read GRID_PARAMETER_FILE line." );
         } else {
             (void) sscanf(inputline, "%*s %s", GpfName);
@@ -140,59 +133,67 @@ void readmap( Boole *P_B_HaveMap,
                 strcpy(ExtGpfName, dock_param_fn);
                 ExtGpfName[ indpf ] = 'g';
             }
-            if (!ignore_errors) {
-                check_header_line(GpfName, ExtGpfName );
-            } /* endif */
         } /* endif */
          /*
          \ :Line 2  GRID_DATA_FILE 
         */
-        if (fgets(inputline, LINE_LEN, mapFilePtr) == NULL) {
+        if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read \".fld\" GRID_DATA_FILE line." );
         } else {
             (void) sscanf(inputline, "%*s %s", FldFileName);
             if (!ignore_errors) {
-                check_header_line( FldFileName, ExtFldFileName );
+                check_header_line( FldFileName, info->FN_gdfld );
             } /* endif */
         } /* endif */
          /*
          \ :Line 3  MACROMOLECULE 
         */
-        if (fgets(inputline, LINE_LEN, mapFilePtr) == NULL) {
+        if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read MACROMOLECULE line." );
         } else {
             (void) sscanf(inputline,"%*s %s", mmFileName);
-            check_header_line( mmFileName, ExtMacromolFileName );
+            check_header_line( mmFileName, info->FN_receptor );
         } /* endif */
          /*
          \ :Line 4  SPACING 
         */
-        if (fgets(inputline, LINE_LEN, mapFilePtr) == NULL) {
+        if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read SPACING line." );
         } else {
-            (void) sscanf(inputline,"%*s %f", &spacing);
-            check_header_float(spacing, *P_ExtSpacing, "grid point spacing", FileName );
+            #ifdef USE_DOUBLE
+                (void) sscanf(inputline,"%*s %lf", &spacing);
+            #else
+                (void) sscanf(inputline,"%*s %f", &spacing);
+            #endif
+            check_header_float(spacing, info->spacing, "grid point spacing", FileName );
         } /* endif */
          /*
          \ :Line 5  NELEMENTS 
         */
-        if (fgets(inputline, LINE_LEN, mapFilePtr) == NULL) {
+        if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read NELEMENTS line." );
         } else {
             (void) sscanf(inputline,"%*s %d %d %d", &nel[X], &nel[Y], &nel[Z]);
             for (xyz = 0;  xyz < SPACE;  xyz++) {
-                check_header_int( nel[xyz], ExtGridPts[xyz], xyz_str[xyz], FileName );
+                //maps->num_points[xyz] = nel[xyz];
+                //maps->num_points1[xyz] = nel[xyz] + 1;
+                check_header_int( nel[xyz], info->num_points[xyz], xyz_str[xyz], FileName );
             } /* xyz */
         } /* endif */
          /* 
          \ :Line 6  CENTER
         */
-        if (fgets(inputline, LINE_LEN, mapFilePtr) == NULL) {
+        if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read CENTER line." );
         } else {
-            (void) sscanf(inputline,"%*s %f %f %f", &cen[X], &cen[Y], &cen[Z]);
+            #ifdef USE_DOUBLE
+                (void) sscanf(inputline,"%*s %lf %lf %lf", &cen[X], &cen[Y], &cen[Z]);
+            #else
+                (void) sscanf(inputline,"%*s %f %f %f", &cen[X], &cen[Y], &cen[Z]);
+            #endif
             for (xyz = 0;  xyz < SPACE;  xyz++) {
-                check_header_float(cen[xyz], MapCenter[xyz], "grid-map center", FileName );
+                //maps->center[xyz] = cen[xyz];
+                check_header_float(cen[xyz], info->center[xyz], "grid-map center", FileName );
             } /* xyz */
         } /* endif */
     } /* endif */
@@ -202,41 +203,53 @@ void readmap( Boole *P_B_HaveMap,
      \  While reading in the values...
       \____________________________________________________________
      */
-    MapMax[*P_Imap] = -BIG;
-    MapMin[*P_Imap] =  BIG;
-    nvExpected = ExtGridPts1[X] * ExtGridPts1[Y] * ExtGridPts1[Z];
+    max[*P_imap] = -BIG;
+    min[*P_imap] =  BIG;
+    nvExpected = info->num_points1[X] * info->num_points1[Y] * info->num_points1[Z];
     nv = 0;
-    pr( logFile, "Number of grid points expected in  x-dimension:  %d\n", ExtGridPts1[X] );
-    pr( logFile, "Number of grid points expected in  y-dimension:  %d\n", ExtGridPts1[Y] );
-    pr( logFile, "Number of grid points expected in  z-dimension:  %d\n", ExtGridPts1[Z] );
-    pr( logFile, "Looking for %d energies from Grid Map %d... \n", nvExpected, (*P_Imap)+1 );
+    pr( logFile, "Number of grid points expected in  x-dimension:  %d\n", info->num_points1[X] );
+    pr( logFile, "Number of grid points expected in  y-dimension:  %d\n", info->num_points1[Y] );
+    pr( logFile, "Number of grid points expected in  z-dimension:  %d\n", info->num_points1[Z] );
+    pr( logFile, "Looking for %d energies from Grid Map %d... \n", nvExpected, (*P_imap)+1 );
     flushLog;
     loadStart = times( &tms_loadStart );
-    for ( k = 0;  k < ExtGridPts1[Z];  k++) {
-        for ( j = 0;  j < ExtGridPts1[Y];  j++) {
-            for ( i = 0;  i < ExtGridPts1[X];  i++) {
+    for ( k = 0;  k < info->num_points1[Z];  k++) {
+        for ( j = 0;  j < info->num_points1[Y];  j++) {
+            for ( i = 0;  i < info->num_points1[X];  i++) {
                 if (B_charMap) {
-                    if (fgets(mapline, LINE_LEN, mapFilePtr) != NULL) { /*new*/
-                        (void) sscanf( mapline,  "%c",  &C_mapValue );
-                        map[k][j][i][*P_Imap] = mapc2f(C_mapValue);
+                    if (fgets(map_line, LINE_LEN, map_file) != NULL) {
+                        (void) sscanf( map_line,  "%c",  &C_mapValue );
+                        // maps->map[k][j][i][*P_imap] = mapc2f(C_mapValue);
+                        map[k][j][i][*P_imap] = mapc2f(C_mapValue);
                         nv++;
                     }
                 } else {
-                    if (fgets( mapline, LINE_LEN, mapFilePtr) != NULL) { /*new*/
-                        (void) sscanf( mapline,  "%f",  &map[k][j][i][*P_Imap] );
+                    if (fgets( map_line, LINE_LEN, map_file) != NULL) {
+                        // (void) sscanf( map_line,  "%lf",  &maps->map[k][j][i][*P_imap] );
+#ifdef USE_DOUBLE
+                        (void) sscanf( map_line,  "%lf",  &map[k][j][i][*P_imap] );
+#else
+                        (void) sscanf( map_line,  "%f",  &map[k][j][i][*P_imap] );
+#endif
                         nv++;
                     }
                 }
-                MapMax[*P_Imap] = max( MapMax[*P_Imap], map[k][j][i][*P_Imap] );
-                MapMin[*P_Imap] = min( MapMin[*P_Imap], map[k][j][i][*P_Imap] );
+                //max[*P_imap] = max( max[*P_imap], maps->map[k][j][i][*P_imap] );
+                //min[*P_imap] = min( min[*P_imap], maps->map[k][j][i][*P_imap] );
+                max[*P_imap] = max( max[*P_imap], map[k][j][i][*P_imap] );
+                min[*P_imap] = min( min[*P_imap], map[k][j][i][*P_imap] );
             }
-            /* nv += ExtGridPts1[X]; */ /*new*/
+            /* nv += info->num_points1[X]; */
         }
     }
     pr( logFile, "Closing file.\n" );
-    fclose( mapFilePtr );
-    pr( logFile, "%d energies found for map %d\n", nv, (*P_Imap)+1 );
-    pr( logFile, "Minimum energy = %.2f,  maximum energy = %.2f\n\n", MapMin[*P_Imap], MapMax[*P_Imap] );
+    fclose( map_file );
+    pr( logFile, "%d energies found for map %d\n", nv, (*P_imap)+1 );
+    if (map_type == 'e') {
+        pr( logFile, "Minimum electrostatic potential = %.2f,  maximum electrostatic potential = %.2f\n\n", min[*P_imap], max[*P_imap] );
+    } else {
+        pr( logFile, "Minimum energy = %.2f,  maximum energy = %.2f\n\n", min[*P_imap], max[*P_imap] );
+    }
     pr( logFile, "Time taken (s): " );
 
     loadEnd = times( &tms_loadEnd );
@@ -255,8 +268,50 @@ void readmap( Boole *P_B_HaveMap,
         exit(-1);
     } /* END PROGRAM */
 
-    ++(*P_Imap);
+    ++(*P_imap);
 
     flushLog;
 }
+
+FloatOrDouble mapc2f(char numin)
+{
+    FloatOrDouble numout;
+    if (numin == 0) {
+        numout = 0.;
+    } else if (numin > 0) {
+        numout = numin * 10.;
+    } else {
+        numout = numin /10.;
+    }
+    return numout;
+}
+
+void scale_map(
+        double weight,
+        FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
+        )
+{
+    
+}
+
+
+/*
+    char mapf2c(FloatOrDouble numin)
+    {
+        char numout;
+        if (numin == 0.) {
+            numout = 0;
+        } else if ((-12.8 < numin) && (numin < 0.)) {
+            numout = numin * 10.;
+        } else if ((0. < numin) && (numin < 1280.)) {
+            numout = numin / 10.;
+        } else if (numin >= 1280.) {
+            numout = 127;
+        } else {
+            numout = -128;
+        }
+        return numout;
+    }
+*/
+
 /* EOF */

@@ -1,23 +1,32 @@
+/*
+
+ $Id: getInitialState.cc,v 1.7 2005/09/28 22:54:20 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* getInitialState.cc */
 
 #include <math.h>
-
-    #include <stdio.h>
-    #include <sys/types.h>
-    #include <sys/times.h>
-    #include <sys/param.h>
-    #include <time.h>
-    #include "getInitialState.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/times.h>
+#include <sys/param.h>
+#include <time.h>
+#include "getInitialState.h"
 
 
 extern FILE *logFile;
 extern char *programname;
 
 
-void getInitialState(   
+void getInitialState(
 
-            float *Addr_e0total,
-            float e0max,
+            FloatOrDouble *Addr_e0total,
+            FloatOrDouble e0max,
 
             State *sInit, /* was qtn0[QUAT] and tor0[MAX_TORS] */
             State *sMinm, /* was qtnMin[QUAT] and torMin[MAX_TORS] */
@@ -27,41 +36,53 @@ void getInitialState(
             Boole B_RandomQuat0,
             Boole B_RandomDihe0,
 
-            float charge[MAX_ATOMS],
-            float q1q2[MAX_NONBONDS],
-            float crd[MAX_ATOMS][SPACE],
-            float crdpdb[MAX_ATOMS][SPACE],
+            FloatOrDouble charge[MAX_ATOMS],
+            FloatOrDouble abs_charge[MAX_ATOMS],
+            FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+            FloatOrDouble q1q2[MAX_NONBONDS],
+            FloatOrDouble crd[MAX_ATOMS][SPACE],
+            FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
             char  atomstuff[MAX_ATOMS][MAX_CHARS],
-            float elec[MAX_ATOMS],
-            float emap[MAX_ATOMS],
-            float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+            FloatOrDouble elec[MAX_ATOMS],
+            FloatOrDouble emap[MAX_ATOMS],
+
+            EnergyTables *ptr_ad_energy_tables,
+
             Boole B_calcIntElec,
-            float xhi,
-            float yhi,
-            float zhi,
-            float xlo,
-            float ylo,
-            float zlo,
-            float inv_spacing,
-            float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
-            int   nonbondlist[MAX_NONBONDS][2],
+            int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
             int   ntor,
             int   tlist[MAX_TORS][MAX_ATOMS],
             int   type[MAX_ATOMS],
-            float vt[MAX_TORS][SPACE],
+            FloatOrDouble vt[MAX_TORS][SPACE],
             int   irun1,
             int   outlev,
             int   MaxRetries,
-            float torsFreeEnergy,
-            int   ligand_is_inhibitor)
+
+            FloatOrDouble torsFreeEnergy,
+
+            int   ligand_is_inhibitor,
+
+            int   ignore_inter[MAX_ATOMS],
+
+            const Boole         B_include_1_4_interactions,
+            const FloatOrDouble scale_1_4,
+
+            const ParameterEntry parameterArray[MAX_MAPS],
+
+            const FloatOrDouble unbound_internal_FE,
+
+            GridMapSetInfo *info
+
+           )
 
 {
-    float e0total = 0.;
-    float e0inter = 0.;
-    float e0intra = 0.;
-    float e0min = BIG;
+    FloatOrDouble e0total = 0.;
+    FloatOrDouble e0inter = 0.;
+    FloatOrDouble e0intra = 0.;
+    FloatOrDouble e0min = BIG;
     int   retries = 0;
     register int i = 0;
     Clock  initStart;
@@ -84,9 +105,9 @@ void getInitialState(
         ** Initialize all state variables...
         */
         if (B_RandomTran0) {
-            sInit->T.x = random_range( xlo, xhi );
-            sInit->T.y = random_range( ylo, yhi );
-            sInit->T.z = random_range( zlo, zhi );
+            sInit->T.x = random_range( info->lo[X], info->hi[X] );
+            sInit->T.y = random_range( info->lo[Y], info->hi[Y] );
+            sInit->T.z = random_range( info->lo[Z], info->hi[Z] );
             if (outlev > 1) {
                 pr( logFile, "Random initial translation,  tran0 %.3f %.3f %.3f\n", sInit->T.x, sInit->T.y, sInit->T.z);
             }
@@ -128,11 +149,11 @@ void getInitialState(
 ** Initialize the automated docking simulation,
 ** _________________________________________________________________________
 */
-        initautodock( atomstuff, crd, crdpdb, xhi, yhi, zhi, xlo, ylo, zlo, 
-            natom, ntor, sInit, tlist, vt, outlev);
+        initautodock( atomstuff, crd, crdpdb, 
+            natom, ntor, sInit, tlist, vt, outlev, info);
         
-        e0inter = trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo );
-        e0intra = eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+        e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+        e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
         e0total = e0inter + e0intra;
 
         if (e0total < e0min) {
@@ -170,8 +191,8 @@ void getInitialState(
 
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
-    e0inter = trilinterp( crd, charge, type, natom, map, inv_spacing, elec, emap, xlo, ylo, zlo );
-    e0intra = eintcal( nonbondlist, e_internal, crd, type, Nnb, B_calcIntElec, q1q2);
+    e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+    e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
     e0total = e0inter + e0intra;
 
     copyState( sMinm, *sInit );

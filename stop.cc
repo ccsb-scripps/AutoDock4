@@ -1,3 +1,13 @@
+/*
+
+ $Id: stop.cc,v 1.2 2003/02/26 01:42:27 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* stop.cc */
 
     #include <stdio.h>

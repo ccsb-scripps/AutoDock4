@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "constants.h"
 #include "quicksort.h"
-void sort_enrg( float econf[MAX_RUNS],
+void sort_enrg( FloatOrDouble econf[MAX_RUNS],
                 int   isort[MAX_RUNS],
                 int   nconf );
 #endif

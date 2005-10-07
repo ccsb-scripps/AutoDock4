@@ -1,13 +1,26 @@
+/*
+
+ $Id: setflags.cc,v 1.4 2005/03/15 23:52:27 gillet Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* setflags.cc */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "setflags.h"
-
+#include "openfile.h"
+#include "version.h"
 
 extern FILE *parFile;
 extern FILE *logFile;
+extern FILE *stateFile;
+extern int  write_stateFile;
 extern char *programname;
 
 extern char dock_param_fn[];
@@ -20,7 +33,7 @@ extern int  parse_tors_mode;
 extern int  keepresnum;
 
 
-int setflags( int I_argc, char **PPC_argv )
+int setflags( int I_argc, char * const PPC_argv[])
 
 /*
 ** naming convention: 
@@ -104,7 +117,7 @@ int setflags( int I_argc, char **PPC_argv )
             command_mode = TRUE;
             break;
         case 'l':
-            if ( (logFile = fopen(PPC_argv[2], "w")) == NULL ) {
+            if ( (logFile = ad_fopen(PPC_argv[2], "w")) == NULL ) {
 #ifdef DEBUG
                 fprintf(stderr,"\n Log file name = %s\n",PPC_argv[2]); 
 #endif /* DEBUG */
@@ -116,9 +129,30 @@ int setflags( int I_argc, char **PPC_argv )
             I_argc--;
             I_argindex++;
             break;
+        case 's':
+            if ( (stateFile = ad_fopen(PPC_argv[2], "w")) == NULL ) {
+#ifdef DEBUG
+                fprintf(stderr,"\n State file name = %s\n",PPC_argv[2]); 
+#endif /* DEBUG */
+                fprintf(stderr, "\n%s: can't create state file %s\n", programname, PPC_argv[2]);
+                fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
+                return(-1);
+            }
+	    else{
+	      fprintf(stateFile,"<?xml version=\"1.0\" ?>\n");
+	      fprintf(stateFile,"<autodock>\n");
+	      fprintf(stateFile,"\t<version>%s.%s</version>\n", AUTODOCK_MAJ_VERSION,AUTODOCK_MIN_VERSION);
+	      fprintf(stateFile,"\t<autogrid_version>%s.%s</autogrid_version>\n", AUTOGRID_MAJ_VERSION,AUTOGRID_MIN_VERSION);
+	      fprintf(stateFile,"\t<output_xml_version>%5.2f</output_xml_version>\n", OUTPUT_XML_VERSION);
+	      write_stateFile = TRUE;
+	    }
+            PPC_argv++;
+            I_argc--;
+            I_argindex++;
+            break;	    
         case 'p':
             strcpy(dock_param_fn, PPC_argv[2]);
-            if ( (parFile = fopen(PPC_argv[2], "r")) == NULL ) {
+            if ( (parFile = ad_fopen(PPC_argv[2], "r")) == NULL ) {
 #ifdef DEBUG
                 fprintf(stderr,"\n Parameter file name = %s\n",PPC_argv[2]);
 #endif /* DEBUG */

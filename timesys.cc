@@ -1,24 +1,37 @@
-/* timesys.cc */
+/*
 
+ $Id: timesys.cc,v 1.4 2005/09/28 22:54:21 garrett Exp $
 
-    #include <stdio.h>
-    #include <unistd.h>
-    #include "timesys.h"
+ */
+
+#ifndef _WIN32
+#   include <sys/times.h>
+#   include <unistd.h>
+#else
+#   include "times.h"
+#endif
+
+#ifdef HAVE_CONFIG_H
+#   include <config.h>
+#endif
+
+#include <stdio.h>
+#include "timesys.h"
 
 extern  FILE    *logFile;
-extern	float	idct;
+extern	FloatOrDouble	idct;
 
 /*----------------------------------------------------------------------------*/
 
-void timesys( Clock  duration,
-	      struct tms *start,
-	      struct tms *end )
+void timesys( Clock       duration,
+              struct tms  *start,
+              struct tms  *end)
 
 /*----------------------------------------------------------------------------*/
 
 {
-	fprintf( logFile, "Real= %.2f,  CPU= %.2f,  System= %.2f\n",     (float)duration * idct,
-                         (float)(end->tms_utime  - start->tms_utime) * idct,
-                         (float)(end->tms_stime  - start->tms_stime) * idct );
+	fprintf( logFile, "Real= %.2f,  CPU= %.2f,  System= %.2f\n",     (FloatOrDouble)duration * idct,
+                         (FloatOrDouble)(end->tms_utime  - start->tms_utime) * idct,
+                         (FloatOrDouble)(end->tms_stime  - start->tms_stime) * idct );
 }
 /* EOF */

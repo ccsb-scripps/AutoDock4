@@ -1,11 +1,21 @@
+/*
+
+ $Id: sort_enrg.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* sort_enrg.cc */
 
-    #include "sort_enrg.h"
+#include "sort_enrg.h"
 
 
 extern FILE *logFile;
 
-void sort_enrg( float econf[MAX_RUNS],
+void sort_enrg( FloatOrDouble econf[MAX_RUNS],
                 int isort[MAX_RUNS],
 		int nconf )
 

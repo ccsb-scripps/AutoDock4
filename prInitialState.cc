@@ -1,3 +1,13 @@
+/*
+
+ $Id: prInitialState.cc,v 1.3 2005/08/15 23:43:55 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* prInitialState.cc */
 
 #include <math.h>
@@ -15,16 +25,16 @@ extern char *programname;
 
 void prInitialState(
 
-    float einter,
-    float eintra,
-    float torsFreeEnergy,
+    FloatOrDouble einter,
+    FloatOrDouble eintra,
+    FloatOrDouble torsFreeEnergy,
     int natom,
-    float crd[MAX_ATOMS][SPACE],
+    FloatOrDouble crd[MAX_ATOMS][SPACE],
     char atomstuff[MAX_ATOMS][MAX_CHARS],
     int type[MAX_ATOMS],
-    float emap[MAX_ATOMS],
-    float elec[MAX_ATOMS],
-    float charge[MAX_ATOMS],
+    FloatOrDouble emap[MAX_ATOMS],
+    FloatOrDouble elec[MAX_ATOMS],
+    FloatOrDouble charge[MAX_ATOMS],
     int ligand_is_inhibitor)
 
 {
@@ -32,6 +42,9 @@ void prInitialState(
     char rec13[15];
     char descriptor[17];
     register int i = 0;
+    int a = 0;
+    FloatOrDouble emap_total = 0.0;
+    FloatOrDouble elec_total = 0.0;
 
     strncpy(descriptor, "INITIAL STATE:  ", (size_t)16);
 
@@ -58,7 +71,13 @@ void prInitialState(
 
     print_atomic_energies( natom, atomstuff, type, emap, elec, charge );
 
-    printEnergies( einter, eintra, torsFreeEnergy, "Initial ", ligand_is_inhibitor);
+    emap_total = 0.0;
+    elec_total = 0.0;
+    for (a=0; a<natom; a++) {
+        emap_total += emap[a];
+        elec_total += elec[a];
+    }
+    printEnergies( einter, eintra, torsFreeEnergy, "Initial ", ligand_is_inhibitor, emap_total, elec_total);
 
     flushLog;
 }

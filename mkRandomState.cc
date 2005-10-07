@@ -1,3 +1,13 @@
+/*
+
+ $Id: mkRandomState.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* mkRandomState.cc */
 
 #include <math.h>
@@ -7,15 +17,10 @@
     #include "mkRandomState.h"
 
 
-State mkRandomState( float xlo,
-		     float xhi,
-		     float ylo,
-		     float yhi,
-		     float zlo,
-		     float zhi,
-		     int   ntor,
-		     float F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-		     int   N_con[MAX_TORS])
+State mkRandomState( int   ntor,
+		     FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		     int   N_con[MAX_TORS],
+                     GridMapSetInfo *info)
 
 {
     State now;
@@ -23,16 +28,16 @@ State mkRandomState( float xlo,
     double t;
     int I_ranCon;
     double x0, r1, r2, t1, t2;
-    float a, b;
+    FloatOrDouble a, b;
 
     now.ntor = ntor;
 
     /*
     ** Translation
     */
-    now.T.x = random_range( xlo, xhi);
-    now.T.y = random_range( ylo, yhi);
-    now.T.z = random_range( zlo, zhi);
+    now.T.x = random_range( info->lo[X], info->hi[X]);
+    now.T.y = random_range( info->lo[Y], info->hi[Y]);
+    now.T.z = random_range( info->lo[Z], info->hi[Z]);
 
     /*
     ** Quaternion angular displacement

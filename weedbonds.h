@@ -8,8 +8,29 @@ void  weedbonds( int   natom,
                  int   piece[MAX_ATOMS],
                  int   ntor,
                  int   tlist[MAX_TORS][MAX_ATOMS],
-                 int   *P_Nnb,
-                 int   Nnbonds[MAX_ATOMS],
                  int   nbmatrix_binary[MAX_ATOMS][MAX_ATOMS],
-                 int   nonbondlist[MAX_NONBONDS][2] );
+                 int   *P_Nnb,
+                 int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                 int   outlev,
+				 int   type[MAX_ATOMS]);
 #endif
+
+
+#ifndef PRINT_NONBONDS
+#define PRINT_NONBONDS
+
+#include "constants.h"
+#include "stop.h"
+void print_nonbonds(
+                int natom,
+                char pdbaname[MAX_ATOMS][5],
+                int piece[MAX_ATOMS],
+                int ntor,
+                int tlist[MAX_TORS][MAX_ATOMS],
+                int nbmatrix[MAX_ATOMS][MAX_ATOMS],
+                int Nnb,
+                int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                int outlev,
+                int type[MAX_ATOMS]);
+#endif
+

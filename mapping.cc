@@ -1,3 +1,13 @@
+/*
+
+ $Id: mapping.cc,v 1.2 2003/02/26 01:19:59 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
      These are the user defined functions that perform the
      mapping between Genotype and Phenotype and its inverse

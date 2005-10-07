@@ -9,7 +9,7 @@
 #include "print_avsfld.h"
 #include "printEnergies.h"
 #include "success.h"
-#include "readPDBQ.h"
+#include "readPDBQT.h"
 #include "get_atom_type.h"
 #include "timesys.h"
 #include "eintcal.h"
@@ -22,29 +22,35 @@
 int   cmdmode( int natom,
              Clock jobStart,
              struct tms tms_jobStart,
-             float xlo,
-             float ylo,
-             float zlo,
-             float xhi,
-             float yhi,
-             float zhi,
-             float inv_spacing,
-             float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-             float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
-             float WallEnergy,
-             float vt[MAX_TORS][SPACE],
+             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+
+             EnergyTables *ptr_ad_energy_tables,
+
+             FloatOrDouble WallEnergy,
+             FloatOrDouble vt[MAX_TORS][SPACE],
              int   tlist[MAX_TORS][MAX_ATOMS],
              int   ntor,
              int   Nnb,
-             int   nonbondlist[MAX_NONBONDS][2],
+             int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
              char  atomstuff[MAX_ATOMS][MAX_CHARS],
-             float crdpdb[MAX_ATOMS][SPACE],
+             FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
              char  hostnm[MAX_CHARS],
              int   type[MAX_ATOMS],
-             float charge[MAX_ATOMS],
-	     Boole B_calcIntElec,
-	     float q1q2[MAX_NONBONDS],
-	     char  atm_typ_str[ATOM_MAPS],
-	     float torsFreeEnergy,
-       int ligand_is_inhibitor);
+             FloatOrDouble charge[MAX_ATOMS],
+             FloatOrDouble abs_charge[MAX_ATOMS],
+             FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+             Boole B_calcIntElec,
+             FloatOrDouble q1q2[MAX_NONBONDS],
+             char  atm_typ_str[ATOM_MAPS],
+             FloatOrDouble torsFreeEnergy,
+             int ligand_is_inhibitor,
+             int ignore_inter[MAX_ATOMS],
+             const Boole         B_include_1_4_interactions,
+             const FloatOrDouble scale_1_4,
+
+             const ParameterEntry parameterArray[MAX_MAPS],
+             const FloatOrDouble unbound_internal_FE,
+
+             GridMapSetInfo *info
+             );
 #endif

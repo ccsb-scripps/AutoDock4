@@ -9,10 +9,10 @@
 void  bestpdb( int   ncluster, 
                int   num_in_clu[MAX_RUNS], 
                int   cluster[MAX_RUNS][MAX_RUNS], 
-               float econf[MAX_RUNS], 
-               float crd[MAX_RUNS][MAX_ATOMS][SPACE], 
+               FloatOrDouble econf[MAX_RUNS], 
+               FloatOrDouble crd[MAX_RUNS][MAX_ATOMS][SPACE], 
                char  atomstuff[MAX_ATOMS][MAX_CHARS], 
                int   natom, 
                Boole B_write_all_clusmem, 
-               float ref_rms[MAX_RUNS]);
+               FloatOrDouble ref_rms[MAX_RUNS]);
 #endif

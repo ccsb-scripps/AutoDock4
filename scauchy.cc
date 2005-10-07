@@ -1,23 +1,23 @@
-/* scauchy.cc */
+/*
 
-/***** RCS INFO **********************************************************
+ $Id: scauchy.cc,v 1.4 2004/11/16 23:42:53 garrett Exp $
 
-$Id: scauchy.cc,v 1.1.1.1 2001/08/13 22:05:53 gillet Exp $
-$Source: /Users/mp/facil/autodock/git-luna/autodock-cvstar/scauchy.cc,v $
-$Log: scauchy.cc,v $
-Revision 1.1.1.1  2001/08/13 22:05:53  gillet
- import initial of autodock sources
-
+$-Id: scauchy.cc,v 3.0 1996/03/11 05:40:00 halliday Exp $
+$-Source: /tmp_mnt/mgl/apps/src/autodock/3.0/autodock/RCS/scauchy.cc,v $
+$-Log: scauchy.cc,v $
 // Revision 3.0  1996/03/11  05:40:00  halliday
 // The function definition for the GA/LS hybrid.
 //
 Revision 1.1  1993/02/05  15:42:11  whart
 Initial revision
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 
-****** RCS INFO *********************************************************/
-
-/* cauchy.c
+/* scauchy.cc
  *
  * Code for generating deviates from the Cauchy/Lorentzian distribution.
  *
@@ -33,9 +33,9 @@ Initial revision
 
 #define EPS     1.e-12
 
-float scauchy1()
+FloatOrDouble scauchy1()
 {
-float x, y;
+FloatOrDouble x, y;
  
 			/* These four lines generate the tangent of a random
 			 *	angle;  this is equivalent to 

@@ -12,8 +12,8 @@
 #include "timesys.h"
 
 void getInitialState(  
-            float *Addr_e0,
-            float e0max,
+            FloatOrDouble *Addr_e0,
+            FloatOrDouble e0max,
 
 	    State *sInit,
 	    State *sMin,
@@ -23,33 +23,45 @@ void getInitialState(
             Boole B_RandomQuat0,
             Boole B_RandomDihe0,
 
-            float charge[MAX_ATOMS],
-            float q1q2[MAX_NONBONDS],
-            float crd[MAX_ATOMS][SPACE],
-            float crdpdb[MAX_ATOMS][SPACE],
+            FloatOrDouble charge[MAX_ATOMS],
+            FloatOrDouble abs_charge[MAX_ATOMS],
+            FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+            FloatOrDouble q1q2[MAX_NONBONDS],
+            FloatOrDouble crd[MAX_ATOMS][SPACE],
+            FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
             char  atomstuff[MAX_ATOMS][MAX_CHARS],
-            float elec[MAX_ATOMS],
-            float emap[MAX_ATOMS],
-            float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS],
+            FloatOrDouble elec[MAX_ATOMS],
+            FloatOrDouble emap[MAX_ATOMS],
+
+            EnergyTables *ptr_ad_energy_tables,
+
             Boole B_calcIntElec,
-            float xhi,
-            float yhi,
-            float zhi,
-            float xlo,
-            float ylo,
-            float zlo,
-            float inv_spacing,
-            float map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
-            int   nonbondlist[MAX_NONBONDS][2],
+            int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
             int   ntor,
             int   tlist[MAX_TORS][MAX_ATOMS],
             int   type[MAX_ATOMS],
-            float vt[MAX_TORS][SPACE],
+            FloatOrDouble vt[MAX_TORS][SPACE],
             int   irun1,
             int   outlev,
-	    int   MaxRetries,
-	    float torsFreeEnergy,
-      int   ligand_is_inhibitor);
+	        int   MaxRetries,
+
+	        FloatOrDouble torsFreeEnergy,
+
+            int   ligand_is_inhibitor,
+
+            int ignore_inter[MAX_ATOMS],
+
+            const Boole         B_include_1_4_interactions,
+            const FloatOrDouble scale_1_4,
+
+            const ParameterEntry parameterArray[MAX_MAPS],
+
+            const FloatOrDouble unbound_internal_FE,
+
+            GridMapSetInfo *info
+           );
+
 #endif

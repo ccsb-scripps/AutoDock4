@@ -1,3 +1,13 @@
+/*
+
+ $Id: prClusterHist.cc,v 1.2 2003/02/26 01:25:07 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* prClusterHist.cc */
 
     #include <stdio.h>
@@ -8,14 +18,14 @@ extern FILE *logFile;
 
 void prClusterHist( int ncluster,
 		    int irunmax,
-		    float clus_rms_tol,
+		    FloatOrDouble clus_rms_tol,
 		    int num_in_clu[MAX_RUNS],
 		    int cluster[MAX_RUNS][MAX_RUNS],
-		    float econf[MAX_RUNS],
-		    float clu_rms[MAX_RUNS][MAX_RUNS],
-		    float ref_rms[MAX_RUNS])
+		    FloatOrDouble econf[MAX_RUNS],
+		    FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS],
+		    FloatOrDouble ref_rms[MAX_RUNS])
 {
-    float         etot = 0.,
+    FloatOrDouble         etot = 0.,
 		  eavg = 0.;
 
     register int  Rank=0,
@@ -58,7 +68,7 @@ void prClusterHist( int ncluster,
 	    for (j = 0;  j < num_in_clu[Rank]; j++ ) {
 		etot += econf[ cluster[Rank][j] ];
 	    }
-	    eavg = etot / (float)num_in_clu[Rank];
+	    eavg = etot / (FloatOrDouble)num_in_clu[Rank];
             num_multi_mem_clu++;
 	    if (eavg > 999999.99) {
 		(void)fprintf( logFile, "%+10.2e |", eavg );

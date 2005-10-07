@@ -1,4 +1,5 @@
 #ifndef BANNER
 #define BANNER
-void  banner( float version_num );
+#include "typedefs.h"
+void  banner( FloatOrDouble version_num );
 #endif

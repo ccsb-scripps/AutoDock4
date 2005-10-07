@@ -1,3 +1,13 @@
+/*
+
+ $Id: qtransform.cc,v 1.3 2004/11/16 23:42:53 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* qtransform.cc */
 
 #include <math.h>
@@ -9,7 +19,7 @@
 
 void qtransform( const Coord T,
                  const Quat  q,
-                 float tcoord[MAX_ATOMS][SPACE],
+                 FloatOrDouble tcoord[MAX_ATOMS][SPACE],
                  const int   natom)
 
 /******************************************************************************/
@@ -33,6 +43,7 @@ void qtransform( const Coord T,
 /* Date     Inits   Comments                                                  */
 /* 05/15/92 GMM     Translated into C.                                        */
 /* 11/23/92 GMM     Introduced (15+,9*) version, replacing (12+,36*) version. */
+/* 11/23/92 GMM     Introduced h and inv_qmag, since * is faster than /.      */
 /******************************************************************************/
 {
     register int a;
@@ -90,9 +101,9 @@ void qtransform( const Coord T,
     r33 = omtxx    - tyy;
 
     for (a = 0;  a < natom;  a++) {
-        tmp.x = tcoord[a][X]*r11 + tcoord[a][Y]*r21 + tcoord[a][Z]*r31 + T.x;
-        tmp.y = tcoord[a][X]*r12 + tcoord[a][Y]*r22 + tcoord[a][Z]*r32 + T.y;
-        tmp.z = tcoord[a][X]*r13 + tcoord[a][Y]*r23 + tcoord[a][Z]*r33 + T.z;
+        tmp.x = ((double)tcoord[a][X])*r11 + ((double)tcoord[a][Y])*r21 + ((double)tcoord[a][Z])*r31 + T.x;
+        tmp.y = ((double)tcoord[a][X])*r12 + ((double)tcoord[a][Y])*r22 + ((double)tcoord[a][Z])*r32 + T.y;
+        tmp.z = ((double)tcoord[a][X])*r13 + ((double)tcoord[a][Y])*r23 + ((double)tcoord[a][Z])*r33 + T.z;
         tcoord[a][X] = tmp.x;
         tcoord[a][Y] = tmp.y;
         tcoord[a][Z] = tmp.z;

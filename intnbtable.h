@@ -2,15 +2,17 @@
 #define INTNBTABLE
 #include "constants.h"
 #include "timesys.h"
+#include "structs.h"
 
 void intnbtable(Boole *P_B_havenbp,
                 int   *P_a1,
                 int   *P_a2,
-		int   num_atm_maps,
-                char  atm_tyP_str[ATOM_MAPS],
-                float cA,
-                float cB,
+                GridMapSetInfo *info,
+                FloatOrDouble cA,
+                FloatOrDouble cB,
                 int   xA,
                 int   xB,
-                float e_internal[NEINT][ATOM_MAPS][ATOM_MAPS] );
+                double coeff_desolv,
+                double sigma,
+                EnergyTables *ad_tables);
 #endif

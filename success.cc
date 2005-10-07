@@ -1,3 +1,13 @@
+/*
+
+ $Id: success.cc,v 1.2 2003/02/26 01:42:48 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* success.cc */
 
     #include <stdio.h>

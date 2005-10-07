@@ -1,37 +1,38 @@
+/*
+
+ $Id: initautodock.cc,v 1.6 2005/09/28 22:54:20 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* initautodock.cc */
 
 #include <math.h>
-
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include "initautodock.h"
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "initautodock.h"
 
 #define TINYDELTA 0.001	 /* To nudge ligand into grid... */
 #define AddNewHardCon(iCon,low,upp)  F_TorConRange[i][iCon][LOWER]=low;F_TorConRange[i][iCon][UPPER]=upp
-
 
 extern int   keepresnum;
 extern FILE *logFile;
 extern char  *programname;
 
-
 void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
-		    float crd[MAX_ATOMS][SPACE],
-		    float crdpdb[MAX_ATOMS][SPACE],
-		    float xhi,
-		    float yhi,
-		    float zhi,
-		    float xlo,
-		    float ylo,
-		    float zlo,
+		    FloatOrDouble crd[MAX_ATOMS][SPACE],
+		    FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
 		    int   natom,
 		    int   ntor,
 		    State *s0,
 		    int   tlist[MAX_TORS][MAX_ATOMS],
-		    float vt[MAX_TORS][SPACE],
-		    int   outlev)
+		    FloatOrDouble vt[MAX_TORS][SPACE],
+		    int   outlev,
+                    GridMapSetInfo *info )
 
 {
     Boole B_change = FALSE;
@@ -43,12 +44,10 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
     char  rec8[10];
     char  axis[5];
 
-    float delta[MAX_ATOMS][SPACE];
-    float delta_max[SPACE];
-    float delta_min[SPACE];
-    float last_delta[SPACE];
-    float hi[SPACE];
-    float lo[SPACE];
+    FloatOrDouble delta[MAX_ATOMS][SPACE];
+    FloatOrDouble delta_max[SPACE];
+    FloatOrDouble delta_min[SPACE];
+    FloatOrDouble last_delta[SPACE];
 
     int   ip[SPACE];
     int   ip_max[SPACE];
@@ -61,14 +60,6 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 **  Initialize the automated docking simulation,
 */
     strcpy( axis, "xyz\0" );
-
-    lo[X] = xlo;
-    lo[Y] = ylo;
-    lo[Z] = zlo;
-
-    hi[X] = xhi; 
-    hi[Y] = yhi; 
-    hi[Z] = zhi;
 
     /* Initialize the delta arrays... */
     for (xyz = 0;  xyz < SPACE;  xyz++) {
@@ -84,7 +75,7 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 
     if (outlev > 1) {
 	pr(logFile, "Allowable atom-coordinates are within these grid extents:\n\n");
-	pr(logFile, "\t%7.3f < x <%7.3f\n\t%7.3f < y <%7.3f\n\t%7.3f < z <%7.3f\n\n", (double)xlo, (double)xhi, (double)ylo, (double)yhi, (double)zlo, (double)zhi);
+	pr(logFile, "\t%7.3f < x <%7.3f\n\t%7.3f < y <%7.3f\n\t%7.3f < z <%7.3f\n\n", (double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z]);
     }
 
     do {
@@ -139,7 +130,7 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 	cnv_state_to_coords( *s0,  vt, tlist, ntor,  crdpdb, crd, natom);
 
         for (i = 0;  i < natom;  i++) {
-            B_outside = is_out_grid( crd[i][X], crd[i][Y], crd[i][Z] );
+            B_outside = is_out_grid_info( crd[i][X], crd[i][Y], crd[i][Z] );
             if ( B_outside ) {
 
                 strncpy( rec8, &atomstuff[i][13], (size_t)8);
@@ -155,25 +146,25 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 ** Figure out the deltas needed to move back into grid,
 */
                 for (xyz = 0;  xyz < SPACE;  xyz++) {
-                    if ( crd[i][xyz] < lo[xyz] )  {
-                        delta[i][xyz] = lo[xyz] - crd[i][xyz] + TINYDELTA;
+                    if ( crd[i][xyz] < info->lo[xyz] )  {
+                        delta[i][xyz] = info->lo[xyz] - crd[i][xyz] + TINYDELTA;
 			if (outlev > 1) {
-			    pr( logFile,"%s: atom %d, %c=%.3f, is too low, since grid-min=%.3f; ", programname, i+1, axis[xyz], crd[i][xyz], lo[xyz] );
+			    pr( logFile,"%s: atom %d, %c=%.3f, is too low, since grid-min=%.3f; ", programname, i+1, axis[xyz], crd[i][xyz], info->lo[xyz] );
 			    pr( logFile,"increase %c by at least %.3f A\n", axis[xyz], (double)delta[i][xyz] );
 			}
-                    } else if ( crd[i][xyz] ==  lo[xyz] )  {
+                    } else if ( crd[i][xyz] ==  info->lo[xyz] )  {
 			if (outlev > 1) {
 			    pr( logFile,"%s: \"is_out_grid\"//lo macro failure on atom %d, %c-axis. Overriding move_inside instruction.\n", programname,i+1,axis[xyz]);
 			}
 			B_move_inside = FALSE;
 		    }
-                    if ( crd[i][xyz] > hi[xyz] )  {
-                        delta[i][xyz] = hi[xyz] - crd[i][xyz] - TINYDELTA;
+                    if ( crd[i][xyz] > info->hi[xyz] )  {
+                        delta[i][xyz] = info->hi[xyz] - crd[i][xyz] - TINYDELTA;
 			if (outlev > 1) {
-			    pr( logFile,"%s: atom %d, %c=%.3f, is too high, since grid-max=%.3f;", programname, i+1, axis[xyz], crd[i][xyz], hi[xyz] );
+			    pr( logFile,"%s: atom %d, %c=%.3f, is too high, since grid-max=%.3f;", programname, i+1, axis[xyz], crd[i][xyz], info->hi[xyz] );
 			    pr( logFile,"decrease %c by at least %.3f A\n", axis[xyz], -(double)delta[i][xyz] );
 			}
-                    } else if ( crd[i][xyz] ==  hi[xyz] )  {
+                    } else if ( crd[i][xyz] ==  info->hi[xyz] )  {
 			if (outlev > 1) {
 			    pr( logFile,"%s: \"is_out_grid\"//hi macro failure on atom %d, %c-axis. Overriding move_inside instruction.\n", programname,i+1,axis[xyz]);
 			}
@@ -236,9 +227,9 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 		prStr( note, ">>> Trying a new, randomly-generated rigid body rotation. (quat0 override)\n");
 		pr_2x( stderr, logFile, note );
 
-                s0->Q.nx  = random_range( -1., 1. );
-                s0->Q.nx  = random_range( -1., 1. );
-                s0->Q.nx  = random_range( -1., 1. );
+         s0->Q.nx  = random_range( -1., 1. );
+         s0->Q.ny  = random_range( -1., 1. );
+         s0->Q.nz  = random_range( -1., 1. );
 		s0->Q.ang = Rad( random_range( 0., 360. ) );  /*radians*/
 
 		mkUnitQuat( &(s0->Q) );

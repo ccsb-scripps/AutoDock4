@@ -1,3 +1,13 @@
+/*
+
+ $Id: qmultiply.cc,v 1.2 2003/02/26 01:30:28 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* qmultiply.cc */
 
 #include <math.h>

@@ -102,4 +102,17 @@
 #define	DPF_INVESTIGATE	77
 #define DPF_LIG_NOT_INHIB 78
 #define DPF_TEMPL_ENERGY 79
+#define DPF_HOLLOW_OUT 80
+#define DPF_COLINY	81
+#define DPF_INCLUDE_1_4_INTERACTIONS	82
+#define DPF_PARAMETER_LIBRARY	83
+#define DPF_RECEPTOR_TYPES	    84
+#define DPF_LIGAND_TYPES	    85
+#define DPF_UNBOUND	    86
+#define DPF_EPDB	    87
+#define DPF_TERMINATION	    88
+#define GA_CROSSOVER_MODE	    89
+#define DPF_POPFILE 90
+
 #endif
+/* EOF */

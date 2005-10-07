@@ -13,16 +13,18 @@
 #ifndef _REP_H
 #define _REP_H
 
-#include <iostream.h>
+// appears not to be used //  #include <iostream.h>
 
-    #include <stdio.h>
-    #include "structs.h"
+#include <stdio.h>
+#include "structs.h"
 
 #define ACCURACY 0.001
-//#define REALV_LOW -100.0 //gmm, 1998-07-08
-//#define REALV_HIGH 100.0 //gmm, 1998-07-08
-#define REALV_LOW -3.14159265358979323846 //gmm, 1998-07-08
-#define REALV_HIGH 3.14159265358979323846 //gmm, 1998-07-08
+#define REALV_LOW -999.999 //gmm, 2003-11-11
+#define REALV_HIGH 999.999 //gmm, 2003-11-11
+// #define REALV_LOW -100.0 //gmm, 2003-10-13
+// #define REALV_HIGH 100.0 //gmm, 2003-10-13
+// #define REALV_LOW -3.14159265358979323846 //gmm, 1998-07-08
+// #define REALV_HIGH 3.14159265358979323846 //gmm, 1998-07-08
 
 enum RepType {T_BASE, T_IntV, T_RealV, T_CRealV, T_BitV};
 
@@ -90,7 +92,7 @@ class RealVector : public Representation
 {
 //   friend void debug(RealVector &);
    protected:
-      float high, low;
+      FloatOrDouble high, low;
       double *vector;
 
       const void *internals(void) const;
@@ -118,7 +120,7 @@ class ConstrainedRealVector : public Representation
 {
 //   friend debug(ConstrainedRealVector &);
    protected:
-      static float high, low;
+      static FloatOrDouble high, low;
       static double sum;
       double *vector;
 
@@ -147,7 +149,7 @@ class BitVector : public Representation
 {
 //   friend void debug(BitVector &);
    protected:
-      static float one_prob;
+      static FloatOrDouble one_prob;
       unsigned char *vector;
 
       const void *internals(void) const;
@@ -157,7 +159,7 @@ class BitVector : public Representation
       BitVector(void);
       BitVector(int);
       BitVector(int, unsigned char *);
-      BitVector(int, float);
+      BitVector(int, FloatOrDouble);
       BitVector(const BitVector &);
       ~BitVector(void);
       void write(unsigned char, int);

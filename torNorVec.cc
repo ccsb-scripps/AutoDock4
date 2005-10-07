@@ -1,30 +1,38 @@
+/*
+
+ $Id: torNorVec.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* torNorVec.cc */
 
 #include <math.h>
-
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include "torNorVec.h"
-    #ifdef DEBUG
-	#include <ctype.h>
-    #endif /* DEBUG */
-
+#include <stdio.h>
+#include <stdlib.h>
+#include "torNorVec.h"
+#ifdef DEBUG
+#include <ctype.h>
+#endif /* DEBUG */
 
 extern FILE *logFile;
 
 
-void torNorVec( float crdpdb[MAX_ATOMS][SPACE],
+void torNorVec( FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
 		int ntor,
 		int tlist[MAX_TORS][MAX_ATOMS],
-		float vt[MAX_TORS][SPACE] )
+		FloatOrDouble vt[MAX_TORS][SPACE] )
 {
 
     register int xyz = 0;
     register int j = 0;
 
-    float magVec = 0.;
-    float imagVec = 0.;
-    float v[SPACE];
+    FloatOrDouble magVec = 0.;
+    FloatOrDouble imagVec = 0.;
+    FloatOrDouble v[SPACE];
 
     char error_message[LINE_LEN];
 

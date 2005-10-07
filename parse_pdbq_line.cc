@@ -1,3 +1,13 @@
+/*
+
+ $Id: parse_pdbq_line.cc,v 1.4 2005/03/11 02:11:30 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* parse_pdbq_line.cc */
 
 
@@ -69,6 +79,12 @@ int parse_pdbq_line( char line[LINE_LEN] )
 	    token = PDBQ_ENDBRANCH;
 	} else if (strncmp(c,"cons",4)==0) {
 	    token = PDBQ_CONSTRAINT;
+	} else if (strncmp(c,"begin_res",9)==0) {
+	    token = PDBQ_BEGIN_RES;
+	} else if (strncmp(c,"end_res",7)==0) {
+	    token = PDBQ_END_RES;
+	} else if (strncmp(c,"conect",6)==0) {
+	    token = PDBQ_CONECT;
 	}
     } else {
 	token = PDBQ_NULL;

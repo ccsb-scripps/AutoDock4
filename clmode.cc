@@ -1,3 +1,13 @@
+/*
+
+ $Id: clmode.cc,v 1.3 2005/03/11 02:11:29 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* clmode.cc */
 
 
@@ -14,17 +24,16 @@
 extern FILE *logFile;
 extern char *programname;
 
-void  clmode( char  atm_typ_str[ATOM_MAPS],
-              int   num_atm_maps,
-              float clus_rms_tol,
+void  clmode( int   num_atm_maps,
+              FloatOrDouble clus_rms_tol,
               char  hostnm[MAX_CHARS],
               Clock jobStart,
               struct tms tms_jobStart,
-              Boole B_write_all_clusmem,
+              Boole write_all_clusmem,
               char  clusFN[MAX_CHARS],
-              float crdpdb[MAX_ATOMS][SPACE],
-              float sml_center[SPACE],
-              Boole B_symmetry_flag,
+              FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+              FloatOrDouble sml_center[SPACE],
+              Boole symmetry_flag,
               char  rms_ref_crds[MAX_CHARS] )
 
 {
@@ -32,26 +41,27 @@ void  clmode( char  atm_typ_str[ATOM_MAPS],
     register int xyz = 0;
     int   anum = 0;
     char  atomstuff[MAX_ATOMS][MAX_CHARS];
-    float crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
-    float econf[MAX_RUNS];
-    float eSave[2];
-    Boole B_haveAtoms = FALSE;
-    Boole B_haveTypes = FALSE;
+    FloatOrDouble crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
+    FloatOrDouble econf[MAX_RUNS];
+    FloatOrDouble eSave[2];
+    Boole haveAtoms = FALSE;
+    Boole haveTypes = FALSE;
     int   ii = 0;
     int   lastanum = -1;
     char  line[LINE_LEN];
-    int   nat = 0;
+    int   atomCounter = 0;
     int   natom = 0;
     int   natom_1 = -1;
     int   nconf = 0;
+    int   confCounter = 0;
     int   ntype[MAX_ATOMS];
     char  pdbaname[MAX_ATOMS][5];
-    float q = 0.;
+    FloatOrDouble q = 0.;
     char  rec5[5];
-    int   ss = 0;
+    int   nsaved = 0;
     char  anumStr[5];
     int   type[MAX_ATOMS];
-    float clu_rms[MAX_RUNS][MAX_RUNS];
+    FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS];
     int   cluster[MAX_RUNS][MAX_RUNS];
     register int i = 0;
     register int j = 0;
@@ -59,111 +69,178 @@ void  clmode( char  atm_typ_str[ATOM_MAPS],
     int   isort[MAX_RUNS];
     int   ncluster = 0;
     int   num_in_clu[MAX_RUNS];
-    float ref_crds[MAX_ATOMS][SPACE];
+    FloatOrDouble ref_crds[MAX_ATOMS][SPACE];
     int   ref_natoms = -1;
-    float ref_rms[MAX_RUNS];
+    FloatOrDouble ref_rms[MAX_RUNS];
+    Boole haveEnergy = FALSE;
+    ParameterEntry thisparm;
 
     for (j = 0; j < MAX_RUNS; j++) {
         num_in_clu[j] = 0;
         isort[j] = j;
         econf[j] = 0.;
     }
-/*
-**  Open file containing coordinates to be clustered...
-*/
+    /*
+     * Open file containing coordinates to be clustered...
+     */
     if ( openFile( clusFN , "r", &clusFile, jobStart, tms_jobStart, TRUE ) ) {
         pr( logFile, "Conformations to be clustered are in this file: \"%s\"\n\n", clusFN );
     }
-/*
-    Read in the conformations
-    All we need are the xyz's of each conformation,
-    and their Energies, plus the Run number/parent dlg file.
-*/
+    /*
+     * Read in the conformations
+     * All we need are the xyz's of each conformation,
+     * and their Energies, plus the Run number/parent dlg file.
+     */
     while ( fgets( line, LINE_LEN, clusFile) != NULL ) {
 
         pr( logFile, "INPUT-PDBQ: %s", line);
 
-        for (ii = 0; ii < 4; ii++) { 
-            rec5[ii] = tolower( (int)line[ii] );
-        }
+        for (ii = 0; ii < 4; ii++) { rec5[ii] = tolower( (int)line[ii] ); };
+
         if (( strindex( line, "USER    Total Interaction Energy of Complex") >= 0 )
          || ( strindex( line, "REMARK  Total Interaction Energy of Complex") >= 0 )) {
-/*
-            Read in the energy of this conformation
-*/
-            if ( B_haveAtoms ) {
-                econf[nconf] = 0.;
-                sscanf( line, "%*s %*s %*s %*s %*s %*s %*s %f", &econf[nconf]);
+            /*
+             * Read in the energy of this conformation;
+             * This is preferred over "Final Docked Energy" because this is never
+             * printed out rounded up as +4.25e+03, but always as +4246.45, e.g.:
+             */
+            if ( haveAtoms ) {
+                econf[confCounter] = 0.;
+                #ifdef USE_DOUBLE
+                    sscanf( line, "%*s %*s %*s %*s %*s %*s %*s %lf", &econf[confCounter]);
+                #else
+                    sscanf( line, "%*s %*s %*s %*s %*s %*s %*s %f", &econf[confCounter]);
+                #endif
+                haveEnergy = TRUE;
             } else {
-                eSave[ss]=0.;
-                sscanf( line, "%*s %*s %*s %*s %*s %*s %*s %f", &eSave[ss] );
-                ++ss;
+                /* ! haveAtoms
+                 * We have not seen any atoms yet, so save this energy. 
+                 */
+                eSave[nsaved]=0.;
+                #ifdef USE_DOUBLE
+                    sscanf( line, "%*s %*s %*s %*s %*s %*s %*s %lf", &eSave[nsaved] );
+                #else
+                    sscanf( line, "%*s %*s %*s %*s %*s %*s %*s %f", &eSave[nsaved] );
+                #endif
+                ++nsaved;
             }
 
-        } else if (( strindex( line, "USER    Final Docked Energy") >= 0 ) 
-                || ( strindex( line, "REMARK  Final Docked Energy") >= 0 )) {
-/*
-            Read in the energy of this conformation
-*/
-            if ( B_haveAtoms ) {
-                econf[nconf] = 0.;
-                sscanf( line, "%*s %*s %*s %*s %*s %f", &econf[nconf]);
+        } else if ( (( strindex( line, "USER    Final Docked Energy") >= 0 ) 
+                  || ( strindex( line, "REMARK  Final Docked Energy") >= 0 )) && ( ! haveEnergy ) ) {
+            /*
+             * Read in the energy of this conformation if we don't already
+             * have an energy:
+             */
+            if ( haveAtoms ) {
+                econf[confCounter] = 0.;
+                #ifdef USE_DOUBLE
+                    sscanf( line, "%*s %*s %*s %*s %*s %lf", &econf[confCounter]);
+                #else
+                    sscanf( line, "%*s %*s %*s %*s %*s %f", &econf[confCounter]);
+                #endif
+                haveEnergy = TRUE;
             } else {
-                eSave[ss]=0.;
-                sscanf( line, "%*s %*s %*s %*s %*s %f", &eSave[ss] );
-                ++ss;
+                /* ! haveAtoms
+                 * We have not seen any atoms yet, so save this energy. 
+                 */
+                eSave[nsaved]=0.;
+                #ifdef USE_DOUBLE
+                    sscanf( line, "%*s %*s %*s %*s %*s %lf", &eSave[nsaved] );
+                #else
+                    sscanf( line, "%*s %*s %*s %*s %*s %f", &eSave[nsaved] );
+                #endif
+                ++nsaved;
             }
 
         } else if (equal( rec5,"atom", 4) || equal( rec5,"heta", 4)) {
 
-            readPDBQLine( line, crdSave[nconf][nat], &q );
+            /* 
+             * This line should contain coordinates, partial charge & 
+             * atom type for one atom.
+             * Let's save the coordinates for this atom, atomCounter.
+             */
+            readPDBQTLine( line, crdSave[confCounter][atomCounter], &q, &thisparm );
 
-            if ( ! B_haveAtoms ) {
+            if ( ! haveAtoms ) {
+                /*
+                 * We do not have any atoms for this conformation,
+                 */
                 sscanf( &line[6], "%s", anumStr );
-                if ( ( anum = atoi( anumStr )) < lastanum ) {
-/*
-                    Start of next conformation,
-*/
-                    B_haveAtoms = TRUE;
-                    B_haveTypes = TRUE;
-                    ++nconf;
-                    for (xyz = 0;  xyz < SPACE;  xyz++) {
-                        crdSave[nconf][0][xyz] = crdSave[nconf-1][nat][xyz]; 
-                    }
+
+                if ((anum = atoi(anumStr)) < lastanum) { /* initially, lastanum is -1, while anum is probably never -1, so this is false initially */
+                    /*
+                     * haveAtoms is FALSE, but this line begins with "atom" or
+                     * "heta", so this must be the...
+                     *
+                     * Start of next conformation,
+                     */
+                    /* This is an atom line, so haveAtoms must be set to true: */
+                    haveAtoms = TRUE;
+                    /* We must also have read in the atom types: */
+                    haveTypes = TRUE;
+                    /* Transfer the saved energies to the econf arrays: */
                     econf[0] = eSave[0];
                     econf[1] = eSave[1];
-                    natom = nat;
-                    natom_1 = natom-1;
-                    nat = 0;
+                    /* Now we have the energy: */
+                    haveEnergy = TRUE;
+                    /* Increment the number of conformations */
+                    ++confCounter;
+                    for (xyz = 0;  xyz < SPACE;  xyz++) {
+                        crdSave[confCounter][0][xyz] = crdSave[confCounter-1][atomCounter][xyz]; 
+                    }
+                    natom = atomCounter; /* number of atoms is set to the atom counter*/
+                    natom_1 = natom - 1;  /* number of atoms minus 1, for 0-based counting */
+                    atomCounter = 0; /* reset the counter "atomCounter" */
                 } else {
-                    strncpy( atomstuff[nat], line, (size_t)30 );
-                    atomstuff[nat][30] = '\0';
-                    if ( ! B_haveTypes ) {
-                        type[nat] = -1;
-                        sscanf( &line[12], "%s", pdbaname[nat] );
-                        type[nat] = get_atom_type( pdbaname[nat], atm_typ_str );
-                        if ( type[nat] == -1 ) {
-                            pr( logFile, "\nNOTE: Atom number %d, using default atom type 1...\n\n", nat+1);
-                            type[nat] = 1;
+                    /* 
+                     * First of all, determine the atom types for all the atoms in the
+                     * molecule: 
+                     */
+                    strncpy( atomstuff[atomCounter], line, (size_t)30 );
+                    atomstuff[atomCounter][30] = '\0';
+                    if ( ! haveTypes ) {
+                        type[atomCounter] = -1;
+                        sscanf( &line[12], "%s", pdbaname[atomCounter] );
+                        /*
+                         * Determine this atom's atom type:
+                         */
+                        type[atomCounter] = get_atom_type(pdbaname[atomCounter]);
+
+                        if (type[atomCounter] == -1) {
+                            pr( logFile, "\nNOTE: Atom number %d, using default atom type 1...\n\n", atomCounter+1);
+                            type[atomCounter] = 1;
                         } else {
-                            pr( logFile, "\nAtom number %d, recognized atom type = %d...\n\n", nat+1, type[nat]+1);
+                            pr( logFile, "\nAtom number %d, recognized atom type = %d...\n\n", atomCounter+1, type[atomCounter]+1);
                         }
-                        ++ntype[ type[nat] ];
+                        /* 
+                         * Increment the number of atoms with this atom type:
+                         */
+                        ++ntype[ type[atomCounter] ];
                     }
                 }
+                /*
+                 * Update the value of the last atom's serial number:
+                 */
                 lastanum = anum;
-            } else if ( nat == natom_1 ) {
-/*
-                Increment total number of conformations,
-*/
-                ++nconf;
-                nat = -1; /*  Pre-zero out the "nat" counter... */
+            } else if ( atomCounter == natom_1 ) {  /* initially, atomCounter=0, and natom_1= -1, so this is not true initially */
+                /*
+                 * We have all the atoms we expect for one molecule:
+                 * Increment total number of conformations,
+                 */
+                ++confCounter;
+                atomCounter = -1; /*  Pre-zero out the "atomCounter" counter... */
+                haveEnergy = FALSE; /* we don't have energy yet for next conf. */
             }
-            ++nat;
-        } 
-    } /* end while */
+            /* 
+             * Just increment the number of atoms, atomCounter:
+             */
+            ++atomCounter;
+            
+        } /* This was an "atom" or "heta" line */
+    } /* end while there is a new line. */
 
-    irunmax = nconf;
+    irunmax = confCounter;
+    nconf = confCounter;
 
     pr( logFile, "\nNumber of conformations found = %d\n", nconf );
 
@@ -174,9 +251,9 @@ void  clmode( char  atm_typ_str[ATOM_MAPS],
     }
 
     if (strncmp(rms_ref_crds,"unspecified filename",20) != 0) {
-/*
-        Read in reference structure, specified by the "rmsref" command...
-*/
+        /*
+         * Read in reference structure, specified by the "rmsref" command...
+         */
         if ((ref_natoms = getpdbcrds( rms_ref_crds, ref_crds)) == -1) {
      
             fprintf( logFile, "%s: Problems while reading \"%s\".\n", programname, rms_ref_crds);
@@ -218,7 +295,7 @@ void  clmode( char  atm_typ_str[ATOM_MAPS],
 
         ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort, 
                                      nconf, natom, type, crdSave, crdpdb, 
-                                     sml_center, clu_rms, B_symmetry_flag,
+                                     sml_center, clu_rms, symmetry_flag,
                                      ref_crds, ref_natoms, ref_rms);
 
         pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
@@ -228,13 +305,13 @@ void  clmode( char  atm_typ_str[ATOM_MAPS],
                        cluster, econf, clu_rms, ref_rms);
 
         bestpdb( ncluster, num_in_clu, cluster, econf, crdSave, 
-                 atomstuff, natom, B_write_all_clusmem, ref_rms);
+                 atomstuff, natom, write_all_clusmem, ref_rms);
 
     }/*if we have more than 1 conformation... */
 
 /*
-**  End cluster_mode and END PROGRAM...
-*/
+ *  End cluster_mode and END PROGRAM...
+ */
     success( hostnm, jobStart, tms_jobStart );
 
     exit((int)0);

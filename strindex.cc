@@ -1,6 +1,16 @@
-/* strindex.cc */
+/*
 
-    #include "strindex.h"
+ $Id: strindex.cc,v 1.3 2005/09/28 22:54:21 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+
+
+#include "strindex.h"
 
 
 int strindex( char s[], char t[] )

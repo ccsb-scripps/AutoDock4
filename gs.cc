@@ -1,10 +1,24 @@
+/*
+
+ $Id: gs.cc,v 1.7 2005/08/15 23:03:35 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /********************************************************************
      These are the methods for Global_Search and its derivations.
 
                                 rsh 9/95
 *********************************************************************/
 
-#include <iostream.h>
+#include <stdio.h>
+#include <sys/types.h>      /*time_t time(time_t *tloc); */
+#include <time.h>           /*time_t time(time_t *tloc); */
+#include <sys/times.h>
+
 #include <math.h>
 #include "gs.h"
 #include "ranlib.h"
@@ -12,10 +26,6 @@
 #include "rep.h"
 #include "assert.h"
 
-    #include <stdio.h>
-    #include <sys/types.h>      /*time_t time(time_t *tloc); */
-    #include <time.h>           /*time_t time(time_t *tloc); */
-    #include <sys/times.h>
 #ifdef sgi
     #include <ieeefp.h>
 #endif
@@ -23,16 +33,17 @@
     #include <ieeefp.h>
 #endif
 
-    #include "constants.h"
-    #include "autocomm.h"
-    #include "timesyshms.h"
-    #include "writePDBQ.h"
+#include "constants.h"
+#include "autocomm.h"
+#include "timesyshms.h"
+#include "writePDBQ.h"
 
 
 extern FILE *logFile;
 extern class Eval evaluate;
 extern int sel_prop_count;//debug
 extern int global_ntor;//debug
+extern int debug;//debug
 
 
 double worst_in_window(double *window, int size)
@@ -94,7 +105,7 @@ double avg_in_window(double *window, int size)
 //  Also set avg
 double Genetic_Algorithm::worst_this_generation(Population &pop)
 {
-   register int i;
+   register unsigned int i;
    double worstval, avgval;
 
 #ifdef DEBUG2
@@ -136,8 +147,8 @@ Genetic_Algorithm::Genetic_Algorithm( EvalMode init_e_mode,
                                       Xover_Mode init_c_mode,
                                       Worst_Mode init_w_mode, 
                                       int init_elitism, 
-                                      float init_c_rate, 
-                                      float init_m_rate, 
+                                      FloatOrDouble init_c_rate, 
+                                      FloatOrDouble init_m_rate, 
                                       int init_window_size, 
                                       unsigned int init_max_generations,
                                       unsigned int outputEveryNgens)
@@ -155,10 +166,11 @@ beta(0.0),
 tranStep(2.0),
 quatStep(0.872664626),
 torsStep(0.872664626),
-low(-100.0),
-high(100.0),
+low(-100),
+high(100),
 generations(0),
 max_generations(init_max_generations),
+outputEveryNgens(100),
 converged(0),
 alloc(NULL),
 mutation_table(NULL),
@@ -235,17 +247,17 @@ M_mode Genetic_Algorithm::m_type(RepType type)
    }
 }
 
-void Genetic_Algorithm::make_table(int size, float prob)
+void Genetic_Algorithm::make_table(int size, FloatOrDouble prob)
 {
    register int i, j;
-   double L = 0.;
+   double L = 0.0L;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::make_table(int size=%d, float prob=%f)\n",size, prob);
+   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::make_table(int size=%d, FloatOrDouble prob=%f)\n",size, prob);
 #endif /* DEBUG */
 
    m_table_size = size;
-   mutation_table = new float[size+1];
+   mutation_table = new FloatOrDouble[size+1];
 
    mutation_table[0] = pow(1-prob, size);
    mutation_table[size] = 1;
@@ -269,12 +281,12 @@ void Genetic_Algorithm::make_table(int size, float prob)
    }
 }
 
-int Genetic_Algorithm::check_table(float prob)
+int Genetic_Algorithm::check_table(FloatOrDouble prob)
 {
    int low, high;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "gs.cc/int Genetic_Algorithm::check_table(float prob=%f)\n",prob);
+   (void)fprintf(logFile, "gs.cc/int Genetic_Algorithm::check_table(FloatOrDouble prob=%f)\n",prob);
 #endif /* DEBUG */
 
    low = 0; high = m_table_size;
@@ -312,7 +324,7 @@ void Genetic_Algorithm::initialize(unsigned int pop_size, unsigned int num_poss_
       delete [] mutation_table;
    }
 
-   alloc = new float[pop_size];
+   alloc = new FloatOrDouble[pop_size];
 
    ordering = new unsigned int[pop_size];
    for (i=0; i<pop_size; i++) {
@@ -389,76 +401,112 @@ void Genetic_Algorithm::mutation(Population &pure)
    }
 }
 
-void Genetic_Algorithm::crossover(Population &original)
+void Genetic_Algorithm::crossover(Population &original_population)
 {
-   int i, starting_point, temp_index, temp_ordering;
+   register unsigned int i;
+   int starting_point, temp_index, temp_ordering;
+#ifndef USE_DOUBLE
+   FloatOrDouble alpha = 0.5;
+#else
+   FloatOrDouble alpha = 0.5L;
+#endif
    
 #ifdef DEBUG
-   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover(Population &original)\n");
+   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover(Population &original_population)\n");
 #endif /* DEBUG */
 
-   //  Permute ordering
-   for (i=0; i<original.num_individuals(); i++) {
+   //  Permute the ordering of the population, "original_population"
+   for (i=0; i<original_population.num_individuals(); i++) {
       temp_ordering = ordering[i];
-      temp_index = ignlgi()%original.num_individuals();
+      // ignlgi is GeNerate LarGe Integer and is in com.cc
+      temp_index = ignlgi()%original_population.num_individuals();
       ordering[i] = ordering[temp_index];
-      assert(ordering[i] < original.num_individuals());//debug
+      assert(ordering[i] < original_population.num_individuals());//debug
       ordering[temp_index] = temp_ordering;
-      assert(ordering[temp_index] < original.num_individuals());//debug
+      assert(ordering[temp_index] < original_population.num_individuals());//debug
    }
                                                                     
    //  How does Goldberg implement crossover?
-   for (i=0; i<original.num_individuals()-1; i=i+2) {
-      if (ranf()<c_rate) {
+
+   // Loop over individuals in population
+   for (i=0; i<original_population.num_individuals()-1; i=i+2) {
+      // The two individuals undergoing crossover are original_population[ordering[i]] and original_population[ordering[i+1]]
+
+      if (ranf() < c_rate) {
+         // Perform crossover with a probability of c_rate
+         
          switch(c_mode) {
             case TwoPt:
-               starting_point = ignuin(0, original[i].genotyp.num_genes()-1);
-               crossover_2pt(original[ordering[i]].genotyp, 
-                             original[ordering[i+1]].genotyp, 
-                             starting_point, 
-                             starting_point+ignuin(0, 
-                             original[i].genotyp.num_genes()-starting_point-1));
-               original[ordering[i]].age = 0L;
-               original[ordering[i+1]].age = 0L;
-               break;
+                // first crossover point is a random integer from 0 to the number of genes minus 1
+                starting_point = ignuin(0, original_population[i].genotyp.num_genes()-1);
+                crossover_2pt( original_population[ordering[i]].genotyp, 
+                               original_population[ordering[i+1]].genotyp, 
+                               starting_point, 
+                               starting_point+ignuin(0, original_population[i].genotyp.num_genes()-starting_point-1));
+                original_population[ordering[i]].age = 0L;
+                original_population[ordering[i+1]].age = 0L;
+                break;
             case OnePt:
-               starting_point = ignlgi()%original[i].genotyp.num_genes();
-               //  We can accomplish one point crossover by using the 2pt crossover operator
-               crossover_2pt(original[ordering[i]].genotyp, 
-                             original[ordering[i+1]].genotyp,
-                             starting_point, 
-                             original[ordering[i]].genotyp.num_genes()-1);
-               original[ordering[i]].age = 0L;
-               original[ordering[i+1]].age = 0L;
-               break;
+                // first crossover point is a random integer from 0 to the number of genes minus 1
+                starting_point = ignlgi()%original_population[i].genotyp.num_genes();
+                //  We can accomplish one point crossover by using the 2pt crossover operator
+                crossover_2pt( original_population[ordering[i]].genotyp, 
+                               original_population[ordering[i+1]].genotyp,
+                               starting_point, 
+                               original_population[ordering[i]].genotyp.num_genes()-1);
+                original_population[ordering[i]].age = 0L;
+                original_population[ordering[i+1]].age = 0L;
+                break;
             case Uniform:
-               (void)fprintf(logFile,"gs.cc/This crossover mode is unimplemented!\n");
+                crossover_uniform( original_population[ordering[i]].genotyp, 
+                                   original_population[ordering[i+1]].genotyp,
+                                   original_population[ordering[i]].genotyp.num_genes() - 1);
+
+                break;
+            case Arithmetic:
+               // select the parents A and B
+               // create new offspring, a and b, where
+               // a = x*A + (1-x)*B, and b = (1-x)*A + x*B    -- note: x is alpha in the code
+               alpha = (FloatOrDouble) ranf();
+#ifdef DEBUG
+#   ifndef USE_DOUBLE
+               (void)fprintf(logFile, "gs.cc/  alpha = %.3f\n", alpha);
+#   else
+               (void)fprintf(logFile, "gs.cc/  alpha = %.3lf\n", alpha);
+#   endif
+               (void)fprintf(logFile, "gs.cc/ About to call crossover_arithmetic with original_population[%d] & [%d]\n", i, i+1);
+#endif /* DEBUG */
+               crossover_arithmetic( original_population[ i ].genotyp, 
+                                     original_population[i+1].genotyp, 
+                                     alpha );
                break;
             default:
-               (void)fprintf(logFile,"gs.cc/Unrecognized crossover mode!\n");
+                (void)fprintf(logFile,"gs.cc/ Unrecognized crossover mode!\n");
          }
       }
    }
 }
 
-/*  Assumes that 0<=pt1<pt2<=number_of_pts  
- *  There are four cases to consider:-
- *  (1) the copied area is contained entirely within the gene
- *  (2) the gene is contained entirely within the copied area
- *  (3) the copied area is partially contained within the gene
- *  (4) there's no intersection between the copied area and the gene
- */
+
 void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsigned int pt1, unsigned int pt2)
 {
-   int i;
+    /*  Assumes that 0<=pt1<pt2<=number_of_pts  
+     *  There are four cases to consider:-
+     *  (1) the copied area is contained entirely within the gene
+     *  (2) the gene is contained entirely within the copied area
+     *  (3) the copied area is partially contained within the gene
+     *  (4) there's no intersection between the copied area and the gene
+     */
+   register unsigned int i;
    Element temp;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_2pt(Genotype");
    (void)fprintf(logFile, "&father, Genotype &mother, unsigned int pt1, unsigned int pt2)\n");
-   (void)fprintf(logFile,"gs.cc/Trying to crossover from %d to %d \n", pt1,pt2);
+   (void)fprintf(logFile,"gs.cc/Performing crossover from %d to %d \n", pt1,pt2);
 #endif /* DEBUG */
 
+   // loop over genes to be crossed over
    for (i=pt1; i<=pt2; i++) {
 #ifdef DEBUG
       //(void)fprintf(logFile,"gs.cc/1::At pt %d   father: %.3lf   mother: %.3lf\n",
@@ -473,6 +521,79 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
 #endif /* DEBUG */
    }
 }
+
+
+void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, unsigned int num_genes)
+{
+    register unsigned int i;
+    Element temp;
+
+#ifdef DEBUG
+    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_uniform(Genotype");
+    (void)fprintf(logFile, "&father, Genotype &mother, unsigned int num_genes)\n");
+#endif /* DEBUG */
+
+    for (i=0; i<num_genes; i++) {
+        // Choose either father's or mother's gene, with a 50/50 probability
+        if (ranf() > 0.5) {
+            temp = father.gread(i);
+            father.write(mother.gread(i), i);
+            mother.write(temp, i);
+        }
+    }
+}
+
+void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, FloatOrDouble alpha)
+{
+   register unsigned int i;
+   Element temp_A, temp_B;
+   FloatOrDouble one_minus_alpha;
+
+#ifndef USE_DOUBLE
+   one_minus_alpha = 1.0 - alpha;
+#else
+   one_minus_alpha = 1.0L - alpha;
+#endif
+
+#ifdef DEBUG
+   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic(Genotype");
+   (void)fprintf(logFile, "&A, Genotype &B, FloatOrDouble alpha)\n");
+   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
+#  ifndef USE_DOUBLE
+   (void)fprintf(logFile, "/Trying to perform arithmetic crossover using alpha = %.3f\n", alpha);
+#  else
+   (void)fprintf(logFile, "/Trying to perform arithmetic crossover using alpha = %.3lf\n", alpha);
+#  endif
+   (void)fflush(logFile);
+#endif /* DEBUG */
+
+   // loop over genes to be crossed over
+   for (i=0; i<A.num_genes(); i++) {
+#ifdef DEBUG
+       (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
+       (void)fprintf(logFile, "/looping over genes to be crossed over, i = %d\n", i);
+       (void)fflush(logFile);
+#endif /* DEBUG */
+      temp_A = A.gread(i);
+      temp_B = B.gread(i);
+#ifdef DEBUG
+       (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
+       (void)fprintf(logFile, "/temp_A = %.3f  &  temp_B = %.3f\n", temp_A.real, temp_B.real);
+       (void)fflush(logFile);
+#endif
+      // a = alpha*A + (1-alpha)*B
+      // b = (1-alpha)*A + alpha*B
+      A.write( (alpha * temp_A.real  +  one_minus_alpha * temp_B.real), i);
+      B.write( (one_minus_alpha * temp_A.real  +  alpha * temp_B.real), i);
+#ifdef DEBUG
+       (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
+       (void)fprintf(logFile, "/A = %.3f  &  B = %.3f\n", A.gread(i).real, B.gread(i).real);
+       (void)fflush(logFile);
+#endif
+   }
+}
+
+/* * */
 
 /*
  * Proportional Selection
@@ -513,12 +634,12 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
  *    value of zero for it's expectation.
  */
 
-void Genetic_Algorithm::selection_proportional(Population &original_pop, Individual *new_pop)
+void Genetic_Algorithm::selection_proportional(Population &original_population, Individual *new_pop)
 {
-   register int i=0;
-   int temp_ordering, temp_index, start_index = 0;
+   register unsigned int i=0, start_index = 0;
+   int temp_ordering, temp_index;
 #ifdef DEBUG2
-   float debug_ranf;
+   FloatOrDouble debug_ranf;
    int allzero = 1;//debug
    Molecule *individualMol;//debug
 #endif
@@ -530,13 +651,13 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
 
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::");
-   (void)fprintf(logFile, "selection_proportional(Population &original_pop, Individual *new_pop)\n");
+   (void)fprintf(logFile, "selection_proportional(Population &original_population, Individual *new_pop)\n");
 #endif /* DEBUG */
 
 #ifdef DEBUG2
    (void)fprintf(logFile, "gs.cc/At the start of sel_prop:  sel_prop_count= %d, start_index= %d\n\n",sel_prop_count, start_index); //debug
 
-   original_pop.printPopulationAsStates(logFile, original_pop.num_individuals(), global_ntor);//debug
+   original_population.printPopulationAsStates(logFile, original_population.num_individuals(), global_ntor);//debug
 #endif
 
 #ifdef CHECK_ISNAN
@@ -565,7 +686,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
       if (ISNAN(invdiffwa)) {
           (void)fprintf(logFile,"WARNING!  While doing proportional selection, not-a-number was detected (NaN).\n");
           (void)fprintf(logFile,"All members of the population will be arbitrarily allocated 1 child each.\n\n");
-          for (i=0;  i < original_pop.num_individuals();  i++) {
+          for (i=0;  i < original_population.num_individuals();  i++) {
              alloc[i] = 1.0;  // arbitrary
           }
           // Assume run has converged:
@@ -574,24 +695,24 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
       } else {
           assert(finite(invdiffwa));
           assert(finite(worst));
-          assert(finite(original_pop.num_individuals()));
+          assert(finite(original_population.num_individuals()));
           assert(!ISNAN(invdiffwa));
           assert(!ISNAN(worst));
-          assert(!ISNAN(original_pop.num_individuals()));
+          assert(!ISNAN(original_population.num_individuals()));
 
-          for (i=0;  i < original_pop.num_individuals();  i++) {
-             alloc[i] = (worst - original_pop[i].value(e_mode)) * invdiffwa;
+          for (i=0;  i < original_population.num_individuals();  i++) {
+             alloc[i] = (worst - original_population[i].value(e_mode)) * invdiffwa;
 
 #ifdef DEBUG2
-             (void)fprintf(logFile,"gs.cc:allocLoop:  worst= %.3f\toriginal_pop[%d].value(e_mode)= %.3f\talloc[%d]= %.3e\tinvdiffwa= %.3e\n",worst, i, original_pop[i].value(e_mode), i, alloc[i], invdiffwa);//debug
-             if (!finite(original_pop[i].value(e_mode) || ISNAN(original_pop[i].value(e_mode))) ) {
-                 original_pop[i].getMol(individualMol); # individualMol is returned...
+             (void)fprintf(logFile,"gs.cc:allocLoop:  worst= %.3f\toriginal_population[%d].value(e_mode)= %.3f\talloc[%d]= %.3e\tinvdiffwa= %.3e\n",worst, i, original_population[i].value(e_mode), i, alloc[i], invdiffwa);//debug
+             if (!finite(original_population[i].value(e_mode) || ISNAN(original_population[i].value(e_mode))) ) {
+                 original_population[i].getMol(individualMol); // individualMol is returned...
                  (void) writeMolAsPDBQ( individualMol, logFile);//debug
              }
 #endif
-             assert(finite(original_pop[i].value(e_mode)));
+             assert(finite(original_population[i].value(e_mode)));
              assert(finite(alloc[i]));
-             assert(!ISNAN(original_pop[i].value(e_mode)));
+             assert(!ISNAN(original_population[i].value(e_mode)));
              assert(!ISNAN(alloc[i]));
           }// for i
       }// endif (ISNAN(invdiffwa))
@@ -612,18 +733,18 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
       (void)fprintf(logFile,"WARNING!  The population appears to have converged, so this run will shortly terminate.\n\n");
 
       alloc[0] = 1.0; // Added by gmm, 2-APR-1997
-      firstEnergy = original_pop[0].value(e_mode);
+      firstEnergy = original_population[0].value(e_mode);
       allEnergiesEqual = 1;
-      for (i=1;  i < original_pop.num_individuals();  i++) {
+      for (i=1;  i < original_population.num_individuals();  i++) {
          alloc[i] = 1.0; // Added by gmm, 2-APR-1997
-         allEnergiesEqual = allEnergiesEqual && (firstEnergy == original_pop[i].value(e_mode));
+         allEnergiesEqual = allEnergiesEqual && (firstEnergy == original_population[i].value(e_mode));
       }
       if (allEnergiesEqual) {
           (void)fprintf(logFile,"          All individuals in the population have the same fitness (%6.2le)\n", firstEnergy);
       } else {
           (void)fprintf(logFile,"          Here are the fitness values of the population:\n\n");
-          for (i=0;  i < original_pop.num_individuals();  i++) {
-              (void)fprintf(logFile,"%3d = %6.2le,  ", i+1, original_pop[i].value(e_mode) );
+          for (i=0;  i < original_population.num_individuals();  i++) {
+              (void)fprintf(logFile,"%3d = %6.2le,  ", i+1, original_population[i].value(e_mode) );
           }
       }
       (void)fprintf(logFile,"\n");
@@ -633,10 +754,10 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
     * Commented out because this writes too many
     * errors out -- (worst-avg) is constant inside loop,
     * so can be brought outside for-loop.
-    * for (i=0; i<original_pop.num_individuals(); i++) {
+    * for (i=0; i<original_population.num_individuals(); i++) {
     * if ((worst - avg) != 0.0) { // added by gmm, 4-JUN-1997
     * //  In function minimization, the max energy is the worst
-    * alloc[i] = (worst - original_pop[i].value(e_mode))/(worst - avg);
+    * alloc[i] = (worst - original_population[i].value(e_mode))/(worst - avg);
     * } else {
     * (void)fprintf(logFile,"gs.cc/WARNING!  While doing proportional selection,
     * worst (%6.2le) and avg (%6.2le) were found equal, which would cause a 
@@ -655,10 +776,10 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
     */
 
    // Calculate expected number of children for each individual
-   for (i=0;  i < original_pop.num_individuals();  i++)
+   for (i=0;  i < original_population.num_individuals();  i++)
    {
       //  In our case of function minimization, the max individual is the worst
-      alloc[i] = (worst - original_pop[i].value(e_mode))/(worst - avg);
+      alloc[i] = (worst - original_population[i].value(e_mode))/(worst - avg);
    }
 
 #endif /* not CHECK_ISNAN */
@@ -667,8 +788,8 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
    allzero = 1; //debug
    int J;//debug
    (void)fprintf(logFile, "gs.cc: checking that all alloc[] variables are not all zero...\n"); //debug
-   for (J=0;  J < original_pop.num_individuals();  J++) {//debug
-       allzero = allzero & (alloc[J] == (float)0.0);//debug
+   for (J=0;  J < original_population.num_individuals();  J++) {//debug
+       allzero = allzero & (alloc[J] == (FloatOrDouble)0.0);//debug
    }//debug
    if (allzero) {//debug
        (void)fprintf(logFile, "gs.cc:  W A R N I N G !  all alloc variables are zero!\n"); //debug
@@ -678,17 +799,17 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
    //  Permute the individuals
 
 #ifdef DEBUG2
-   (void)fprintf(logFile, "gs.cc:  Permuting beginning: original_pop.num_individuals()= %d\n", original_pop.num_individuals()); //debug
+   (void)fprintf(logFile, "gs.cc:  Permuting beginning: original_population.num_individuals()= %d\n", original_population.num_individuals()); //debug
 #endif
 
-   for (i=0;  i < original_pop.num_individuals();  i++) {
+   for (i=0;  i < original_population.num_individuals();  i++) {
       temp_ordering = ordering[i];
 
-      assert(ordering[i] < original_pop.num_individuals());//debug
+      assert(ordering[i] < original_population.num_individuals());//debug
 
-      temp_index = ignlgi()%(original_pop.num_individuals());
+      temp_index = ignlgi()%(original_population.num_individuals());
 
-      assert(ordering[temp_index] < original_pop.num_individuals());//debug
+      assert(ordering[temp_index] < original_population.num_individuals());//debug
 
       ordering[i] = ordering[temp_index];
       ordering[temp_index] = temp_ordering;
@@ -700,9 +821,9 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
 
    //  We might get some savings here if we sorted the individuals before calling
    //  this routine
-   for (i=0; (i < original_pop.num_individuals()) && (start_index < original_pop.num_individuals()); i++) {
-      for (; (alloc[i] >= 1.0) && (start_index < original_pop.num_individuals());  alloc[i]-= 1.0) {
-         new_pop[start_index] = original_pop[i];
+   for (i=0; (i < original_population.num_individuals()) && (start_index < original_population.num_individuals()); i++) {
+      for (; (alloc[i] >= 1.0) && (start_index < original_population.num_individuals());  alloc[i]-= 1.0) {
+         new_pop[start_index] = original_population[i];
          //new_pop[start_index].incrementAge();
          ++start_index;
       }
@@ -710,23 +831,23 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
 
 #ifdef DEBUG2
    (void)fprintf(stderr, "gs.cc/void Genetic_Algorithm::"); //debug
-   (void)fprintf(stderr, "selection_proportional(Population &original_pop, Individual *new_pop)\n"); //debug
+   (void)fprintf(stderr, "selection_proportional(Population &original_population, Individual *new_pop)\n"); //debug
 #endif
 
    i = 0;
 
 #ifdef DEBUG2
    int count = 0;//debug
-   (void)fprintf(stderr, "gs.cc/beginning \"while(start_index < original_pop.num_individuals()) {\" loop\n"); //debug
+   (void)fprintf(stderr, "gs.cc/beginning \"while(start_index < original_population.num_individuals()) {\" loop\n"); //debug
 #endif
 
    // ??? start_index = 0; // gmm, 1998-07-13 ???
 
-   while (start_index < original_pop.num_individuals()) {
+   while (start_index < original_population.num_individuals()) {
 #ifdef DEBUG2
-      (void)fprintf(stderr, "gs.cc:596/inside \"while(start_index(=%d) < original_pop.num_individuals()(=%d)) \" loop:  count= %d\n", start_index, original_pop.num_individuals(), ++count); //debug
+      (void)fprintf(stderr, "gs.cc:596/inside \"while(start_index(=%d) < original_population.num_individuals()(=%d)) \" loop:  count= %d\n", start_index, original_population.num_individuals(), ++count); //debug
 #endif
-      assert(ordering[i] < original_pop.num_individuals());//debug
+      assert(ordering[i] < original_population.num_individuals());//debug
 #ifdef DEBUG2
       debug_ranf = ranf();
       (void)fprintf(stderr, "gs.cc:599/inside debug_ranf= %.3f, alloc[ordering[i]]= %.3e, ordering[i]= %d,  i= %d\n", debug_ranf, alloc[ordering[i]], ordering[i], i); // debug
@@ -736,9 +857,9 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
 #endif //  not DEBUG2
 #ifdef DEBUG2
          (void)fprintf(stderr, "gs.cc:603/inside (debug_ranf < alloc[ordering[i]]) is true!\n"); //debug
-         (void)fprintf(stderr, "gs.cc:604/inside about to increment start_index in:  \"new_pop[start_index++] = original_pop[ordering[i]];\"; right now, start_index= %d\n", start_index); //debug
+         (void)fprintf(stderr, "gs.cc:604/inside about to increment start_index in:  \"new_pop[start_index++] = original_population[ordering[i]];\"; right now, start_index= %d\n", start_index); //debug
 #endif
-         new_pop[start_index] = original_pop[ordering[i]];
+         new_pop[start_index] = original_population[ordering[i]];
          //new_pop[start_index].incrementAge();
          start_index++;
 #ifdef DEBUG2
@@ -747,27 +868,27 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
       }// endif (ranf() < alloc[ordering[i]])
 
 #ifdef DEBUG2
-      (void)fprintf(stderr, "gs.cc:608/inside i= %d, original_pop.num_individuals()= %d\n", i, original_pop.num_individuals()); //debug
-      (void)fprintf(stderr, "gs.cc:609/inside about to \"i = (i+1)%%original_pop.num_individuals();\"\n"); //debug
+      (void)fprintf(stderr, "gs.cc:608/inside i= %d, original_population.num_individuals()= %d\n", i, original_population.num_individuals()); //debug
+      (void)fprintf(stderr, "gs.cc:609/inside about to \"i = (i+1)%%original_population.num_individuals();\"\n"); //debug
 #endif
-      i = (i+1)%original_pop.num_individuals();
+      i = (i+1)%original_population.num_individuals();
 #ifdef DEBUG2
-      (void)fprintf(stderr, "gs.cc:611/inside just done \"i = (i+1)%%original_pop.num_individuals();\"\n"); //debug
+      (void)fprintf(stderr, "gs.cc:611/inside just done \"i = (i+1)%%original_population.num_individuals();\"\n"); //debug
       (void)fprintf(stderr, "gs.cc:612/inside i= %d  _____________________________________________________\n\n", i); //debug
 
        allzero = 1;//debug
-       for (J=0;  J < original_pop.num_individuals();  J++) {//debug
-           allzero = allzero & (alloc[J] == (float)0.0);//debug
+       for (J=0;  J < original_population.num_individuals();  J++) {//debug
+           allzero = allzero & (alloc[J] == (FloatOrDouble)0.0);//debug
        }//debug
        if (allzero) {//debug
            (void)fprintf(logFile, "gs.cc:  W A R N I N G !  all alloc variables are zero!\n"); //debug
        }//debug
 #endif
 
-   }// endwhile (start_index < original_pop.num_individuals())
+   }// endwhile (start_index < original_population.num_individuals())
 
 #ifdef DEBUG2
-  (void)fprintf(stderr, "gs.cc/finished \"while(start_index < original_pop.num_individuals()) \" loop\n"); //debug
+  (void)fprintf(stderr, "gs.cc/finished \"while(start_index < original_population.num_individuals()) \" loop\n"); //debug
 #endif
 
 }
@@ -786,40 +907,40 @@ void Genetic_Algorithm::selection_proportional(Population &original_pop, Individ
  * between the best and worst individual.  Since 2P = C,
  * P = K/(1+K).
  */
-void Genetic_Algorithm::selection_tournament(Population &original, Individual *new_pop)
+void Genetic_Algorithm::selection_tournament(Population &original_population, Individual *new_pop)
 {
-   register int i = 0, start_index = 0;
+   register unsigned int i = 0, start_index = 0;
    int temp_ordering, temp_index;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::");
-   (void)fprintf(logFile, "selection_tournament(Population &original, Individual *new_pop)\n");
+   (void)fprintf(logFile, "selection_tournament(Population &original_population, Individual *new_pop)\n");
 #endif /* DEBUG */
 
-   original.msort(original.num_individuals());
-   for (i=0; i<original.num_individuals(); i++) {
-      alloc[i] = original.num_individuals()*(2*tournament_prob - i*(4*tournament_prob - 2));
+   original_population.msort(original_population.num_individuals());
+   for (i=0; i<original_population.num_individuals(); i++) {
+      alloc[i] = original_population.num_individuals()*(2*tournament_prob - i*(4*tournament_prob - 2));
    }
 
-   for (i=0;  (i < original.num_individuals()) && (start_index < original.num_individuals());  i++) {
-      for (; (alloc[i] >= 1.0) && (start_index < original.num_individuals());  alloc[i] -= 1.0) {
-         new_pop[start_index++] = original[i];
+   for (i=0;  (i < original_population.num_individuals()) && (start_index < original_population.num_individuals());  i++) {
+      for (; (alloc[i] >= 1.0) && (start_index < original_population.num_individuals());  alloc[i] -= 1.0) {
+         new_pop[start_index++] = original_population[i];
       }
    }
 
-   for (i=0; i < original.num_individuals(); i++) {
+   for (i=0; i < original_population.num_individuals(); i++) {
       temp_ordering = ordering[i];
-      temp_index = ignlgi()%original.num_individuals();
+      temp_index = ignlgi()%original_population.num_individuals();
       ordering[i] = ordering[temp_index];
       ordering[temp_index] = temp_ordering;
    }
 
    i = 0;
-   while (start_index < original.num_individuals()) {
+   while (start_index < original_population.num_individuals()) {
       if (ranf() < alloc[ordering[i]]) {
-         new_pop[start_index++] = original[ordering[i]];
+         new_pop[start_index++] = original_population[ordering[i]];
       }
-      i = (i+1)%original.num_individuals();
+      i = (i+1)%original_population.num_individuals();
    }
 }
 
@@ -854,9 +975,12 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
 }
 
 //  For right now global search is taken to be a GA
+//
+//  This is where the action is... SEARCH!
+//
 int Genetic_Algorithm::search(Population &solutions)
 {
-   int i;
+   register unsigned int i;
    unsigned int oldest = 0, oldestIndividual = 0, fittestIndividual = 0;
    double fittest = BIG;
 
@@ -873,60 +997,71 @@ int Genetic_Algorithm::search(Population &solutions)
    genStart = times( &tms_genStart );
 
 #ifdef DEBUG3 /* DEBUG3 { */
-   (void)fprintf(logFile,"[Pre-Mapping] (solutions)\n");
+   (void)fprintf(logFile,"About to perform Mapping on the solutions.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%d ", solutions[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
+   //
+   // Map from genotype to phenotype
+   //
    for (i=0; i<solutions.num_individuals(); i++) {
       solutions[i].mapping();
    }
    
 #ifdef DEBUG3 /* DEBUG3 { */
-   (void)fprintf(logFile,"[Pre-Selection] (solutions)\n");
+   (void)fprintf(logFile,"About to perform Selection on the solutions.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", solutions[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   //  Perform selection
+   //
+   // Perform selection
+   //
    Population newPop(solutions.num_individuals(), selection(solutions));
 
 #ifdef DEBUG3 /* DEBUG3 { */
-   (void)fprintf(logFile,"[Pre-Crossover] (newPop)\n");
+   (void)fprintf(logFile,"About to perform Crossover on the population, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   //  Perform crossover
+   //
+   // Perform crossover
+   // 
    crossover(newPop);
 
 #ifdef DEBUG3 /* DEBUG3 } */
-   (void)fprintf(logFile,"[Pre-Mutation] (newPop)\n");
+   (void)fprintf(logFile,"About to perform mutation on the population, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   //  Perform mutation
+   //
+   // Perform mutation
+   // 
    mutation(newPop);
 
 #ifdef DEBUG3 /* DEBUG3 } */
-   (void)fprintf(logFile,"[Pre-Elitism] (newPop)\n");
+   (void)fprintf(logFile,"About to perform elitism, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   //  Copy the n best individuals to the next population, if the elitist flag is set.
-   if (elitism>0) {
+   //
+   // Copy the n best individuals to the next population, if the elitist flag is set, where n is the value of elitism.
+   //
+   if (elitism > 0) {
       solutions.msort(elitism);
       for (i=0; i<elitism; i++) {
          newPop[solutions.num_individuals()-1-i] = solutions[i];
@@ -934,22 +1069,34 @@ int Genetic_Algorithm::search(Population &solutions)
    }
 
 #ifdef DEBUG3 /* DEBUG3 } */
-   (void)fprintf(logFile,"[Pre-UpdateCurrentGeneration] (newPop)\n");
+   (void)fprintf(logFile,"About to Update the Current Generation, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   // Update current generation...
+   //
+   // Update current generation 
+   //  
    solutions = newPop;
+
+   //
+   // Increase the number of generations
+   //
    generations++;
 
-   // Increment age of surviving individuals...
+   //
+   // Increment the age of surviving individuals...
+   // 
    for (i=0; i<solutions.num_individuals(); i++) {
        solutions[i].incrementAge();
    }
 
+   if (debug > 0) {
+       (void)fprintf(logFile,"DEBUG:  Generation: %3u, outputEveryNgens = %3u, generations%%outputEveryNgens = %u\n",
+                     generations, outputEveryNgens, generations%outputEveryNgens);
+   }
    if (generations%outputEveryNgens == 0) {
        oldest  = 0L;
        fittest = BIG;
@@ -965,33 +1112,33 @@ int Genetic_Algorithm::search(Population &solutions)
        }
        /* Only output if the output level is not 0. */
        if (outputEveryNgens != OUTLEV0_GENS) {
-           (void)fprintf(logFile, "___\noutputEveryNgens = %d, OUTLEV0_GENS=%d\n___\n", outputEveryNgens, OUTLEV0_GENS);
+           // (void)fprintf(logFile, "___\noutputEveryNgens = %d, OUTLEV0_GENS=%d\n___\n", outputEveryNgens, OUTLEV0_GENS);
            if (outputEveryNgens > 1) {
     #ifndef DEBUG3
-               (void)fprintf(logFile,"Generation: %3u,  Oldest individual's energy: %.3f;   Lowest energy: %.3f;   Time taken for last %d generations: ", 
+               (void)fprintf(logFile,"Generation: %3u   Oldest individual's energy: %.3f    Lowest energy: %.3f    Time taken for last %d generations: ", 
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), 
                outputEveryNgens);
     #else
-               (void)fprintf(logFile,"Generation: %3u,  Oldest individual: %u/%u, age: %uld, energy: %.3f;   Lowest energy individual: %u/%u, age: %uld, energy: %.3f;   Time taken for last %d generations: ", 
-               generations, oldestIndividual+1L, solutions.num_individuals(), solutions[oldestIndividual].age, 
-               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1L, solutions.num_individuals(), 
+               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %uld, energy: %.3f    Lowest energy individual: %u/%u, age: %uld, energy: %.3f    Time taken for last %d generations: ", 
+               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
+               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
                solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), outputEveryNgens);
     #endif /* DEBUG3 */
-               } else {
+           } else {
     #ifndef DEBUG3
-               (void)fprintf(logFile,"Generation: %3u,  Oldest individual's energy: %.3f;   Lowest energy: %.3f;   Time taken: ", 
+               (void)fprintf(logFile,"Generation: %3u   Oldest individual's energy: %.3f    Lowest energy: %.3f    Time taken: ", 
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval));
     #else
-               (void)fprintf(logFile,"Generation: %3u,  Oldest individual: %u/%u, age: %uld, energy: %.3f;   Lowest energy individual: %u/%u, age: %uld, energy: %.3f;   Time taken: ", 
-               generations, oldestIndividual+1L, solutions.num_individuals(), solutions[oldestIndividual].age, 
-               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1L, solutions.num_individuals(), 
+               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %uld, energy: %.3f    Lowest energy individual: %u/%u, age: %uld, energy: %.3f    Time taken: ", 
+               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
+               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
                solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval));
     #endif /* DEBUG3 */
            }
        }
        genEnd = times( &tms_genEnd );
        timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd );
-       //genStart = times( &tms_genStart );
+       genStart = times( &tms_genStart );
    }
 
    return(0);

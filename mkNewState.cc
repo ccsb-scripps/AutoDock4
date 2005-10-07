@@ -1,3 +1,13 @@
+/*
+
+ $Id: mkNewState.cc,v 1.2 2003/02/26 01:20:28 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* mkNewState.cc */
 
 #include <math.h>
@@ -10,16 +20,16 @@ void mkNewState( State *now,
                  State *last,        /* ...must be a normalized quaternion! */
                  State *change,
 
-                float vt[MAX_TORS][NTRN],
+                FloatOrDouble vt[MAX_TORS][NTRN],
                 int   tlist[MAX_TORS][MAX_ATOMS],
                 int   ntor,
-                float crd[MAX_ATOMS][NTRN],
-                float crdpdb[MAX_ATOMS][NTRN],
+                FloatOrDouble crd[MAX_ATOMS][NTRN],
+                FloatOrDouble crdpdb[MAX_ATOMS][NTRN],
                 int   natom,
-                float trnStep,
-                /*float qtwStep,*/
-                float torStep,
-                float F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                FloatOrDouble trnStep,
+                /*FloatOrDouble qtwStep,*/
+                FloatOrDouble torStep,
+                FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                 int N_con[MAX_TORS])
 
 {
@@ -27,7 +37,7 @@ void mkNewState( State *now,
     double t;
     int I_ranCon;
     double x0, r1, r2, t1, t2;
-    float a, b;
+    FloatOrDouble a, b;
 
     /*
     ** Translation

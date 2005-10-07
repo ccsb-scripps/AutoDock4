@@ -1,3 +1,13 @@
+/*
+
+ $Id: print_rem.cc,v 1.2 2003/02/26 01:29:27 garrett Exp $
+
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* print_rem.cc */ 
     #include <stdio.h>
     #include "print_rem.h"
@@ -7,7 +17,7 @@ void print_rem( FILE *outFile,
 		int Rank,
 		int NumMem,
 		int Run,
-		float ref_rms)
+		FloatOrDouble ref_rms)
 {
     fprintf( outFile, "MODEL     %4d\n", Run );
     fprintf( outFile, "USER    Run = %d\n", Run );

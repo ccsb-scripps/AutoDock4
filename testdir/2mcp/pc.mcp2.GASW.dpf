@@ -1,0 +1,71 @@
+seed    863546106 2863	# for random number generator
+types	CNOP		# atom type names
+fld	mcp2.maps.fld	# grid data file
+map	mcp2.C.map	# C-atomic affinity map
+map	mcp2.N.map	# N-atomic affinity map
+map	mcp2.O.map	# O-atomic affinity map
+map	mcp2.P.map	# P-atomic affinity map
+map	mcp2.e.map	# electrostatics map
+
+move	pc4.pdbq	# small molecule
+about	50.985 59.018 -36.282	# small molecule center
+tran0	random		# initial coordinates/A or "random"
+quat0	random		# initial quaternion or "random"
+ndihe	4		# number of initial torsions
+dihe0	random		# initial torsions
+
+torsdof 4 0.3113	# num. non-H tors.degrees of freedom & coeff.
+
+tstep	0.2		# translation step/A
+qstep	5.		# quaternion step/deg
+dstep	5.		# torsion step/deg
+trnrf	1.		# trans reduction factor/per cycle
+quarf	1.		# quat reduction factor/per cycle
+dihrf	1.		# tors reduction factor/per cycle
+
+#hardtorcon 1 -180. 30.	# constrain torsion, num., angle(deg), range(deg)
+
+intnbp_r_eps  4.00 0.0222750  12  6	#C-C lj
+intnbp_r_eps  3.75 0.0230026  12  6	#C-N lj
+intnbp_r_eps  3.60 0.0257202  12  6	#C-O lj
+intnbp_r_eps  4.00 0.0222750  12  6	#C-C lj
+intnbp_r_eps  3.50 0.0237600  12  6	#N-N lj
+intnbp_r_eps  3.35 0.0265667  12  6	#N-O lj
+intnbp_r_eps  3.75 0.0230026  12  6	#N-C lj
+intnbp_r_eps  3.20 0.0297000  12  6	#O-O lj
+intnbp_r_eps  3.60 0.0257202  12  6	#O-C lj
+intnbp_r_eps  4.00 0.0222750  12  6	#C-C lj
+
+#intelec		# calculate internal electrostatic energy
+
+outlev	0		# GA: diagnostic output level
+
+rmstol	0.5		# cluster tolerance/A
+rmsref	pc4.pdbq	# reference structure for RMS calc.
+#rmsnosym		# do no symmetry checking in RMS calc.
+write_all		# write all conformations in a cluster
+
+extnrg	1000.		# external grid energy
+e0max	0.		# maximum allowable initial energy
+
+ga_pop_size 50		# number of individuals in population
+ga_num_evals 1500	# maximum number of energy evaluations
+ga_num_generations 27000	# maximum number of generations
+ga_elitism 1		# num. of top individuals that automatically survive
+ga_mutation_rate 0.02	# rate of gene mutation
+ga_crossover_rate 0.80	# rate of crossover
+ga_window_size 10	# num. of generations for picking worst individual
+ga_cauchy_alpha 0	# ~mean of Cauchy distribution for gene mutation
+ga_cauchy_beta 1	# ~variance of Cauchy distribution for gene mutation
+set_ga			# set the above parameters for GA
+
+sw_max_its 300		# number of iterations of Solis & Wets local search
+sw_max_succ 4		# number of consecutive successes before changing rho
+sw_max_fail 4		# number of consecutive failures before changing rho
+sw_rho 1.0		# size of local search space to sample
+sw_lb_rho 0.01		# lower bound on rho
+ls_search_freq 0.06	# probability of performing local search on an indiv.
+set_psw1		# set the above pseudo-Solis & Wets parameters
+
+ga_run 10		# do this many hybrid GA-LS runs
+analysis		# do cluster analysis on results
