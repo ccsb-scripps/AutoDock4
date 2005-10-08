@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.12 2005/09/29 03:31:03 garrett Exp $
+ $Id: call_glss.cc,v 1.13 2005/10/08 01:05:02 lindy Exp $
 
 */
 
@@ -15,6 +15,7 @@
                                 rsh 9/95
 ********************************************************************/
 
+#include <string.h>
 #include "gs.h"
 #include "ls.h"
 #include "support.h"
@@ -246,7 +247,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         }
         if (outlev > 2) { thisPop.printPopulationAsStates( logFile, pop_size, now.ntor); }
 
-        if (outlev < -9) { 
+        if (strcmp (FN_pop_file, "") != 0) { // YES, do print!
             if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
                 pr(logFile, "\n%s: ERROR:  I'm sorry, I cannot create\"%s\".\n\n", programname, FN_pop_file);
             } else {

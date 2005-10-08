@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.24 2005/10/06 22:27:06 lindy Exp $
+ $Id: main.cc,v 1.25 2005/10/08 01:05:01 lindy Exp $
 
 */
 
@@ -1226,6 +1226,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         B_constrain_dist = B_haveCharges = FALSE;
         ntor1 = ntor = atomC1 = atomC2 = 0;
         sqlower = squpper = 0.0;
+	strcpy( FN_pop_file, "");  // means don't print pop_file
+	//
+	// end of initialization
+	//
+
+	// this is the DPF_MOVE section...
         B_found_move_keyword = TRUE;
 
         print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
