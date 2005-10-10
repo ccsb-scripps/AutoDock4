@@ -1,6 +1,6 @@
 /*
 
- $Id: nbe.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
+ $Id: nbe.cc,v 1.3.6.1 2005/10/10 16:48:02 alther Exp $
 
 */
 
@@ -10,10 +10,14 @@
 
 /* nbe.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
-    #include <stdio.h>
-    #include "nbe.h"
+#include <stdio.h>
+#include "nbe.h"
 
 
 #ifdef NOSQRT
@@ -44,7 +48,7 @@ void nbe( char atm_typ_str[ATOM_MAPS],
           int num_atm_maps )
 
 {
- 
+
     static int NUMPTS = 640;
     register int i = 0;
     register int j = 0;
@@ -54,7 +58,7 @@ void nbe( char atm_typ_str[ATOM_MAPS],
     pr( logFile,"SUMMARY OF PAIRWISE-ATOMIC NON-BONDED INTERNAL ENERGIES\n" );
     pr( logFile,"________________________________________________________\n\n");
     pr( logFile,"Clamp pairwise-atomic interaction energies at:\t%.2f\n", EINTCLAMP );
- 
+
     pr( logFile, "    \t\n r  \tLook-up\t" );
     for ( i = 0; i < num_atm_maps; i++) {
 	for ( j = i; j < num_atm_maps; j++) {
