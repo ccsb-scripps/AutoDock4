@@ -1,6 +1,6 @@
 /*
 
- $Id: writeMolAsPDBQ.cc,v 1.1 2005/08/16 00:08:47 garrett Exp $
+ $Id: writeMolAsPDBQ.cc,v 1.1.6.1 2005/10/10 16:51:41 alther Exp $
 
 */
 
@@ -10,7 +10,6 @@
 
 /* writeMolAsPDBQ.cc */
 
-#include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include "structs.h"
@@ -20,7 +19,7 @@
 extern int      keepresnum;
 extern FILE    *logFile;
 
-void 
+void
 writeMolAsPDBQ(Molecule * mol, FILE * output)
 /*
  * write out the Molecule "mol" as a PDBQ formatted file to the file pointed
