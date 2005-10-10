@@ -1,6 +1,6 @@
 /*
 
- $Id: linpack.cc,v 1.2 2003/02/26 01:10:32 garrett Exp $
+ $Id: linpack.cc,v 1.2.8.1 2005/10/10 16:50:05 alther Exp $
 
 */
 
@@ -10,7 +10,12 @@
 
 /* linpack.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include "structs.h"
 
 FloatOrDouble sdot(FourByteLong n,FloatOrDouble *sx,FourByteLong incx,FloatOrDouble *sy,FourByteLong incy)
