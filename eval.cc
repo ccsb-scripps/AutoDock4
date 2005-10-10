@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.11 2005/09/28 22:54:19 garrett Exp $
+ $Id: eval.cc,v 1.11.6.1 2005/10/10 16:45:52 alther Exp $
 
 */
 
@@ -13,15 +13,15 @@
 
                                 rsh 9/95
 ********************************************************************/
-// #include <iostream.h>
-// #include <fstream.h>
-#include <math.h>
+#include <stdio.h>
+
 #include "eval.h"
+#include "cnv_state_to_coords.h"
+#include "eintcal.h"
+#include "qmultiply.h"
+#include "trilinterp.h"
 
 extern FILE *logFile;
-
-#include <stdio.h>
-#include <string.h>
 
 #ifdef sgi
     #include <ieeefp.h>
@@ -49,7 +49,7 @@ extern FILE *logFile;
 void make_state_from_rep(Representation **rep, State *stateNow)
 /*
     This routine modifies the various components of stateNow to correspond
-    to the chromosome.  
+    to the chromosome.
 */
 {
    register int i;
@@ -68,7 +68,7 @@ void make_state_from_rep(Representation **rep, State *stateNow)
    stateNow->Q.ny = rep[3]->gene(1).real;
    stateNow->Q.nz = rep[3]->gene(2).real;
    stateNow->Q.ang = rep[4]->gene(0).real;
-   
+
    //  Copy the angles
    for (i=1; i<=stateNow->ntor; i++) {
       stateNow->tor[i-1] = rep[4]->gene(i).real;
@@ -107,7 +107,7 @@ double Eval::eval()
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/Converting state to coordinates...\n");
 #endif /* DEBUG */
- 
+
    // Ligand could be inside or could still be outside, check all the atoms...
    cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
 
@@ -128,19 +128,19 @@ double Eval::eval()
 (void)fprintf(logFile,"eval.cc/All coordinates are inside grid...\n");
 #endif /* DEBUG */
 
-            energy = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, 
+            energy = quicktrilinterp4( crd, charge, abs_charge, type, natom, map,
                              		   ignore_inter, info);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after quicktrilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, 
-                               B_include_1_4_interactions, scale_1_4, 
-                               qsp_abs_charge, parameterArray, 
+            energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2,
+                               B_include_1_4_interactions, scale_1_4,
+                               qsp_abs_charge, parameterArray,
                                unbound_internal_FE);
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-         
+
             if (B_isGaussTorCon) {
                 for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
                     if (B_isTorConstrained[I_tor] == 1) {
@@ -164,8 +164,8 @@ double Eval::eval()
             /*
              * Instead...
              *
-             * Penalise atoms outside grid based on the square of the 
-             * distance from centre of grid map, otherwise use the normal 
+             * Penalise atoms outside grid based on the square of the
+             * distance from centre of grid map, otherwise use the normal
              * trilinear interpolation.
              */
             energy = outsidetrilinterp4( crd, charge, abs_charge, type, natom, map, ignore_inter, info );
@@ -193,7 +193,7 @@ double Eval::eval()
     } else {
         // Use template scoring function
         if (!B_outside) {
-            energy = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
+            energy = template_trilinterp( crd, charge, abs_charge, type, natom, map,
                                   template_energy, template_stddev, info);
         } else {
             energy = outside_templ_trilinterp( crd, charge, abs_charge, type, natom, map,
@@ -203,19 +203,19 @@ double Eval::eval()
 
    num_evals++;
 
-   if (!finite(energy)) {
+   if (!FINITE(energy)) {
       (void)fprintf( logFile, "eval.cc:  ERROR!  energy is infinite!\n\n");
       for (i=0; i<natom; i++) {
-           // (void)fprintf( logFile, "ATOM  %5d  C   INF     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]); 
-          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   INF     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
+           // (void)fprintf( logFile, "ATOM  %5d  C   INF     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]);
+          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   INF     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]);
           (void)fprintf(logFile, "\n");
       } // i
    }
    if (ISNAN(energy)) {
       (void)fprintf( logFile, "eval.cc:  ERROR!  energy is not a number!\n\n");
       for (i=0; i<natom; i++) {
-          // (void)fprintf( logFile, "ATOM  %5d  C   NaN     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]); 
-          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   NaN     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
+          // (void)fprintf( logFile, "ATOM  %5d  C   NaN     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]);
+          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   NaN     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]);
           (void)fprintf(logFile, "\n");
       } // i
    }
@@ -240,8 +240,8 @@ int Eval::write(FILE *out_file, Representation **rep)
         // strncpy( rec14, &atomstuff[i][13], (size_t)13);
         // rec14[13]='\0';
         //strncpy(rec14, "C   RES     1\0", (size_t)14);
-        //retval = fprintf( out_file, "ATOM  %5d  %13s    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, rec14, crd[i][X], crd[i][Y], crd[i][Z], 0., 0., charge[i]); 
-        retval = fprintf( out_file, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   RES     1", crd[i][X], crd[i][Y], crd[i][Z], 0., 0., charge[i]); 
+        //retval = fprintf( out_file, "ATOM  %5d  %13s    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, rec14, crd[i][X], crd[i][Y], crd[i][Z], 0., 0., charge[i]);
+        retval = fprintf( out_file, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   RES     1", crd[i][X], crd[i][Y], crd[i][Z], 0., 0., charge[i]);
         (void)fprintf(out_file, "\n");
     } // i
     return retval;

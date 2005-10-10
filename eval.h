@@ -6,15 +6,12 @@
 #ifndef _EVAL_H
 #define _EVAL_H
 
-#include "structs.h"
+#include "autocomm.h"
+#include "constants.h"
+#include "grid.h"
 #include "rep.h"
-
-#include <stdio.h>
-#include "qmultiply.h"
-#include "cnv_state_to_coords.h"
-#include "trilinterp.h"
-#include "eintcal.h"
-#include "energy.h"
+#include "structs.h"
+#include "typedefs.h"
 
 
 #if defined(USING_COLINY)
