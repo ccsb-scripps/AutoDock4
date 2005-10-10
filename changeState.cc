@@ -1,6 +1,6 @@
 /*
 
- $Id: changeState.cc,v 1.3 2005/03/11 02:11:29 garrett Exp $
+ $Id: changeState.cc,v 1.3.6.1 2005/10/10 16:42:40 alther Exp $
 
 */
 
@@ -10,12 +10,16 @@
 
 /* changeState.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
-    #include <stdlib.h>
-    #include "constants.h"
-    #include "qmultiply.h"
-    #include "changeState.h"
+#include <stdlib.h>
+#include "constants.h"
+#include "qmultiply.h"
+#include "changeState.h"
 
 
 State  changeState( State last,      /* ...must be a normalized quaternion! */
@@ -69,13 +73,13 @@ State  changeState( State last,      /* ...must be a normalized quaternion! */
             if (N_con[i] > 1) {
                 /* If N_con was 2, I_ranCon could be 0 or 1, never 2 */
                 /* Select a random constraint */
-                I_ranCon = (int)((double)N_con[i] * local_random());  
+                I_ranCon = (int)((double)N_con[i] * local_random());
             } else {
                 /* Hobson's choice...
                 */
                 I_ranCon = 0;
             }
-            t = random_range(F_TorConRange[i][I_ranCon][LOWER], 
+            t = random_range(F_TorConRange[i][I_ranCon][LOWER],
                              F_TorConRange[i][I_ranCon][UPPER]);
             now.tor[i] = WrpModRad(t);
         } else {
@@ -85,5 +89,5 @@ State  changeState( State last,      /* ...must be a normalized quaternion! */
     }/*i*/
 
     return(now);
-} 
+}
 /* EOF */
