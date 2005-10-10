@@ -1,6 +1,6 @@
 /*
 
- $Id: gencau.cc,v 1.3 2003/02/27 02:11:08 lindy Exp $
+ $Id: gencau.cc,v 1.3.8.1 2005/10/10 16:46:07 alther Exp $
 
 */
 
@@ -9,7 +9,6 @@
 #endif
 
 
-#include <math.h>
 #include "ranlib.h"
 
 
