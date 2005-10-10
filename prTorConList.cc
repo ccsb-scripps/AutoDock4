@@ -1,6 +1,6 @@
 /*
 
- $Id: prTorConList.cc,v 1.2 2003/02/26 01:26:43 garrett Exp $
+ $Id: prTorConList.cc,v 1.2.8.1 2005/10/10 16:51:10 alther Exp $
 
 */
 
@@ -10,12 +10,16 @@
 
 /* prTorConList.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include "prTorConList.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "prTorConList.h"
 
 
 #define AddNewHardCon(iCon,low,upp)  F_TorConRange[i][iCon][LOWER]=low;F_TorConRange[i][iCon][UPPER]=upp
@@ -82,25 +86,25 @@ void prTorConList( int ntor,
 		pr( logFile,"------|");
 		for (j=0;j<NCOLS;j++) {
 		    pr(logFile,"-");
-		} 
+		}
 		pr(logFile,"\n    -180");
 		flushLog;
 		for (j=0;j<jncol2;j++) {
 		    pr(logFile," ");
 		    /* DEBUG: pr(logFile,"A-<%d> [%d]",j,jncol2); */
-		} 
+		}
 		pr(logFile,"0");
 		flushLog;
 		for (j=0; j<jncol2; j++) {
 		    pr(logFile," ");
 		    /* DEBUG: pr(logFile,"B-<%d> [%d]",j,jncol2); */
-		} 
+		}
 		pr(logFile,"180\n       ");
 		flushLog;
 		for (j=0; j<jncol216; j++) {
 		    pr(logFile," ");
 		    /* DEBUG: pr(logFile,"C-<%d> [%d]",j,jncol2); */
-		} 
+		}
 		pr(logFile,"      Relative Torsion Angle / degrees\n\n");
 		pr(logFile,"\n\nTors\tAngle\tDegs\tPenalty\n");
 		pr(logFile,"____\t_____\t_____\t_______\n\n");
