@@ -1,22 +1,14 @@
 /*
 
- $Id: printdate.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
+ $Id: printdate.cc,v 1.3.6.1 2005/10/10 23:46:00 alther Exp $
 
 */
-
-#include <stdio.h>
-#include <sys/types.h>
-
-#ifndef _WIN32
-#   include <sys/time.h>
-#else
-#   include "times.h"
-#endif
 
 #ifdef HAVE_CONFIG_H
 #   include <config.h>
 #endif
 
+#include <time.h>
 #include "printdate.h"
 
 void printdate( FILE *fp, int flag )
@@ -28,9 +20,9 @@ void printdate( FILE *fp, int flag )
     tn = time( &tn );
 
     ts = localtime( &tn );
-    
+
     if (flag==1) {
-        fprintf(fp, "%d:%02d %02d\" %s, %02d/%02d/%4d\n", 
+        fprintf(fp, "%d:%02d %02d\" %s, %02d/%02d/%4d\n",
         ( (ts->tm_hour >  12) ? (ts->tm_hour-12) : ts->tm_hour ), ts->tm_min, ts->tm_sec,
         ( (ts->tm_hour >= 12) ? "p.m." : "a.m." ),
         (ts->tm_mon + 1), ts->tm_mday, 1900+ts->tm_year );
@@ -38,7 +30,7 @@ void printdate( FILE *fp, int flag )
           StringTimeDate = ctime( &tn );
           fprintf(fp, "%s", StringTimeDate);
     } else {
-        fprintf(fp, "%d:%02d %02d\" %s\n", 
+        fprintf(fp, "%d:%02d %02d\" %s\n",
         ( (ts->tm_hour >  12) ? (ts->tm_hour-12) : ts->tm_hour ), ts->tm_min, ts->tm_sec,
         ( (ts->tm_hour >= 12) ? "pm" : "am" ) );
     }
