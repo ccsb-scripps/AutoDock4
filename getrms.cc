@@ -1,6 +1,6 @@
 /*
 
- $Id: getrms.cc,v 1.2 2003/02/26 01:07:17 garrett Exp $
+ $Id: getrms.cc,v 1.2.8.1 2005/10/10 16:46:25 alther Exp $
 
 */
 
@@ -10,16 +10,20 @@
 
 /* getrms.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
-    #include "getrms.h"
+#include "getrms.h"
 
 
 
-FloatOrDouble getrms ( FloatOrDouble Crd[MAX_ATOMS][SPACE], 
-	       FloatOrDouble CrdRef[MAX_ATOMS][SPACE], 
-	       Boole B_symmetry_flag, 
-	       int natom, 
+FloatOrDouble getrms ( FloatOrDouble Crd[MAX_ATOMS][SPACE],
+	       FloatOrDouble CrdRef[MAX_ATOMS][SPACE],
+	       Boole B_symmetry_flag,
+	       int natom,
 	       int type[MAX_ATOMS] )
 
 {
