@@ -1,6 +1,6 @@
 /*
 
- $Id: readfield.cc,v 1.3 2005/09/28 22:54:21 garrett Exp $
+ $Id: readfield.cc,v 1.3.6.1 2005/10/10 23:47:48 alther Exp $
 
 */
 
@@ -14,9 +14,16 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include <sys/times.h>
-#include <sys/types.h>
-#include "readfield.h"
+
+#ifdef _WIN32
+	#include "times.h"
+#else
+    #include <sys/times.h>
+   #endif
+
+    #include <sys/types.h>
+    #include "readfield.h"
+
 
 extern FILE *logFile;
 
@@ -38,13 +45,13 @@ void readfield( GridMapSetInfo *info,
     ** _____________________________________________________________
     **/
     (void) sscanf( line, "%*s %s", info->FN_gdfld);
-     
+
     if ( openFile( info->FN_gdfld, "r", &fldFile, jobStart, tms_jobStart, TRUE )) {
         pr( logFile, "Opening Grid Map Dimensions file:\t\t%s\n\n", info->FN_gdfld);
     }
 
     /*
-    ** Skip over the AVS-readable .fld  header comments, until 
+    ** Skip over the AVS-readable .fld  header comments, until
     **
     ** #SPACING
     */
@@ -60,7 +67,7 @@ void readfield( GridMapSetInfo *info,
     pr( logFile, "Grid Point Spacing =\t\t\t\t%.3f Angstroms\n\n", info->spacing);
 
     /*
-    ** #NELEMENTS 
+    ** #NELEMENTS
     */
     (void) fgets(inputline, LINE_LEN, fldFile);
     (void) sscanf(inputline,"%*s %d %d %d", &info->num_points[X], &info->num_points[Y], &info->num_points[Z]);
@@ -86,28 +93,28 @@ void readfield( GridMapSetInfo *info,
     }
 
     /*
-    ** #CENTER 
+    ** #CENTER
     */
     (void) fgets(inputline, LINE_LEN, fldFile);
     (void) sscanf(inputline,"%*s %lf %lf %lf", &info->center[X], &info->center[Y], &info->center[Z]);
     pr( logFile, "Coordinates of Central Grid Point of Maps =\t(%.3f, %.3f, %.3f)\n\n", info->center[X],  info->center[Y],  info->center[Z]);
 
     /*
-    ** #MACROMOLECULE 
+    ** #MACROMOLECULE
     */
     (void) fgets(inputline, LINE_LEN, fldFile);
     (void) sscanf(inputline,"%*s %s", info->FN_receptor);
     pr( logFile, "Macromolecule file used to create Grid Maps =\t%s\n\n", info->FN_receptor);
 
     /*
-    ** #GRID_PARAMETER_FILE 
+    ** #GRID_PARAMETER_FILE
     */
     (void) fgets(inputline, LINE_LEN, fldFile);
     (void) sscanf(inputline,"%*s %s", info->FN_gpf);
     pr( logFile, "Grid Parameter file used to create Grid Maps =\t%s\n\n", info->FN_gpf);
 
     /*
-    ** Close Grid-dimensions data file 
+    ** Close Grid-dimensions data file
     */
     fclose(fldFile);
 
