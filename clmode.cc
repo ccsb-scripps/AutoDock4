@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.3 2005/03/11 02:11:29 garrett Exp $
+ $Id: clmode.cc,v 1.3.6.1 2005/10/10 16:43:00 alther Exp $
 
 */
 
@@ -17,7 +17,13 @@
     #include <ctype.h>
     #include <time.h>
     #include <sys/types.h>
+
+	#ifdef _WIN32
+	#include "times.h"
+	#else
     #include <sys/times.h>
+	#endif
+
     #include "clmode.h"
 
 
