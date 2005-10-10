@@ -1,13 +1,16 @@
+/*
+ $Id: writeStateOfPDBQ.h,v 1.3.6.1 2005/10/10 16:52:47 alther Exp $
+*/
+
 #ifndef _WRITESTATEOFPDBQ
 #define _WRITESTATEOFPDBQ
 
-#include "structs.h"
+#include "autocomm.h"
 #include "constants.h"
-#include "printEnergies.h"
-#include "trilinterp.h"
-#include "eintcal.h"
-#include "cnv_state_to_coords.h"
-#include "stateLibrary.h"
+#include "grid.h"
+#include "structs.h"
+#include "typedefs.h"
+
 
 void writeStateOfPDBQ(int irun,FourByteLong seed[2],
                     char  smFileName[MAX_CHARS],
