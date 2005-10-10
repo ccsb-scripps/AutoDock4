@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.2 2003/02/26 01:30:28 garrett Exp $
+ $Id: qmultiply.cc,v 1.2.8.1 2005/10/10 16:39:10 alther Exp $
 
 */
 
@@ -10,11 +10,15 @@
 
 /* qmultiply.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
-    #include <stdio.h>
-    #include <string.h>
-    #include "qmultiply.h"
+#include <stdio.h>
+#include <string.h>
+#include "qmultiply.h"
 
 
 void qmultiply( Quat *q,
@@ -49,7 +53,7 @@ void qmultiply( Quat *q,
 /* 12/03/92 GMM     Changed '/2.' to '*0.5'; introduced 'hqwl' and 'hqwr'.    */
 /* 12/03/92 GMM     Replaced rqtot by inv_qag; was '/rqtot', now '*inv_qag'   */
 /******************************************************************************/
-{ 
+{
     if (ql->w == 0.) {
         q->x = qr->x;
         q->y = qr->y;
@@ -65,7 +69,7 @@ void qmultiply( Quat *q,
         q->w = ql->w;
         return;
     }
-    
+
     q->x = (double) (ql->w*qr->x + ql->x*qr->w + ql->y*qr->z - ql->z*qr->y);
     q->y = (double) (ql->w*qr->y + ql->y*qr->w + ql->z*qr->x - ql->x*qr->z);
     q->z = (double) (ql->w*qr->z + ql->z*qr->w + ql->x*qr->y - ql->y*qr->x);
@@ -79,20 +83,20 @@ void qmultiply( Quat *q,
 void mkUnitQuat( Quat *q )
 {	
     double inv_nmag, hqang, s;
-	     
+	
     inv_nmag = 1. / hypotenuse( q->nx, q->ny, q->nz );
     q->nx *= inv_nmag;       /* Normalize q */
     q->ny *= inv_nmag;       /* Normalize q */
     q->nz *= inv_nmag;       /* Normalize q */
-      
+
     hqang = 0.5 * q->ang;
     s     = sin( hqang );
-    
+
     q->w  = cos( hqang );
     q->x  = s * q->nx;
     q->y  = s * q->ny;
     q->z  = s * q->nz;
-    
+
     /* q->qmag = hypotenuse4( q->x,  q->y,  q->z,  q->w  ); */
 }
 
