@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.3 2005/08/15 23:43:55 garrett Exp $
+ $Id: prInitialState.cc,v 1.3.6.1 2005/10/10 23:47:05 alther Exp $
 
 */
 
@@ -10,12 +10,10 @@
 
 /* prInitialState.cc */
 
-#include <math.h>
-
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include "prInitialState.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "prInitialState.h"
 
 
 extern int keepresnum;
