@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.7 2005/09/28 22:54:20 garrett Exp $
+ $Id: printEnergies.cc,v 1.7.6.1 2005/10/10 23:46:43 alther Exp $
 
 */
 
@@ -10,7 +10,12 @@
 
 /* printEnergies.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -26,7 +31,7 @@ void print1000_no_sign(FILE* file, double x) {
     pr(file,  ((fabs((x)) >= 0.01) && ((fabs(x)) <= 1000.)) ? "%7.2f" : "%11.2e" , (x));
 }
 
-void printEnergies( 
+void printEnergies(
         FloatOrDouble einter,
         FloatOrDouble eintra,
         FloatOrDouble torsFreeEnergy,
@@ -63,7 +68,7 @@ void printEnergies(
     // deltaG(binding)    = -R*T*ln Kb
     // deltaG(inhibition) =  R*T*ln Ki
     //
-    // Binding and Inhibition occur in opposite directions, so we 
+    // Binding and Inhibition occur in opposite directions, so we
     // lose the minus-sign:  deltaG = R*T*lnKi,  _not_ -R*T*lnKi
     // => deltaG/(R*T) = lnKi
     // => Ki = exp(deltaG/(R*T))
@@ -145,7 +150,7 @@ void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDoub
     // deltaG(binding)    = -R*T*ln Kb
     // deltaG(inhibition) =  R*T*ln Ki
     //
-    // Binding and Inhibition occur in opposite directions, so we 
+    // Binding and Inhibition occur in opposite directions, so we
     // lose the minus-sign:  deltaG = R*T*lnKi,  _not_ -R*T*lnKi
     // => deltaG/(R*T) = lnKi
     // => Ki = exp(deltaG/(R*T))
@@ -169,7 +174,7 @@ void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDoub
             pr(stateFile, "</Kd>\n");
         }
         pr(stateFile, "\t\t<Temp>%.2f</Temp>\n", TK); //temperature in K
-    } 
+    }
     pr(stateFile, "\t\t<final_dock_NRG>");
     print1000(stateFile, edocked);
     pr(stateFile, "</final_dock_NRG>\n");
@@ -184,6 +189,6 @@ void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDoub
 
     pr(stateFile, "\t\t<torsonial_free_NRG>");
     print1000(stateFile, torsFreeEnergy);
-    pr(stateFile, "</torsonial_free_NRG>\n"); 
+    pr(stateFile, "</torsonial_free_NRG>\n");
 
 }
