@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.11 2005/09/29 03:28:27 garrett Exp $
+ $Id: analysis.cc,v 1.11.6.1 2005/10/10 16:41:40 alther Exp $
 
 */
 
@@ -8,12 +8,15 @@
 #include <config.h>
 #endif
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
-#include "constants.h"
-#include "structs.h"
+#include "analysis.h"
 #include "getpdbcrds.h"
 #include "stateLibrary.h"
 #include "cnv_state_to_coords.h"
@@ -27,38 +30,37 @@
 #include "strindex.h"
 #include "print_avsfld.h"
 #include "printEnergies.h"
-#include "analysis.h"
 
 extern FILE *logFile;
 extern int   keepresnum;
 extern char  dock_param_fn[];
 extern char  *programname;
 
-void analysis( int   Nnb, 
-               char  atomstuff[MAX_ATOMS][MAX_CHARS], 
-               FloatOrDouble charge[MAX_ATOMS], 
-               FloatOrDouble abs_charge[MAX_ATOMS], 
-               FloatOrDouble qsp_abs_charge[MAX_ATOMS], 
+void analysis( int   Nnb,
+               char  atomstuff[MAX_ATOMS][MAX_CHARS],
+               FloatOrDouble charge[MAX_ATOMS],
+               FloatOrDouble abs_charge[MAX_ATOMS],
+               FloatOrDouble qsp_abs_charge[MAX_ATOMS],
                Boole B_calcIntElec,
                FloatOrDouble q1q2[MAX_NONBONDS],
-               FloatOrDouble clus_rms_tol, 
-               FloatOrDouble crdpdb[MAX_ATOMS][SPACE], 
+               FloatOrDouble clus_rms_tol,
+               FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
 
                EnergyTables *ptr_ad_energy_tables,
 
-               FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-               FloatOrDouble econf[MAX_RUNS], 
-               int   irunmax, 
-               int   natom, 
-               int   nonbondlist[MAX_NONBONDS][MAX_NBDATA], 
-               int   nconf, 
-               int   ntor, 
-               State hist[MAX_RUNS], 
-               char  smFileName[MAX_CHARS], 
+               FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+               FloatOrDouble econf[MAX_RUNS],
+               int   irunmax,
+               int   natom,
+               int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+               int   nconf,
+               int   ntor,
+               State hist[MAX_RUNS],
+               char  smFileName[MAX_CHARS],
                FloatOrDouble sml_center[SPACE],
-               Boole B_symmetry_flag, 
-               int   tlist[MAX_TORS][MAX_ATOMS], 
-               int   type[MAX_ATOMS], 
+               Boole B_symmetry_flag,
+               int   tlist[MAX_TORS][MAX_ATOMS],
+               int   type[MAX_ATOMS],
                FloatOrDouble vt[MAX_TORS][SPACE],
                char  FN_rms_ref_crds[MAX_CHARS],
                FloatOrDouble torsFreeEnergy,
@@ -170,8 +172,8 @@ void analysis( int   Nnb,
     if (nconf > 1) {
         sort_enrg( econf, isort, nconf );
 
-        ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort, 
-                    nconf, natom, type, crdSave, crdpdb, 
+        ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort,
+                    nconf, natom, type, crdSave, crdpdb,
                     sml_center, clu_rms, B_symmetry_flag,
                     ref_crds, ref_natoms, ref_rms);
 
@@ -218,7 +220,7 @@ void analysis( int   Nnb,
             c1 = c + 1;
 
             (void)memcpy(crd, crdSave[c], natom*3*sizeof(FloatOrDouble));
-     
+
             if (ntor > 0) {
                 eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
             } else {
@@ -228,7 +230,7 @@ void analysis( int   Nnb,
             if (!B_template) {
                  einter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
             } else {
-                 einter = byatom_template_trilinterp( crd, charge, abs_charge, type, natom, map, elec, emap, 
+                 einter = byatom_template_trilinterp( crd, charge, abs_charge, type, natom, map, elec, emap,
                                                       template_energy, template_stddev, info);
             }
 
@@ -241,7 +243,7 @@ void analysis( int   Nnb,
 
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
             printEnergies( einter, eintra, torsFreeEnergy, "USER    ", ligand_is_inhibitor, emap_total, elec_total );
-     
+
             pr( logFile, "USER  \n");
             pr( logFile, "USER    DPF = %s\n", dock_param_fn);
             pr( logFile, "USER    NEWDPF move\t%s\n", smFileName );
@@ -261,7 +263,7 @@ void analysis( int   Nnb,
             }/*if*/
             pr( logFile, "USER  \n");
             flushLog;
-     
+
             if (keepresnum > 0) {
                 if (outlev > -11) {
                     // Log File PDBQ coordinates [
@@ -274,7 +276,7 @@ void analysis( int   Nnb,
                         strncpy( rec14, &atomstuff[j][13], (size_t)13);
                         rec14[13]='\0';
                         pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", j+1, rec14, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
-                        pr(logFile," %6.3f\n", ref_rms[c]); 
+                        pr(logFile," %6.3f\n", ref_rms[c]);
                     }
                     //]
                 }
@@ -290,7 +292,7 @@ void analysis( int   Nnb,
                         strncpy( rec9, &atomstuff[j][13], (size_t)8);
                         rec9[8]='\0';
                         pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, "", j+1, rec9, i1, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
-                        pr(logFile," %6.3f\n", ref_rms[c]); 
+                        pr(logFile," %6.3f\n", ref_rms[c]);
                     }/*j*/
                     //]
                 }
