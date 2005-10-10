@@ -1,6 +1,6 @@
 /*
 
- $Id: torNorVec.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
+ $Id: torNorVec.cc,v 1.3.8.1 2005/10/10 16:56:13 alther Exp $
 
 */
 
@@ -10,7 +10,12 @@
 
 /* torNorVec.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "torNorVec.h"
@@ -51,9 +56,9 @@ void torNorVec( FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
 
 #ifdef DEBUG
 		pr( logFile, "\n__norm__ Torsion %d, crdpdb[ %d,ATM2 ][%c] = %.3f, crdpdb[ %d,ATM1 ][%c] = %.3f\n",
-		    j, tlist[j][ATM2], toascii(88+xyz), crdpdb[tlist[j][ATM2]][xyz], 
+		    j, tlist[j][ATM2], toascii(88+xyz), crdpdb[tlist[j][ATM2]][xyz],
 		    tlist[j][ATM1], toascii(88+xyz), crdpdb[tlist[j][ATM1]][xyz] );
-		flushLog; 
+		flushLog;
 #endif /* DEBUG */
 
 	} /* xyz */
