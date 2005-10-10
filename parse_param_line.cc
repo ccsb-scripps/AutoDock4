@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_param_line.cc,v 1.2 2005/08/15 23:42:34 garrett Exp $
+ $Id: parse_param_line.cc,v 1.2.6.1 2005/10/10 23:56:10 alther Exp $
 
 */
 
@@ -40,7 +40,7 @@ int parse_param_line( char line[LINE_LEN] )
     char c[LINE_LEN];
 
     // tokentablesize should be set to the length of the tokentable
-    // 
+    //
     const int tokentablesize = 6;
 
     const struct {
@@ -80,7 +80,13 @@ int parse_param_line( char line[LINE_LEN] )
         if (debug > 0) {
             (void)fprintf(logFile,"i = %d, tokentable[i].lexeme = %s, tokentable[i].value = %d, c = %s\n",i,tokentable[i].lexeme,tokentable[i].tokenvalue,c);
         }
-        if (strncasecmp(tokentable[i].lexeme, c, j) == 0) {
+
+#ifdef _WIN32
+        if (_strnicmp(tokentable[i].lexeme, c, j) == 0)
+#else
+        if (strncasecmp(tokentable[i].lexeme, c, j) == 0)
+#endif
+        {
             token = tokentable[i].tokenvalue;
         }
     }
