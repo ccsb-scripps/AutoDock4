@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.9 2005/09/29 03:34:42 garrett Exp $
+ $Id: support.cc,v 1.9.6.1 2005/10/10 23:50:00 alther Exp $
 
 */
 
@@ -13,10 +13,11 @@
 
 #include "eval.h"
 
-    #include <stdio.h>
-    #include "support.h"
-    #include "stateLibrary.h"
-    #include "structs.h"
+#include <stdio.h>
+#include "support.h"
+#include "cnv_state_to_coords.h"
+#include "stateLibrary.h"
+#include "structs.h"
 
 extern FILE *logFile;
 
@@ -38,10 +39,10 @@ Population::Population(Population &original)
    }
 }
 
-/*  Heap Functions:  In this case, the heap condition means the maximal 
-    element wrt fitness (i.e. the best) is at the top of the heap.  lhb 
-    is the index of the last element to be inserted into the heap.  Some 
-    the standard functions on the heap can be accomplished in the following 
+/*  Heap Functions:  In this case, the heap condition means the maximal
+    element wrt fitness (i.e. the best) is at the top of the heap.  lhb
+    is the index of the last element to be inserted into the heap.  Some
+    the standard functions on the heap can be accomplished in the following
     manner:
        Root = size - 1  (Note: that the root is fixed)
        LeftChild(I) = 2I - size
@@ -136,7 +137,7 @@ void Population::msort(int m)
       lhb++;
       SiftDown();
    }
-   
+
    //  Assert: heap[0..m-1] sorted
 }
 
@@ -248,7 +249,7 @@ init_rep_vector)
    for (i=0; i<number_of_vectors; i++) {
       number_of_genes += rep_vector[i]->number_of_points();
    }
- 
+
    i=0;
    lookup = new Lookup[number_of_genes];
    for (j=0; j<number_of_vectors; j++) {
@@ -486,7 +487,7 @@ Phenotype::Phenotype(const Phenotype &original)
    for (i=0; i<number_of_dimensions; i++) {
       value_vector[i] = original.value_vector[i]->clone();
    }
-   
+
    for (i=0; i<number_of_points; i++) {
       lookup[i] = original.lookup[i];
    }
@@ -544,7 +545,7 @@ Phenotype::~Phenotype(void)
 
 
    if (value_vector!=NULL) {
-      for (i=0; i<number_of_dimensions; i++) {  
+      for (i=0; i<number_of_dimensions; i++) {
          delete value_vector[i];
       }
       delete [] value_vector;
@@ -609,7 +610,7 @@ void Phenotype::write(const Representation &value, int gene_number)
 }
 
 double Phenotype::evaluate(EvalMode mode)
-{ 
+{
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/double Phenotype::evaluate(EvalMode mode)\n");
@@ -689,13 +690,13 @@ void Individual::getMol(Molecule *returnedMol)
     returnedMol = &molcopy;
 }
 
-void Individual::printIndividualsState(FILE *filePtr, int ntor, int detail) 
+void Individual::printIndividualsState(FILE *filePtr, int ntor, int detail)
 {
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/void Individual::printIndividualsState(FILE *filePtr, int ntor=%d, int detaiil=%d)\n", ntor, detail);
 #endif /* DEBUG */
 
-    printState( filePtr, state(ntor), detail ); 
+    printState( filePtr, state(ntor), detail );
 }
 
 void Individual::incrementAge(void)
