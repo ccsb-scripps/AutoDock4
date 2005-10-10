@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.5 2005/09/29 03:32:25 garrett Exp $
+ $Id: stateLibrary.cc,v 1.5.6.1 2005/10/10 23:54:44 alther Exp $
 
 */
 
@@ -10,7 +10,11 @@
 
 /* stateLibrary.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
 #include <stdio.h>
 #include "stateLibrary.h"
@@ -42,11 +46,11 @@ void copyState( State *D,  /* Destination -- copy to here */
                     State  S ) /* Source      -- copy this.   */
 {
     register int i;
-        
+
     D->T.x    = S.T.x;
     D->T.y    = S.T.y;
     D->T.z    = S.T.z;
-    
+
     D->Q.nx   = S.Q.nx;
     D->Q.ny   = S.Q.ny;
     D->Q.nz   = S.Q.nz;
@@ -56,16 +60,16 @@ void copyState( State *D,  /* Destination -- copy to here */
     D->Q.z    = S.Q.z;
     D->Q.w    = S.Q.w;
     D->Q.qmag = S.Q.qmag;
- 
+
     D->ntor   = S.ntor;
- 
+
     for ( i=0; i < S.ntor; i++ ) {
             D->tor[i] = S.tor[i];
     }
 }
 
-void printState( FILE *fp, 
-                 State S, 
+void printState( FILE *fp,
+                 State S,
                  int detail )
 {
     register int i;
@@ -97,7 +101,7 @@ void printState( FILE *fp,
                     torDegTmp = WrpDeg( torDegTmp );
                     // Commented out next line to make format more consistent, now all
                     // numbers are space-delimited.
-                    //pr( fp, " %.2f%c", torDegTmp, (i==(S.ntor-1) ? '.' : ',')); 
+                    //pr( fp, " %.2f%c", torDegTmp, (i==(S.ntor-1) ? '.' : ','));
                     pr( fp, " %.2f", torDegTmp );
                     //if ((B_isTorConstrained[i] == 1) && B_ShowTorE) {
                         //pr( fp, ", Energetic penalty = %uhd\n", US_TorE[i]);
@@ -122,7 +126,7 @@ void writeState( FILE *fp, State S )
 
     (void)fprintf( fp, "State= " );
     (void)fprintf( fp, "%.3f %.3f %.3f  ", S.T.x, S.T.y, S.T.z );
-    
+
     S.Q.ang = WrpRad( ModRad( S.Q.ang ));
     (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q.nx, S.Q.ny, S.Q.nz,
 		   Deg(S.Q.ang) );
@@ -147,7 +151,7 @@ int checkState(State *D)
 {
     register int i;
     int retval = 1;
-        
+
     if (ISNAN(D->T.x)) {
         (void)fprintf(logFile,"checkState: (NaN) detected in x translation\n");
         retval = 0;
@@ -159,7 +163,7 @@ int checkState(State *D)
     if (ISNAN(D->T.z)) {
         (void)fprintf(logFile,"checkState: (NaN) detected in z translation\n");
         retval = 0;
-    
+
     }
     if (ISNAN(D->Q.nx)) {
         (void)fprintf(logFile,"checkState: (NaN) detected in nx quaternion\n");
@@ -198,7 +202,7 @@ int checkState(State *D)
         (void)fprintf(logFile,"checkState: (NaN) detected in magnitude of quaternion\n");
         retval = 0;
     }
- 
+
     for ( i=0; i < D->ntor; i++ ) {
             if (ISNAN(D->tor[i])) {
                 (void)fprintf(logFile,"checkState: (NaN) detected in torsion %d\n",i+1);
