@@ -330,8 +330,7 @@ ARFLAGS = r # SGI, Sun, Alpha, Linux, Darwin, Mac OS X
 # RANLIB = file # SGI
 RANLIB = ranlib # Linux, Darwin, Mac OS X
 
-RANLIBFLAGS = # Linux, SGI
-# RANLIBFLAGS = -s # MacOS X
+RANLIBFLAGS = -s # MacOS X, Linux, SGI
 
 
 # C++ compiler
