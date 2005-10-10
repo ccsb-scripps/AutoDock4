@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
+ $Id: readPDBQT.cc,v 1.3.6.1 2005/10/10 23:55:43 alther Exp $
 
 */
 
@@ -8,13 +8,24 @@
 #include <config.h>
 #endif
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/times.h>
-#include <sys/param.h>
+
+#ifdef _WIN32
+   #include "times.h"
+#else
+   #include <sys/times.h>
+   #include <sys/param.h>
+#endif
+
 #include <time.h>
 #include <ctype.h>		/* tolower */
 #include "readPDBQT.h"
