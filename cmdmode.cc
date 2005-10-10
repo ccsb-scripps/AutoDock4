@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.9 2005/09/28 22:54:19 garrett Exp $
+ $Id: cmdmode.cc,v 1.9.6.1 2005/10/10 16:44:18 alther Exp $
 
 */
 
@@ -11,18 +11,26 @@
 /* cmdmode.cc */
 
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/times.h>
-#include <time.h>
 #include <string.h>
 #include <ctype.h>
 #include "cmdmode.h"
+#include "cnv_state_to_coords.h"
 #include "cmdtokens.h"
+#include "eintcalPrint.h"
+#include "get_atom_type.h"
+#include "input_state.h"
+#include "openfile.h"
+#include "parse_com_line.h"
+#include "parse_trj_line.h"
+#include "print_avsfld.h"
+#include "printEnergies.h"
+#include "qmultiply.h"
+#include "readPDBQT.h"
+#include "set_cmd_io_std.h"
+#include "success.h"
 #include "trjtokens.h"
-#include "eintcal.h"
 
 
 extern FILE *logFile;
@@ -40,51 +48,51 @@ extern int debug;
 extern int parse_tors_mode;
 
 int cmdmode(int   natom,
-             Clock jobStart,
-             struct tms tms_jobStart,
-             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            Clock jobStart,
+            struct tms tms_jobStart,
+            FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 
-                    EnergyTables *ptr_ad_energy_tables,
+            EnergyTables *ptr_ad_energy_tables,
 
-             FloatOrDouble WallEnergy,
-             FloatOrDouble vt[MAX_TORS][SPACE],
-             int   tlist[MAX_TORS][MAX_ATOMS],
-             int   ntor,
-             int   Nnb,
-             int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
-             char  atomstuff[MAX_ATOMS][MAX_CHARS],
-             FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-             char  hostnm[MAX_CHARS],
-             int   type[MAX_ATOMS],
-             FloatOrDouble charge[MAX_ATOMS],
-             FloatOrDouble abs_charge[MAX_ATOMS],
-             FloatOrDouble qsp_abs_charge[MAX_ATOMS],
-             Boole B_calcIntElec,
-             FloatOrDouble q1q2[MAX_NONBONDS],
-             char  atm_typ_str[ATOM_MAPS],
-             FloatOrDouble torsFreeEnergy,
-             int ligand_is_inhibitor,
-             int ignore_inter[MAX_ATOMS],
-             const Boole         B_include_1_4_interactions,
-             const FloatOrDouble scale_1_4,
-             const ParameterEntry parameterArray[MAX_MAPS],
-             const FloatOrDouble unbound_internal_FE,
+            FloatOrDouble WallEnergy,
+            FloatOrDouble vt[MAX_TORS][SPACE],
+            int   tlist[MAX_TORS][MAX_ATOMS],
+            int   ntor,
+            int   Nnb,
+            int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+            char  atomstuff[MAX_ATOMS][MAX_CHARS],
+            FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+            char  hostnm[MAX_CHARS],
+            int   type[MAX_ATOMS],
+            FloatOrDouble charge[MAX_ATOMS],
+            FloatOrDouble abs_charge[MAX_ATOMS],
+            FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+            Boole B_calcIntElec,
+            FloatOrDouble q1q2[MAX_NONBONDS],
+            char  atm_typ_str[ATOM_MAPS],
+            FloatOrDouble torsFreeEnergy,
+            int ligand_is_inhibitor,
+            int ignore_inter[MAX_ATOMS],
+            const Boole         B_include_1_4_interactions,
+            const FloatOrDouble scale_1_4,
+            const ParameterEntry parameterArray[MAX_MAPS],
+            const FloatOrDouble unbound_internal_FE,
 
-             GridMapSetInfo *info
+            GridMapSetInfo *info
             )
 
 {
-    char message[LINE_LEN],
-         command[LINE_LEN],
-         trjline[LINE_LEN],
-         filename[MAX_CHARS],
-         line[LINE_LEN],
-         rec5[5],
-         pdbaname[MAX_ATOMS][5],
-         rec8[MAX_ATOMS][9], /* rec[X] gives (X+1) elements...   */
-         rec14[MAX_ATOMS][15],
-         trjFileName[MAX_CHARS],
-         lastmove = '?';
+    char message[LINE_LEN]      = {'\0'};
+    char command[LINE_LEN]      = {'\0'};
+    char trjline[LINE_LEN]      = {'\0'};
+    char filename[MAX_CHARS]    = {'\0'};
+    char line[LINE_LEN]         = {'\0'};
+    char rec5[5]                = {'\0'};
+    char pdbaname[MAX_ATOMS][5] = { {'\0', '\0'} };
+    char rec8[MAX_ATOMS][9]     = { {'\0', '\0'} }; /* rec[X] gives (X+1) elements...   */
+    char rec14[MAX_ATOMS][15]   = { {'\0', '\0'} };
+    char trjFileName[MAX_CHARS] = {'\0'};
+    char lastmove = '?';
 
     int  com_id = 0,
          nframes = 0,
@@ -121,7 +129,8 @@ int cmdmode(int   natom,
           E = 0.,
           Eint   = 0.;
 
-    FILE *pdbFile, *trjFile;
+    FILE *pdbFile = 0;
+    FILE *trjFile = 0;
 
     State S;
 
@@ -147,7 +156,7 @@ int cmdmode(int   natom,
     Now read in the Commands...
 */
     while ((fgets(command, LINE_LEN, command_in_fp)) != NULL) {
-/* 
+/*
         Parse the command line...
 */
         com_id = parse_com_line(command);
@@ -158,7 +167,7 @@ int cmdmode(int   natom,
             continue;
         } /* endif */
 
-/* 
+/*
         Act on that command...
 */
         switch(com_id) {
@@ -213,11 +222,11 @@ int cmdmode(int   natom,
 */
                 sscanf(command, "%*s %s %d", filename, &oldpdbq);
                 pr(logFile, "COMMAND: epdb %s %d\n\n", filename, oldpdbq);
- 
+
                 nat = 0;
                 eintra = einter = etotal = 0.;
                 outside = FALSE;
- 
+
                 if (openFile(filename, "r", &pdbFile, jobStart, tms_jobStart, FALSE)) {
                     while ((fgets(line, LINE_LEN, pdbFile)) != NULL) {
                         for (ii = 0; ii < 4; ii++) {
@@ -226,7 +235,7 @@ int cmdmode(int   natom,
                         if (equal(rec5, "atom", 4) || equal(rec5, "heta", 4)) {
                             readPDBQTLine(line, crd[nat], &charge[nat], &thisparm);
                             strncpy(pdbaname[natom], &line[12], (size_t)4);
-                            type[nat]=get_atom_type(pdbaname[natom]);
+                            type[nat] = get_atom_type(pdbaname[natom]);
                             if (type[nat] == -1) {
                                 jobEnd = times(&tms_jobEnd);
                                 timesys(jobEnd - jobStart, &tms_jobStart, &tms_jobEnd);
@@ -277,7 +286,7 @@ int cmdmode(int   natom,
                     pr(logFile, "      __________  __________  __________  _______\n\n");
                     pr(logFile, "Total %10.2f  %10.2f  %10.2f  %7.3f\n\n",
                         (emap_total + elec_total), emap_total, elec_total, charge_total);
-                
+
                     pr(command_out_fp, "%.2f\n", etotal);
                     pr(logFile, "    E_intermolecular_atomic-affinity = %.2f kcal/mol\n", emap_total);
                     pr(logFile, "    E_intermolecular_electrostatic   = %.2f kcal/mol\n", elec_total);
@@ -298,10 +307,10 @@ int cmdmode(int   natom,
                 tor2
                 ...
 */
-                sscanf(command, "%*s %lf %lf %lf %lf %lf %lf %lf", 
-                    &(S.T.x), &(S.T.y), &(S.T.z),  
+                sscanf(command, "%*s %lf %lf %lf %lf %lf %lf %lf",
+                    &(S.T.x), &(S.T.y), &(S.T.z),
                     &(S.Q.nx), &(S.Q.ny), &(S.Q.nz),  &(S.Q.ang));
-                pr(logFile, "COMMAND: eval %lf %lf %lf %lf %lf %lf %lf\n         ", 
+                pr(logFile, "COMMAND: eval %lf %lf %lf %lf %lf %lf %lf\n         ",
                     S.T.x, S.T.y, S.T.z, S.Q.nx, S.Q.ny, S.Q.nz, S.Q.ang);
                 /**/
                 S.Q.ang = Rad(S.Q.ang);
@@ -445,7 +454,7 @@ int cmdmode(int   natom,
                         ________________________________________________________
 */
                             case TRJ_STATE:
-                                if (input_state(&S, trjFile, trjline, ntor, 
+                                if (input_state(&S, trjFile, trjline, ntor,
                                     &nstep, &E, &Eint, &lastmove) != (int)0) {
                                     /*...input_state ensures tor is in radians*/
                                     cnv_state_to_coords(S, vt, tlist, ntor, crdpdb, crd, natom);
@@ -542,7 +551,7 @@ Write out an AVS-readable field file, for input of trajectory file.
         offset[i] = i;
     }
 
-    print_avsfld(logFile, veclen, natom, nframes, offset, 13, 
+    print_avsfld(logFile, veclen, natom, nframes, offset, 13,
         "x y z E_atom E_elec E_atom_elec E_internal E_total Temp MoveCode Step Cycle Run", filename);
 
     jobEnd = times(&tms_jobEnd);
