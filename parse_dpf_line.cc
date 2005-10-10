@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.7 2005/09/29 03:24:24 garrett Exp $
+ $Id: parse_dpf_line.cc,v 1.7.6.1 2005/10/10 23:56:24 alther Exp $
 
 */
 
@@ -39,7 +39,7 @@ int parse_dpf_line( char line[LINE_LEN] )
     char c[LINE_LEN];
 
     // tokentablesize should be set to the length of the tokentable
-    // 
+    //
 #if defined(USING_COLINY)
     const int tokentablesize = 99; // this is 1 more than without USING_COLING
 #else
@@ -172,7 +172,12 @@ int parse_dpf_line( char line[LINE_LEN] )
 
     for (i=0;  (i < tokentablesize) && (token == DPF_);  i++) {
         /*(void)fprintf(stderr,"i = %d, tokentable[i].lexeme = %s, tokentable[i].value = %d, c = %s\n",i,tokentable[i].lexeme,tokentable[i].tokenvalue,c);*/
-        if (strncasecmp(tokentable[i].lexeme, c, j) == 0) {
+#ifdef _WIN32
+        if (_strnicmp(tokentable[i].lexeme, c, j) == 0)
+#else
+        if (strncasecmp(tokentable[i].lexeme, c, j) == 0)
+#endif
+        {
             token = tokentable[i].tokenvalue;
         }
     }
