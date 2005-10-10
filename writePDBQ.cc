@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.10 2005/09/29 20:42:43 garrett Exp $
+ $Id: writePDBQ.cc,v 1.10.6.1 2005/10/10 16:51:59 alther Exp $
 
 */
 
@@ -10,7 +10,12 @@
 #include <config.h>
 #endif
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include "structs.h"
