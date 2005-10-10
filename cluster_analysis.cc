@@ -1,6 +1,6 @@
 /*
 
- $Id: cluster_analysis.cc,v 1.2 2003/02/26 00:44:49 garrett Exp $
+ $Id: cluster_analysis.cc,v 1.2.8.1 2005/10/10 16:43:34 alther Exp $
 
 */
 
@@ -11,22 +11,20 @@
 /* cluster_analysis.cc */
 
 
-#include <math.h>
-
-    #include "cluster_analysis.h"
+#include "cluster_analysis.h"
 
 
-int cluster_analysis( FloatOrDouble clus_rms_tol, 
-		      int cluster[MAX_RUNS][MAX_RUNS], 
-		      int num_in_clus[MAX_RUNS], 
-		      int isort[MAX_RUNS], 
-		      int nconf, 
-		      int natom, 
+int cluster_analysis( FloatOrDouble clus_rms_tol,
+		      int cluster[MAX_RUNS][MAX_RUNS],
+		      int num_in_clus[MAX_RUNS],
+		      int isort[MAX_RUNS],
+		      int nconf,
+		      int natom,
 		      int type[MAX_ATOMS],
-		      FloatOrDouble crd[MAX_RUNS][MAX_ATOMS][SPACE], 
-		      FloatOrDouble crdpdb[MAX_ATOMS][SPACE], 
-		      FloatOrDouble sml_center[SPACE], 
-		      FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS], 
+		      FloatOrDouble crd[MAX_RUNS][MAX_ATOMS][SPACE],
+		      FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+		      FloatOrDouble sml_center[SPACE],
+		      FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS],
 		      Boole B_symmetry_flag,
 		      FloatOrDouble ref_crds[MAX_ATOMS][SPACE],
 		      int ref_natoms,
@@ -62,12 +60,12 @@ int cluster_analysis( FloatOrDouble clus_rms_tol,
 
 /* Assign the index of the lowest energy to 0,0 in "cluster" */
 
-    thisconf = cluster[0][0] = isort[0]; 
+    thisconf = cluster[0][0] = isort[0];
 
 /* Set number in 0-th cluster to 1 */
 /* Also initialize total number of clusters to 1 */
 
-    num_in_clus[0] = nClusters = 1;	 
+    num_in_clus[0] = nClusters = 1;	
     clu_rms[0][0]  = getrms(crd[thisconf], ref_crds,
 			    B_symmetry_flag, natom, type);
 
