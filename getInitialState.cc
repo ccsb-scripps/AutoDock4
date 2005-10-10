@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.7 2005/09/28 22:54:20 garrett Exp $
+ $Id: getInitialState.cc,v 1.7.6.1 2005/10/10 16:47:29 alther Exp $
 
 */
 
@@ -10,14 +10,25 @@
 
 /* getInitialState.cc */
 
-#include <math.h>
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/times.h>
-#include <sys/param.h>
-#include <time.h>
-#include "getInitialState.h"
+//#include <sys/types.h>
 
+#ifdef _WIN32
+   #include "times.h"
+#else
+   #include <sys/times.h>
+//   #include <sys/param.h>
+#endif
+
+#include "getInitialState.h"
+#include "cnv_state_to_coords.h"
+#include "eintcal.h"
+#include "initautodock.h"
+#include "prInitialState.h"
+#include "qmultiply.h"
+#include "stateLibrary.h"
+#include "timesys.h"
+#include "trilinterp.h"
 
 extern FILE *logFile;
 extern char *programname;
@@ -149,9 +160,9 @@ void getInitialState(
 ** Initialize the automated docking simulation,
 ** _________________________________________________________________________
 */
-        initautodock( atomstuff, crd, crdpdb, 
+        initautodock( atomstuff, crd, crdpdb,
             natom, ntor, sInit, tlist, vt, outlev, info);
-        
+
         e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
         e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
         e0total = e0inter + e0intra;
