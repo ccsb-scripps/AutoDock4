@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.cc,v 1.4 2005/08/15 22:53:33 garrett Exp $
+ $Id: cnv_state_to_coords.cc,v 1.4.6.1 2005/10/10 16:44:36 alther Exp $
 
 */
 
@@ -10,7 +10,6 @@
 
 /* cnv_state_to_coords.cc */
 
-#include <math.h>
 #include <string.h>
 
 #include <stdio.h>
