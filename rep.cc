@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.7 2005/03/11 02:11:31 garrett Exp $
+ $Id: rep.cc,v 1.7.6.1 2005/10/10 23:49:19 alther Exp $
 
 */
 
@@ -15,10 +15,16 @@
 
 				rsh 9/95
 ********************************************************************/
- 
+
 // possibly unnecessary // #include <iostream.h>
 #include <stdio.h>
-#include <math.h>
+
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include <limits.h>
 #include "rep.h"
 #include "ranlib.h"
@@ -708,13 +714,13 @@ Representation &ConstrainedRealVector::operator=(const Representation &original)
       if (vector!=NULL) {
          delete [] vector;
       }
-      
+
       if (array!=NULL) {
          vector = new double[number_of_pts];
       } else {
          vector = NULL;
       }
-      
+
       for (i=0; i<number_of_pts; i++) {
          vector[i] = array[i];
       }
