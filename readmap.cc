@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.4 2005/09/28 22:54:21 garrett Exp $
+ $Id: readmap.cc,v 1.4.6.1 2005/10/10 23:55:26 alther Exp $
 
 */
 
@@ -14,7 +14,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+
+#ifdef _WIN32
+#include "times.h"
+#else
 #include <sys/times.h>
+#endif
+
 #include <time.h>
 #include "readmap.h"
 
@@ -29,18 +35,18 @@ char mapf2c(FloatOrDouble);
 
 void readmap( char           line[LINE_LEN],
               int            outlev,
- 
+
               Clock          jobStart,
               struct tms     tmsJobStart,
-        
+
               Boole          B_charMap,
 
-              Boole          *P_B_HaveMap, 
-              int            *P_imap, 
- 
+              Boole          *P_B_HaveMap,
+              int            *P_imap,
+
               GridMapSetInfo *info,
               FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
-              // double *maps 
+              // double *maps
              )
 
 {
@@ -114,9 +120,9 @@ void readmap( char           line[LINE_LEN],
             pr( logFile, "Checking header information.\n" );
         }
          /*
-         \ Check header lines of grid map... 
+         \ Check header lines of grid map...
          /
-         \ :Line 1  GRID_PARAMETER_FILE 
+         \ :Line 1  GRID_PARAMETER_FILE
         */
         if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read GRID_PARAMETER_FILE line." );
@@ -135,7 +141,7 @@ void readmap( char           line[LINE_LEN],
             }
         } /* endif */
          /*
-         \ :Line 2  GRID_DATA_FILE 
+         \ :Line 2  GRID_DATA_FILE
         */
         if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read \".fld\" GRID_DATA_FILE line." );
@@ -146,7 +152,7 @@ void readmap( char           line[LINE_LEN],
             } /* endif */
         } /* endif */
          /*
-         \ :Line 3  MACROMOLECULE 
+         \ :Line 3  MACROMOLECULE
         */
         if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read MACROMOLECULE line." );
@@ -155,7 +161,7 @@ void readmap( char           line[LINE_LEN],
             check_header_line( mmFileName, info->FN_receptor );
         } /* endif */
          /*
-         \ :Line 4  SPACING 
+         \ :Line 4  SPACING
         */
         if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read SPACING line." );
@@ -168,7 +174,7 @@ void readmap( char           line[LINE_LEN],
             check_header_float(spacing, info->spacing, "grid point spacing", FileName );
         } /* endif */
          /*
-         \ :Line 5  NELEMENTS 
+         \ :Line 5  NELEMENTS
         */
         if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read NELEMENTS line." );
@@ -180,7 +186,7 @@ void readmap( char           line[LINE_LEN],
                 check_header_int( nel[xyz], info->num_points[xyz], xyz_str[xyz], FileName );
             } /* xyz */
         } /* endif */
-         /* 
+         /*
          \ :Line 6  CENTER
         */
         if (fgets(inputline, LINE_LEN, map_file) == NULL) {
@@ -291,7 +297,7 @@ void scale_map(
         FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
         )
 {
-    
+
 }
 
 
