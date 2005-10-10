@@ -1,13 +1,26 @@
+/*
+ $Id: eintcalPrint.h,v 1.6.6.1 2005/10/10 16:36:40 alther Exp $
+*/
 
-#ifndef EINTCALPRINT
-#define EINTCALPRINT
+#ifndef EINTCALPRINT_H
+#define EINTCALPRINT_H
+
 #include "constants.h"
-FloatOrDouble  eintcalPrint( int   nonbondlist[MAX_NONBONDS][2], 
-                             EnergyTables *ptr_ad_energy_tables,
-                             FloatOrDouble tcoord[MAX_ATOMS][SPACE], 
-                             int   atmtyp[MAX_ATOMS], 
-                             int   Nnb,
-                             Boole B_calcIntElec,
-                             FloatOrDouble q1q2[MAX_NONBONDS],
-                             FloatOrDouble abs_charge[MAX_ATOMS]);
-#endif
+#include "structs.h"
+#include "typedefs.h"
+
+FloatOrDouble  eintcalPrint(const int           nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                            const EnergyTables  *ad_energy_tables,
+                            const FloatOrDouble tcoord[MAX_ATOMS][SPACE],
+                            const int            Nnb,
+                            const Boole          B_calcIntElec,
+                            const FloatOrDouble  q1q2[MAX_NONBONDS],
+                            const Boole          B_include_1_4_interactions,
+                            const FloatOrDouble  scale_1_4,
+                            const FloatOrDouble  qsp_abs_charge[MAX_ATOMS],
+                            const ParameterEntry parameterArray[MAX_MAPS],
+                            const FloatOrDouble  unbound_internal_FE
+                           );
+
+#endif   // EINTCALPRINT
+
