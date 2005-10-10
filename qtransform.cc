@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.cc,v 1.3 2004/11/16 23:42:53 garrett Exp $
+ $Id: qtransform.cc,v 1.3.8.1 2005/10/10 16:39:32 alther Exp $
 
 */
 
@@ -10,11 +10,9 @@
 
 /* qtransform.cc */
 
-#include <math.h>
-
-    #include "qtransform.h"
-    #include <stdio.h>
-    #include <string.h>
+#include "qtransform.h"
+#include <stdio.h>
+#include <string.h>
 
 
 void qtransform( const Coord T,
