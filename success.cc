@@ -1,6 +1,6 @@
 /*
 
- $Id: success.cc,v 1.2 2003/02/26 01:42:48 garrett Exp $
+ $Id: success.cc,v 1.2.8.1 2005/10/10 23:52:28 alther Exp $
 
 */
 
@@ -11,7 +11,13 @@
 /* success.cc */
 
     #include <stdio.h>
+
+    #ifdef _WIN32
+    #include "times.h"
+    #else
     #include <sys/times.h>
+    #endif
+
     #include <sys/types.h>
     #include <time.h>
     #include "success.h"
