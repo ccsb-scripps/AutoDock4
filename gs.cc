@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.7 2005/08/15 23:03:35 garrett Exp $
+ $Id: gs.cc,v 1.7.6.1 2005/10/10 16:46:51 alther Exp $
 
 */
 
@@ -17,9 +17,19 @@
 #include <stdio.h>
 #include <sys/types.h>      /*time_t time(time_t *tloc); */
 #include <time.h>           /*time_t time(time_t *tloc); */
-#include <sys/times.h>
 
-#include <math.h>
+#ifdef _WIN32
+   #include "times.h"
+#else
+   #include <sys/times.h>
+#endif
+
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include "gs.h"
 #include "ranlib.h"
 #include "eval.h"
@@ -142,14 +152,14 @@ double Genetic_Algorithm::worst_this_generation(Population &pop)
 
 //  This could be made inline
 
-Genetic_Algorithm::Genetic_Algorithm( EvalMode init_e_mode, 
-                                      Selection_Mode init_s_mode, 
+Genetic_Algorithm::Genetic_Algorithm( EvalMode init_e_mode,
+                                      Selection_Mode init_s_mode,
                                       Xover_Mode init_c_mode,
-                                      Worst_Mode init_w_mode, 
-                                      int init_elitism, 
-                                      FloatOrDouble init_c_rate, 
-                                      FloatOrDouble init_m_rate, 
-                                      int init_window_size, 
+                                      Worst_Mode init_w_mode,
+                                      int init_elitism,
+                                      FloatOrDouble init_c_rate,
+                                      FloatOrDouble init_m_rate,
+                                      int init_window_size,
                                       unsigned int init_max_generations,
                                       unsigned int outputEveryNgens)
 
@@ -376,7 +386,7 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
          break;
       default:
          (void)fprintf(logFile,"gs.cc/Unrecognized mutation Mode!\n");
-         break; 
+         break;
    }
 }
 
@@ -410,7 +420,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
 #else
    FloatOrDouble alpha = 0.5L;
 #endif
-   
+
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover(Population &original_population)\n");
 #endif /* DEBUG */
@@ -425,7 +435,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
       ordering[temp_index] = temp_ordering;
       assert(ordering[temp_index] < original_population.num_individuals());//debug
    }
-                                                                    
+
    //  How does Goldberg implement crossover?
 
    // Loop over individuals in population
@@ -434,14 +444,14 @@ void Genetic_Algorithm::crossover(Population &original_population)
 
       if (ranf() < c_rate) {
          // Perform crossover with a probability of c_rate
-         
+
          switch(c_mode) {
             case TwoPt:
                 // first crossover point is a random integer from 0 to the number of genes minus 1
                 starting_point = ignuin(0, original_population[i].genotyp.num_genes()-1);
-                crossover_2pt( original_population[ordering[i]].genotyp, 
-                               original_population[ordering[i+1]].genotyp, 
-                               starting_point, 
+                crossover_2pt( original_population[ordering[i]].genotyp,
+                               original_population[ordering[i+1]].genotyp,
+                               starting_point,
                                starting_point+ignuin(0, original_population[i].genotyp.num_genes()-starting_point-1));
                 original_population[ordering[i]].age = 0L;
                 original_population[ordering[i+1]].age = 0L;
@@ -450,15 +460,15 @@ void Genetic_Algorithm::crossover(Population &original_population)
                 // first crossover point is a random integer from 0 to the number of genes minus 1
                 starting_point = ignlgi()%original_population[i].genotyp.num_genes();
                 //  We can accomplish one point crossover by using the 2pt crossover operator
-                crossover_2pt( original_population[ordering[i]].genotyp, 
+                crossover_2pt( original_population[ordering[i]].genotyp,
                                original_population[ordering[i+1]].genotyp,
-                               starting_point, 
+                               starting_point,
                                original_population[ordering[i]].genotyp.num_genes()-1);
                 original_population[ordering[i]].age = 0L;
                 original_population[ordering[i+1]].age = 0L;
                 break;
             case Uniform:
-                crossover_uniform( original_population[ordering[i]].genotyp, 
+                crossover_uniform( original_population[ordering[i]].genotyp,
                                    original_population[ordering[i+1]].genotyp,
                                    original_population[ordering[i]].genotyp.num_genes() - 1);
 
@@ -476,8 +486,8 @@ void Genetic_Algorithm::crossover(Population &original_population)
 #   endif
                (void)fprintf(logFile, "gs.cc/ About to call crossover_arithmetic with original_population[%d] & [%d]\n", i, i+1);
 #endif /* DEBUG */
-               crossover_arithmetic( original_population[ i ].genotyp, 
-                                     original_population[i+1].genotyp, 
+               crossover_arithmetic( original_population[ i ].genotyp,
+                                     original_population[i+1].genotyp,
                                      alpha );
                break;
             default:
@@ -490,7 +500,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
 
 void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsigned int pt1, unsigned int pt2)
 {
-    /*  Assumes that 0<=pt1<pt2<=number_of_pts  
+    /*  Assumes that 0<=pt1<pt2<=number_of_pts
      *  There are four cases to consider:-
      *  (1) the copied area is contained entirely within the gene
      *  (2) the gene is contained entirely within the copied area
@@ -619,18 +629,18 @@ void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, FloatOrDo
  *
  *                            =  N * (b-f_i) / (N*b - \sum f_i)
  *
- *  Within a given generation, let 'b' be the maximal (worst) individual and 
- *      let 'a' be the minimal individual. 
+ *  Within a given generation, let 'b' be the maximal (worst) individual and
+ *      let 'a' be the minimal individual.
  *
  *  Note:
- *      (1) This calculation is invariant to the value of B, but _not_ 
+ *      (1) This calculation is invariant to the value of B, but _not_
  *              invariant to the value of A.
  *      (2) This selection strategy works fine for functions bounded above,
  *              but it won't necessarily work for functions which are unbounded
  *              above.
  *
- *  The 'b' parameter is represented as 'Worst' and is selected by the 
- *    scale_fitness method.  If a value is greater than Worst, it is given a 
+ *  The 'b' parameter is represented as 'Worst' and is selected by the
+ *    scale_fitness method.  If a value is greater than Worst, it is given a
  *    value of zero for it's expectation.
  */
 
@@ -669,14 +679,14 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
 
    // Calculate expected number of children for each individual
 
-   assert(finite(worst));
-   assert(finite(avg));
+   assert(FINITE(worst));
+   assert(FINITE(avg));
    assert(!ISNAN(worst));
    assert(!ISNAN(avg));
 
    diffwa = worst - avg;
 
-   assert(finite(diffwa));
+   assert(FINITE(diffwa));
    assert(!ISNAN(diffwa));
 
    if (diffwa != 0.0) { // added by gmm, 4-JUN-1997
@@ -693,9 +703,9 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
           converged = 1;
           (void)fprintf(stderr,"WARNING!  The population appears to have converged, so this run will shortly terminate.\n");
       } else {
-          assert(finite(invdiffwa));
-          assert(finite(worst));
-          assert(finite(original_population.num_individuals()));
+          assert(FINITE(invdiffwa));
+          assert(FINITE(worst));
+          assert(FINITE(original_population.num_individuals()));
           assert(!ISNAN(invdiffwa));
           assert(!ISNAN(worst));
           assert(!ISNAN(original_population.num_individuals()));
@@ -705,13 +715,13 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
 
 #ifdef DEBUG2
              (void)fprintf(logFile,"gs.cc:allocLoop:  worst= %.3f\toriginal_population[%d].value(e_mode)= %.3f\talloc[%d]= %.3e\tinvdiffwa= %.3e\n",worst, i, original_population[i].value(e_mode), i, alloc[i], invdiffwa);//debug
-             if (!finite(original_population[i].value(e_mode) || ISNAN(original_population[i].value(e_mode))) ) {
+             if (!FINITE(original_population[i].value(e_mode) || ISNAN(original_population[i].value(e_mode))) ) {
                  original_population[i].getMol(individualMol); // individualMol is returned...
                  (void) writeMolAsPDBQ( individualMol, logFile);//debug
              }
 #endif
-             assert(finite(original_population[i].value(e_mode)));
-             assert(finite(alloc[i]));
+             assert(FINITE(original_population[i].value(e_mode)));
+             assert(FINITE(alloc[i]));
              assert(!ISNAN(original_population[i].value(e_mode)));
              assert(!ISNAN(alloc[i]));
           }// for i
@@ -760,15 +770,15 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
     * alloc[i] = (worst - original_population[i].value(e_mode))/(worst - avg);
     * } else {
     * (void)fprintf(logFile,"gs.cc/WARNING!  While doing proportional selection,
-    * worst (%6.2le) and avg (%6.2le) were found equal, which would cause a 
-    * division-by-zero error; this was just prevented, for individual %d\n", 
+    * worst (%6.2le) and avg (%6.2le) were found equal, which would cause a
+    * division-by-zero error; this was just prevented, for individual %d\n",
     * worst, avg, i); // Added by gmm, 4-JUN-1997
     * alloc[i] = 1.0; // Added by gmm, 2-APR-1997
     * }
     * }
     */
 
-#else 
+#else
 
    /*
     * This is how the code used to be, before the worst=avg problem
@@ -953,7 +963,7 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
 #endif /* DEBUG */
 
    next_generation = new Individual[solutions.num_individuals()];
-   
+
    set_worst(solutions);
    switch(s_mode)
    {
@@ -1010,7 +1020,7 @@ int Genetic_Algorithm::search(Population &solutions)
    for (i=0; i<solutions.num_individuals(); i++) {
       solutions[i].mapping();
    }
-   
+
 #ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform Selection on the solutions.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
@@ -1034,7 +1044,7 @@ int Genetic_Algorithm::search(Population &solutions)
 
    //
    // Perform crossover
-   // 
+   //
    crossover(newPop);
 
 #ifdef DEBUG3 /* DEBUG3 } */
@@ -1047,7 +1057,7 @@ int Genetic_Algorithm::search(Population &solutions)
 
    //
    // Perform mutation
-   // 
+   //
    mutation(newPop);
 
 #ifdef DEBUG3 /* DEBUG3 } */
@@ -1077,8 +1087,8 @@ int Genetic_Algorithm::search(Population &solutions)
 #endif /* } DEBUG3 */
 
    //
-   // Update current generation 
-   //  
+   // Update current generation
+   //
    solutions = newPop;
 
    //
@@ -1088,7 +1098,7 @@ int Genetic_Algorithm::search(Population &solutions)
 
    //
    // Increment the age of surviving individuals...
-   // 
+   //
    for (i=0; i<solutions.num_individuals(); i++) {
        solutions[i].incrementAge();
    }
@@ -1115,23 +1125,23 @@ int Genetic_Algorithm::search(Population &solutions)
            // (void)fprintf(logFile, "___\noutputEveryNgens = %d, OUTLEV0_GENS=%d\n___\n", outputEveryNgens, OUTLEV0_GENS);
            if (outputEveryNgens > 1) {
     #ifndef DEBUG3
-               (void)fprintf(logFile,"Generation: %3u   Oldest individual's energy: %.3f    Lowest energy: %.3f    Time taken for last %d generations: ", 
-               generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), 
+               (void)fprintf(logFile,"Generation: %3u   Oldest individual's energy: %.3f    Lowest energy: %.3f    Time taken for last %d generations: ",
+               generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval),
                outputEveryNgens);
     #else
-               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %uld, energy: %.3f    Lowest energy individual: %u/%u, age: %uld, energy: %.3f    Time taken for last %d generations: ", 
-               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
-               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
+               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %uld, energy: %.3f    Lowest energy individual: %u/%u, age: %uld, energy: %.3f    Time taken for last %d generations: ",
+               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age,
+               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(),
                solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), outputEveryNgens);
     #endif /* DEBUG3 */
            } else {
     #ifndef DEBUG3
-               (void)fprintf(logFile,"Generation: %3u   Oldest individual's energy: %.3f    Lowest energy: %.3f    Time taken: ", 
+               (void)fprintf(logFile,"Generation: %3u   Oldest individual's energy: %.3f    Lowest energy: %.3f    Time taken: ",
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval));
     #else
-               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %uld, energy: %.3f    Lowest energy individual: %u/%u, age: %uld, energy: %.3f    Time taken: ", 
-               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
-               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
+               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %uld, energy: %.3f    Lowest energy individual: %u/%u, age: %uld, energy: %.3f    Time taken: ",
+               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age,
+               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(),
                solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval));
     #endif /* DEBUG3 */
            }
