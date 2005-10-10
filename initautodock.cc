@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.cc,v 1.6 2005/09/28 22:54:20 garrett Exp $
+ $Id: initautodock.cc,v 1.6.6.1 2005/10/10 16:55:42 alther Exp $
 
 */
 
@@ -10,7 +10,12 @@
 
 /* initautodock.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -187,12 +192,12 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
                 for (xyz = 0;  xyz < SPACE;  xyz++) {
 		    B_change = FALSE;
                     if (delta[i][xyz] > delta_max[xyz]) {
-                        delta_max[xyz] = delta[i][xyz]; 
+                        delta_max[xyz] = delta[i][xyz];
                         ip_max[xyz] = i;
 			B_change = TRUE;
                     }
                     if (delta[i][xyz] < delta_min[xyz]) {
-                        delta_min[xyz] = delta[i][xyz]; 
+                        delta_min[xyz] = delta[i][xyz];
                         ip_min[xyz] = i;
 			B_change = TRUE;
                     }
@@ -217,7 +222,7 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 
 	    /*Assume*/ B_eq_and_opp = TRUE;
 	    for (xyz = 0;  xyz < SPACE;  xyz++) {
-		B_eq_and_opp = (delta[ip[xyz]][xyz] == -last_delta[xyz]) 
+		B_eq_and_opp = (delta[ip[xyz]][xyz] == -last_delta[xyz])
 			       && B_eq_and_opp;
 	    }
 	    if (B_eq_and_opp) {
