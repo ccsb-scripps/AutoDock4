@@ -17,6 +17,8 @@
  * 02/28/95 GMM     This header added                                         *
  ******************************************************************************/
 
+#ifndef PDBQTOKENS_H
+#define PDBQTOKENS_H
 
 #define PDBQ_UNRECOGNIZED    (-1)      /* PDBQ-file token for unrecognized symbols. */
 #define PDBQ_NULL    0      /* PDBQ-file token for '\n' or '\0'. */
@@ -34,3 +36,5 @@
 #define PDBQ_END_RES 12     /* PDBQ-file token for "END_RES". */
 #define PDBQ_TORSDOF 14     /* PDBQ-file token for "TORSDOF" - torsional degrees of freedom. */
 #define PDBQ_CONECT  15     /* PDBQ-file token for "CONECT" - PDB connectivity record. */
+
+#endif   // PDBQTOKENS_H
