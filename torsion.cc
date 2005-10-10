@@ -1,6 +1,6 @@
 /*
 
- $Id: torsion.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
+ $Id: torsion.cc,v 1.3.8.1 2005/10/10 16:53:33 alther Exp $
 
 */
 
@@ -10,7 +10,11 @@
 
 /* torsion.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
 #include "constants.h"
 #include "structs.h"
@@ -55,7 +59,7 @@ void torsion( State now,
           s = sin(this_tor = ModRad(now.tor[n]));
           o = 1. - (c = cos(this_tor));
           /*
-          atmnum = Serial number of Atom 0 in Torsion n, (0)--(1) 
+          atmnum = Serial number of Atom 0 in Torsion n, (0)--(1)
           This atom is at the origin of the current torsion
           vector, about which we are rotating...
           */
@@ -81,15 +85,15 @@ void torsion( State now,
           k[X][Z]  =  v[n][X] * ov[Z]  +  sv[Y];
           k[Y][X]  =  v[n][Y] * ov[X]  +  sv[Z];
 
-          numatmmoved = tlist[n][NUM_ATM_MOVED] + 3; 
-          for (a = 3;  a < numatmmoved;  a++ )  {        
+          numatmmoved = tlist[n][NUM_ATM_MOVED] + 3;
+          for (a = 3;  a < numatmmoved;  a++ )  {
               mvatm = tlist[n][a]; /* mvatm = Serial Num of Atom to be moved by this Torsion */
               d[X] = (double)crd[mvatm][X] - crdtemp[X];
               d[Y] = (double)crd[mvatm][Y] - crdtemp[Y];
               d[Z] = (double)crd[mvatm][Z] - crdtemp[Z];
-              crd[mvatm][X] = (double)crdtemp[X] + d[X] * k[X][X] + d[Y] * k[X][Y] + d[Z] * k[X][Z]; 
-              crd[mvatm][Y] = (double)crdtemp[Y] + d[X] * k[Y][X] + d[Y] * k[Y][Y] + d[Z] * k[Y][Z]; 
-              crd[mvatm][Z] = (double)crdtemp[Z] + d[X] * k[Z][X] + d[Y] * k[Z][Y] + d[Z] * k[Z][Z]; 
+              crd[mvatm][X] = (double)crdtemp[X] + d[X] * k[X][X] + d[Y] * k[X][Y] + d[Z] * k[X][Z];
+              crd[mvatm][Y] = (double)crdtemp[Y] + d[X] * k[Y][X] + d[Y] * k[Y][Y] + d[Z] * k[Y][Z];
+              crd[mvatm][Z] = (double)crdtemp[Z] + d[X] * k[Z][X] + d[Y] * k[Z][Y] + d[Z] * k[Z][Z];
           }/*a*/
     } /*n*/
 }
