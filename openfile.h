@@ -8,7 +8,12 @@
 #include "print_2x.h"
 #include <sys/types.h>      /*time_t time(time_t *tloc); */
 #include <time.h>           /*time_t time(time_t *tloc); */
+
+#ifdef _WIN32
+#include "times.h"
+#else
 #include <sys/times.h>
+#endif
 
 int  openfile( char  filename[MAX_CHARS],
                char  mode[],
