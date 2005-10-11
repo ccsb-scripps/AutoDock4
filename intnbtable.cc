@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.5 2005/09/28 22:54:20 garrett Exp $
+ $Id: intnbtable.cc,v 1.5.6.1 2005/10/11 00:05:18 alther Exp $
 
 */
 
@@ -10,11 +10,22 @@
 
 /* intnbtable.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
+
+#ifdef _WIN32
+#include "times.h"
+#else
 #include <sys/times.h>
+#endif
+
 #include "intnbtable.h"
 #include "structs.h"
 #include "distdepdiel.h"
@@ -34,11 +45,11 @@ extern int debug;
 
 void intnbtable( Boole *P_B_havenbp,
                  int *P_a1,
-                 int *P_a2, 
+                 int *P_a2,
                  GridMapSetInfo *info,
-                 FloatOrDouble cA, 
-                 FloatOrDouble cB, 
-                 int xA, 
+                 FloatOrDouble cA,
+                 FloatOrDouble cB,
+                 int xA,
                  int xB,
                  double coeff_desolv,
                  double sigma,
@@ -92,7 +103,7 @@ void intnbtable( Boole *P_B_havenbp,
         Bis2A = FALSE;
     }
 
-    // loop up to a maximum distance of  (NEINT * INV_A_DIV), 
+    // loop up to a maximum distance of  (NEINT * INV_A_DIV),
     //                          usually    2048 * 0.01,       or 20.48 Angstroms
 
     for ( i = 1;  i < NEINT;  i++ ) {
@@ -123,7 +134,7 @@ void intnbtable( Boole *P_B_havenbp,
         }
 
     } // 1 <= i < NEINT
-    
+
     nbeEnd = times( &tms_nbeEnd );
     pr( logFile, "Time taken: ");
     timesys( nbeEnd - nbeStart, &tms_nbeStart, &tms_nbeEnd );
@@ -135,7 +146,7 @@ void intnbtable( Boole *P_B_havenbp,
 /* end of intnbtable */
 
 
-void setup_distdepdiel( int outlev, 
+void setup_distdepdiel( int outlev,
                         EnergyTables *ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables
                       )
 {
