@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.4 2005/03/11 02:11:30 garrett Exp $
+ $Id: mkTorTree.cc,v 1.4.6.1 2005/10/11 00:03:41 alther Exp $
 
 */
 
@@ -10,19 +10,23 @@
 
 /* mkTorTree.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include <ctype.h>
-    #include "mkTorTree.h"
-    #include "pdbqtokens.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include "mkTorTree.h"
+#include "pdbqtokens.h"
 
 
 extern FILE *logFile;
 extern char  *programname;
-    
+
 
 void mkTorTree( int   atomnumber[ MAX_RECORDS ],
                 char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
@@ -134,7 +138,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
                 break;
 
     /*____________________________________________________________*/
-            case PDBQ_ATOM: 
+            case PDBQ_ATOM:
             case PDBQ_HETATM:
 
              /* This is an ATOM or HETATM. */
@@ -144,7 +148,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
              if (found_new_res) {
                     /* We are in a residue. */
                     if (natoms_in_res < 2) {
-                        /* flag the first two atoms in each new 
+                        /* flag the first two atoms in each new
                          * residue to prevent them being
                          * included in the intermolecular
                          * energy calculation.  */
@@ -155,10 +159,10 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
                 } else {
                     /* We are not in a residue.
                      *
-                     * "found_new_res" can only be reset to FALSE 
-                     * if we encounter an "END_RES" record. 
+                     * "found_new_res" can only be reset to FALSE
+                     * if we encounter an "END_RES" record.
                      * By default, found_new_res is set to FALSE. */
-                     
+
                     /* reset the atom counter */
                     natoms_in_res = 0;
                 }
@@ -368,7 +372,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     if (ntor > 0) {
         pr( logFile, "\n\nNumber of Rotatable Bonds in Small Molecule =\t%d torsions\n", ntor);
         pr( logFile, "\n\nTORSION TREE\n____________\n\nSorted in order of increasing number of atoms moved:\n\n" );
-     
+
         pr( logFile, "Torsion                    #\n" );
         pr( logFile, " #  Atom1--Atom2 Moved List of Atoms Moved\n" );
         pr( logFile, "___ ____________ _____ ________________________________________________________\n");
@@ -381,7 +385,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
             pr( logFile, "\n" );
         }
         pr( logFile, "\n" );
-    } else { 
+    } else {
         pr( logFile, "\n*** No Rotatable Bonds detected in Small Molecule. ***\n\n" );
     }
 }
