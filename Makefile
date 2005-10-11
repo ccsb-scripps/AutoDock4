@@ -1,5 +1,6 @@
 #
 # Makefile to build AutoDock 4
+# $ Id: $
 #
 # NOTE: Must be run in the $(AUTODOCK_DEV) directory
 #
@@ -56,15 +57,14 @@ OBJS = \
     cmdmode.o \
     cnv_state_to_coords.o \
     com.o \
-	distdepdiel.o \
+	 distdepdiel.o \
     stateLibrary.o \
     readfield.o \
     readmap.o \
     readPDBQT.o \
-	read_parameter_library.o \
+	 read_parameter_library.o \
     dpftypes.o \
     eval.o \
-    evaluate_energy.o \
     gencau.o \
     getrms.o \
     get_atom_type.o \
@@ -89,7 +89,7 @@ OBJS = \
     parse_param_line.o \
     parse_pdbq_line.o \
     parse_trj_line.o \
-	parsetypes.o \
+	 parsetypes.o \
     print_2x.o \
     print_atomic_energies.o \
     print_avsfld.o \
@@ -152,7 +152,6 @@ OBJS_LSFIT = \
 	read_parameter_library.o \
     dpftypes.o \
     eval.o \
-    evaluate_energy.o \
     gencau.o \
     getrms.o \
     get_atom_type.o \
@@ -255,7 +254,6 @@ LNS = \
     readPDBQT.ln \
 	read_parameter_library.ln \
     dpftypes.ln \
-    evaluate_energy.ln \
     getrms.ln \
     get_atom_type.ln \
     getInitialState.ln \
@@ -330,8 +328,8 @@ ARFLAGS = r # SGI, Sun, Alpha, Linux, Darwin, Mac OS X
 # RANLIB = file # SGI
 RANLIB = ranlib # Linux, Darwin, Mac OS X
 
-# RANLIBFLAGS = # Linux, SGI
-RANLIBFLAGS = -s # MacOS X
+RANLIBFLAGS = # Linux, SGI
+# RANLIBFLAGS = -s # MacOS X
 
 
 # C++ compiler
@@ -354,6 +352,7 @@ CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, 
 # CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X`
 
 OPTLEVEL = -O3 # Agressive optimization
+OPTLEVEL += -mieee-fp -fno-rtti
 # OPTLEVEL = -fast # Agressive optimization for the G5 on Mac OS X
 # OPTLEVEL = -O2 # High optimization
 # OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing
@@ -416,6 +415,7 @@ PROF = # No profiling
 # WARN = # Default warning level
 # WARN = -woff all # For no warnings
 WARN = -Wall # All warnings, gcc -- Recommended for developers
+WARN += -Weffc++
 # WARN = -fullwarn -ansiE -ansiW # For full warnings during compilation
 
 ifeq ($(COLINY),yes)
@@ -600,8 +600,8 @@ clmode.o : clmode.cc clmode.h constants.h openfile.h strindex.h readPDBQT.h get_
 cluster_analysis.o : cluster_analysis.cc cluster_analysis.h constants.h getrms.h
 	$(CC) $(CFLAGS) -c cluster_analysis.cc
 
-cmdmode.o : cmdmode.cc cmdtokens.h trjtokens.h cmdmode.h constants.h set_cmd_io_std.h print_2x.h parse_com_line.h strindex.h print_avsfld.h success.h openfile.h readPDBQT.h get_atom_type.h timesys.h eintcal.h trilinterp.h qmultiply.h cnv_state_to_coords.h parse_trj_line.h input_state.h autocomm.h
-	$(CC) $(CFLAGS) -c -DEINTCALPRINT cmdmode.cc
+cmdmode.o : cmdmode.cc cmdtokens.h trjtokens.h cmdmode.h constants.h set_cmd_io_std.h print_2x.h parse_com_line.h strindex.h print_avsfld.h success.h openfile.h readPDBQT.h get_atom_type.h timesys.h eintcalPrint.h trilinterp.h qmultiply.h cnv_state_to_coords.h parse_trj_line.h input_state.h autocomm.h
+	$(CC) $(CFLAGS) -c cmdmode.cc
 
 cnv_state_to_coords.o : cnv_state_to_coords.cc cnv_state_to_coords.h constants.h torsion.h qtransform.h stateLibrary.h
 	$(CC) $(CFLAGS) -c cnv_state_to_coords.cc
@@ -625,14 +625,11 @@ dpftypes.o : dpftypes.cc dpftypes.h constants.h dpftoken.h stop.h
 eintcal.o : eintcal.cc eintcal.h constants.h
 	$(CC) $(CFLAGS) -DNOSQRT -DBOUNDED -c eintcal.cc -o eintcal.o
 
-eintcalPrint.o : eintcal.cc eintcal.h constants.h
-	$(CC) $(CFLAGS) -DNOSQRT -DBOUNDED -DEINTCALPRINT -c eintcal.cc -o eintcalPrint.o
+eintcalPrint.o : eintcalPrint.cc eintcalPrint.h constants.h
+	$(CC) $(CFLAGS) -DNOSQRT -DBOUNDED -c eintcalPrint.cc -o eintcalPrint.o
 
 eval.o : eval.cc eval.h structs.h constants.h autocomm.h 
 	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c eval.cc
-
-evaluate_energy.o : evaluate_energy.cc evaluate_energy.h constants.h trilinterp.h eintcal.h
-	$(CC) $(CFLAGS) -c evaluate_energy.cc
 
 gencau.o : gencau.cc ranlib.h
 	$(CC) $(CFLAGS) -c gencau.cc
@@ -670,8 +667,8 @@ linpack.o : linpack.cc
 ls.o : ls.cc ls.h support.h ranlib.h
 	$(CC) $(CFLAGS) -c ls.cc
 
-main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcal.cc eintcal.h atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h
-	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c -DEINTCALPRINT -DWRITEPDBQSTATE main.cc
+main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcalPrint.cc eintcalPrint.h atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c -DWRITEPDBQSTATE main.cc
 
 mapping.o : mapping.cc support.h
 	$(CC) $(CFLAGS) -c mapping.cc
@@ -780,7 +777,7 @@ readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_t
 
 default_parameters.h : AD4_parameters.dat paramdat2h.csh
 	rm -f $@
-	paramdat2h.csh > tmp-paramdat
+	./paramdat2h.csh > tmp-paramdat
 	mv -f tmp-paramdat $@
 
 read_parameter_library.o : read_parameter_library.cc autocomm.h default_parameters.h
@@ -852,8 +849,8 @@ weedbonds.o : weedbonds.cc weedbonds.h constants.h
 eintcal.sqrt.o : eintcal.cc eintcal.h constants.h
 	$(CC) $(CFLAGS) -c -DBOUNDED eintcal.cc -o eintcal.sqrt.o
 
-eintcalPrint.sqrt.o : eintcal.cc eintcal.h constants.h
-	$(CC) $(CFLAGS) -c -DBOUNDED -DEINTCALPRINT eintcal.cc -o eintcalPrint.sqrt.o
+eintcalPrint.sqrt.o : eintcalPrint.cc eintcalPrint.h constants.h
+	$(CC) $(CFLAGS) -c -DBOUNDED eintcalPrint.cc -o eintcalPrint.sqrt.o
 
 intnbtable.sqrt.o : intnbtable.cc intnbtable.h constants.h
 	$(CC) $(CFLAGS) -c intnbtable.cc -o intnbtable.sqrt.o
@@ -914,9 +911,6 @@ readPDBQT.ln : readPDBQT.cc
 	$(LINT) $(LINTFLAGS) $?
 
 dpftypes.ln : dpftypes.cc
-	$(LINT) $(LINTFLAGS) $?
-
-evaluate_energy.ln : evaluate_energy.cc
 	$(LINT) $(LINTFLAGS) $?
 
 getrms.ln : getrms.cc
@@ -1086,8 +1080,8 @@ warn_bad_file.ln : warn_bad_file.cc
 eintcal.ln : eintcal.cc
 	$(LINT) $(LINTFLAGS) -DNOSQRT $?
 
-eintcalPrint.ln : eintcal.cc
-	$(LINT) $(LINTFLAGS) -DNOSQRT -DEINTCALPRINT $?
+eintcalPrint.ln : eintcalPrint.cc
+	$(LINT) $(LINTFLAGS) -DNOSQRT $?
 
 intnbtable.ln : intnbtable.cc
 	$(LINT) $(LINTFLAGS) -DNOSQRT $?
@@ -1103,8 +1097,8 @@ nbe.ln : nbe.cc
 eintcal.sqrt.ln : eintcal.cc
 	$(LINT) $(LINTFLAGS) $?
 
-eintcalPrint.sqrt.ln : eintcal.cc
-	$(LINT) $(LINTFLAGS) -DEINTCALPRINT $?
+eintcalPrint.sqrt.ln : eintcalPrint.cc
+	$(LINT) $(LINTFLAGS) $?
 
 intnbtable.sqrt.ln : intnbtable.cc
 	$(LINT) $(LINTFLAGS) $?
