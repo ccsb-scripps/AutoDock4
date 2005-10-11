@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.23 2005/09/29 03:27:09 garrett Exp $
+ $Id: main.cc,v 1.23.6.1 2005/10/11 00:15:53 alther Exp $
 
 */
 
@@ -11,24 +11,37 @@
 /* main.cc */
 
 // possibly unnecessary // #include <iostream.h>
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
+
 #include <sys/types.h> // time_t time(time_t *tloc);
 #include <time.h>      // time_t time(time_t *tloc);
-#include <sys/times.h>
+
+#ifdef _WIN32
+   #include "times.h"
+#else
+   #include <sys/times.h>
+   #include <unistd.h> // sysconf
+   #include <sys/param.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
-#include <sys/param.h>
 #include <ctype.h> // tolower
-#include <unistd.h> // sysconf
 
 /* the BOINC API header file */
 #ifdef BOINC
 #include "diagnostics.h"
-#include "boinc_api.h" 
+#include "boinc_api.h"
 #include "filesys.h" 		// boinc_fopen(), etc... */
 #endif
 
+#include "main.h"
 #include "coliny.h"
+#include "eintcalPrint.h"
 #include "hybrids.h"
 #include "ranlib.h"
 #include "gs.h"
@@ -36,8 +49,8 @@
 #include "rep.h"
 #include "support.h"
 #include "distdepdiel.h"
+#include "trilinterp.h"
 
-#include "main.h"
 
 #ifdef sun
     extern "C"
@@ -224,12 +237,12 @@ FloatOrDouble tmpconst;
 const double sigma = 3.6L;
 const double qsolpar = 0.01097L;
 
-// ELECSCALE converts between CGS units and SI units; 
+// ELECSCALE converts between CGS units and SI units;
 // see, e.g. p 254, "Molecular Modeling and Simulation", by Tamar Schlick, Springer.
 //
-// Units of ELECSCALE are (Kcal/mol ) * (Angstrom / esu^2) 
+// Units of ELECSCALE are (Kcal/mol ) * (Angstrom / esu^2)
 // and this allows us to use distances in  Angstroms and charges in esu...
-const FloatOrDouble ELECSCALE = 332.06363;   
+const FloatOrDouble ELECSCALE = 332.06363;
 
 // const FloatOrDouble ELECSCALE = 83.0159075;   this ELECSCALE (corresponding to eps(r) = 1/4r) gives -7.13 kcal/mol for 1pgp Tests/test_autodock4.py
 
@@ -448,7 +461,7 @@ static FloatOrDouble F_A_to;
 static FloatOrDouble F_lnH;
 static FloatOrDouble F_W;
 static FloatOrDouble F_hW;
-static FourByteLong clktck = 0;
+// static FourByteLong clktck = 0;   // RPA: Not used.  Commenting out.
 
 static FloatOrDouble version = 4.00;
 
@@ -522,7 +535,7 @@ jobStart = times( &tms_jobStart );
     options.handle_process_control = false;
     options.send_status_msgs = true;// only the worker programs (i.e. model) sends status msgs
     options.direct_process_action = true;// monitor handles suspend/quit, but app/model doesn't
-    // Initialisation of Boinc 
+    // Initialisation of Boinc
     rc =  boinc_init_options(options); //return 0 for success
     if( rc ){
       fprintf(stderr,"BOINC_ERROR: boinc_init_options() failed \n");
@@ -616,19 +629,20 @@ sqlower = squpper = 0.0;
 timeSeedIsSet[0] = 'F';
 timeSeedIsSet[1] = 'F';
 
-if (clktck == 0) {        /* fetch clock ticks per second first time */
-    if ( (clktck = sysconf(_SC_CLK_TCK)) < (FourByteLong)0L) {
-        stop("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
-        exit( -1 );
-    } else {
-        idct = (FloatOrDouble)1.0 / (FloatOrDouble)clktck;
-        if (debug) {
-            pr(logFile, "N.B. debug is on and set to %d\n\n", debug);
-            pr(logFile, "\n\nFYI:  Number of clock ticks per second = %d\n", (int)clktck);
-            pr(logFile, "FYI:  Elapsed time per clock tick = %.3e milli-seconds\n\n\n\n", idct * 1000. );
-        }
-    }
-}
+// RPA - Not used.
+//if (clktck == 0) {        /* fetch clock ticks per second first time */
+//    if ( (clktck = sysconf(_SC_CLK_TCK)) < (FourByteLong)0L) {
+//        stop("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
+//        exit( -1 );
+//    } else {
+//        idct = (FloatOrDouble)1.0 / (FloatOrDouble)clktck;
+//        if (debug) {
+//            pr(logFile, "N.B. debug is on and set to %d\n\n", debug);
+//            pr(logFile, "\n\nFYI:  Number of clock ticks per second = %d\n", (int)clktck);
+//            pr(logFile, "FYI:  Elapsed time per clock tick = %.3e milli-seconds\n\n\n\n", idct * 1000. );
+//        }
+//    }
+//}
 
 (void) strcpy(FN_rms_ref_crds,"unspecified filename\0");
 
@@ -655,11 +669,14 @@ banner( version );
 pr( logFile, "This file was created at:\t\t\t" );
 printdate( logFile, 1 );
 
+// RPA: Don't log this information for Win32 systems.
+#ifndef _WIN32
 (void) strcpy(hostnm, "unknown host\0");
 
 if (gethostname( hostnm, MAX_CHARS ) == 0) {
     pr( logFile, "                   using:\t\t\t\"%s\"\n", hostnm );
 }
+#endif
 
 pr( logFile, "\nNOTE: \"rus\" stands for:\n\n      r = Real, wall-clock or elapsed time;\n      u = User or cpu-usage time;\n      s = System time\n\nAll timings are in seconds, unless otherwise stated.\n\n\n" );
 
@@ -673,9 +690,9 @@ pr( logFile, "\nNOTE: \"rus\" stands for:\n\n      r = Real, wall-clock or elaps
 //
 setup_parameter_library(outlev);
 
-// 
+//
 // Compute the look-up table for the distance-dependent dielectric function
-// 
+//
 setup_distdepdiel(outlev, ad_energy_tables);
 
 //______________________________________________________________________________
@@ -858,15 +875,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if ((retval==2) || (retval==1)) {
             for (i=0; i<retval ; i++ ) {
                 if (equal(param[i], "tim", 3)) {
-                    timeSeedIsSet[i] = 'T';
-                    seed[i] = (FourByteLong)time( &time_seed );
-                    seed_random(seed[i]);
-                    pr(logFile,"Random number generator was seeded with the current time, value = %ld\n",seed[i]);
+                    pr(logFile, "Invalid random number seed, 'time', used in dpf.  Not valid for World Community Grid.\n");
+                    exit(10);
+//                  timeSeedIsSet[i] = 'T';
+//                  seed[i] = (FourByteLong)time( &time_seed );
+//                  seed_random(seed[i]);
+//                  pr(logFile,"Random number generator was seeded with the current time, value = %ld\n",seed[i]);
                 } else if (equal(param[i], "pid", 3)) {
-                    timeSeedIsSet[i] = 'F';
-                    seed[i] = getpid();
-                    seed_random(seed[i]);
-                    pr(logFile,"Random number generator was seeded with the process ID, value   = %ld\n",seed[i]);
+                   pr(logFile, "Invalid random number seed, 'pid', used in dpf.  Not valid for World Community Grid.\n");
+                   exit(10);
+//                  timeSeedIsSet[i] = 'F';
+//                  seed[i] = getpid();
+//                  seed_random(seed[i]);
+//                  pr(logFile,"Random number generator was seeded with the process ID, value   = %ld\n",seed[i]);
                 } else {
                     timeSeedIsSet[i] = 'F';
                     seed[i] = atol(param[i]);
@@ -895,12 +916,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *
          *  ligand_types C HD OA P               # ligand atom type names
          *
-         *  The order of the arguments is the index that will 
+         *  The order of the arguments is the index that will
          *  be used for look up in the grid maps, "map_index".
          */
-        
+
         //  Use "parsetypes" to read in the atom types;
-        //  
+        //
         //  The array "ligand_atom_type_ptrs" is returned, having been filled with pointers
         //  to the beginning of each "atom type word" (not atom type characters);
         //  an atom type can be either 1 or 2 characters long.
@@ -984,7 +1005,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
             // loop over atom types, j, from i to number of atom types
             for (j=i; j<num_atom_types; j++) {
-                
+
                 //  Find internal energy parameters, i.e.  epsilon and r-equilibrium values...
                 //  Lennard-Jones and Hydrogen Bond Potentials
 
@@ -1009,7 +1030,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     epsij = epsj_hb;
                     xB = 10;
                 } else if ( ((hbondi == AS) || (hbondi == A1) || (hbondi == A2)) && ((hbondj == DS) || (hbondj == D1))) {
-                    // i is an acceptor and j is a donor. 
+                    // i is an acceptor and j is a donor.
                     // i is a heteroatom, j is a hydrogen
                     // we need to calculate the arithmetic mean of Ri_hb and Rj_hb// not in this Universe...  :-(
                     //Rij = arithmetic_mean(Ri_hb, Rj_hb);// not in this Universe...  :-(
@@ -1066,10 +1087,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** ATOM_TYPE_NAMES
         */
         for (i=0; i<ATOM_MAPS-1; i++) {
-            atm_typ_str[i] = '?'; 
+            atm_typ_str[i] = '?';
         }
         atm_typ_str[ATOM_MAPS-1] = '\0';
-        // This is deprecated 
+        // This is deprecated
         prStr( error_message, "%s: WARNING:  In AutoDock 4, the new command, \"ligand_types\" is preferable to the \"types\" command.\n\n", programname);
         pr_2x( logFile, stderr, error_message );
         dpftypes( &Htype, &num_all_maps, &num_atom_types, atm_typ_str, line );
@@ -1098,15 +1119,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         // Dynamically allocate memory for the maps
         map = NewGridMapSet(info);
-            
+
         if (map == NULL) {
             prStr(error_message, "%s:  Sorry, there is not enough memory to store the grid maps.  Please use smaller maps and/or fewer atom types.\n", programname);
             stop(error_message);
             exit(1);
         }
         // Initialise the maps
-        for (i=0; i<num_map_values; i++) { 
-            map[i] = 0.0L; 
+        for (i=0; i<num_map_values; i++) {
+            map[i] = 0.0L;
         }
         */
         (void) fflush(logFile);
@@ -1126,13 +1147,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             readmap( line,
                      outlev,
 
-                     jobStart, 
+                     jobStart,
                      tms_jobStart,
 
-                     B_charMap, 
+                     B_charMap,
 
-                     &B_havemap, 
-                     &imap, 
+                     &B_havemap,
+                     &imap,
 
                      info,
                      map );
@@ -1159,13 +1180,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             readmap( line,
                      outlev,
 
-                     jobStart, 
-                     tms_jobStart, 
-                    
-                     B_charMap, 
+                     jobStart,
+                     tms_jobStart,
 
-                     &B_havemap, 
-                     &imap, 
+                     B_charMap,
+
+                     &B_havemap,
+                     &imap,
 
                      info,
                      map );
@@ -1225,7 +1246,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         B_found_move_keyword = TRUE;
 
         print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
- 
+
         natom=0;
         ligand = readPDBQT( line,
                             num_atom_types,
@@ -1251,7 +1272,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile, "Number of atoms in ligand:  %d\n\n", true_ligand_atoms);
 
         pr(logFile, "Number of vibrational degrees of freedom of ligand:  %d\n\n\n", (3 * true_ligand_atoms) - 6 );
- 
+
         for (i=0;i<natom;i++) {
             if (ignore_inter[i] == 1) {
                 pr(logFile, "Special Boundary Conditions:\n");
@@ -1345,8 +1366,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                            abs_charge,
                            qsp_abs_charge,
                            type,
-                           natom, 
-                           
+                           natom,
+
                            map,
 
                            elec,
@@ -1376,7 +1397,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                            parameterArray,
                            unbound_internal_FE,
-                           
+
                            info);
 
             char domain[1024];
@@ -1450,11 +1471,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                   writeStateOfPDBQ( j, seed, FN_ligand, dock_param_fn, lig_center,
                         &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
-                        crd, emap, elec, 
+                        crd, emap, elec,
                         charge, abs_charge, qsp_abs_charge,
                         ligand_is_inhibitor,
                         torsFreeEnergy,
-                        vt, tlist, crdpdb, nonbondlist, 
+                        vt, tlist, crdpdb, nonbondlist,
                         ad_energy_tables,
                         type, Nnb, B_calcIntElec, q1q2,
                         map,
@@ -1465,7 +1486,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         info);
 
 		  econf[nconf] = eintra + einter; // new2
-		  
+		
 		  ++nconf;
 
 		} // Next run
@@ -1873,7 +1894,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (xA != xB) {
             cA = (tmpconst = epsij / (FloatOrDouble)(xA - xB)) * pow( (double)Rij, (double)xA ) * (FloatOrDouble)xB;
             cB = tmpconst * pow( (double)Rij, (double)xB ) * (FloatOrDouble)xA;
-            intnbtable( &B_havenbp, &a1, &a2, info, cA, cB, xA, xB, 
+            intnbtable( &B_havenbp, &a1, &a2, info, cA, cB, xA, xB,
                         AD4.coeff_desolv, sigma, ad_energy_tables);
         } else {
             pr(logFile,"WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
@@ -1899,7 +1920,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         /* Defend against division by zero... */
         if (xA != xB) {
-            intnbtable( &B_havenbp, &a1, &a2, info, cA, cB, xA, xB, 
+            intnbtable( &B_havenbp, &a1, &a2, info, cA, cB, xA, xB,
                         AD4.coeff_desolv, sigma, ad_energy_tables);
         } else {
             pr(logFile,"WARNING: Exponents must be different. Aborting...\n");
@@ -2684,16 +2705,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
             pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
 
-            evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+            evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
               elec, emap,
-              nonbondlist, 
-              ad_energy_tables, 
+              nonbondlist,
+              ad_energy_tables,
               Nnb,
               B_calcIntElec, q1q2, B_isGaussTorCon, B_isTorConstrained,
               B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
               B_template, template_energy, template_stddev,
               ignore_inter,
-              B_include_1_4_interactions, scale_1_4, 
+              B_include_1_4_interactions, scale_1_4,
               parameterArray, unbound_internal_FE, info );
 
 	    if(write_stateFile){
@@ -2771,7 +2792,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     vt, tlist, crdpdb, nonbondlist,
                     ad_energy_tables,
                     type, Nnb, B_calcIntElec, q1q2,
-                    map, 
+                    map,
                     B_template, template_energy, template_stddev,
                     outlev,
                     ignore_inter,
@@ -2816,15 +2837,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
 
 
-           evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+           evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
               elec, emap,
               nonbondlist,
-              ad_energy_tables, 
+              ad_energy_tables,
               Nnb, B_calcIntElec, q1q2,B_isGaussTorCon,B_isTorConstrained,
               B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
               B_template, template_energy, template_stddev,
               ignore_inter,
-              B_include_1_4_interactions, scale_1_4, 
+              B_include_1_4_interactions, scale_1_4,
               parameterArray, unbound_internal_FE, info );
 
 	   if(write_stateFile){
@@ -2870,14 +2891,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                writeStateOfPDBQ( j,seed, FN_ligand, dock_param_fn, lig_center,
                     &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
-                    crd, emap, elec, 
-                    charge, abs_charge, qsp_abs_charge, 
+                    crd, emap, elec,
+                    charge, abs_charge, qsp_abs_charge,
                     ligand_is_inhibitor,
                     torsFreeEnergy,
-                    vt, tlist, crdpdb, nonbondlist, 
+                    vt, tlist, crdpdb, nonbondlist,
                     ad_energy_tables,
                     type, Nnb, B_calcIntElec, q1q2,
-                    map, 
+                    map,
                     B_template, template_energy, template_stddev,
                     outlev,
                     ignore_inter,
@@ -2923,15 +2944,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
           pr(logFile, "Number of Genetic Algorithm (GA) only dockings = %d run%c\n", nruns, (nruns>1)?'s':' ');
 
 
-          evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+          evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
              elec, emap,
              nonbondlist,
-             ad_energy_tables, 
+             ad_energy_tables,
              Nnb, B_calcIntElec, q1q2, B_isGaussTorCon,B_isTorConstrained,
              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
              B_template, template_energy, template_stddev,
              ignore_inter,
-             B_include_1_4_interactions, scale_1_4, 
+             B_include_1_4_interactions, scale_1_4,
              parameterArray, unbound_internal_FE, info );
 
 	  if(write_stateFile){
@@ -2963,7 +2984,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
               gaStart = times(&tms_gaStart);
 
-              sHist[nconf] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size, 
+              sHist[nconf] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size,
                                       &ligand, outputEveryNgens, info);
 
               pr(logFile, "\nFinal docked state:\n");
@@ -2984,14 +3005,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
               writeStateOfPDBQ( j, seed, FN_ligand, dock_param_fn, lig_center,
                     &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
-                    crd, emap, elec, 
-                    charge, abs_charge, qsp_abs_charge, 
+                    crd, emap, elec,
+                    charge, abs_charge, qsp_abs_charge,
                     ligand_is_inhibitor,
                     torsFreeEnergy,
-                    vt, tlist, crdpdb, nonbondlist, 
+                    vt, tlist, crdpdb, nonbondlist,
                     ad_energy_tables,
                     type, Nnb, B_calcIntElec, q1q2,
-                    map, 
+                    map,
                     B_template, template_energy, template_stddev,
                     outlev,
                     ignore_inter,
@@ -3199,7 +3220,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   lig_center, B_symmetry_flag, tlist, type, vt, FN_rms_ref_crds,
                   torsFreeEnergy, B_write_all_clusmem, ligand_is_inhibitor,
                   B_template, template_energy, template_stddev, outlev,
-                  ignore_inter, B_include_1_4_interactions, scale_1_4, 
+                  ignore_inter, B_include_1_4_interactions, scale_1_4,
                   parameterArray, unbound_internal_FE,
                   info );
             (void) fflush(logFile);
@@ -3254,14 +3275,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) fprintf( logFile, "NumLocalTests= %d\n\n", NumLocalTests );
         (void) investigate( Nnb, charge, abs_charge, qsp_abs_charge, B_calcIntElec, q1q2,
                 crd, crdpdb, ad_energy_tables,
-                maxTests, 
+                maxTests,
                 map, natom, nonbondlist, ntor,
                 outlev, tlist, type, vt, B_isGaussTorCon, US_torProfile,
                 B_isTorConstrained, B_ShowTorE, US_TorE,
                 F_TorConRange, N_con, B_symmetry_flag, FN_rms_ref_crds,
                 OutputEveryNTests, NumLocalTests, trnStep0, torStep0,
                 ignore_inter,
-                B_include_1_4_interactions, scale_1_4, 
+                B_include_1_4_interactions, scale_1_4,
                 parameterArray, unbound_internal_FE,
                 info );
 
@@ -3430,13 +3451,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             eintra = 0.0L;
         }
         if (outside) {
-            etotal = (einter = outsidetrilinterp4byatom(crdpdb, charge, abs_charge, type, 
-                                                        natom, map, elec,emap, 
+            etotal = (einter = outsidetrilinterp4byatom(crdpdb, charge, abs_charge, type,
+                                                        natom, map, elec,emap,
                                                         ignore_inter,
                                                         info )) + eintra; // gmm 2001.11.07
         } else {
-            etotal = (einter = trilinterp4(crdpdb, charge, abs_charge, type, natom, map, 
-                                           elec, emap, 
+            etotal = (einter = trilinterp4(crdpdb, charge, abs_charge, type, natom, map,
+                                           elec, emap,
                                            ignore_inter,
                                            info )) + eintra;
         }
@@ -3538,7 +3559,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
          *  output_pop_file
          *
-         *  Used to write out the population to a file at the end of 
+         *  Used to write out the population to a file at the end of
          *  every GA.
          */
         (void) sscanf( line, "%*s %s", FN_pop_file);
@@ -3593,9 +3614,9 @@ if (command_mode) {
                       Nnb, nonbondlist, atomstuff, crdpdb,
                       hostnm, type, charge, abs_charge, qsp_abs_charge, B_calcIntElec, q1q2,
                       atm_typ_str, torsFreeEnergy,
-                      ligand_is_inhibitor, 
+                      ligand_is_inhibitor,
                       ignore_inter,
-                      B_include_1_4_interactions, scale_1_4, 
+                      B_include_1_4_interactions, scale_1_4,
                       parameterArray, unbound_internal_FE,
                       info );
     exit( status );  /* "command_mode" exits here... */
@@ -3626,7 +3647,7 @@ success( hostnm, jobStart, tms_jobStart );
 #ifdef BOINCCOMPOUND
  boinc_fraction_done(1.);
 #endif
-#ifdef BOINC	   
+#ifdef BOINC	
     boinc_finish(0);       /* should not return */
 #endif
 
