@@ -5,6 +5,9 @@
  *
  */
 
+#ifndef MDIST_H
+#define MDIST_H
+
 #include "autocomm.h"
 
 void mdist();
@@ -93,4 +96,6 @@ void mdist() {
     maxdist[N][O] = 1.50;  // N-O is ~ 1.40 Å, plus 0.1 Å error
     mindist[O][N] = mindist[N][O];  // N=O is ~ 1.21 Å, minus 0.1Å error
     maxdist[O][N] = maxdist[N][O];  // N-O is ~ 1.40 Å, plus 0.1 Å error
-}; 
+};
+
+#endif   // MDIST_H
