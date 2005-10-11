@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.2 2003/02/26 01:20:28 garrett Exp $
+ $Id: mkNewState.cc,v 1.2.8.1 2005/10/11 00:04:14 alther Exp $
 
 */
 
@@ -10,10 +10,14 @@
 
 /* mkNewState.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
-    #include <stdlib.h>
-    #include "mkNewState.h"
+#include <stdlib.h>
+#include "mkNewState.h"
 
 
 void mkNewState( State *now,
@@ -49,12 +53,12 @@ void mkNewState( State *now,
     /*
     ** Quaternion angular displacement
     */
-    /* 
+    /*
     **  This code probably does *not* produce a uniformly distributed quaternion
     **
-    ** change->Q.nx  = Randpm1; 
-    ** change->Q.ny  = Randpm1; 
-    ** change->Q.nz  = Randpm1; 
+    ** change->Q.nx  = Randpm1;
+    ** change->Q.ny  = Randpm1;
+    ** change->Q.nz  = Randpm1;
     ** change->Q.ang = random_pm( qtwStep );
     ** mkUnitQuat( &(change->Q) );
     */
@@ -80,7 +84,7 @@ void mkNewState( State *now,
             if (N_con[i] > 1) {
                 /* If N_con was 2, I_ranCon could be 0 or 1, never 2
                  * Select a random constraint */
-                I_ranCon = (int)((double)N_con[i] * local_random());  
+                I_ranCon = (int)((double)N_con[i] * local_random());
             } else {
                 /* Hobson's choice...  */
                 I_ranCon = 0;
@@ -97,5 +101,5 @@ void mkNewState( State *now,
     }/*i*/
 
     cnv_state_to_coords( *now,  vt, tlist, ntor,  crdpdb, crd, natom );
-} 
+}
 /* EOF */
