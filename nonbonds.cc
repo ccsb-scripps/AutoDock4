@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.4 2005/08/15 23:39:38 garrett Exp $
+ $Id: nonbonds.cc,v 1.4.6.1 2005/10/11 00:03:25 alther Exp $
 
 */
 
@@ -10,7 +10,12 @@
 
 #include "nonbonds.h"
 #include "mdist.h"  /* mindist and maxdist are here */
-#include <math.h>
+
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
 #include <stdio.h>
 extern int debug;
@@ -22,11 +27,11 @@ extern int debug;
 extern  FILE    *logFile;
 #endif /* DEBUG */
 
-using namespace std;
+//using namespace std;
 
 void nonbonds(const float crdpdb[MAX_ATOMS][SPACE],
 		      int         nbmatrix[MAX_ATOMS][MAX_ATOMS],
-		      const int   natom, 
+		      const int   natom,
               const int   bond_index[MAX_ATOMS],
               int         B_include_1_4_interactions,
               int         bonded[MAX_ATOMS][6])
@@ -41,7 +46,7 @@ void nonbonds(const float crdpdb[MAX_ATOMS][SPACE],
     //
     // in "nbmatrix", the value 1 means this pair of atoms will be included in the internal, non-bonded list
     //                          0                                  ignored
- 
+
     // set all nonbonds in nbmatrix to 1, except "1-1 interactions" (self interaction)
     for (i = 0; i<MAX_ATOMS; i++) {
         for (j = 0; j<MAX_ATOMS; j++){
@@ -77,7 +82,7 @@ void nonbonds(const float crdpdb[MAX_ATOMS][SPACE],
                 } //  end if we are ignoring "1-4 interactions"
 
                 // Loop over each atom "l" bonded to the atom "k" bonded to the atom "j" bonded to the atom "i"...
-                for (l=0; l<bonded[bonded[bonded[i][j]][k]][5]; l++) { 
+                for (l=0; l<bonded[bonded[bonded[i][j]][k]][5]; l++) {
                     nbmatrix[i][bonded[bonded[bonded[i][j]][k]][l]] = nonbond_type;
                     nbmatrix[bonded[bonded[bonded[i][j]][k]][l]][i] = nonbond_type;
                 } //  l
@@ -91,8 +96,8 @@ void nonbonds(const float crdpdb[MAX_ATOMS][SPACE],
 
 /*----------------------------------------------------------------------------*/
 
-void getbonds(const float crdpdb[MAX_ATOMS][SPACE], 
-              const int natom, 
+void getbonds(const float crdpdb[MAX_ATOMS][SPACE],
+              const int natom,
               const int bond_index[MAX_ATOMS],
               int   bonded[MAX_ATOMS][6])
 {
@@ -112,13 +117,13 @@ void getbonds(const float crdpdb[MAX_ATOMS][SPACE],
 			dz = crdpdb[i][Z] - crdpdb[j][Z];
 			dist = sqrt(dx*dx + dy*dy + dz*dz);  // calculate the distance from "i" to "j"
 
-			if (dist >= mindist[bond_index[i]][bond_index[j]] && 
-                dist <= maxdist[bond_index[i]][bond_index[j]]) {  
-                // if distance from "i" to "j" is in range for their atom types, 
+			if (dist >= mindist[bond_index[i]][bond_index[j]] &&
+                dist <= maxdist[bond_index[i]][bond_index[j]]) {
+                // if distance from "i" to "j" is in range for their atom types,
                 // set one of the atoms to which "i" is bonded to "j", and vice-versa.
                 //
                 // bonded[x][5] is the current number of bonds that atom "x" has.
-                // 
+                //
 	            // Remember:   int bonded[MAX_ATOMS][6];	
 
 				bonded[i][ bonded[i][5] ] = j;
