@@ -1,6 +1,6 @@
 /*
 
- $Id: mkRandomState.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
+ $Id: mkRandomState.cc,v 1.3.6.1 2005/10/11 00:03:56 alther Exp $
 
 */
 
@@ -10,11 +10,15 @@
 
 /* mkRandomState.cc */
 
-#include <math.h>
+#ifdef __INTEL_COMPILER
+   #include <mathimf.h>
+#else
+   #include <math.h>
+#endif
 
-    #include <stdlib.h>
-    #include "structs.h"
-    #include "mkRandomState.h"
+#include <stdlib.h>
+#include "structs.h"
+#include "mkRandomState.h"
 
 
 State mkRandomState( int   ntor,
@@ -62,7 +66,7 @@ State mkRandomState( int   ntor,
 	    if (N_con[i] > 1) {
 		/* If N_con was 2, I_ranCon could be 0 or 1, never 2 */
 		/* Select a random constraint */
-		I_ranCon = (int)((double)N_con[i] * local_random());  
+		I_ranCon = (int)((double)N_con[i] * local_random());
 	    } else {
 		/* Hobson's choice...
 		*/
@@ -78,5 +82,5 @@ State mkRandomState( int   ntor,
     }/*i*/
 
     return( now );
-} 
+}
 /* EOF */
