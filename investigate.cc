@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.7 2005/09/28 22:54:20 garrett Exp $
+ $Id: investigate.cc,v 1.7.6.1 2005/10/11 00:05:00 alther Exp $
 
 */
 
@@ -10,17 +10,18 @@
 #include <config.h>
 #endif
 
-#include <math.h>
-#include <assert.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/times.h>
-#include <sys/param.h>
-#include <time.h>
-#include "structs.h"
+
 #include "investigate.h"
+#include "changeState.h"
+#include "cnv_state_to_coords.h"
+#include "eintcal.h"
+#include "getpdbcrds.h"
+#include "getrms.h"
+#include "mkRandomState.h"
+#include "stateLibrary.h"
+#include "trilinterp.h"
 
 #define RANDOM_MODE 1
 #define CHANGE_MODE 2
@@ -29,49 +30,49 @@ extern FILE *logFile;
 extern char *programname;
 
 
-void investigate( int   Nnb,
-                    FloatOrDouble charge[MAX_ATOMS],
-                    FloatOrDouble abs_charge[MAX_ATOMS],
-                    FloatOrDouble qsp_abs_charge[MAX_ATOMS],
-                    Boole B_calcIntElec,
-                    FloatOrDouble q1q2[MAX_NONBONDS],
-                    FloatOrDouble crd[MAX_ATOMS][SPACE],
-                    FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+void investigate(int   Nnb,
+                 FloatOrDouble charge[MAX_ATOMS],
+                 FloatOrDouble abs_charge[MAX_ATOMS],
+                 FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+                 Boole B_calcIntElec,
+                 FloatOrDouble q1q2[MAX_NONBONDS],
+                 FloatOrDouble crd[MAX_ATOMS][SPACE],
+                 FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
 
-                    EnergyTables *ptr_ad_energy_tables,
+                 EnergyTables *ptr_ad_energy_tables,
 
-                    int   maxTests,
-                    FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-                    int   natom,
-                    int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
-                    int   ntor,
-                    int   outlev,
-                    int   tlist[MAX_TORS][MAX_ATOMS],
-                    int   type[MAX_ATOMS],
-                    FloatOrDouble vt[MAX_TORS][SPACE],
-                    Boole B_isGaussTorCon,
-                    unsigned short US_torProfile[MAX_TORS][NTORDIVS],
-                    Boole B_isTorConstrained[MAX_TORS],
-                    Boole B_ShowTorE,
-                    unsigned short US_TorE[MAX_TORS],
-                    FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-                    int   N_con[MAX_TORS],
-                    Boole B_symmetry_flag,
-                    char  FN_rms_ref_crds[MAX_CHARS],
-                    int   OutputEveryNTests,
-                    int   NumLocalTests,
-                    FloatOrDouble trnStep,
-                    FloatOrDouble torStep,
-                    
-                    int   ignore_inter[MAX_ATOMS],
-                    
-                    const Boole         B_include_1_4_interactions,
-                    const FloatOrDouble scale_1_4,
+                 int   maxTests,
+                 FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                 int   natom,
+                 int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                 int   ntor,
+                 int   outlev,
+                 int   tlist[MAX_TORS][MAX_ATOMS],
+                 int   type[MAX_ATOMS],
+                 FloatOrDouble vt[MAX_TORS][SPACE],
+                 Boole B_isGaussTorCon,
+                 unsigned short US_torProfile[MAX_TORS][NTORDIVS],
+                 Boole B_isTorConstrained[MAX_TORS],
+                 Boole B_ShowTorE,
+                 unsigned short US_TorE[MAX_TORS],
+                 FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                 int   N_con[MAX_TORS],
+                 Boole B_symmetry_flag,
+                 char  FN_rms_ref_crds[MAX_CHARS],
+                 int   OutputEveryNTests,
+                 int   NumLocalTests,
+                 FloatOrDouble trnStep,
+                 FloatOrDouble torStep,
 
-                    const ParameterEntry parameterArray[MAX_MAPS],
+                 int   ignore_inter[MAX_ATOMS],
 
-                    const FloatOrDouble unbound_internal_FE,
-                    GridMapSetInfo *info )
+                 const Boole         B_include_1_4_interactions,
+                 const FloatOrDouble scale_1_4,
+
+                 const ParameterEntry parameterArray[MAX_MAPS],
+
+                 const FloatOrDouble unbound_internal_FE,
+                 GridMapSetInfo *info )
 
 {
     Boole B_outside = FALSE;
@@ -170,7 +171,7 @@ void investigate( int   Nnb,
                         }
                     }
                     cnv_state_to_coords( sNow, vt, tlist, ntor, crdpdb, crd, natom );
-     
+
                     /* Check to see if any atom is outside the grid...  */
                     for (i = 0;  i < natom;  i++) {
                         B_outside= is_out_grid_info(crd[i][X], crd[i][Y], crd[i][Z]);
@@ -190,14 +191,14 @@ void investigate( int   Nnb,
                 rms = getrms( crd, ref_crds, B_symmetry_flag, natom, type);
             } while (rms > MaxRms);
             /* Calculate Energy of System, */
-            e = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, ignore_inter, info) 
+            e = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, ignore_inter, info)
                     + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
             if (B_isGaussTorCon) {
                 for (Itor = 0; Itor < ntor; Itor++) {
                     if (B_isTorConstrained[Itor] == 1) {
                         indx = Rad2Div( sNow.tor[Itor] );
                         if (B_ShowTorE) {
-                            e += (FloatOrDouble)( US_TorE[Itor] 
+                            e += (FloatOrDouble)( US_TorE[Itor]
                                           = US_torProfile[Itor][indx] );
                         } else {
                             e += (FloatOrDouble)US_torProfile[Itor][indx];

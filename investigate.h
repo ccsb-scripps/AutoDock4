@@ -1,18 +1,21 @@
-/* investigate.h */
+/*
+  investigate.h
+
+ $Id: investigate.h,v 1.7.6.1 2005/10/11 00:05:00 alther Exp $
+
+*/
 
 
 #ifndef INVESTIGATE
 #define INVESTIGATE
 
+#include <stdio.h>
+
+#include "autocomm.h"
 #include "constants.h"
-#include "getpdbcrds.h"
-#include "mkRandomState.h"
-#include "cnv_state_to_coords.h"
-#include "getrms.h"
-#include "trilinterp.h"
-#include "eintcal.h"
-#include "changeState.h"
-#include "stateLibrary.h"
+#include "grid.h"
+#include "parameters.h"
+#include "structs.h"
 
 #define NUMRMSBINS 80 /* int   NumRmsBins = 40; // NumRmsBins = MaxRms / RmsBinSize; */
 
@@ -42,10 +45,10 @@ void investigate(
                 int   type[MAX_ATOMS],
                 FloatOrDouble vt[MAX_TORS][SPACE],
                 Boole B_isGaussTorCon,
-               unsigned short US_torProfile[MAX_TORS][NTORDIVS],
+                unsigned short US_torProfile[MAX_TORS][NTORDIVS],
                 Boole B_isTorConstrained[MAX_TORS],
                 Boole B_ShowTorE,
-               unsigned short US_TorE[MAX_TORS],
+                unsigned short US_TorE[MAX_TORS],
                 FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                 int   N_con[MAX_TORS],
                 Boole B_symmetry_flag,
@@ -54,12 +57,12 @@ void investigate(
                 int   NumLocalTests,
                 FloatOrDouble trnStep,
                 FloatOrDouble torStep,
-                
+
                 int   ignore_inter[MAX_ATOMS],
-                
+
                 const Boole         B_include_1_4_interactions,
                 const FloatOrDouble scale_1_4,
-                
+
                 const ParameterEntry parameterArray[MAX_MAPS],
 
                 const FloatOrDouble unbound_internal_FE,
