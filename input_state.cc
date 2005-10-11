@@ -1,6 +1,6 @@
 /*
 
- $Id: input_state.cc,v 1.2 2003/02/26 01:09:41 garrett Exp $
+ $Id: input_state.cc,v 1.2.8.1 2005/10/11 00:05:46 alther Exp $
 
 */
 
@@ -10,12 +10,10 @@
 
 /* input_state.cc */
 
-#include <math.h>
-
-
-    #include <stdio.h>
-    #include <string.h>
-    #include "input_state.h"
+#include <stdio.h>
+#include <string.h>
+#include "input_state.h"
+#include "qmultiply.h"
 
 #define LINELEN 132
 
