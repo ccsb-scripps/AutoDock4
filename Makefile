@@ -438,37 +438,35 @@ endif
 #
 
 autodock4 : main.o $(ADLIB)
-	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
-	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
+	@echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	@echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
 	@echo Making autodock4
 	@echo " "
 	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
 autodock4sqrt : main.o $(ADLIB)
-	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
-	echo 'Flags: '$(CC) $(LINK) -L. -lad $(LIB) >> LATEST_MAKE
+	@echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	@echo 'Flags: '$(CC) $(LINK) -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
 	@echo Making autodock4sqrt
 	@echo " "
 	$(CC) $(CFLAGS) -o $@ main.o -L. -lad $(LIB)
 
 autodock4minpt : main.o $(ADLIB)
-	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
-	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
+	@echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	@echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
 	@echo Making autodock4minpt
 	@echo " "
-	echo $(EXE)'  on  '`date`', using '`hostname` >> LATEST_MAKE
 	$(CC) $(CFLAGS) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
 
 autodock4alt : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
-	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
-	echo 'Flags: '$(CC) $(LINK) -DNOSQRT $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT) $(LIB) >> LATEST_MAKE
+	@echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	@echo 'Flags: '$(CC) $(LINK) -DNOSQRT $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT) $(LIB) >> LATEST_MAKE
 	@echo " "
 	@echo Making autodock4alt
 	@echo " "
-	echo $(EXE)'  on  '`date`', using '`hostname` >> LATEST_MAKE
 	$(CC) $(LINK) -DNOSQRT -o $@ $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT) $(LIB)
 
 install :
