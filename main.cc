@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.25 2005/10/08 01:05:01 lindy Exp $
+ $Id: main.cc,v 1.26 2005/10/14 03:15:17 garrett Exp $
 
 */
 
@@ -25,7 +25,7 @@
 #ifdef BOINC
 #include "diagnostics.h"
 #include "boinc_api.h" 
-#include "filesys.h" 		// boinc_fopen(), etc... */
+#include "filesys.h"                 // boinc_fopen(), etc... */
 #endif
 
 #include "coliny.h"
@@ -740,10 +740,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         retval = sscanf( line, "%*s %d", &outlev );
         switch ( outlev ) {
-	case -10:
-            pr( logFile, "Output Level = -10.  NO STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
-            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
-            break;
         case -1:
             pr( logFile, "Output Level = -1.  ONLY STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
             outputEveryNgens = (unsigned int) OUTLEV0_GENS;
@@ -1226,12 +1222,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         B_constrain_dist = B_haveCharges = FALSE;
         ntor1 = ntor = atomC1 = atomC2 = 0;
         sqlower = squpper = 0.0;
-	strcpy( FN_pop_file, "");  // means don't print pop_file
-	//
-	// end of initialization
-	//
+        strcpy( FN_pop_file, "");  // means don't print pop_file
+        //
+        // end of initialization
+        //
 
-	// this is the DPF_MOVE section...
+        // this is the DPF_MOVE section...
         B_found_move_keyword = TRUE;
 
         print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
@@ -1474,21 +1470,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                         info);
 
-		  econf[nconf] = eintra + einter; // new2
-		  
-		  ++nconf;
+                  econf[nconf] = eintra + einter; // new2
+                  
+                  ++nconf;
 
-		} // Next run
-		if(write_stateFile){
-		  fprintf(stateFile,"\t</runs>\n");
-		  (void) fflush(stateFile);
-		}
-		(void) fflush(logFile);
-	    }
-	    catch (std::exception& err) {
-	      (void)fprintf(logFile, "Caught Exception: %s\n", err.what());
-	      exit(1);
-	    }
+                } // Next run
+                if(write_stateFile){
+                  fprintf(stateFile,"\t</runs>\n");
+                  (void) fflush(stateFile);
+                }
+                (void) fflush(logFile);
+            }
+            catch (std::exception& err) {
+              (void)fprintf(logFile, "Caught Exception: %s\n", err.what());
+              exit(1);
+            }
 
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so optimization cannot be performed.\n\n");
@@ -2690,10 +2686,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               B_include_1_4_interactions, scale_1_4, 
               parameterArray, unbound_internal_FE, info );
 
-	    if(write_stateFile){
-	      fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
-	      fprintf(stateFile,"\t<runs>\n");
-	    }
+            if(write_stateFile){
+              fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
+              fprintf(stateFile,"\t<runs>\n");
+            }
             for (j=0; j<nruns; j++) {
                 j1 = j + 1;
 
@@ -2778,10 +2774,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                 pr( logFile, UnderLine );
             } // Next LGA run
-	    if(write_stateFile){
-	       fprintf(stateFile,"\t</runs>\n");
-	       (void) fflush(stateFile);
-	    }
+            if(write_stateFile){
+               fprintf(stateFile,"\t</runs>\n");
+               (void) fflush(stateFile);
+            }
             (void) fflush(logFile);
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set.  Sorry, genetic algorithm-local search cannot be performed.\n\n");
@@ -2821,10 +2817,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               B_include_1_4_interactions, scale_1_4, 
               parameterArray, unbound_internal_FE, info );
 
-	   if(write_stateFile){
-	     fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
-	     fprintf(stateFile,"\t<runs>\n");
-	   }
+           if(write_stateFile){
+             fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
+             fprintf(stateFile,"\t<runs>\n");
+           }
 
            for (j=0; j<nruns; j++) {
 
@@ -2885,10 +2881,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                pr( logFile, UnderLine );
 
            } // Next run
-	   if(write_stateFile){
-	     fprintf(stateFile,"\t</runs>\n");
-	     (void) fflush(stateFile);
-	   }
+           if(write_stateFile){
+             fprintf(stateFile,"\t</runs>\n");
+             (void) fflush(stateFile);
+           }
            (void) fflush(logFile);
        } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so local search cannot be performed.\n\n");
@@ -2928,10 +2924,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
              B_include_1_4_interactions, scale_1_4, 
              parameterArray, unbound_internal_FE, info );
 
-	  if(write_stateFile){
-	    fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
-	    fprintf(stateFile,"\t<runs>\n");
-	  }
+          if(write_stateFile){
+            fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
+            fprintf(stateFile,"\t<runs>\n");
+          }
           for (j=0; j<nruns; j++) {
 
               fprintf( logFile, "\n\n\tBEGINNING GENETIC ALGORITHM DOCKING\n");
@@ -2999,10 +2995,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               pr( logFile, UnderLine );
 
           } // Next run
-	  if(write_stateFile){
-	    fprintf(stateFile,"\t</runs>\n");
-	    (void) fflush(stateFile);
-	  }
+          if(write_stateFile){
+            fprintf(stateFile,"\t</runs>\n");
+            (void) fflush(stateFile);
+          }
           (void) fflush(logFile);
       } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so global search cannot be performed.\n\n");
@@ -3537,7 +3533,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          */
         (void) sscanf( line, "%*s %s", FN_pop_file);
         (void) fflush(logFile);
-        pr( logFile, "The population will be output to the file \"%s\" at the end of every generation.\n", FN_pop_file);
+        pr( logFile, "The population will be written to the file \"%s\" at the end of every generation.\n", FN_pop_file);
         break;
 
 /*_12yy_______________________________________________________________________*/
@@ -3620,7 +3616,7 @@ success( hostnm, jobStart, tms_jobStart );
 #ifdef BOINCCOMPOUND
  boinc_fraction_done(1.);
 #endif
-#ifdef BOINC	   
+#ifdef BOINC           
     boinc_finish(0);       /* should not return */
 #endif
 
