@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.11 2005/09/28 22:54:19 garrett Exp $
+ $Id: eval.cc,v 1.12 2005/10/14 03:04:59 garrett Exp $
 
 */
 
@@ -13,8 +13,8 @@
 
                                 rsh 9/95
 ********************************************************************/
-// #include <iostream.h>
-// #include <fstream.h>
+
+
 #include <math.h>
 #include "eval.h"
 
@@ -35,7 +35,7 @@ extern FILE *logFile;
 
        | x | y | z | nx | ny | nz | ang | tor1 | ... | tor N |
 
-    where
+    where:
        x is the x translation
        y is the y translation
        z is the z translation
@@ -83,6 +83,13 @@ double Eval::operator()(Representation **rep)
    return eval();
 }
 
+double Eval::operator()(Representation **rep, int term)
+{
+   make_state_from_rep(rep, &stateNow);
+   return eval(term);
+}
+
+
 double Eval::eval()
 {
    register int i;
@@ -99,7 +106,7 @@ double Eval::eval()
 #endif /* DEBUG */
 
 #ifdef DEBUG
-    if (is_out_grid(stateNow.T.x, stateNow.T.y, stateNow.T.z)) {
+    if (is_out_grid_info(stateNow.T.x, stateNow.T.y, stateNow.T.z)) {
        (void)fprintf(logFile,"eval.cc/stateNow.T is outside grid!\n");
     }
 #endif /* DEBUG */
@@ -220,9 +227,200 @@ double Eval::eval()
       } // i
    }
 #ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/double Eval::eval() returns energy= %.5lf\n",energy);
+    (void)fprintf(logFile,"eval.cc/double Eval::eval() returns energy= %.5lf\n", energy);
 #endif /*DEBUG*/
    return(energy);
+}
+
+
+double Eval::eval(int term)
+
+// Use this method, eval(int term), to compute just one particular term of the total energy
+//
+// we define term=0 as total energy
+//           term=1 as total non-bonded energy, i.e. vdW+Hb+desolv
+//           term=2 as total electrostatic energy
+
+{
+   register int i;
+   int   B_outside = 0;
+   int   I_tor = 0;
+   int   indx = 0;
+   double energy = 0.0L;
+   double retval = 0.0L;
+
+	FloatOrDouble emap_total = 0.0L;
+	FloatOrDouble elec_total = 0.0L;
+	FloatOrDouble emap[MAX_ATOMS] = { 0.0L };
+	FloatOrDouble elec[MAX_ATOMS] = { 0.0L };
+
+
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d)\n", term);
+    if (B_template) {
+        (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) -- B_template is true.\n", term);
+    }
+#endif /* DEBUG */
+
+#ifdef DEBUG
+    if (is_out_grid_info(stateNow.T.x, stateNow.T.y, stateNow.T.z)) {
+       (void)fprintf(logFile,"eval.cc/stateNow.T is outside grid!\n");
+    }
+#endif /* DEBUG */
+
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/Converting state to coordinates...\n");
+#endif /* DEBUG */
+ 
+   // Ligand could be inside or could still be outside, check all the atoms...
+   cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
+
+#ifdef DEBUG
+(void)fprintf(logFile,"eval.cc/Checking to see if all coordinates are inside grid...\n");
+#endif /* DEBUG */
+
+   //  Check to see if crd is valid
+   for (i=0; (i<natom)&&(!B_outside); i++) {
+      B_outside = is_out_grid_info(crd[i][0], crd[i][1], crd[i][2]);
+   }
+
+   if (!B_template) {
+       // Use standard energy function
+       if (!B_outside) {
+
+#ifdef DEBUG
+(void)fprintf(logFile,"eval.cc/All coordinates are inside grid...\n");
+#endif /* DEBUG */
+
+            energy = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap,
+                             		   ignore_inter, info);
+            
+            // Sum the non-bonded energies (emap[i]) and the electrostatic energies (elec[i])
+            emap_total = 0.0L;
+            elec_total = 0.0L;
+            for (i = 0; i < natom; i++) {
+                emap_total += emap[i];
+                elec_total += elec[i];
+            }
+
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after quicktrilinterp, energy= %.5lf\n", term, energy);
+#endif /* DEBUG */
+            energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, 
+                               B_include_1_4_interactions, scale_1_4, 
+                               qsp_abs_charge, parameterArray, 
+                               unbound_internal_FE);
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after eintcal, energy= %.5lf\n", term, energy);
+#endif /* DEBUG */
+         
+            if (B_isGaussTorCon) {
+                for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
+                    if (B_isTorConstrained[I_tor] == 1) {
+                        indx = Rad2Div( WrpModRad(stateNow.tor[I_tor]) );
+                        if (B_ShowTorE) {
+                            energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
+                        } else {
+                            energy += (double)US_torProfile[I_tor][indx];
+                        }
+                    }
+                } // I_tor
+            }/*if*/
+           } else {
+            /*
+             * This confuses the GA and GA-LS, because there is no gradient
+             * information when all outside conformations are given the same
+             * energy.
+             *
+             * energy = BIG_ENERGY;  / / A really big number defined in autocomm.h
+             */
+            /*
+             * Instead...
+             *
+             * Penalise atoms outside grid based on the square of the 
+             * distance from centre of grid map, otherwise use the normal 
+             * trilinear interpolation.
+             */
+            energy = outsidetrilinterp4byatom( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+
+            // Sum the non-bonded energies (emap[i]) and the electrostatic energies (elec[i])
+            emap_total = 0.0L;
+            elec_total = 0.0L;
+            for (i = 0; i < natom; i++) {
+                emap_total += emap[i];
+                elec_total += elec[i];
+            }
+
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after outsidetrilinterp, energy= %.5lf\n", term, energy);
+#endif /* DEBUG */
+            energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after eintcal, energy= %.5lf\n", term, energy);
+#endif /* DEBUG */
+            if (B_isGaussTorCon) {
+                for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
+                    if (B_isTorConstrained[I_tor] == 1) {
+                        indx = Rad2Div( WrpModRad(stateNow.tor[I_tor]) );
+                        if (B_ShowTorE) {
+                            energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx
+    ]);
+                        } else {
+                            energy += (double)US_torProfile[I_tor][indx];
+                        }
+                    }
+                } // I_tor
+            } // if
+        }
+    } else {
+        // Use template scoring function
+        if (!B_outside) {
+            energy = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
+                                  template_energy, template_stddev, info);
+        } else {
+            energy = outside_templ_trilinterp( crd, charge, abs_charge, type, natom, map,
+                                               template_energy, template_stddev, info);
+        }
+    }
+
+   // num_evals++;
+
+   if (!finite(energy)) {
+      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is infinite!\n\n");
+      for (i=0; i<natom; i++) {
+           // (void)fprintf( logFile, "ATOM  %5d  C   INF     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]); 
+          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   INF     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
+          (void)fprintf(logFile, "\n");
+      } // i
+   }
+   if (ISNAN(energy)) {
+      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is not a number!\n\n");
+      for (i=0; i<natom; i++) {
+          // (void)fprintf( logFile, "ATOM  %5d  C   NaN     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]); 
+          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   NaN     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
+          (void)fprintf(logFile, "\n");
+      } // i
+   }
+    switch (term) {
+    default:
+    case 0:
+        // Return the total energy.
+        retval = energy;
+        break;
+    case 1:
+        // Return the non-bonded energy, vdW+Hb+desolv.
+        retval = (double)emap_total;
+        break;
+    case 2:
+        // Return the electrostatics energy.
+        retval = (double)elec_total;
+        break;
+    }
+
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) returns retval= %.5lf\n", term, retval);
+#endif /*DEBUG*/
+   return(retval);
 }
 
 int Eval::write(FILE *out_file, Representation **rep)
@@ -247,7 +445,7 @@ int Eval::write(FILE *out_file, Representation **rep)
     return retval;
 }
 
-#if defined(USING_COLINY)
+#if defined(USING_COLINY) // {
 double Eval::operator()(double* vec, int len)
 {
    make_state_from_rep(vec, len, &stateNow);
@@ -311,4 +509,4 @@ for (int i=6; i<n; i++)
 return ::evaluate(x,n);
 }
 //
-#endif // USING_COLINY
+#endif // USING_COLINY // }

@@ -85,10 +85,12 @@ class Eval
           );
 
       double operator()(Representation **);
+      double operator()(Representation **, int); // GMM - allows calculation of a particular term of the total energy
 #if defined(USING_COLINY)
       double operator()(double*, int);
 #endif
-      double eval();			// WEH - a basic change that facilitates the use of Coliny
+      double eval();    // WEH - a basic change that facilitates the use of Coliny
+      double eval(int); // GMM - allows calculation of a particular term of the total energy
       UnsignedFourByteLong evals(void);
       void reset(void);
       int write(FILE *out_file, Representation **rep);
