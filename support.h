@@ -11,6 +11,9 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.7  2005/10/14 03:10:01  garrett
+** Completed the "printPopulationAsCoordsEnergies" member function of the "Population" class, so that it now prints the nonbonded energy and the electrostatics energy, in addition to the translation and total energy for each member of the population.  These numbers are written to the population file at the end of each generation.  The DPF keyword "output_pop_file" expects the name of this population file; if this keyword is not given before a given "ga_run" command, then no population file will be written.
+**
 ** Revision 1.6  2005/09/29 03:34:42  garrett
 ** Added a new method to the Population class, called "printPopulationAsCoordsEnergies", which is used to print out the translation of the centre of each individual and its total interaction energy.
 **
@@ -87,7 +90,7 @@
 #include "eval.h"
 #include "structs.h"
 
-enum EvalMode {Reset, Always_Eval, Normal_Eval};
+enum EvalMode { Reset, Always_Eval, Normal_Eval, Always_Eval_Nonbond, Always_Eval_Elec };
 
 typedef struct
 {
@@ -206,7 +209,7 @@ class Population
       Population(int); /* create a pop. with this many individuals */
       Population(int, Individual *); /* takes an array of ind's and turns into pop. */
       Population(Population &); /* copy constructor */
-      ~Population(void);
+      ~Population(void); /* destructor */
       Individual &operator[](int);  /* for accessing a particular indiv.in pop*/
       Population &operator=(const Population &);
       unsigned int num_individuals(void); /* returns the size of the pop. */

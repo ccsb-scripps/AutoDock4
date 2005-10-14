@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.11 2005/10/06 22:52:49 lindy Exp $
+ $Id: support.cc,v 1.12 2005/10/14 03:10:01 garrett Exp $
 
 */
 
@@ -8,19 +8,19 @@
 #include <config.h>
 #endif
 
-//  These are the member functions for the support classes.
-
-
+#include <stdio.h>
 #include "eval.h"
-
-    #include <stdio.h>
-    #include "support.h"
-    #include "stateLibrary.h"
-    #include "structs.h"
+#include "support.h"
+#include "stateLibrary.h"
+#include "structs.h"
 
 extern FILE *logFile;
 
 extern class Eval evaluate;
+
+
+//  These are the member functions for the support classes.
+
 
 Population::Population(Population &original)
 : lhb(original.lhb), size(original.size)
@@ -218,16 +218,32 @@ void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor
 
    //(void)fprintf( output, "The top %d individuals in the population:\n\n", num);
    for (i=0; i<num; i++) {
+
       // Print the number of this individual in the population (counting from 1, not 0)
       (void)fprintf( output, "%d\t", i+1);
+
       // Print the translation
       heap[i].printIndividualsState(output, ntor, 3);  // 3 means print just the translation
       //heap[i].printIndividualsState(output, ntor, 0);  // 0 means print the whole state
+
       // Print the energy
       thisValue = heap[i].value(Always_Eval);
-      (void)fprintf( output, "\t%9.2le\n", thisValue);
+      (void)fprintf( output, "\t%9.2lf", thisValue);
+
+      // Print the non-bonded energy, i.e. vdW+Hb+desolv
+      thisValue = heap[i].value(Always_Eval_Nonbond);
+      (void)fprintf( output, "\t%9.2lf", thisValue);
+
+      // Print the electrostatic energy, i.e. elec
+      thisValue = heap[i].value(Always_Eval_Elec);
+      (void)fprintf( output, "\t%9.2lf", thisValue);
+
+      // Write a newline at the end
+      (void)fprintf( output, "\n");
+
       // We need the coordinates of this individual to compute the electrostatic and nonbond energies
-      cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);
+      //cnv_state_to_coords( heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);
+
    }// i
    (void)fprintf( output, "\n");
 }
@@ -610,7 +626,7 @@ void Phenotype::write(const Representation &value, int gene_number)
 }
 
 double Phenotype::evaluate(EvalMode mode)
-{ 
+{
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/double Phenotype::evaluate(EvalMode mode)\n");
@@ -620,6 +636,14 @@ double Phenotype::evaluate(EvalMode mode)
    {
       case Always_Eval:
          value = ::evaluate(value_vector);
+         evalflag = 1;
+         break;
+      case Always_Eval_Nonbond:
+         value = ::evaluate(value_vector, 1); // term=1 as total non-bonded energy, i.e. vdW+Hb+desolv
+         evalflag = 1;
+         break;
+      case Always_Eval_Elec:
+         value = ::evaluate(value_vector, 2); // term=2 as total electrostatic energy
          evalflag = 1;
          break;
       case Normal_Eval:
