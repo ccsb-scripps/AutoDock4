@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.27 2005/10/22 04:02:40 garrett Exp $
+ $Id: main.cc,v 1.28 2005/10/22 04:22:20 garrett Exp $
 
 */
 
@@ -195,7 +195,7 @@ FloatOrDouble lig_center[SPACE];
 
 //   MAX_RUNS
 //
-FloatOrDouble econf[MAX_RUNS];
+FloatOrDouble econf[MAX_RUNS];  // this is the list of energies printed in the histogram in "analysis"
 State sHist[MAX_RUNS];  /* qtnHist[MAX_RUNS][QUAT],torHist[MAX_RUNS][MAX_TORS];*/
 
 char out_acc_rej = '?';
@@ -1470,7 +1470,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                         info);
 
-                  econf[nconf] = eintra + einter; // new2
+                  econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
                   
                   ++nconf;
 
@@ -2535,7 +2535,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   B_symmetry_flag, FN_rms_ref_crds );
             }
             for (j = 0; j < MAX_RUNS; j++) {
-                econf[j] = torsFreeEnergy;
+                econf[j] = torsFreeEnergy - unbound_internal_FE;
             }
             /* ___________________________________________________________________
             **
@@ -2768,7 +2768,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                     info );
 
-                econf[nconf] = eintra + einter; // new2
+                econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 
                 ++nconf;
 
@@ -2874,7 +2874,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                     info);
 
-               econf[nconf] = eintra + einter; // new2
+               econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 
                ++nconf;
 
@@ -2988,7 +2988,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                     info );
 
-              econf[nconf] = eintra + einter; // new2
+              econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 
               ++nconf;
 
