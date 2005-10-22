@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.7 2005/09/29 03:24:24 garrett Exp $
+ $Id: parse_dpf_line.cc,v 1.8 2005/10/22 04:02:40 garrett Exp $
 
 */
 
@@ -143,8 +143,8 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"ligand_types", DPF_LIGAND_TYPES}      // 92
               , {"unbound", DPF_UNBOUND}      // 93
               , {"epdb", DPF_EPDB}      // 94
-              , {"termination_criterion", DPF_TERMINATION}      // 95
-              , {"termination", DPF_TERMINATION}      // 96
+              , {"ga_termination_criterion", DPF_TERMINATION}      // 95
+              , {"ga_termination", DPF_TERMINATION}      // 96
               , {"ga_crossover_mode", GA_CROSSOVER_MODE}      // 97
               , {"output_pop_file", DPF_POPFILE}      // 98
 #if defined(USING_COLINY)

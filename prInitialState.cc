@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.3 2005/08/15 23:43:55 garrett Exp $
+ $Id: prInitialState.cc,v 1.4 2005/10/22 04:02:40 garrett Exp $
 
 */
 
@@ -35,7 +35,9 @@ void prInitialState(
     FloatOrDouble emap[MAX_ATOMS],
     FloatOrDouble elec[MAX_ATOMS],
     FloatOrDouble charge[MAX_ATOMS],
-    int ligand_is_inhibitor)
+    int ligand_is_inhibitor,
+    FloatOrDouble unbound_internal_FE
+    )
 
 {
     char rec8[10];
@@ -77,7 +79,7 @@ void prInitialState(
         emap_total += emap[a];
         elec_total += elec[a];
     }
-    printEnergies( einter, eintra, torsFreeEnergy, "Initial ", ligand_is_inhibitor, emap_total, elec_total);
+    printEnergies( einter, eintra, torsFreeEnergy, "Initial ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
 
     flushLog;
 }

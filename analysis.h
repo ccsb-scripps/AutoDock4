@@ -56,5 +56,5 @@ void  analysis( int   Nnb,
                 const ParameterEntry parameterArray[MAX_MAPS],
                 const FloatOrDouble unbound_internal_FE,
                 
-                GridMapSetInfo *info );
+                GridMapSetInfo *info);
 #endif

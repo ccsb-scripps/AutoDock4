@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.26 2005/10/14 03:15:17 garrett Exp $
+ $Id: main.cc,v 1.27 2005/10/22 04:02:40 garrett Exp $
 
 */
 
@@ -3467,7 +3467,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile, "Total Intermolecular vdW + Hbond Energy   = %+.3f kcal/mol\n", emap_total);
         pr(logFile, "Total Intermolecular Electrostatic Energy = %+.3f kcal/mol\n\n\n", elec_total);
 #endif
-        printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total);
+        printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
         pr(logFile, "\n");
         for ( i=0; i<true_ligand_atoms; i++ ) {
             for (xyz = 0;  xyz < SPACE;  xyz++) {
@@ -3482,9 +3482,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case DPF_TERMINATION:
         /*
-         *  termination_criterion energy 0.1
-         *  termination_criterion evals 25000
-         *  termination_criterion time 120 s
+         *  ga_termination energy 0.1
+         *  ga_termination evals 25000  // the best energy did not change in this time
+         *  ga_termination time 120 s
          */
         /*
         (void) sscanf( line, "%*s %d", &i );

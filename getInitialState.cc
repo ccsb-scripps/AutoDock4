@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.7 2005/09/28 22:54:20 garrett Exp $
+ $Id: getInitialState.cc,v 1.8 2005/10/22 04:02:40 garrett Exp $
 
 */
 
@@ -198,7 +198,7 @@ void getInitialState(
     copyState( sMinm, *sInit );
     copyState( sLast, *sInit );
 
-    prInitialState(e0inter, e0intra, torsFreeEnergy, natom, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor);
+    prInitialState(e0inter, e0intra, torsFreeEnergy, natom, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor, unbound_internal_FE);
 
     initEnd = times( &tms_initEnd );
     pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);

@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.12 2005/10/22 02:48:28 garrett Exp $
+ $Id: analysis.cc,v 1.13 2005/10/22 04:02:40 garrett Exp $
 
 */
 
@@ -240,7 +240,7 @@ void analysis( int   Nnb,
             }
 
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
-            printEnergies( einter, eintra, torsFreeEnergy, "USER    ", ligand_is_inhibitor, emap_total, elec_total );
+            printEnergies( einter, eintra, torsFreeEnergy, "USER    ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE );
      
             pr( logFile, "USER  \n");
             pr( logFile, "USER    DPF = %s\n", dock_param_fn);

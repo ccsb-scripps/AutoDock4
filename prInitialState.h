@@ -15,5 +15,6 @@ void  prInitialState(
     FloatOrDouble emap[MAX_ATOMS],
     FloatOrDouble elec[MAX_ATOMS],
     FloatOrDouble charge[MAX_ATOMS],
-    int ligand_is_inhibitor);
+    int ligand_is_inhibitor,
+    FloatOrDouble unbound_internal_FE);
 #endif

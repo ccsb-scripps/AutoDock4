@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.7 2005/09/28 22:54:20 garrett Exp $
+ $Id: printEnergies.cc,v 1.8 2005/10/22 04:02:41 garrett Exp $
 
 */
 
@@ -33,7 +33,8 @@ void printEnergies(
         char  *prefixString,
         int ligand_is_inhibitor,
         FloatOrDouble emap_total,
-        FloatOrDouble elec_total
+        FloatOrDouble elec_total,
+        FloatOrDouble unbound_internal_FE
         )
 {
     FloatOrDouble deltaG = 0.0;
@@ -67,14 +68,14 @@ void printEnergies(
     // lose the minus-sign:  deltaG = R*T*lnKi,  _not_ -R*T*lnKi
     // => deltaG/(R*T) = lnKi
     // => Ki = exp(deltaG/(R*T))
-    deltaG = einter + eintra + torsFreeEnergy;
+    deltaG = einter + eintra + torsFreeEnergy - unbound_internal_FE;
     if (deltaG < 0.0) {
         Ki = exp((deltaG*1000.)/(Rcal*TK));
     }
 
     pr( logFile, "%sEstimated Free Energy of Binding    = ", prefixString);
     print1000(logFile, deltaG);
-    pr( logFile, " kcal/mol  [=(1)+(2)+(3)]\n");
+    pr( logFile, " kcal/mol  [=(1)+(2)+(3)-(4)]\n");
 
     if (deltaG < 0.0) {
         if (ligand_is_inhibitor == 1) {
@@ -112,20 +113,22 @@ void printEnergies(
     print1000(logFile, torsFreeEnergy);
     pr( logFile, " kcal/mol\n");
 
+    pr( logFile, "%s(4) Unbound System's Energy         = ", prefixString);
+    print1000(logFile, unbound_internal_FE);
+    pr( logFile, " kcal/mol\n");
+
     pr( logFile, "%s\n", prefixString);
     pr( logFile, "%s\n", prefixString);
 }
 
-void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDouble torsFreeEnergy, char  *prefixString, int ligand_is_inhibitor )
+void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDouble torsFreeEnergy, char  *prefixString, int ligand_is_inhibitor, FloatOrDouble unbound_internal_FE )
 {
     FloatOrDouble deltaG = 0.0;
     FloatOrDouble Ki = 1.0;
-    FloatOrDouble edocked=0.0;
     // FloatOrDouble RJ = 8.31441;  // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
     FloatOrDouble Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
     FloatOrDouble TK = 298.15;      // Room temperature, in K
 
-    edocked = einter + eintra;
     // equilibrium:   E  +  I  <=>    EI
     // binding:       E  +  I   ->    EI         K(binding),      Kb
     // dissociation:     EI     ->  E  +  I      K(dissociation), Kd
@@ -149,7 +152,7 @@ void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDoub
     // lose the minus-sign:  deltaG = R*T*lnKi,  _not_ -R*T*lnKi
     // => deltaG/(R*T) = lnKi
     // => Ki = exp(deltaG/(R*T))
-    deltaG = einter + torsFreeEnergy;
+    deltaG = einter + eintra + torsFreeEnergy - unbound_internal_FE;
     if (deltaG < 0.0) {
         Ki = exp((deltaG*1000.)/(Rcal*TK));
     }
@@ -170,9 +173,6 @@ void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDoub
         }
         pr(stateFile, "\t\t<Temp>%.2f</Temp>\n", TK); //temperature in K
     } 
-    pr(stateFile, "\t\t<final_dock_NRG>");
-    print1000(stateFile, edocked);
-    pr(stateFile, "</final_dock_NRG>\n");
 
     pr(stateFile, "\t\t<final_intermol_NRG>");
     print1000(stateFile, einter);
@@ -185,5 +185,4 @@ void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDoub
     pr(stateFile, "\t\t<torsonial_free_NRG>");
     print1000(stateFile, torsFreeEnergy);
     pr(stateFile, "</torsonial_free_NRG>\n"); 
-
 }

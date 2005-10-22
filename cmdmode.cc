@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.9 2005/09/28 22:54:19 garrett Exp $
+ $Id: cmdmode.cc,v 1.10 2005/10/22 04:02:40 garrett Exp $
 
 */
 
@@ -281,7 +281,7 @@ int cmdmode(int   natom,
                     pr(command_out_fp, "%.2f\n", etotal);
                     pr(logFile, "    E_intermolecular_atomic-affinity = %.2f kcal/mol\n", emap_total);
                     pr(logFile, "    E_intermolecular_electrostatic   = %.2f kcal/mol\n", elec_total);
-                    printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total);
+                    printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
                     pr(logFile, "\n");
                     fflush(logFile);
                     fflush(stderr);
@@ -365,7 +365,7 @@ int cmdmode(int   natom,
 */
             case COM_OUTE:
                 pr(logFile, "COMMAND: oute\n\n");
-                printEnergies(einter, eintra, torsFreeEnergy, "oute: USER    ", ligand_is_inhibitor, emap_total, elec_total);
+                printEnergies(einter, eintra, torsFreeEnergy, "oute: USER    ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
 /*                 prStr(message, "USER    Total Internal Energy of Small Molecule = %.2f\n", eintra); */
 /*                 pr_2x(command_out_fp, logFile, message); */
 /*                 prStr(message, "USER    Total Docked Energy of Complex = %.2f\n", etotal); */
