@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.8 2005/10/22 04:02:41 garrett Exp $
+ $Id: printEnergies.cc,v 1.9 2005/10/22 04:36:33 garrett Exp $
 
 */
 
@@ -105,7 +105,7 @@ void printEnergies(
     print1000(logFile, elec_total);
     pr( logFile, " kcal/mol\n");
 
-    pr( logFile, "%s(2) Final Internal Energy of Ligand = ", prefixString);
+    pr( logFile, "%s(2) Final Internal Energy           = ", prefixString);
     print1000(logFile, eintra);
     pr( logFile, " kcal/mol\n");
 
