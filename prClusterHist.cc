@@ -1,6 +1,6 @@
 /*
 
- $Id: prClusterHist.cc,v 1.2 2003/02/26 01:25:07 garrett Exp $
+ $Id: prClusterHist.cc,v 1.3 2005/10/22 04:34:21 garrett Exp $
 
 */
 
@@ -46,7 +46,7 @@ void prClusterHist( int ncluster,
     (void)fprintf( logFile, "________________________________________________________________________________\n");
     (void)fprintf( logFile, "     |           |     |           |     |                                    \n" );
     (void)fprintf( logFile, "Clus | Lowest    | Run | Mean      | Num | Histogram                          \n" );
-    (void)fprintf( logFile, "-ter | Docked    |     | Docked    | in  |                                    \n" );
+    (void)fprintf( logFile, "-ter | Binding   |     | Binding   | in  |                                    \n" );
     (void)fprintf( logFile, "Rank | Energy    |     | Energy    | Clus|    5    10   15   20   25   30   35\n" );
     (void)fprintf( logFile, "_____|___________|_____|___________|_____|____:____|____:____|____:____|____:___");
 
@@ -104,7 +104,7 @@ void prClusterHist( int ncluster,
 
     (void)fprintf( logFile, "_____________________________________________________________________\n");
     (void)fprintf( logFile, "     |      |      |           |         |                 |\n");
-    (void)fprintf( logFile, "Rank | Sub- | Run  | Docked    | Cluster | Reference       | Grep\n");
+    (void)fprintf( logFile, "Rank | Sub- | Run  | Binding   | Cluster | Reference       | Grep\n");
     (void)fprintf( logFile, "     | Rank |      | Energy    | RMSD    | RMSD            | Pattern\n");
     (void)fprintf( logFile, "_____|______|______|___________|_________|_________________|___________\n" );
 
