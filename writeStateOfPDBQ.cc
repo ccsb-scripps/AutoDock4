@@ -1,6 +1,6 @@
 /*
 
- $Id: writeStateOfPDBQ.cc,v 1.5 2005/10/14 03:16:48 garrett Exp $
+ $Id: writeStateOfPDBQ.cc,v 1.6 2005/10/22 04:40:02 garrett Exp $
 
 */
 
@@ -130,14 +130,14 @@ writeStateOfPDBQ(int irun, FourByteLong seed[2],
         pr( logFile, "DOCKED: USER    DPF = %s\n", dpfFN );
         pr( logFile, "DOCKED: USER  \n" );
         
-        printEnergies(*Ptr_einter, *Ptr_eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor, emap_total, elec_total);
+        printEnergies(*Ptr_einter, *Ptr_eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
 
 		if (write_stateFile) {
 			pr(stateFile, "\n");
 			pr(stateFile, "\t<run id=\"%4d\">\n", irun + 1);
 			pr(stateFile, "\t\t<seed>%ld %ld</seed>\n", seed[0], seed[1]);
 			pr(stateFile, "\t\t<dpf>%s</dpf>\n", dpfFN);
-			printStateEnergies(*Ptr_einter, *Ptr_eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor);
+			printStateEnergies(*Ptr_einter, *Ptr_eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor, unbound_internal_FE);
 		}
 		(void) fprintf(logFile, "DOCKED: USER    NEWDPF move %s\n", smFileName);
 		(void) fprintf(logFile, "DOCKED: USER    NEWDPF about %f %f %f\n", sml_center[X], sml_center[Y], sml_center[Z]);

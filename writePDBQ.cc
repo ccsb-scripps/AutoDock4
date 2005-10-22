@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.10 2005/09/29 20:42:43 garrett Exp $
+ $Id: writePDBQ.cc,v 1.11 2005/10/22 04:40:02 garrett Exp $
 
 */
 
@@ -66,7 +66,7 @@ writePDBQ(int irun,
 		pr(logFile, "DOCKED: USER    Run = %d\n", irun + 1);
 		pr(logFile, "DOCKED: USER    DPF = %s\n", dpfFN);
 
-		printEnergies(einter, eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor, emap_total, elec_total);
+		printEnergies(einter, eintra, torsFreeEnergy, "DOCKED: USER    ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
 
 		(void) fprintf(logFile, "DOCKED: USER    NEWDPF move %s\n", smFileName);
 		(void) fprintf(logFile, "DOCKED: USER    NEWDPF about %f %f %f\n", sml_center[X], sml_center[Y], sml_center[Z]);
