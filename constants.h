@@ -1,8 +1,6 @@
 /* constants.h */
 
-#ifndef _AUTOCOMM
 #include "autocomm.h" /* PI, TWOPI. */
-#endif
 #include "dpftoken.h"
 #include "partokens.h"
 
