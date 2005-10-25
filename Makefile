@@ -409,9 +409,9 @@ DBUG = # Use assert code
 # DBUG = -DDEBUG3 # Just DEBUG3-specific code for print age of individuals
 # DBUG = -g -DDEBUG -DDEBUG2 -DDEBUG3 # Debug everything
 
-# PROF = # No profiling
+PROF = # No profiling
 # PROF = -p # CC Profiling
-PROF = -pg # For GNU gcc & GNU g++ Profiling with GNU gprof
+# PROF = -pg # For GNU gcc & GNU g++ Profiling with GNU gprof
 
 # WARN = # Default warning level
 # WARN = -woff all # For no warnings
