@@ -7,9 +7,9 @@
 #############################################################################
 
 
-# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.3 2005/09/30 15:36:36 rhuey Exp $
+# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.4 2005/10/25 03:20:58 garrett Exp $
 #
-# $Id: DlgParser.py,v 1.3 2005/09/30 15:36:36 rhuey Exp $
+# $Id: DlgParser.py,v 1.4 2005/10/25 03:20:58 garrett Exp $
 #
 #
 #
@@ -456,8 +456,8 @@ class DlgParser:
                 energyDict[k]['binding_energy'] = float(split(l)[7])
             elif find(l, 'Final Intermolecular Energy')>-1:
                 energyDict[k]['intermol_energy'] = float(split(l)[6])
-            elif find(l, 'Final Internal Energy of Ligand')>-1:
-                energyDict[k]['internal_energy'] = float(split(l)[8])
+            elif find(l, 'Final Internal Energy')>-1:
+                energyDict[k]['internal_energy'] = float(split(l)[6])
             elif find(l, 'Final Docked Energy ')>-1:
                 energyDict[k]['docking_energy'] = float(split(l)[5])
             elif find(l, 'Torsional Free Energy ')>-1:
@@ -578,8 +578,8 @@ class DlgParser:
                 d['docking_energy'] = float((ll)[5])
             elif find(l, 'Final Intermolecular Energy')>-1:
                 d['intermol_energy'] = float((ll)[6])
-            elif find(l, 'Final Internal Energy of Ligand')>-1:
-                d['internal_energy'] = float((ll)[8])
+            elif find(l, 'Final Internal Energy')>-1:
+                d['internal_energy'] = float((ll)[6])
             elif find(l, 'Torsional Free Energy')>-1:
                 d['torsional_energy'] = float((ll)[6])
             elif find(l, 'NEWDPF tran0')>-1:
