@@ -330,7 +330,7 @@ ARFLAGS = r # SGI, Sun, Alpha, Linux, Darwin, Mac OS X
 # RANLIB = file # SGI
 RANLIB = ranlib # Linux, Darwin, Mac OS X
 
-RANLIBFLAGS = -s # MacOS X, Linux, SGI
+RANLIBFLAGS = # Linux, SGI, Mac OS X
 
 
 # C++ compiler
@@ -398,19 +398,20 @@ LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X
 # LINTFLAGS = -DHPPA -D_HPUX_SOURCE $(LIB) -c # HP
 # LINTFLAGS = -u -n -lm # Sun
 
-# DBUG = # Use assert code
+DBUG = # Use assert code
 # DBUG = -DNDEBUG # No debugging and no assert code
 # DBUG = -g # dbx, or Gnu gdb
 # DBUG = -g -DDEBUG # dbx + DEBUG-specific code
-DBUG = -g3 # dbx + optimization
+# DBUG = -g3 # dbx + optimization
 # DBUG = -g3 -DDEBUG # dbx + optimization, + DEBUG-specific code
 # DBUG = -DDEBUG # Just DEBUG-specific code
 # DBUG = -DDEBUG2 # Just DEBUG2-specific code for tracking prop.selection
 # DBUG = -DDEBUG3 # Just DEBUG3-specific code for print age of individuals
 # DBUG = -g -DDEBUG -DDEBUG2 -DDEBUG3 # Debug everything
 
-PROF = # No profiling
-# PROF = -p # Profiling
+# PROF = # No profiling
+# PROF = -p # CC Profiling
+PROF = -pg # For GNU gcc & GNU g++ Profiling with GNU gprof
 
 # WARN = # Default warning level
 # WARN = -woff all # For no warnings
