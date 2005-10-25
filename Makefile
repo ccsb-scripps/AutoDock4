@@ -778,7 +778,7 @@ readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_t
 
 default_parameters.h : AD4_parameters.dat paramdat2h.csh
 	rm -f $@
-	paramdat2h.csh > tmp-paramdat
+	./paramdat2h.csh > tmp-paramdat
 	mv -f tmp-paramdat $@
 
 read_parameter_library.o : read_parameter_library.cc autocomm.h default_parameters.h
