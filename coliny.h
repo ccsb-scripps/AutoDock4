@@ -17,8 +17,7 @@ using utilib::Flush;
 //
 // Initialize the 'algname' coliny optimizer over 'domain'
 //
-void coliny_init(char* algname, char* domain,
-			utilib::BasicArray<double>& initpt);
+void coliny_init(char* algname, char* domain);
 
 //
 // Perform minimization with a given seed and initial point. Return
