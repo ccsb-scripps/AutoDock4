@@ -37,8 +37,7 @@ coliny::ColinySolver<colin::OptProblem<BasicArray<double>, BasicArray >,BasicArr
 //// Initialize the "algname" optimizer over the given domain.  An initial
 //// point is generate as the midpoint over the domain.
 ////
-void coliny_init(char* algname, char* domain,
-			utilib::BasicArray<double>& initpt)
+void coliny_init(char* algname, char* domain)
 {
 //
 // If 'algname' equals "help", then return after calling 
@@ -78,13 +77,14 @@ if (ifstr)
 //
 // Create a default 'initial point'
 //
+/*
 BasicArray<double> lower,upper;
 coliny_problem.get_real_bounds(lower,upper);
 initpt.resize(lower.size());
 for (size_type i=0; i<lower.size(); i++)
   initpt[i] = (upper[i]+lower[i])/2.0;
+*/
 }
-
 
 
 ////
@@ -97,7 +97,7 @@ void coliny_minimize(int seed, utilib::BasicArray<double>& initpt,
 				int& neval, int& niters)
 {
 colin::real best_value;
-coliny_solver.minimize(coliny_problem, initpt, seed, false, true, finalpt, best_value);
+coliny_solver.minimize(coliny_problem, initpt, seed, false, false, finalpt, best_value);
 }
 
 
