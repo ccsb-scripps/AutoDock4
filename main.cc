@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.28 2005/10/22 04:22:20 garrett Exp $
+ $Id: main.cc,v 1.29 2005/11/01 23:58:05 mchang Exp $
 
 */
 
@@ -1319,6 +1319,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         Clock  colinyStart;
         Clock  colinyEnd;
 
+				int coliny_seed;
         char algname[64];
         char nruns_str[64];
         (void) sscanf(line, "%*s %s %d", algname, &nruns);
@@ -1326,14 +1327,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         if (strcmp(algname,"help")==0) {
             utilib::BasicArray<double> initvec;
-            coliny_init(algname, "", initvec);
+            coliny_init(algname, "");
             prStr(error_message, "ERROR:  no optimizer type specified.");
             stop(error_message);
             exit(-1);
         }
         else if (strcmp(nruns_str,"help")==0) {
             utilib::BasicArray<double> initvec;
-            coliny_init(algname, nruns_str, initvec);
+            coliny_init(algname, nruns_str);
             prStr(error_message, "ERROR:  no optimizer type specified.");
             stop(error_message);
             exit(-1);
@@ -1406,7 +1407,20 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             try {
 
                 utilib::BasicArray<double> initvec, finalpt;
-                coliny_init(algname, domain, initvec);
+								// set up initial point 
+                initvec.resize(7+sInit.ntor);
+								initvec[0] = sInit.T.x;
+                initvec[1] = sInit.T.y;
+                initvec[2] = sInit.T.z;
+                initvec[3] = sInit.Q.nx;
+                initvec[4] = sInit.Q.ny;
+                initvec[5] = sInit.Q.nz;
+                initvec[6] = Rad( sInit.Q.ang );
+                for (j=0; j < sInit.ntor ; j++) {
+                  initvec[j+7] = Rad(sInit.tor[j]);
+                }
+
+                coliny_init(algname, domain);
 
                 for (j=0; j<nruns; j++) {
 
@@ -1425,21 +1439,24 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   } else {
                       pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
                   }
-                  pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
+									
+									//coliny uses a single seed
+									coliny_seed = seed[0]+seed[1]+j;
+                  pr(logFile, "Seed: %d [%ld+%ld+%d]\n", coliny_seed, seed[0], seed[1], j);
+                  //pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
                   (void) fflush(logFile);
 
                   colinyStart = times(&tms_colinyStart);
 
                   finalpt.resize( initvec.size() );
                   int neval, niters;
-                  coliny_minimize( seed[0]+seed[1]*j+j, initvec, finalpt, neval, niters );
+                  coliny_minimize( coliny_seed, initvec, finalpt, neval, niters );
                   //fstr.flush();
 
-                  make_state_from_rep( (double *)&finalpt, int(finalpt.size()), &sHist[nconf]);
+                  make_state_from_rep( (double *)finalpt.data(), int(finalpt.size()), &sHist[nconf]);
 
-                  pr(logFile, "\nFinal docked state:\n");
-                  pr(logFile, "\nTotal Num Evals: %d\n", neval);
-                  printState(logFile, sHist[nconf], 2);
+                  //pr(logFile, "\nTotal Num Evals: %d\n", neval);
+                  //printState(logFile, sHist[nconf], 2);
 
                   colinyEnd = times(&tms_colinyEnd);
                   pr(logFile, "Time taken for this %s run:\n", algname);
@@ -1448,8 +1465,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   (void) fflush(logFile);
 
                   pr(logFile, "Total number of Energy Evaluations: %d\n", (int)evaluate.evals() );
-                  pr(logFile, "Total number of Iterations:        %d\n", (int)niters);
+                  //pr(logFile, "Total number of Iterations:        %d\n", (int)niters);
 
+                  pr(logFile, "\nFinal docked state:\n");
                   pr( logFile, UnderLine );
                   pr( logFile, "\n\n\tFINAL Coliny %s DOCKED STATE\n",algname );
                   pr( logFile,     "\t____________________________________\n\n\n" );
@@ -1471,6 +1489,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         info);
 
                   econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
+									evaluate.reset();
                   
                   ++nconf;
 
