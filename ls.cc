@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.4 2004/11/16 23:42:53 garrett Exp $
+ $Id: ls.cc,v 1.5 2006/01/06 21:46:47 mchang Exp $
 
 */
 
@@ -194,6 +194,7 @@ void Pseudo_Solis_Wets::SW(Phenotype &vector)
       //  WEH - Scott's code doesn't do anything!!! no stopping based upon step scale!!!
       //  GMM - corrected Scott's code; this does now stop correctly, based upon step scale.
       //  GMM - This version only exits if all the step sizes are too small...
+      all_rho_stepsizes_too_small = 1;
       for(j=0; j < size; j++) {   
          all_rho_stepsizes_too_small = all_rho_stepsizes_too_small & (temp_rho[j] < lower_bound_on_rho[j]);
       } //  j-loop
