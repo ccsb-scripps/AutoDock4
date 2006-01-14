@@ -353,6 +353,7 @@ CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, 
 # CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X`
 
 OPTLEVEL = -O3 # Agressive optimization
+# OPTLEVEL = -O3 -ffast-math # Agressive optimization, for Intel Itanium, ia64Linux2
 # OPTLEVEL = -fast # Agressive optimization for the G5 on Mac OS X
 # OPTLEVEL = -O2 # High optimization
 # OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing
