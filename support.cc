@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.12 2005/10/14 03:10:01 garrett Exp $
+ $Id: support.cc,v 1.13 2006/01/14 00:56:03 garrett Exp $
 
 */
 
@@ -209,12 +209,12 @@ void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor
 #ifdef DEBUG2
    register int j;
    char resstr[LINE_LEN];
-#endif /* DEBUG2 */
+#endif // DEBUG2
    double thisValue;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/void Population::printPopulationAsCoordsEnergies(FILE *output, int num=%d, int ntor=%d)\n",num,ntor);
-#endif /* DEBUG */
+#endif // DEBUG
 
    //(void)fprintf( output, "The top %d individuals in the population:\n\n", num);
    for (i=0; i<num; i++) {
@@ -227,17 +227,17 @@ void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor
       //heap[i].printIndividualsState(output, ntor, 0);  // 0 means print the whole state
 
       // Print the energy
-      thisValue = heap[i].value(Always_Eval);
+      thisValue = heap[i].value(Normal_Eval); // was Always_Eval before 13-Jan-2006
       (void)fprintf( output, "\t%9.2lf", thisValue);
 
       // Print the non-bonded energy, i.e. vdW+Hb+desolv
       thisValue = heap[i].value(Always_Eval_Nonbond);
       (void)fprintf( output, "\t%9.2lf", thisValue);
-
+   
       // Print the electrostatic energy, i.e. elec
       thisValue = heap[i].value(Always_Eval_Elec);
       (void)fprintf( output, "\t%9.2lf", thisValue);
-
+     
       // Write a newline at the end
       (void)fprintf( output, "\n");
 
@@ -640,11 +640,11 @@ double Phenotype::evaluate(EvalMode mode)
          break;
       case Always_Eval_Nonbond:
          value = ::evaluate(value_vector, 1); // term=1 as total non-bonded energy, i.e. vdW+Hb+desolv
-         evalflag = 1;
+         evalflag = 0;
          break;
       case Always_Eval_Elec:
          value = ::evaluate(value_vector, 2); // term=2 as total electrostatic energy
-         evalflag = 1;
+         evalflag = 0;
          break;
       case Normal_Eval:
          if (!evalflag) {
