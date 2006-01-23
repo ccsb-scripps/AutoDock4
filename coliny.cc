@@ -24,11 +24,11 @@ double ADEvalFn(double* x, int n);
 //
 // Global COLIN problem
 //
-colin::OptProblem<BasicArray<double>, BasicArray > coliny_problem;
+colin::OptProblem<BasicArray<double>,colin::AppResponse_Utilib> coliny_problem;
 //
 // Global Coliny solver
 //
-coliny::ColinySolver<colin::OptProblem<BasicArray<double>, BasicArray >,BasicArray<double> > coliny_solver;
+coliny::ColinySolver<colin::OptProblem<BasicArray<double>, colin::AppResponse_Utilib>,BasicArray<double> > coliny_solver;
 
 
 
