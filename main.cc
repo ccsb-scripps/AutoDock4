@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.29 2005/11/01 23:58:05 mchang Exp $
+ $Id: main.cc,v 1.30 2006/01/24 15:46:29 billhart Exp $
 
 */
 
@@ -1395,8 +1395,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } else {
                 sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-3.1416,3.1416]",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z]);
             }
-            ucout << domain << endl;
-            ucout << Flush;
+            ucout << domain << std::endl;
+            ucout << utilib::Flush;
 
             pr(logFile, "Number of Coliny %s dockings = %d run%c\n", algname, nruns, (nruns>1)?'s':' ');
 
