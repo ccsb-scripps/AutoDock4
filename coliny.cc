@@ -16,6 +16,9 @@
 #include "coliny.h"
 #include <coliny/coliny.h>
 
+using namespace std;
+using namespace utilib;
+
 //
 // The AutoDock 'objective function' used within Coliny
 //
