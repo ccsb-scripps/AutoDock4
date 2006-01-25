@@ -102,10 +102,10 @@ void coliny_minimize(int seed, std::vector<double>& initpt,
 BasicArray<double> initpt_;
 initpt_ << initpt;
 BasicArray<double> finalpt_;
-finalpt_ << finalpt;
 
 colin::real best_value;
 coliny_solver.minimize(coliny_problem, initpt_, seed, false, false, finalpt_, best_value);
+finalpt << finalpt_;
 }
 
 

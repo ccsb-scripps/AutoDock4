@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.31 2006/01/25 04:21:20 billhart Exp $
+ $Id: main.cc,v 1.32 2006/01/25 07:21:15 billhart Exp $
 
 */
 
@@ -1391,11 +1391,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // torsion angles are periodic, we simply prevent the optimizer
             // from going too far.
             if (sInit.ntor > 0) {
-                sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-6.2832,12.5664] [-6.2832,12.5664]^%d",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z], sInit.ntor);
+                sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-3.1416,3.1416] [-3.1416,3.1416]^%d",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z], sInit.ntor);
+                //sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-6.2832,12.5664] [-6.2832,12.5664]^%d",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z], sInit.ntor);
             } else {
                 sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-3.1416,3.1416]",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z]);
             }
             pr(logFile, "Number of Coliny %s dockings = %d run%c\n", algname, nruns, (nruns>1)?'s':' ');
+            pr(logFile, "Search Domain: %s\n", domain);
 
             //
             // COLINY-SPECIFIC LOGIC - BEGIN
@@ -1452,14 +1454,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                   make_state_from_rep( (double *)&(finalpt[0]), int(finalpt.size()), &sHist[nconf]);
 
-                  //pr(logFile, "\nTotal Num Evals: %d\n", neval);
-                  //printState(logFile, sHist[nconf], 2);
+                  pr(logFile, "\nTotal Num Evals: %d\n", neval);
+                  printState(logFile, sHist[nconf], 2);
 
                   colinyEnd = times(&tms_colinyEnd);
                   pr(logFile, "Time taken for this %s run:\n", algname);
                   timesyshms(colinyEnd-colinyStart, &tms_colinyStart, &tms_colinyEnd);
                   pr(logFile, "\n");
-                  (void) fflush(logFile);
 
                   pr(logFile, "Total number of Energy Evaluations: %d\n", (int)evaluate.evals() );
                   //pr(logFile, "Total number of Iterations:        %d\n", (int)niters);
@@ -1468,7 +1469,23 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   pr( logFile, UnderLine );
                   pr( logFile, "\n\n\tFINAL Coliny %s DOCKED STATE\n",algname );
                   pr( logFile,     "\t____________________________________\n\n\n" );
+                  (void) fflush(logFile);
 
+                  writeStateOfPDBQ( j,seed,  FN_ligand, dock_param_fn, lig_center,
+                      &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
+                      crd, emap, elec,
+                      charge, abs_charge, qsp_abs_charge,
+                      ligand_is_inhibitor,
+                      torsFreeEnergy,
+                      vt, tlist, crdpdb, nonbondlist,
+                      ad_energy_tables,
+                      type, Nnb, B_calcIntElec, q1q2,
+                      map, 
+                      B_template, template_energy, template_stddev,
+                      outlev,
+                      ignore_inter,
+                      B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
+                      info );
                   writeStateOfPDBQ( j, seed, FN_ligand, dock_param_fn, lig_center,
                         &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
                         crd, emap, elec, 
