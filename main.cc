@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.30 2006/01/24 15:46:29 billhart Exp $
+ $Id: main.cc,v 1.31 2006/01/25 04:21:20 billhart Exp $
 
 */
 
@@ -1326,14 +1326,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) sscanf(line, "%*s %s %s", algname, nruns_str);
 
         if (strcmp(algname,"help")==0) {
-            utilib::BasicArray<double> initvec;
+            std::vector<double> initvec;
             coliny_init(algname, "");
             prStr(error_message, "ERROR:  no optimizer type specified.");
             stop(error_message);
             exit(-1);
         }
         else if (strcmp(nruns_str,"help")==0) {
-            utilib::BasicArray<double> initvec;
+            std::vector<double> initvec;
             coliny_init(algname, nruns_str);
             prStr(error_message, "ERROR:  no optimizer type specified.");
             stop(error_message);
@@ -1395,9 +1395,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } else {
                 sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-3.1416,3.1416]",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z]);
             }
-            ucout << domain << std::endl;
-            ucout << utilib::Flush;
-
             pr(logFile, "Number of Coliny %s dockings = %d run%c\n", algname, nruns, (nruns>1)?'s':' ');
 
             //
@@ -1406,7 +1403,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
             try {
 
-                utilib::BasicArray<double> initvec, finalpt;
+                std::vector<double> initvec, finalpt;
 								// set up initial point 
                 initvec.resize(7+sInit.ntor);
 								initvec[0] = sInit.T.x;
@@ -1453,7 +1450,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   coliny_minimize( coliny_seed, initvec, finalpt, neval, niters );
                   //fstr.flush();
 
-                  make_state_from_rep( (double *)finalpt.data(), int(finalpt.size()), &sHist[nconf]);
+                  make_state_from_rep( (double *)&(finalpt[0]), int(finalpt.size()), &sHist[nconf]);
 
                   //pr(logFile, "\nTotal Num Evals: %d\n", neval);
                   //printState(logFile, sHist[nconf], 2);

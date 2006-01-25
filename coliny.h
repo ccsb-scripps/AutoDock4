@@ -9,10 +9,7 @@
 
 #if defined(USING_COLINY)
 
-#include <utilib/BasicArray.h>
-#include <utilib/CommonIO.h>
-
-using utilib::Flush;
+#include <vector>
 
 //
 // Initialize the 'algname' coliny optimizer over 'domain'
@@ -23,8 +20,8 @@ void coliny_init(char* algname, char* domain);
 // Perform minimization with a given seed and initial point. Return
 // summary statistics
 //
-void coliny_minimize(int seed, utilib::BasicArray<double>& initpt,
-				utilib::BasicArray<double>& finalpt,
+void coliny_minimize(int seed, std::vector<double>& initpt,
+				std::vector<double>& finalpt,
 				int& neval, int& niters);
 
 #endif

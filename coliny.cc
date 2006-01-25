@@ -95,12 +95,17 @@ for (size_type i=0; i<lower.size(); i++)
 ////
 //// To turn on "full debugging", set the false flag to true.
 ////
-void coliny_minimize(int seed, utilib::BasicArray<double>& initpt,
-				utilib::BasicArray<double>& finalpt,
+void coliny_minimize(int seed, std::vector<double>& initpt,
+				std::vector<double>& finalpt,
 				int& neval, int& niters)
 {
+BasicArray<double> initpt_;
+initpt_ << initpt;
+BasicArray<double> finalpt_;
+finalpt_ << finalpt;
+
 colin::real best_value;
-coliny_solver.minimize(coliny_problem, initpt, seed, false, false, finalpt, best_value);
+coliny_solver.minimize(coliny_problem, initpt_, seed, false, false, finalpt_, best_value);
 }
 
 
