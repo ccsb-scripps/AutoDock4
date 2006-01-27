@@ -365,17 +365,8 @@
 #ifndef _CONST_INT
 #define _CONST_INT
 
-/*
- * const int and const FloatOrDouble are allowed by the SGI "CC" compiler
- */
-
-#ifdef sgi
 #define CONST_INT const int
 #define CONST_FLOAT const FloatOrDouble
-#else /* Not on an SGI */
-#define CONST_INT int
-#define CONST_FLOAT FloatOrDouble
-#endif /*sgi*/
 
 #endif /* _CONST_INT */
 
