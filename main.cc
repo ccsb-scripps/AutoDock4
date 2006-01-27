@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.32 2006/01/25 07:21:15 billhart Exp $
+ $Id: main.cc,v 1.33 2006/01/27 06:04:29 garrett Exp $
 
 */
 
@@ -1471,21 +1471,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   pr( logFile,     "\t____________________________________\n\n\n" );
                   (void) fflush(logFile);
 
-                  writeStateOfPDBQ( j,seed,  FN_ligand, dock_param_fn, lig_center,
-                      &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
-                      crd, emap, elec,
-                      charge, abs_charge, qsp_abs_charge,
-                      ligand_is_inhibitor,
-                      torsFreeEnergy,
-                      vt, tlist, crdpdb, nonbondlist,
-                      ad_energy_tables,
-                      type, Nnb, B_calcIntElec, q1q2,
-                      map, 
-                      B_template, template_energy, template_stddev,
-                      outlev,
-                      ignore_inter,
-                      B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                      info );
                   writeStateOfPDBQ( j, seed, FN_ligand, dock_param_fn, lig_center,
                         &(sHist[nconf]), ntor, &eintra, &einter, natom, atomstuff,
                         crd, emap, elec, 
@@ -2708,10 +2693,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
 
             evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
-              elec, emap,
-              nonbondlist, 
-              ad_energy_tables, 
-              Nnb,
+              elec, emap, nonbondlist, ad_energy_tables, Nnb,
               B_calcIntElec, q1q2, B_isGaussTorCon, B_isTorConstrained,
               B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
               B_template, template_energy, template_stddev,
@@ -3452,17 +3434,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         } else {
             eintra = 0.0L;
         }
-        if (outside) {
-            etotal = (einter = outsidetrilinterp4byatom(crdpdb, charge, abs_charge, type, 
-                                                        natom, map, elec,emap, 
-                                                        ignore_inter,
-                                                        info )) + eintra; // gmm 2001.11.07
-        } else {
-            etotal = (einter = trilinterp4(crdpdb, charge, abs_charge, type, natom, map, 
-                                           elec, emap, 
-                                           ignore_inter,
-                                           info )) + eintra;
-        }
+        etotal = trilinterp( crdpdb, charge, abs_charge, type, natom, map, 
+                             info, outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
+                             ignore_inter, elec, emap,
+                             &elec_total, &emap_total)
+                 + eintra;
         pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
         pr(logFile,     "\t\t==============================\n\n");
         pr(logFile, "Atom  vdW+Hb+Elec  vdW+Hbond  Electrosta  Partial          Coordinates         \n");
@@ -3470,16 +3446,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile, "____  __________  __________  __________  _______  ________  ________  ________\n");
         /*          "1234  0123456789  0123456789  0123456789  1234567  12345678  12345678  12345678"*/
         /*          "----  ----------  ----------  ----------  -------  --------  --------  --------"*/
-        emap_total = 0.;
-        elec_total = 0.;
         charge_total = 0.;
         etot = 0.;
 
         for (i = 0;  i < natom;  i++) {
             etot = emap[i] + elec[i];
             pr(logFile, "%4d  %10.2f  %10.2f  %10.2f  %7.3f  %8.4f  %8.4f  %8.4f\n", (type[i]+1), etot, emap[i], elec[i], charge[i], crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z]);
-            emap_total += emap[i];
-            elec_total += elec[i];
             charge_total += charge[i];
         } /*i*/
         pr(logFile, "      __________  __________  __________  _______\n");
