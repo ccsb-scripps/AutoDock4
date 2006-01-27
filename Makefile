@@ -392,6 +392,8 @@ LINKOPT = $(CSTD) $(OPT) #
 LINK = $(LINKOPT) # Linking flags
 # LINK = $(LINKOPT) -cord # Procedure rearranger on SGI
 
+# LIB = -lSaturn # for profiling using Mac OS X Saturn
+
 LINT = lint # lint C code checking
 
 LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X
