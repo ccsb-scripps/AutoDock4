@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.8 2005/10/22 04:02:40 garrett Exp $
+ $Id: getInitialState.cc,v 1.9 2006/01/27 05:39:14 garrett Exp $
 
 */
 
@@ -152,7 +152,9 @@ void getInitialState(
         initautodock( atomstuff, crd, crdpdb, 
             natom, ntor, sInit, tlist, vt, outlev, info);
         
-        e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+        e0inter = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                    info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
+                    NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
         e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
         e0total = e0inter + e0intra;
 
@@ -191,7 +193,9 @@ void getInitialState(
 
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
-    e0inter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+    e0inter = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
+                NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
     e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
     e0total = e0inter + e0intra;
 

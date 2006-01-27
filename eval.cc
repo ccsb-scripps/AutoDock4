@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.12 2005/10/14 03:04:59 garrett Exp $
+ $Id: eval.cc,v 1.13 2006/01/27 05:39:14 garrett Exp $
 
 */
 
@@ -97,6 +97,8 @@ double Eval::eval()
    int   I_tor = 0;
    int   indx = 0;
    double energy = 0.0L;
+   FloatOrDouble emap[MAX_ATOMS] = { 0.0L };
+   FloatOrDouble elec[MAX_ATOMS] = { 0.0L };
 
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval()\n");
@@ -127,85 +129,40 @@ double Eval::eval()
       B_outside = is_out_grid_info(crd[i][0], crd[i][1], crd[i][2]);
    } // i
 
-   if (!B_template) {
-       // Use standard energy function
-       if (!B_outside) {
+    if (!B_template) {
 
+        energy = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
+                ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
 #ifdef DEBUG
-(void)fprintf(logFile,"eval.cc/All coordinates are inside grid...\n");
+(void)fprintf(logFile,"eval.cc/double Eval::eval() after trilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-
-            energy = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, 
-                             		   ignore_inter, info);
+        energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, 
+                           B_include_1_4_interactions, scale_1_4, 
+                           qsp_abs_charge, parameterArray, 
+                           unbound_internal_FE);
 #ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/double Eval::eval() after quicktrilinterp, energy= %.5lf\n",energy);
+(void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, 
-                               B_include_1_4_interactions, scale_1_4, 
-                               qsp_abs_charge, parameterArray, 
-                               unbound_internal_FE);
-#ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
-#endif /* DEBUG */
-         
-            if (B_isGaussTorCon) {
-                for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
-                    if (B_isTorConstrained[I_tor] == 1) {
-                        indx = Rad2Div( WrpModRad(stateNow.tor[I_tor]) );
-                        if (B_ShowTorE) {
-                            energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
-                        } else {
-                            energy += (double)US_torProfile[I_tor][indx];
-                        }
+     
+        if (B_isGaussTorCon) {
+            for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
+                if (B_isTorConstrained[I_tor] == 1) {
+                    indx = Rad2Div( WrpModRad(stateNow.tor[I_tor]) );
+                    if (B_ShowTorE) {
+                        energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
+                    } else {
+                        energy += (double)US_torProfile[I_tor][indx];
                     }
-                } // I_tor
-            }/*if*/
-           } else {
-            /*
-             * This confuses the GA and GA-LS, because there is no gradient
-             * information when all outside conformations are given the same
-             * energy.
-             *
-             * energy = BIG_ENERGY;  / / A really big number defined in autocomm.h
-             */
-            /*
-             * Instead...
-             *
-             * Penalise atoms outside grid based on the square of the 
-             * distance from centre of grid map, otherwise use the normal 
-             * trilinear interpolation.
-             */
-            energy = outsidetrilinterp4( crd, charge, abs_charge, type, natom, map, ignore_inter, info );
-#ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/double Eval::eval() after outsidetrilinterp, energy= %.5lf\n",energy);
-#endif /* DEBUG */
-            energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
-#ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
-#endif /* DEBUG */
-            if (B_isGaussTorCon) {
-                for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
-                    if (B_isTorConstrained[I_tor] == 1) {
-                        indx = Rad2Div( WrpModRad(stateNow.tor[I_tor]) );
-                        if (B_ShowTorE) {
-                            energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx
-    ]);
-                        } else {
-                            energy += (double)US_torProfile[I_tor][indx];
-                        }
-                    }
-                } // I_tor
-            } // if
-        }
+                }
+            } // I_tor
+        }/*if*/
     } else {
         // Use template scoring function
-        if (!B_outside) {
-            energy = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
-                                  template_energy, template_stddev, info);
-        } else {
-            energy = outside_templ_trilinterp( crd, charge, abs_charge, type, natom, map,
-                                               template_energy, template_stddev, info);
-        }
+        energy = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
+                info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
+                NULL_IGNORE_INTERMOL, template_energy, template_stddev, 
+                elec /* set */ , emap /* set */, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL );
     }
 
    num_evals++;
@@ -286,101 +243,44 @@ double Eval::eval(int term)
 
    if (!B_template) {
        // Use standard energy function
-       if (!B_outside) {
 
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/All coordinates are inside grid...\n");
 #endif /* DEBUG */
 
-            energy = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap,
-                             		   ignore_inter, info);
-            
-            // Sum the non-bonded energies (emap[i]) and the electrostatic energies (elec[i])
-            emap_total = 0.0L;
-            elec_total = 0.0L;
-            for (i = 0; i < natom; i++) {
-                emap_total += emap[i];
-                elec_total += elec[i];
-            }
-
+        energy = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
+                ignore_inter, elec, emap, &elec_total, &emap_total);
+        
 #ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after quicktrilinterp, energy= %.5lf\n", term, energy);
+(void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after trilinterp, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
-            energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, 
-                               B_include_1_4_interactions, scale_1_4, 
-                               qsp_abs_charge, parameterArray, 
-                               unbound_internal_FE);
+        energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, 
+                           B_include_1_4_interactions, scale_1_4, 
+                           qsp_abs_charge, parameterArray, 
+                           unbound_internal_FE);
 #ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after eintcal, energy= %.5lf\n", term, energy);
+(void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after eintcal, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
-         
-            if (B_isGaussTorCon) {
-                for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
-                    if (B_isTorConstrained[I_tor] == 1) {
-                        indx = Rad2Div( WrpModRad(stateNow.tor[I_tor]) );
-                        if (B_ShowTorE) {
-                            energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
-                        } else {
-                            energy += (double)US_torProfile[I_tor][indx];
-                        }
+     
+        if (B_isGaussTorCon) {
+            for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
+                if (B_isTorConstrained[I_tor] == 1) {
+                    indx = Rad2Div( WrpModRad(stateNow.tor[I_tor]) );
+                    if (B_ShowTorE) {
+                        energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
+                    } else {
+                        energy += (double)US_torProfile[I_tor][indx];
                     }
-                } // I_tor
-            }/*if*/
-           } else {
-            /*
-             * This confuses the GA and GA-LS, because there is no gradient
-             * information when all outside conformations are given the same
-             * energy.
-             *
-             * energy = BIG_ENERGY;  / / A really big number defined in autocomm.h
-             */
-            /*
-             * Instead...
-             *
-             * Penalise atoms outside grid based on the square of the 
-             * distance from centre of grid map, otherwise use the normal 
-             * trilinear interpolation.
-             */
-            energy = outsidetrilinterp4byatom( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
-
-            // Sum the non-bonded energies (emap[i]) and the electrostatic energies (elec[i])
-            emap_total = 0.0L;
-            elec_total = 0.0L;
-            for (i = 0; i < natom; i++) {
-                emap_total += emap[i];
-                elec_total += elec[i];
-            }
-
-#ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after outsidetrilinterp, energy= %.5lf\n", term, energy);
-#endif /* DEBUG */
-            energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
-#ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after eintcal, energy= %.5lf\n", term, energy);
-#endif /* DEBUG */
-            if (B_isGaussTorCon) {
-                for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
-                    if (B_isTorConstrained[I_tor] == 1) {
-                        indx = Rad2Div( WrpModRad(stateNow.tor[I_tor]) );
-                        if (B_ShowTorE) {
-                            energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx
-    ]);
-                        } else {
-                            energy += (double)US_torProfile[I_tor][indx];
-                        }
-                    }
-                } // I_tor
-            } // if
-        }
+                }
+            } // I_tor
+        }/*if*/
     } else {
         // Use template scoring function
-        if (!B_outside) {
-            energy = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
-                                  template_energy, template_stddev, info);
-        } else {
-            energy = outside_templ_trilinterp( crd, charge, abs_charge, type, natom, map,
-                                               template_energy, template_stddev, info);
-        }
+        energy = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
+                info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
+                NULL_IGNORE_INTERMOL, template_energy, template_stddev, elec /* set */ , emap /* set */,
+                NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
     }
 
    // num_evals++;

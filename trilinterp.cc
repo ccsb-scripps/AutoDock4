@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.6 2005/09/28 22:54:21 garrett Exp $
+ $Id: trilinterp.cc,v 1.7 2006/01/27 05:39:14 garrett Exp $
 
 */
 
@@ -8,11 +8,8 @@
 #include <config.h>
 #endif
 
-/* trilinterp.cc */
-
 #include <math.h>
 #include "trilinterp.h"
-
 
 /* linear interpolation from l (when a=0) to h (when a=1)*/
 /* (equal to (a*h)+((1-a)*l) )*/
@@ -26,30 +23,22 @@ extern int DesolvMap;
 extern FILE *logFile;
 #endif
 
-FloatOrDouble trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-                          CONST_FLOAT charge[MAX_ATOMS], 
-                          CONST_FLOAT abs_charge[MAX_ATOMS], 
-                          CONST_INT   type[MAX_ATOMS], 
-                          CONST_INT   total_atoms, 
-                          CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-                          FloatOrDouble elec[MAX_ATOMS], 
-                          FloatOrDouble emap[MAX_ATOMS], 
-                          GridMapSetInfo *info )	/**/
+FloatOrDouble trilinterp( 
 
-/*
-** FloatOrDouble tcoord[MAX_ATOMS][SPACE];	temporary coordinates
-** FloatOrDouble charge[MAX_ATOMS];		partial atomic charges
-** int   type[MAX_ATOMS];		atom type of each atom
-** int   total_atoms;			number of atoms
-** FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];  
-** 					intermolecular interaction energies
-** FloatOrDouble inv_spacing;  			= 1/(grid point spacing, in Angstroms) 
-** FloatOrDouble elec[MAX_ATOMS];  		electrostatic energies, atom by atom
-** FloatOrDouble emap[MAX_ATOMS];  		intermolecular energies
-** FloatOrDouble info->lo[X],info->lo[Y],info->lo[Z];			minimum coordinates in x,y,z
-*/
-
-/* { */
+ CONST_FLOAT tcoord[MAX_ATOMS][SPACE], // temporary coordinates
+ CONST_FLOAT charge[MAX_ATOMS], // partial atomic charges
+ CONST_FLOAT abs_charge[MAX_ATOMS], // absolute magnitude of partial charges
+ CONST_INT   type[MAX_ATOMS], // atom type of each atom
+ CONST_INT   total_atoms, // number of atoms
+ CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    //  intermolecular interaction energies
+ GridMapSetInfo *info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
+ int some_atoms_outside_grid, // boolean
+ int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
+ FloatOrDouble elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
+ FloatOrDouble emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
+ FloatOrDouble *p_elec_total, // set if not NULL - total electrostatic energy
+ FloatOrDouble *p_emap_total // set if not NULL - total intermolecular energy
+ )
 
 /******************************************************************************/
 /*      Name: trilinterp                                                      */
@@ -74,24 +63,44 @@ FloatOrDouble trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
 /******************************************************************************/
 
 {
-    register double emaptotal, electotal;
-    register double u,   v,   w;
-    register double p0u, p0v, p0w;
-    register double p1u, p1v, p1w;
-    register int AtomType;        /* atom type */
-    register int u0,  v0,  w0;
-    register int u1,  v1,  w1;
+    register double e_total=0, elec_total=0, emap_total=0;
     register int i;               /* i-th atom */
 
-#ifdef MINPOINT
-    register int x,y,z;                                                    /*MINPOINT*/
-#else
-    register double e, m, d; 
-#endif
-
-    emaptotal = electotal = 0.0L;
+    e_total = 0.0L;
 
     for (i=0; i<total_atoms; i++) {
+        register double e, m, d; 
+        register double u,   v,   w;
+        register double p0u, p0v, p0w;
+        register double p1u, p1v, p1w;
+        register int AtomType;        /* atom type */
+        register int u0,  v0,  w0;
+        register int u1,  v1,  w1;
+
+        if (ignore_inter[i]) {
+            if (elec != NULL) elec[i] = 0;
+            if (emap != NULL) emap[i] = 0;
+            continue;
+        }
+
+        if (some_atoms_outside_grid) {
+            register double x,y,z;
+            x = tcoord[i][X];
+            y = tcoord[i][Y];
+            z = tcoord[i][Z];
+            if (is_out_grid_info(x,y,z)) {
+                register double epenalty;
+                x -= info->center[X];
+                y -= info->center[Y];
+                z -= info->center[Z];
+                // sqhypotenuse(x,y,z) is the square of the distance from grid's centre to atom
+                epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
+                if (elec != NULL) elec[i] = epenalty;
+                if (emap != NULL) emap[i] = epenalty;
+                e_total += epenalty + epenalty;
+                continue;
+            }
+        }
 
         AtomType = type[i];
 
@@ -105,12 +114,14 @@ FloatOrDouble trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         p1w = 1.0L - (p0w = w - (double) w0);
 
 #ifdef MINPOINT
-    x = (p0u < p1u)? u0 : u1;				    /*MINPOINT*/
-    y = (p0v < p1v)? v0 : v1;				    /*MINPOINT*/
-    z = (p0w < p1w)? w0 : w1;				    /*MINPOINT*/
-        						    /*MINPOINT*/
-        electotal += (elec[i] = map[z][y][x][ElecMap] * charge[i]); /*MINPOINT*/
-        emaptotal += (emap[i] = map[z][y][x][AtomType]); 	    /*MINPOINT*/
+        register int ix,iy,iz;                      /*MINPOINT*/
+        ix = (p0u < p1u)? u0 : u1;				    /*MINPOINT*/
+        iy = (p0v < p1v)? v0 : v1;				    /*MINPOINT*/
+        iz = (p0w < p1w)? w0 : w1;				    /*MINPOINT*/
+
+        e = map[iz][iy][ix][ElecMap];               /*MINPOINT*/
+        m = map[iz][iy][ix][AtomType]; 	            /*MINPOINT*/
+        d = map[iz][iy][ix][DesolvMap]; 	        /*MINPOINT*/
 #else
         e = m = d = 0.0L;
 
@@ -145,1157 +156,61 @@ FloatOrDouble trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
         d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
         m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
         e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-        electotal += (elec[i] = e * charge[i]);
-        emaptotal += (emap[i] = m + d * abs_charge[i]); 
-
 #endif /* not MINPOINT */
 
-    }/*for  0 <= i < total_atoms*/
+        elec_total += e * charge[i];
+        emap_total += m + d * abs_charge[i]; 
 
-    return( (FloatOrDouble)(electotal + emaptotal) );
+        if (elec != NULL) elec[i] = e * charge[i];
+        if (emap != NULL) emap[i] = m + d * abs_charge[i];
+
+    } /*for  0 <= i < total_atoms*/
+
+    if (p_elec_total != NULL) *p_elec_total = elec_total;
+    if (p_emap_total != NULL) *p_emap_total = emap_total;
+
+    return( (FloatOrDouble)elec_total+emap_total );
 }
-
-/* } */
-
-/*----------------------------------------------------------------------------*/
-/* quicktrilinterp.c */
-
-/* { */
-
-FloatOrDouble quicktrilinterp(    CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-                          CONST_FLOAT charge[MAX_ATOMS], 
-                          CONST_FLOAT abs_charge[MAX_ATOMS], 
-                          CONST_INT   type[MAX_ATOMS], 
-                          CONST_INT   total_atoms, 
-                          CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                          GridMapSetInfo *info )
-
-{
-    register double etotal;
-    register double u,   v,   w;
-    register double p0u, p0v, p0w;
-    register double p1u, p1v, p1w;
-    register int AtomType;
-    register int u0,  v0,  w0;
-    register int u1,  v1,  w1;
-    register int i;                /* i-th atom */
-
-#ifdef MINPOINT
-    register int x,y,z;
-#else
-    register double e, m, d; 
-#endif
-
-    etotal = 0.0L;
-
-    for (i=0; i<total_atoms; i++) {
-
-#ifdef DEBUG
-    // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  atom i= %d\n", i);
-#endif /* DEBUG */
-
-        AtomType = type[i];
-
-        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
-        p1u = 1.0L - (p0u = u - (double) u0);
-
-        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
-        p1v = 1.0L - (p0v = v - (double) v0);
-
-        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
-        p1w = 1.0L - (p0w = w - (double) w0);
-
-#ifdef DEBUG
-    // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\ttcoord[i][X]= %.9f\n\t\t\t\t\ttcoord[i][Y]= %.9f\n\t\t\t\t\ttcoord[i][Z]= %.9f\n", tcoord[i][X], tcoord[i][Y], tcoord[i][Z]);
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\tinfo->lo[X]= %.9f\n\t\t\t\t\tinfo->lo[Y]= %.9f\n\t\t\t\t\tinfo->lo[Z]= %.9f\n", info->lo[X], info->lo[Y], info->lo[Z]);
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\tinfo->inv_spacing= %.9f\n", info->inv_spacing);
-
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\tu= %.9lf\n\t\t\t\t\tu0= %d\n\t\t\t\t\tu1= %d\n\t\t\t\t\tp0u= %.9lf\n\t\t\t\t\tp1u= %.9lf\n", u, u0, u1, p0u, p1u);
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\tv= %.9lf\n\t\t\t\t\tv0= %d\n\t\t\t\t\tv1= %d\n\t\t\t\t\tp0v= %.9lf\n\t\t\t\t\tp1v= %.9lf\n", v, v0, v1, p0v, p1v);
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)\tw= %.9lf\n\t\t\t\t\tw0= %d\n\t\t\t\t\tw1= %d\n\t\t\t\t\tp0w= %.9lf\n\t\t\t\t\tp1w= %.9lf\n", w, w0, w1, p0w, p1w);
-#endif /* DEBUG */
-
-#ifdef MINPOINT
-        x = (p0u < p1u)? u0 : u1;
-        y = (p0v < p1v)? v0 : v1;
-        z = (p0w < p1w)? w0 : w1;
-
-        etotal += map[z][y][x][ElecMap] * charge[i] + map[z][y][x][AtomType]; 
-#else
-        // e = m = d = 0.0L;
-
-        e = p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-        m = p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
-        d = p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
-
-#ifdef DEBUG
-    // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  1  map[ w0 ][v0 ][ u0 ][ElecMap]= %.9f\n", map[ w0 ][ v0 ][ u0 ][ElecMap]);
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  1  map[ w0 ][v0 ][ u0 ][AtomType]= %.9f\n", map[ w0 ][ v0 ][ u0 ][AtomType]);
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  1  p1u * p1v * p1w= %.9lf\n", p1u * p1v * p1w);
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  1  e= %.9lf\n\t\t\t\t\t m= %.9lf\n", e, m);
-#endif /* DEBUG */
-
-        d += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][DesolvMap];
-        m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
-        e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
-
-#ifdef DEBUG // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  2  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
-#endif /* DEBUG */
-
-        e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
-        m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
-        d += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][DesolvMap];
-
-#ifdef DEBUG // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  3  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
-#endif /* DEBUG */
-
-        d += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][DesolvMap];
-        m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
-        e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-
-#ifdef DEBUG // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  4  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
-#endif /* DEBUG */
-
-        e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-        m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-        d += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][DesolvMap];
-
-#ifdef DEBUG // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  5  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
-#endif /* DEBUG */
-
-        d += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][DesolvMap];
-        m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-        e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-    
-#ifdef DEBUG // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  6  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
-#endif /* DEBUG */
-    
-        e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-        m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-        d += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][DesolvMap];
-
-#ifdef DEBUG // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  7  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
-#endif /* DEBUG */
-
-        d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
-        m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-        e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-#ifdef DEBUG // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  8  e= %.9lf\n\t\t\t\t m= %.9lf\n", e, m);
-#endif /* DEBUG */
-
-        etotal += e * charge[i] + m + d * abs_charge[i]; 
-
-#ifdef DEBUG // gmm  19-FEB-2003
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  9  etotal= %.9lf\n", etotal);
-    (void)fprintf(logFile, "trilinterp.cc/quicktrilinterp(...)  9  (FloatOrDouble)etotal= %.5f\n", (FloatOrDouble)etotal);
-#endif /* DEBUG */
-
-#endif /* not MINPOINT */
-
-    }/*for  0 <= i < total_atoms*/
-
-    return( (FloatOrDouble)etotal );
-}
-/* } */
 
 /*----------------------------------------------------------------------------*/
 
-/* { */
+FloatOrDouble template_trilinterp( 
 
-FloatOrDouble outsidetrilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-          	CONST_FLOAT charge[MAX_ATOMS], 
-          	CONST_FLOAT abs_charge[MAX_ATOMS], 
-          	CONST_INT   type[MAX_ATOMS], 
-          	CONST_INT   total_atoms, 
-          	CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-            GridMapSetInfo *info )
+ CONST_FLOAT tcoord[MAX_ATOMS][SPACE], // temporary coordinates
+ CONST_FLOAT charge[MAX_ATOMS], // partial atomic charges
+ CONST_FLOAT abs_charge[MAX_ATOMS], // absolute magnitude of partial charges
+ CONST_INT   type[MAX_ATOMS], // atom type of each atom
+ CONST_INT   total_atoms, // number of atoms
+ CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    //  intermolecular interaction energies
+ GridMapSetInfo *info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
+ int some_atoms_outside_grid, // boolean
+ int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
+ CONST_FLOAT template_energy[MAX_ATOMS],
+ CONST_FLOAT template_stddev[MAX_ATOMS],
+ FloatOrDouble elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
+ FloatOrDouble emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
+ FloatOrDouble *p_elec_total, // set if not NULL - total electrostatic energy
+ FloatOrDouble *p_emap_total // set if not NULL - total intermolecular energy
+ )
 
 {
-    double	 etotal, epenalty;
-    double	 x, y, z; // Xcode-gmm was double 2004-02-03
-    double	 u,   v,   w;
-    double	 p0u, p0v, p0w;
-    double	 p1u, p1v, p1w;
-
-    int		 AtomType;
-    int		 u0,  v0,  w0;
-    int		 u1,  v1,  w1;
-
+    double etotal = 0;
     register int i;		/* i-th atom */
 
-#ifdef MINPOINT
-    int		 x,y,z;
-#else
-    double 	 e, m, d; 
-#endif
+    if (elec == NULL || emap == NULL || total_atoms <= 0) {
+        return -1.; // ERROR!
+    }
 
-    etotal = 0.0L;
+    trilinterp( tcoord, charge, abs_charge, type, total_atoms, map, 
+            info, some_atoms_outside_grid, ignore_inter, elec, emap, p_elec_total, p_emap_total);
 
-    for (i=0; i<total_atoms; i++) {
-        x = tcoord[i][X];
-        y = tcoord[i][Y];
-        z = tcoord[i][Z];
-
-        if (is_out_grid_info(x,y,z)) {
-            x -= info->center[X];
-            y -= info->center[Y];
-            z -= info->center[Z];
-            // sqhypotenuse(x,y,z) is the square of the distance 
-            // from grid's centre to atom
-            epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
-            // etotal += (elec[i] = epenalty) + (emap[i] = epenalty);
-            etotal += (epenalty) + (epenalty);
-        } else {
-            AtomType = type[i];
-     
-            u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
-            p1u = 1.0L - (p0u = u - (double) u0);
-     
-            v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
-            p1v = 1.0L - (p0v = v - (double) v0);
-     
-            w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
-            p1w = 1.0L - (p0w = w - (double) w0);
-     
-#ifdef MINPOINT
-            x = (p0u < p1u)? u0 : u1;
-            y = (p0v < p1v)? v0 : v1;
-            z = (p0w < p1w)? w0 : w1;
-     
-            // etotal += (elec[i] = map[z][y][x][ElecMap] * charge[i]) + 
-                      // (emap[i] = map[z][y][x][AtomType]); 
-            etotal += (map[z][y][x][ElecMap] * charge[i]) + 
-                      (map[i] = map[z][y][x][AtomType]); 
-
-#else
-            // e = m = 0.0L;
-     
-            e = p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-            m = p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
-            d = p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
-     
-            d += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][DesolvMap];
-            m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
-            e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
-     
-            e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
-            m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
-            d += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][DesolvMap];
-     
-            d += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][DesolvMap];
-            m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
-            e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-
-            e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-            m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-            d += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][DesolvMap];
-     
-            d += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][DesolvMap];
-            m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-            e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-     
-            e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-            m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-            d += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][DesolvMap];
-     
-            d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
-            m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-            e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-            // etotal += (elec[i] = e * charge[i]) + (emap[i] = m); 
-            etotal += (e * charge[i]) + (m) + (d * abs_charge[i]); 
-
-#endif /* not MINPOINT */
-
-        } /* inside grid */
-    }/*for  0 <= i < total_atoms*/
-
-    return( (FloatOrDouble)etotal );
-}
-
-// added 07-nov-2001
-
-/*----------------------------------------------------------------------------*/
-
-FloatOrDouble outsidetrilinterpbyatom(CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-                          CONST_FLOAT charge[MAX_ATOMS], 
-                          CONST_FLOAT abs_charge[MAX_ATOMS], 
-                          CONST_INT   type[MAX_ATOMS], 
-                          CONST_INT   total_atoms, 
-                          CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                          FloatOrDouble elec[MAX_ATOMS],
-                          FloatOrDouble emap[MAX_ATOMS],
-                          GridMapSetInfo *info )
-
-{
-    register double etotal, epenalty;
-    register double x, y, z;
-    register double u,   v,   w;
-    register double p0u, p0v, p0w;
-    register double p1u, p1v, p1w;
-    register int AtomType;
-    register int u0,  v0,  w0;
-    register int u1,  v1,  w1;
-    register int i;                /* i-th atom */
-
-#ifdef MINPOINT
-    register int x,y,z;
-#else
-    register double e, m, d; 
-#endif
-
-    etotal = 0.0L;
-
-    for (i=0; i<total_atoms; i++) {
-        x = tcoord[i][X];
-        y = tcoord[i][Y];
-        z = tcoord[i][Z];
-
-        if (is_out_grid_info(x,y,z)) {
-            x -= info->center[X];
-            y -= info->center[Y];
-            z -= info->center[Z];
-            // sqhypotenuse(x,y,z) is the square of the distance 
-            // from grid's centre to atom
-            epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
-            etotal += (elec[i] = epenalty) + (emap[i] = epenalty);
-        } else {
-            AtomType = type[i];
-     
-            u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
-            p1u = 1.0L - (p0u = u - (double) u0);
-     
-            v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
-            p1v = 1.0L - (p0v = v - (double) v0);
-     
-            w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
-            p1w = 1.0L - (p0w = w - (double) w0);
-     
-#ifdef MINPOINT
-            x = (p0u < p1u)? u0 : u1;
-            y = (p0v < p1v)? v0 : v1;
-            z = (p0w < p1w)? w0 : w1;
-     
-            etotal += (elec[i] = map[z][y][x][ElecMap] * charge[i]) + 
-                      (emap[i] = map[z][y][x][AtomType]); 
-
-#else
-            e = m = d = 0.0L;
-     
-            e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-            m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
-            d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
-     
-            d += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][DesolvMap];
-            m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
-            e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
-     
-            e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
-            m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
-            d += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][DesolvMap];
-     
-            d += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][DesolvMap];
-            m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-            e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-     
-            e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-            m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
-            d += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][DesolvMap];
-     
-            d += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][DesolvMap];
-            m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-            e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-     
-            e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-            m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-            d += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][DesolvMap];
-     
-            d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
-            m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-            e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-            etotal += (elec[i] = e * charge[i]) + (emap[i] = ((m) + (d * abs_charge[i]))); 
-
-#endif /* not MINPOINT */
-
-        } /* inside grid */
-    }/*for  0 <= i < total_atoms*/
-
-    return( (FloatOrDouble)etotal );
-} /* outsidetrilinterpbyatom */
-/* } */
-
-// added 15-jan-2001
-
-/* { */
-/*----------------------------------------------------------------------------*/
-
-FloatOrDouble template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-                             CONST_FLOAT charge[MAX_ATOMS], 
-                             CONST_FLOAT abs_charge[MAX_ATOMS], 
-                             CONST_INT   type[MAX_ATOMS], 
-                             CONST_INT   total_atoms, 
-                             CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                           CONST_FLOAT template_energy[MAX_ATOMS],
-                           CONST_FLOAT template_stddev[MAX_ATOMS],
-                           GridMapSetInfo *info )
-
-{
-    double	 etotal;
-    double	 u,   v,   w;
-    double	 p0u, p0v, p0w;
-    double	 p1u, p1v, p1w;
-    double diff;
-
-    int		 AtomType;
-    int		 u0,  v0,  w0;
-    int		 u1,  v1,  w1;
-
-    register int i;		/* i-th atom */
-
-#ifdef MINPOINT
-    int		 x,y,z;
-#else
-    double 	 e; // electrostatic energy
-    double 	 m; // affinity map
-    double 	 d; // desolvation map
-#endif
-
-    etotal = 0.0L;
-
-    for (i=0; i<total_atoms; i++) {
-
-        AtomType = type[i];
-
-        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
-        p1u = 1.0L - (p0u = u - (double) u0);
-
-        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
-        p1v = 1.0L - (p0v = v - (double) v0);
-
-        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
-        p1w = 1.0L - (p0w = w - (double) w0);
-
-#ifdef MINPOINT
-        x = (p0u < p1u)? u0 : u1;
-        y = (p0v < p1v)? v0 : v1;
-        z = (p0w < p1w)? w0 : w1;
-
-        diff = (map[z][y][x][AtomType] + map[z][y][x][ElecMap] * charge[i]  - template_energy[i]) / template_stddev[i]; 
-        etotal +=  + diff * diff;
-#else
-        e = m = d = 0.0L;
-
-        e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-        m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
-        d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
-
-        d += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][DesolvMap];
-        m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
-        e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
-
-        e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
-        m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
-        d += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][DesolvMap];
-
-        d += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][DesolvMap];
-        m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-        e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-
-        e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-        m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
-        d += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][DesolvMap];
-
-        d += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][DesolvMap];
-        m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-        e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-
-        e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-        m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-        d += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][DesolvMap];
-
-        d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
-        m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-        e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-        diff = (m + d * abs_charge[i] + e * charge[i] - template_energy[i]) / template_stddev[i]; 
+    for  (i=0; i < total_atoms; i++) {
+        double diff;
+        diff = (emap[i] + elec[i] - template_energy[i]) / template_stddev[i]; 
         etotal += diff * diff;
-
-#endif /* not MINPOINT */
-
-    }/*for  0 <= i < total_atoms*/
+    }
 
     return((FloatOrDouble)sqrt(etotal / (FloatOrDouble)total_atoms ));
-} // FloatOrDouble template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-
-/*----------------------------------------------------------------------------*/
-
-FloatOrDouble outside_templ_trilinterp(CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-          	CONST_FLOAT charge[MAX_ATOMS], 
-          	CONST_FLOAT abs_charge[MAX_ATOMS], 
-          	CONST_INT   type[MAX_ATOMS], 
-          	CONST_INT   total_atoms, 
-          	CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-            CONST_FLOAT template_energy[MAX_ATOMS],
-            CONST_FLOAT template_stddev[MAX_ATOMS],
-            GridMapSetInfo *info )
-
-{
-    double	 etotal, epenalty;
-    double	 x, y, z;
-    double	 u,   v,   w;
-    double	 p0u, p0v, p0w;
-    double	 p1u, p1v, p1w;
-    double   diff;
-
-    int		 AtomType;
-    int		 u0,  v0,  w0;
-    int		 u1,  v1,  w1;
-
-    register int i;                /* i-th atom */
-
-#ifdef MINPOINT
-    int		 x,y,z;
-#else
-    double 	 e, m, d; 
-#endif
-
-    etotal = 0.0L;
-
-    for (i=0; i<total_atoms; i++) {
-        x = tcoord[i][X];
-        y = tcoord[i][Y];
-        z = tcoord[i][Z];
-
-        if (is_out_grid_info(x,y,z)) {
-            x -= info->center[X];
-            y -= info->center[Y];
-            z -= info->center[Z];
-            // sqhypotenuse(x,y,z) is the square of the distance 
-            // from grid's centre to atom
-            epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
-            // etotal += (elec[i] = epenalty) + (emap[i] = epenalty);
-            etotal += (epenalty) + (epenalty);
-        } else {
-            AtomType = type[i];
-     
-            u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
-            p1u = 1.0L - (p0u = u - (double) u0);
-     
-            v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
-            p1v = 1.0L - (p0v = v - (double) v0);
-     
-            w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
-            p1w = 1.0L - (p0w = w - (double) w0);
-     
-#ifdef MINPOINT
-            x = (p0u < p1u)? u0 : u1;
-            y = (p0v < p1v)? v0 : v1;
-            z = (p0w < p1w)? w0 : w1;
-     
-        diff = (map[z][y][x][AtomType] + map[z][y][x][ElecMap] * charge[i] - template_energy[i]) / template_stddev[i];
-        etotal += diff * diff;
-#else
-            e = m = d = 0.0L;
-     
-            e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-            m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
-            d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
-     
-            d += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][DesolvMap];
-            m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
-            e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
-     
-            e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
-            m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
-            d += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][DesolvMap];
-     
-            d += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][DesolvMap];
-            m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-            e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-     
-            e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-            m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
-            d += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][DesolvMap];
-     
-            d += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][DesolvMap];
-            m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-            e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-     
-            e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-            m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-            d += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][DesolvMap];
-     
-            d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
-            m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-            e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-        diff = (m + e * charge[i] + d * abs_charge[i] - template_energy[i]) / template_stddev[i];
-            etotal += diff * diff; 
-
-#endif /* not MINPOINT */
-
-        } /* inside grid */
-    }/*for  0 <= i < total_atoms*/
-
-    return( (FloatOrDouble)sqrt(etotal / (FloatOrDouble)total_atoms));
 }
-
-/*----------------------------------------------------------------------------*/
-
-FloatOrDouble byatom_template_trilinterp( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-          	                      CONST_FLOAT charge[MAX_ATOMS], 
-          	                      CONST_FLOAT abs_charge[MAX_ATOMS], 
-          	                      CONST_INT   type[MAX_ATOMS], 
-          	                      CONST_INT   total_atoms, 
-          	                      CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                                  FloatOrDouble elec[MAX_ATOMS], 
-                                  FloatOrDouble emap[MAX_ATOMS], 
-                                  CONST_FLOAT template_energy[MAX_ATOMS],
-                                  CONST_FLOAT template_stddev[MAX_ATOMS],
-                                  GridMapSetInfo *info )
-{
-    double	 etotal;
-    double	 u,   v,   w;
-    double	 p0u, p0v, p0w;
-    double	 p1u, p1v, p1w;
-    double diff;
-
-    int		 AtomType;
-    int		 u0,  v0,  w0;
-    int		 u1,  v1,  w1;
-
-    register int i;		/* i-th atom */
-
-#ifdef MINPOINT
-    int		 x,y,z;
-#else
-    double 	 e; // electrostatic energy
-    double 	 m; // affinity map
-    double 	 d; // desolvation map
-#endif
-
-    etotal = 0.0L;
-
-    for (i=0; i<total_atoms; i++) {
-
-        AtomType = type[i];
-
-        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
-        p1u = 1.0L - (p0u = u - (double) u0);
-
-        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
-        p1v = 1.0L - (p0v = v - (double) v0);
-
-        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
-        p1w = 1.0L - (p0w = w - (double) w0);
-
-#ifdef MINPOINT
-        x = (p0u < p1u)? u0 : u1;
-        y = (p0v < p1v)? v0 : v1;
-        z = (p0w < p1w)? w0 : w1;
-
-        diff = ((emap[i] = map[z][y][x][AtomType]) + (elec[i] = map[z][y][x][ElecMap] * charge[i]) - template_energy[i]) / template_stddev[i]; 
-        etotal += diff * diff;
-#else
-        e = m = d = 0.0L;
-
-        e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-        m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
-        d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
-
-        d += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][DesolvMap];
-        m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
-        e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
-
-        e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
-        m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
-        d += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][DesolvMap];
-
-        d += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][DesolvMap];
-        m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-        e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-
-        e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-        m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
-        d += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][DesolvMap];
-
-        d += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][DesolvMap];
-        m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-        e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-
-        e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-        m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-        d += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][DesolvMap];
-
-        d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
-        m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-        e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-        diff = ((emap[i] = m + d * abs_charge[i]) + (elec[i] = e * charge[i]) - template_energy[i]) / template_stddev[i];
-        etotal += diff * diff;
-
-#endif /* not MINPOINT */
-
-    }/*for  0 <= i < total_atoms*/
-
-    return( (FloatOrDouble)sqrt(etotal / (FloatOrDouble)total_atoms));
-}
-
-//#------------------------------------------------------------------
-
-/* { */
-
-FloatOrDouble trilinterp4( CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-                              CONST_FLOAT charge[MAX_ATOMS], 
-                              CONST_FLOAT abs_charge[MAX_ATOMS], 
-                              CONST_INT   type[MAX_ATOMS], 
-                              CONST_INT   total_atoms, 
-                              CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-                              FloatOrDouble elec[MAX_ATOMS], 
-                              FloatOrDouble emap[MAX_ATOMS], 
-                              int ignore_inter[MAX_ATOMS],
-                              GridMapSetInfo *info)
-
-{
-    register double emaptotal, electotal;
-    register double u,   v,   w;
-    register double p0u, p0v, p0w;
-    register double p1u, p1v, p1w;
-    register int AtomType;        /* atom type */
-    register int u0,  v0,  w0;
-    register int u1,  v1,  w1;
-    register int i;               /* i-th atom */
-
-#ifdef MINPOINT
-    register int x,y,z;                                                    /*MINPOINT*/
-#else
-    register double e, m, d; 
-#endif
-
-    emaptotal = electotal = 0.0L;
-
-    for (i=0; i<total_atoms; i++) {
-
-        if (!ignore_inter[i]) {
-
-            AtomType = type[i];
-
-            u1  = (u0 = (int) (u = (tcoord[i][X]-info->lo[X]) * info->inv_spacing)) + 1;
-            p1u = 1.0L - (p0u = u - (double) u0);
-
-            v1  = (v0 = (int) (v = (tcoord[i][Y]-info->lo[Y]) * info->inv_spacing)) + 1;
-            p1v = 1.0L - (p0v = v - (double) v0);
-
-            w1  = (w0 = (int) (w = (tcoord[i][Z]-info->lo[Z]) * info->inv_spacing)) + 1;
-            p1w = 1.0L - (p0w = w - (double) w0);
-
-    #ifdef MINPOINT
-            x = (p0u < p1u)? u0 : u1;                                    /*MINPOINT*/
-            y = (p0v < p1v)? v0 : v1;                                    /*MINPOINT*/
-            z = (p0w < p1w)? w0 : w1;                                    /*MINPOINT*/
-                                                                        /*MINPOINT*/
-            electotal += (elec[i] = map[z][y][x][ElecMap] * charge[i]); /*MINPOINT*/
-            emaptotal += (emap[i] = map[z][y][x][AtomType]);             /*MINPOINT*/
-    #else
-            e = m = d = 0.0L;
-
-            e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-            m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
-            d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
-
-            d += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][DesolvMap];
-            m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
-            e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
-
-            e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
-            m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
-            d += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][DesolvMap];
-
-            d += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][DesolvMap];
-            m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-            e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-
-            e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-            m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
-            d += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][DesolvMap];
-
-            d += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][DesolvMap];
-            m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-            e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-
-            e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-            m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-            d += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][DesolvMap];
-
-            d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
-            m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-            e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-            electotal += (elec[i] = e * charge[i]);
-            emaptotal += (emap[i] = m + d * abs_charge[i]); 
-
-    #endif /* not MINPOINT */
-
-        } else {
-            elec[i] = 0.0;
-            emap[i] = 0.0;
-        }/* if (ignore_inter[i]) */
-
-    }/*for  0 <= i < total_atoms*/
-
-    return( (FloatOrDouble)(electotal + emaptotal) );
-}
-
-/* } */
-
-//#------------------------------------------------------------------
-
-/* { */
-
-FloatOrDouble outsidetrilinterp4(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
-                          CONST_FLOAT charge[MAX_ATOMS], 
-                          CONST_FLOAT abs_charge[MAX_ATOMS], 
-                          CONST_INT   type[MAX_ATOMS], 
-                          CONST_INT   total_atoms, 
-                          CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                          int ignore_inter[MAX_ATOMS],
-                          GridMapSetInfo *info )
-
-{
-    register double etotal, epenalty;
-    register double x, y, z;
-    register double u,   v,   w;
-    register double p0u, p0v, p0w;
-    register double p1u, p1v, p1w;
-    register int AtomType;
-    register int u0,  v0,  w0;
-    register int u1,  v1,  w1;
-    register int i;                /* i-th atom */
-
-#ifdef MINPOINT
-    register int x,y,z;
-#else
-    register double e, m, d; 
-#endif
-
-    etotal = 0.0L;
-
-    for (i=0; i<total_atoms; i++) {
-
-        if (!ignore_inter[i]) {
-
-            x = tcoord[i][X];
-            y = tcoord[i][Y];
-            z = tcoord[i][Z];
-
-            if (is_out_grid_info(x,y,z)) {
-                x -= info->center[X];
-                y -= info->center[Y];
-                z -= info->center[Z];
-                // sqhypotenuse(x,y,z) is the square of the distance 
-                // from grid's centre to atom
-                epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
-                etotal += epenalty + epenalty;
-            } else {
-                AtomType = type[i];
-         
-                u1  = (u0 = (int) (u = (tcoord[i][X]-info->lo[X]) * info->inv_spacing)) + 1;
-                p1u = 1.0L - (p0u = u - (double) u0);
-         
-                v1  = (v0 = (int) (v = (tcoord[i][Y]-info->lo[Y]) * info->inv_spacing)) + 1;
-                p1v = 1.0L - (p0v = v - (double) v0);
-         
-                w1  = (w0 = (int) (w = (tcoord[i][Z]-info->lo[Z]) * info->inv_spacing)) + 1;
-                p1w = 1.0L - (p0w = w - (double) w0);
-         
-    #ifdef MINPOINT
-                x = (p0u < p1u)? u0 : u1;
-                y = (p0v < p1v)? v0 : v1;
-                z = (p0w < p1w)? w0 : w1;
-         
-                etotal += map[z][y][x][ElecMap] * charge[i] + map[z][y][x][AtomType]; 
-
-    #else
-                e = m = d = 0.0L;
-         
-                e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-                m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
-                d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
-         
-                d += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][DesolvMap];
-                m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
-                e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
-         
-                e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
-                m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
-                d += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][DesolvMap];
-         
-                d += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][DesolvMap];
-                m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-                e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-         
-                e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-                m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
-                d += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][DesolvMap];
-         
-                d += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][DesolvMap];
-                m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-                e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-         
-                e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-                m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-                d += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][DesolvMap];
-         
-                d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
-                m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-                e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-                etotal += e * charge[i] + m + d * abs_charge[i]; 
-
-    #endif /* not MINPOINT */
-
-            } /* inside grid */
-
-        }
-
-    }/*for  0 <= i < total_atoms*/
-
-    return( (FloatOrDouble)etotal );
-}
-
-/* } */
-
-//#------------------------------------------------------------------
-
-/* { */
-
-FloatOrDouble outsidetrilinterp4byatom(CONST_FLOAT tcoord[MAX_ATOMS][SPACE],
-                          CONST_FLOAT charge[MAX_ATOMS], 
-                          CONST_FLOAT abs_charge[MAX_ATOMS], 
-                          CONST_INT   type[MAX_ATOMS], 
-                          CONST_INT   total_atoms, 
-                          CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                        FloatOrDouble elec[MAX_ATOMS],
-                        FloatOrDouble emap[MAX_ATOMS],
-                          int ignore_inter[MAX_ATOMS],
-                          GridMapSetInfo *info )
-
-{
-    register double etotal, epenalty;
-    register double x, y, z;
-    register double u,   v,   w;
-    register double p0u, p0v, p0w;
-    register double p1u, p1v, p1w;
-    register int AtomType;
-    register int u0,  v0,  w0;
-    register int u1,  v1,  w1;
-    register int i;                /* i-th atom */
-
-#ifdef MINPOINT
-    register int x,y,z;
-#else
-    register double e, m, d; 
-#endif
-
-    etotal = 0.0L;
-
-    for (i=0; i<total_atoms; i++) {
-
-        if (!ignore_inter[i]) {
-
-            x = tcoord[i][X];
-            y = tcoord[i][Y];
-            z = tcoord[i][Z];
-
-            if (is_out_grid_info(x,y,z)) {
-                x -= info->center[X];
-                y -= info->center[Y];
-                z -= info->center[Z];
-                // sqhypotenuse(x,y,z) is the square of the distance 
-                // from grid's centre to atom
-                epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
-                etotal += (elec[i] = epenalty) + (emap[i] = epenalty);
-            } else {
-                AtomType = type[i];
-         
-                u1  = (u0 = (int) (u = (tcoord[i][X]-info->lo[X]) * info->inv_spacing)) + 1;
-                p1u = 1.0L - (p0u = u - (double) u0);
-         
-                v1  = (v0 = (int) (v = (tcoord[i][Y]-info->lo[Y]) * info->inv_spacing)) + 1;
-                p1v = 1.0L - (p0v = v - (double) v0);
-         
-                w1  = (w0 = (int) (w = (tcoord[i][Z]-info->lo[Z]) * info->inv_spacing)) + 1;
-                p1w = 1.0L - (p0w = w - (double) w0);
-         
-    #ifdef MINPOINT
-                x = (p0u < p1u)? u0 : u1;
-                y = (p0v < p1v)? v0 : v1;
-                z = (p0w < p1w)? w0 : w1;
-         
-                etotal += (elec[i] = map[z][y][x][ElecMap] * charge[i]) + 
-                          (emap[i] = map[z][y][x][AtomType]); 
-
-    #else
-                e = m = d = 0.0L;
-         
-                e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-                m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
-                d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
-         
-                d += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][DesolvMap];
-                m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
-                e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
-         
-                e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
-                m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
-                d += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][DesolvMap];
-         
-                d += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][DesolvMap];
-                m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-                e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-         
-                e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-                m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
-                d += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][DesolvMap];
-         
-                d += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][DesolvMap];
-                m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-                e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-         
-                e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-                m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-                d += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][DesolvMap];
-         
-                d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
-                m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-                e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-                etotal += (elec[i] = e * charge[i]) + (emap[i] = m + d * abs_charge[i]); 
-
-    #endif /* not MINPOINT */
-
-            } /* inside grid */
-        } else { 
-            /* if (ignore_inter[i]) */
-            elec[i] = 0.0;
-            emap[i] = 0.0;
-        }
-    }/*for  0 <= i < total_atoms*/
-
-    return( (FloatOrDouble)etotal );
-}
-
-/* } */
-
-//#------------------------------------------------------------------
-
-/* { */
-
-FloatOrDouble quicktrilinterp4(    CONST_FLOAT tcoord[MAX_ATOMS][SPACE], 
-                          CONST_FLOAT charge[MAX_ATOMS], 
-                          CONST_FLOAT abs_charge[MAX_ATOMS], 
-                          CONST_INT   type[MAX_ATOMS], 
-                          CONST_INT   total_atoms, 
-                          CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-                          int ignore_inter[MAX_ATOMS],
-                          GridMapSetInfo *info )
-
-{
-    register double etotal;
-    register double u,   v,   w;
-    register double p0u, p0v, p0w;
-    register double p1u, p1v, p1w;
-    register int AtomType;
-    register int u0,  v0,  w0;
-    register int u1,  v1,  w1;
-    register int i;                /* i-th atom */
-
-#ifdef MINPOINT
-    register int x,y,z;
-#else
-    register double e, m, d; 
-#endif
-
-    etotal = 0.0L;
-
-    for (i=0; i<total_atoms; i++) {
-
-        if (!ignore_inter[i]) {
-
-            AtomType = type[i];
-
-            u1  = (u0 = (int) (u = (tcoord[i][X]-info->lo[X]) * info->inv_spacing)) + 1;
-            p1u = 1.0L - (p0u = u - (double) u0);
-
-            v1  = (v0 = (int) (v = (tcoord[i][Y]-info->lo[Y]) * info->inv_spacing)) + 1;
-            p1v = 1.0L - (p0v = v - (double) v0);
-
-            w1  = (w0 = (int) (w = (tcoord[i][Z]-info->lo[Z]) * info->inv_spacing)) + 1;
-            p1w = 1.0L - (p0w = w - (double) w0);
-
-    #ifdef MINPOINT
-            x = (p0u < p1u)? u0 : u1;
-            y = (p0v < p1v)? v0 : v1;
-            z = (p0w < p1w)? w0 : w1;
-
-            etotal += map[z][y][x][ElecMap] * charge[i] + map[z][y][x][AtomType]; 
-    #else
-            e = m = d = 0.0L;
-
-            e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
-            m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
-            d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
-
-            d += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][DesolvMap];
-            m += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][AtomType];
-            e += p0u * p1v * p1w * map[ w0 ][ v0 ][ u1 ][ElecMap];
-
-            e += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][ElecMap];
-            m += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][AtomType];
-            d += p1u * p0v * p1w * map[ w0 ][ v1 ][ u0 ][DesolvMap];
-
-            d += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][DesolvMap];
-            m += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][AtomType];
-            e += p1u * p1v * p0w * map[ w1 ][ v0 ][ u0 ][ElecMap];
-
-            e += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][ElecMap];
-            m += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][AtomType];
-            d += p0u * p0v * p1w * map[ w0 ][ v1 ][ u1 ][DesolvMap];
-
-            d += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][DesolvMap];
-            m += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][AtomType];
-            e += p1u * p0v * p0w * map[ w1 ][ v1 ][ u0 ][ElecMap];
-
-            e += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][ElecMap];
-            m += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][AtomType];
-            d += p0u * p1v * p0w * map[ w1 ][ v0 ][ u1 ][DesolvMap];
-
-            d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
-            m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
-            e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-
-            etotal += e * charge[i] + m + d * abs_charge[i];
-
-    #endif /* not MINPOINT */
-        }
-
-    }/*for  0 <= i < total_atoms*/
-
-    return( (FloatOrDouble)etotal );
-}
-/* } */
 
 /* EOF */

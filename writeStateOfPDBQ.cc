@@ -1,6 +1,6 @@
 /*
 
- $Id: writeStateOfPDBQ.cc,v 1.6 2005/10/22 04:40:02 garrett Exp $
+ $Id: writeStateOfPDBQ.cc,v 1.7 2006/01/27 05:39:14 garrett Exp $
 
 */
 
@@ -102,26 +102,19 @@ writeStateOfPDBQ(int irun, FourByteLong seed[2],
 		} else {
 			*Ptr_eintra = 0.0;
 		}
-		if (B_template) {
-			*Ptr_einter = byatom_template_trilinterp(crd, charge, abs_charge, type, natom, map, elec, emap, 
-					  template_energy, template_stddev, info );
+		if (!B_template) {
+            *Ptr_einter = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                    info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap, &elec_total, &emap_total);
 		} else {
-			*Ptr_einter = trilinterp4(crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+            *Ptr_einter = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
+                    info, ALL_ATOMS_INSIDE_GRID, 
+                    NULL_IGNORE_INTERMOL, template_energy, template_stddev, elec /* set */ , emap /* set */,  &elec_total, &emap_total);
 		}
 
 	} else {
 		*Ptr_eintra = *Ptr_einter = BIG;
 		//BIG is defined in constants.h
 	}
-
-	//Sum the non - bonded energies(emap[i]) and the electrostatic energies(elec[i])
-	                emap_total = 0.0L;
-	elec_total = 0.0L;
-	for (i = 0; i < natom; i++) {
-		emap_total += emap[i];
-		elec_total += elec[i];
-	}
-
 
 	if (outlev > -1) {
 		//output of coordinates(gmm 2001 - 11 - 01)
@@ -221,7 +214,7 @@ void write_emap_elec( State *Ptr_state,
                      const ParameterEntry parameterArray[MAX_MAPS],
                      const FloatOrDouble unbound_internal_FE,
                      GridMapSetInfo *info )
-
+	
 {
 	int           i = 0;
 	FloatOrDouble emap_total = 0.0L;
@@ -242,21 +235,16 @@ void write_emap_elec( State *Ptr_state,
                            B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
                            parameterArray, unbound_internal_FE);
 		}
-		if (B_template) {
-			(void) byatom_template_trilinterp(crd, charge, abs_charge, type, natom, map, 
-                                              elec, emap, template_energy, template_stddev, info );
+		if (!B_template) {
+            (void) trilinterp( crd, charge, abs_charge, type, natom, map, 
+                    info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap, &elec_total, &emap_total);
 		} else {
-			(void) trilinterp4(crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+            (void) template_trilinterp( crd, charge, abs_charge, type, natom, map, 
+                    info, ALL_ATOMS_INSIDE_GRID, 
+                    NULL_IGNORE_INTERMOL, template_energy, template_stddev, elec /* set */ , emap /* set */,  &elec_total, &emap_total);
 		}
 	}
 
-	// Sum the non-bonded energies (emap[i]) and the electrostatic energies (elec[i])
-    emap_total = 0.0L;
-	elec_total = 0.0L;
-	for (i = 0; i < natom; i++) {
-		emap_total += emap[i];
-		elec_total += elec[i];
-	}
     pr( logFile, "%9.2e %9.2e", emap_total, elec_total );
 }
 /* EOF */

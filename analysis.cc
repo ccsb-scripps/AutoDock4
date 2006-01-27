@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.13 2005/10/22 04:02:40 garrett Exp $
+ $Id: analysis.cc,v 1.14 2006/01/27 05:39:14 garrett Exp $
 
 */
 
@@ -101,7 +101,6 @@ void analysis( int   Nnb,
     FloatOrDouble modtorDeg = 0.;
     FloatOrDouble MaxValue = 99.99;
 
-    int   a = 0;
     int   c = 0;
     int   c1 = 0;
     static int   cluster[MAX_RUNS][MAX_RUNS];
@@ -226,17 +225,14 @@ void analysis( int   Nnb,
                 eintra = 0.0;
             }
             if (!B_template) {
-                 einter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+                 einter = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                    info, ALL_ATOMS_INSIDE_GRID, ignore_inter, 
+                    elec, emap, &elec_total, &emap_total);
             } else {
-                 einter = byatom_template_trilinterp( crd, charge, abs_charge, type, natom, map, elec, emap, 
-                                                      template_energy, template_stddev, info);
-            }
-
-            emap_total = 0.0;
-            elec_total = 0.0;
-            for (a=0; a<natom; a++) {
-                emap_total += emap[a];
-                elec_total += elec[a];
+                 einter = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
+                        info, ALL_ATOMS_INSIDE_GRID, 
+                        ignore_inter, template_energy, template_stddev, 
+                        elec /* set */ , emap /* set */, &elec_total, &emap_total );
             }
 
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);

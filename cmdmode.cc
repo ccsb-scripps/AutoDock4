@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.10 2005/10/22 04:02:40 garrett Exp $
+ $Id: cmdmode.cc,v 1.11 2006/01/27 05:39:14 garrett Exp $
 
 */
 
@@ -250,12 +250,6 @@ int cmdmode(int   natom,
                     } else {
                         eintra = 0.0;
                     }
-                    /* gmm 2001.11.07
-                    if (outside) {
-			etotal = (einter = outsidetrilinterp4byatom(crd, charge, abs_charge, type, natom, map, elec,emap, ignore_inter, info)) + eintra; // gmm 2001.11.07
-                    } else {
-                        etotal = (einter = trilinterp4(crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info)) + eintra;
-                    } / * endif */
                     pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
                     pr(logFile,     "\t\t==============================\n\n\n");
                     pr(logFile, "Atom  NB.+ Elec.  Non-bonded  Electrosta  Partial          Coordinates         \n");
@@ -330,14 +324,6 @@ int cmdmode(int   natom,
                         outside = FALSE;
                     }
                 } /*i*/
-                /*
-                if (outside) {
-                    etotal = (einter = outsidetrilinterp4byatom(crd, charge, abs_charge, type, natom, map, elec,emap, ignore_inter, info)) + eintra; // gmm 2001.11.07
-                } else {
-                    etotal = (einter = trilinterp4(crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info)) + eintra;
-                    / * lo) ...using lo array is slower * /
-                }
-                */
                 prStr(message, "%f\n", etotal);
                 pr_2x(command_out_fp, logFile, message);
                 fflush(logFile);
@@ -460,13 +446,6 @@ int cmdmode(int   natom,
                                             outside = FALSE;
                                         }
                                     } /*i*/
-                                    /* gmm 2001.11.07
-                                    if (outside) {
-                                        etotal = (einter = outsidetrilinterp4byatom(crd, charge, abs_charge, type, natom, map, elec,emap, ignore_inter, info)) + Eint; // gmm 2001.11.07
-                                    } else {
-                                        etotal = (einter = trilinterp4(crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info)) + Eint;
-                                            / * lo) + Eint; * /
-                                    } / * endif */
                                     pr(logFile, "USER   Run %d  Cycle %d  Step %d  Temp %.2f K  %c  Etot %.2f  Eint   %.2f\n", irun, icycle, nstep, T, lastmove, E, Eint);
                                     switch (lastmove) {
                                         case 'A':

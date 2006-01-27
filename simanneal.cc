@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.8 2005/09/28 22:54:21 garrett Exp $
+ $Id: simanneal.cc,v 1.9 2006/01/27 05:39:14 garrett Exp $
 
 */
 
@@ -360,22 +360,12 @@ void simanneal ( int   *Addr_nconf,
 			/*
 			** MORE ACCURATE METHOD, (SLOWER):
 			*/
-			e = quicktrilinterp4( crd, charge, abs_charge, type, natom, map, ignore_inter, info ) + 
-				(eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE));
-
-			/*
-			** LESS ACCURATE  METHOD (FASTER):
-			** (alternative to above line).
-			** 
-			** Only calculate internal energy if 
-			** trilinterp energy is low enough.
-			** 
-			** if ( (e = quicktrilinterp( crd, charge, abs_charge, type, natom, 
-			** map, inv_spacing, xlo, ylo, zlo)) < 
-			** ENERGY_CUTOFF) { 
-			**   e += (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE));
-			** }
-			*/
+                        e = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                                        info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW,
+                                        NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
+				            + (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
+                                   B_calcIntElec, q1q2, B_include_1_4_interactions, 
+                                   scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE));
 
 			if (B_isGaussTorCon) {
 			    /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { ***/
@@ -595,7 +585,9 @@ void simanneal ( int   *Addr_nconf,
 	} else {
 	    eintra = 0.0;
 	}
-        einter = trilinterp4( crd, charge, abs_charge, type, natom, map, elec, emap, ignore_inter, info );
+        einter = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                    info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
+                    NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
 
 	writePDBQ( irun, FN_ligand, FN_dpf, sml_center, sSave, ntor,
 	  eintra, einter, natom, atomstuff, crd, emap, elec, 

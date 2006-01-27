@@ -1,6 +1,6 @@
 /*
 
- $Id: evaluate_energy.cc,v 1.6 2005/09/28 22:54:20 garrett Exp $
+ $Id: evaluate_energy.cc,v 1.7 2006/01/27 05:39:14 garrett Exp $
 
 */
 
@@ -51,27 +51,12 @@ FloatOrDouble evaluate_energy(
     int   I_tor = 0;
     int   indx = 0;
 
-    e = quicktrilinterp( crd, charge, abs_charge, type, natom, map, info);
-
-    /* pr(logFile,"e(tril)=%10.2f,  ",e); / *###*/
+    e = trilinterp( crd, charge, abs_charge, type, natom, map, 
+            info, ALL_ATOMS_INSIDE_GRID, NULL_IGNORE_INTERMOL, 
+            NULL_ELEC, NULL_EVDW,
+            NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
 
     e += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
-
-    /* pr(logFile,"e(eintcal)=%10.2f\n",e); / *###*/
-
-    /*
-    ** FASTER, LESS ACCURATE  METHOD:
-    ** (alternative to above line).
-    **
-    ** Only bother to calculate internal energy if
-    ** trilinterp energy is low enough.
-    **
-    ** if ( (e = quicktrilinterp( crd, charge, abs_charge, type, natom,
-    ** map, inv_spacing, xlo,ylo,zlo)) <
-    ** ENERGY_CUTOFF) {
-    **   e += (*Addr_eintra = eintcal( nonbondlist,ptr_ad_energy_tables,crd,Nnb,B_calcIntElec,q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, unbound_internal_FE));
-    ** }
-    */
 
     if (B_isGaussTorCon) {
         for (I_tor = 0; I_tor <= now.ntor; I_tor++) {
