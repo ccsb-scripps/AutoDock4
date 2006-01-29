@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.7 2005/08/15 23:03:35 garrett Exp $
+ $Id: gs.cc,v 1.8 2006/01/29 17:07:18 billhart Exp $
 
 */
 
@@ -25,6 +25,7 @@
 #include "eval.h"
 #include "rep.h"
 #include "assert.h"
+#include "writeMolAsPDBQ.h"
 
 #ifdef sgi
     #include <ieeefp.h>
