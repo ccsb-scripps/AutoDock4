@@ -80,13 +80,8 @@ if (ifstr)
 //
 // Create a default 'initial point'
 //
-/*
 BasicArray<double> lower,upper;
 coliny_problem.get_real_bounds(lower,upper);
-initpt.resize(lower.size());
-for (size_type i=0; i<lower.size(); i++)
-  initpt[i] = (upper[i]+lower[i])/2.0;
-*/
 }
 
 
@@ -99,8 +94,31 @@ void coliny_minimize(int seed, std::vector<double>& initpt,
 				std::vector<double>& finalpt,
 				int& neval, int& niters)
 {
+coliny_problem.reset_neval();
+
 BasicArray<double> initpt_;
+#if 1
 initpt_ << initpt;
+#else
+initpt_.resize(initpt.size());
+initpt_[0] = -9.151;
+initpt_[1] = 16.175;
+initpt_[2] = 28.005;
+initpt_[3] = 0.866;
+initpt_[4] = 0.496;
+initpt_[5] = 0.071;
+initpt_[6] = -0.847;
+initpt_[7] = 2*3.1416*(-74.83/360);
+initpt_[8] = 2*3.1416*(18.36/360);
+initpt_[9] = 2*3.1416*(12.26/360);
+initpt_[10] = 2*3.1416*(169.72/360);
+initpt_[11] = 2*3.1416*(12.54/360);
+initpt_[12] = 2*3.1416*(4.41/360);
+initpt_[13] = 2*3.1416*(5.80/360);
+initpt_[14] = 2*3.1416*(13.62/360);
+initpt_[15] = 2*3.1416*(-0.83/360);
+initpt_[16] = 2*3.1416*(-0.44/360);
+#endif
 BasicArray<double> finalpt_;
 
 colin::real best_value;
