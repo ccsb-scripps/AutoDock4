@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.33 2006/01/27 06:04:29 garrett Exp $
+ $Id: main.cc,v 1.34 2006/01/30 04:25:10 billhart Exp $
 
 */
 
@@ -1391,10 +1391,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // torsion angles are periodic, we simply prevent the optimizer
             // from going too far.
             if (sInit.ntor > 0) {
-                sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-3.1416,3.1416] [-3.1416,3.1416]^%d",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z], sInit.ntor);
+                sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1000.0,1000.0]^3 [-3.1416,3.1416] [-3.1416,3.1416]^%d",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z], sInit.ntor);
                 //sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-6.2832,12.5664] [-6.2832,12.5664]^%d",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z], sInit.ntor);
             } else {
-                sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1.0,1.1]^3 [-3.1416,3.1416]",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z]);
+                sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1000.0,1000.0]^3 [-3.1416,3.1416]",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z]);
             }
             pr(logFile, "Number of Coliny %s dockings = %d run%c\n", algname, nruns, (nruns>1)?'s':' ');
             pr(logFile, "Search Domain: %s\n", domain);

@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.13 2005/10/08 01:05:02 lindy Exp $
+ $Id: call_glss.cc,v 1.14 2006/01/30 04:25:10 billhart Exp $
 
 */
 
@@ -260,5 +260,6 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     } while ((evaluate.evals() < num_evals) && (!global_method->terminate()));
 
     thisPop.msort(3);
+    (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
     return( thisPop[0].state(now.ntor) );
 }
