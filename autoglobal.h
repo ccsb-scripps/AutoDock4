@@ -62,11 +62,7 @@ FILE    *parFile;
 FILE    *GPF;
 FILE    *logFile;
 
-#ifdef USE_DOUBLE
-FloatOrDouble	idct = 1.0L;
-#else
 FloatOrDouble	idct = 1.0;
-#endif
 
 Linear_FE_Model AD3;
 Linear_FE_Model AD4_wrt_3;
