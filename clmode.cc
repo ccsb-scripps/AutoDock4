@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.3 2005/03/11 02:11:29 garrett Exp $
+ $Id: clmode.cc,v 1.4 2006/01/30 23:01:37 garrett Exp $
 
 */
 
@@ -106,22 +106,14 @@ void  clmode( int   num_atm_maps,
              */
             if ( haveAtoms ) {
                 econf[confCounter] = 0.;
-                #ifdef USE_DOUBLE
-                    sscanf( line, "%*s %*s %*s %*s %*s %*s %*s %lf", &econf[confCounter]);
-                #else
-                    sscanf( line, "%*s %*s %*s %*s %*s %*s %*s %f", &econf[confCounter]);
-                #endif
+                sscanf( line, "%*s %*s %*s %*s %*s %*s %*s " FDFMT, &econf[confCounter]);
                 haveEnergy = TRUE;
             } else {
                 /* ! haveAtoms
                  * We have not seen any atoms yet, so save this energy. 
                  */
                 eSave[nsaved]=0.;
-                #ifdef USE_DOUBLE
-                    sscanf( line, "%*s %*s %*s %*s %*s %*s %*s %lf", &eSave[nsaved] );
-                #else
-                    sscanf( line, "%*s %*s %*s %*s %*s %*s %*s %f", &eSave[nsaved] );
-                #endif
+                sscanf( line, "%*s %*s %*s %*s %*s %*s %*s " FDFMT, &eSave[nsaved] );
                 ++nsaved;
             }
 
@@ -133,22 +125,14 @@ void  clmode( int   num_atm_maps,
              */
             if ( haveAtoms ) {
                 econf[confCounter] = 0.;
-                #ifdef USE_DOUBLE
-                    sscanf( line, "%*s %*s %*s %*s %*s %lf", &econf[confCounter]);
-                #else
-                    sscanf( line, "%*s %*s %*s %*s %*s %f", &econf[confCounter]);
-                #endif
+                sscanf( line, "%*s %*s %*s %*s %*s " FDFMT, &econf[confCounter]);
                 haveEnergy = TRUE;
             } else {
                 /* ! haveAtoms
                  * We have not seen any atoms yet, so save this energy. 
                  */
                 eSave[nsaved]=0.;
-                #ifdef USE_DOUBLE
-                    sscanf( line, "%*s %*s %*s %*s %*s %lf", &eSave[nsaved] );
-                #else
-                    sscanf( line, "%*s %*s %*s %*s %*s %f", &eSave[nsaved] );
-                #endif
+                sscanf( line, "%*s %*s %*s %*s %*s " FDFMT, &eSave[nsaved] );
                 ++nsaved;
             }
 
