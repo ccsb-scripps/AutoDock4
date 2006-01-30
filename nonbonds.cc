@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.4 2005/08/15 23:39:38 garrett Exp $
+ $Id: nonbonds.cc,v 1.5 2006/01/30 23:06:03 garrett Exp $
 
 */
 
@@ -161,12 +161,8 @@ void print_1_4_message(FILE *file, Boole B_include_1_4_interactions,  FloatOrDou
         pr(file, "1,4-interactions will be _ignored_ in the non-bonded internal energy calculation.\n\n");
     } else {
         pr(file, "1,4-interactions will be _included_ in the non-bonded internal energy calculation.\n\n");
-#ifdef USE_DOUBLE
-        pr(file, "1,4-interaction energies will be will be scaled by a factor of %.2lf .\n\n", scale_1_4);
-#else
-        pr(file, "1,4-interaction energies will be will be scaled by a factor of %.2f .\n\n", scale_1_4);
-#endif
-        pr(file,   "NOTE:  Computed internal energies will differ from the standard AutoDock free energy function.\n\n");
+        pr(file, "1,4-interaction energies will be will be scaled by a factor of %.2lf .\n\n", (double)scale_1_4);
+        pr(file, "NOTE:  Computed internal energies will differ from the standard AutoDock free energy function.\n\n");
     }
     (void) fflush(file);
 } // end of print_1_4_message
