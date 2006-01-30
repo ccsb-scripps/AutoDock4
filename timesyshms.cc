@@ -1,6 +1,6 @@
 /*
 
- $Id: timesyshms.cc,v 1.5 2005/09/28 22:54:21 garrett Exp $
+ $Id: timesyshms.cc,v 1.6 2006/01/30 23:08:48 garrett Exp $
 
 */
 
@@ -38,11 +38,7 @@ void timesyshms( Clock     duration,
 {
     int   h, m;
     FloatOrDouble t, T, s;
-#ifndef USE_DOUBLE
     const FloatOrDouble min = 60., hrs = 3600.;
-#else
-    const FloatOrDouble min = 60.L, hrs = 3600.L;
-#endif
 
     (void)fprintf( logFile, "Real= " );
     t = (FloatOrDouble)duration * idct;
@@ -52,23 +48,11 @@ void timesyshms( Clock     duration,
     s = T - ((FloatOrDouble)m)*min;
     if (h == 0) {
         if (m == 0)
-#ifndef USE_DOUBLE
-            (void)fprintf(logFile,       "%.2fs",       s );
-#else
-            (void)fprintf(logFile,       "%.2lfs",       s );
-#endif
+            (void)fprintf(logFile,       "%.2lfs",       (double)s );
         else
-#ifndef USE_DOUBLE
-            (void)fprintf(logFile,    "%dm %05.2fs",    m, s );
-#else
-            (void)fprintf(logFile,    "%dm %05.2lfs",    m, s );
-#endif
+            (void)fprintf(logFile,    "%dm %05.2lfs",    m, (double)s );
     } else {
-#ifndef USE_DOUBLE
-            (void)fprintf(logFile, "%dh %02dm %05.2fs", h, m, s );
-#else
-            (void)fprintf(logFile, "%dh %02dm %05.2lfs", h, m, s );
-#endif
+            (void)fprintf(logFile, "%dh %02dm %05.2lfs", h, m, (double)s );
     }
 
     (void)fprintf( logFile, ",  CPU= " );
@@ -79,23 +63,11 @@ void timesyshms( Clock     duration,
     s = T - ((FloatOrDouble)m)*min;
     if (h == 0) {
         if (m == 0)
-#ifndef USE_DOUBLE
-            (void)fprintf(logFile,       "%.2fs",       s );
-#else
-            (void)fprintf(logFile,       "%.2lfs",       s );
-#endif
+            (void)fprintf(logFile,       "%.2lfs",       (double)s );
         else
-#ifndef USE_DOUBLE
-            (void)fprintf(logFile,    "%dm %05.2fs",    m, s );
-#else
-            (void)fprintf(logFile,    "%dm %05.2lfs",    m, s );
-#endif
+            (void)fprintf(logFile,    "%dm %05.2lfs",    m, (double)s );
     } else {
-#ifndef USE_DOUBLE
-            (void)fprintf(logFile, "%dh %02dm %05.2fs", h, m, s );
-#else
-            (void)fprintf(logFile, "%dh %02dm %05.2lfs", h, m, s );
-#endif
+            (void)fprintf(logFile, "%dh %02dm %05.2lfs", h, m, (double)s );
     }
 
     (void)fprintf( logFile, ",  System= " );
@@ -106,23 +78,11 @@ void timesyshms( Clock     duration,
     s = T - ((FloatOrDouble)m)*min;
     if (h == 0) {
         if (m == 0)
-#ifndef USE_DOUBLE
-            (void)fprintf(logFile,       "%.2fs",       s );
-#else
-            (void)fprintf(logFile,       "%.2lfs",       s );
-#endif
+            (void)fprintf(logFile,       "%.2lfs",       (double)s );
         else
-#ifndef USE_DOUBLE
-            (void)fprintf(logFile,    "%dm %05.2fs",    m, s );
-#else
-            (void)fprintf(logFile,    "%dm %05.2lfs",    m, s );
-#endif
+            (void)fprintf(logFile,    "%dm %05.2lfs",    m, (double)s );
     } else {
-#ifndef USE_DOUBLE
-            (void)fprintf(logFile, "%dh %02dm %05.2fs", h, m, s );
-#else
-            (void)fprintf(logFile, "%dh %02dm %05.2lfs", h, m, s );
-#endif
+            (void)fprintf(logFile, "%dh %02dm %05.2lfs", h, m, (double)s );
     }
 
     (void)fprintf( logFile, "\n" );
