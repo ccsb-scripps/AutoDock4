@@ -1,6 +1,6 @@
 /*
 
- $Id: input_state.cc,v 1.2 2003/02/26 01:09:41 garrett Exp $
+ $Id: input_state.cc,v 1.3 2006/01/30 23:03:18 garrett Exp $
 
 */
 
@@ -11,11 +11,9 @@
 /* input_state.cc */
 
 #include <math.h>
-
-
-    #include <stdio.h>
-    #include <string.h>
-    #include "input_state.h"
+#include <stdio.h>
+#include <string.h>
+#include "input_state.h"
 
 #define LINELEN 132
 
@@ -37,17 +35,13 @@ int input_state( State *S,
     fprintf(stderr, "line=|%s|\n", line);
 #endif /* DEBUG */
 
-    #ifdef USE_DOUBLE
-        status = sscanf(line, "%*s %d %1s %lf %lf %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T.x), &(S->T.y), &(S->T.z),  &(S->Q.nx), &(S->Q.ny), &(S->Q.nz),  &(S->Q.ang) );
-    #else
-        status = sscanf(line, "%*s %d %1s %f %f %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T.x), &(S->T.y), &(S->T.z),  &(S->Q.nx), &(S->Q.ny), &(S->Q.nz),  &(S->Q.ang) );
-    #endif
+    status = sscanf(line, "%*s %d %1s " FDFMT " " FDFMT " %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T.x), &(S->T.y), &(S->T.z),  &(S->Q.nx), &(S->Q.ny), &(S->Q.nz),  &(S->Q.ang) );
 
     if (status != 0) {
 	S->Q.ang = Rad( S->Q.ang );
 	mkUnitQuat( &(S->Q) );
 
-        *p_istep = istep;
+    *p_istep = istep;
 	*p_energy = energy;
 	*p_eint = eint;
 	*p_lastmove = lastmove;
