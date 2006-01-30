@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.4 2005/09/28 22:54:21 garrett Exp $
+ $Id: readmap.cc,v 1.5 2006/01/30 23:06:57 garrett Exp $
 
 */
 
@@ -160,11 +160,7 @@ void readmap( char           line[LINE_LEN],
         if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read SPACING line." );
         } else {
-            #ifdef USE_DOUBLE
-                (void) sscanf(inputline,"%*s %lf", &spacing);
-            #else
-                (void) sscanf(inputline,"%*s %f", &spacing);
-            #endif
+            (void) sscanf(inputline,"%*s " FDFMT, &spacing);
             check_header_float(spacing, info->spacing, "grid point spacing", FileName );
         } /* endif */
          /*
@@ -186,11 +182,7 @@ void readmap( char           line[LINE_LEN],
         if (fgets(inputline, LINE_LEN, map_file) == NULL) {
             warn_bad_file( FileName,"Could not read CENTER line." );
         } else {
-            #ifdef USE_DOUBLE
-                (void) sscanf(inputline,"%*s %lf %lf %lf", &cen[X], &cen[Y], &cen[Z]);
-            #else
-                (void) sscanf(inputline,"%*s %f %f %f", &cen[X], &cen[Y], &cen[Z]);
-            #endif
+            (void) sscanf(inputline,"%*s " FDFMT3, &cen[X], &cen[Y], &cen[Z]);
             for (xyz = 0;  xyz < SPACE;  xyz++) {
                 //maps->center[xyz] = cen[xyz];
                 check_header_float(cen[xyz], info->center[xyz], "grid-map center", FileName );
@@ -217,20 +209,14 @@ void readmap( char           line[LINE_LEN],
         for ( j = 0;  j < info->num_points1[Y];  j++) {
             for ( i = 0;  i < info->num_points1[X];  i++) {
                 if (B_charMap) {
-                    if (fgets(map_line, LINE_LEN, map_file) != NULL) {
-                        (void) sscanf( map_line,  "%c",  &C_mapValue );
-                        // maps->map[k][j][i][*P_imap] = mapc2f(C_mapValue);
+                    if (fgets(map_line, LINE_LEN, map_file) != NULL) { /*new*/
+                        if (sscanf( map_line,  "%c",  &C_mapValue ) != 1) continue;
                         map[k][j][i][*P_imap] = mapc2f(C_mapValue);
                         nv++;
                     }
                 } else {
-                    if (fgets( map_line, LINE_LEN, map_file) != NULL) {
-                        // (void) sscanf( map_line,  "%lf",  &maps->map[k][j][i][*P_imap] );
-#ifdef USE_DOUBLE
-                        (void) sscanf( map_line,  "%lf",  &map[k][j][i][*P_imap] );
-#else
-                        (void) sscanf( map_line,  "%f",  &map[k][j][i][*P_imap] );
-#endif
+                    if (fgets( map_line, LINE_LEN, map_file) != NULL) { /*new*/
+                        if (sscanf( map_line,  FDFMT,  &map[k][j][i][*P_imap] ) != 1) continue;
                         nv++;
                     }
                 }
@@ -239,7 +225,6 @@ void readmap( char           line[LINE_LEN],
                 max[*P_imap] = max( max[*P_imap], map[k][j][i][*P_imap] );
                 min[*P_imap] = min( min[*P_imap], map[k][j][i][*P_imap] );
             }
-            /* nv += info->num_points1[X]; */
         }
     }
     pr( logFile, "Closing file.\n" );
