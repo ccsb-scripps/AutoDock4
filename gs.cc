@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.8 2006/01/29 17:07:18 billhart Exp $
+ $Id: gs.cc,v 1.9 2006/01/30 23:02:17 garrett Exp $
 
 */
 
@@ -406,11 +406,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
 {
    register unsigned int i;
    int starting_point, temp_index, temp_ordering;
-#ifndef USE_DOUBLE
    FloatOrDouble alpha = 0.5;
-#else
-   FloatOrDouble alpha = 0.5L;
-#endif
    
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover(Population &original_population)\n");
@@ -470,11 +466,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
                // a = x*A + (1-x)*B, and b = (1-x)*A + x*B    -- note: x is alpha in the code
                alpha = (FloatOrDouble) ranf();
 #ifdef DEBUG
-#   ifndef USE_DOUBLE
-               (void)fprintf(logFile, "gs.cc/  alpha = %.3f\n", alpha);
-#   else
-               (void)fprintf(logFile, "gs.cc/  alpha = %.3lf\n", alpha);
-#   endif
+               (void)fprintf(logFile, "gs.cc/  alpha = " FDFMT "\n", alpha);
                (void)fprintf(logFile, "gs.cc/ About to call crossover_arithmetic with original_population[%d] & [%d]\n", i, i+1);
 #endif /* DEBUG */
                crossover_arithmetic( original_population[ i ].genotyp, 
@@ -550,21 +542,13 @@ void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, FloatOrDo
    Element temp_A, temp_B;
    FloatOrDouble one_minus_alpha;
 
-#ifndef USE_DOUBLE
    one_minus_alpha = 1.0 - alpha;
-#else
-   one_minus_alpha = 1.0L - alpha;
-#endif
 
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic(Genotype");
    (void)fprintf(logFile, "&A, Genotype &B, FloatOrDouble alpha)\n");
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
-#  ifndef USE_DOUBLE
-   (void)fprintf(logFile, "/Trying to perform arithmetic crossover using alpha = %.3f\n", alpha);
-#  else
-   (void)fprintf(logFile, "/Trying to perform arithmetic crossover using alpha = %.3lf\n", alpha);
-#  endif
+   (void)fprintf(logFile, "/Trying to perform arithmetic crossover using alpha = " FDFMT "\n", alpha);
    (void)fflush(logFile);
 #endif /* DEBUG */
 
