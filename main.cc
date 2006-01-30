@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.34 2006/01/30 04:25:10 billhart Exp $
+ $Id: main.cc,v 1.35 2006/01/30 23:03:48 garrett Exp $
 
 */
 
@@ -241,54 +241,6 @@ hbond_type hbondi;
 double Rj, epsj, Rj_hb, epsj_hb;
 hbond_type hbondj;
 
-#ifdef USE_DOUBLE
-FloatOrDouble scale_1_4 = 0.5L;
-FloatOrDouble c=0.0L;
-FloatOrDouble clus_rms_tol = 0.0L;
-FloatOrDouble e0max = BIG;
-FloatOrDouble eintra = 0.0L;
-FloatOrDouble einter = 0.0L;
-FloatOrDouble etotal = 0.0L;
-FloatOrDouble AD3_FE_coeff_estat   = 1.000L;
-FloatOrDouble qtwFac = 1.0L;
-FloatOrDouble qtwStep0 = 5.0L;
-FloatOrDouble qtwStepFinal = 5.0L;
-FloatOrDouble maxrad = -1.0L;
-FloatOrDouble r2sum=0.0L;
-FloatOrDouble RJ = 8.31441L;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
-FloatOrDouble Rcal = 1.9871917L; // in cal/K/mol, Gas Constant, RJ/4.184
-FloatOrDouble T0K = 273.15L;     // 0 degrees Celsius, in K
-FloatOrDouble RTreduc = 1.0L;
-// FloatOrDouble spacing = 0.0L;  // now part of the GridMapSetInfo structure
-FloatOrDouble RT0 = 616.0L;
-FloatOrDouble RTFac = 0.95L;
-FloatOrDouble torsdoffac = 0.3113L;
-FloatOrDouble torsFreeEnergy = 0.0L;
-FloatOrDouble torFac = 1.0L;
-FloatOrDouble torStep0 = 5.0L;
-FloatOrDouble torStepFinal = 5.0L;
-FloatOrDouble trnFac = 1.0L;
-FloatOrDouble trnStep0 = 0.2L;
-FloatOrDouble trnStepFinal = 0.2L;
-FloatOrDouble WallEnergy = 1.0e8L; /* Energy barrier beyond walls of gridmaps. */
-//  The GA Stuff
-FloatOrDouble m_rate = 0.02L;
-FloatOrDouble c_rate = 0.80L;
-FloatOrDouble alpha = 0.0L;
-FloatOrDouble beta = 1.0L;
-FloatOrDouble search_freq = 0.06L;
-FloatOrDouble rho = 1.0L;
-FloatOrDouble lb_rho = 0.01L;
-FloatOrDouble *rho_ptr = NULL;
-FloatOrDouble *lb_rho_ptr = NULL;
-FloatOrDouble unbound_internal_FE = 0.0L;
-FloatOrDouble emap_total = 0.L;
-FloatOrDouble elec_total = 0.L;
-FloatOrDouble charge_total = 0.L;
-FloatOrDouble etot = 0.L;
-
-#else
-
 FloatOrDouble scale_1_4 = 0.5;
 FloatOrDouble c=0.0;
 FloatOrDouble clus_rms_tol = 0.0;
@@ -333,8 +285,6 @@ FloatOrDouble emap_total = 0.;
 FloatOrDouble elec_total = 0.;
 FloatOrDouble charge_total = 0.;
 FloatOrDouble etot = 0.;
-
-#endif
 
 unsigned int outputEveryNgens = 100;
 
@@ -795,11 +745,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (B_found_move_keyword == TRUE) {  // If we have found the move keyword already, warn the user that his command should be given first!
             pr(logFile, "\nWARNING:  This command will be ignored.\n\nYou must put this command _before_ the \"move ligand.pdbqt\" command, since this command affects how the PDBQT file will be interpreted.\n\n");
         }
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf", &scale_1_4 );
-        #else
-            (void) sscanf( line, "%*s %f", &scale_1_4 );
-        #endif
+        (void) sscanf( line, "%*s " FDFMT, &scale_1_4 );
         B_include_1_4_interactions = TRUE;
         print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
         break;
@@ -815,11 +761,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (outlev >= 0) {
             pr( logFile, "Internal electrostatic energies will be calculated.\n\n");
         }
-        #ifdef USE_DOUBLE
-            retval = sscanf( line, "%*s %lf", &AD3_FE_coeff_estat );
-        #else
-            retval = sscanf( line, "%*s %f", &AD3_FE_coeff_estat );
-        #endif
+        retval = sscanf( line, "%*s " FDFMT, &AD3_FE_coeff_estat );
         if (retval == 1) {
             if (outlev >= 0) {
                 pr(logFile, "WARNING!  Internal electrostatics will NOT be scaled by the factor specified by this command,  %.4f -- the coefficient set by this command is ignored in AutoDock 4;\n", AD3_FE_coeff_estat);
@@ -1519,11 +1461,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  about
         **  Rotation center for current ligand,
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf %lf %lf", &lig_center[X], &lig_center[Y], &lig_center[Z]);
-        #else
-            (void) sscanf( line, "%*s %f %f %f", &lig_center[X], &lig_center[Y], &lig_center[Z]);
-        #endif
+        (void) sscanf( line, "%*s " FDFMT3, &lig_center[X], &lig_center[Y], &lig_center[Z]);
         pr( logFile, "Small molecule center of rotation =\t" );
         pr( logFile, "(%+.3f, %+.3f, %+.3f)\n\n", lig_center[X], lig_center[Y], lig_center[Z]);
         /*
@@ -1702,11 +1640,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  tstep
         **  Translation_step,
         */
-        #ifdef USE_DOUBLE
-            retval = (int)sscanf( line, "%*s %lf %lf", &trnStep0, &trnStepFinal );
-        #else
-            retval = (int)sscanf( line, "%*s %f %f", &trnStep0, &trnStepFinal );
-        #endif
+        retval = (int)sscanf( line, "%*s " FDFMT2, &trnStep0, &trnStepFinal );
         if (retval == 0) {
             pr( logFile, "WARNING!  Could not read any arguments!\n" );
         } else if (retval == EOF) {
@@ -1731,11 +1665,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  qstep
         **  Quaternion_step,
         */
-        #ifdef USE_DOUBLE
-            retval = (int)sscanf( line, "%*s %lf %lf", &qtwStep0, &qtwStepFinal );
-        #else
-            retval = (int)sscanf( line, "%*s %f %f", &qtwStep0, &qtwStepFinal );
-        #endif
+        retval = (int)sscanf( line, "%*s " FDFMT2, &qtwStep0, &qtwStepFinal );
         if (retval == 0) {
             pr( logFile, "WARNING!  Could not read any arguments!\n" );
         } else if (retval == EOF) {
@@ -1766,11 +1696,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  dstep
         **  Torsion_step,
         */
-        #ifdef USE_DOUBLE
-            retval = (int)sscanf( line, "%*s %lf %lf", &torStep0, &torStepFinal );
-        #else
-            retval = (int)sscanf( line, "%*s %f %f", &torStep0, &torStepFinal );
-        #endif
+        retval = (int)sscanf( line, "%*s " FDFMT2, &torStep0, &torStepFinal );
         if (retval == 0) {
             pr( logFile, "WARNING!  Could not read any arguments!\n" );
         } else if (retval == EOF) {
@@ -1801,11 +1727,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  trnrf
         **  Translation reduction factor,
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf", &trnFac );
-        #else
-            (void) sscanf( line, "%*s %f", &trnFac );
-        #endif
+        (void) sscanf( line, "%*s " FDFMT, &trnFac );
         if (outlev >= 0) {
             pr( logFile, "Reduction factor for translations =\t%-.3f /cycle\n", trnFac );
         }
@@ -1820,11 +1742,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  quarf
         **  Quaternion reduction factor,
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf", &qtwFac );
-        #else
-            (void) sscanf( line, "%*s %f", &qtwFac );
-        #endif
+        (void) sscanf( line, "%*s " FDFMT, &qtwFac );
         if (outlev >= 0) {
             pr( logFile, "Reduction factor for quaternion angle =\t%-.3f /cycle\n", qtwFac );
         }
@@ -1839,11 +1757,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  dihrf
         **  Torsion reduction factor,
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf", &torFac );
-        #else
-            (void) sscanf( line, "%*s %f", &torFac );
-        #endif
+        (void) sscanf( line, "%*s " FDFMT, &torFac );
         if (outlev >= 0) {
             pr( logFile, "Reduction factor for torsion angles =\t%-.3f /cycle\n", torFac );
         }
@@ -1872,11 +1786,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Lennard-Jones and Hydrogen Bond Potentials,
         **  Using epsilon and r-equilibrium values...
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf %lf %d %d", &Rij, &epsij, &xA, &xB );
-        #else
-            (void) sscanf( line, "%*s %f %f %d %d", &Rij, &epsij, &xA, &xB );
-        #endif
+        (void) sscanf( line, "%*s " FDFMT2 " %d %d", &Rij, &epsij, &xA, &xB );
         /* check that the Rij is reasonable */
         if ((Rij < RIJ_MIN) || (Rij > RIJ_MAX)) {
             (void) fprintf( logFile,
@@ -1915,11 +1825,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Lennard-Jones and Hydrogen Bond Potentials,
         **  Using coefficients...
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf %lf %d %d", &cA, &cB, &xA, &xB );
-        #else
-            (void) sscanf( line, "%*s %f %f %d %d", &cA, &cB, &xA, &xB );
-        #endif
+        (void) sscanf( line, "%*s " FDFMT2 " %d %d", &cA, &cB, &xA, &xB );
 
         /* Defend against division by zero... */
         if (xA != xB) {
@@ -1940,11 +1846,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  rt0
         **  Initial Temperature,
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf", &RT0 );
-        #else
-            (void) sscanf( line, "%*s %f", &RT0 );
-        #endif
+        (void) sscanf( line, "%*s " FDFMT, &RT0 );
         if (RT0 <= 0.) {
             pr( logFile, "\nWARNING!  Negative temperatures not allowed! Will default to RT = 616 cal mol.\n" );
             RT0 = 616.0;
@@ -1968,11 +1870,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  rtrf
         **  Temperature reduction factor,
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf", &RTFac);
-        #else
-            (void) sscanf( line, "%*s %f", &RTFac);
-        #endif
+        (void) sscanf( line, "%*s " FDFMT, &RTFac);
         if (outlev >= 0) {
             pr( logFile, "R*Temperature reduction factor = %8.2f\t/cycle\n", RTFac );
         }
@@ -2108,11 +2006,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  rmstol
         **  Cluster tolerance,
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf", &clus_rms_tol);
-        #else
-            (void) sscanf( line, "%*s %f", &clus_rms_tol);
-        #endif
+        (void) sscanf( line, "%*s " FDFMT, &clus_rms_tol);
         if (outlev >= 0) {
             pr( logFile, "Maximum RMS tolerance for conformational cluster analysis = %.2f Angstroms\n", clus_rms_tol);
         }
@@ -2245,11 +2139,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  extnrg
         **  Wall Energy,
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %lf", &WallEnergy );
-        #else
-            (void) sscanf( line, "%*s %f", &WallEnergy );
-        #endif
+        (void) sscanf( line, "%*s " FDFMT, &WallEnergy );
         if (outlev >= 0) {
             pr( logFile, "External grid energy (beyond grid map walls) = %.2f\n\n", WallEnergy );
         }
@@ -2354,11 +2244,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** "gausstorcon" Add Gaussian torsion contraints,
         ** "hardtorcon"  Add Hard torsion contraints,
         */
-        #ifdef USE_DOUBLE
-            (void) sscanf( line, "%*s %d %lf %lf", &I_tor, &F_torPref, &F_torHWdth);
-        #else
-            (void) sscanf( line, "%*s %d %f %f", &I_tor, &F_torPref, &F_torHWdth);
-        #endif
+        (void) sscanf( line, "%*s %d " FDFMT2, &I_tor, &F_torPref, &F_torHWdth);
         if (I_tor <= 0) {
             pr( logFile, "\nTorsion IDs less than 1 (%d) are not allowed!\n\n", I_tor);
         } else if (I_tor > ntor) {
@@ -2481,11 +2367,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  e0max
         **  Set maximum initial energy,
         */
-        #ifdef USE_DOUBLE
-            retval = sscanf( line, "%*s %lf %d", &e0max, &MaxRetries );
-        #else
-            retval = sscanf( line, "%*s %f %d", &e0max, &MaxRetries );
-        #endif
+        retval = sscanf( line, "%*s " FDFMT " %d", &e0max, &MaxRetries );
         if (retval == 0) {
             pr( logFile, "Could not read any arguments!\n" );
         } else if (retval == EOF) {
@@ -3079,11 +2961,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_mutation_rate:
-       #ifdef USE_DOUBLE
-           (void) sscanf(line, "%*s %lf", &m_rate);
-       #else
-           (void) sscanf(line, "%*s %f", &m_rate);
-       #endif
+       (void) sscanf(line, "%*s " FDFMT, &m_rate);
        pr(logFile, "The mutation rate is %f.\n", m_rate);
         (void) fflush(logFile);
        break;
@@ -3091,11 +2969,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_crossover_rate:
-       #ifdef USE_DOUBLE
-           (void) sscanf(line, "%*s %lf", &c_rate);
-       #else
-           (void) sscanf(line, "%*s %f", &c_rate);
-       #endif
+       (void) sscanf(line, "%*s " FDFMT, &c_rate);
        pr(logFile, "The crossover rate is %f.\n", c_rate);
         (void) fflush(logFile);
        break;
@@ -3103,11 +2977,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_Cauchy_alpha:
-       #ifdef USE_DOUBLE
-           (void) sscanf(line, "%*s %lf", &alpha);
-       #else
-           (void) sscanf(line, "%*s %f", &alpha);
-       #endif
+       (void) sscanf(line, "%*s " FDFMT, &alpha);
        pr(logFile, "The alpha parameter (for the Cauchy distribution) is being set to %f.\n",
           alpha);
         (void) fflush(logFile);
@@ -3116,11 +2986,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_Cauchy_beta:
-       #ifdef USE_DOUBLE
-           (void) sscanf(line, "%*s %lf", &beta);
-       #else
-           (void) sscanf(line, "%*s %f", &beta);
-       #endif
+       (void) sscanf(line, "%*s " FDFMT, &beta);
        pr(logFile, "The beta parameter (for the Cauchy distribution) is being set to %f.\n",
           beta);
         (void) fflush(logFile);
@@ -3153,11 +3019,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case SW_rho:
-       #ifdef USE_DOUBLE
-           (void) sscanf(line, "%*s %lf", &rho);
-       #else
-           (void) sscanf(line, "%*s %f", &rho);
-       #endif
+       (void) sscanf(line, "%*s " FDFMT, &rho);
        pr(logFile, "rho is set to %f.\n", rho);
         (void) fflush(logFile);
       break;
@@ -3165,11 +3027,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case SW_lb_rho:
-        #ifdef USE_DOUBLE
-            (void) sscanf(line, "%*s %lf", &lb_rho);
-        #else
-            (void) sscanf(line, "%*s %f", &lb_rho);
-        #endif
+        (void) sscanf(line, "%*s " FDFMT, &lb_rho);
         pr(logFile, "rho will never get smaller than %f.\n", lb_rho);
         (void) fflush(logFile);
         break;
@@ -3177,11 +3035,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case LS_search_freq:
-        #ifdef USE_DOUBLE
-            (void) sscanf(line, "%*s %lf", &search_freq);
-        #else
-            (void) sscanf(line, "%*s %f", &search_freq);
-        #endif
+        (void) sscanf(line, "%*s " FDFMT, &search_freq);
         pr(logFile, "Local search will be performed with frequency %f.\n", search_freq);
         (void) fflush(logFile);
         break;
@@ -3219,17 +3073,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         ** torsdof %d %f
         */
-        #ifdef USE_DOUBLE
-            retval = sscanf( line, "%*s %d %lf", &ntorsdof, &torsdoffac );
-            if (retval == 2) {
-                pr( logFile, "WARNING:  The torsional DOF coefficient is now read in from the parameter file; the value specified here (%.4lf) will be ignored.\n\n", torsdoffac);
-            }
-        #else
-            retval = sscanf( line, "%*s %d %f", &ntorsdof, &torsdoffac );
-            if (retval == 2) {
-                pr( logFile, "WARNING:  The torsional DOF coefficient is now read in from the parameter file; the value specified here (%.4f) will be ignored.\n\n", torsdoffac);
-            }
-        #endif
+        retval = sscanf( line, "%*s %d " FDFMT, &ntorsdof, &torsdoffac );
+        if (retval == 2) {
+            pr( logFile, "WARNING:  The torsional DOF coefficient is now read in from the parameter file; the value specified here (%.4lf) will be ignored.\n\n", (double)torsdoffac);
+        }
         pr( logFile, "Number of torsional degrees of freedom = %d\n", ntorsdof);
         pr( logFile, "Note: this must exclude any torsions involving -OH and -NH2 groups.\n\n");
         pr( logFile, "Free energy coefficient for torsional degrees of freedom = %.4f", AD4.coeff_tors);
@@ -3300,11 +3147,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         curatm = 0;
         while (fgets(line_template, LINE_LEN, template_energy_file) != NULL) {
-            #ifdef USE_DOUBLE
-                retval = (int)sscanf(line_template, "%lf %lf", &template_energy[curatm], &template_stddev[curatm]);
-            #else
-                retval = (int)sscanf(line_template, "%f %f", &template_energy[curatm], &template_stddev[curatm]);
-            #endif
+            retval = (int)sscanf(line_template, FDFMT2, &template_energy[curatm], &template_stddev[curatm]);
             if (retval != 2) {
                 pr(logFile, "\nWARNING: AutoDock expects the template energy file to have two values on each line: the energy and the standard deviation.  %d values were found on line %d.\n\n", retval, curatm+1);
             }
@@ -3327,13 +3170,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
          * unbound 0.0
          */
-#ifdef USE_DOUBLE
-        (void) sscanf( line, "%*s %lf", &unbound_internal_FE );
+        (void) sscanf( line, "%*s " FDFMT, &unbound_internal_FE );
         pr(logFile, "\nThe internal free energy of the unbound state is %+.3lf kcal/mol\n\n", unbound_internal_FE);
-#else
-        (void) sscanf( line, "%*s %f", &unbound_internal_FE );
-        pr(logFile, "\nThe internal free energy of the unbound state is %+.3f kcal/mol\n\n", unbound_internal_FE);
-#endif
         (void) fflush(logFile);
         break;
 
@@ -3455,23 +3293,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             charge_total += charge[i];
         } /*i*/
         pr(logFile, "      __________  __________  __________  _______\n");
-#ifdef USE_DOUBLE
-        pr(logFile, "Total %10.2lf  %10.2lf  %10.2lf  %7.3lf\n", (emap_total + elec_total), emap_total, elec_total, charge_total);
+        pr(logFile, "Total %10.2lf  %10.2lf  %10.2lf  %7.3lf\n",        (double)(emap_total + elec_total), (double)emap_total, (double)elec_total, (double)charge_total);
         pr(logFile, "      __________  __________  __________  _______\n");
         pr(logFile, "      vdW+Hb+Elec  vdW+Hbond  Electrosta  Partial\n");
         pr(logFile, "        Energy      Energy    tic Energy  Charge\n\n");
-        pr(logFile, "Total Intermolecular Interaction Energy   = %+.3lf kcal/mol\n", etotal);
-        pr(logFile, "Total Intermolecular vdW + Hbond Energy   = %+.3lf kcal/mol\n", emap_total);
-        pr(logFile, "Total Intermolecular Electrostatic Energy = %+.3lf kcal/mol\n\n\n", elec_total);
-#else
-        pr(logFile, "Total %10.2f  %10.2f  %10.2f  %7.3f\n", (emap_total + elec_total), emap_total, elec_total, charge_total);
-        pr(logFile, "      __________  __________  __________  _______\n");
-        pr(logFile, "      vdW+Hb+Elec  vdW+Hbond  Electrosta  Partial\n");
-        pr(logFile, "        Energy      Energy    tic Energy  Charge\n\n");
-        pr(logFile, "Total Intermolecular Interaction Energy   = %+.3f kcal/mol\n", etotal);
-        pr(logFile, "Total Intermolecular vdW + Hbond Energy   = %+.3f kcal/mol\n", emap_total);
-        pr(logFile, "Total Intermolecular Electrostatic Energy = %+.3f kcal/mol\n\n\n", elec_total);
-#endif
+        pr(logFile, "Total Intermolecular Interaction Energy   = %+.3lf kcal/mol\n", (double)etotal);
+        pr(logFile, "Total Intermolecular vdW + Hbond Energy   = %+.3lf kcal/mol\n", (double)emap_total);
+        pr(logFile, "Total Intermolecular Electrostatic Energy = %+.3lf kcal/mol\n\n\n", (double)elec_total);
         printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
         pr(logFile, "\n");
         for ( i=0; i<true_ligand_atoms; i++ ) {
