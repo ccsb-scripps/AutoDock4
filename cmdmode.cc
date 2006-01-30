@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.11 2006/01/27 05:39:14 garrett Exp $
+ $Id: cmdmode.cc,v 1.12 2006/01/30 23:01:58 garrett Exp $
 
 */
 
@@ -421,11 +421,7 @@ int cmdmode(int   natom,
                         ________________________________________________________
 */
                             case TRJ_TEMP:
-                                #ifdef USE_DOUBLE
-                                    sscanf(trjline, "%*s %lf", &T);
-                                #else
-                                    sscanf(trjline, "%*s %f", &T);
-                                #endif
+                                sscanf(trjline, "%*s " FDFMT, &T);
                                 break;
 /*
                         ________________________________________________________
