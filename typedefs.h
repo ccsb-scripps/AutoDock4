@@ -30,9 +30,14 @@
 
 #ifdef USE_DOUBLE
     typedef double FloatOrDouble;
+#   define FDFMT "%lf"
 #else
     typedef float FloatOrDouble;
+#   define FDFMT "%f"
 #endif
+#define FDFMT2 FDFMT " " FDFMT
+#define FDFMT3 FDFMT " " FDFMT " " FDFMT
+
 
 #ifdef USE_VELOCITY_ENGINE
 typedef union
