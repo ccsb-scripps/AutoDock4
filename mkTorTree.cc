@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.4 2005/03/11 02:11:30 garrett Exp $
+ $Id: mkTorTree.cc,v 1.5 2006/01/30 23:04:34 garrett Exp $
 
 */
 
@@ -283,11 +283,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     /*____________________________________________________________*/
             case PDBQ_CONSTRAINT:
 
-        #ifdef USE_DOUBLE
-            sscanf(Rec_line[ i ],"%*s %d %d %lf %lf", P_atomC1, P_atomC2, &lower, &upper);
-        #else
-            sscanf(Rec_line[ i ],"%*s %d %d %f %f", P_atomC1, P_atomC2, &lower, &upper);
-        #endif
+                sscanf(Rec_line[ i ],"%*s %d %d " FDFMT2, P_atomC1, P_atomC2, &lower, &upper);
 
                 *P_B_constrain = TRUE;
 
