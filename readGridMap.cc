@@ -1,6 +1,6 @@
 /*
 
- $Id: readGridMap.cc,v 1.1 2005/03/11 02:11:30 garrett Exp $
+ $Id: readGridMap.cc,v 1.2 2006/01/30 23:06:38 garrett Exp $
 
 */
 
@@ -161,11 +161,7 @@ void readmap( Boole *P_B_HaveMap,
         if (fgets(inputline, LINE_LEN, mapFilePtr) == NULL) {
             warn_bad_file( FileName,"Could not read SPACING line." );
         } else {
-            #ifdef USE_DOUBLE
-                (void) sscanf(inputline,"%*s %lf", &spacing);
-            #else
-                (void) sscanf(inputline,"%*s %f", &spacing);
-            #endif
+            (void) sscanf(inputline,"%*s " FDFMT, &spacing);
             check_header_float(spacing, *P_ExtSpacing, "grid point spacing", FileName );
         } /* endif */
          /*
@@ -185,11 +181,7 @@ void readmap( Boole *P_B_HaveMap,
         if (fgets(inputline, LINE_LEN, mapFilePtr) == NULL) {
             warn_bad_file( FileName,"Could not read CENTER line." );
         } else {
-            #ifdef USE_DOUBLE
-                (void) sscanf(inputline,"%*s %lf %lf %lf", &cen[X], &cen[Y], &cen[Z]);
-            #else
-                (void) sscanf(inputline,"%*s %f %f %f", &cen[X], &cen[Y], &cen[Z]);
-            #endif
+            (void) sscanf(inputline,"%*s " FDFMT3, &cen[X], &cen[Y], &cen[Z]);
             for (xyz = 0;  xyz < SPACE;  xyz++) {
                 check_header_float(cen[xyz], MapCenter[xyz], "grid-map center", FileName );
             } /* xyz */
@@ -216,24 +208,19 @@ void readmap( Boole *P_B_HaveMap,
             for ( i = 0;  i < ExtGridPts1[X];  i++) {
                 if (B_charMap) {
                     if (fgets(mapline, LINE_LEN, mapFilePtr) != NULL) { /*new*/
-                        (void) sscanf( mapline,  "%c",  &C_mapValue );
+                        if (sscanf( mapline,  "%c",  &C_mapValue ) != 1) continue;
                         map[k][j][i][*P_imap] = mapc2f(C_mapValue);
                         nv++;
                     }
                 } else {
                     if (fgets( mapline, LINE_LEN, mapFilePtr) != NULL) { /*new*/
-                        #ifdef USE_DOUBLE
-                            (void) sscanf( mapline,  "%lf",  &map[k][j][i][*P_imap] );
-                        #else
-                            (void) sscanf( mapline,  "%f",  &map[k][j][i][*P_imap] );
-                        #endif
+                        if (sscanf( mapline,  FDFMT,  &map[k][j][i][*P_imap] ) != 1) continue;
                         nv++;
                     }
                 }
                 MapMax[*P_imap] = max( MapMax[*P_imap], map[k][j][i][*P_imap] );
                 MapMin[*P_imap] = min( MapMin[*P_imap], map[k][j][i][*P_imap] );
             }
-            /* nv += ExtGridPts1[X]; */ /*new*/
         }
     }
     pr( logFile, "Closing file.\n" );
