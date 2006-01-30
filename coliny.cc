@@ -64,6 +64,8 @@ if (strcmp(domain,"help")==0) {
 // Setup the OptProblem object
 //
 colin::OptSetup(coliny_problem, &ADEvalFn, domain);
+for (unsigned int i=6; i<coliny_problem.num_real_params(); i++)
+  coliny_problem.set_periodic_real_bound(i);
 //
 // Initialize the OptSolver object
 //
@@ -120,6 +122,14 @@ initpt_[15] = 2*3.1416*(-0.83/360);
 initpt_[16] = 2*3.1416*(-0.44/360);
 #endif
 BasicArray<double> finalpt_;
+
+#if 0
+// TESTING STUFF
+cerr << "Bound ";
+for (unsigned int i=0; i<coliny_problem.num_real_params(); i++)
+  cerr << coliny_problem.periodic_real_bound(i);
+cerr << endl;
+#endif
 
 colin::real best_value;
 coliny_solver.minimize(coliny_problem, initpt_, seed, false, false, finalpt_, best_value);
