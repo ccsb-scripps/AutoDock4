@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.14 2006/01/27 05:39:14 garrett Exp $
+ $Id: analysis.cc,v 1.15 2006/02/11 04:49:53 garrett Exp $
 
 */
 
@@ -225,13 +225,15 @@ void analysis( int   Nnb,
                 eintra = 0.0;
             }
             if (!B_template) {
+                // we assume that some atoms might be outside the grid -
+                // we do not know to be honest, but this is a safer usage of trilinterp
                  einter = trilinterp( crd, charge, abs_charge, type, natom, map, 
-                    info, ALL_ATOMS_INSIDE_GRID, ignore_inter, 
+                    info, SOME_ATOMS_OUTSIDE_GRID, ignore_inter, 
                     elec, emap, &elec_total, &emap_total);
             } else {
                  einter = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
-                        info, ALL_ATOMS_INSIDE_GRID, 
-                        ignore_inter, template_energy, template_stddev, 
+                        info, SOME_ATOMS_OUTSIDE_GRID, ignore_inter, 
+                        template_energy, template_stddev, 
                         elec /* set */ , emap /* set */, &elec_total, &emap_total );
             }
 
