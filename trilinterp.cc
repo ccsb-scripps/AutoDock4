@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.7 2006/01/27 05:39:14 garrett Exp $
+ $Id: trilinterp.cc,v 1.8 2006/02/11 04:54:14 garrett Exp $
 
 */
 
@@ -63,10 +63,8 @@ FloatOrDouble trilinterp(
 /******************************************************************************/
 
 {
-    register double e_total=0, elec_total=0, emap_total=0;
+    register double elec_total=0, emap_total=0;
     register int i;               /* i-th atom */
-
-    e_total = 0.0L;
 
     for (i=0; i<total_atoms; i++) {
         register double e, m, d; 
@@ -97,7 +95,8 @@ FloatOrDouble trilinterp(
                 epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
                 if (elec != NULL) elec[i] = epenalty;
                 if (emap != NULL) emap[i] = epenalty;
-                e_total += epenalty + epenalty;
+                elec_total += epenalty;
+                emap_total += epenalty;
                 continue;
             }
         }
