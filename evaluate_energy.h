@@ -13,7 +13,7 @@ FloatOrDouble evaluate_energy(
     int   type[MAX_ATOMS],
     int   natom,
     FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-    int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+    int   **nonbondlist,
 
     EnergyTables *ptr_ad_energy_tables,
     

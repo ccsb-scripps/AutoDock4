@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.12 2006/01/30 23:01:58 garrett Exp $
+ $Id: cmdmode.cc,v 1.13 2006/02/14 18:12:43 mchang Exp $
 
 */
 
@@ -51,7 +51,7 @@ int cmdmode(int   natom,
              int   tlist[MAX_TORS][MAX_ATOMS],
              int   ntor,
              int   Nnb,
-             int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+             int   **nonbondlist,
              char  atomstuff[MAX_ATOMS][MAX_CHARS],
              FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
              char  hostnm[MAX_CHARS],

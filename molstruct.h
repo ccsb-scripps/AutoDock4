@@ -26,5 +26,5 @@ typedef struct molecule {
 
 	int   Nnb;
 	int   Nnbonds[ MAX_ATOMS ];
-	int   nonbondlist[MAX_NONBONDS][MAX_NBDATA];
+	int   **nonbondlist;
 } Molecule;

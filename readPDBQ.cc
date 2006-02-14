@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQ.cc,v 1.6 2004/11/16 23:42:53 garrett Exp $
+ $Id: readPDBQ.cc,v 1.7 2006/02/14 18:12:44 mchang Exp $
 
 */
 
@@ -59,7 +59,7 @@ Molecule readPDBQ( char  thisline[ LINE_LEN ],
 
               int   *P_Nnb,
               int   Nnbonds[ MAX_ATOMS ],
-              int   nonbondlist[MAX_NONBONDS][4],
+              int   **nonbondlist,
 
               Clock jobStart,
               struct tms tms_jobStart,

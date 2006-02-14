@@ -35,7 +35,7 @@ void investigate(
                 int   maxTests,
                 FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
                 int   natom,
-                int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                int   **nonbondlist,
                 int   ntor,
                 int   outlev,
                 int   tlist[MAX_TORS][MAX_ATOMS],

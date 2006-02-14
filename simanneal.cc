@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.9 2006/01/27 05:39:14 garrett Exp $
+ $Id: simanneal.cc,v 1.10 2006/02/14 18:12:45 mchang Exp $
 
 */
 
@@ -52,7 +52,7 @@ void simanneal ( int   *Addr_nconf,
 		FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 		int   naccmax,
 		int   natom,
-		int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+		int   **nonbondlist,
 		int   nrejmax,
 		int   ntor1,
 		int   ntor,

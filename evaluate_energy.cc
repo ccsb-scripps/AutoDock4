@@ -1,6 +1,6 @@
 /*
 
- $Id: evaluate_energy.cc,v 1.7 2006/01/27 05:39:14 garrett Exp $
+ $Id: evaluate_energy.cc,v 1.8 2006/02/14 18:12:44 mchang Exp $
 
 */
 
@@ -25,7 +25,7 @@ FloatOrDouble evaluate_energy(
     int   type[MAX_ATOMS],
     int   natom,
     FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-    int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+    int   **nonbondlist,
 
     EnergyTables *ptr_ad_energy_tables,
     

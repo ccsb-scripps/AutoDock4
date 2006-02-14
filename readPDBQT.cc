@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
+ $Id: readPDBQT.cc,v 1.4 2006/02/14 18:12:45 mchang Exp $
 
 */
 
@@ -61,7 +61,7 @@ readPDBQT(char input_line[LINE_LEN],
 	  FloatOrDouble vt[MAX_TORS][NTRN],
 
 	  int *P_Nnb,
-	  int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+	  int **nonbondlist,
 
 	  Clock jobStart,
 	  struct tms tms_jobStart,

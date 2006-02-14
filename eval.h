@@ -34,7 +34,7 @@ class Eval
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
       State stateNow;
       unsigned short *US_TorE, (*US_torProfile)[NTORDIVS];
-      int *type, (*nonbondlist)[MAX_NBDATA], (*tlist)[MAX_ATOMS];
+      int *type, (**nonbondlist), (*tlist)[MAX_ATOMS];
       FloatOrDouble *q1q2, *charge, *abs_charge, *qsp_abs_charge;
       FloatOrDouble (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE];
       EnergyTables *ptr_ad_energy_tables;
@@ -64,7 +64,7 @@ class Eval
           FloatOrDouble  init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
           FloatOrDouble  init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
 
-          int            init_nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+          int            **init_nonbondlist,
           EnergyTables   *init_ptr_ad_energy_tables,
           int init_Nnb,
           Boole          init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS],
@@ -111,7 +111,7 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
 
                         FloatOrDouble init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
                         FloatOrDouble init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-                        int init_nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                        int **init_nonbondlist,
                         EnergyTables   *init_ptr_ad_energy_tables,
                         int init_Nnb,
                         Boole init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS],

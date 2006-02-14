@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.9 2006/01/27 05:39:14 garrett Exp $
+ $Id: getInitialState.cc,v 1.10 2006/02/14 18:12:44 mchang Exp $
 
 */
 
@@ -52,7 +52,7 @@ void getInitialState(
             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
-            int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+            int   **nonbondlist,
             int   ntor,
             int   tlist[MAX_TORS][MAX_ATOMS],
             int   type[MAX_ATOMS],

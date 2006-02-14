@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds-reilly.cc,v 1.1 2005/03/11 02:11:31 garrett Exp $
+ $Id: weedbonds-reilly.cc,v 1.2 2006/02/14 18:12:45 mchang Exp $
 
 */
 
@@ -27,7 +27,7 @@ void weedbonds( int natom,
                 int *Addr_Nnb,
                 int Nnbonds[MAX_ATOMS],
                 int nbmatrix[MAX_ATOMS][MAX_ATOMS],
-                int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                int **nonbondlist,
                 int outlev,
 				int type[MAX_ATOMS])
 

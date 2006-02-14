@@ -8,7 +8,7 @@
 
 extern FILE *logFile;
 
-FloatOrDouble eintcalPrint( int nonbondlist[MAX_NONBONDS][2],
+FloatOrDouble eintcalPrint( int ** nonbondlist,
                             FloatOrDouble eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
                             FloatOrDouble tcoord[MAX_ATOMS][SPACE],
                             int type[MAX_ATOMS],

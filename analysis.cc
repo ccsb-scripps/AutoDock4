@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.15 2006/02/11 04:49:53 garrett Exp $
+ $Id: analysis.cc,v 1.16 2006/02/14 18:12:43 mchang Exp $
 
 */
 
@@ -50,7 +50,7 @@ void analysis( int   Nnb,
                FloatOrDouble econf[MAX_RUNS], 
                int   irunmax, 
                int   natom, 
-               int   nonbondlist[MAX_NONBONDS][MAX_NBDATA], 
+               int   **nonbondlist, 
                int   nconf, 
                int   ntor, 
                State hist[MAX_RUNS], 

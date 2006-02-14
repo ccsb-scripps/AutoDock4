@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.6 2005/08/15 23:57:37 garrett Exp $
+ $Id: weedbonds.cc,v 1.7 2006/02/14 18:12:45 mchang Exp $
 
 */
 
@@ -27,7 +27,7 @@ void weedbonds( int natom,
                 int tlist[MAX_TORS][MAX_ATOMS],
                 int nbmatrix[MAX_ATOMS][MAX_ATOMS],
                 int *Addr_Nnb,
-                int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                int **nonbondlist,
                 int outlev,
                 int type[MAX_ATOMS])
 
@@ -181,7 +181,7 @@ void print_nonbonds(
                 int tlist[MAX_TORS][MAX_ATOMS],
                 int nbmatrix[MAX_ATOMS][MAX_ATOMS],
                 int Nnb,
-                int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                int **nonbondlist,
                 int outlev,
                 int type[MAX_ATOMS])
 

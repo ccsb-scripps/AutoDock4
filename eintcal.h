@@ -8,7 +8,7 @@
 #ifndef EINTCALPRINT
 
 FloatOrDouble  eintcal( 
-                        const int           nonbondlist[MAX_NONBONDS][MAX_NBDATA], 
+                        int   ** const nonbondlist, 
                         const EnergyTables  *ad_energy_tables,
                         const FloatOrDouble tcoord[MAX_ATOMS][SPACE], 
                         const int           Nnb,
@@ -24,7 +24,7 @@ FloatOrDouble  eintcal(
 #else        /*EINTCALPRINT*/
 
 FloatOrDouble  eintcalPrint( 
-                             const int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                             int  ** const nonbondlist,
                              const EnergyTables  *ad_energy_tables,
                              const FloatOrDouble tcoord[MAX_ATOMS][SPACE],
                              const int   Nnb,

@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.10 2005/09/28 22:54:19 garrett Exp $
+ $Id: eintcal.cc,v 1.11 2006/02/14 18:12:43 mchang Exp $
 
 */
 
@@ -26,7 +26,7 @@ extern Linear_FE_Model AD4;
  * Calculate internal energy
  */
 
-FloatOrDouble eintcal( const int           nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+FloatOrDouble eintcal( int ** const nonbondlist,
                        const EnergyTables  *ptr_ad_energy_tables,
                        const FloatOrDouble tcoord[MAX_ATOMS][SPACE],
                        const int           Nnb,
@@ -47,7 +47,7 @@ extern FILE *logFile;
  * Calculate internal energy and print out a detailed report
  */
 
-FloatOrDouble eintcalPrint( const int           nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+FloatOrDouble eintcalPrint( int ** nonbondlist,
                             const EnergyTables  *ptr_ad_energy_tables,
                             const FloatOrDouble tcoord[MAX_ATOMS][SPACE],
                             const int           Nnb,

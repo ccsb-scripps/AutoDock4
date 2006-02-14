@@ -1,6 +1,6 @@
 /*
 
- $Id: writeStateOfPDBQ.cc,v 1.7 2006/01/27 05:39:14 garrett Exp $
+ $Id: writeStateOfPDBQ.cc,v 1.8 2006/02/14 18:12:45 mchang Exp $
 
 */
 
@@ -45,7 +45,7 @@ writeStateOfPDBQ(int irun, FourByteLong seed[2],
 		 FloatOrDouble vt[MAX_TORS][SPACE],
 		 int tlist[MAX_TORS][MAX_ATOMS],
 		 FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-		 int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+		 int **nonbondlist,
          EnergyTables *ptr_ad_energy_tables,
 		 int type[MAX_ATOMS],
 		 int Nnb,
@@ -198,7 +198,7 @@ void write_emap_elec( State *Ptr_state,
                      FloatOrDouble vt[MAX_TORS][SPACE],
                      int tlist[MAX_TORS][MAX_ATOMS],
                      FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-                     int nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                     int **nonbondlist,
                      EnergyTables *ptr_ad_energy_tables,
                      int type[MAX_ATOMS],
                      int Nnb,

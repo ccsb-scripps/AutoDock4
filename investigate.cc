@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.8 2006/01/27 05:39:14 garrett Exp $
+ $Id: investigate.cc,v 1.9 2006/02/14 18:12:44 mchang Exp $
 
 */
 
@@ -43,7 +43,7 @@ void investigate( int   Nnb,
                     int   maxTests,
                     FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
                     int   natom,
-                    int   nonbondlist[MAX_NONBONDS][MAX_NBDATA],
+                    int   **nonbondlist,
                     int   ntor,
                     int   outlev,
                     int   tlist[MAX_TORS][MAX_ATOMS],
