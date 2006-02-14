@@ -13,6 +13,7 @@
 
 #include "support.h"
 #include "ranlib.h"
+#include <stdlib.h>
 
 class Local_Search
 {
@@ -22,6 +23,34 @@ class Local_Search
       virtual void reset(void) = 0;
       virtual int terminate(void) = 0;
       virtual int search(Individual &) = 0;
+};
+
+class Pattern_Search : public Local_Search
+{
+   protected:
+      unsigned int size; 
+			unsigned int max_success;
+      FloatOrDouble step_size, current_step_size;
+      FloatOrDouble step_threshold, expansion, contraction;
+			FloatOrDouble search_frequency;
+			FloatOrDouble *pattern;
+			unsigned int *index;
+			unsigned int successes;
+      //int HJ_bias; // not implemented
+      //FloatOrDouble * step_scales; // not implemented
+			Phenotype exploratory_move(const Phenotype&);
+			Phenotype pattern_explore(const Phenotype&);
+			Phenotype pattern_move(const Phenotype&);
+			void reset_pattern(void);
+			void reset_indexes(void);
+			void shuffle_indexes(void);
+   public:
+      Pattern_Search(void);
+      Pattern_Search(unsigned int, unsigned int, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble, FloatOrDouble);
+      ~Pattern_Search(void);
+      void reset(void);
+      int terminate(void);
+      int search(Individual &);
 };
 
 class Solis_Wets_Base : public Local_Search

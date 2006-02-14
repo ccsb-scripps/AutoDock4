@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.5 2006/01/06 21:46:47 mchang Exp $
+ $Id: ls.cc,v 1.6 2006/02/14 18:02:26 mchang Exp $
 
 */
 
@@ -53,7 +53,7 @@ void Solis_Wets::SW(Phenotype &vector)
    register unsigned int i, j, num_successes = 0, num_failures = 0;
    register FloatOrDouble temp_rho = rho;
    Phenotype newPh;
-
+   
 #ifdef DEBUG
    (void)fprintf(logFile, "ls.cc/void Solis_Wets::SW(Phenotype &vector)\n");
 #endif /* DEBUG */
@@ -218,4 +218,166 @@ int Solis_Wets_Base::search(Individual &solution)
    }
 
    return(0);
+}
+
+Pattern_Search::Pattern_Search(void)
+{
+}
+
+Pattern_Search::Pattern_Search(unsigned int init_size, unsigned int init_max_success, FloatOrDouble init_step_size, FloatOrDouble init_step_threshold, FloatOrDouble init_expansion, FloatOrDouble init_contraction, FloatOrDouble init_search_frequency)
+: size(init_size), max_success(init_max_success), step_size(init_step_size), step_threshold(init_step_threshold), expansion(init_expansion), contraction(init_contraction), search_frequency(init_search_frequency)
+{
+  current_step_size = step_size;
+  pattern = new FloatOrDouble[size];
+	index = new unsigned int[size];
+  reset_pattern();
+	reset_indexes();
+  successes = 0;
+}
+
+Pattern_Search::~Pattern_Search(void)
+{
+	delete []pattern;
+	delete []index;
+}
+
+void Pattern_Search::reset()
+{
+  current_step_size = step_size;
+  reset_pattern();
+	reset_indexes();
+  successes = 0;
+}
+
+void Pattern_Search::reset_pattern() {
+  for (unsigned int i=0; i < size; i++) {
+    pattern[i] = 0.0;
+  }
+}
+
+void Pattern_Search::reset_indexes() {
+	for (unsigned int i=0; i < size; i++) {
+		index[i] = i;
+	}
+}
+
+void Pattern_Search::shuffle_indexes() {
+	int select;
+	unsigned int temp;
+	for (unsigned int i=size; i > 1; i--) {
+		select = rand() % i;
+		temp = index[select];
+		index[select] = index[i-1];
+		index[i-1] = temp;
+	}
+}
+
+int Pattern_Search::terminate(void)
+{
+   return (0);
+}
+
+int Pattern_Search::search(Individual &solution)
+{
+  // TODO: implement scaling?
+
+  if (ranf() >= search_frequency) {
+    return(0);
+  }
+
+	reset();
+  Phenotype base = solution.phenotyp;
+  Phenotype newPoint;
+  // evaluate function at base point
+  while (current_step_size > step_threshold) {
+    // do exploratory moves
+    //fprintf(stderr, "base point energy: %f\n", base.evaluate(Normal_Eval));
+    newPoint = exploratory_move(base);
+    //fprintf(stderr, "newPoint energy: %f\n", newPoint.evaluate(Normal_Eval));
+    if (newPoint.evaluate(Normal_Eval) < base.evaluate(Normal_Eval)) {
+      // new point is more favorable than base point
+      // set new point as base point
+      base = newPoint;
+
+      while (true) {
+        newPoint = pattern_explore(base);
+        if (newPoint.evaluate(Normal_Eval) < base.evaluate(Normal_Eval)) {
+					successes++;
+          base = newPoint;
+        }
+        else {
+					break;
+					successes = 0;
+				}
+
+				if (successes > max_success) {
+					//fprintf(stderr, "Expanding step size\n");
+					successes = 0;
+					current_step_size *= expansion;
+				}
+      }
+    }
+
+    else {
+      current_step_size *= contraction;
+			successes = 0;
+      reset_pattern();
+      //fprintf(stderr, "Contracted to %f after %ld evaluations.\n", current_step_size, evaluate.evals());
+    }
+  }
+  
+  solution.phenotyp = base;
+  solution.inverse_mapping();
+  return (0);
+}
+
+Phenotype Pattern_Search::exploratory_move(const Phenotype& base) {
+  Phenotype newBase(base);
+	shuffle_indexes();
+	unsigned int current_index;
+	int direction;
+
+  for (unsigned int i=0; i < size; i++) {
+    Phenotype trialPoint(newBase);
+
+		current_index = index[i];
+		// pick a random direction
+		if (rand()%2 == 0) {
+			direction = 1;
+		}
+		else {
+			direction = -1;
+		}
+    // try first coordinate direction
+    trialPoint.write(trialPoint.gread(current_index).real+current_step_size*direction, current_index);
+    // if successful, keep new point
+    if (trialPoint.evaluate(Normal_Eval) < newBase.evaluate(Normal_Eval)) {
+      newBase = trialPoint;
+      pattern[current_index] += current_step_size*direction;
+    }
+    // otherwise, try opposite coordinate and test again
+    else {
+      trialPoint.write(trialPoint.gread(current_index).real-2.0*current_step_size*direction, current_index);
+      if (trialPoint.evaluate(Normal_Eval) < newBase.evaluate(Normal_Eval)) {
+        newBase = trialPoint;
+        pattern[current_index] -= current_step_size*direction;
+      }
+    }
+  }
+  return newBase;
+}
+
+Phenotype Pattern_Search::pattern_explore(const Phenotype& base) {
+  Phenotype newPoint = pattern_move(base);
+  reset_pattern();
+  Phenotype newBase = exploratory_move(newPoint);
+  return newBase;
+}
+
+Phenotype Pattern_Search::pattern_move(const Phenotype& base) {
+  Phenotype newPoint(base);
+  for (unsigned int i=0; i < size; i++) {
+    newPoint.write(newPoint.gread(i).real + pattern[i] , i);
+  }
+  return newPoint;
 }
