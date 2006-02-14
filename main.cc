@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.35 2006/01/30 23:03:48 garrett Exp $
+ $Id: main.cc,v 1.36 2006/02/14 18:10:23 mchang Exp $
 
 */
 
@@ -159,8 +159,12 @@ unsigned short  US_torProfile[MAX_TORS][NTORDIVS];
 
 //   MAX_NONBONDS
 //
-FloatOrDouble   q1q2[MAX_NONBONDS];
-int             nonbondlist[MAX_NONBONDS][MAX_NBDATA];
+FloatOrDouble* q1q2 = new FloatOrDouble[MAX_NONBONDS];
+int** nonbondlist = new int*[MAX_NONBONDS];
+for (int i=0; i < MAX_NONBONDS; i++) {
+    nonbondlist[i] = new int[MAX_NBDATA];
+}
+
 
 //   LINE_LEN
 //
@@ -1360,11 +1364,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 for (j=0; j < sInit.ntor ; j++) {
                   initvec[j+7] = Rad(sInit.tor[j]);
                 }
-
                 coliny_init(algname, domain);
 
                 for (j=0; j<nruns; j++) {
-
                   fprintf( logFile, "\n\n\tBEGINNING Coliny %s DOCKING\n",algname);
                   pr(logFile, "\nDoing %s run:  %d/%d.\n", algname, j+1, nruns);
 
@@ -2550,6 +2552,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
+    case DPF_SET_PATTERN:
+
+      if (LocalSearchMethod != NULL) {
+          pr(logFile, "Deleting the previous settings for the local search Pattern Search algorithm (PS object).\n");
+          delete LocalSearchMethod;
+          LocalSearchMethod = NULL;
+      }
+
+      pr(logFile, "Creating a new Local Search object using the Pattern Search algorithm (PS) with the current settings.\n\n");
+      LocalSearchMethod = new Pattern_Search(7+sInit.ntor, max_succ, rho, lb_rho, 2.0, 0.5, search_freq);
+
+      (void) fflush(logFile);
+      break;
+//______________________________________________________________________________
+
     case DPF_GALS:
         (void) fflush( logFile );
         /*
@@ -2593,7 +2610,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 (void) fprintf( logFile, "\n\n\tBEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING\n");
                 (void) fflush( logFile );
                 pr( logFile, "\nRun:\t%d / %d\n", j1, nruns );
-
                 // Update time-based RNG seeds...
                 if (timeSeedIsSet[0] == 'T') {
                     pr(logFile, "Updating First Time-dependent Seed Now.\n");
@@ -3440,6 +3456,13 @@ success( hostnm, jobStart, tms_jobStart );
    (void) fclose( stateFile );
  }
 (void) fclose( logFile );
+
+// delete arrays
+delete []q1q2;
+for (int i=0; i < MAX_NONBONDS; i++) {
+    delete []nonbondlist[i];
+}
+delete []nonbondlist;
 
 
 //________________________________________________________________________________
