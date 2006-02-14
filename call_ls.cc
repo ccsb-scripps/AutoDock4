@@ -1,6 +1,6 @@
 /*
 
- $Id: call_ls.cc,v 1.4 2004/02/12 05:50:47 garrett Exp $
+ $Id: call_ls.cc,v 1.5 2006/02/14 18:06:11 mchang Exp $
 
 */
 
@@ -99,6 +99,7 @@ State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Mole
       local_method->search( thisPop[i] );
    }
 
-   thisPop.msort(1);
+   if (pop_size > 1)
+	 	thisPop.msort(1);
    return(thisPop[0].state(now.ntor));
 }
