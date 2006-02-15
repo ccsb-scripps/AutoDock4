@@ -1,6 +1,6 @@
 /*
 
- $Id: writeStateOfPDBQ.cc,v 1.8 2006/02/14 18:12:45 mchang Exp $
+ $Id: writeStateOfPDBQ.cc,v 1.9 2006/02/15 21:57:11 garrett Exp $
 
 */
 
@@ -86,7 +86,9 @@ writeStateOfPDBQ(int irun, FourByteLong seed[2],
 
 	if ((outlev > -1) && (outlev < 3)) {
         //the 2 is the level of detail:2 is high, 0 is low
+        pr(logFile,"State:\t");
         printState(logFile, (*Ptr_state), outlev);
+        pr(logFile,"\n\n");
 	} else if (outlev == -1) {
 		printState(logFile, (*Ptr_state), 0);
 	}
