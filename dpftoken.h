@@ -114,6 +114,7 @@
 #define GA_CROSSOVER_MODE	    89
 #define DPF_POPFILE 90
 #define DPF_SET_PATTERN 91
+#define DPF_COMPUTE_UNBOUND_EXTENDED	    92
 
 #endif
 /* EOF */
