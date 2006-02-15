@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.9 2006/02/14 18:04:25 mchang Exp $
+ $Id: parse_dpf_line.cc,v 1.10 2006/02/15 21:54:01 garrett Exp $
 
 */
 
@@ -13,6 +13,8 @@
 #include <ctype.h>
 #include "parse_dpf_line.h"
 
+#define NUM_LEXEMES_AUTODOCK 100 // this is the length of the tokentable of AutoDock-related lexemes 
+#define NUM_LEXEMES_COLINY 1 // this is the length of the tokentable of Coliny-related lexemes 
 
 int parse_dpf_line( char line[LINE_LEN] )
 
@@ -38,12 +40,12 @@ int parse_dpf_line( char line[LINE_LEN] )
     int j, i, token = DPF_;               /* return -1 if nothing is recognized. */
     char c[LINE_LEN];
 
-    // tokentablesize should be set to the length of the tokentable
-    // 
+    // tokentablesize should be set to the length of the tokentable,
+    //
 #if defined(USING_COLINY)
-    const int tokentablesize = 100; // this is 1 more than without USING_COLING
+    const int tokentablesize = NUM_LEXEMES_AUTODOCK + NUM_LEXEMES_COLINY;
 #else
-    const int tokentablesize = 99; // this is without USING_COLINY
+    const int tokentablesize = NUM_LEXEMES_AUTODOCK;
 #endif
 
     const struct {
@@ -148,10 +150,13 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"ga_crossover_mode", GA_CROSSOVER_MODE}      // 97
               , {"output_pop_file", DPF_POPFILE}      // 98
               , {"set_pattern", DPF_SET_PATTERN}      // 99
+              , {"compute_unbound_extended", DPF_COMPUTE_UNBOUND_EXTENDED} // 100
+			   // Remember to define NUM_LEXEMES_AUTODOCK earlier
 #if defined(USING_COLINY)
-              , {"coliny", DPF_COLINY}  // 100       // remember to set tokentablesize earlier
+              , {"coliny", DPF_COLINY}  // 1 
+               // Remember to define NUM_LEXEMES_COLINY earlier
 #endif
-              }; // 99, or 100 if USING_COLINY      // remember to set tokentablesize earlier
+              };
 
     c[0] = '\0';
     for (j=0; ((line[j]!='\0')&&(line[j]!=' ')&&(line[j]!='\t')&&(line[j]!='\n')); j++) {
