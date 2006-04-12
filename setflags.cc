@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.4 2005/03/15 23:52:27 gillet Exp $
+ $Id: setflags.cc,v 1.5 2006/04/12 03:49:28 garrett Exp $
 
 */
 
@@ -28,7 +28,6 @@ extern char AutoDockHelp[];
 extern int  debug;
 extern int  ignore_errors;
 extern int  command_mode;
-extern int  oldpdbq;
 extern int  parse_tors_mode;
 extern int  keepresnum;
 
@@ -103,9 +102,6 @@ int setflags( int I_argc, char * const PPC_argv[])
         case 'u':
             usage();
 	    exit(0);
-            break;
-        case 'o':
-            oldpdbq = TRUE;
             break;
         case 'i':
             ignore_errors = TRUE;
