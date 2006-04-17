@@ -1,6 +1,6 @@
 /*
 
- $Id: evaluate_energy.cc,v 1.8 2006/02/14 18:12:44 mchang Exp $
+ $Id: evaluate_energy.cc,v 1.9 2006/04/17 05:35:26 garrett Exp $
 
 */
 
@@ -56,7 +56,7 @@ FloatOrDouble evaluate_energy(
             NULL_ELEC, NULL_EVDW,
             NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
 
-    e += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
+    e += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
 
     if (B_isGaussTorCon) {
         for (I_tor = 0; I_tor <= now.ntor; I_tor++) {
