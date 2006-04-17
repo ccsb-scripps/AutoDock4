@@ -17,8 +17,7 @@ FloatOrDouble  eintcal(
                         const Boole         B_include_1_4_interactions,
                         const FloatOrDouble scale_1_4,
                         const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
-                        const ParameterEntry parameterArray[MAX_MAPS],
-                        const FloatOrDouble unbound_internal_FE
+                        const ParameterEntry parameterArray[MAX_MAPS]
                       );
 
 #else        /*EINTCALPRINT*/
@@ -33,8 +32,7 @@ FloatOrDouble  eintcalPrint(
                              const Boole B_include_1_4_interactions,
                              const FloatOrDouble scale_1_4,
                              const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
-                             const ParameterEntry parameterArray[MAX_MAPS],
-                             const FloatOrDouble unbound_internal_FE
+                             const ParameterEntry parameterArray[MAX_MAPS]
                            );
 
 #endif        /*EINTCALPRINT*/
