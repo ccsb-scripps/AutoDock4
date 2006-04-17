@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.16 2006/02/14 18:12:43 mchang Exp $
+ $Id: analysis.cc,v 1.17 2006/04/17 05:17:44 garrett Exp $
 
 */
 
@@ -219,10 +219,10 @@ void analysis( int   Nnb,
             (void)memcpy(crd, crdSave[c], natom*3*sizeof(FloatOrDouble));
      
             if (ntor > 0) {
-                eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
+                eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
             } else {
                 // eintra = torsFreeEnergy;
-                eintra = 0.0;
+                eintra = 0.0 - unbound_internal_FE;
             }
             if (!B_template) {
                 // we assume that some atoms might be outside the grid -
