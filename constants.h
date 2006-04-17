@@ -404,7 +404,13 @@
  */
 /* serial, name, altLoc, resName, chainID, resSeq, iCode, x, y, z, occupancy, tempFactor, segID, atom_type, "" */
 #define FORMAT_PDBQT_ATOM       "ATOM  %5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s%2s" 
-
+/*                               ATOM     10  HO4 PGP     1      22.065  29.222  38.002  1.00  0.00     0.210 HD
+                                 65432154321 43211321 143211   876543218765432187654321654321654321    654321 21 */
+#define FORMAT_PDBQT_ATOM_RESSTR         "%sATOM  %5d  %.13s    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
+#define FORMAT_PDBQT_ATOM_RESNUM         "%sATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
+#define FORMAT_PDBQT_ATOM_RANKRUN_STR      "ATOM  %5d  %.13s    %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f %-2s\n"
+#define FORMAT_PDBQT_ATOM_RUN_NUM          "ATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f %-2s\n"
+                                                                  
 #endif /* _PDB_FORMATS */
 
 /*----------------------------------------------------------------------------* 
