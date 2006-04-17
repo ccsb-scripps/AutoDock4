@@ -133,7 +133,7 @@ void read_parameter_library(
                 thisParameter.epsij_hb *= AD4.coeff_hbond;
 
                 apm_enter(thisParameter.autogrid_type, thisParameter);
-                pr(logFile, "Parameters for the atom type named \"%s\" were read in from the parameter library as follows:\n", thisParameter.autogrid_type);
+                pr(logFile, "Parameters for the atom type \"%s\" were read in from \"%s\" as follows:\n\n", thisParameter.autogrid_type, FN_parameter_library);
 
                 if (outlev > 2) {
                     pr(logFile, "\tR-eqm = %5.2f Angstrom\n\tweighted epsilon = %5.3f\n\tAtomic fragmental volume = %5.3f\n\tAtomic solvation parameter = %5.3f\n\tH-bonding R-eqm = %5.3f\n\tweighted H-bonding epsilon = %5.3f\n\tH-bonding type = %d,  bond index = %d\n\n",
@@ -161,7 +161,7 @@ void setup_parameter_library( int outlev )
     int int_hbond_type = 0;
     register int counter = 0;
 
-    pr(logFile, "Setting up parameter library with factory defaults.\n\n\n");
+    pr(logFile, "Setting up parameter library with factory default values.\n\n\n");
 
     // Default parameters
     //
@@ -267,7 +267,7 @@ void setup_parameter_library( int outlev )
                 thisParameter.epsij_hb *= AD4.coeff_hbond;
 
                 apm_enter(thisParameter.autogrid_type, thisParameter);
-                pr(logFile, "Parameters for the atom type named \"%s\" were read in from the parameter library as follows:\n", thisParameter.autogrid_type);
+                pr(logFile, "Parameters for the atom type \"%s\" were initialised with the following default values:\n\n", thisParameter.autogrid_type);
 
                 if (outlev > 2) {
                     pr(logFile, "\tR-eqm = %5.2f Angstrom\n\tweighted epsilon = %5.3f\n\tAtomic fragmental volume = %5.3f\n\tAtomic solvation parameter = %5.3f\n\tH-bonding R-eqm = %5.3f\n\tweighted H-bonding epsilon = %5.3f\n\tH-bonding type = %d,  bond index = %d\n\n",
