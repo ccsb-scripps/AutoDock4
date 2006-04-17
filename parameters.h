@@ -13,7 +13,7 @@ enum hbond_type
 
 typedef struct parameter_entry
 {				// was "parm_info" in earlier AutoGrid 4 code
-  char autogrid_type[MAX_LEN_AUTOGRID_TYPE + 1];	/* autogrid_type is based on babel_types assigned by PyBabel */
+  char autogrid_type[MAX_LEN_AUTOGRID_TYPE + 1];	/* autogrid_type is a string based on babel_types assigned by PyBabel */
   double Rij;			/* Lennard-Jones equilibrium separation */
   double epsij;			/* Lennard-Jones energy well-depth */
   double vol;			/* solvation volume */
