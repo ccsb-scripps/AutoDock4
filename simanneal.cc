@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.10 2006/02/14 18:12:45 mchang Exp $
+ $Id: simanneal.cc,v 1.11 2006/04/17 06:09:07 garrett Exp $
 
 */
 
@@ -365,7 +365,7 @@ void simanneal ( int   *Addr_nconf,
                                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
 				            + (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
                                    B_calcIntElec, q1q2, B_include_1_4_interactions, 
-                                   scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE));
+                                   scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE);
 
 			if (B_isGaussTorCon) {
 			    /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { ***/
@@ -581,9 +581,9 @@ void simanneal ( int   *Addr_nconf,
 	cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
 
 	if (ntor > 0) {
-	    eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
+	    eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
 	} else {
-	    eintra = 0.0;
+	    eintra = 0.0 - unbound_internal_FE;
 	}
         einter = trilinterp( crd, charge, abs_charge, type, natom, map, 
                     info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
