@@ -35,7 +35,10 @@
 #include "structs.h"
 #include "success.h"
 #include "timesyshms.h"
-#include "writeStateOfPDBQ.h"
+#include "writePDBQT.h"
+
+#define UNBOUND 0
+#define DOCKED 1
 
 //int  main( int  argc, char **argv, char **envp);
 int main (int argc, char * const argv[], char * const envp[]);
