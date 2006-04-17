@@ -2,7 +2,7 @@
 #define MKTORTREE
 
 #include "constants.h"
-#include "parse_pdbq_line.h"
+#include "parse_PDBQT_line.h"
 #include "stop.h"
 
 void  mkTorTree(int   atomnumber[MAX_RECORDS],

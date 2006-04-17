@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.5 2006/01/30 23:04:34 garrett Exp $
+ $Id: mkTorTree.cc,v 1.6 2006/04/17 05:54:53 garrett Exp $
 
 */
 
@@ -17,7 +17,7 @@
     #include <string.h>
     #include <ctype.h>
     #include "mkTorTree.h"
-    #include "pdbqtokens.h"
+    #include "PDBQT_tokens.h"
 
 
 extern FILE *logFile;
@@ -111,13 +111,13 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 
     for (i = 0;  i < nrecord;  i++) {
 
-        if ( (keyword_id = parse_pdbq_line( Rec_line[ i ] )) == -1) {
-            pr( logFile, "%s: Unrecognized keyword found while parsing PDBQ file, line:\n|%s|\n", programname, Rec_line[ i ] );
+        if ( (keyword_id = parse_PDBQT_line( Rec_line[ i ] )) == -1) {
+            pr( logFile, "%s: Unrecognized keyword found while parsing PDBQT file, line:\n|%s|\n", programname, Rec_line[ i ] );
             continue;
         }
 
 #ifdef DEBUG
-        pr( logFile, "PDBQ-Line %d: %s", i+1, Rec_line[i] );
+        pr( logFile, "PDBQT-Line %d: %s", i+1, Rec_line[i] );
 #endif /* DEBUG */
 
         switch( keyword_id ) {
@@ -162,7 +162,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
                     /* reset the atom counter */
                     natoms_in_res = 0;
                 }
-                /* Increment atom counter for all atoms in PDBQ file */
+                /* Increment atom counter for all atoms in PDBQT file */
                 thisatom++;
 
 #ifdef DEBUG
@@ -329,8 +329,8 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
             default:
                 break;
     /*____________________________________________________________*/
-        } /* switch -- finished parsing this line of PDBQ file*/
-    } /* i --- do next record in PDBQ file... */
+        } /* switch -- finished parsing this line of PDBQT file*/
+    } /* i --- do next record in PDBQT file... */
 
     /*
     \   Sort Torsion list on number of atoms moved,
