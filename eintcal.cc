@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.11 2006/02/14 18:12:43 mchang Exp $
+ $Id: eintcal.cc,v 1.12 2006/04/17 05:33:41 garrett Exp $
 
 */
 
@@ -35,8 +35,7 @@ FloatOrDouble eintcal( int ** const nonbondlist,
                        const Boole         B_include_1_4_interactions,
                        const FloatOrDouble scale_1_4,
                        const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
-                       const ParameterEntry parameterArray[MAX_MAPS],
-                       const FloatOrDouble unbound_internal_FE
+                       const ParameterEntry parameterArray[MAX_MAPS]
                        )
 
 #else // eintcalPrint [
@@ -56,8 +55,7 @@ FloatOrDouble eintcalPrint( int ** nonbondlist,
                             const Boole         B_include_1_4_interactions,
                             const FloatOrDouble scale_1_4,
                             const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
-                            const ParameterEntry parameterArray[MAX_MAPS],
-                            const FloatOrDouble unbound_internal_FE
+                            const ParameterEntry parameterArray[MAX_MAPS]
                             )
 
 #endif // eintcalPrint ]
@@ -341,11 +339,8 @@ FloatOrDouble eintcalPrint( int ** nonbondlist,
     }
 #endif
 
-    // Subtract the internal free energy of the unbound state
-    total_e_internal = total_e_internal - unbound_internal_FE;
-
 #ifdef EINTCALPRINT
-    pr( logFile, "\nTotal Intramolecular Interaction Energy = %+.3lf kcal/mol\n", (double)total_e_internal); // eintcalPrint
+    pr( logFile, "\nTotal Intramolecular Interaction Energy   = %+.3lf kcal/mol\n", (double)total_e_internal); // eintcalPrint
 #endif
 
     return (FloatOrDouble) total_e_internal;
