@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.13 2006/01/27 05:39:14 garrett Exp $
+ $Id: eval.cc,v 1.14 2006/04/17 05:35:02 garrett Exp $
 
 */
 
@@ -131,16 +131,17 @@ double Eval::eval()
 
     if (!B_template) {
 
-        energy = trilinterp( crd, charge, abs_charge, type, natom, map, 
-                info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
-                ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
+        if (B_compute_intermol_energy) {
+            energy = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                                 info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
+                                 ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
+        }
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval() after trilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
         energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, 
                            B_include_1_4_interactions, scale_1_4, 
-                           qsp_abs_charge, parameterArray, 
-                           unbound_internal_FE);
+                           qsp_abs_charge, parameterArray) - unbound_internal_FE;
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */
@@ -248,17 +249,18 @@ double Eval::eval(int term)
 (void)fprintf(logFile,"eval.cc/All coordinates are inside grid...\n");
 #endif /* DEBUG */
 
-        energy = trilinterp( crd, charge, abs_charge, type, natom, map, 
-                info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
-                ignore_inter, elec, emap, &elec_total, &emap_total);
+        if (B_compute_intermol_energy) {
+            energy = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                                 info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
+                                 ignore_inter, elec, emap, &elec_total, &emap_total);
+        }
         
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after trilinterp, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
         energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, 
                            B_include_1_4_interactions, scale_1_4, 
-                           qsp_abs_charge, parameterArray, 
-                           unbound_internal_FE);
+                           qsp_abs_charge, parameterArray) - unbound_internal_FE;
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after eintcal, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */

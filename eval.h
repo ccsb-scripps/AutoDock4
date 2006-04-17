@@ -51,6 +51,7 @@ class Eval
       FloatOrDouble scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
       ParameterEntry *parameterArray;
       FloatOrDouble  unbound_internal_FE;
+      Boole B_compute_intermol_energy; // use for computing unbound state
 
    public:
       Eval(void);
@@ -94,6 +95,7 @@ class Eval
       UnsignedFourByteLong evals(void);
       void reset(void);
       int write(FILE *out_file, Representation **rep);
+      void compute_intermol_energy(Boole init_B_compute_intermol_energy); // for computing unbound state
 };
 
 inline Eval::Eval(void)
@@ -184,7 +186,15 @@ inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
     unbound_internal_FE = init_unbound_internal_FE;
 
     info = init_info;
+    B_compute_intermol_energy = TRUE; // default is "Yes, calculate the intermolecular energy".
 }
+
+inline void Eval::compute_intermol_energy(Boole init_B_compute_intermol_energy)
+    // For computing the conformation and the internal energy of the unbound state.
+{
+    B_compute_intermol_energy = init_B_compute_intermol_energy;
+}
+
 
 inline UnsignedFourByteLong Eval::evals(void)
 {
