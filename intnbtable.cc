@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.5 2005/09/28 22:54:20 garrett Exp $
+ $Id: intnbtable.cc,v 1.6 2006/04/17 05:41:04 garrett Exp $
 
 */
 
@@ -15,6 +15,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/times.h>
+#include <string.h>
 #include "intnbtable.h"
 #include "structs.h"
 #include "distdepdiel.h"
@@ -33,8 +34,8 @@ extern FILE *logFile;
 extern int debug;
 
 void intnbtable( Boole *P_B_havenbp,
-                 int *P_a1,
-                 int *P_a2, 
+                 int a1,
+                 int a2, 
                  GridMapSetInfo *info,
                  FloatOrDouble cA, 
                  FloatOrDouble cB, 
@@ -63,18 +64,26 @@ void intnbtable( Boole *P_B_havenbp,
     struct tms tms_nbeEnd;
     struct tms tms_nbeStart;
 
+    char calc_type[128];
+
+    if ((xA == 1) && (xB == 2)) {
+        strcpy(calc_type, "unbound");
+    } else {
+        strcpy(calc_type, "internal");
+    }
+
     *P_B_havenbp = TRUE;
 
-    if (*P_a1 != *P_a2) {
-        pr( logFile, "\nNon-bonded parameters for %s-%s and %s-%s interactions, used in internal energy calculations:\n", info->atom_type_name[*P_a1], info->atom_type_name[*P_a2], info->atom_type_name[*P_a2], info->atom_type_name[*P_a1] );
+    if (a1 != a2) {
+        pr( logFile, "\nNon-bonded parameters for %s-%s and %s-%s interactions, used in %s energy calculations:\n", info->atom_type_name[a1], info->atom_type_name[a2], info->atom_type_name[a2], info->atom_type_name[a1], calc_type );
     } else {
-        pr( logFile, "\nNon-bonded parameters for %s-%s interactions, used in internal energy calculations:\n", info->atom_type_name[*P_a1], info->atom_type_name[*P_a2] );
+        pr( logFile, "\nNon-bonded parameters for %s-%s interactions, used in %s energy calculations:\n", info->atom_type_name[a1], info->atom_type_name[a2], calc_type );
     }
     pr( logFile, "\n               %9.1lf       %9.1lf \n", cA, cB );
     pr( logFile, "    E      =  -----------  -  -----------\n");
-    pr( logFile, "     %2s,%-2s         %2d              %2d\n", info->atom_type_name[*P_a1], info->atom_type_name[*P_a2], xA, xB );
+    pr( logFile, "     %2s,%-2s         %2d              %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA, xB );
     pr( logFile, "                  r               r \n\n");
-    pr( logFile, "Calculating %s-%-s interaction energy versus atomic separation (%d data points).\n", info->atom_type_name[*P_a1], info->atom_type_name[*P_a2], NEINT );
+    pr( logFile, "Calculating %s-%-s interaction energy versus atomic separation (%d data points).\n", info->atom_type_name[a1], info->atom_type_name[a2], NEINT );
     flushLog;
 
     nbeStart = times( &tms_nbeStart );
@@ -116,10 +125,10 @@ void intnbtable( Boole *P_B_havenbp,
             rB = pow( r, dxB );
         }
 
-        ad_tables->e_vdW_Hb[i][*P_a1][*P_a2]  =  ad_tables->e_vdW_Hb[i][*P_a2][*P_a1]  =  min( EINTCLAMP, (cA/rA - cB/rB) );
+        ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA - cB/rB) );
 
         if (debug > 1) {
-            pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %.3f,   r=%.4lf\n",i, ad_tables->e_vdW_Hb[i][*P_a1][*P_a2], r ); // Xcode-gmm
+            pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %.3f,   r=%.4lf\n",i, ad_tables->e_vdW_Hb[i][a1][a2], r ); // Xcode-gmm
         }
 
     } // 1 <= i < NEINT
@@ -127,10 +136,6 @@ void intnbtable( Boole *P_B_havenbp,
     nbeEnd = times( &tms_nbeEnd );
     pr( logFile, "Time taken: ");
     timesys( nbeEnd - nbeStart, &tms_nbeStart, &tms_nbeEnd );
-
-    if (++(*P_a2) >= info->num_atom_types) {
-        *P_a2 = ++(*P_a1);
-    }
 }
 /* end of intnbtable */
 

@@ -5,8 +5,8 @@
 #include "structs.h"
 
 void intnbtable(Boole *P_B_havenbp,
-                int   *P_a1,
-                int   *P_a2,
+                int   a1,
+                int   a2,
                 GridMapSetInfo *info,
                 FloatOrDouble cA,
                 FloatOrDouble cB,
