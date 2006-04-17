@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.13 2006/02/14 18:12:43 mchang Exp $
+ $Id: cmdmode.cc,v 1.14 2006/04/17 05:21:28 garrett Exp $
 
 */
 
@@ -33,7 +33,6 @@ extern char *programname;
 extern char dock_param_fn[];
 extern char AutoDockHelp[];
 
-extern int oldpdbq;
 extern int ignore_errors;
 extern int keepresnum;
 extern int debug;
@@ -208,11 +207,9 @@ int cmdmode(int   natom,
                 Return the energy of the Small Molecule.
                 filename must be in PDBQ-format;
                 flag can be:-
-                0 = NEW, or PDBQ-71, and
-                1 = OLD, or PDBQ-55 (old PDBq format).
 */
-                sscanf(command, "%*s %s %d", filename, &oldpdbq);
-                pr(logFile, "COMMAND: epdb %s %d\n\n", filename, oldpdbq);
+                sscanf(command, "%*s %s", filename);
+                pr(logFile, "COMMAND: epdb %s\n\n", filename);
  
                 nat = 0;
                 eintra = einter = etotal = 0.;
@@ -246,9 +243,9 @@ int cmdmode(int   natom,
                     fclose(pdbFile);
                     natom = nat;
                     if (ntor > 0) {
-                        eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, unbound_internal_FE);
+                        eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray) - unbound_internal_FE;
                     } else {
-                        eintra = 0.0;
+                        eintra = 0.0 - unbound_internal_FE;
                     }
                     pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
                     pr(logFile,     "\t\t==============================\n\n\n");
@@ -309,9 +306,9 @@ int cmdmode(int   natom,
                 }
                 cnv_state_to_coords(S,  vt, tlist, ntor,  crdpdb, crd, natom);
                 if (ntor > 0) {
-                    eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, unbound_internal_FE);
+                    eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray) - unbound_internal_FE;
                 } else {
-                    eintra = 0.0;
+                    eintra = 0.0 - unbound_internal_FE;
                 }
                 outside = FALSE;
                 for (i = 0;  i < natom;  i++) {
