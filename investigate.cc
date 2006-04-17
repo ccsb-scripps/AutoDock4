@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.9 2006/02/14 18:12:44 mchang Exp $
+ $Id: investigate.cc,v 1.10 2006/04/17 05:42:49 garrett Exp $
 
 */
 
@@ -134,7 +134,7 @@ void investigate( int   Nnb,
 */
 
     pr( logFile, "\n\n\t\tBEGINNING INVESTIGATION OF FORCE FIELD\n");
-    pr( logFile,     "\t\t_____________________________________\n\n\n\n" );
+    pr( logFile,     "\t\t______________________________________\n\n\n\n" );
 
 /*  Initialize random number generator with a time-dependent seed...  */
 
@@ -195,7 +195,7 @@ void investigate( int   Nnb,
                     NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
                     + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, 
                             q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
-                            parameterArray, unbound_internal_FE);
+                            parameterArray) - unbound_internal_FE;
             if (B_isGaussTorCon) {
                 for (Itor = 0; Itor < ntor; Itor++) {
                     if (B_isTorConstrained[Itor] == 1) {
