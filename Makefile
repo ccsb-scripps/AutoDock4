@@ -87,7 +87,7 @@ OBJS = \
     parse_com_line.o \
     parse_dpf_line.o \
     parse_param_line.o \
-    parse_pdbq_line.o \
+    parse_PDBQT_line.o \
     parse_trj_line.o \
 	parsetypes.o \
     print_2x.o \
@@ -95,7 +95,7 @@ OBJS = \
     print_avsfld.o \
     writeMolAsPDBQ.o \
     writePDBQ.o \
-    writeStateOfPDBQ.o \
+    writePDBQT.o \
     print_rem.o \
     printdate.o \
     printEnergies.o \
@@ -175,7 +175,7 @@ OBJS_LSFIT = \
     parse_com_line.o \
     parse_dpf_line.o \
     parse_param_line.o \
-    parse_pdbq_line.o \
+    parse_PDBQT_line.o \
     parse_trj_line.o \
 	parsetypes.o \
     print_2x.o \
@@ -183,7 +183,7 @@ OBJS_LSFIT = \
     print_avsfld.o \
     writeMolAsPDBQ.o \
     writePDBQ.o \
-    writeStateOfPDBQ.o \
+    writePDBQT.o \
     print_rem.o \
     printdate.o \
     printEnergies.o \
@@ -273,7 +273,7 @@ LNS = \
     parse_com_line.ln \
     parse_dpf_line.ln \
     parse_param_line.ln \
-    parse_pdbq_line.ln \
+    parse_PDBQT_line.ln \
     parse_trj_line.ln \
     parsetypes.ln \
     print_2x.ln \
@@ -281,7 +281,7 @@ LNS = \
     print_avsfld.ln \
     writeMolAsPDBQ.ln \
     writePDBQ.ln \
-    writeStateOfPDBQ.ln \
+    writePDBQT.ln \
     print_rem.ln \
     printdate.ln \
     printEnergies.ln \
@@ -683,7 +683,7 @@ minmeanmax.o : minmeanmax.cc  rep.h support.h
 mkNewState.o : mkNewState.cc mkNewState.h constants.h
 	$(CC) $(CFLAGS) -c mkNewState.cc
 
-mkTorTree.o : mkTorTree.cc pdbqtokens.h mkTorTree.h constants.h
+mkTorTree.o : mkTorTree.cc PDBQT_tokens.h mkTorTree.h constants.h
 	$(CC) $(CFLAGS) -c mkTorTree.cc
 
 mkRandomState.o : mkRandomState.cc mkRandomState.h constants.h
@@ -710,8 +710,8 @@ parse_dpf_line.o : parse_dpf_line.cc parse_dpf_line.h constants.h dpftoken.h
 parse_param_line.o : parse_param_line.cc partokens.h  parse_param_line.h constants.h
 	$(CC) $(CFLAGS) -c parse_param_line.cc
 
-parse_pdbq_line.o : parse_pdbq_line.cc pdbqtokens.h  parse_pdbq_line.h constants.h
-	$(CC) $(CFLAGS) -c parse_pdbq_line.cc
+parse_PDBQT_line.o : parse_PDBQT_line.cc PDBQT_tokens.h  parse_PDBQT_line.h constants.h
+	$(CC) $(CFLAGS) -c parse_PDBQT_line.cc
 
 parse_trj_line.o : parse_trj_line.cc trjtokens.h parse_trj_line.h constants.h
 	$(CC) $(CFLAGS) -c parse_trj_line.cc
@@ -743,8 +743,8 @@ writeMolAsPDBQ.o : writeMolAsPDBQ.cc writeMolAsPDBQ.h constants.h autocomm.h
 writePDBQ.o : writePDBQ.cc writePDBQ.h constants.h autocomm.h
 	$(CC) $(CFLAGS) -c writePDBQ.cc -o writePDBQ.o
 
-writeStateOfPDBQ.o : writeStateOfPDBQ.cc writeStateOfPDBQ.h constants.h autocomm.h
-	$(CC) $(CFLAGS) -c writeStateOfPDBQ.cc -o writeStateOfPDBQ.o
+writePDBQT.o : writePDBQT.cc writePDBQT.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c writePDBQT.cc -o writePDBQT.o
 
 print_rem.o : print_rem.cc print_rem.h
 	$(CC) $(CFLAGS) -c print_rem.cc
@@ -776,7 +776,7 @@ readfield.o : readfield.cc readfield.h constants.h openfile.h stop.h
 readmap.o : readmap.cc readmap.h constants.h openfile.h warn_bad_file.h strindex.h print_2x.h check_header_line.h warn_bad_file.h check_header_float.h check_header_int.h timesys.h autocomm.h
 	$(CC) $(CFLAGS) -c readmap.cc
 
-readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_pdbq_line.cc parse_pdbq_line.h mdist.h atom_parameter_manager.cc atom_parameter_manager.h 
+readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_PDBQT_line.cc parse_PDBQT_line.h mdist.h atom_parameter_manager.cc atom_parameter_manager.h 
 	$(CC) $(CFLAGS) -c readPDBQT.cc
 
 default_parameters.h : AD4_parameters.dat paramdat2h.csh
@@ -971,7 +971,7 @@ parse_dpf_line.ln : parse_dpf_line.cc
 parse_param_line.ln : parse_param_line.cc
 	$(LINT) $(LINTFLAGS) $?
 
-parse_pdbq_line.ln : parse_pdbq_line.cc
+parse_PDBQT_line.ln : parse_PDBQT_line.cc
 	$(LINT) $(LINTFLAGS) $?
 
 parse_trj_line.ln : parse_trj_line.cc
@@ -995,7 +995,7 @@ writeMolAsPDBQ.ln : writeMolAsPDBQ.cc
 writePDBQ.ln : writePDBQ.cc
 	$(LINT) $(LINTFLAGS) $?
 
-writeStateOfPDBQ.ln : writeStateOfPDBQ.cc
+writePDBQT.ln : writePDBQT.cc
 	$(LINT) $(LINTFLAGS) $?
 
 print_rem.ln : print_rem.cc
