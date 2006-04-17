@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.10 2006/02/14 18:12:44 mchang Exp $
+ $Id: getInitialState.cc,v 1.11 2006/04/17 05:35:44 garrett Exp $
 
 */
 
@@ -155,7 +155,7 @@ void getInitialState(
         e0inter = trilinterp( crd, charge, abs_charge, type, natom, map, 
                     info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
                     NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-        e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
+        e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
         e0total = e0inter + e0intra;
 
         if (e0total < e0min) {
@@ -196,7 +196,7 @@ void getInitialState(
     e0inter = trilinterp( crd, charge, abs_charge, type, natom, map, 
                 info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
                 NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-    e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, unbound_internal_FE);
+    e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
     e0total = e0inter + e0intra;
 
     copyState( sMinm, *sInit );
