@@ -52,7 +52,6 @@ int	    ElecMap = 0;
 int	    DesolvMap = 0;
 int     ignore_errors = FALSE;
 int     keepresnum = 1;
-int     oldpdbq = FALSE;
 int     parse_tors_mode = FALSE;
 int	    true_ligand_atoms = 0;
 
