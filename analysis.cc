@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.17 2006/04/17 05:17:44 garrett Exp $
+ $Id: analysis.cc,v 1.18 2006/04/25 22:31:41 garrett Exp $
 
 */
 
@@ -36,18 +36,18 @@ extern char  *programname;
 
 void analysis( int   Nnb, 
                char  atomstuff[MAX_ATOMS][MAX_CHARS], 
-               FloatOrDouble charge[MAX_ATOMS], 
-               FloatOrDouble abs_charge[MAX_ATOMS], 
-               FloatOrDouble qsp_abs_charge[MAX_ATOMS], 
+               Real charge[MAX_ATOMS], 
+               Real abs_charge[MAX_ATOMS], 
+               Real qsp_abs_charge[MAX_ATOMS], 
                Boole B_calcIntElec,
-               FloatOrDouble q1q2[MAX_NONBONDS],
-               FloatOrDouble clus_rms_tol, 
-               FloatOrDouble crdpdb[MAX_ATOMS][SPACE], 
+               Real q1q2[MAX_NONBONDS],
+               Real clus_rms_tol, 
+               Real crdpdb[MAX_ATOMS][SPACE], 
 
                EnergyTables *ptr_ad_energy_tables,
 
-               FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-               FloatOrDouble econf[MAX_RUNS], 
+               Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+               Real econf[MAX_RUNS], 
                int   irunmax, 
                int   natom, 
                int   **nonbondlist, 
@@ -55,25 +55,25 @@ void analysis( int   Nnb,
                int   ntor, 
                State hist[MAX_RUNS], 
                char  smFileName[MAX_CHARS], 
-               FloatOrDouble sml_center[SPACE],
+               Real sml_center[SPACE],
                Boole B_symmetry_flag, 
                int   tlist[MAX_TORS][MAX_ATOMS], 
                int   type[MAX_ATOMS], 
-               FloatOrDouble vt[MAX_TORS][SPACE],
+               Real vt[MAX_TORS][SPACE],
                char  FN_rms_ref_crds[MAX_CHARS],
-               FloatOrDouble torsFreeEnergy,
+               Real torsFreeEnergy,
                Boole B_write_all_clusmem,
                int ligand_is_inhibitor,
                Boole B_template,
-               FloatOrDouble template_energy[MAX_ATOMS],
-               FloatOrDouble template_stddev[MAX_ATOMS],
+               Real template_energy[MAX_ATOMS],
+               Real template_stddev[MAX_ATOMS],
                int           outlev,
 			   int           ignore_inter[MAX_ATOMS],
                const Boole   B_include_1_4_interactions,
-               const FloatOrDouble scale_1_4,
+               const Real scale_1_4,
 
                const ParameterEntry parameterArray[MAX_MAPS],
-               const FloatOrDouble unbound_internal_FE,
+               const Real unbound_internal_FE,
 
                GridMapSetInfo *info
               )
@@ -85,21 +85,21 @@ void analysis( int   Nnb,
     static char  rec14[14];
     static char  rec9[9];
 
-    static FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS];
-    static FloatOrDouble crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
-    static FloatOrDouble crd[MAX_ATOMS][SPACE];
-    FloatOrDouble einter = 0.;
-    FloatOrDouble eintra = 0.;
-    static FloatOrDouble elec[MAX_ATOMS];
-    static FloatOrDouble elec_total;
-    static FloatOrDouble emap[MAX_ATOMS];
-    static FloatOrDouble emap_total;
-    // FloatOrDouble lo[3];
-    static FloatOrDouble ref_crds[MAX_ATOMS][SPACE];
-    static FloatOrDouble ref_rms[MAX_RUNS];
-    FloatOrDouble torDeg = 0.;
-    FloatOrDouble modtorDeg = 0.;
-    FloatOrDouble MaxValue = 99.99;
+    static Real clu_rms[MAX_RUNS][MAX_RUNS];
+    static Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
+    static Real crd[MAX_ATOMS][SPACE];
+    Real einter = 0.;
+    Real eintra = 0.;
+    static Real elec[MAX_ATOMS];
+    static Real elec_total;
+    static Real emap[MAX_ATOMS];
+    static Real emap_total;
+    // Real lo[3];
+    static Real ref_crds[MAX_ATOMS][SPACE];
+    static Real ref_rms[MAX_RUNS];
+    Real torDeg = 0.;
+    Real modtorDeg = 0.;
+    Real MaxValue = 99.99;
 
     int   c = 0;
     int   c1 = 0;
@@ -160,7 +160,7 @@ void analysis( int   Nnb,
         /* fprintf( logFile, "Saving coordinates of state %d.\n", k); */
 
         /* Save coordinates in crdSave array...  */
-        (void)memcpy(crdSave[k], crd, natom*3*sizeof(FloatOrDouble));
+        (void)memcpy(crdSave[k], crd, natom*3*sizeof(Real));
     } /*k*/
 
     flushLog;
@@ -216,7 +216,7 @@ void analysis( int   Nnb,
             c = cluster[i][k];
             c1 = c + 1;
 
-            (void)memcpy(crd, crdSave[c], natom*3*sizeof(FloatOrDouble));
+            (void)memcpy(crd, crdSave[c], natom*3*sizeof(Real));
      
             if (ntor > 0) {
                 eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
