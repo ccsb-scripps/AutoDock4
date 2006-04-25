@@ -1,6 +1,6 @@
 /*
 
- $Id: cluster_analysis.cc,v 1.2 2003/02/26 00:44:49 garrett Exp $
+ $Id: cluster_analysis.cc,v 1.3 2006/04/25 22:31:55 garrett Exp $
 
 */
 
@@ -16,21 +16,21 @@
     #include "cluster_analysis.h"
 
 
-int cluster_analysis( FloatOrDouble clus_rms_tol, 
+int cluster_analysis( Real clus_rms_tol, 
 		      int cluster[MAX_RUNS][MAX_RUNS], 
 		      int num_in_clus[MAX_RUNS], 
 		      int isort[MAX_RUNS], 
 		      int nconf, 
 		      int natom, 
 		      int type[MAX_ATOMS],
-		      FloatOrDouble crd[MAX_RUNS][MAX_ATOMS][SPACE], 
-		      FloatOrDouble crdpdb[MAX_ATOMS][SPACE], 
-		      FloatOrDouble sml_center[SPACE], 
-		      FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS], 
+		      Real crd[MAX_RUNS][MAX_ATOMS][SPACE], 
+		      Real crdpdb[MAX_ATOMS][SPACE], 
+		      Real sml_center[SPACE], 
+		      Real clu_rms[MAX_RUNS][MAX_RUNS], 
 		      Boole B_symmetry_flag,
-		      FloatOrDouble ref_crds[MAX_ATOMS][SPACE],
+		      Real ref_crds[MAX_ATOMS][SPACE],
 		      int ref_natoms,
-		      FloatOrDouble ref_rms[MAX_RUNS])
+		      Real ref_rms[MAX_RUNS])
 {
 /* __________________________________________________________________________
   | Cluster Analysis                                                         |
@@ -46,7 +46,7 @@ int cluster_analysis( FloatOrDouble clus_rms_tol,
 	  thisconf = 0,
 	  new_conf = FALSE;
 
-    FloatOrDouble rms = 0.;
+    Real rms = 0.;
 
     if (ref_natoms == -1) {
 
