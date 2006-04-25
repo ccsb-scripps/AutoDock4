@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.8 2006/02/11 04:54:14 garrett Exp $
+ $Id: trilinterp.cc,v 1.9 2006/04/25 22:33:30 garrett Exp $
 
 */
 
@@ -23,7 +23,7 @@ extern int DesolvMap;
 extern FILE *logFile;
 #endif
 
-FloatOrDouble trilinterp( 
+Real trilinterp( 
 
  CONST_FLOAT tcoord[MAX_ATOMS][SPACE], // temporary coordinates
  CONST_FLOAT charge[MAX_ATOMS], // partial atomic charges
@@ -34,10 +34,10 @@ FloatOrDouble trilinterp(
  GridMapSetInfo *info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
  int some_atoms_outside_grid, // boolean
  int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
- FloatOrDouble elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
- FloatOrDouble emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
- FloatOrDouble *p_elec_total, // set if not NULL - total electrostatic energy
- FloatOrDouble *p_emap_total // set if not NULL - total intermolecular energy
+ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
+ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
+ Real *p_elec_total, // set if not NULL - total electrostatic energy
+ Real *p_emap_total // set if not NULL - total intermolecular energy
  )
 
 /******************************************************************************/
@@ -168,12 +168,12 @@ FloatOrDouble trilinterp(
     if (p_elec_total != NULL) *p_elec_total = elec_total;
     if (p_emap_total != NULL) *p_emap_total = emap_total;
 
-    return( (FloatOrDouble)elec_total+emap_total );
+    return( (Real)elec_total+emap_total );
 }
 
 /*----------------------------------------------------------------------------*/
 
-FloatOrDouble template_trilinterp( 
+Real template_trilinterp( 
 
  CONST_FLOAT tcoord[MAX_ATOMS][SPACE], // temporary coordinates
  CONST_FLOAT charge[MAX_ATOMS], // partial atomic charges
@@ -186,10 +186,10 @@ FloatOrDouble template_trilinterp(
  int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
  CONST_FLOAT template_energy[MAX_ATOMS],
  CONST_FLOAT template_stddev[MAX_ATOMS],
- FloatOrDouble elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
- FloatOrDouble emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
- FloatOrDouble *p_elec_total, // set if not NULL - total electrostatic energy
- FloatOrDouble *p_emap_total // set if not NULL - total intermolecular energy
+ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
+ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
+ Real *p_elec_total, // set if not NULL - total electrostatic energy
+ Real *p_emap_total // set if not NULL - total intermolecular energy
  )
 
 {
@@ -209,7 +209,7 @@ FloatOrDouble template_trilinterp(
         etotal += diff * diff;
     }
 
-    return((FloatOrDouble)sqrt(etotal / (FloatOrDouble)total_atoms ));
+    return((Real)sqrt(etotal / (Real)total_atoms ));
 }
 
 /* EOF */
