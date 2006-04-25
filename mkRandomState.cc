@@ -1,6 +1,6 @@
 /*
 
- $Id: mkRandomState.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
+ $Id: mkRandomState.cc,v 1.4 2006/04/25 22:32:34 garrett Exp $
 
 */
 
@@ -18,7 +18,7 @@
 
 
 State mkRandomState( int   ntor,
-		     FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		     Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		     int   N_con[MAX_TORS],
                      GridMapSetInfo *info)
 
@@ -28,7 +28,7 @@ State mkRandomState( int   ntor,
     double t;
     int I_ranCon;
     double x0, r1, r2, t1, t2;
-    FloatOrDouble a, b;
+    Real a, b;
 
     now.ntor = ntor;
 
