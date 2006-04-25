@@ -1,6 +1,6 @@
 /*
 
- $Id: getrms.cc,v 1.2 2003/02/26 01:07:17 garrett Exp $
+ $Id: getrms.cc,v 1.3 2006/04/25 22:32:16 garrett Exp $
 
 */
 
@@ -16,8 +16,8 @@
 
 
 
-FloatOrDouble getrms ( FloatOrDouble Crd[MAX_ATOMS][SPACE], 
-	       FloatOrDouble CrdRef[MAX_ATOMS][SPACE], 
+Real getrms ( Real Crd[MAX_ATOMS][SPACE], 
+	       Real CrdRef[MAX_ATOMS][SPACE], 
 	       Boole B_symmetry_flag, 
 	       int natom, 
 	       int type[MAX_ATOMS] )
