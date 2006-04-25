@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.6 2006/04/17 05:41:04 garrett Exp $
+ $Id: intnbtable.cc,v 1.7 2006/04/25 22:32:24 garrett Exp $
 
 */
 
@@ -37,8 +37,8 @@ void intnbtable( Boole *P_B_havenbp,
                  int a1,
                  int a2, 
                  GridMapSetInfo *info,
-                 FloatOrDouble cA, 
-                 FloatOrDouble cB, 
+                 Real cA, 
+                 Real cB, 
                  int xA, 
                  int xB,
                  double coeff_desolv,
@@ -160,8 +160,9 @@ void setup_distdepdiel( int outlev,
         ptr_ad_energy_tables->epsilon_fn[i] = calc_ddd_Mehler_Solmajer( distance, APPROX_ZERO );
         ptr_ad_energy_tables->r_epsilon_fn[i] = distance * calc_ddd_Mehler_Solmajer( distance, APPROX_ZERO );
         if (outlev > 1) {
-            if (i%10 == 0) {
-                pr(logFile, "i, ptr_ad_energy_tables->epsilon_fn[i] = %d, %8.4lf\n", i, ptr_ad_energy_tables->epsilon_fn[i]);
+            if (i%1000 == 0) {
+                pr(logFile, "i = %5d,  distance = %7.2lf,  epsilon_fn[i] = %8.4lf,  r_epsilon_fn[i] = %8.4lf\n", 
+                        i, distance, ptr_ad_energy_tables->epsilon_fn[i], ptr_ad_energy_tables->r_epsilon_fn[i]);
             }
         }
     } // next i
