@@ -1,6 +1,6 @@
 /*
 
- $Id: torNorVec.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
+ $Id: torNorVec.cc,v 1.4 2006/04/25 22:33:26 garrett Exp $
 
 */
 
@@ -21,18 +21,18 @@
 extern FILE *logFile;
 
 
-void torNorVec( FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+void torNorVec( Real crdpdb[MAX_ATOMS][SPACE],
 		int ntor,
 		int tlist[MAX_TORS][MAX_ATOMS],
-		FloatOrDouble vt[MAX_TORS][SPACE] )
+		Real vt[MAX_TORS][SPACE] )
 {
 
     register int xyz = 0;
     register int j = 0;
 
-    FloatOrDouble magVec = 0.;
-    FloatOrDouble imagVec = 0.;
-    FloatOrDouble v[SPACE];
+    Real magVec = 0.;
+    Real imagVec = 0.;
+    Real v[SPACE];
 
     char error_message[LINE_LEN];
 
