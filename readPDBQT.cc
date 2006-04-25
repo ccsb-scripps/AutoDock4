@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.5 2006/04/17 06:06:34 garrett Exp $
+ $Id: readPDBQT.cc,v 1.6 2006/04/25 22:33:06 garrett Exp $
 
 */
 
@@ -32,65 +32,68 @@ extern char    *programname;
 extern int      true_ligand_atoms;
 
 /*----------------------------------------------------------------------------*/
-Molecule
-readPDBQT(char input_line[LINE_LEN],
+Molecule readPDBQT(char input_line[LINE_LEN],
+                    int num_atom_maps,
 
-	  int num_atom_maps,
+                    int *P_natom,
+                    Real crdpdb[MAX_ATOMS][NTRN],
+                    Real charge[MAX_ATOMS],
+                    Boole * P_B_haveCharges,
+                    int map_index[MAX_ATOMS], //was:int type[MAX_ATOMS]
+                    int bond_index[MAX_ATOMS],
+                    char pdbaname[MAX_ATOMS][5],
 
-	  int *P_natom,
-	  FloatOrDouble crdpdb[MAX_ATOMS][NTRN],
-	  FloatOrDouble charge[MAX_ATOMS],
-	  Boole * P_B_haveCharges,
-      int map_index[MAX_ATOMS], //was:int type[MAX_ATOMS]
-	  int bond_index[MAX_ATOMS],
-	  char pdbaname[MAX_ATOMS][5],
-	  char PDBQT_FileName[MAX_CHARS],
-	  char atomstuff[MAX_ATOMS][MAX_CHARS],
-	  int Htype,
+                    char FN_ligand[MAX_CHARS],
+                    char FN_flexres[MAX_CHARS],
+                    Boole B_have_flexible_residues,
 
-	  Boole * P_B_constrain,
-	  int *P_atomC1,
-	  int *P_atomC2,
-	  FloatOrDouble *P_sqlower,
-	  FloatOrDouble *P_squpper,
+                    char atomstuff[MAX_ATOMS][MAX_CHARS],
+                    int Htype,
 
-	  int *P_ntor1,
-	  int *P_ntor,
-	  int tlist[MAX_TORS][MAX_ATOMS],
-	  FloatOrDouble vt[MAX_TORS][NTRN],
+                    Boole * P_B_constrain,
+                    int *P_atomC1,
+                    int *P_atomC2,
+                    Real *P_sqlower,
+                    Real *P_squpper,
 
-	  int *P_Nnb,
-	  int **nonbondlist,
+                    int *P_ntor1,
+                    int *P_ntor,
+                    int tlist[MAX_TORS][MAX_ATOMS],
+                    Real vt[MAX_TORS][NTRN],
 
-	  Clock jobStart,
-	  struct tms tms_jobStart,
-	  char hostnm[MAX_CHARS],
-	  int *P_ntorsdof,
-	  int outlev,
-	  int ignore_inter[MAX_ATOMS],
-	  int B_include_1_4_interactions,
+                    int *P_Nnb,
+                    int **nonbondlist,
 
-	  Atom atoms[MAX_ATOMS],
-	  char PDBQT_record[MAX_RECORDS][LINE_LEN]
-)
+                    Clock jobStart,
+                    struct tms tms_jobStart,
+                    char hostnm[MAX_CHARS],
+                    int *P_ntorsdof,
+                    int outlev,
+                    int ignore_inter[MAX_ATOMS],
+                    int B_include_1_4_interactions,
+
+                    Atom atoms[MAX_ATOMS],
+                    char PDBQT_record[MAX_RECORDS][LINE_LEN]
+                    )
+
 {
-	FILE           *PDBQT_File;
+	FILE           *FP_ligand;
+	FILE           *FP_flexres;
 	static char     dummy[LINE_LEN];
 	static char     error_message[LINE_LEN];
 	static char     message[LINE_LEN];
 
-	FloatOrDouble   aq = 0.;
-	FloatOrDouble   lq = 0.;
-	FloatOrDouble   total_charge = 0.;
-	FloatOrDouble   total_charge_ligand = 0.;
-	FloatOrDouble   total_charge_residues = 0.;
-	FloatOrDouble   uq = 0.;
+	Real   aq = 0.;
+	Real   lq = 0.;
+	Real   total_charge_ligand = 0.;
+	Real   uq = 0.;
 
 	static int      atomnumber[MAX_RECORDS];
 	int             iq = 0;
 	int             natom = 0;
 	static int      nbmatrix[MAX_ATOMS][MAX_ATOMS];
 	int             nrecord = 0;
+    int             nligand_record = 0;
 	int             ntor = 0;
 	static int      ntype[MAX_ATOMS];
 	static int      piece[MAX_ATOMS];
@@ -106,7 +109,7 @@ readPDBQT(char input_line[LINE_LEN],
 	register int    i = 0;
 	register int    j = 0;
 
-	static FloatOrDouble QTOL = 0.005;
+	static Real QTOL = 0.005;
 
 	Molecule        mol;
 
@@ -122,40 +125,75 @@ readPDBQT(char input_line[LINE_LEN],
 	}
 
     //  Attempt to open the ligand PDBQT file...
-	sscanf(input_line, "%*s %s", PDBQT_FileName);
-	if (openFile(PDBQT_FileName, "r", &PDBQT_File, jobStart, tms_jobStart, TRUE)) {
-		pr(logFile, "Atomic coordinate, partial charge, PDBQT file = \"%s\"\n\n", PDBQT_FileName);
+	sscanf(input_line, "%*s %s", FN_ligand);
+	if (openFile(FN_ligand, "r", &FP_ligand, jobStart, tms_jobStart, TRUE)) {
+		pr(logFile, "Ligand PDBQT file = \"%s\"\n\n", FN_ligand);
 	}
 
-    //  Count the number of records in the PDBQT file first...
-	nrecord = 0;
-	while (fgets(dummy, LINE_LEN, PDBQT_File) != NULL) {
-		++nrecord;
+    if (B_have_flexible_residues) {
+        //  Attempt to open the flexible residue PDBQT file...
+        sscanf(input_line, "%*s %s", FN_flexres);
+        if (openFile(FN_flexres, "r", &FP_flexres, jobStart, tms_jobStart, TRUE)) {
+            pr(logFile, "Flexible Residues PDBQT file = \"%s\"\n\n", FN_flexres);
+        }
+    }
+
+    //  Count the number of records in the Ligand PDBQT file first...
+	nligand_record = 0;
+	while (fgets(dummy, LINE_LEN, FP_ligand) != NULL) {
+		++nligand_record;
 	}
-	(void) fclose(PDBQT_File);
+	(void) fclose(FP_ligand);
+
+    nrecord = nligand_record;
+
+    if (B_have_flexible_residues) {
+        //  Count the number of records in the Flexible Residue PDBQT file next, 
+        //  but don't reset the counter...
+        while (fgets(dummy, LINE_LEN, FP_flexres) != NULL) {
+            ++nrecord;
+        }
+        (void) fclose(FP_flexres);
+    }
 
     // Set the nrecord-th entry of PDBQT_record to NULL, aka '\0'
     (void) strcpy(PDBQT_record[nrecord], "\0");
 
-    // Read in the PDBQT file if there are not too many records
+    // Read in the PDBQT file(s) if there are not too many records
 	if (nrecord > MAX_RECORDS) {
 		prStr(error_message, "ERROR: %d records read in, but only dimensioned for %d.\nChange \"MAX_RECORDS\" in \"constants.h\".", nrecord, MAX_RECORDS);
 		stop(error_message);
 		exit(-1);
 	} else {
-        // Read in the input PDBQT file...
-		if (openFile(PDBQT_FileName, "r", &PDBQT_File, jobStart, tms_jobStart, TRUE)) {
-			pr(logFile, "INPUT PDBQT FILE:");
-			pr(logFile, "\n________________\n\n");
-			for (i = 0; i < nrecord; i++) {
-				if (fgets(PDBQT_record[i], LINE_LEN, PDBQT_File) != NULL) {
+        // Read in the input Ligand PDBQT file...
+		if (openFile(FN_ligand, "r", &FP_ligand, jobStart, tms_jobStart, TRUE)) {
+			pr(logFile,   "INPUT LIGAND PDBQT FILE:");
+			pr(logFile, "\n________________________\n\n");
+			for (i = 0; i < nligand_record; i++) {
+				if (fgets(PDBQT_record[i], LINE_LEN, FP_ligand) != NULL) {
 					pr(logFile, "INPUT-PDBQT: %s", PDBQT_record[i]);
 				}
-			}	/* i */
+			} // i
 			pr(logFile, UnderLine);
-		}		/* if */
-		(void) fclose(PDBQT_File);
-	}			/* if */
+		} // if
+		(void) fclose(FP_ligand);
+
+        if (B_have_flexible_residues) {
+            // Read in the input Flexible Residues PDBQT file...
+            if (openFile(FN_flexres, "r", &FP_flexres, jobStart, tms_jobStart, TRUE)) {
+                pr(logFile,   "INPUT FLEXIBLE RESIDUES PDBQT FILE:");
+                pr(logFile, "\n___________________________________\n\n");
+                for (i = nligand_record; i < nrecord; i++) {
+                    if (fgets(PDBQT_record[i], LINE_LEN, FP_flexres) != NULL) {
+                        pr(logFile, "INPUT-PDBQT: %s", PDBQT_record[i]);
+                    }
+                } // i
+                pr(logFile, UnderLine);
+            } // if
+            (void) fclose(FP_flexres);
+        }
+
+	} // if
 
 	// Count the ATOMs and HETATMs; store the (x,y,z) coordinates...
 	// Also, check for any BEGIN_RES records, for receptor flexibility...
@@ -163,7 +201,7 @@ readPDBQT(char input_line[LINE_LEN],
 	pr(logFile,   "__________________________________________________________\n\n");
 	natom = 0;
 
-    // Loop over all the lines in the ligand file
+    // Loop over all the lines in either the ligand or the combined-ligand-flexible-residues file
 	for (i = 0; i < nrecord; i++) {
 		strncpy(input_line, PDBQT_record[i], (size_t) LINE_LEN);
 		// Parse this line in the ligand file
@@ -191,9 +229,8 @@ readPDBQT(char input_line[LINE_LEN],
 			mol.crd[natom][Y] = crdpdb[natom][Y];
 			mol.crd[natom][Z] = crdpdb[natom][Z];
 
-			if (found_begin_res) {
-				total_charge_residues += charge[natom];
-			} else {
+			if (!found_begin_res) {
+                // Only accumulate charges on the ligand...
 				total_charge_ligand += charge[natom];
 			}
 			*P_B_haveCharges = TRUE;
@@ -297,27 +334,6 @@ readPDBQT(char input_line[LINE_LEN],
 		pr_2x(stderr, logFile, message);
 	}
 
-    // Check total charge on residues
-	pr(logFile, "\nTotal charge on residues                             =\t%+.3f e\n\n", total_charge_residues);
-	iq = (int) ((aq = fabs(total_charge_residues)) + 0.5);
-	lq = iq - QTOL;
-	uq = iq + QTOL;
-	if (!((aq >= lq) && (aq <= uq))) {
-		prStr(message, "\n%s: *** WARNING!  Non-integral total charge (%.3f e) on residues! ***\n\n", programname, total_charge_residues);
-		pr_2x(stderr, logFile, message);
-	}
-
-    // Check total charge on all PDBQT atoms
-	total_charge = total_charge_ligand + total_charge_residues;
-	pr(logFile, "Total charge on all moving atoms (ligand + residues) =\t%+.3f e\n\n\n", total_charge);
-	iq = (int) ((aq = fabs(total_charge)) + 0.5);
-	lq = iq - QTOL;
-	uq = iq + QTOL;
-	if (!((aq >= lq) && (aq <= uq))) {
-		prStr(message, "\n%s: *** WARNING!  Non-integral total charge (%.3f e) on all moving atoms! ***\n\n", programname, total_charge);
-		pr_2x(stderr, logFile, message);
-	}
-
 	/*
 	 * Work out where the torsions are; and what they move...
 	 *
@@ -325,7 +341,7 @@ readPDBQT(char input_line[LINE_LEN],
 	 * intermolecular energy calculation (ignore_inter[MAX_ATOMS]
 	 * array)
 	 */
-	mkTorTree(atomnumber, PDBQT_record, nrecord, tlist, &ntor, PDBQT_FileName, pdbaname,
+	mkTorTree(atomnumber, PDBQT_record, nrecord, tlist, &ntor, FN_ligand, pdbaname,
               P_B_constrain, P_atomC1, P_atomC2, P_sqlower, P_squpper, P_ntorsdof, ignore_inter);
 
 	*P_ntor = ntor;
@@ -399,8 +415,8 @@ readPDBQT(char input_line[LINE_LEN],
 
 void
 readPDBQTLine(char line[LINE_LEN],
-	      FloatOrDouble crd[SPACE],
-	      FloatOrDouble *ptr_q,
+	      Real crd[SPACE],
+	      Real *ptr_q,
 	      ParameterEntry *this_parameter_entry)
 /*----------------------------------------------------------------------------*/
 {
