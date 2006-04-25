@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.4 2006/01/30 23:01:37 garrett Exp $
+ $Id: clmode.cc,v 1.5 2006/04/25 22:31:53 garrett Exp $
 
 */
 
@@ -25,14 +25,14 @@ extern FILE *logFile;
 extern char *programname;
 
 void  clmode( int   num_atm_maps,
-              FloatOrDouble clus_rms_tol,
+              Real clus_rms_tol,
               char  hostnm[MAX_CHARS],
               Clock jobStart,
               struct tms tms_jobStart,
               Boole write_all_clusmem,
               char  clusFN[MAX_CHARS],
-              FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-              FloatOrDouble sml_center[SPACE],
+              Real crdpdb[MAX_ATOMS][SPACE],
+              Real sml_center[SPACE],
               Boole symmetry_flag,
               char  rms_ref_crds[MAX_CHARS] )
 
@@ -41,9 +41,9 @@ void  clmode( int   num_atm_maps,
     register int xyz = 0;
     int   anum = 0;
     char  atomstuff[MAX_ATOMS][MAX_CHARS];
-    FloatOrDouble crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
-    FloatOrDouble econf[MAX_RUNS];
-    FloatOrDouble eSave[2];
+    Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
+    Real econf[MAX_RUNS];
+    Real eSave[2];
     Boole haveAtoms = FALSE;
     Boole haveTypes = FALSE;
     int   ii = 0;
@@ -56,12 +56,12 @@ void  clmode( int   num_atm_maps,
     int   confCounter = 0;
     int   ntype[MAX_ATOMS];
     char  pdbaname[MAX_ATOMS][5];
-    FloatOrDouble q = 0.;
+    Real q = 0.;
     char  rec5[5];
     int   nsaved = 0;
     char  anumStr[5];
     int   type[MAX_ATOMS];
-    FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS];
+    Real clu_rms[MAX_RUNS][MAX_RUNS];
     int   cluster[MAX_RUNS][MAX_RUNS];
     register int i = 0;
     register int j = 0;
@@ -69,9 +69,9 @@ void  clmode( int   num_atm_maps,
     int   isort[MAX_RUNS];
     int   ncluster = 0;
     int   num_in_clu[MAX_RUNS];
-    FloatOrDouble ref_crds[MAX_ATOMS][SPACE];
+    Real ref_crds[MAX_ATOMS][SPACE];
     int   ref_natoms = -1;
-    FloatOrDouble ref_rms[MAX_RUNS];
+    Real ref_rms[MAX_RUNS];
     Boole haveEnergy = FALSE;
     ParameterEntry thisparm;
 
