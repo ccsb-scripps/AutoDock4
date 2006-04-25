@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.11 2006/04/17 05:35:44 garrett Exp $
+ $Id: getInitialState.cc,v 1.12 2006/04/25 22:32:12 garrett Exp $
 
 */
 
@@ -25,8 +25,8 @@ extern char *programname;
 
 void getInitialState(
 
-            FloatOrDouble *Addr_e0total,
-            FloatOrDouble e0max,
+            Real *Addr_e0total,
+            Real e0max,
 
             State *sInit, /* was qtn0[QUAT] and tor0[MAX_TORS] */
             State *sMinm, /* was qtnMin[QUAT] and torMin[MAX_TORS] */
@@ -36,53 +36,53 @@ void getInitialState(
             Boole B_RandomQuat0,
             Boole B_RandomDihe0,
 
-            FloatOrDouble charge[MAX_ATOMS],
-            FloatOrDouble abs_charge[MAX_ATOMS],
-            FloatOrDouble qsp_abs_charge[MAX_ATOMS],
-            FloatOrDouble q1q2[MAX_NONBONDS],
-            FloatOrDouble crd[MAX_ATOMS][SPACE],
-            FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+            Real charge[MAX_ATOMS],
+            Real abs_charge[MAX_ATOMS],
+            Real qsp_abs_charge[MAX_ATOMS],
+            Real q1q2[MAX_NONBONDS],
+            Real crd[MAX_ATOMS][SPACE],
+            Real crdpdb[MAX_ATOMS][SPACE],
             char  atomstuff[MAX_ATOMS][MAX_CHARS],
-            FloatOrDouble elec[MAX_ATOMS],
-            FloatOrDouble emap[MAX_ATOMS],
+            Real elec[MAX_ATOMS],
+            Real emap[MAX_ATOMS],
 
             EnergyTables *ptr_ad_energy_tables,
 
             Boole B_calcIntElec,
-            FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
             int   **nonbondlist,
             int   ntor,
             int   tlist[MAX_TORS][MAX_ATOMS],
             int   type[MAX_ATOMS],
-            FloatOrDouble vt[MAX_TORS][SPACE],
+            Real vt[MAX_TORS][SPACE],
             int   irun1,
             int   outlev,
             int   MaxRetries,
 
-            FloatOrDouble torsFreeEnergy,
+            Real torsFreeEnergy,
 
             int   ligand_is_inhibitor,
 
             int   ignore_inter[MAX_ATOMS],
 
             const Boole         B_include_1_4_interactions,
-            const FloatOrDouble scale_1_4,
+            const Real scale_1_4,
 
             const ParameterEntry parameterArray[MAX_MAPS],
 
-            const FloatOrDouble unbound_internal_FE,
+            const Real unbound_internal_FE,
 
             GridMapSetInfo *info
 
            )
 
 {
-    FloatOrDouble e0total = 0.;
-    FloatOrDouble e0inter = 0.;
-    FloatOrDouble e0intra = 0.;
-    FloatOrDouble e0min = BIG;
+    Real e0total = 0.;
+    Real e0inter = 0.;
+    Real e0intra = 0.;
+    Real e0min = BIG;
     int   retries = 0;
     register int i = 0;
     Clock  initStart;
