@@ -1,6 +1,6 @@
 /*
 
- $Id: check_header_float.cc,v 1.2 2003/02/26 00:36:07 garrett Exp $
+ $Id: check_header_float.cc,v 1.3 2006/04/25 22:31:51 garrett Exp $
 
 */
 
@@ -19,7 +19,7 @@ extern char *programname;
 extern FILE *logFile;
 
 
-void check_header_float( FloatOrDouble f1, FloatOrDouble f2, char keyword[], char filename[] )
+void check_header_float( Real f1, Real f2, char keyword[], char filename[] )
 
 {
     if ( f1 != f2 ) { 
