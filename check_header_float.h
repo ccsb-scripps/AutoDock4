@@ -1,8 +1,8 @@
 #ifndef CHKHDFLOAT
 #define CHKHDFLOAT
 
-void  check_header_float( FloatOrDouble f1, 
-			  FloatOrDouble f2, 
+void  check_header_float( Real f1, 
+			  Real f2, 
 			  char  keyword[], 
 			  char  filename[] );
 #endif
