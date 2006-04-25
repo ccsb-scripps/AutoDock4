@@ -1,6 +1,6 @@
 /*
 
- $Id: torsion.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
+ $Id: torsion.cc,v 1.4 2006/04/25 22:33:28 garrett Exp $
 
 */
 
@@ -19,8 +19,8 @@
 
 
 void torsion( State now,
-              FloatOrDouble crd[MAX_ATOMS][SPACE],
-              FloatOrDouble v[MAX_TORS][SPACE],
+              Real crd[MAX_ATOMS][SPACE],
+              Real v[MAX_TORS][SPACE],
               int   tlist[MAX_TORS][MAX_ATOMS],
               int   ntor )
 
