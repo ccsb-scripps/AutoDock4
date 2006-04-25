@@ -1,6 +1,6 @@
 /*
 
- $Id: evaluate_energy.cc,v 1.9 2006/04/17 05:35:26 garrett Exp $
+ $Id: evaluate_energy.cc,v 1.10 2006/04/25 22:32:09 garrett Exp $
 
 */
 
@@ -16,22 +16,22 @@
 
 extern FILE *logFile;
 
-FloatOrDouble evaluate_energy( 
+Real evaluate_energy( 
 
-    FloatOrDouble crd[MAX_ATOMS][SPACE],
-    FloatOrDouble charge[MAX_ATOMS],
-    FloatOrDouble abs_charge[MAX_ATOMS],
-    FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+    Real crd[MAX_ATOMS][SPACE],
+    Real charge[MAX_ATOMS],
+    Real abs_charge[MAX_ATOMS],
+    Real qsp_abs_charge[MAX_ATOMS],
     int   type[MAX_ATOMS],
     int   natom,
-    FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+    Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
     int   **nonbondlist,
 
     EnergyTables *ptr_ad_energy_tables,
     
     int   Nnb,
     Boole B_calcIntElec,
-    FloatOrDouble q1q2[MAX_NONBONDS],
+    Real q1q2[MAX_NONBONDS],
     Boole B_isGaussTorCon,
     Boole B_isTorConstrained[MAX_TORS],
     State now,
@@ -39,15 +39,15 @@ FloatOrDouble evaluate_energy(
     unsigned short US_TorE[MAX_TORS],
     unsigned short US_torProfile[MAX_TORS][NTORDIVS],
     const Boole         B_include_1_4_interactions,
-    const FloatOrDouble scale_1_4,
+    const Real scale_1_4,
     const ParameterEntry parameterArray[MAX_MAPS],
-    const FloatOrDouble unbound_internal_FE,
+    const Real unbound_internal_FE,
     GridMapSetInfo *info
 
    )
 
 {
-    FloatOrDouble e = 0.;
+    Real e = 0.;
     int   I_tor = 0;
     int   indx = 0;
 
@@ -63,9 +63,9 @@ FloatOrDouble evaluate_energy(
             if (B_isTorConstrained[I_tor] == 1) {
                 indx = Rad2Div( now.tor[I_tor] );
                 if (B_ShowTorE) {
-                    e += (FloatOrDouble)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
+                    e += (Real)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
                 } else {
-                    e += (FloatOrDouble)US_torProfile[I_tor][indx];
+                    e += (Real)US_torProfile[I_tor][indx];
                 }
             }/*if*/
         }/*I_tor*/
