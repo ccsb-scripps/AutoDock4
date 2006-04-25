@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.2 2003/02/26 01:20:28 garrett Exp $
+ $Id: mkNewState.cc,v 1.3 2006/04/25 22:32:32 garrett Exp $
 
 */
 
@@ -20,16 +20,16 @@ void mkNewState( State *now,
                  State *last,        /* ...must be a normalized quaternion! */
                  State *change,
 
-                FloatOrDouble vt[MAX_TORS][NTRN],
+                Real vt[MAX_TORS][NTRN],
                 int   tlist[MAX_TORS][MAX_ATOMS],
                 int   ntor,
-                FloatOrDouble crd[MAX_ATOMS][NTRN],
-                FloatOrDouble crdpdb[MAX_ATOMS][NTRN],
+                Real crd[MAX_ATOMS][NTRN],
+                Real crdpdb[MAX_ATOMS][NTRN],
                 int   natom,
-                FloatOrDouble trnStep,
-                /*FloatOrDouble qtwStep,*/
-                FloatOrDouble torStep,
-                FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                Real trnStep,
+                /*Real qtwStep,*/
+                Real torStep,
+                Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                 int N_con[MAX_TORS])
 
 {
@@ -37,7 +37,7 @@ void mkNewState( State *now,
     double t;
     int I_ranCon;
     double x0, r1, r2, t1, t2;
-    FloatOrDouble a, b;
+    Real a, b;
 
     /*
     ** Translation
