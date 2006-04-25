@@ -61,7 +61,7 @@ FILE    *parFile;
 FILE    *GPF;
 FILE    *logFile;
 
-FloatOrDouble	idct = 1.0;
+Real	idct = 1.0;
 
 Linear_FE_Model AD3;
 Linear_FE_Model AD4_wrt_3;
@@ -117,8 +117,8 @@ FILE    *stateFile;
 int     write_stateFile = FALSE;
 /*
 ** struct  Quat {
-**             FloatOrDouble angle;
-**             FloatOrDouble vec[SPACE];
+**             Real angle;
+**             Real vec[SPACE];
 **             };
 */
 
