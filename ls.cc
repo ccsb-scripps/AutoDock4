@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.6 2006/02/14 18:02:26 mchang Exp $
+ $Id: ls.cc,v 1.7 2006/04/25 22:32:29 garrett Exp $
 
 */
 
@@ -21,14 +21,14 @@ extern class Eval evaluate;
 extern FILE *logFile;
 
 //  This function adds array1 + array2 to all the reals in the representation
-Phenotype genPh(const Phenotype &original, FloatOrDouble *array1, FloatOrDouble *array2)
+Phenotype genPh(const Phenotype &original, Real *array1, Real *array2)
 {
    RepType genetype;
    register unsigned int i, index = 0;
    Phenotype retval(original);
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, FloatOrDouble *array1, FloatOrDouble *array2)\n");
+   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, Real *array1, Real *array2)\n");
 #endif /* DEBUG */
 
 
@@ -51,7 +51,7 @@ Phenotype genPh(const Phenotype &original, FloatOrDouble *array1, FloatOrDouble 
 void Solis_Wets::SW(Phenotype &vector)
 {
    register unsigned int i, j, num_successes = 0, num_failures = 0;
-   register FloatOrDouble temp_rho = rho;
+   register Real temp_rho = rho;
    Phenotype newPh;
    
 #ifdef DEBUG
@@ -224,11 +224,11 @@ Pattern_Search::Pattern_Search(void)
 {
 }
 
-Pattern_Search::Pattern_Search(unsigned int init_size, unsigned int init_max_success, FloatOrDouble init_step_size, FloatOrDouble init_step_threshold, FloatOrDouble init_expansion, FloatOrDouble init_contraction, FloatOrDouble init_search_frequency)
+Pattern_Search::Pattern_Search(unsigned int init_size, unsigned int init_max_success, Real init_step_size, Real init_step_threshold, Real init_expansion, Real init_contraction, Real init_search_frequency)
 : size(init_size), max_success(init_max_success), step_size(init_step_size), step_threshold(init_step_threshold), expansion(init_expansion), contraction(init_contraction), search_frequency(init_search_frequency)
 {
   current_step_size = step_size;
-  pattern = new FloatOrDouble[size];
+  pattern = new Real[size];
 	index = new unsigned int[size];
   reset_pattern();
 	reset_indexes();
