@@ -5,5 +5,5 @@ void  print_rem(  FILE  *outFile,
                   int   Rank,
                   int   NumMem,
                   int   Run,
-		  FloatOrDouble ref_rms);
+		  Real ref_rms);
 #endif
