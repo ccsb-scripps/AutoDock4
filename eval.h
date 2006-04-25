@@ -29,59 +29,59 @@ class Eval
       UnsignedFourByteLong num_evals;
       int natom, Nnb;
       GridMapSetInfo *info;
-      FloatOrDouble eval_elec[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
-      FloatOrDouble eval_emap[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
+      Real eval_elec[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
+      Real eval_emap[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
       State stateNow;
       unsigned short *US_TorE, (*US_torProfile)[NTORDIVS];
       int *type, (**nonbondlist), (*tlist)[MAX_ATOMS];
-      FloatOrDouble *q1q2, *charge, *abs_charge, *qsp_abs_charge;
-      FloatOrDouble (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE];
+      Real *q1q2, *charge, *abs_charge, *qsp_abs_charge;
+      Real (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE];
       EnergyTables *ptr_ad_energy_tables;
-      FloatOrDouble (*map)[MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
+      Real (*map)[MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
       Boole *B_isTorConstrained;
       Molecule mol;
       Boole B_template; // Use the template-docking scoring function if true 15-jan-2001
-      // FloatOrDouble template_energy[MAX_ATOMS]; // atomic template values
-      // FloatOrDouble template_stddev[MAX_ATOMS]; // atomic template values
-      FloatOrDouble *template_energy; // atomic template values
-      FloatOrDouble *template_stddev; // atomic template values
+      // Real template_energy[MAX_ATOMS]; // atomic template values
+      // Real template_stddev[MAX_ATOMS]; // atomic template values
+      Real *template_energy; // atomic template values
+      Real *template_stddev; // atomic template values
       int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
       Boole         B_include_1_4_interactions; // gmm 2005-01-8, for scaling 1-4 nonbonds
-      FloatOrDouble scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
+      Real scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
       ParameterEntry *parameterArray;
-      FloatOrDouble  unbound_internal_FE;
+      Real  unbound_internal_FE;
       Boole B_compute_intermol_energy; // use for computing unbound state
 
    public:
       Eval(void);
-      void setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
-          FloatOrDouble  init_charge[MAX_ATOMS],
-          FloatOrDouble  init_abs_charge[MAX_ATOMS],
-          FloatOrDouble  init_qsp_abs_charge[MAX_ATOMS],
+      void setup(Real init_crd[MAX_ATOMS][SPACE],
+          Real  init_charge[MAX_ATOMS],
+          Real  init_abs_charge[MAX_ATOMS],
+          Real  init_qsp_abs_charge[MAX_ATOMS],
           int            init_type[MAX_ATOMS], int init_natom,
-          FloatOrDouble  init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+          Real  init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 
-          FloatOrDouble  init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-          FloatOrDouble  init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+          Real  init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+          Real  init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
 
           int            **init_nonbondlist,
           EnergyTables   *init_ptr_ad_energy_tables,
           int init_Nnb,
-          Boole          init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS],
+          Boole          init_B_calcIntElec, Real init_q1q2[MAX_NONBONDS],
           Boole          init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS],
           Boole          init_B_ShowTorE, unsigned short init_US_TorE[MAX_TORS],
           unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
-          FloatOrDouble  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS],
-          FloatOrDouble  init_crdpdb[MAX_ATOMS][SPACE], State stateInit, Molecule molInit,
+          Real  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS],
+          Real  init_crdpdb[MAX_ATOMS][SPACE], State stateInit, Molecule molInit,
           Boole          init_B_template,
-          FloatOrDouble  init_template_energy[MAX_ATOMS],
-          FloatOrDouble  init_template_stddev[MAX_ATOMS],
+          Real  init_template_energy[MAX_ATOMS],
+          Real  init_template_stddev[MAX_ATOMS],
           int            init_ignore_inter[MAX_ATOMS],
           Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
-          FloatOrDouble  init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
+          Real  init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
           ParameterEntry init_parameterArray[MAX_MAPS],
-          FloatOrDouble  init_unbound_internal_FE,
+          Real  init_unbound_internal_FE,
           GridMapSetInfo *init_info
           );
 
@@ -103,43 +103,43 @@ inline Eval::Eval(void)
 {
 }
 
-inline void Eval::setup(FloatOrDouble init_crd[MAX_ATOMS][SPACE],
-                        FloatOrDouble init_charge[MAX_ATOMS],
-                        FloatOrDouble init_abs_charge[MAX_ATOMS],
-                        FloatOrDouble init_qsp_abs_charge[MAX_ATOMS],
+inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
+                        Real init_charge[MAX_ATOMS],
+                        Real init_abs_charge[MAX_ATOMS],
+                        Real init_qsp_abs_charge[MAX_ATOMS],
                         int init_type[MAX_ATOMS],
                         int init_natom,
-                        FloatOrDouble init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                        Real init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 
-                        FloatOrDouble init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-                        FloatOrDouble init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+                        Real init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+                        Real init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
                         int **init_nonbondlist,
                         EnergyTables   *init_ptr_ad_energy_tables,
                         int init_Nnb,
-                        Boole init_B_calcIntElec, FloatOrDouble init_q1q2[MAX_NONBONDS],
+                        Boole init_B_calcIntElec, Real init_q1q2[MAX_NONBONDS],
                         Boole init_B_isGaussTorCon,
                         Boole init_B_isTorConstrained[MAX_TORS],
                         Boole init_B_ShowTorE,
                         unsigned short init_US_TorE[MAX_TORS],
                         unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
-                        FloatOrDouble init_vt[MAX_TORS][SPACE],
+                        Real init_vt[MAX_TORS][SPACE],
                         int init_tlist[MAX_TORS][MAX_ATOMS],
-                        FloatOrDouble init_crdpdb[MAX_ATOMS][SPACE],
+                        Real init_crdpdb[MAX_ATOMS][SPACE],
                         State stateInit,
                         Molecule molInit,
 
                         Boole init_B_template,
-                        FloatOrDouble init_template_energy[MAX_ATOMS],
-                        FloatOrDouble init_template_stddev[MAX_ATOMS],
+                        Real init_template_energy[MAX_ATOMS],
+                        Real init_template_stddev[MAX_ATOMS],
 
                         int   init_ignore_inter[MAX_ATOMS],
 
                         Boole         init_B_include_1_4_interactions,
-                        FloatOrDouble init_scale_1_4,
+                        Real init_scale_1_4,
 
                         ParameterEntry init_parameterArray[MAX_MAPS],
 
-                        FloatOrDouble init_unbound_internal_FE,
+                        Real init_unbound_internal_FE,
                         GridMapSetInfo *init_info
                        )
 
