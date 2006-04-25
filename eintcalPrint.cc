@@ -8,14 +8,14 @@
 
 extern FILE *logFile;
 
-FloatOrDouble eintcalPrint( int ** nonbondlist,
-                            FloatOrDouble eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
-                            FloatOrDouble tcoord[MAX_ATOMS][SPACE],
+Real eintcalPrint( int ** nonbondlist,
+                            Real eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
+                            Real tcoord[MAX_ATOMS][SPACE],
                             int type[MAX_ATOMS],
                             int Nnb,
                             Boole B_calcIntElec,
-                            FloatOrDouble q1q2[MAX_NONBONDS],
-                            FloatOrDouble abs_charge[MAX_ATOMS]
+                            Real q1q2[MAX_NONBONDS],
+                            Real abs_charge[MAX_ATOMS]
                             )
 
 /******************************************************************************/
@@ -86,6 +86,6 @@ FloatOrDouble eintcalPrint( int ** nonbondlist,
 
     pr( logFile, "\n\n Total internal non-bonded energy = %+8.3lf\n", (double)eint);
 
-    return (FloatOrDouble)eint;
+    return (Real)eint;
 }
 /* EOF */
