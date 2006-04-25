@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.10 2006/04/17 05:42:49 garrett Exp $
+ $Id: investigate.cc,v 1.11 2006/04/25 22:32:26 garrett Exp $
 
 */
 
@@ -30,47 +30,47 @@ extern char *programname;
 
 
 void investigate( int   Nnb,
-                    FloatOrDouble charge[MAX_ATOMS],
-                    FloatOrDouble abs_charge[MAX_ATOMS],
-                    FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+                    Real charge[MAX_ATOMS],
+                    Real abs_charge[MAX_ATOMS],
+                    Real qsp_abs_charge[MAX_ATOMS],
                     Boole B_calcIntElec,
-                    FloatOrDouble q1q2[MAX_NONBONDS],
-                    FloatOrDouble crd[MAX_ATOMS][SPACE],
-                    FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+                    Real q1q2[MAX_NONBONDS],
+                    Real crd[MAX_ATOMS][SPACE],
+                    Real crdpdb[MAX_ATOMS][SPACE],
 
                     EnergyTables *ptr_ad_energy_tables,
 
                     int   maxTests,
-                    FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                    Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
                     int   natom,
                     int   **nonbondlist,
                     int   ntor,
                     int   outlev,
                     int   tlist[MAX_TORS][MAX_ATOMS],
                     int   type[MAX_ATOMS],
-                    FloatOrDouble vt[MAX_TORS][SPACE],
+                    Real vt[MAX_TORS][SPACE],
                     Boole B_isGaussTorCon,
                     unsigned short US_torProfile[MAX_TORS][NTORDIVS],
                     Boole B_isTorConstrained[MAX_TORS],
                     Boole B_ShowTorE,
                     unsigned short US_TorE[MAX_TORS],
-                    FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                    Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                     int   N_con[MAX_TORS],
                     Boole B_symmetry_flag,
                     char  FN_rms_ref_crds[MAX_CHARS],
                     int   OutputEveryNTests,
                     int   NumLocalTests,
-                    FloatOrDouble trnStep,
-                    FloatOrDouble torStep,
+                    Real trnStep,
+                    Real torStep,
                     
                     int   ignore_inter[MAX_ATOMS],
                     
                     const Boole         B_include_1_4_interactions,
-                    const FloatOrDouble scale_1_4,
+                    const Real scale_1_4,
 
                     const ParameterEntry parameterArray[MAX_MAPS],
 
-                    const FloatOrDouble unbound_internal_FE,
+                    const Real unbound_internal_FE,
                     GridMapSetInfo *info )
 
 {
@@ -83,12 +83,12 @@ void investigate( int   Nnb,
     register int i = 0;
     //register int XYZ = 0;
 
-    FloatOrDouble e = 0.;
-    FloatOrDouble ref_crds[MAX_ATOMS][SPACE];
-    FloatOrDouble rms;
-    FloatOrDouble MaxRms = 20.0;
-    FloatOrDouble RmsBinSize = 0.25;
-    FloatOrDouble MinEnergyInRmsBin[NUMRMSBINS];
+    Real e = 0.;
+    Real ref_crds[MAX_ATOMS][SPACE];
+    Real rms;
+    Real MaxRms = 20.0;
+    Real RmsBinSize = 0.25;
+    Real MinEnergyInRmsBin[NUMRMSBINS];
     int   NumberInRmsBin[NUMRMSBINS];
     int   NumberRandomInRmsBin[NUMRMSBINS];
     int   NumberChangeInRmsBin[NUMRMSBINS];
@@ -201,10 +201,10 @@ void investigate( int   Nnb,
                     if (B_isTorConstrained[Itor] == 1) {
                         indx = Rad2Div( sNow.tor[Itor] );
                         if (B_ShowTorE) {
-                            e += (FloatOrDouble)( US_TorE[Itor] 
+                            e += (Real)( US_TorE[Itor] 
                                           = US_torProfile[Itor][indx] );
                         } else {
-                            e += (FloatOrDouble)US_torProfile[Itor][indx];
+                            e += (Real)US_torProfile[Itor][indx];
                         }
                     }
                 }
