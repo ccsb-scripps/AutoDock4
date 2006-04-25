@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.9 2006/01/30 23:02:17 garrett Exp $
+ $Id: gs.cc,v 1.10 2006/04/25 22:32:18 garrett Exp $
 
 */
 
@@ -148,8 +148,8 @@ Genetic_Algorithm::Genetic_Algorithm( EvalMode init_e_mode,
                                       Xover_Mode init_c_mode,
                                       Worst_Mode init_w_mode, 
                                       int init_elitism, 
-                                      FloatOrDouble init_c_rate, 
-                                      FloatOrDouble init_m_rate, 
+                                      Real init_c_rate, 
+                                      Real init_m_rate, 
                                       int init_window_size, 
                                       unsigned int init_max_generations,
                                       unsigned int outputEveryNgens)
@@ -248,17 +248,17 @@ M_mode Genetic_Algorithm::m_type(RepType type)
    }
 }
 
-void Genetic_Algorithm::make_table(int size, FloatOrDouble prob)
+void Genetic_Algorithm::make_table(int size, Real prob)
 {
    register int i, j;
    double L = 0.0L;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::make_table(int size=%d, FloatOrDouble prob=%f)\n",size, prob);
+   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::make_table(int size=%d, Real prob=%f)\n",size, prob);
 #endif /* DEBUG */
 
    m_table_size = size;
-   mutation_table = new FloatOrDouble[size+1];
+   mutation_table = new Real[size+1];
 
    mutation_table[0] = pow(1-prob, size);
    mutation_table[size] = 1;
@@ -282,12 +282,12 @@ void Genetic_Algorithm::make_table(int size, FloatOrDouble prob)
    }
 }
 
-int Genetic_Algorithm::check_table(FloatOrDouble prob)
+int Genetic_Algorithm::check_table(Real prob)
 {
    int low, high;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "gs.cc/int Genetic_Algorithm::check_table(FloatOrDouble prob=%f)\n",prob);
+   (void)fprintf(logFile, "gs.cc/int Genetic_Algorithm::check_table(Real prob=%f)\n",prob);
 #endif /* DEBUG */
 
    low = 0; high = m_table_size;
@@ -325,7 +325,7 @@ void Genetic_Algorithm::initialize(unsigned int pop_size, unsigned int num_poss_
       delete [] mutation_table;
    }
 
-   alloc = new FloatOrDouble[pop_size];
+   alloc = new Real[pop_size];
 
    ordering = new unsigned int[pop_size];
    for (i=0; i<pop_size; i++) {
@@ -406,7 +406,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
 {
    register unsigned int i;
    int starting_point, temp_index, temp_ordering;
-   FloatOrDouble alpha = 0.5;
+   Real alpha = 0.5;
    
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover(Population &original_population)\n");
@@ -464,7 +464,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
                // select the parents A and B
                // create new offspring, a and b, where
                // a = x*A + (1-x)*B, and b = (1-x)*A + x*B    -- note: x is alpha in the code
-               alpha = (FloatOrDouble) ranf();
+               alpha = (Real) ranf();
 #ifdef DEBUG
                (void)fprintf(logFile, "gs.cc/  alpha = " FDFMT "\n", alpha);
                (void)fprintf(logFile, "gs.cc/ About to call crossover_arithmetic with original_population[%d] & [%d]\n", i, i+1);
@@ -536,17 +536,17 @@ void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, un
     }
 }
 
-void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, FloatOrDouble alpha)
+void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, Real alpha)
 {
    register unsigned int i;
    Element temp_A, temp_B;
-   FloatOrDouble one_minus_alpha;
+   Real one_minus_alpha;
 
    one_minus_alpha = 1.0 - alpha;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic(Genotype");
-   (void)fprintf(logFile, "&A, Genotype &B, FloatOrDouble alpha)\n");
+   (void)fprintf(logFile, "&A, Genotype &B, Real alpha)\n");
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
    (void)fprintf(logFile, "/Trying to perform arithmetic crossover using alpha = " FDFMT "\n", alpha);
    (void)fflush(logFile);
@@ -624,7 +624,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    register unsigned int i=0, start_index = 0;
    int temp_ordering, temp_index;
 #ifdef DEBUG2
-   FloatOrDouble debug_ranf;
+   Real debug_ranf;
    int allzero = 1;//debug
    Molecule *individualMol;//debug
 #endif
@@ -774,7 +774,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    int J;//debug
    (void)fprintf(logFile, "gs.cc: checking that all alloc[] variables are not all zero...\n"); //debug
    for (J=0;  J < original_population.num_individuals();  J++) {//debug
-       allzero = allzero & (alloc[J] == (FloatOrDouble)0.0);//debug
+       allzero = allzero & (alloc[J] == (Real)0.0);//debug
    }//debug
    if (allzero) {//debug
        (void)fprintf(logFile, "gs.cc:  W A R N I N G !  all alloc variables are zero!\n"); //debug
@@ -863,7 +863,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
 
        allzero = 1;//debug
        for (J=0;  J < original_population.num_individuals();  J++) {//debug
-           allzero = allzero & (alloc[J] == (FloatOrDouble)0.0);//debug
+           allzero = allzero & (alloc[J] == (Real)0.0);//debug
        }//debug
        if (allzero) {//debug
            (void)fprintf(logFile, "gs.cc:  W A R N I N G !  all alloc variables are zero!\n"); //debug
