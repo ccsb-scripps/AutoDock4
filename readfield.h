@@ -6,22 +6,22 @@
 #include "stop.h"
 #include "structs.h"
 /*
-void    readfield( FloatOrDouble *P_inv_spacing, 
-                FloatOrDouble *P_spacing, 
+void    readfield( Real *P_inv_spacing, 
+                Real *P_spacing, 
                 char  gdfldFileName[MAX_CHARS], 
                 char  gpfFileName[MAX_CHARS], 
                 int   gridpts1[SPACE], 
                 int   gridpts[SPACE], 
-		FloatOrDouble *xhi,
-		FloatOrDouble *yhi,
-		FloatOrDouble *zhi,
+		Real *xhi,
+		Real *yhi,
+		Real *zhi,
                 Clock jobStart, 
                 char  line[LINE_LEN], 
-                FloatOrDouble *xlo, 
-                FloatOrDouble *ylo, 
-                FloatOrDouble *zlo, 
+                Real *xlo, 
+                Real *ylo, 
+                Real *zlo, 
                 char  macromolFileName[MAX_CHARS], 
-                FloatOrDouble maP_center[SPACE], 
+                Real maP_center[SPACE], 
 		struct tms tms_jobStart );
 */
 
