@@ -1,6 +1,6 @@
 /*
 
- $Id: timesyshms.cc,v 1.6 2006/01/30 23:08:48 garrett Exp $
+ $Id: timesyshms.cc,v 1.7 2006/04/25 22:33:25 garrett Exp $
 
 */
 
@@ -25,7 +25,7 @@
 
 
 extern  FILE    *logFile;
-extern	FloatOrDouble	idct;
+extern	Real	idct;
 
 /*----------------------------------------------------------------------------*/
 
@@ -37,15 +37,15 @@ void timesyshms( Clock     duration,
 
 {
     int   h, m;
-    FloatOrDouble t, T, s;
-    const FloatOrDouble min = 60., hrs = 3600.;
+    Real t, T, s;
+    const Real min = 60., hrs = 3600.;
 
     (void)fprintf( logFile, "Real= " );
-    t = (FloatOrDouble)duration * idct;
+    t = (Real)duration * idct;
     h = (int)(t/hrs);
-    T = t - ((FloatOrDouble)h)*hrs;
+    T = t - ((Real)h)*hrs;
     m = (int)(T/min);
-    s = T - ((FloatOrDouble)m)*min;
+    s = T - ((Real)m)*min;
     if (h == 0) {
         if (m == 0)
             (void)fprintf(logFile,       "%.2lfs",       (double)s );
@@ -56,11 +56,11 @@ void timesyshms( Clock     duration,
     }
 
     (void)fprintf( logFile, ",  CPU= " );
-    t =      (FloatOrDouble)((end->tms_utime  - start->tms_utime) * idct);
+    t =      (Real)((end->tms_utime  - start->tms_utime) * idct);
     h = (int)(t/hrs);
-    T = t - ((FloatOrDouble)h)*hrs;
+    T = t - ((Real)h)*hrs;
     m = (int)(T/min);
-    s = T - ((FloatOrDouble)m)*min;
+    s = T - ((Real)m)*min;
     if (h == 0) {
         if (m == 0)
             (void)fprintf(logFile,       "%.2lfs",       (double)s );
@@ -71,11 +71,11 @@ void timesyshms( Clock     duration,
     }
 
     (void)fprintf( logFile, ",  System= " );
-    t = (FloatOrDouble)((end->tms_stime  - start->tms_stime) * idct);
+    t = (Real)((end->tms_stime  - start->tms_stime) * idct);
     h = (int)(t/hrs);
-    T = t - ((FloatOrDouble)h)*hrs;
+    T = t - ((Real)h)*hrs;
     m = (int)(T/min);
-    s = T - ((FloatOrDouble)m)*min;
+    s = T - ((Real)m)*min;
     if (h == 0) {
         if (m == 0)
             (void)fprintf(logFile,       "%.2lfs",       (double)s );
