@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.10 2006/04/17 06:04:08 garrett Exp $
+ $Id: printEnergies.cc,v 1.11 2006/04/25 22:32:50 garrett Exp $
 
 */
 
@@ -58,21 +58,21 @@ void print_molar(FILE* file, double x) {
 }
 
 void printEnergies( 
-        FloatOrDouble einter,
-        FloatOrDouble eintra,
-        FloatOrDouble torsFreeEnergy,
+        Real einter,
+        Real eintra,
+        Real torsFreeEnergy,
         char  *prefixString,
         int ligand_is_inhibitor,
-        FloatOrDouble emap_total,
-        FloatOrDouble elec_total,
-        FloatOrDouble unbound_internal_FE
+        Real emap_total,
+        Real elec_total,
+        Real unbound_internal_FE
         )
 {
-    FloatOrDouble deltaG = 0.0;
-    FloatOrDouble Ki = 1.0;
-    // FloatOrDouble RJ = 8.31441;  // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
-    FloatOrDouble Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
-    FloatOrDouble TK = 298.15;      // Room temperature, in K
+    Real deltaG = 0.0;
+    Real Ki = 1.0;
+    // Real RJ = 8.31441;  // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
+    Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
+    Real TK = 298.15;      // Room temperature, in K
 
     // equilibrium:   E  +  I  <=>    EI
     // binding:       E  +  I   ->    EI         K(binding),      Kb
@@ -147,13 +147,13 @@ void printEnergies(
     pr( logFile, "%s\n", prefixString);
 }
 
-void printStateEnergies( FloatOrDouble einter, FloatOrDouble eintra, FloatOrDouble torsFreeEnergy, char  *prefixString, int ligand_is_inhibitor, FloatOrDouble unbound_internal_FE )
+void printStateEnergies( Real einter, Real eintra, Real torsFreeEnergy, char  *prefixString, int ligand_is_inhibitor, Real unbound_internal_FE )
 {
-    FloatOrDouble deltaG = 0.0;
-    FloatOrDouble Ki = 1.0;
-    // FloatOrDouble RJ = 8.31441;  // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
-    FloatOrDouble Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
-    FloatOrDouble TK = 298.15;      // Room temperature, in K
+    Real deltaG = 0.0;
+    Real Ki = 1.0;
+    // Real RJ = 8.31441;  // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
+    Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
+    Real TK = 298.15;      // Room temperature, in K
 
     // equilibrium:   E  +  I  <=>    EI
     // binding:       E  +  I   ->    EI         K(binding),      Kb
