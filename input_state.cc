@@ -1,6 +1,6 @@
 /*
 
- $Id: input_state.cc,v 1.3 2006/01/30 23:03:18 garrett Exp $
+ $Id: input_state.cc,v 1.4 2006/04/25 22:32:22 garrett Exp $
 
 */
 
@@ -22,12 +22,12 @@ int input_state( State *S,
 		 char  line[LINE_LEN],
 		 int   ntor,
 		 int   *p_istep,
-		 FloatOrDouble *p_energy,
-		 FloatOrDouble *p_eint,
+		 Real *p_energy,
+		 Real *p_eint,
 		 char  *p_lastmove )
 {
     int i, istep, status;
-    FloatOrDouble energy, eint;
+    Real energy, eint;
     char lastmove;
     char myline[LINELEN];
 
