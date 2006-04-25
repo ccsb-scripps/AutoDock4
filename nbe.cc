@@ -1,6 +1,6 @@
 /*
 
- $Id: nbe.cc,v 1.3 2005/09/28 22:54:20 garrett Exp $
+ $Id: nbe.cc,v 1.4 2006/04/25 22:32:38 garrett Exp $
 
 */
 
@@ -49,7 +49,7 @@ void nbe( char atm_typ_str[ATOM_MAPS],
     register int i = 0;
     register int j = 0;
     register int k = 0;
-    FloatOrDouble r = 0.;
+    Real r = 0.;
 
     pr( logFile,"SUMMARY OF PAIRWISE-ATOMIC NON-BONDED INTERNAL ENERGIES\n" );
     pr( logFile,"________________________________________________________\n\n");
