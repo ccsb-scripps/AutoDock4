@@ -1,6 +1,6 @@
 /*
 
- $Id: changeState.cc,v 1.3 2005/03/11 02:11:29 garrett Exp $
+ $Id: changeState.cc,v 1.4 2006/04/25 22:31:49 garrett Exp $
 
 */
 
@@ -19,10 +19,10 @@
 
 
 State  changeState( State last,      /* ...must be a normalized quaternion! */
-                    FloatOrDouble trnStep,
-                    FloatOrDouble torStep,
+                    Real trnStep,
+                    Real torStep,
                     int   ntor,
-                    FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                    Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                     int   N_con[MAX_TORS])
 
 {
