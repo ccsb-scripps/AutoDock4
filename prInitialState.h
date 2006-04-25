@@ -5,16 +5,16 @@
 #include "print_atomic_energies.h"
 #include "printEnergies.h"
 void  prInitialState( 
-    FloatOrDouble einter,
-    FloatOrDouble eintra,
-    FloatOrDouble torsFreeEnergy,
+    Real einter,
+    Real eintra,
+    Real torsFreeEnergy,
     int natom,
-    FloatOrDouble crd[MAX_ATOMS][SPACE],
+    Real crd[MAX_ATOMS][SPACE],
     char  atomstuff[MAX_ATOMS][MAX_CHARS],
     int type[MAX_ATOMS],
-    FloatOrDouble emap[MAX_ATOMS],
-    FloatOrDouble elec[MAX_ATOMS],
-    FloatOrDouble charge[MAX_ATOMS],
+    Real emap[MAX_ATOMS],
+    Real elec[MAX_ATOMS],
+    Real charge[MAX_ATOMS],
     int ligand_is_inhibitor,
-    FloatOrDouble unbound_internal_FE);
+    Real unbound_internal_FE);
 #endif
