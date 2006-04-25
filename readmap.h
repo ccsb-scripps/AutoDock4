@@ -11,7 +11,7 @@
 #include "check_header_float.h"
 #include "check_header_int.h"
 #include "timesys.h"
-FloatOrDouble   mapc2f( char C_mapValue );
+Real   mapc2f( char C_mapValue );
 #endif
 
 #ifndef READMAP
@@ -40,7 +40,7 @@ void readmap( char line[LINE_LEN],
              int *P_imap, 
              
              GridMapSetInfo *info,
-             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
+             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
              // double *maps 
              );
 
