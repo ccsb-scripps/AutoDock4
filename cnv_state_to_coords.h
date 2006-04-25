@@ -8,10 +8,10 @@
 #include "qtransform.h"
 
 void cnv_state_to_coords( State now,
-			  FloatOrDouble vt[MAX_TORS][SPACE],
+			  Real vt[MAX_TORS][SPACE],
 			  int   tlist[MAX_TORS][MAX_ATOMS],
 			  int ntor,
-			  FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-			  FloatOrDouble crd[MAX_ATOMS][SPACE],
+			  Real crdpdb[MAX_ATOMS][SPACE],
+			  Real crd[MAX_ATOMS][SPACE],
 			  int   natom);
 #endif
