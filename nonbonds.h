@@ -29,5 +29,5 @@ void printbonds(const int natom, const int bonded[MAX_ATOMS][6], const char *mes
 #define PRINT14
 #include "constants.h"
 #include <stdio.h>
-void print_1_4_message(FILE *file, Boole B_include_1_4_interactions,  FloatOrDouble scale_1_4);
+void print_1_4_message(FILE *file, Boole B_include_1_4_interactions,  Real scale_1_4);
 #endif
