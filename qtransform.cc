@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.cc,v 1.3 2004/11/16 23:42:53 garrett Exp $
+ $Id: qtransform.cc,v 1.4 2006/04/25 22:32:59 garrett Exp $
 
 */
 
@@ -19,7 +19,7 @@
 
 void qtransform( const Coord T,
                  const Quat  q,
-                 FloatOrDouble tcoord[MAX_ATOMS][SPACE],
+                 Real tcoord[MAX_ATOMS][SPACE],
                  const int   natom)
 
 /******************************************************************************/
