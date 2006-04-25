@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.14 2006/04/17 05:35:02 garrett Exp $
+ $Id: eval.cc,v 1.15 2006/04/25 22:32:07 garrett Exp $
 
 */
 
@@ -97,8 +97,8 @@ double Eval::eval()
    int   I_tor = 0;
    int   indx = 0;
    double energy = 0.0L;
-   FloatOrDouble emap[MAX_ATOMS] = { 0.0L };
-   FloatOrDouble elec[MAX_ATOMS] = { 0.0L };
+   Real emap[MAX_ATOMS] = { 0.0L };
+   Real elec[MAX_ATOMS] = { 0.0L };
 
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/double Eval::eval()\n");
@@ -207,10 +207,10 @@ double Eval::eval(int term)
    double energy = 0.0L;
    double retval = 0.0L;
 
-	FloatOrDouble emap_total = 0.0L;
-	FloatOrDouble elec_total = 0.0L;
-	FloatOrDouble emap[MAX_ATOMS] = { 0.0L };
-	FloatOrDouble elec[MAX_ATOMS] = { 0.0L };
+	Real emap_total = 0.0L;
+	Real elec_total = 0.0L;
+	Real emap[MAX_ATOMS] = { 0.0L };
+	Real elec[MAX_ATOMS] = { 0.0L };
 
 
 #ifdef DEBUG
