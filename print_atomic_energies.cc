@@ -1,6 +1,6 @@
 /*
 
- $Id: print_atomic_energies.cc,v 1.2 2003/02/26 01:28:36 garrett Exp $
+ $Id: print_atomic_energies.cc,v 1.3 2006/04/25 22:32:52 garrett Exp $
 
 */
 
@@ -21,9 +21,9 @@ extern FILE *logFile;
 void print_atomic_energies( int natom, 
 			    char atomstuff[MAX_ATOMS][MAX_CHARS],
 			    int type[MAX_ATOMS],
-			    FloatOrDouble emap[MAX_ATOMS],
-			    FloatOrDouble elec[MAX_ATOMS],
-			    FloatOrDouble charge[MAX_ATOMS] )
+			    Real emap[MAX_ATOMS],
+			    Real elec[MAX_ATOMS],
+			    Real charge[MAX_ATOMS] )
 
 /*----------------------------------------------------------------------------*/
 {
