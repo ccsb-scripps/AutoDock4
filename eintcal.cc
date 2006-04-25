@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.12 2006/04/17 05:33:41 garrett Exp $
+ $Id: eintcal.cc,v 1.13 2006/04/25 22:32:03 garrett Exp $
 
 */
 
@@ -26,15 +26,15 @@ extern Linear_FE_Model AD4;
  * Calculate internal energy
  */
 
-FloatOrDouble eintcal( int ** const nonbondlist,
+Real eintcal( int ** const nonbondlist,
                        const EnergyTables  *ptr_ad_energy_tables,
-                       const FloatOrDouble tcoord[MAX_ATOMS][SPACE],
+                       const Real tcoord[MAX_ATOMS][SPACE],
                        const int           Nnb,
                        const Boole         B_calcIntElec,
-                       const FloatOrDouble q1q2[MAX_NONBONDS],
+                       const Real q1q2[MAX_NONBONDS],
                        const Boole         B_include_1_4_interactions,
-                       const FloatOrDouble scale_1_4,
-                       const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+                       const Real scale_1_4,
+                       const Real qsp_abs_charge[MAX_ATOMS],
                        const ParameterEntry parameterArray[MAX_MAPS]
                        )
 
@@ -46,15 +46,15 @@ extern FILE *logFile;
  * Calculate internal energy and print out a detailed report
  */
 
-FloatOrDouble eintcalPrint( int ** nonbondlist,
+Real eintcalPrint( int ** nonbondlist,
                             const EnergyTables  *ptr_ad_energy_tables,
-                            const FloatOrDouble tcoord[MAX_ATOMS][SPACE],
+                            const Real tcoord[MAX_ATOMS][SPACE],
                             const int           Nnb,
                             const Boole         B_calcIntElec,
-                            const FloatOrDouble q1q2[MAX_NONBONDS],
+                            const Real q1q2[MAX_NONBONDS],
                             const Boole         B_include_1_4_interactions,
-                            const FloatOrDouble scale_1_4,
-                            const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+                            const Real scale_1_4,
+                            const Real qsp_abs_charge[MAX_ATOMS],
                             const ParameterEntry parameterArray[MAX_MAPS]
                             )
 
@@ -170,8 +170,8 @@ FloatOrDouble eintcalPrint( int ** nonbondlist,
         index_lt_NDIEL = BoundedNdiel(index);  // guarantees that index_lt_NDIEL is never greater than (NDIEL - 1)
 
         dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
-        // r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[index_lt_NDIEL];
-        r_dielectric = r * ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
+        r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[index_lt_NDIEL];
+        // r_dielectric = r * ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL]; // gmm 2006-04-17
 
         if (B_calcIntElec) {
             //  Calculate  Electrostatic Energy
@@ -343,6 +343,6 @@ FloatOrDouble eintcalPrint( int ** nonbondlist,
     pr( logFile, "\nTotal Intramolecular Interaction Energy   = %+.3lf kcal/mol\n", (double)total_e_internal); // eintcalPrint
 #endif
 
-    return (FloatOrDouble) total_e_internal;
+    return (Real) total_e_internal;
 }
 /*  EOF */
