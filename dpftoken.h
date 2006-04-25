@@ -115,6 +115,7 @@
 #define DPF_POPFILE 90
 #define DPF_SET_PATTERN 91
 #define DPF_COMPUTE_UNBOUND_EXTENDED	    92
+#define DPF_FLEXRES 93
 
 #endif
 /* EOF */
