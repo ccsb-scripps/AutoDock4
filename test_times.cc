@@ -1,6 +1,6 @@
 /*
 
- $Id: test_times.cc,v 1.3 2003/02/26 01:47:18 garrett Exp $
+ $Id: test_times.cc,v 1.4 2006/04/25 22:33:23 garrett Exp $
 
 */
 
@@ -25,7 +25,7 @@
 #define Clock clock_t
 #endif /* #ifdef __alpha */
 
-FloatOrDouble idct;
+Real idct;
 
 
 #ifdef USE_INT_AS_LONG
@@ -53,7 +53,7 @@ int main( int argc, char **argv, char **envp )
             (void) printf("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
             exit( -1 );
         } else {
-            idct = (FloatOrDouble)1. / (FloatOrDouble)clktck;
+            idct = (Real)1. / (Real)clktck;
             (void) printf("\n\nFYI:  Number of clock ticks per second = %d\nFYI:  Elapsed time per clock tick = %.3e seconds\n\n\n\n", clktck, idct);
         }
     }
@@ -81,7 +81,7 @@ int main( int argc, char **argv, char **envp )
     #include "timesyshms.h"
 
 
-extern	FloatOrDouble	idct;
+extern	Real	idct;
 
 /*----------------------------------------------------------------------------*/
 
@@ -94,19 +94,19 @@ void timesyshms( Clock  duration,
 {
     int   h,
           m;
-    FloatOrDouble t,
+    Real t,
 	  T,
 	  s;
-    const FloatOrDouble min = 60.,
+    const Real min = 60.,
                 hrs = 3600.;
  
 
     (void)fprintf( stdout, "Real= " );
-    t = (FloatOrDouble)duration * idct;
+    t = (Real)duration * idct;
     h = (int)(t/hrs);
-    T = t - ((FloatOrDouble)h)*hrs;
+    T = t - ((Real)h)*hrs;
     m = (int)(T/min);
-    s = T - ((FloatOrDouble)m)*min;
+    s = T - ((Real)m)*min;
     if (h == 0) {
         if (m == 0)
             (void)fprintf(stdout,       "%.2fs",       s );
@@ -117,11 +117,11 @@ void timesyshms( Clock  duration,
     }
 
     (void)fprintf( stdout, ",  CPU= " );
-    t = (FloatOrDouble)((end->tms_utime  - start->tms_utime) * idct);
+    t = (Real)((end->tms_utime  - start->tms_utime) * idct);
     h = (int)(t/hrs);
-    T = t - ((FloatOrDouble)h)*hrs;
+    T = t - ((Real)h)*hrs;
     m = (int)(T/min);
-    s = T - ((FloatOrDouble)m)*min;
+    s = T - ((Real)m)*min;
     if (h == 0) {
         if (m == 0)
             (void)fprintf(stdout,       "%.2fs",       s );
@@ -132,11 +132,11 @@ void timesyshms( Clock  duration,
     }
 
     (void)fprintf( stdout, ",  System= " );
-    t = (FloatOrDouble)((end->tms_stime  - start->tms_stime) * idct);
+    t = (Real)((end->tms_stime  - start->tms_stime) * idct);
     h = (int)(t/hrs);
-    T = t - ((FloatOrDouble)h)*hrs;
+    T = t - ((Real)h)*hrs;
     m = (int)(T/min);
-    s = T - ((FloatOrDouble)m)*min;
+    s = T - ((Real)m)*min;
     if (h == 0) {
         if (m == 0)
             (void)fprintf(stdout,       "%.2fs",       s );
