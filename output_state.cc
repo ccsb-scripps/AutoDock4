@@ -1,6 +1,6 @@
 /*
 
- $Id: output_state.cc,v 1.3 2004/02/12 04:32:15 garrett Exp $
+ $Id: output_state.cc,v 1.4 2006/04/25 22:32:41 garrett Exp $
 
 */
 
@@ -29,14 +29,14 @@ void output_state( FILE *fp,
 		   State S,
                    int ntor,
                    int istep,
-                   FloatOrDouble energy,
-                   FloatOrDouble eint,
+                   Real energy,
+                   Real eint,
                    char lastmove,
                    Boole B_watch,
                    char FN_watch[MAX_CHARS],
                    char atomstuff[MAX_ATOMS][MAX_CHARS],
                    int natom,
-                   FloatOrDouble crd[MAX_ATOMS][SPACE])
+                   Real crd[MAX_ATOMS][SPACE])
 /*----------------------------------------------------------------------------*/
 {
     int i;
