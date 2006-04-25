@@ -15,8 +15,8 @@
 
 #include "constants.h"
 void  readPDBQTLine( char  line[LINE_LEN],
-                     FloatOrDouble crd[SPACE], 
-                     FloatOrDouble *P_q,
+                     Real crd[SPACE], 
+                     Real *P_q,
                      ParameterEntry *thisparm);
 
 Molecule readPDBQT( char  line[LINE_LEN],
@@ -24,26 +24,30 @@ Molecule readPDBQT( char  line[LINE_LEN],
               int   num_atm_maps,
 
               int   *P_natom,
-              FloatOrDouble crdpdb[MAX_ATOMS][NTRN],
-              FloatOrDouble charge[MAX_ATOMS],
+              Real crdpdb[MAX_ATOMS][NTRN],
+              Real charge[MAX_ATOMS],
               Boole *P_B_haveCharges,
               int   type[MAX_ATOMS],
               int   bondtype[MAX_ATOMS],
               char  pdbaname[MAX_ATOMS][5],
+
               char  pdbqFileName[MAX_CHARS],
+              char FN_flexres[MAX_CHARS],
+              Boole B_have_flexible_residues,
+
               char  atomstuff[MAX_ATOMS][MAX_CHARS],
               int   Htype,
 
               Boole *P_B_constrain,
               int   *P_atomC1,
               int   *P_atomC2,
-              FloatOrDouble *P_sqlower,
-              FloatOrDouble *P_squpper,
+              Real *P_sqlower,
+              Real *P_squpper,
 
               int   *P_ntor1,
               int   *P_ntor,
               int   tortree[MAX_TORS][MAX_ATOMS],
-              FloatOrDouble vt[MAX_TORS][NTRN],
+              Real vt[MAX_TORS][NTRN],
 
               int   *P_Nnb,
               int   **nonbondlist,
