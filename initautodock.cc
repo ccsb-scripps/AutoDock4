@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.cc,v 1.6 2005/09/28 22:54:20 garrett Exp $
+ $Id: initautodock.cc,v 1.7 2006/04/25 22:32:20 garrett Exp $
 
 */
 
@@ -24,13 +24,13 @@ extern FILE *logFile;
 extern char  *programname;
 
 void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
-		    FloatOrDouble crd[MAX_ATOMS][SPACE],
-		    FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+		    Real crd[MAX_ATOMS][SPACE],
+		    Real crdpdb[MAX_ATOMS][SPACE],
 		    int   natom,
 		    int   ntor,
 		    State *s0,
 		    int   tlist[MAX_TORS][MAX_ATOMS],
-		    FloatOrDouble vt[MAX_TORS][SPACE],
+		    Real vt[MAX_TORS][SPACE],
 		    int   outlev,
                     GridMapSetInfo *info )
 
@@ -44,10 +44,10 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
     char  rec8[10];
     char  axis[5];
 
-    FloatOrDouble delta[MAX_ATOMS][SPACE];
-    FloatOrDouble delta_max[SPACE];
-    FloatOrDouble delta_min[SPACE];
-    FloatOrDouble last_delta[SPACE];
+    Real delta[MAX_ATOMS][SPACE];
+    Real delta_max[SPACE];
+    Real delta_min[SPACE];
+    Real last_delta[SPACE];
 
     int   ip[SPACE];
     int   ip_max[SPACE];
