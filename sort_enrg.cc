@@ -1,6 +1,6 @@
 /*
 
- $Id: sort_enrg.cc,v 1.3 2004/11/16 23:42:54 garrett Exp $
+ $Id: sort_enrg.cc,v 1.4 2006/04/25 22:33:17 garrett Exp $
 
 */
 
@@ -15,7 +15,7 @@
 
 extern FILE *logFile;
 
-void sort_enrg( FloatOrDouble econf[MAX_RUNS],
+void sort_enrg( Real econf[MAX_RUNS],
                 int isort[MAX_RUNS],
 		int nconf )
 
