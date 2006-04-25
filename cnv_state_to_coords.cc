@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.cc,v 1.4 2005/08/15 22:53:33 garrett Exp $
+ $Id: cnv_state_to_coords.cc,v 1.5 2006/04/25 22:31:59 garrett Exp $
 
 */
 
@@ -27,11 +27,11 @@ extern FILE *logFile;
 extern int true_ligand_atoms;
 
 void cnv_state_to_coords( State now,
-                          FloatOrDouble vt[MAX_TORS][SPACE],
+                          Real vt[MAX_TORS][SPACE],
                           int   tlist[MAX_TORS][MAX_ATOMS],
                           int   ntor,
-                          FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
-                          FloatOrDouble crd[MAX_ATOMS][SPACE],
+                          Real crdpdb[MAX_ATOMS][SPACE],
+                          Real crd[MAX_ATOMS][SPACE],
                           int   natom)
 
 {
@@ -43,7 +43,7 @@ void cnv_state_to_coords( State now,
     //  coordinates ensures that cumulative
     //  rounding errors do not occur.
 
-    (void) memcpy( crd, crdpdb,  natom * 3 * sizeof(FloatOrDouble));
+    (void) memcpy( crd, crdpdb,  natom * 3 * sizeof(Real));
 
     //  memcpy is about 100x faster than these nested for-loops...
     //  for (i = 0;  i < natom;  i++) for (XYZ = 0;  XYZ < SPACE;  XYZ++) crd[i][XYZ] = crdpdb[i][XYZ];
@@ -61,7 +61,7 @@ void cnv_state_to_coords( State now,
     // double matrix[3][3];
     // rotlsqfit(crd, crdpdb, crdfit, weights, natom, matrix, vector)
     (void) rotlsqfit( crd, crdpdb, crdfit, NULL, natom, NULL, NULL);
-    (void) memcpy( crd, crdfit,  natom * 3 * sizeof(FloatOrDouble));
+    (void) memcpy( crd, crdfit,  natom * 3 * sizeof(Real));
 #endif
 
     //  Apply quaternion rigid-body rotation and translation...
