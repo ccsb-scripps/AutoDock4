@@ -1,6 +1,6 @@
 /*
 
- $Id: gencau.cc,v 1.3 2003/02/27 02:11:08 lindy Exp $
+ $Id: gencau.cc,v 1.4 2006/04/25 22:32:11 garrett Exp $
 
 */
 
@@ -13,10 +13,10 @@
 #include "ranlib.h"
 
 
-FloatOrDouble rcauchy(FloatOrDouble alpha, FloatOrDouble beta)
+Real rcauchy(Real alpha, Real beta)
 /*
 **********************************************************************
-     FloatOrDouble rcauchy(FloatOrDouble alpha, FloatOrDouble beta)
+     Real rcauchy(Real alpha, Real beta)
          GENerate random deviate from a CAUchy distribution
                               Function
      Generates a single random deviate from a Cauchy distribution
@@ -25,7 +25,7 @@ FloatOrDouble rcauchy(FloatOrDouble alpha, FloatOrDouble beta)
 **********************************************************************
 */
 {
-static FloatOrDouble gencau;
+static Real gencau;
 
     gencau = beta*scauchy1()+alpha;
     return gencau;
