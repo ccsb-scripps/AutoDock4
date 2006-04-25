@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.3 2004/02/12 04:32:16 garrett Exp $
+ $Id: ranlib.cc,v 1.4 2006/04/25 22:33:03 garrett Exp $
 
 */
 
@@ -25,10 +25,10 @@ void ftnstop(char*);
 extern FILE *logFile;
 
 
-FloatOrDouble genbet(FloatOrDouble aa,FloatOrDouble bb)
+Real genbet(Real aa,Real bb)
 /*
 **********************************************************************
-     FloatOrDouble genbet(FloatOrDouble aa,FloatOrDouble bb)
+     Real genbet(Real aa,Real bb)
                GeNerate BETa random deviate
                               Function
      Returns a single random deviate from the beta distribution with
@@ -49,9 +49,9 @@ FloatOrDouble genbet(FloatOrDouble aa,FloatOrDouble bb)
 {
 #define expmax 89.0
 #define infnty 1.0E38
-static FloatOrDouble olda = -1.0;
-static FloatOrDouble oldb = -1.0;
-static FloatOrDouble genbet,a,alpha,b,beta,delta,gamma,k1,k2,r,s,t,u1,u2,v,w,y,z;
+static Real olda = -1.0;
+static Real oldb = -1.0;
+static Real genbet,a,alpha,b,beta,delta,gamma,k1,k2,r,s,t,u1,u2,v,w,y,z;
 static FourByteLong qsame;
 
     qsame = olda == aa && oldb == bb;
@@ -188,10 +188,10 @@ S220:
 #undef expmax
 #undef infnty
 }
-FloatOrDouble genchi(FloatOrDouble df)
+Real genchi(Real df)
 /*
 **********************************************************************
-     FloatOrDouble genchi(FloatOrDouble df)
+     Real genchi(Real df)
                 Generate random value of CHIsquare variable
                               Function
      Generates random deviate from the distribution of a chisquare
@@ -205,7 +205,7 @@ FloatOrDouble genchi(FloatOrDouble df)
 **********************************************************************
 */
 {
-static FloatOrDouble genchi;
+static Real genchi;
 
     if(!(df <= 0.0)) goto S10;
     fputs("DF <= 0 in GENCHI - ABORT",stderr);
@@ -215,10 +215,10 @@ S10:
     genchi = 2.0*gengam(1.0,df/2.0);
     return genchi;
 }
-FloatOrDouble genexp(FloatOrDouble av)
+Real genexp(Real av)
 /*
 **********************************************************************
-     FloatOrDouble genexp(FloatOrDouble av)
+     Real genexp(Real av)
                     GENerate EXPonential random deviate
                               Function
      Generates a single random deviate from an exponential
@@ -237,15 +237,15 @@ FloatOrDouble genexp(FloatOrDouble av)
 **********************************************************************
 */
 {
-static FloatOrDouble genexp;
+static Real genexp;
 
     genexp = sexpo()*av;
     return genexp;
 }
-FloatOrDouble genf(FloatOrDouble dfn,FloatOrDouble dfd)
+Real genf(Real dfn,Real dfd)
 /*
 **********************************************************************
-     FloatOrDouble genf(FloatOrDouble dfn,FloatOrDouble dfd)
+     Real genf(Real dfn,Real dfd)
                 GENerate random deviate from the F distribution
                               Function
      Generates a random deviate from the F (variance ratio)
@@ -261,7 +261,7 @@ FloatOrDouble genf(FloatOrDouble dfn,FloatOrDouble dfd)
 **********************************************************************
 */
 {
-static FloatOrDouble genf,xden,xnum;
+static Real genf,xden,xnum;
 
     if(!(dfn <= 0.0 || dfd <= 0.0)) goto S10;
     fputs("Degrees of freedom nonpositive in GENF - abort!",stderr);
@@ -284,10 +284,10 @@ S20:
 S30:
     return genf;
 }
-FloatOrDouble gengam(FloatOrDouble a,FloatOrDouble r)
+Real gengam(Real a,Real r)
 /*
 **********************************************************************
-     FloatOrDouble gengam(FloatOrDouble a,FloatOrDouble r)
+     Real gengam(Real a,Real r)
            GENerates random deviates from GAMma distribution
                               Function
      Generates random deviates from the gamma distribution whose
@@ -315,16 +315,16 @@ FloatOrDouble gengam(FloatOrDouble a,FloatOrDouble r)
 **********************************************************************
 */
 {
-static FloatOrDouble gengam;
+static Real gengam;
 
     gengam = sgamma(r);
     gengam /= a;
     return gengam;
 }
-void genmn(FloatOrDouble *parm,FloatOrDouble *x,FloatOrDouble *work)
+void genmn(Real *parm,Real *x,Real *work)
 /*
 **********************************************************************
-     void genmn(FloatOrDouble *parm,FloatOrDouble *x,FloatOrDouble *work)
+     void genmn(Real *parm,Real *x,Real *work)
               GENerate Multivariate Normal random deviate
                               Arguments
      parm --> Parameters needed to generate multivariate normal
@@ -344,7 +344,7 @@ void genmn(FloatOrDouble *parm,FloatOrDouble *x,FloatOrDouble *work)
 */
 {
 static FourByteLong i,icount,j,p,D1,D2,D3,D4;
-static FloatOrDouble ae;
+static Real ae;
 
     p = (FourByteLong) (*parm);
 /*
@@ -372,11 +372,11 @@ static FloatOrDouble ae;
         *(x+i-1) = ae+*(parm+i);
     }
 }
-void genmul(FourByteLong n,FloatOrDouble *p,FourByteLong ncat,FourByteLong *ix)
+void genmul(FourByteLong n,Real *p,FourByteLong ncat,FourByteLong *ix)
 /*
 **********************************************************************
  
-     void genmul(int n,FloatOrDouble *p,int ncat,int *ix)
+     void genmul(int n,Real *p,int ncat,int *ix)
      GENerate an observation from the MULtinomial distribution
                               Arguments
      N --> Number of events that will be classified into one of
@@ -400,7 +400,7 @@ void genmul(FourByteLong n,FloatOrDouble *p,FourByteLong ncat,FourByteLong *ix)
 **********************************************************************
 */
 {
-static FloatOrDouble prob,ptot,sum;
+static Real prob,ptot,sum;
 static FourByteLong i,icat,ntot;
     if(n < 0) ftnstop("N < 0 in GENMUL");
     if(ncat <= 1) ftnstop("NCAT <= 1 in GENMUL");
@@ -433,10 +433,10 @@ static FourByteLong i,icat,ntot;
 */
     return;
 }
-FloatOrDouble gennch(FloatOrDouble df,FloatOrDouble xnonc)
+Real gennch(Real df,Real xnonc)
 /*
 **********************************************************************
-     FloatOrDouble gennch(FloatOrDouble df,FloatOrDouble xnonc)
+     Real gennch(Real df,Real xnonc)
            Generate random value of Noncentral CHIsquare variable
                               Function
      Generates random deviate  from the  distribution  of a  noncentral
@@ -454,7 +454,7 @@ FloatOrDouble gennch(FloatOrDouble df,FloatOrDouble xnonc)
 **********************************************************************
 */
 {
-static FloatOrDouble gennch;
+static Real gennch;
 
     if(!(df <= 1.0 || xnonc < 0.0)) goto S10;
     fputs("DF <= 1 or XNONC < 0 in GENNCH - ABORT",stderr);
@@ -464,10 +464,10 @@ S10:
     gennch = genchi(df-1.0)+pow(gennor(sqrt(xnonc),1.0),2.0);
     return gennch;
 }
-FloatOrDouble gennf(FloatOrDouble dfn,FloatOrDouble dfd,FloatOrDouble xnonc)
+Real gennf(Real dfn,Real dfd,Real xnonc)
 /*
 **********************************************************************
-     FloatOrDouble gennf(FloatOrDouble dfn,FloatOrDouble dfd,FloatOrDouble xnonc)
+     Real gennf(Real dfn,Real dfd,Real xnonc)
            GENerate random deviate from the Noncentral F distribution
                               Function
      Generates a random deviate from the  noncentral F (variance ratio)
@@ -487,7 +487,7 @@ FloatOrDouble gennf(FloatOrDouble dfn,FloatOrDouble dfd,FloatOrDouble xnonc)
 **********************************************************************
 */
 {
-static FloatOrDouble gennf,xden,xnum;
+static Real gennf,xden,xnum;
 static FourByteLong qcond;
 
     qcond = dfn <= 1.0 || dfd <= 0.0 || xnonc < 0.0;
@@ -516,10 +516,10 @@ S20:
 S30:
     return gennf;
 }
-FloatOrDouble gennor(FloatOrDouble av,FloatOrDouble sd)
+Real gennor(Real av,Real sd)
 /*
 **********************************************************************
-     FloatOrDouble gennor(FloatOrDouble av,FloatOrDouble sd)
+     Real gennor(Real av,Real sd)
          GENerate random deviate from a NORmal distribution
                               Function
      Generates a single random deviate from a normal distribution
@@ -538,7 +538,7 @@ FloatOrDouble gennor(FloatOrDouble av,FloatOrDouble sd)
 **********************************************************************
 */
 {
-static FloatOrDouble gennor;
+static Real gennor;
 
     gennor = sd*snorm()+av;
     return gennor;
@@ -564,10 +564,10 @@ static FourByteLong i,itmp,iwhich,D1,D2;
         *(iarray+i-1) = itmp;
     }
 }
-FloatOrDouble genunf(FloatOrDouble low,FloatOrDouble high)
+Real genunf(Real low,Real high)
 /*
 **********************************************************************
-     FloatOrDouble genunf(FloatOrDouble low,FloatOrDouble high)
+     Real genunf(Real low,Real high)
                GeNerate Uniform Real between LOW and HIGH
                               Function
      Generates a real uniformly distributed between LOW and HIGH.
@@ -577,7 +577,7 @@ FloatOrDouble genunf(FloatOrDouble low,FloatOrDouble high)
 **********************************************************************
 */
 {
-static FloatOrDouble genunf;
+static Real genunf;
 
     if(!(low > high)) goto S10;
     fprintf(stderr,"LOW > HIGH in GENUNF: LOW %16.6E HIGH: %16.6E\n",low,high);
@@ -645,10 +645,10 @@ static FourByteLong qstate = 0;
     if(getset != 0) qstate = 1;
     else  *qset = qstate;
 }
-FourByteLong ignbin(FourByteLong n,FloatOrDouble pp)
+FourByteLong ignbin(FourByteLong n,Real pp)
 /*
 **********************************************************************
-     FourByteLong ignbin(FourByteLong n,FloatOrDouble pp)
+     FourByteLong ignbin(FourByteLong n,Real pp)
                     GENerate BINomial random deviate
                               Function
      Generates a single random deviate from a binomial
@@ -751,10 +751,10 @@ FourByteLong ignbin(FourByteLong n,FloatOrDouble pp)
 *****DETERMINE APPROPRIATE ALGORITHM AND WHETHER SETUP IS NECESSARY
 */
 {
-static FloatOrDouble psave = -1.0;
+static Real psave = -1.0;
 static FourByteLong nsave = -1;
 static FourByteLong ignbin,i,ix,ix1,k,m,mp,T1;
-static FloatOrDouble al,alv,amaxp,c,f,f1,f2,ffm,fm,g,p,p1,p2,p3,p4,q,qn,r,u,v,w,w2,x,x1,
+static Real al,alv,amaxp,c,f,f1,f2,ffm,fm,g,p,p1,p2,p3,p4,q,qn,r,u,v,w,w2,x,x1,
     x2,xl,xll,xlr,xm,xnp,xnpq,xr,ynorm,z,z2;
 
     if(pp != psave) goto S10;
@@ -902,11 +902,11 @@ S170:
     ignbin = ix;
     return ignbin;
 }
-FourByteLong ignnbn(FourByteLong n,FloatOrDouble p)
+FourByteLong ignnbn(FourByteLong n,Real p)
 /*
 **********************************************************************
  
-     FourByteLong ignnbn(FourByteLong n,FloatOrDouble p)
+     FourByteLong ignnbn(FourByteLong n,Real p)
                 GENerate Negative BiNomial random deviate
                               Function
      Generates a single random deviate from a negative binomial
@@ -926,7 +926,7 @@ FourByteLong ignnbn(FourByteLong n,FloatOrDouble p)
 */
 {
 static FourByteLong ignnbn;
-static FloatOrDouble y,a,r;
+static Real y,a,r;
 /*
      ..
      .. Executable Statements ..
@@ -940,7 +940,7 @@ static FloatOrDouble y,a,r;
 /*
      Generate Y, a random gamma (n,(1-p)/p) variable
 */
-    r = (FloatOrDouble)n;
+    r = (Real)n;
     a = p/(1.0F-p);
     y = gengam(a,r);
 /*
@@ -949,10 +949,10 @@ static FloatOrDouble y,a,r;
     ignnbn = ignpoi(y);
     return ignnbn;
 }
-FourByteLong ignpoi(FloatOrDouble mu)
+FourByteLong ignpoi(Real mu)
 /*
 **********************************************************************
-     FourByteLong ignpoi(FloatOrDouble mu)
+     FourByteLong ignpoi(Real mu)
                     GENerate POIsson random deviate
                               Function
      Generates a single random deviate from a Poisson
@@ -1000,22 +1000,22 @@ FourByteLong ignpoi(FloatOrDouble mu)
      SEPARATION OF CASES A AND B
 */
 {
-extern FloatOrDouble fsign( FloatOrDouble num, FloatOrDouble sign );
-static FloatOrDouble a0 = -0.5;
-static FloatOrDouble a1 = 0.3333333;
-static FloatOrDouble a2 = -0.2500068;
-static FloatOrDouble a3 = 0.2000118;
-static FloatOrDouble a4 = -0.1661269;
-static FloatOrDouble a5 = 0.1421878;
-static FloatOrDouble a6 = -0.1384794;
-static FloatOrDouble a7 = 0.125006;
-static FloatOrDouble muold = 0.0;
-static FloatOrDouble muprev = 0.0;
-static FloatOrDouble fact[10] = {
+extern Real fsign( Real num, Real sign );
+static Real a0 = -0.5;
+static Real a1 = 0.3333333;
+static Real a2 = -0.2500068;
+static Real a3 = 0.2000118;
+static Real a4 = -0.1661269;
+static Real a5 = 0.1421878;
+static Real a6 = -0.1384794;
+static Real a7 = 0.125006;
+static Real muold = 0.0;
+static Real muprev = 0.0;
+static Real fact[10] = {
     1.0,1.0,2.0,6.0,24.0,120.0,720.0,5040.0,40320.0,362880.0
 };
 static FourByteLong ignpoi,j,k,kflag,l,m;
-static FloatOrDouble b1,b2,c,c0,c1,c2,c3,d,del,difmuk,e,fk,fx,fy,g,omega,p,p0,px,py,q,s,
+static Real b1,b2,c,c0,c1,c2,c3,d,del,difmuk,e,fk,fx,fy,g,omega,p,p0,px,py,q,s,
     t,u,v,x,xx,pp[35];
 
     if(mu == muprev) goto S10;
@@ -1046,7 +1046,7 @@ S10:
 /*
      STEP S. SQUEEZE ACCEPTANCE - SUNIF(IR) FOR (0,1)-SAMPLE U
 */
-    fk = (FloatOrDouble)ignpoi;
+    fk = (Real)ignpoi;
     difmuk = mu-fk;
     u = ranf();
     if(d*u >= difmuk*difmuk*difmuk) return ignpoi;
@@ -1093,7 +1093,7 @@ S50:
     t = 1.8+fsign(e,u);
     if(t <= -0.6744) goto S50;
     ignpoi = (FourByteLong) (mu+s*t);
-    fk = (FloatOrDouble)ignpoi;
+    fk = (Real)ignpoi;
     difmuk = mu-fk;
 /*
              'SUBROUTINE' F IS CALLED (KFLAG=1 FOR CORRECT RETURN)
@@ -1175,7 +1175,7 @@ S150:
 */
     l += 1;
     for (k=l; k<=35; k++) {
-        p = p*mu/(FloatOrDouble)k;
+        p = p*mu/(Real)k;
         q += p;
         *(pp+k-1) = q;
         if(u <= q) goto S170;
@@ -1411,12 +1411,12 @@ extern FourByteLong lennob(char *str);
     }
 #undef twop30
 }
-FloatOrDouble ranf(void)
+Real ranf(void)
 /*
 **********************************************************************
-     FloatOrDouble ranf(void)
+     Real ranf(void)
                 RANDom number generator as a Function
-     Returns a random FloatOrDoubleing point number from a uniform distribution
+     Returns a random Realing point number from a uniform distribution
      over 0 - 1 (endpoints of this interval are not returned) using the
      current generator
      This is a transcription from Pascal to Fortran of routine
@@ -1427,7 +1427,7 @@ FloatOrDouble ranf(void)
 **********************************************************************
 */
 {
-static FloatOrDouble ranf;
+static Real ranf;
 /*
      4.656613057E-10 is 1/M1  M1 is set in a data statement in IGNLGI
       and is currently 2147483563. If M1 changes, change this also.
@@ -1435,10 +1435,10 @@ static FloatOrDouble ranf;
     ranf = ignlgi()*4.656613057E-10;
     return ranf;
 }
-void setgmn(FloatOrDouble *meanv,FloatOrDouble *covm,FourByteLong p,FloatOrDouble *parm)
+void setgmn(Real *meanv,Real *covm,FourByteLong p,Real *parm)
 /*
 **********************************************************************
-     void setgmn(FloatOrDouble *meanv,FloatOrDouble *covm,FourByteLong p,FloatOrDouble *parm)
+     void setgmn(Real *meanv,Real *covm,FourByteLong p,Real *parm)
             SET Generate Multivariate Normal random deviate
                               Function
       Places P, MEANV, and the Cholesky factoriztion of COVM
@@ -1459,7 +1459,7 @@ void setgmn(FloatOrDouble *meanv,FloatOrDouble *covm,FourByteLong p,FloatOrDoubl
 **********************************************************************
 */
 {
-extern void spofa(FloatOrDouble *a,FourByteLong lda,FourByteLong n,FourByteLong *info);
+extern void spofa(Real *a,FourByteLong lda,FourByteLong n,FourByteLong *info);
 /* not used: static FourByteLong T1; */
 static FourByteLong i,icount,info,j,D2,D3,D4,D5;
     /* not used: T1 = p*(p+3)/2+1; */
@@ -1500,7 +1500,7 @@ S30:
         }
     }
 }
-FloatOrDouble sexpo(void)
+Real sexpo(void)
 /*
 **********************************************************************
                                                                       
@@ -1529,12 +1529,12 @@ FloatOrDouble sexpo(void)
      (HERE 8) IS DETERMINED BY Q(N)=1.0 WITHIN STANDARD PRECISION
 */
 {
-static FloatOrDouble q[8] = {
+static Real q[8] = {
     0.6931472,0.9333737,0.9888778,0.9984959,0.9998293,0.9999833,0.9999986,1.0
 };
 static FourByteLong i;
-static FloatOrDouble sexpo,a,u,ustar,umin;
-static FloatOrDouble *q1 = q;
+static Real sexpo,a,u,ustar,umin;
+static Real *q1 = q;
     a = 0.0;
     u = ranf();
     goto S30;
@@ -1559,7 +1559,7 @@ S70:
     sexpo = a+umin**q1;
     return sexpo;
 }
-FloatOrDouble sgamma(FloatOrDouble a)
+Real sgamma(Real a)
 /*
 **********************************************************************
                                                                       
@@ -1612,30 +1612,30 @@ FloatOrDouble sgamma(FloatOrDouble a)
      SQRT32 IS THE SQUAREROOT OF 32 = 5.656854249492380
 */
 {
-extern FloatOrDouble fsign( FloatOrDouble num, FloatOrDouble sign );
-static FloatOrDouble q1 = 4.166669E-2;
-static FloatOrDouble q2 = 2.083148E-2;
-static FloatOrDouble q3 = 8.01191E-3;
-static FloatOrDouble q4 = 1.44121E-3;
-static FloatOrDouble q5 = -7.388E-5;
-static FloatOrDouble q6 = 2.4511E-4;
-static FloatOrDouble q7 = 2.424E-4;
-static FloatOrDouble a1 = 0.3333333;
-static FloatOrDouble a2 = -0.250003;
-static FloatOrDouble a3 = 0.2000062;
-static FloatOrDouble a4 = -0.1662921;
-static FloatOrDouble a5 = 0.1423657;
-static FloatOrDouble a6 = -0.1367177;
-static FloatOrDouble a7 = 0.1233795;
-static FloatOrDouble e1 = 1.0;
-static FloatOrDouble e2 = 0.4999897;
-static FloatOrDouble e3 = 0.166829;
-static FloatOrDouble e4 = 4.07753E-2;
-static FloatOrDouble e5 = 1.0293E-2;
-static FloatOrDouble aa = 0.0;
-static FloatOrDouble aaa = 0.0;
-static FloatOrDouble sqrt32 = 5.656854;
-static FloatOrDouble sgamma,s2,s,d,t,x,u,r,q0,b,si,c,v,q,e,w,p;
+extern Real fsign( Real num, Real sign );
+static Real q1 = 4.166669E-2;
+static Real q2 = 2.083148E-2;
+static Real q3 = 8.01191E-3;
+static Real q4 = 1.44121E-3;
+static Real q5 = -7.388E-5;
+static Real q6 = 2.4511E-4;
+static Real q7 = 2.424E-4;
+static Real a1 = 0.3333333;
+static Real a2 = -0.250003;
+static Real a3 = 0.2000062;
+static Real a4 = -0.1662921;
+static Real a5 = 0.1423657;
+static Real a6 = -0.1367177;
+static Real a7 = 0.1233795;
+static Real e1 = 1.0;
+static Real e2 = 0.4999897;
+static Real e3 = 0.166829;
+static Real e4 = 4.07753E-2;
+static Real e5 = 1.0293E-2;
+static Real aa = 0.0;
+static Real aaa = 0.0;
+static Real sqrt32 = 5.656854;
+static Real sgamma,s2,s,d,t,x,u,r,q0,b,si,c,v,q,e,w,p;
     if(a == aa) goto S10;
     if(a < 1.0) goto S120;
 /*
@@ -1773,7 +1773,7 @@ S140:
     if(sexpo() < (1.0-a)*log(sgamma)) goto S130;
     return sgamma;
 }
-FloatOrDouble snorm(void)
+Real snorm(void)
 /*
 **********************************************************************
                                                                       
@@ -1802,27 +1802,27 @@ FloatOrDouble snorm(void)
      H(K) ARE ACCORDING TO THE ABOVEMENTIONED ARTICLE
 */
 {
-static FloatOrDouble a[32] = {
+static Real a[32] = {
     0.0,3.917609E-2,7.841241E-2,0.11777,0.1573107,0.1970991,0.2372021,0.2776904,
     0.3186394,0.36013,0.4022501,0.4450965,0.4887764,0.5334097,0.5791322,
     0.626099,0.6744898,0.7245144,0.7764218,0.8305109,0.8871466,0.9467818,
     1.00999,1.077516,1.150349,1.229859,1.318011,1.417797,1.534121,1.67594,
     1.862732,2.153875
 };
-static FloatOrDouble d[31] = {
+static Real d[31] = {
     0.0,0.0,0.0,0.0,0.0,0.2636843,0.2425085,0.2255674,0.2116342,0.1999243,
     0.1899108,0.1812252,0.1736014,0.1668419,0.1607967,0.1553497,0.1504094,
     0.1459026,0.14177,0.1379632,0.1344418,0.1311722,0.128126,0.1252791,
     0.1226109,0.1201036,0.1177417,0.1155119,0.1134023,0.1114027,0.1095039
 };
-static FloatOrDouble t[31] = {
+static Real t[31] = {
     7.673828E-4,2.30687E-3,3.860618E-3,5.438454E-3,7.0507E-3,8.708396E-3,
     1.042357E-2,1.220953E-2,1.408125E-2,1.605579E-2,1.81529E-2,2.039573E-2,
     2.281177E-2,2.543407E-2,2.830296E-2,3.146822E-2,3.499233E-2,3.895483E-2,
     4.345878E-2,4.864035E-2,5.468334E-2,6.184222E-2,7.047983E-2,8.113195E-2,
     9.462444E-2,0.1123001,0.136498,0.1716886,0.2276241,0.330498,0.5847031
 };
-static FloatOrDouble h[31] = {
+static Real h[31] = {
     3.920617E-2,3.932705E-2,3.951E-2,3.975703E-2,4.007093E-2,4.045533E-2,
     4.091481E-2,4.145507E-2,4.208311E-2,4.280748E-2,4.363863E-2,4.458932E-2,
     4.567523E-2,4.691571E-2,4.833487E-2,4.996298E-2,5.183859E-2,5.401138E-2,
@@ -1830,7 +1830,7 @@ static FloatOrDouble h[31] = {
     8.781922E-2,9.930398E-2,0.11556,0.1404344,0.1836142,0.2790016,0.7010474
 };
 static FourByteLong i;
-static FloatOrDouble snorm,u,s,ustar,aa,w,y,tt;
+static Real snorm,u,s,ustar,aa,w,y,tt;
     u = ranf();
     s = 0.0;
     if(u > 0.5) s = 1.0;
@@ -1842,7 +1842,7 @@ static FloatOrDouble snorm,u,s,ustar,aa,w,y,tt;
 /*
                                 START CENTER
 */
-    ustar = u-(FloatOrDouble)i;
+    ustar = u-(Real)i;
     aa = *(a+i-1);
 S40:
     if(ustar <= *(t+i-1)) goto S60;
@@ -1900,7 +1900,7 @@ S160:
     u = ranf();
     goto S140;
 }
-FloatOrDouble fsign( FloatOrDouble num, FloatOrDouble sign )
+Real fsign( Real num, Real sign )
 /* Transfers sign of argument sign to argument num */
 {
 if ( ( sign>0.0f && num<0.0f ) || ( sign<0.0f && num>0.0f ) )
