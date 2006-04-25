@@ -1,6 +1,6 @@
 /*
 
- $Id: quicksort.cc,v 1.2 2003/02/26 01:30:49 garrett Exp $
+ $Id: quicksort.cc,v 1.3 2006/04/25 22:33:01 garrett Exp $
 
 */
 
@@ -26,7 +26,7 @@
 extern FILE *logFile;
 #endif /* DEBUG */
 
-void quicksort( FloatOrDouble e[], 
+void quicksort( Real e[], 
 		int isort[],
 		int left,
 		int right )
