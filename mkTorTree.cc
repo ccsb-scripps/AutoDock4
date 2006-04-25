@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.6 2006/04/17 05:54:53 garrett Exp $
+ $Id: mkTorTree.cc,v 1.7 2006/04/25 22:32:36 garrett Exp $
 
 */
 
@@ -37,8 +37,8 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
                 Boole *P_B_constrain,
                 int   *P_atomC1,
                 int   *P_atomC2,
-                FloatOrDouble *P_sqlower,
-                FloatOrDouble *P_squpper,
+                Real *P_sqlower,
+                Real *P_squpper,
          int   *P_ntorsdof,
          int   ignore_inter[MAX_ATOMS])
 
@@ -64,9 +64,9 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     char  error_message[ LINE_LEN ];
     char  rec5[ 5 ];
 
-    FloatOrDouble lower = 0.;
-    FloatOrDouble temp  = 0.;
-    FloatOrDouble upper = 0.01;
+    Real lower = 0.;
+    Real temp  = 0.;
+    Real upper = 0.01;
 
 #ifdef DEBUG
     int   oo = 0;
