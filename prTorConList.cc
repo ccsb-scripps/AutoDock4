@@ -1,6 +1,6 @@
 /*
 
- $Id: prTorConList.cc,v 1.2 2003/02/26 01:26:43 garrett Exp $
+ $Id: prTorConList.cc,v 1.3 2006/04/25 22:32:48 garrett Exp $
 
 */
 
@@ -25,7 +25,7 @@ extern FILE *logFile;
 void prTorConList( int ntor,
 		    Boole B_isTorConstrained[MAX_TORS],
 		    unsigned short US_torProfile[MAX_TORS][NTORDIVS],
-		    FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		    Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		    int N_con[MAX_TORS])
 
 {
@@ -40,13 +40,13 @@ void prTorConList( int ntor,
     int jncol2;
     int N_ConChecks;
 
-    FloatOrDouble lower;
-    FloatOrDouble upper;
+    Real lower;
+    Real upper;
 
     unsigned short US_row = 0;
     unsigned short US_yscale;
 
-    jncol2 = (int)((FloatOrDouble)NCOLS / 2. - 2.);
+    jncol2 = (int)((Real)NCOLS / 2. - 2.);
     jncol216 = jncol2 - 16;
 
     pr( logFile, UnderLine );
