@@ -4,10 +4,10 @@
 #include "constants.h"
 void  prClusterHist(int   ncluster,
                     int   irunmax,
-                    FloatOrDouble clus_rms_tol,
+                    Real clus_rms_tol,
                     int   num_in_clu[MAX_RUNS],
                     int   cluster[MAX_RUNS][MAX_RUNS],
-                    FloatOrDouble econf[MAX_RUNS],
-                    FloatOrDouble clu_rms[MAX_RUNS][MAX_RUNS],
-		    FloatOrDouble ref_rms[MAX_RUNS]);
+                    Real econf[MAX_RUNS],
+                    Real clu_rms[MAX_RUNS][MAX_RUNS],
+		    Real ref_rms[MAX_RUNS]);
 #endif
