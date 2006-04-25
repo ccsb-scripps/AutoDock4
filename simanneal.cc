@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.11 2006/04/17 06:09:07 garrett Exp $
+ $Id: simanneal.cc,v 1.12 2006/04/25 22:33:15 garrett Exp $
 
 */
 
@@ -29,27 +29,27 @@ extern char *programname;
 
 void simanneal ( int   *Addr_nconf,
 		int   Nnb,
-		FloatOrDouble WallEnergy,
+		Real WallEnergy,
 		char  atomstuff[MAX_ATOMS][MAX_CHARS],
-		FloatOrDouble charge[MAX_ATOMS],
-		FloatOrDouble abs_charge[MAX_ATOMS],
-		FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+		Real charge[MAX_ATOMS],
+		Real abs_charge[MAX_ATOMS],
+		Real qsp_abs_charge[MAX_ATOMS],
 		Boole B_calcIntElec,
-		FloatOrDouble q1q2[MAX_NONBONDS],
-		FloatOrDouble crd[MAX_ATOMS][SPACE],
-		FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+		Real q1q2[MAX_NONBONDS],
+		Real crd[MAX_ATOMS][SPACE],
+		Real crdpdb[MAX_ATOMS][SPACE],
 		char  FN_dpf[MAX_CHARS],
         
                     EnergyTables *ptr_ad_energy_tables,
 
-		FloatOrDouble econf[MAX_RUNS],
+		Real econf[MAX_RUNS],
 		Boole B_either,
-		FloatOrDouble elec[MAX_ATOMS],
-		FloatOrDouble emap[MAX_ATOMS],
+		Real elec[MAX_ATOMS],
+		Real emap[MAX_ATOMS],
 		int   NcycMax,
 		int   irunmax,
 		Clock jobStart,
-		FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+		Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 		int   naccmax,
 		int   natom,
 		int   **nonbondlist,
@@ -61,38 +61,38 @@ void simanneal ( int   *Addr_nconf,
 		State sInit, /* tor0, qtn0 */
 		State sHist[MAX_RUNS], /* was qtnHist, torHist */
 
-		FloatOrDouble qtwFac,
+		Real qtwFac,
 		Boole B_qtwReduc,
-		FloatOrDouble qtwStep0,
+		Real qtwStep0,
 		Boole B_selectmin,
 		char  FN_ligand[MAX_CHARS],
-		FloatOrDouble sml_center[SPACE],
-		FloatOrDouble RT0,
+		Real sml_center[SPACE],
+		Real RT0,
 		Boole B_RTChange,
-		FloatOrDouble RTFac,
+		Real RTFac,
 		struct tms tms_jobStart,
 		int   tlist[MAX_TORS][MAX_ATOMS],
-		FloatOrDouble torFac,
+		Real torFac,
 		Boole B_torReduc,
-		FloatOrDouble torStep0,
+		Real torStep0,
 		char  FN_trj[MAX_CHARS],
 		int   trj_cyc_max,
 		int   trj_cyc_min,
 		int   trj_freq,
-		FloatOrDouble trnFac,
+		Real trnFac,
 		Boole B_trnReduc,
-		FloatOrDouble trnStep0,
+		Real trnStep0,
 		int   type[MAX_ATOMS],
-		FloatOrDouble vt[MAX_TORS][SPACE],
+		Real vt[MAX_TORS][SPACE],
 		Boole B_writeTrj,
 		Boole B_constrain,
 		int   atomC1,
 		int   atomC2,
-		FloatOrDouble sqlower,
-		FloatOrDouble squpper,
+		Real sqlower,
+		Real squpper,
 		Boole B_linear_schedule,
-		FloatOrDouble RTreduc,
-		/*FloatOrDouble maxrad,*/
+		Real RTreduc,
+		/*Real maxrad,*/
 		Boole B_watch,
 		char  FN_watch[MAX_CHARS],
 		Boole B_isGaussTorCon,
@@ -100,14 +100,14 @@ void simanneal ( int   *Addr_nconf,
 		Boole B_isTorConstrained[MAX_TORS],
 		Boole B_ShowTorE,
 		unsigned short US_TorE[MAX_TORS],
-		FloatOrDouble F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		int N_con[MAX_TORS],
 		Boole B_RandomTran0,
 		Boole B_RandomQuat0,
 		Boole B_RandomDihe0,
-		FloatOrDouble e0max,
+		Real e0max,
         
-		FloatOrDouble torsFreeEnergy,
+		Real torsFreeEnergy,
 		
         int   MaxRetries,
 		
@@ -116,11 +116,11 @@ void simanneal ( int   *Addr_nconf,
         int   ignore_inter[MAX_ATOMS],
         
         const Boole         B_include_1_4_interactions,
-        const FloatOrDouble scale_1_4,
+        const Real scale_1_4,
         
         const ParameterEntry parameterArray[MAX_MAPS],
 
-        const FloatOrDouble unbound_internal_FE,
+        const Real unbound_internal_FE,
 
         GridMapSetInfo *info
         )
@@ -138,22 +138,22 @@ void simanneal ( int   *Addr_nconf,
     State sMin; /* qtnMin, torMin */
     State sSave; /* qtnSave, torSave */
 
-    FloatOrDouble d[SPACE];
-    FloatOrDouble e = 0.;
-    FloatOrDouble e0 = 0.;
-    FloatOrDouble einter = 0.;
-    FloatOrDouble eintra = 0.;
-    FloatOrDouble eLast = 0.;
-    FloatOrDouble eMin = BIG_ENERGY;
-    FloatOrDouble etot = 0.0;
-    FloatOrDouble inv_RT = 0.;
-    FloatOrDouble qtwStep;
-    FloatOrDouble rsqC1C2;
-    FloatOrDouble RT = 616.;
-    FloatOrDouble torTmp;
-    FloatOrDouble torStep;
-    FloatOrDouble trnStep;
-    /* ** FloatOrDouble xloTrn; ** FloatOrDouble xhiTrn; ** FloatOrDouble yloTrn; ** FloatOrDouble yhiTrn; ** FloatOrDouble zloTrn; ** FloatOrDouble zhiTrn; ** FloatOrDouble lo[SPACE]; ** FloatOrDouble trnStepHi; ** FloatOrDouble qtwStepHi; ** FloatOrDouble torStepHi; */
+    Real d[SPACE];
+    Real e = 0.;
+    Real e0 = 0.;
+    Real einter = 0.;
+    Real eintra = 0.;
+    Real eLast = 0.;
+    Real eMin = BIG_ENERGY;
+    Real etot = 0.0;
+    Real inv_RT = 0.;
+    Real qtwStep;
+    Real rsqC1C2;
+    Real RT = 616.;
+    Real torTmp;
+    Real torStep;
+    Real trnStep;
+    /* ** Real xloTrn; ** Real xhiTrn; ** Real yloTrn; ** Real yhiTrn; ** Real zloTrn; ** Real zhiTrn; ** Real lo[SPACE]; ** Real trnStepHi; ** Real qtwStepHi; ** Real torStepHi; */
 
     Boole B_inRange = FALSE;
     Boole B_outside = FALSE;
@@ -373,10 +373,10 @@ void simanneal ( int   *Addr_nconf,
 				if (B_isTorConstrained[Itor] == 1) {
 				    indx = Rad2Div( sNow.tor[Itor] );
 				    if (B_ShowTorE) {
-					e += (FloatOrDouble)( US_TorE[Itor] 
+					e += (Real)( US_TorE[Itor] 
 						  = US_torProfile[Itor][indx] );
 				    } else {
-					e += (FloatOrDouble)US_torProfile[Itor][indx];
+					e += (Real)US_torProfile[Itor][indx];
 				    }
 				}
 			    }
@@ -487,7 +487,7 @@ void simanneal ( int   *Addr_nconf,
 		*/
 		if (outlev > 0) {
 		    /*pr(logFile, "\n"); / *###*/
-		    pr( logFile, "%d /%d\t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", irun1, irunmax, icycle1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (FloatOrDouble)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
+		    pr( logFile, "%d /%d\t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", irun1, irunmax, icycle1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (Real)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
 		    cycEnd = times( &tms_cycEnd );
 		    timesys( cycEnd - cycStart, &tms_cycStart, &tms_cycEnd );
 		    if (outlev > 1) {
