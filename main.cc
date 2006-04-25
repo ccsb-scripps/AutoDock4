@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.37 2006/04/17 05:52:32 garrett Exp $
+ $Id: main.cc,v 1.38 2006/04/25 22:32:31 garrett Exp $
 
 */
 
@@ -49,7 +49,7 @@
 
 extern int debug;
 extern int keepresnum;
-extern FloatOrDouble idct;
+extern Real idct;
 extern Eval evaluate;
 extern Linear_FE_Model AD4;
 
@@ -116,12 +116,12 @@ char            atm_typ_str[ATOM_MAPS]; //  "atm_typ_str" (in AD3) used to serve
 char            *ligand_atom_type_ptrs[MAX_MAPS]; /* array of ptrs used to parse input line of atom type names */
 //char            atom_type_name[MAX_MAPS][3];  // now part of the GridMapSetInfo structure
 ParameterEntry  parameterArray[MAX_MAPS];
-//FloatOrDouble   mapmax[MAX_MAPS];  // now part of the GridMapSetInfo structure
-//FloatOrDouble   mapmin[MAX_MAPS];  // now part of the GridMapSetInfo structure
+//Real   mapmax[MAX_MAPS];  // now part of the GridMapSetInfo structure
+//Real   mapmin[MAX_MAPS];  // now part of the GridMapSetInfo structure
 
 //   MAX_GRID_PTS & MAX_MAPS
 //
-static FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
+static Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
 // double *map;  // Use this with malloc...
 
 GridMapSetInfo *info;  // this information is from the AVS field file
@@ -130,15 +130,15 @@ GridMapSetInfo *info;  // this information is from the AVS field file
 //
 char            atomstuff[MAX_ATOMS][MAX_CHARS];
 char            pdbaname[MAX_ATOMS][5];
-FloatOrDouble   crdpdb[MAX_ATOMS][SPACE];
-FloatOrDouble   crd[MAX_ATOMS][SPACE];
-FloatOrDouble   charge[MAX_ATOMS];
-FloatOrDouble   abs_charge[MAX_ATOMS];
-FloatOrDouble   qsp_abs_charge[MAX_ATOMS];
-FloatOrDouble   elec[MAX_ATOMS];
-FloatOrDouble   emap[MAX_ATOMS];
-FloatOrDouble   template_energy[MAX_ATOMS]; // template energy value for each atom
-FloatOrDouble   template_stddev[MAX_ATOMS]; // and standard deviation of this energy
+Real   crdpdb[MAX_ATOMS][SPACE];
+Real   crd[MAX_ATOMS][SPACE];
+Real   charge[MAX_ATOMS];
+Real   abs_charge[MAX_ATOMS];
+Real   qsp_abs_charge[MAX_ATOMS];
+Real   elec[MAX_ATOMS];
+Real   emap[MAX_ATOMS];
+Real   template_energy[MAX_ATOMS]; // template energy value for each atom
+Real   template_stddev[MAX_ATOMS]; // and standard deviation of this energy
 int             type[MAX_ATOMS];
 int             bond_index[MAX_ATOMS];
 int             ignore_inter[MAX_ATOMS];
@@ -147,8 +147,8 @@ Atom            atoms[MAX_ATOMS];
 //   MAX_TORS
 //
 int             tlist[MAX_TORS][MAX_ATOMS];
-FloatOrDouble   vt[MAX_TORS][SPACE];
-FloatOrDouble   F_TorConRange[MAX_TORS][MAX_TOR_CON][2];
+Real   vt[MAX_TORS][SPACE];
+Real   F_TorConRange[MAX_TORS][MAX_TOR_CON][2];
 unsigned short  US_TorE[MAX_TORS];
 Boole           B_isTorConstrained[MAX_TORS];
 int             N_con[MAX_TORS];
@@ -156,7 +156,7 @@ unsigned short  US_torProfile[MAX_TORS][NTORDIVS];
 
 //   MAX_NONBONDS
 //
-FloatOrDouble* q1q2 = new FloatOrDouble[MAX_NONBONDS];
+Real* q1q2 = new Real[MAX_NONBONDS];
 int** nonbondlist = new int*[MAX_NONBONDS];
 for (int i=0; i < MAX_NONBONDS; i++) {
     nonbondlist[i] = new int[MAX_NBDATA];
@@ -188,6 +188,7 @@ char hostnm[MAX_CHARS];
 char param[2][MAX_CHARS];
 char c_mode_str[MAX_CHARS];
 char FN_pop_file[MAX_CHARS];
+char FN_flexres[MAX_CHARS];
 
 //   MAX_RECORDS
 //
@@ -195,12 +196,12 @@ char PDBQT_record[MAX_RECORDS][LINE_LEN];
 
 //   SPACE
 //
-FloatOrDouble lig_center[SPACE];
-//FloatOrDouble map_center[SPACE];
+Real lig_center[SPACE];
+//Real map_center[SPACE];
 
 //   MAX_RUNS
 //
-FloatOrDouble econf[MAX_RUNS];  // this is the list of energies printed in the histogram in "analysis"
+Real econf[MAX_RUNS];  // this is the list of energies printed in the histogram in "analysis"
 State sHist[MAX_RUNS];  /* qtnHist[MAX_RUNS][QUAT],torHist[MAX_RUNS][MAX_TORS];*/
 State sUnbound; // State of the unbound ligand's conformation
 
@@ -213,18 +214,18 @@ static ParameterEntry * foundParameter;
 
 FILE *template_energy_file;
 
-FloatOrDouble cA;
-FloatOrDouble cB;
-FloatOrDouble epsij;
-FloatOrDouble F_A;
-FloatOrDouble F_Aova;
-FloatOrDouble F_tor;
-FloatOrDouble F_torPref;
-FloatOrDouble F_torHWdth;
-FloatOrDouble Rij;
-FloatOrDouble sqlower;
-FloatOrDouble squpper;
-FloatOrDouble tmpconst;
+Real cA;
+Real cB;
+Real epsij;
+Real F_A;
+Real F_Aova;
+Real F_tor;
+Real F_torPref;
+Real F_torHWdth;
+Real Rij;
+Real sqlower;
+Real squpper;
+Real tmpconst;
 
 // Distance-dependence in Desolvation Term
 const double sigma = 3.6L;
@@ -235,9 +236,9 @@ const double qsolpar = 0.01097L;
 //
 // Units of ELECSCALE are (Kcal/mol ) * (Angstrom / esu^2) 
 // and this allows us to use distances in  Angstroms and charges in esu...
-const FloatOrDouble ELECSCALE = 332.06363;   
+const Real ELECSCALE = 332.06363;   
 
-// const FloatOrDouble ELECSCALE = 83.0159075;   this ELECSCALE (corresponding to eps(r) = 1/4r) gives -7.13 kcal/mol for 1pgp Tests/test_autodock4.py
+// const Real ELECSCALE = 83.0159075;   this ELECSCALE (corresponding to eps(r) = 1/4r) gives -7.13 kcal/mol for 1pgp Tests/test_autodock4.py
 
 // i
 double Ri, epsi, Ri_hb, epsi_hb;
@@ -247,50 +248,50 @@ hbond_type hbondi;
 double Rj, epsj, Rj_hb, epsj_hb;
 hbond_type hbondj;
 
-FloatOrDouble scale_1_4 = 0.5;
-FloatOrDouble c=0.0;
-FloatOrDouble clus_rms_tol = 0.0;
-FloatOrDouble e0max = BIG;
-FloatOrDouble eintra = 0.0;
-FloatOrDouble einter = 0.0;
-FloatOrDouble etotal = 0.0;
-FloatOrDouble AD3_FE_coeff_estat   = 1.000;
-FloatOrDouble qtwFac = 1.0;
-FloatOrDouble qtwStep0 = 5.0;
-FloatOrDouble qtwStepFinal = 5.0;
-FloatOrDouble maxrad = -1.0;
-FloatOrDouble r2sum=0.0;
-FloatOrDouble RJ = 8.31441;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
-FloatOrDouble Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
-FloatOrDouble T0K = 273.15;        // 0 degrees Celsius, in K
-FloatOrDouble RTreduc = 1.0;
-// FloatOrDouble spacing = 0.0;// now part of the GridMapSetInfo structure
-FloatOrDouble RT0 = 616.0;
-FloatOrDouble RTFac = 0.95;
-FloatOrDouble torsdoffac = 0.3113;
-FloatOrDouble torsFreeEnergy = 0.0;
-FloatOrDouble torFac = 1.0;
-FloatOrDouble torStep0 = 5.0;
-FloatOrDouble torStepFinal = 5.0;
-FloatOrDouble trnFac = 1.0;
-FloatOrDouble trnStep0 = 0.2;
-FloatOrDouble trnStepFinal = 0.2;
-FloatOrDouble WallEnergy = 1.0e8; /* Energy barrier beyond walls of gridmaps. */
+Real scale_1_4 = 0.5;
+Real c=0.0;
+Real clus_rms_tol = 0.0;
+Real e0max = BIG;
+Real eintra = 0.0;
+Real einter = 0.0;
+Real etotal = 0.0;
+Real AD3_FE_coeff_estat   = 1.000;
+Real qtwFac = 1.0;
+Real qtwStep0 = 5.0;
+Real qtwStepFinal = 5.0;
+Real maxrad = -1.0;
+Real r2sum=0.0;
+Real RJ = 8.31441;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
+Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
+Real T0K = 273.15;        // 0 degrees Celsius, in K
+Real RTreduc = 1.0;
+// Real spacing = 0.0;// now part of the GridMapSetInfo structure
+Real RT0 = 616.0;
+Real RTFac = 0.95;
+Real torsdoffac = 0.3113;
+Real torsFreeEnergy = 0.0;
+Real torFac = 1.0;
+Real torStep0 = 5.0;
+Real torStepFinal = 5.0;
+Real trnFac = 1.0;
+Real trnStep0 = 0.2;
+Real trnStepFinal = 0.2;
+Real WallEnergy = 1.0e8; /* Energy barrier beyond walls of gridmaps. */
 //  The GA Stuff
-FloatOrDouble m_rate = 0.02;
-FloatOrDouble c_rate = 0.80;
-FloatOrDouble alpha = 0;
-FloatOrDouble beta = 1;
-FloatOrDouble search_freq = 0.06;
-FloatOrDouble rho = 1.0;
-FloatOrDouble lb_rho = 0.01;
-FloatOrDouble *rho_ptr = NULL;
-FloatOrDouble *lb_rho_ptr = NULL;
-FloatOrDouble unbound_internal_FE = 0.0;
-FloatOrDouble emap_total = 0.;
-FloatOrDouble elec_total = 0.;
-FloatOrDouble charge_total = 0.;
-FloatOrDouble etot = 0.;
+Real m_rate = 0.02;
+Real c_rate = 0.80;
+Real alpha = 0;
+Real beta = 1;
+Real search_freq = 0.06;
+Real rho = 1.0;
+Real lb_rho = 0.01;
+Real *rho_ptr = NULL;
+Real *lb_rho_ptr = NULL;
+Real unbound_internal_FE = 0.0;
+Real emap_total = 0.;
+Real elec_total = 0.;
+Real charge_total = 0.;
+Real etot = 0.;
 
 unsigned int outputEveryNgens = 100;
 
@@ -325,6 +326,7 @@ Boole B_CalcTorRF = FALSE;
 Boole B_charMap = FALSE;
 Boole B_include_1_4_interactions = FALSE;  // This was the default behaviour in previous AutoDock versions (1 to 3).
 Boole B_found_move_keyword = FALSE;
+Boole B_have_flexible_residues = FALSE;
 
 int atm1=0;
 int atm2=0;
@@ -394,18 +396,18 @@ register int k = 0;
 register int xyz = 0;
 int j1 = 1;
 
-State sInit;            /* FloatOrDouble qtn0[QUAT], tor0[MAX_TORS]; */
+State sInit;            /* Real qtn0[QUAT], tor0[MAX_TORS]; */
 
 Molecule ligand;        /* ligand */
 
-static FloatOrDouble F_A_from;
-static FloatOrDouble F_A_to;
-static FloatOrDouble F_lnH;
-static FloatOrDouble F_W;
-static FloatOrDouble F_hW;
+static Real F_A_from;
+static Real F_A_to;
+static Real F_lnH;
+static Real F_W;
+static Real F_hW;
 static FourByteLong clktck = 0;
 
-static FloatOrDouble version = 4.00;
+static Real version = 4.00;
 
 struct tms tms_jobStart;
 struct tms tms_gaStart;
@@ -578,7 +580,7 @@ if (clktck == 0) {        /* fetch clock ticks per second first time */
         stop("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
         exit( -1 );
     } else {
-        idct = (FloatOrDouble)1.0 / (FloatOrDouble)clktck;
+        idct = (Real)1.0 / (Real)clktck;
         if (debug) {
             pr(logFile, "N.B. debug is on and set to %d\n\n", debug);
             pr(logFile, "\n\nFYI:  Number of clock ticks per second = %d\n", (int)clktck);
@@ -595,7 +597,61 @@ if (clktck == 0) {        /* fetch clock ticks per second first time */
 ** log(x): compute the natural (base e) logarithm of x,
 */
 
-F_lnH = ((FloatOrDouble)log(0.5));
+F_lnH = ((Real)log(0.5));
+
+//______________________________________________________________________________
+/*
+** Determine output level before we ouput anything.  
+** We must parse the entire DPF -- silently -- for any outlev settings.
+*/
+
+while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
+    dpf_keyword = parse_dpf_line( line );
+
+    switch( dpf_keyword ) {
+    case DPF_OUTLEV:
+        /*
+        **  outlev
+        **  Output level,
+        */
+        retval = sscanf( line, "%*s %d", &outlev );
+        switch ( outlev ) {
+        case -1:
+            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            break;
+        case 0:
+            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            break;
+        case 1:
+            outputEveryNgens = (unsigned int) OUTLEV1_GENS;
+            break;
+        case 2:
+        default:
+            outputEveryNgens = (unsigned int) OUTLEV2_GENS;
+            break;
+        }
+        break;
+
+    case DPF_FLEXRES:
+        // The DPF specifies a flexible residues file
+        // -- set a flag
+        // -- get the filename
+        B_have_flexible_residues = TRUE;
+        (void) sscanf( line, "%*s %s", FN_flexres );
+        break;
+
+    default:
+        break;
+    } // switch( dpf_keyword )
+} // while
+// Close DPF, so we can resume normal parsing
+(void) fclose( parFile );
+// Re-open DPF for normal parsing
+if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
+    fprintf(stderr, "\n%s: can't find or open parameter file %s\n", programname, dock_param_fn);
+    fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
+    exit(-1);
+}
 
 //______________________________________________________________________________
 /*
@@ -623,6 +679,8 @@ pr( logFile, "\nNOTE: \"rus\" stands for:\n\n      r = Real, wall-clock or elaps
 //______________________________________________________________________________
 
 (void) fprintf(logFile, "      ________________________________________________________________\n\n");
+(void) fprintf(logFile, "                   SETTING UP DEFAULT PARAMETER LIBRARY\n");
+(void) fprintf(logFile, "      ________________________________________________________________\n\n");
 
 //______________________________________________________________________________
 //
@@ -638,6 +696,8 @@ setup_distdepdiel(outlev, unbound_energy_tables);
 
 //______________________________________________________________________________
 
+(void) fprintf(logFile, "\n      ________________________________________________________________\n\n");
+(void) fprintf(logFile, "             BEGINNING PARSING OF INPUT DOCKING PARAMETER FILE\n");
 (void) fprintf(logFile, "      ________________________________________________________________\n\n");
 
 //______________________________________________________________________________
@@ -645,7 +705,6 @@ setup_distdepdiel(outlev, unbound_energy_tables);
 ** (Note: "dock_param_fn" set in "setflags.c"...)
 */
 pr( logFile, "Docking parameter file (DPF) used for this docking:\t\t%s\n\n", dock_param_fn );
-
 
 //______________________________________________________________________________
 /*
@@ -992,8 +1051,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 }
                 /* Defend against division by zero... */
                 if (xA != xB) {
-                    cA = (tmpconst = epsij / (FloatOrDouble)(xA - xB)) * pow( (double)Rij, (double)xA ) * (FloatOrDouble)xB;
-                    cB = tmpconst * pow( (double)Rij, (double)xB ) * (FloatOrDouble)xA;
+                    cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
+                    cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
                     intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables);
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
@@ -1140,8 +1199,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case DPF_MOVE:
         /*
-        ** move
-        ** Movable ligand,
+        ** move ligand_file.pdbqt
+        ** Specify the movable ligand,
         */
         //
         // Initialisations that must be done before reading in a new ligand...
@@ -1196,7 +1255,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             &natom,
                             crdpdb, charge, &B_haveCharges,
                             type, bond_index,
-                            pdbaname, FN_ligand, atomstuff, Htype,
+                            pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, Htype,
                             &B_constrain_dist, &atomC1, &atomC2,
                             &sqlower, &squpper,
                             &ntor1, &ntor, tlist, vt,
@@ -1219,7 +1278,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         for (i=0;i<natom;i++) {
             if (ignore_inter[i] == 1) {
                 pr(logFile, "Special Boundary Conditions:\n");
-                pr(logFile, "----------------------------\n\n");
+                pr(logFile, "____________________________\n\n");
                 pr(logFile, "AutoDock will ignore the following atoms in the input PDBQT file \nin intermolecular energy calculations:\n");
                 pr(logFile, "\n(This is because these residue atoms are at the boundary between \nflexible and rigid, and since they cannot move \nthey will not affect the total energy.)\n\n");
                 break;
@@ -1248,7 +1307,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     q1q2[i] = charge[atm1] * charge[atm2];
                     pr(logFile,"   %4d     %5d-%-5d    %5.2f",i+1,atm1+1,atm2+1,q1q2[i]);
                     q1q2[i] *= ELECSCALE * AD4.coeff_estat;
-                    pr(logFile,"      %5.2f\n",q1q2[i]);
+                    pr(logFile,"     %6.2f\n",q1q2[i]);
                 }
                 pr(logFile,"\n");
             }
@@ -1259,6 +1318,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ++nlig;
 
         (void) fflush(logFile);
+        break;
+
+/*____________________________________________________________________________*/
+
+    case DPF_FLEXRES:
+        /*
+         * flexible_residues file.pdbqt
+         */
+        (void) fflush(logFile);
+        pr(logFile, "\nThe flexible residues will be read in from \"%s\".\n", FN_flexres);
         break;
 
 
@@ -1823,8 +1892,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /* Defend against division by zero... */
         if (xA != xB) {
             // Calculate the coefficients from Rij and epsij
-            cA = (tmpconst = epsij / (FloatOrDouble)(xA - xB)) * pow( (double)Rij, (double)xA ) * (FloatOrDouble)xB;
-            cB = tmpconst * pow( (double)Rij, (double)xB ) * (FloatOrDouble)xA;
+            cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
+            cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
             pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
             intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables);
             pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
@@ -2331,7 +2400,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 */
                 for (F_A = F_A_from;  F_A <= F_A_to;  F_A += F_W) {
                     F_Aova = (F_A - F_torPref) / F_torHWdth;
-                    US_energy = (unsigned short) (((FloatOrDouble)US_torBarrier) * (1.0 - exp(F_lnH * F_Aova*F_Aova)));
+                    US_energy = (unsigned short) (((Real)US_torBarrier) * (1.0 - exp(F_lnH * F_Aova*F_Aova)));
                     /*
                     ** if F_A(<-180.or>180), wrap to -180to180,
                     */
@@ -2556,8 +2625,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       pr(logFile, "Creating a new Local Search object using the pseudo-Solis-Wets algorithm (pSW1) with the current settings.\n\n");
 
       //  Allocate space for the variable rho's
-      rho_ptr = new FloatOrDouble[7+sInit.ntor];
-      lb_rho_ptr = new FloatOrDouble[7+sInit.ntor];
+      rho_ptr = new Real[7+sInit.ntor];
+      lb_rho_ptr = new Real[7+sInit.ntor];
 
       //  Initialize the rho's corresponding to the translation
       for (j=0; j<3; j++) {
@@ -3136,7 +3205,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, ", the factory default value.\n\n");
         }
 
-        torsFreeEnergy = (FloatOrDouble)ntorsdof * AD4.coeff_tors;
+        torsFreeEnergy = (Real)ntorsdof * AD4.coeff_tors;
 
         pr( logFile, "Estimated loss of torsional free energy upon binding = %+.4f kcal/mol\n\n", torsFreeEnergy);
         (void) fflush(logFile);
@@ -3391,7 +3460,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         &natom,
                         crdpdb, charge, &B_haveCharges,
                         type, bond_index,
-                        pdbaname, FN_ligand, atomstuff, Htype,
+                        pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, Htype,
                         &B_constrain_dist, &atomC1, &atomC2,
                         &sqlower, &squpper,
                         &ntor1, &ntor, tlist, vt,
@@ -3430,7 +3499,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         for (i=0;i<natom;i++) {
             if (ignore_inter[i] == 1) {
                 pr(logFile, "Special Boundary Conditions:\n");
-                pr(logFile, "----------------------------\n\n");
+                pr(logFile, "____________________________\n\n");
                 pr(logFile, "AutoDock will ignore the following atoms in the input PDBQT file \nin intermolecular energy calculations:\n");
                 pr(logFile, "\n(This is because these residue atoms are at the boundary between \nflexible and rigid, and since they cannot move \nthey will not affect the total energy.)\n\n");
                 break;
@@ -3648,8 +3717,6 @@ return 0;
 
 } /* END OF PROGRAM */
 
-/* EOF */
-
 #ifdef BOINC
 /*  Dummy graphics API entry points.
  *  This app does not do graphics, but it still must provide these callbacks.
@@ -3662,3 +3729,5 @@ void boinc_app_mouse_button(int x, int y, int which, bool is_down){}
 void boinc_app_key_press(int wParam, int lParam){}
 void boinc_app_key_release(int wParam, int lParam){}
 #endif
+
+/* EOF */
