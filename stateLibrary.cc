@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.8 2005/10/06 22:52:49 lindy Exp $
+ $Id: stateLibrary.cc,v 1.9 2006/04/25 22:33:19 garrett Exp $
 
 */
 
@@ -69,7 +69,7 @@ void printState( FILE *fp,
                  int detail )
 {
     register int i;
-    FloatOrDouble torDegTmp;
+    Real torDegTmp;
 
     switch( detail ) {
         case 0:
@@ -118,7 +118,7 @@ void printState( FILE *fp,
 void writeState( FILE *fp, State S )
 {
     register int i;
-    FloatOrDouble torDegTmp;
+    Real torDegTmp;
 
     //    (void)fprintf( fp, "State= " );
 
