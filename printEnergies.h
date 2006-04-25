@@ -2,21 +2,21 @@
 #define PRINTENERGIES
 #include <stdio.h>
 #include "autocomm.h"
-void printEnergies( FloatOrDouble einter,
-		    FloatOrDouble eintra,
-		    FloatOrDouble torsFreeEnergy,
+void printEnergies( Real einter,
+		    Real eintra,
+		    Real torsFreeEnergy,
 		    char  *prefixString, 
             int ligand_is_inhibitor,
-			 FloatOrDouble elec_total,
-			 FloatOrDouble emap_total,
-			 FloatOrDouble unbound_internal_FE
+			 Real elec_total,
+			 Real emap_total,
+			 Real unbound_internal_FE
 		    );
 
-void printStateEnergies( FloatOrDouble einter,
-			 FloatOrDouble eintra,
-			 FloatOrDouble torsFreeEnergy,
+void printStateEnergies( Real einter,
+			 Real eintra,
+			 Real torsFreeEnergy,
 			 char  *prefixString, 
 			 int ligand_is_inhibitor,
-			 FloatOrDouble unbound_internal_FE
+			 Real unbound_internal_FE
 			 );
 #endif
