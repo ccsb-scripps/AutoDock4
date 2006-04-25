@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.5 2006/01/30 23:06:03 garrett Exp $
+ $Id: nonbonds.cc,v 1.6 2006/04/25 22:32:39 garrett Exp $
 
 */
 
@@ -155,7 +155,7 @@ void printbonds(const int natom, const int bonded[MAX_ATOMS][6], const char *mes
 
 /*----------------------------------------------------------------------------*/
 
-void print_1_4_message(FILE *file, Boole B_include_1_4_interactions,  FloatOrDouble scale_1_4)
+void print_1_4_message(FILE *file, Boole B_include_1_4_interactions,  Real scale_1_4)
 {
     if (B_include_1_4_interactions == FALSE) {
         pr(file, "1,4-interactions will be _ignored_ in the non-bonded internal energy calculation.\n\n");
