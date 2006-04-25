@@ -120,8 +120,8 @@ typedef char Boole;
 
 typedef struct AtomDesc {
 
-	FloatOrDouble crd[XYZ];
-	FloatOrDouble q;
+	Real crd[XYZ];
+	Real q;
 	int   type;
 
 	} AtomDesc;
