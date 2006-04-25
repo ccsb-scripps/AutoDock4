@@ -1,6 +1,6 @@
 /*
 
- $Id: readGridMap.cc,v 1.2 2006/01/30 23:06:38 garrett Exp $
+ $Id: readGridMap.cc,v 1.3 2006/04/25 22:33:05 garrett Exp $
 
 */
 
@@ -25,12 +25,12 @@ extern int ElecMap;
 extern FILE *logFile;
 extern int debug;
 
-char mapf2c(FloatOrDouble);
+char mapf2c(Real);
 
 void readmap( Boole *P_B_HaveMap, 
              int *P_imap, 
              int *num_atom_types, 
-             FloatOrDouble *P_ExtSpacing, 
+             Real *P_ExtSpacing, 
              char ligand_atom_types[MAX_MAPS][3],
              char ExtFldFileName[MAX_CHARS],
              int ExtGridPts1[SPACE],
@@ -38,10 +38,10 @@ void readmap( Boole *P_B_HaveMap,
              Clock jobStart,
              char line[LINE_LEN],
              char ExtMacromolFileName[MAX_CHARS],
-             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-             FloatOrDouble MapCenter[SPACE],
-             FloatOrDouble MapMax[MAX_MAPS],
-             FloatOrDouble MapMin[MAX_MAPS],
+             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+             Real MapCenter[SPACE],
+             Real MapMax[MAX_MAPS],
+             Real MapMin[MAX_MAPS],
              struct tms tmsJobStart,
              Boole B_charMap,
              int outlev,
@@ -63,8 +63,8 @@ void readmap( Boole *P_B_HaveMap,
     char atom_type_name[MAX_CHARS];
     char map_type = '?';
 
-    FloatOrDouble cen[SPACE];
-    FloatOrDouble spacing = 0.;
+    Real cen[SPACE];
+    Real spacing = 0.;
 
     int indpf = 0;
     int nel[SPACE];
@@ -254,9 +254,9 @@ void readmap( Boole *P_B_HaveMap,
     flushLog;
 }
 
-FloatOrDouble mapc2f(char numin)
+Real mapc2f(char numin)
 {
-    FloatOrDouble numout;
+    Real numout;
     if (numin == 0) {
         numout = 0.;
     } else if (numin > 0) {
@@ -268,7 +268,7 @@ FloatOrDouble mapc2f(char numin)
 }
 
 /*
-    char mapf2c(FloatOrDouble numin)
+    char mapf2c(Real numin)
     {
         char numout;
         if (numin == 0.) {
