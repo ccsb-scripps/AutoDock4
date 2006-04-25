@@ -140,7 +140,7 @@ void read_parameter_library(
                             thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
                             thisParameter.Rij_hb, thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
                 } else {
-                    pr(logFile, "\tR-eqm = %.2f Angstrom,  weighted epsilon = %.3f,  At.frag.vol. = %.3f,  At.solv.par. = %.3f, \n\tHb R-eqm = %.3f,  weighted Hb epsilon = %.3f,  Hb type = %d,  bond index = %d\n\n",
+                    pr(logFile, "\tR-eqm = %.2f Angstrom,  weighted epsilon = %.3f,\n\tAt.frag.vol. = %.3f,  At.solv.par. = %.3f,\n\tHb R-eqm = %.3f,  weighted Hb epsilon = %.3f,\n\tHb type = %d,  bond index = %d\n\n",
                             thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
                             thisParameter.Rij_hb, thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
                 }
@@ -274,7 +274,7 @@ void setup_parameter_library( int outlev )
                             thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
                             thisParameter.Rij_hb, thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
                 } else {
-                    pr(logFile, "\tR-eqm = %.2f Angstrom,  weighted epsilon = %.3f,  At.frag.vol. = %.3f,  At.solv.par. = %.3f, \n\tHb R-eqm = %.3f,  weighted Hb epsilon = %.3f,  Hb type = %d,  bond index = %d\n\n",
+                    pr(logFile, "\tR-eqm = %.2f Angstrom,  weighted epsilon = %.3f,\n\tAt.frag.vol. = %.3f,  At.solv.par. = %.3f,\n\tHb R-eqm = %.3f,  weighted Hb epsilon = %.3f,\n\tHb type = %d,  bond index = %d\n\n",
                             thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
                             thisParameter.Rij_hb, thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
                 }
