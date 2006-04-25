@@ -1,6 +1,6 @@
 /*
 
- $Id: getpdbcrds.cc,v 1.2 2003/02/26 01:05:49 garrett Exp $
+ $Id: getpdbcrds.cc,v 1.3 2006/04/25 22:32:14 garrett Exp $
 
 */
 
@@ -22,7 +22,7 @@ extern char *programname;
 
 
 int getpdbcrds( char rms_ref_crds_FN[MAX_CHARS],
-		FloatOrDouble ref_crds[MAX_ATOMS][SPACE] )
+		Real ref_crds[MAX_ATOMS][SPACE] )
 {
     int ii=0;
     int natoms=0;
