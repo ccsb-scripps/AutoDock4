@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.14 2006/04/17 05:21:28 garrett Exp $
+ $Id: cmdmode.cc,v 1.15 2006/04/25 22:31:57 garrett Exp $
 
 */
 
@@ -41,33 +41,33 @@ extern int parse_tors_mode;
 int cmdmode(int   natom,
              Clock jobStart,
              struct tms tms_jobStart,
-             FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 
                     EnergyTables *ptr_ad_energy_tables,
 
-             FloatOrDouble WallEnergy,
-             FloatOrDouble vt[MAX_TORS][SPACE],
+             Real WallEnergy,
+             Real vt[MAX_TORS][SPACE],
              int   tlist[MAX_TORS][MAX_ATOMS],
              int   ntor,
              int   Nnb,
              int   **nonbondlist,
              char  atomstuff[MAX_ATOMS][MAX_CHARS],
-             FloatOrDouble crdpdb[MAX_ATOMS][SPACE],
+             Real crdpdb[MAX_ATOMS][SPACE],
              char  hostnm[MAX_CHARS],
              int   type[MAX_ATOMS],
-             FloatOrDouble charge[MAX_ATOMS],
-             FloatOrDouble abs_charge[MAX_ATOMS],
-             FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+             Real charge[MAX_ATOMS],
+             Real abs_charge[MAX_ATOMS],
+             Real qsp_abs_charge[MAX_ATOMS],
              Boole B_calcIntElec,
-             FloatOrDouble q1q2[MAX_NONBONDS],
+             Real q1q2[MAX_NONBONDS],
              char  atm_typ_str[ATOM_MAPS],
-             FloatOrDouble torsFreeEnergy,
+             Real torsFreeEnergy,
              int ligand_is_inhibitor,
              int ignore_inter[MAX_ATOMS],
              const Boole         B_include_1_4_interactions,
-             const FloatOrDouble scale_1_4,
+             const Real scale_1_4,
              const ParameterEntry parameterArray[MAX_MAPS],
-             const FloatOrDouble unbound_internal_FE,
+             const Real unbound_internal_FE,
 
              GridMapSetInfo *info
             )
@@ -106,7 +106,7 @@ int cmdmode(int   natom,
 
     struct tms tms_jobEnd;
 
-    FloatOrDouble eintra = 0.,
+    Real eintra = 0.,
           einter = 0.,
           etotal = 0.,
           etot   = 0.,
