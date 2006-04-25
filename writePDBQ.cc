@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQ.cc,v 1.11 2005/10/22 04:40:02 garrett Exp $
+ $Id: writePDBQ.cc,v 1.12 2006/04/25 22:33:33 garrett Exp $
 
 */
 
@@ -27,34 +27,34 @@ void
 writePDBQ(int irun,
 	  char smFileName[MAX_CHARS],
 	  char dpfFN[MAX_CHARS],
-	  FloatOrDouble sml_center[SPACE],
+	  Real sml_center[SPACE],
 	  State state,
 	  int ntor,
-	  FloatOrDouble eintra,
-	  FloatOrDouble einter,
+	  Real eintra,
+	  Real einter,
 	  int natom,
 	  char atomstuff[MAX_ATOMS][MAX_CHARS],
-	  FloatOrDouble crd[MAX_ATOMS][SPACE],
-	  FloatOrDouble emap[MAX_ATOMS],
-	  FloatOrDouble elec[MAX_ATOMS],
-	  FloatOrDouble charge[MAX_ATOMS],
-	  FloatOrDouble abs_charge[MAX_ATOMS],
-	  FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+	  Real crd[MAX_ATOMS][SPACE],
+	  Real emap[MAX_ATOMS],
+	  Real elec[MAX_ATOMS],
+	  Real charge[MAX_ATOMS],
+	  Real abs_charge[MAX_ATOMS],
+	  Real qsp_abs_charge[MAX_ATOMS],
 	  int ligand_is_inhibitor,
-	  FloatOrDouble torsFreeEnergy,
+	  Real torsFreeEnergy,
 	  int outlev,
 	  int ignore_inter[MAX_ATOMS],
 	  const Boole B_include_1_4_interactions,
-	  const FloatOrDouble scale_1_4,
+	  const Real scale_1_4,
 
 	  const ParameterEntry parameterArray[MAX_MAPS],
-	  const FloatOrDouble unbound_internal_FE)
+	  const Real unbound_internal_FE)
 {
 	int             i = 0;
 
-	FloatOrDouble   emap_total = 0.0L;
-	FloatOrDouble   elec_total = 0.0L;
-	FloatOrDouble   MaxValue = 99.99L;
+	Real   emap_total = 0.0L;
+	Real   elec_total = 0.0L;
+	Real   MaxValue = 99.99L;
 
 	char            rec14[14], rec9[9];
 
