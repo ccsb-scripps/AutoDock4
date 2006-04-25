@@ -92,7 +92,7 @@ class RealVector : public Representation
 {
 //   friend void debug(RealVector &);
    protected:
-      FloatOrDouble high, low;
+      Real high, low;
       double *vector;
 
       const void *internals(void) const;
@@ -120,7 +120,7 @@ class ConstrainedRealVector : public Representation
 {
 //   friend debug(ConstrainedRealVector &);
    protected:
-      static FloatOrDouble high, low;
+      static Real high, low;
       static double sum;
       double *vector;
 
@@ -149,7 +149,7 @@ class BitVector : public Representation
 {
 //   friend void debug(BitVector &);
    protected:
-      static FloatOrDouble one_prob;
+      static Real one_prob;
       unsigned char *vector;
 
       const void *internals(void) const;
@@ -159,7 +159,7 @@ class BitVector : public Representation
       BitVector(void);
       BitVector(int);
       BitVector(int, unsigned char *);
-      BitVector(int, FloatOrDouble);
+      BitVector(int, Real);
       BitVector(const BitVector &);
       ~BitVector(void);
       void write(unsigned char, int);
