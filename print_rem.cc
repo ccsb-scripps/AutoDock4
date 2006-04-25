@@ -1,6 +1,6 @@
 /*
 
- $Id: print_rem.cc,v 1.2 2003/02/26 01:29:27 garrett Exp $
+ $Id: print_rem.cc,v 1.3 2006/04/25 22:32:55 garrett Exp $
 
 */
 
@@ -17,7 +17,7 @@ void print_rem( FILE *outFile,
 		int Rank,
 		int NumMem,
 		int Run,
-		FloatOrDouble ref_rms)
+		Real ref_rms)
 {
     fprintf( outFile, "MODEL     %4d\n", Run );
     fprintf( outFile, "USER    Run = %d\n", Run );
