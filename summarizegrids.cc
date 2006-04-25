@@ -1,6 +1,6 @@
 /*
 
- $Id: summarizegrids.cc,v 1.2 2003/02/26 01:42:55 garrett Exp $
+ $Id: summarizegrids.cc,v 1.3 2006/04/25 22:33:21 garrett Exp $
 
 */
 
@@ -17,8 +17,8 @@
 extern FILE *logFile;
 
 void summarizegrids( char  atm_typ_str[ATOM_MAPS],
-		     FloatOrDouble mapmax[MAX_MAPS],
-		     FloatOrDouble mapmin[MAX_MAPS],
+		     Real mapmax[MAX_MAPS],
+		     Real mapmin[MAX_MAPS],
 		     int   num_all_maps,
 		     int   num_atm_maps )
 {
