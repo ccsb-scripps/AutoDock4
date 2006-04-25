@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.7 2006/04/17 05:19:28 garrett Exp $
+ $Id: banner.cc,v 1.8 2006/04/25 22:31:45 garrett Exp $
 
 */
 
@@ -15,7 +15,7 @@
 
 extern FILE *logFile;
 
-void banner( FloatOrDouble version_num )
+void banner( Real version_num )
 
 {
 
