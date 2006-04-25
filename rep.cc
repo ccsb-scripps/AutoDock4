@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.7 2005/03/11 02:11:31 garrett Exp $
+ $Id: rep.cc,v 1.8 2006/04/25 22:33:12 garrett Exp $
 
 */
 
@@ -31,14 +31,14 @@ extern int debug;
 FourByteLong IntVector::low = -INT_MAX/4;
 FourByteLong IntVector::high = INT_MAX/4;
 /* A nonstatic data member cannot be defined outside its class:
- * FloatOrDouble RealVector::low = REALV_LOW;
- * FloatOrDouble RealVector::high = REALV_HIGH;
+ * Real RealVector::low = REALV_LOW;
+ * Real RealVector::high = REALV_HIGH;
  */
 //  For now assume that normalize handles this constraint
-FloatOrDouble ConstrainedRealVector::low = REALV_LOW;
-FloatOrDouble ConstrainedRealVector::high = REALV_HIGH;
+Real ConstrainedRealVector::low = REALV_LOW;
+Real ConstrainedRealVector::high = REALV_HIGH;
 double ConstrainedRealVector::sum = 1.0;
-FloatOrDouble BitVector::one_prob = 0.5;
+Real BitVector::one_prob = 0.5;
 
 //  The member functions for the canonical base classes
 
@@ -743,12 +743,12 @@ BitVector::BitVector(int num_els)
    }
 }
 
-BitVector::BitVector(int num_els, FloatOrDouble prob)
+BitVector::BitVector(int num_els, Real prob)
 : Representation(num_els)
 {
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/BitVector::BitVector(int num_els=%d, FloatOrDouble prob=%f) \n",num_els,prob);
+    (void)fprintf(logFile, "rep.cc/BitVector::BitVector(int num_els=%d, Real prob=%f) \n",num_els,prob);
 #endif /* DEBUG */
 
    mytype = T_BitV;
