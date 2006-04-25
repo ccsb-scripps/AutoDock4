@@ -29,10 +29,10 @@
 #endif
 
 #ifdef USE_DOUBLE
-    typedef double FloatOrDouble;
+    typedef double Real;
 #   define FDFMT "%lf"
 #else
-    typedef float FloatOrDouble;
+    typedef float Real;
 #   define FDFMT "%f"
 #endif
 #define FDFMT2 FDFMT " " FDFMT
