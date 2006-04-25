@@ -7,31 +7,31 @@
 
 #ifndef EINTCALPRINT
 
-FloatOrDouble  eintcal( 
+Real  eintcal( 
                         int   ** const nonbondlist, 
                         const EnergyTables  *ad_energy_tables,
-                        const FloatOrDouble tcoord[MAX_ATOMS][SPACE], 
+                        const Real tcoord[MAX_ATOMS][SPACE], 
                         const int           Nnb,
                         const Boole         B_calcIntElec,
-                        const FloatOrDouble q1q2[MAX_NONBONDS],
+                        const Real q1q2[MAX_NONBONDS],
                         const Boole         B_include_1_4_interactions,
-                        const FloatOrDouble scale_1_4,
-                        const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+                        const Real scale_1_4,
+                        const Real qsp_abs_charge[MAX_ATOMS],
                         const ParameterEntry parameterArray[MAX_MAPS]
                       );
 
 #else        /*EINTCALPRINT*/
 
-FloatOrDouble  eintcalPrint( 
+Real  eintcalPrint( 
                              int  ** const nonbondlist,
                              const EnergyTables  *ad_energy_tables,
-                             const FloatOrDouble tcoord[MAX_ATOMS][SPACE],
+                             const Real tcoord[MAX_ATOMS][SPACE],
                              const int   Nnb,
                              const Boole B_calcIntElec,
-                             const FloatOrDouble q1q2[MAX_NONBONDS],
+                             const Real q1q2[MAX_NONBONDS],
                              const Boole B_include_1_4_interactions,
-                             const FloatOrDouble scale_1_4,
-                             const FloatOrDouble qsp_abs_charge[MAX_ATOMS],
+                             const Real scale_1_4,
+                             const Real qsp_abs_charge[MAX_ATOMS],
                              const ParameterEntry parameterArray[MAX_MAPS]
                            );
 
