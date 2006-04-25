@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.4 2005/10/22 04:02:40 garrett Exp $
+ $Id: prInitialState.cc,v 1.5 2006/04/25 22:32:46 garrett Exp $
 
 */
 
@@ -25,18 +25,18 @@ extern char *programname;
 
 void prInitialState(
 
-    FloatOrDouble einter,
-    FloatOrDouble eintra,
-    FloatOrDouble torsFreeEnergy,
+    Real einter,
+    Real eintra,
+    Real torsFreeEnergy,
     int natom,
-    FloatOrDouble crd[MAX_ATOMS][SPACE],
+    Real crd[MAX_ATOMS][SPACE],
     char atomstuff[MAX_ATOMS][MAX_CHARS],
     int type[MAX_ATOMS],
-    FloatOrDouble emap[MAX_ATOMS],
-    FloatOrDouble elec[MAX_ATOMS],
-    FloatOrDouble charge[MAX_ATOMS],
+    Real emap[MAX_ATOMS],
+    Real elec[MAX_ATOMS],
+    Real charge[MAX_ATOMS],
     int ligand_is_inhibitor,
-    FloatOrDouble unbound_internal_FE
+    Real unbound_internal_FE
     )
 
 {
@@ -45,8 +45,8 @@ void prInitialState(
     char descriptor[17];
     register int i = 0;
     int a = 0;
-    FloatOrDouble emap_total = 0.0;
-    FloatOrDouble elec_total = 0.0;
+    Real emap_total = 0.0;
+    Real elec_total = 0.0;
 
     strncpy(descriptor, "INITIAL STATE:  ", (size_t)16);
 
