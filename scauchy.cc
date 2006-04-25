@@ -1,6 +1,6 @@
 /*
 
- $Id: scauchy.cc,v 1.4 2004/11/16 23:42:53 garrett Exp $
+ $Id: scauchy.cc,v 1.5 2006/04/25 22:33:14 garrett Exp $
 
 $-Id: scauchy.cc,v 3.0 1996/03/11 05:40:00 halliday Exp $
 $-Source: /tmp_mnt/mgl/apps/src/autodock/3.0/autodock/RCS/scauchy.cc,v $
@@ -33,9 +33,9 @@ Initial revision
 
 #define EPS     1.e-12
 
-FloatOrDouble scauchy1()
+Real scauchy1()
 {
-FloatOrDouble x, y;
+Real x, y;
  
 			/* These four lines generate the tangent of a random
 			 *	angle;  this is equivalent to 
