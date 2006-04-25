@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.5 2006/01/30 23:06:57 garrett Exp $
+ $Id: readmap.cc,v 1.6 2006/04/25 22:33:10 garrett Exp $
 
 */
 
@@ -25,7 +25,7 @@ extern int ElecMap;
 extern FILE *logFile;
 extern int debug;
 
-char mapf2c(FloatOrDouble);
+char mapf2c(Real);
 
 void readmap( char           line[LINE_LEN],
               int            outlev,
@@ -39,7 +39,7 @@ void readmap( char           line[LINE_LEN],
               int            *P_imap, 
  
               GridMapSetInfo *info,
-              FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
+              Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
               // double *maps 
              )
 
@@ -59,8 +59,8 @@ void readmap( char           line[LINE_LEN],
     char atom_type_name[MAX_CHARS];
     char map_type = '?';
 
-    FloatOrDouble cen[SPACE];
-    FloatOrDouble spacing = 0.;
+    Real cen[SPACE];
+    Real spacing = 0.;
     double max[MAX_MAPS];
     double min[MAX_MAPS];
 
@@ -258,9 +258,9 @@ void readmap( char           line[LINE_LEN],
     flushLog;
 }
 
-FloatOrDouble mapc2f(char numin)
+Real mapc2f(char numin)
 {
-    FloatOrDouble numout;
+    Real numout;
     if (numin == 0) {
         numout = 0.;
     } else if (numin > 0) {
@@ -273,7 +273,7 @@ FloatOrDouble mapc2f(char numin)
 
 void scale_map(
         double weight,
-        FloatOrDouble map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
+        Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
         )
 {
     
@@ -281,7 +281,7 @@ void scale_map(
 
 
 /*
-    char mapf2c(FloatOrDouble numin)
+    char mapf2c(Real numin)
     {
         char numout;
         if (numin == 0.) {
