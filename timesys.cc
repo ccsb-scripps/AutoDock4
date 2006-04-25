@@ -1,6 +1,6 @@
 /*
 
- $Id: timesys.cc,v 1.4 2005/09/28 22:54:21 garrett Exp $
+ $Id: timesys.cc,v 1.5 2006/04/25 22:33:24 garrett Exp $
 
  */
 
@@ -19,7 +19,7 @@
 #include "timesys.h"
 
 extern  FILE    *logFile;
-extern	FloatOrDouble	idct;
+extern	Real	idct;
 
 /*----------------------------------------------------------------------------*/
 
@@ -30,8 +30,8 @@ void timesys( Clock       duration,
 /*----------------------------------------------------------------------------*/
 
 {
-	fprintf( logFile, "Real= %.2f,  CPU= %.2f,  System= %.2f\n",     (FloatOrDouble)duration * idct,
-                         (FloatOrDouble)(end->tms_utime  - start->tms_utime) * idct,
-                         (FloatOrDouble)(end->tms_stime  - start->tms_stime) * idct );
+	fprintf( logFile, "Real= %.2f,  CPU= %.2f,  System= %.2f\n",     (Real)duration * idct,
+                         (Real)(end->tms_utime  - start->tms_utime) * idct,
+                         (Real)(end->tms_stime  - start->tms_stime) * idct );
 }
 /* EOF */
