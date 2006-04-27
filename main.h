@@ -10,7 +10,6 @@
 #include "cmdmode.h"
 #include "cnv_state_to_coords.h"
 #include "constants.h"
-#include "dpftypes.h"
 #include "eintcal.h"
 #include "evaluate_energy.h"
 #include "intnbtable.h"
