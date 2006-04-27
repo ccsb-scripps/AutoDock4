@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.12 2006/04/25 22:32:43 garrett Exp $
+ $Id: parse_dpf_line.cc,v 1.13 2006/04/27 00:28:47 garrett Exp $
 
 */
 
@@ -13,7 +13,7 @@
 #include <ctype.h>
 #include "parse_dpf_line.h"
 
-#define NUM_LEXEMES_AUTODOCK 103 // this is the length of the tokentable of AutoDock-related lexemes 
+#define NUM_LEXEMES_AUTODOCK 105 // this is the length of the tokentable of AutoDock-related lexemes 
 #define NUM_LEXEMES_COLINY 1 // this is the length of the tokentable of Coliny-related lexemes 
 
 int parse_dpf_line( char line[LINE_LEN] )
@@ -51,7 +51,7 @@ int parse_dpf_line( char line[LINE_LEN] )
     const struct {
        char *lexeme;
        int tokenvalue;
-    } tokentable[] = {{"types", DPF_TYPES},  // 1
+    } tokentable[] = {{"ligand", DPF_MOVE},  // 1
                       {"fld", DPF_FLD}, // 2
                       {"map", DPF_MAP}, // 3
                       {"move", DPF_MOVE}, // 4
@@ -154,7 +154,10 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"set_unbound_energy", DPF_UNBOUND}      // 101
               , {"flexible_residues", DPF_FLEXRES} // 102
               , {"flexres", DPF_FLEXRES} // 103
+              , {"elecmap", DPF_ELECMAP} // 104
+              , {"desolvmap", DPF_DESOLVMAP} // 105
 			   // Remember to define NUM_LEXEMES_AUTODOCK earlier
+
 #if defined(USING_COLINY)
               , {"coliny", DPF_COLINY}  // 1 
                // Remember to define NUM_LEXEMES_COLINY earlier
