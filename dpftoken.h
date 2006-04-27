@@ -24,7 +24,7 @@
 #define	DPF_		-1
 #define	DPF_NULL	 0
 #define	DPF_COMMENT	 1
-#define	DPF_TYPES	 2
+// 2 // (DPF_TYPES was removed, since the "types" command is no longer supported in AD4
 #define	DPF_FLD		 3
 #define	DPF_MAP		 4
 #define	DPF_MOVE	 5
@@ -116,6 +116,8 @@
 #define DPF_SET_PATTERN 91
 #define DPF_COMPUTE_UNBOUND_EXTENDED	    92
 #define DPF_FLEXRES 93
+#define DPF_ELECMAP 94
+#define DPF_DESOLVMAP 95
 
 #endif
 /* EOF */
