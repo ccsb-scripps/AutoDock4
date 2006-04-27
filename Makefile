@@ -62,7 +62,6 @@ OBJS = \
     readmap.o \
     readPDBQT.o \
 	read_parameter_library.o \
-    dpftypes.o \
     eval.o \
     evaluate_energy.o \
     gencau.o \
@@ -150,7 +149,6 @@ OBJS_LSFIT = \
     readmap.o \
     readPDBQT.o \
 	read_parameter_library.o \
-    dpftypes.o \
     eval.o \
     evaluate_energy.o \
     gencau.o \
@@ -254,7 +252,6 @@ LNS = \
     readmap.ln \
     readPDBQT.ln \
 	read_parameter_library.ln \
-    dpftypes.ln \
     evaluate_energy.ln \
     getrms.ln \
     get_atom_type.ln \
@@ -619,10 +616,6 @@ distdepdiel.o : distdepdiel.cc distdepdiel.h
 stateLibrary.o : stateLibrary.cc stateLibrary.h constants.h
 	$(CC) $(CFLAGS) -c stateLibrary.cc
 
-
-dpftypes.o : dpftypes.cc dpftypes.h constants.h dpftoken.h stop.h
-	$(CC) $(CFLAGS) -c dpftypes.cc
-
 eintcal.o : eintcal.cc eintcal.h constants.h
 	$(CC) $(CFLAGS) -DNOSQRT -DBOUNDED -c eintcal.cc -o eintcal.o
 
@@ -912,9 +905,6 @@ readmap.ln : readmap.cc
 	$(LINT) $(LINTFLAGS) $?
 
 readPDBQT.ln : readPDBQT.cc
-	$(LINT) $(LINTFLAGS) $?
-
-dpftypes.ln : dpftypes.cc
 	$(LINT) $(LINTFLAGS) $?
 
 evaluate_energy.ln : evaluate_energy.cc
