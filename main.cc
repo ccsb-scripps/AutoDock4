@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.38 2006/04/25 22:32:31 garrett Exp $
+ $Id: main.cc,v 1.39 2006/05/02 20:27:59 garrett Exp $
 
 */
 
@@ -360,7 +360,6 @@ int nrejmax = 0;
 int ntor;
 int ntor1;
 int ntorsdof = 0;
-int num_all_maps = 0;
 int num_atom_types = 0;
 int nval = 0;
 int outlev = -1;
@@ -1072,33 +1071,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
             } // for j
         } // for i
-        break;
-
-//______________________________________________________________________________
-
-    case DPF_TYPES:
-        /*
-        ** types
-        **       - for backwards compatibility with AutoDock 3 and earlier.
-        ** ATOM_TYPE_NAMES
-        */
-        for (i=0; i<ATOM_MAPS-1; i++) {
-            atm_typ_str[i] = '?'; 
-        }
-        atm_typ_str[ATOM_MAPS-1] = '\0';
-        // This is deprecated 
-        prStr( error_message, "%s: WARNING:  In AutoDock 4, the new command, \"ligand_types\" is preferable to the \"types\" command.\n\n", programname);
-        pr_2x( logFile, stderr, error_message );
-        dpftypes( &Htype, &num_all_maps, &num_atom_types, atm_typ_str, line );
-        info->num_atom_types = num_atom_types;
-        if (num_atom_types > 0) {
-            B_atom_types_found = TRUE;
-        } else {
-            prStr( error_message, "%s:  ERROR!  No atom types have been found; we cannot continue without this information!\n\n", programname );
-            pr_2x( logFile, stderr, error_message );
-            exit(-1);
-        }
-        (void) fflush(logFile);
         break;
 
 //______________________________________________________________________________
