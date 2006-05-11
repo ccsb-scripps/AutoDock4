@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.6 2006/04/25 22:33:10 garrett Exp $
+ $Id: readmap.cc,v 1.7 2006/05/11 22:23:15 garrett Exp $
 
 */
 
@@ -16,6 +16,7 @@
 #include <sys/types.h>
 #include <sys/times.h>
 #include <time.h>
+#include <math.h>
 #include "readmap.h"
 
 extern char dock_param_fn[];
@@ -27,20 +28,17 @@ extern int debug;
 
 char mapf2c(Real);
 
-void readmap( char           line[LINE_LEN],
+Statistics readmap( char           line[LINE_LEN],
               int            outlev,
- 
               Clock          jobStart,
               struct tms     tmsJobStart,
-        
               Boole          B_charMap,
-
               Boole          *P_B_HaveMap, 
-              int            *P_imap, 
- 
+                    int            num_maps, 
               GridMapSetInfo *info,
-              Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
+                    Real           map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
               // double *maps 
+                    char           map_type
              )
 
 {
@@ -57,12 +55,12 @@ void readmap( char           line[LINE_LEN],
     char map_line[LINE_LEN];
     char inputline[LINE_LEN];
     char atom_type_name[MAX_CHARS];
-    char map_type = '?';
 
     Real cen[SPACE];
     Real spacing = 0.;
-    double max[MAX_MAPS];
-    double min[MAX_MAPS];
+    double map_max;
+    double map_min;
+    double map_total;
 
     int indpf = 0;
     int nel[SPACE];
@@ -82,9 +80,11 @@ void readmap( char           line[LINE_LEN],
     Clock loadEnd;
     Clock loadStart;
 
+    Statistics map_stats;
+
     strcpy( xyz_str, "xyz\0" );
 
-    //maps->atom_type = *P_imap;
+    //maps->atom_type = num_maps;
 
     /*
     \  ATOMIC AFFINITY or ELECTROSTATIC GRID MAP
@@ -100,16 +100,16 @@ void readmap( char           line[LINE_LEN],
                 (void) fprintf(logFile, "info->atom_type_name[%d] = \"%s\"\n", i, info->atom_type_name[i] );
             }
         }
-        if ((*P_imap) == info->num_atom_types) {
+
+        if (map_type == 'e') {
             strcpy(atom_type_name, "e\0");
-            map_type = 'e';
-        } else if ( (*P_imap) == (info->num_atom_types + 1)) {
+        } else if (map_type == 'd') {
             strcpy(atom_type_name, "d\0");
-            map_type = 'd';
         } else {
-            strcpy(atom_type_name, info->atom_type_name[*P_imap]);
+            strcpy(atom_type_name, info->atom_type_name[num_maps]);
         }
-        pr( logFile, "Opened Grid Map %d (%s):\t\t\t\t%s\n", (*P_imap)+1, atom_type_name, FileName );
+        pr( logFile, "Opened Grid Map %d (%s):\t\t\t\t%s\n", num_maps+1, atom_type_name, FileName );
+
         if (!ignore_errors) {
             pr( logFile, "Checking header information.\n" );
         }
@@ -190,50 +190,78 @@ void readmap( char           line[LINE_LEN],
         } /* endif */
     } /* endif */
     flushLog;
+
     /*
     \   Now find the extrema of the grid-map energies,
      \  While reading in the values...
       \____________________________________________________________
      */
-    max[*P_imap] = -BIG;
-    min[*P_imap] =  BIG;
+
+    map_max = -BIG;
+    map_min =  BIG;
+    map_total = 0.;
     nvExpected = info->num_points1[X] * info->num_points1[Y] * info->num_points1[Z];
     nv = 0;
+
     pr( logFile, "Number of grid points expected in  x-dimension:  %d\n", info->num_points1[X] );
     pr( logFile, "Number of grid points expected in  y-dimension:  %d\n", info->num_points1[Y] );
     pr( logFile, "Number of grid points expected in  z-dimension:  %d\n", info->num_points1[Z] );
-    pr( logFile, "Looking for %d energies from Grid Map %d... \n", nvExpected, (*P_imap)+1 );
+    pr( logFile, "Looking for %d energies from Grid Map %d... \n", nvExpected, num_maps+1 );
     flushLog;
     loadStart = times( &tms_loadStart );
+
     for ( k = 0;  k < info->num_points1[Z];  k++) {
         for ( j = 0;  j < info->num_points1[Y];  j++) {
             for ( i = 0;  i < info->num_points1[X];  i++) {
                 if (B_charMap) {
                     if (fgets(map_line, LINE_LEN, map_file) != NULL) { /*new*/
                         if (sscanf( map_line,  "%c",  &C_mapValue ) != 1) continue;
-                        map[k][j][i][*P_imap] = mapc2f(C_mapValue);
+                        map[k][j][i][num_maps] = mapc2f(C_mapValue);
                         nv++;
                     }
                 } else {
                     if (fgets( map_line, LINE_LEN, map_file) != NULL) { /*new*/
-                        if (sscanf( map_line,  FDFMT,  &map[k][j][i][*P_imap] ) != 1) continue;
+                        if (sscanf( map_line,  FDFMT,  &map[k][j][i][num_maps] ) != 1) continue;
                         nv++;
                     }
                 }
-                //max[*P_imap] = max( max[*P_imap], maps->map[k][j][i][*P_imap] );
-                //min[*P_imap] = min( min[*P_imap], maps->map[k][j][i][*P_imap] );
-                max[*P_imap] = max( max[*P_imap], map[k][j][i][*P_imap] );
-                min[*P_imap] = min( min[*P_imap], map[k][j][i][*P_imap] );
+                map_max = max( map_max, map[k][j][i][num_maps] );
+                map_min = min( map_min, map[k][j][i][num_maps] );
+                map_total += map[k][j][i][num_maps];
             }
         }
     }
+
+    map_stats.number = nv;
+    map_stats.minimum = map_min;
+    map_stats.maximum = map_max;
+    map_stats.mean = map_total / (double) nv;
+
+    /*
+    if (map_stats.number > 1) {
+        double deviation = 0.;
+        double sum_squares = 0.;
+        for ( k = 0;  k < info->num_points1[Z];  k++) {
+            for ( j = 0;  j < info->num_points1[Y];  j++) {
+                for ( i = 0;  i < info->num_points1[X];  i++) {
+                    deviation = map[k][j][i][num_maps] - map_stats.mean;
+                    sum_squares += deviation * deviation;
+                }
+            }
+        }
+        map_stats.standard_deviation = sqrt(sum_squares / (map_stats.number - 1));
+    } else {
+        map_stats.standard_deviation = 0.;
+    }
+    */
+
     pr( logFile, "Closing file.\n" );
     fclose( map_file );
-    pr( logFile, "%d energies found for map %d\n", nv, (*P_imap)+1 );
+    pr( logFile, "%d energies found for map %d\n", nv, num_maps+1 );
     if (map_type == 'e') {
-        pr( logFile, "Minimum electrostatic potential = %.2f,  maximum electrostatic potential = %.2f\n\n", min[*P_imap], max[*P_imap] );
+        pr( logFile, "Minimum electrostatic potential = %.2f,  maximum electrostatic potential = %.2f\n\n", map_min, map_max );
     } else {
-        pr( logFile, "Minimum energy = %.2f,  maximum energy = %.2f\n\n", min[*P_imap], max[*P_imap] );
+        pr( logFile, "Minimum energy = %.2f,  maximum energy = %.2f\n\n", map_min, map_max );
     }
     pr( logFile, "Time taken (s): " );
 
@@ -250,12 +278,13 @@ void readmap( char           line[LINE_LEN],
         timesys( jobEnd - jobStart, &tmsJobStart, &tms_jobEnd );
         pr_2x( logFile, stderr, UnderLine );
 
+        /* END PROGRAM */
         exit(-1);
-    } /* END PROGRAM */
-
-    ++(*P_imap);
+    } 
 
     flushLog;
+
+    return map_stats;
 }
 
 Real mapc2f(char numin)
@@ -269,14 +298,6 @@ Real mapc2f(char numin)
         numout = numin /10.;
     }
     return numout;
-}
-
-void scale_map(
-        double weight,
-        Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
-        )
-{
-    
 }
 
 

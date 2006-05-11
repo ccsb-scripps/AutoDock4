@@ -28,7 +28,7 @@ Real   mapc2f( char C_mapValue );
 #include "timesys.h"
 #include "structs.h"
 
-void readmap( char line[LINE_LEN],
+Statistics readmap( char line[LINE_LEN],
              int outlev,
 
              Clock jobStart,
@@ -37,11 +37,12 @@ void readmap( char line[LINE_LEN],
              Boole B_charMap,
 
              Boole *P_B_HaveMap, 
-             int *P_imap, 
+             int num_maps, 
              
              GridMapSetInfo *info,
-             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS]
+             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
              // double *maps 
+             char map_type
              );
 
 #endif

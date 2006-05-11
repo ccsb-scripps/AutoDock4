@@ -216,5 +216,17 @@ typedef struct energy_tables
 } EnergyTables;
 
 
+/* ______________________________________________________________________________ */
+/* Statistics */
+
+typedef struct statistics 
+{
+    int number;
+    Real minimum;
+    Real mean;
+    Real maximum;
+    /* Real standard_deviation; */
+} Statistics;
+
 #endif
 /* EOF */
