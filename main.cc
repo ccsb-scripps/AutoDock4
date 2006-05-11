@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.39 2006/05/02 20:27:59 garrett Exp $
+ $Id: main.cc,v 1.40 2006/05/11 22:25:26 garrett Exp $
 
 */
 
@@ -327,6 +327,9 @@ Boole B_charMap = FALSE;
 Boole B_include_1_4_interactions = FALSE;  // This was the default behaviour in previous AutoDock versions (1 to 3).
 Boole B_found_move_keyword = FALSE;
 Boole B_have_flexible_residues = FALSE;
+Boole B_found_ligand_types = FALSE;
+Boole B_found_elecmap = FALSE;
+Boole B_found_desolvmap = FALSE;
 
 int atm1=0;
 int atm2=0;
@@ -341,7 +344,6 @@ int dpf_keyword = -1;
 int Htype = 0;
 int ncycles = -1;
 int iCon=0;
-int imap=0;
 int indcom = 0;
 int ligand_is_inhibitor = 1;
 int ltorfmt = 4;
@@ -360,6 +362,7 @@ int nrejmax = 0;
 int ntor;
 int ntor1;
 int ntorsdof = 0;
+int num_maps = 0;
 int num_atom_types = 0;
 int nval = 0;
 int outlev = -1;
@@ -420,6 +423,8 @@ time_t time_seed;
 
 EnergyTables *ad_energy_tables;  // Holds vdw+Hb, desolvation & dielectric lookup tables
 EnergyTables *unbound_energy_tables;  // Use for computing unbound energy & conformation
+
+Statistics map_stats;
 
 //  The GA Stuff
 FourByteLong seed[2];
@@ -916,6 +921,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         //  "atm_typ_str" (in AD3) used to serve a similar role to "atom_type_name" (in AD4).
         num_atom_types = parsetypes(line, ligand_atom_type_ptrs, MAX_ATOM_TYPES);
 
+        B_found_ligand_types = TRUE;
+
+        // this is not necessary if we increment num_maps one-at-a-time as read each atom map in
+        // num_maps += num_atom_types;
+
         info->num_atom_types = num_atom_types;
 
         for (i=0; i<num_atom_types; i++) {
@@ -969,9 +979,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } // if / else apm_find
         } // for i
         pr( logFile, "\n\n");
-
-        ElecMap = num_atom_types;
-        DesolvMap = num_atom_types + 1;
 
         (void) fflush( logFile);
 
@@ -1111,26 +1118,48 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         B_charMap = FALSE;
         if (B_atom_types_found == TRUE) {
+            // Read in the AutoGrid atomic affinity map
             // map_index could be incremented here if we had the atom_type stored in each map...
-            readmap( line,
-                     outlev,
+            map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'a' );
+            pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n", 
+                    map_stats.minimum, map_stats.mean, map_stats.maximum);
+            num_maps++;
 
-                     jobStart, 
-                     tms_jobStart,
-
-                     B_charMap, 
-
-                     &B_havemap, 
-                     &imap, 
-
-                     info,
-                     map );
-            // "imap" is incremented each time we call "readmap".
         } else {
             prStr( error_message, "%s:  ERROR! No atom types have been found; we cannot continue without this information!\n\n", programname );
             pr_2x( logFile, stderr, error_message );
             exit(-1);
         }
+        (void) fflush(logFile);
+        break;
+
+//______________________________________________________________________________
+
+    case DPF_ELECMAP:
+        /*
+         *  elecmap file.e.map
+         */
+        map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'e' );
+        pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n", 
+                map_stats.minimum, map_stats.mean, map_stats.maximum);
+        ElecMap = num_maps;
+        B_found_elecmap = TRUE;
+        num_maps++;
+        (void) fflush(logFile);
+        break;
+
+//______________________________________________________________________________
+
+    case DPF_DESOLVMAP:
+        /*
+         *  desolvmap file.d.map
+         */
+        map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'd' );
+        pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n", 
+                map_stats.minimum, map_stats.mean, map_stats.maximum);
+        DesolvMap = num_maps;
+        B_found_desolvmap = TRUE;
+        num_maps++;
         (void) fflush(logFile);
         break;
 
@@ -1145,20 +1174,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         B_charMap = TRUE;
         if (B_atom_types_found == TRUE) {
             // map_index could be incremented here if we had the atom_type stored in each map...
-            readmap( line,
-                     outlev,
-
-                     jobStart, 
-                     tms_jobStart, 
-                    
-                     B_charMap, 
-
-                     &B_havemap, 
-                     &imap, 
-
-                     info,
-                     map );
-            // "imap" is incremented each time we call "readmap".
+            map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'c' );
+            pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n", 
+                    map_stats.minimum, map_stats.mean, map_stats.maximum);
+            num_maps++;
         } else {
             prStr( error_message, "%s:  ERROR! No atom types have been found; we cannot continue without this information!\n\n", programname );
             pr_2x( logFile, stderr, error_message );
@@ -3285,6 +3304,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             exit(-1);
         }
 
+        // TODO -- DO NOT USE A NON-BOND CUTOFF FOR UNBOUND CALCULATION
+        //
+        // TODO -- CLAMP NUMBER OF EVALS
+        //
         // Use the repulsive unbound energy tables to drive the molecule into an extended conformation
         evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
           elec, emap, nonbondlist, unbound_energy_tables, Nnb,
@@ -3340,6 +3363,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         // State of best individual at end of GA-LS run is returned.
         // Finished Lamarckian GA run
 
+        // Convert from unbound state to unbound coordinates
+        cnv_state_to_coords( sUnbound, vt, tlist, sUnbound.ntor, crdpdb, crd, natom );
+
         // Remember to reset the energy evaluator back to computing the intermolecular energy between
         // the flexible and the rigid molecules.
         evaluate.compute_intermol_energy(TRUE);
@@ -3367,7 +3393,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         // Calculate the unbound internal energy using the standard AutoDock energy function
         if (ntor > 0) {
-            unbound_internal_FE = eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray);
+            unbound_internal_FE = eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, 
+                    q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray);
         } else {
             unbound_internal_FE = 0.0L;
         }
