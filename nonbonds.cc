@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.6 2006/04/25 22:32:39 garrett Exp $
+ $Id: nonbonds.cc,v 1.7 2006/05/26 04:00:37 garrett Exp $
 
 */
 
@@ -24,7 +24,7 @@ extern  FILE    *logFile;
 
 using namespace std;
 
-void nonbonds(const float crdpdb[MAX_ATOMS][SPACE],
+void nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
 		      int         nbmatrix[MAX_ATOMS][MAX_ATOMS],
 		      const int   natom, 
               const int   bond_index[MAX_ATOMS],
@@ -91,7 +91,7 @@ void nonbonds(const float crdpdb[MAX_ATOMS][SPACE],
 
 /*----------------------------------------------------------------------------*/
 
-void getbonds(const float crdpdb[MAX_ATOMS][SPACE], 
+void getbonds(const Real crdpdb[MAX_ATOMS][SPACE], 
               const int natom, 
               const int bond_index[MAX_ATOMS],
               int   bonded[MAX_ATOMS][6])

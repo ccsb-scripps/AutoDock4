@@ -2,7 +2,7 @@
 #ifndef NONBONDS
 #define NONBONDS
 #include "constants.h"
-void  nonbonds( const float crdpdb[MAX_ATOMS][SPACE],  
+void  nonbonds( const Real crdpdb[MAX_ATOMS][SPACE],  
 			    int         nbmatrix[MAX_ATOMS][MAX_ATOMS],
 			    const int   natom, 
 			    const int   bond_index[MAX_ATOMS],
@@ -13,7 +13,7 @@ void  nonbonds( const float crdpdb[MAX_ATOMS][SPACE],
 #ifndef GETBONDS
 #define GETBONDS
 #include "constants.h"
-void getbonds(const float crdpdb[MAX_ATOMS][SPACE], 
+void getbonds(const Real crdpdb[MAX_ATOMS][SPACE], 
 			  const int natom, 
 			  const int bond_index[MAX_ATOMS],
               int bonded[MAX_ATOMS][6]);
