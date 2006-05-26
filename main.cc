@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.40 2006/05/11 22:25:26 garrett Exp $
+ $Id: main.cc,v 1.41 2006/05/26 03:57:29 garrett Exp $
 
 */
 
@@ -385,6 +385,8 @@ int parameter_library_found = 0;
 /* int imol = 0; */
 int outside = FALSE;
 int atoms_outside = FALSE;
+// unsigned int min_evals_unbound =  250000;
+unsigned int max_evals_unbound = 1000000;
 
 unsigned short US_energy;
 unsigned short US_tD;
@@ -3304,10 +3306,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             exit(-1);
         }
 
-        // TODO -- DO NOT USE A NON-BOND CUTOFF FOR UNBOUND CALCULATION
-        //
-        // TODO -- CLAMP NUMBER OF EVALS
-        //
         // Use the repulsive unbound energy tables to drive the molecule into an extended conformation
         evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
           elec, emap, nonbondlist, unbound_energy_tables, Nnb,
@@ -3351,10 +3349,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         //  Can get rid of the following line
         ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
 
+        // Set the maximum number of energy evaluations for finding the unbound conformation
+        // if num_evals is less than this, then a shorter unbound docking will be performed
+        max_evals_unbound = 1000000;
+
         // Start Lamarckian GA run
         sUnbound = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                   sInit,
-                                  num_evals, pop_size,
+                                  (num_evals > max_evals_unbound? max_evals_unbound : num_evals), pop_size,
                                   outlev,
                                   outputEveryNgens, &ligand,
                                   B_template,
