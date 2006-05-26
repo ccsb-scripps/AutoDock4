@@ -228,5 +228,28 @@ typedef struct statistics
     /* Real standard_deviation; */
 } Statistics;
 
+/* ______________________________________________________________________________ */
+/* EnergyBreakdown */
+
+typedef struct energy_breakdown
+{
+    Real e_inter_moving_fixed;      // (1)  // trilinterp( 0, true_ligand_atoms, ...)
+    Real e_intra_moving_fixed_rec;  // (2)  // trilinterp( true_ligand_atoms, natom, ...)
+    Real e_intra_moving_moving_lig; // (3)  // eintcal( 0, nb_array[0], ...)            // nb_group_energy[INTRA_LIGAND]
+    Real e_inter_moving_moving;     // (4)  // eintcal( nb_array[0], nb_array[1], ...)  // nb_group_energy[INTER]
+    Real e_intra_moving_moving_rec; // (5)  // eintcal( nb_array[1], nb_array[2], ...)  // nb_group_energy[INTRA_RECEPTOR]
+
+    Real e_inter;                   // total    intermolecular energy = (1) + (4)
+    Real e_intra;                   // total    intramolecular energy = (3)  +  (2) + (5)
+    Real e_intra_lig;               // ligand   intramolecular energy = (3)
+    Real e_intra_rec;               // receptor intramolecular energy = (2) + (5)
+
+    Real e_torsFreeEnergy;          // empirical torsional free energy penalty
+    Real e_unbound_internal_FE;     // computed internal free energy of the unbound state
+    Real deltaG;                    // estimated change in free energy upon binding
+
+} EnergyBreakdown;
+
+
 #endif
 /* EOF */
