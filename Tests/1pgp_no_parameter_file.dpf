@@ -1,5 +1,5 @@
 outlev 0
-intelec 0.1319                       # calculate internal electrostatic energy
+intelec                              # calculate internal electrostatic energy
 
 seed 28641 1106107140                # seeds for random generator
 
