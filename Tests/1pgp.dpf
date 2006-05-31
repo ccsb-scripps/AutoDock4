@@ -1,7 +1,7 @@
 outlev 0
 parameter_file AD4_parameters.dat    # New parameter library  >>> NEW
 #include_1_4_interactions 1.0        # test  >>> NEW
-intelec 0.1319                       # calculate internal electrostatic energy
+intelec                              # calculate internal electrostatic energy
 
 # seed pid time                      # seeds for random generator
 seed 28641 1106107140                # seeds for random generator
