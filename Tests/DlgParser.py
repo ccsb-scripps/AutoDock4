@@ -7,9 +7,9 @@
 #############################################################################
 
 
-# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.4 2005/10/25 03:20:58 garrett Exp $
+# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.5 2006/06/01 02:35:10 garrett Exp $
 #
-# $Id: DlgParser.py,v 1.4 2005/10/25 03:20:58 garrett Exp $
+# $Id: DlgParser.py,v 1.5 2006/06/01 02:35:10 garrett Exp $
 #
 #
 #
@@ -580,6 +580,8 @@ class DlgParser:
                 d['intermol_energy'] = float((ll)[6])
             elif find(l, 'Final Internal Energy')>-1:
                 d['internal_energy'] = float((ll)[6])
+            elif find(l, 'Final Total Internal Energy')>-1:
+                d['internal_energy'] = float((ll)[7])
             elif find(l, 'Torsional Free Energy')>-1:
                 d['torsional_energy'] = float((ll)[6])
             elif find(l, 'NEWDPF tran0')>-1:
