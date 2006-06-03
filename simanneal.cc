@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.12 2006/04/25 22:33:15 garrett Exp $
+ $Id: simanneal.cc,v 1.13 2006/06/03 02:03:41 garrett Exp $
 
 */
 
@@ -28,91 +28,91 @@ extern char *programname;
 
 
 void simanneal ( int   *Addr_nconf,
-		int   Nnb,
-		Real WallEnergy,
-		char  atomstuff[MAX_ATOMS][MAX_CHARS],
-		Real charge[MAX_ATOMS],
-		Real abs_charge[MAX_ATOMS],
-		Real qsp_abs_charge[MAX_ATOMS],
-		Boole B_calcIntElec,
-		Real q1q2[MAX_NONBONDS],
-		Real crd[MAX_ATOMS][SPACE],
-		Real crdpdb[MAX_ATOMS][SPACE],
-		char  FN_dpf[MAX_CHARS],
+                int   Nnb,
+                Real WallEnergy,
+                char  atomstuff[MAX_ATOMS][MAX_CHARS],
+                Real charge[MAX_ATOMS],
+                Real abs_charge[MAX_ATOMS],
+                Real qsp_abs_charge[MAX_ATOMS],
+                Boole B_calcIntElec,
+                Real q1q2[MAX_NONBONDS],
+                Real crd[MAX_ATOMS][SPACE],
+                Real crdpdb[MAX_ATOMS][SPACE],
+                char  FN_dpf[MAX_CHARS],
         
                     EnergyTables *ptr_ad_energy_tables,
 
-		Real econf[MAX_RUNS],
-		Boole B_either,
-		Real elec[MAX_ATOMS],
-		Real emap[MAX_ATOMS],
-		int   NcycMax,
-		int   irunmax,
-		Clock jobStart,
-		Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-		int   naccmax,
-		int   natom,
-		int   **nonbondlist,
-		int   nrejmax,
-		int   ntor1,
-		int   ntor,
-		int   outlev,
+                Real econf[MAX_RUNS],
+                Boole B_either,
+                Real elec[MAX_ATOMS],
+                Real emap[MAX_ATOMS],
+                int   NcycMax,
+                int   irunmax,
+                Clock jobStart,
+                Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                int   naccmax,
+                int   natom,
+                int   **nonbondlist,
+                int   nrejmax,
+                int   ntor1,
+                int   ntor,
+                int   outlev,
 
-		State sInit, /* tor0, qtn0 */
-		State sHist[MAX_RUNS], /* was qtnHist, torHist */
+                State sInit, /* tor0, qtn0 */
+                State sHist[MAX_RUNS], /* was qtnHist, torHist */
 
-		Real qtwFac,
-		Boole B_qtwReduc,
-		Real qtwStep0,
-		Boole B_selectmin,
-		char  FN_ligand[MAX_CHARS],
-		Real sml_center[SPACE],
-		Real RT0,
-		Boole B_RTChange,
-		Real RTFac,
-		struct tms tms_jobStart,
-		int   tlist[MAX_TORS][MAX_ATOMS],
-		Real torFac,
-		Boole B_torReduc,
-		Real torStep0,
-		char  FN_trj[MAX_CHARS],
-		int   trj_cyc_max,
-		int   trj_cyc_min,
-		int   trj_freq,
-		Real trnFac,
-		Boole B_trnReduc,
-		Real trnStep0,
-		int   type[MAX_ATOMS],
-		Real vt[MAX_TORS][SPACE],
-		Boole B_writeTrj,
-		Boole B_constrain,
-		int   atomC1,
-		int   atomC2,
-		Real sqlower,
-		Real squpper,
-		Boole B_linear_schedule,
-		Real RTreduc,
-		/*Real maxrad,*/
-		Boole B_watch,
-		char  FN_watch[MAX_CHARS],
-		Boole B_isGaussTorCon,
-		unsigned short US_torProfile[MAX_TORS][NTORDIVS],
-		Boole B_isTorConstrained[MAX_TORS],
-		Boole B_ShowTorE,
-		unsigned short US_TorE[MAX_TORS],
-		Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-		int N_con[MAX_TORS],
-		Boole B_RandomTran0,
-		Boole B_RandomQuat0,
-		Boole B_RandomDihe0,
-		Real e0max,
+                Real qtwFac,
+                Boole B_qtwReduc,
+                Real qtwStep0,
+                Boole B_selectmin,
+                char  FN_ligand[MAX_CHARS],
+                Real sml_center[SPACE],
+                Real RT0,
+                Boole B_RTChange,
+                Real RTFac,
+                struct tms tms_jobStart,
+                int   tlist[MAX_TORS][MAX_ATOMS],
+                Real torFac,
+                Boole B_torReduc,
+                Real torStep0,
+                char  FN_trj[MAX_CHARS],
+                int   trj_cyc_max,
+                int   trj_cyc_min,
+                int   trj_freq,
+                Real trnFac,
+                Boole B_trnReduc,
+                Real trnStep0,
+                int   type[MAX_ATOMS],
+                Real vt[MAX_TORS][SPACE],
+                Boole B_writeTrj,
+                Boole B_constrain,
+                int   atomC1,
+                int   atomC2,
+                Real sqlower,
+                Real squpper,
+                Boole B_linear_schedule,
+                Real RTreduc,
+                /*Real maxrad,*/
+                Boole B_watch,
+                char  FN_watch[MAX_CHARS],
+                Boole B_isGaussTorCon,
+                unsigned short US_torProfile[MAX_TORS][NTORDIVS],
+                Boole B_isTorConstrained[MAX_TORS],
+                Boole B_ShowTorE,
+                unsigned short US_TorE[MAX_TORS],
+                Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                int N_con[MAX_TORS],
+                Boole B_RandomTran0,
+                Boole B_RandomQuat0,
+                Boole B_RandomDihe0,
+                Real e0max,
         
-		Real torsFreeEnergy,
-		
+                Real torsFreeEnergy,
+                
         int   MaxRetries,
-		
+                
         int   ligand_is_inhibitor,
-		
+                
         int   ignore_inter[MAX_ATOMS],
         
         const Boole         B_include_1_4_interactions,
@@ -130,7 +130,7 @@ void simanneal ( int   *Addr_nconf,
 
 
     FILE *FP_trj;
-	FP_trj = NULL;
+        FP_trj = NULL;
 
     State sNow; /* qtnNow, torNow */
     State sChange; /* qtnChange, torChange */
@@ -193,7 +193,7 @@ void simanneal ( int   *Addr_nconf,
 /* Open the trajectory file for writing, =====================================*/
 
     if ( B_writeTrj ) {
-		FP_trj = fopen(FN_trj, "w");
+                FP_trj = fopen(FN_trj, "w");
         if ( FP_trj == NULL ) {
             prStr( message, "\n%s: can't create trajectory file %s\n", programname, FN_trj);
             pr_2x( stderr, logFile, message );
@@ -216,56 +216,56 @@ void simanneal ( int   *Addr_nconf,
 
         irun1 = 1 + irun;
 
-	/*
-	** Initialize random number generator with a time-dependent seed...
-	*/
-	time_seed = time( &time_seed );
-	seed_random( time_seed );
+        /*
+        ** Initialize random number generator with a time-dependent seed...
+        */
+        time_seed = time( &time_seed );
+        seed_random( time_seed );
 
-	if (outlev > 0) {
-	    pr(logFile, "\n\tINITIALIZING AUTOMATED DOCKING SIMULATION\n" );
-	    pr(logFile, "\t_________________________________________\n\n" );
-	    pr( logFile, "RUN %d...\n\n", irun1);
-	    pr( logFile, "Time-dependent Seed:  %ld\n\n", time_seed);
-	}
+        if (outlev > 0) {
+            pr(logFile, "\n\tINITIALIZING AUTOMATED DOCKING SIMULATION\n" );
+            pr(logFile, "\t_________________________________________\n\n" );
+            pr( logFile, "RUN %d...\n\n", irun1);
+            pr( logFile, "Time-dependent Seed:  %ld\n\n", time_seed);
+        }
 
         if ( B_writeTrj ) {
             pr( FP_trj, "ntorsions %d\nrun %d\n", ntor, irun1 );
             fflush( FP_trj );
         }
 
-	getInitialState( &e0, e0max,
-			 &sInit, &sMin, &sLast, 
-			 B_RandomTran0, B_RandomQuat0, B_RandomDihe0, 
-			 charge, abs_charge, qsp_abs_charge, q1q2, crd, crdpdb, atomstuff,
-			 elec, emap, ptr_ad_energy_tables, B_calcIntElec,
-			 map, natom, Nnb, nonbondlist,
-			 ntor, tlist, type, vt, irun1, outlev, MaxRetries,
-			 torsFreeEnergy, ligand_is_inhibitor,
-			 ignore_inter,
+        getInitialState( &e0, e0max,
+                         &sInit, &sMin, &sLast, 
+                         B_RandomTran0, B_RandomQuat0, B_RandomDihe0, 
+                         charge, abs_charge, qsp_abs_charge, q1q2, crd, crdpdb, atomstuff,
+                         elec, emap, ptr_ad_energy_tables, B_calcIntElec,
+                         map, natom, Nnb, nonbondlist,
+                         ntor, tlist, type, vt, irun1, outlev, MaxRetries,
+                         torsFreeEnergy, ligand_is_inhibitor,
+                         ignore_inter,
                          B_include_1_4_interactions, scale_1_4, 
                          parameterArray, 
                          unbound_internal_FE, info);
 
-        RT = RT0;		/* Initialize the "annealing" temperature */
-	if (RT <= APPROX_ZERO) { RT = 616.; }
-	inv_RT = 1. / RT;
+        RT = RT0;                /* Initialize the "annealing" temperature */
+        if (RT <= APPROX_ZERO) { RT = 616.; }
+        inv_RT = 1. / RT;
 
         eMin    = min(BIG_ENERGY, e0);
         eLast   = e0;
-        trnStep = trnStep0;	/* translation*/
-        qtwStep = qtwStep0;	/* quaternion angle, w*/
-        torStep = torStep0;	/* torsion angles*/
+        trnStep = trnStep0;        /* translation*/
+        qtwStep = qtwStep0;        /* quaternion angle, w*/
+        torStep = torStep0;        /* torsion angles*/
 
         if (outlev > 0) {
-	    pr( logFile, "\n\n\t\tBEGINNING SIMULATED ANNEALING");
-	    pr( logFile, "\n\t\t_____________________________\n\n");
-	    pr( logFile, "\n      \t      \tMinimum     Average     | Acc/    Accepted:    Rejected:     |          |  xyz-Translation  |        Time:        \n");
-	      pr( logFile, "Run:  \tCycle:\tEnergy:     Energy:     |   /Rej: Down:  Up:   Total: Edge:  |   RT:    |   of Min.Energy   |  Real, CPU, System  \n" );
-	      pr( logFile, "______\t______\t___________ ___________ | ______ ______ ______ ______ ______ | ________ | _________________ | ____________________\n" );
-/*	                                  12345678901 12345678901   123456 123456 123456 123456 123456   12345678   12345 12345 12345
-**	                 "%D /%D\T%D /%D\T%+11.2F     %+11.2F       %6.2F  %6D    %6D    %6D    %6D      %8.1F     %5.2F %5.2F %5.2F   ",
-**	                 IRUN1, IRUNMAX, ICYCLE1, ICYCLEMAX, EmIN, ETOT/NTOT, QTNmIN[x], QTNmIN[y], QTNmIN[z], (NREJ!=0) ? (FLOAT)NACC/NREJ : -999., NACC, NREJ, NEDGE, rt
+            pr( logFile, "\n\n\t\tBEGINNING SIMULATED ANNEALING");
+            pr( logFile, "\n\t\t_____________________________\n\n");
+            pr( logFile, "\n      \t      \tMinimum     Average     | Acc/    Accepted:    Rejected:     |          |  xyz-Translation  |        Time:        \n");
+              pr( logFile, "Run:  \tCycle:\tEnergy:     Energy:     |   /Rej: Down:  Up:   Total: Edge:  |   RT:    |   of Min.Energy   |  Real, CPU, System  \n" );
+              pr( logFile, "______\t______\t___________ ___________ | ______ ______ ______ ______ ______ | ________ | _________________ | ____________________\n" );
+/*                                          12345678901 12345678901   123456 123456 123456 123456 123456   12345678   12345 12345 12345
+**                         "%D /%D\T%D /%D\T%+11.2F     %+11.2F       %6.2F  %6D    %6D    %6D    %6D      %8.1F     %5.2F %5.2F %5.2F   ",
+**                         IRUN1, IRUNMAX, ICYCLE1, ICYCLEMAX, EmIN, ETOT/NTOT, QTNmIN[x], QTNmIN[y], QTNmIN[z], (NREJ!=0) ? (FLOAT)NACC/NREJ : -999., NACC, NREJ, NEDGE, rt
 */
         }
         fflush(logFile);
@@ -278,274 +278,274 @@ void simanneal ( int   *Addr_nconf,
             icycle1 = icycle + (ntot = 1);
             B_inRange = (icycle >= trj_cyc_min) && (icycle <= trj_cyc_max);
             if ( B_writeTrj && B_inRange ) {
-		pr( FP_trj, "cycle %d\ntemp %f\n", icycle1, RT );
-		fflush(  FP_trj  );
+                pr( FP_trj, "cycle %d\ntemp %f\n", icycle1, RT );
+                fflush(  FP_trj  );
             }
             nAcc = nAccProb = nacc = nrej = nedge = 0;
-	    etot = eLast;
+            etot = eLast;
 
 /*____________________________________________________________________________*/
 
             do {
-		/*
-		** Do one Monte Carlo step,
+                /*
+                ** Do one Monte Carlo step,
                 ** while the number of accepted steps < naccmax 
-		** and number of rejected steps < nrejmax...
-		*/
+                ** and number of rejected steps < nrejmax...
+                */
 
-		mkNewState( &sNow, &sLast, &sChange,
+                mkNewState( &sNow, &sLast, &sChange,
                     vt, tlist, ntor, crd, crdpdb, natom,
-		    trnStep,
-		    /*qtwStep,*/
-		    torStep,
-		    F_TorConRange, N_con);
+                    trnStep,
+                    qtwStep,
+                    torStep,
+                    F_TorConRange, N_con);
 
-		if (B_constrain) {
-		    for (xyz = 0;  xyz < SPACE;  xyz++) {
-			d[xyz] = crd[atomC1][xyz] - crd[atomC2][xyz];
-		    }
-		    rsqC1C2 = sqhypotenuse(d[X],  d[Y], d[Z]);
-		    if (! (B_within_constraint = (rsqC1C2 > sqlower) && 
-						 (rsqC1C2 < squpper))) {
-			copyState( &sNow, sLast );
-		    }
-		}/*if B_constrain*/
+                if (B_constrain) {
+                    for (xyz = 0;  xyz < SPACE;  xyz++) {
+                        d[xyz] = crd[atomC1][xyz] - crd[atomC2][xyz];
+                    }
+                    rsqC1C2 = sqhypotenuse(d[X],  d[Y], d[Z]);
+                    if (! (B_within_constraint = (rsqC1C2 > sqlower) && 
+                                                 (rsqC1C2 < squpper))) {
+                        copyState( &sNow, sLast );
+                    }
+                }/*if B_constrain*/
 
-		if (B_within_constraint) {
-		    /* 
-		    ** Normally, this is true.
-		    ** If the distance-constraint was set,
-		    ** and was just violated, this is false.
-		    */
+                if (B_within_constraint) {
+                    /* 
+                    ** Normally, this is true.
+                    ** If the distance-constraint was set,
+                    ** and was just violated, this is false.
+                    */
 
-		    for (i = 0;  i < natom;  i++) {
-			B_outside= is_out_grid_info(crd[i][X], crd[i][Y], crd[i][Z]);
-			if ( B_outside ) {
-			    /*
-			    ** Outside grid!
-			    */
-			    ++nedge;
-			    ++nrej;
-			    /*pr(logFile, "e"); / *###*/
-			    /* etot += WallEnergy; ++ntot;*/
-			    /*
-			    ** Undo this move,
-			    */
-			    copyState( &sNow, sLast );
-			    /*
-			    ** Subtract just the translation;
-			    ** hence "doubling back" from the edge.
-			    */
-			    sNow.T.x -= sChange.T.x;
-			    sNow.T.y -= sChange.T.y;
-			    sNow.T.z -= sChange.T.z;
+                    for (i = 0;  i < natom;  i++) {
+                        B_outside= is_out_grid_info(crd[i][X], crd[i][Y], crd[i][Z]);
+                        if ( B_outside ) {
+                            /*
+                            ** Outside grid!
+                            */
+                            ++nedge;
+                            ++nrej;
+                            /*pr(logFile, "e"); / *###*/
+                            /* etot += WallEnergy; ++ntot;*/
+                            /*
+                            ** Undo this move,
+                            */
+                            copyState( &sNow, sLast );
+                            /*
+                            ** Subtract just the translation;
+                            ** hence "doubling back" from the edge.
+                            */
+                            sNow.T.x -= sChange.T.x;
+                            sNow.T.y -= sChange.T.y;
+                            sNow.T.z -= sChange.T.z;
 
-			    if ( B_writeTrj && B_inRange && B_either && (++count == trj_freq)) {
-				count = 0;
-				e = eintra = WallEnergy;
-				output_state( FP_trj, sNow, ntor, nacc+nrej, e,
-				    eintra, (char)'e', B_watch, FN_watch, 
-				    atomstuff, natom, crd);
-			    }/*writeTrj*/
+                            if ( B_writeTrj && B_inRange && B_either && (++count == trj_freq)) {
+                                count = 0;
+                                e = eintra = WallEnergy;
+                                output_state( FP_trj, sNow, ntor, nacc+nrej, e,
+                                    eintra, (char)'e', B_watch, FN_watch, 
+                                    atomstuff, natom, crd);
+                            }/*writeTrj*/
 
-			    break;/*...out of i*/
+                            break;/*...out of i*/
 
-			}/*outside*/
-		    }/*for atoms i*/
+                        }/*outside*/
+                    }/*for atoms i*/
 
-		    if ( !B_outside ){ /*inside grid maps*/
+                    if ( !B_outside ){ /*inside grid maps*/
 
- 			/* Calculate Energy of System, =======================*/
+                         /* Calculate Energy of System, =======================*/
 
-			/*
-			** MORE ACCURATE METHOD, (SLOWER):
-			*/
+                        /*
+                        ** MORE ACCURATE METHOD, (SLOWER):
+                        */
                         e = trilinterp( crd, charge, abs_charge, type, natom, map, 
                                         info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW,
                                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
-				            + (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
+                                            + (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
                                    B_calcIntElec, q1q2, B_include_1_4_interactions, 
                                    scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE);
 
-			if (B_isGaussTorCon) {
-			    /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { ***/
-			    for (Itor = 0; Itor < ntor; Itor++) {
-				if (B_isTorConstrained[Itor] == 1) {
-				    indx = Rad2Div( sNow.tor[Itor] );
-				    if (B_ShowTorE) {
-					e += (Real)( US_TorE[Itor] 
-						  = US_torProfile[Itor][indx] );
-				    } else {
-					e += (Real)US_torProfile[Itor][indx];
-				    }
-				}
-			    }
-			}
+                        if (B_isGaussTorCon) {
+                            /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { ***/
+                            for (Itor = 0; Itor < ntor; Itor++) {
+                                if (B_isTorConstrained[Itor] == 1) {
+                                    indx = Rad2Div( sNow.tor[Itor] );
+                                    if (B_ShowTorE) {
+                                        e += (Real)( US_TorE[Itor] 
+                                                  = US_torProfile[Itor][indx] );
+                                    } else {
+                                        e += (Real)US_torProfile[Itor][indx];
+                                    }
+                                }
+                            }
+                        }
 
-			/* Apply the Metropolis energy test... ===============*/
+                        /* Apply the Metropolis energy test... ===============*/
 
-			if (e <= eLast) {
-			    /*
-			    **  Accept this move immediately.
-			    */
-			    ++nacc;
-			    ++nAcc;
-			    etot += (eLast = e);
-			    ++ntot;
-			    copyState( &sLast, sNow );
+                        if (e <= eLast) {
+                            /*
+                            **  Accept this move immediately.
+                            */
+                            ++nacc;
+                            ++nAcc;
+                            etot += (eLast = e);
+                            ++ntot;
+                            copyState( &sLast, sNow );
 
-			    /* pr(logFile, "A"); / *###*/
-			    if (e < eMin) {
-				/*
-				** Update minimum-energy state variables,
-				*/
-				eMin = e;
-				copyState( &sMin,  sNow );
-			    }
-			    if ( B_writeTrj && B_inRange && (++count == trj_freq)){
-				count = 0;
-				output_state( FP_trj, sNow, ntor, nacc+nrej, e,
-				    eintra, (char)'A', B_watch, FN_watch, 
-				    atomstuff, natom, crd);
-			    }/*write trajectory*/
+                            /* pr(logFile, "A"); / *###*/
+                            if (e < eMin) {
+                                /*
+                                ** Update minimum-energy state variables,
+                                */
+                                eMin = e;
+                                copyState( &sMin,  sNow );
+                            }
+                            if ( B_writeTrj && B_inRange && (++count == trj_freq)){
+                                count = 0;
+                                output_state( FP_trj, sNow, ntor, nacc+nrej, e,
+                                    eintra, (char)'A', B_watch, FN_watch, 
+                                    atomstuff, natom, crd);
+                            }/*write trajectory*/
 
-			} else {
+                        } else {
 
                             /* Probabilistic move. ===========================*/
 
-			    if (exp((double)((eLast-e)*inv_RT))<local_random()){
-				/*
-				** Failed the probability test. 
-				** Reject this move.
-				*/
-				++nrej;
-				/* pr(logFile, "R"); / *###*/
-				copyState( &sNow, sLast );
+                            if (exp((double)((eLast-e)*inv_RT))<local_random()){
+                                /*
+                                ** Failed the probability test. 
+                                ** Reject this move.
+                                */
+                                ++nrej;
+                                /* pr(logFile, "R"); / *###*/
+                                copyState( &sNow, sLast );
 
-				if ( B_writeTrj && B_inRange && B_either && 
-				    (++count == trj_freq)) {
-				    count = 0;
-				    output_state( FP_trj, sNow, ntor, nacc+nrej,
-				        e, eintra, (char)'R', B_watch, FN_watch,
-					atomstuff, natom, crd);
-				}/*write trajectory*/
+                                if ( B_writeTrj && B_inRange && B_either && 
+                                    (++count == trj_freq)) {
+                                    count = 0;
+                                    output_state( FP_trj, sNow, ntor, nacc+nrej,
+                                        e, eintra, (char)'R', B_watch, FN_watch,
+                                        atomstuff, natom, crd);
+                                }/*write trajectory*/
 
-			    } else {
-				/*
-				** Passed the probability test.  
-				** Accept this move.
-				** A chance to escape a local minimum...
-				*/
-				++nacc;
-				++nAccProb;
-				etot += e;
-				++ntot;
-				/*pr(logFile, "a"); / *###*/
+                            } else {
+                                /*
+                                ** Passed the probability test.  
+                                ** Accept this move.
+                                ** A chance to escape a local minimum...
+                                */
+                                ++nacc;
+                                ++nAccProb;
+                                etot += e;
+                                ++ntot;
+                                /*pr(logFile, "a"); / *###*/
 
-				eLast = e;
-				copyState( &sLast, sNow );
-				if ( B_writeTrj && B_inRange && (++count == trj_freq))  {
-				    count = 0;
-				    output_state(FP_trj, sNow, ntor, nacc+nrej,
-					e, eintra, (char)'a', B_watch, FN_watch,
-					atomstuff, natom, crd);
-				}/*write trajectory*/
-			    }/*passed Monte Carlo probablility test*/
-			}/*e > eLast, Probabilistic move...*/
-		    }/*inside grid maps*/
-		}/*within_constraint*/
+                                eLast = e;
+                                copyState( &sLast, sNow );
+                                if ( B_writeTrj && B_inRange && (++count == trj_freq))  {
+                                    count = 0;
+                                    output_state(FP_trj, sNow, ntor, nacc+nrej,
+                                        e, eintra, (char)'a', B_watch, FN_watch,
+                                        atomstuff, natom, crd);
+                                }/*write trajectory*/
+                            }/*passed Monte Carlo probablility test*/
+                        }/*e > eLast, Probabilistic move...*/
+                    }/*inside grid maps*/
+                }/*within_constraint*/
 
             } while ( nacc < naccmax  &&  nrej < nrejmax );
 /*____________________________________________________________________________*/
 
-	    if ((nacc == 0) && (nedge == nrejmax)) {
-		/*
-		**  Clear indication that ligand got stuck on an edge...
-		*/
-		pr(logFile, "\n\n>>> Ligand appears to be stuck on an edge: forced to re-initialize. <<<\n\n");
-		--icycle;
-		getInitialState( &e0, e0max,
-			 &sInit, &sMin, &sLast, 
-			 TRUE, TRUE, TRUE, 
-			 charge, abs_charge, qsp_abs_charge, q1q2, crd, crdpdb, atomstuff,
-			 elec, emap, ptr_ad_energy_tables, B_calcIntElec,
-			 map, natom, Nnb, nonbondlist,
-			 ntor, tlist, type, vt, irun1, outlev, MaxRetries,
-			 torsFreeEnergy, ligand_is_inhibitor,
-			 ignore_inter,
+            if ((nacc == 0) && (nedge == nrejmax)) {
+                /*
+                **  Clear indication that ligand got stuck on an edge...
+                */
+                pr(logFile, "\n\n>>> Ligand appears to be stuck on an edge: forced to re-initialize. <<<\n\n");
+                --icycle;
+                getInitialState( &e0, e0max,
+                         &sInit, &sMin, &sLast, 
+                         TRUE, TRUE, TRUE, 
+                         charge, abs_charge, qsp_abs_charge, q1q2, crd, crdpdb, atomstuff,
+                         elec, emap, ptr_ad_energy_tables, B_calcIntElec,
+                         map, natom, Nnb, nonbondlist,
+                         ntor, tlist, type, vt, irun1, outlev, MaxRetries,
+                         torsFreeEnergy, ligand_is_inhibitor,
+                         ignore_inter,
                          B_include_1_4_interactions, scale_1_4, 
                          parameterArray, unbound_internal_FE,
                          info );
 
-	    } else {
+            } else {
 
-		if ( B_trnReduc )  trnStep *= trnFac;       
-		if ( B_qtwReduc )  qtwStep *= qtwFac;
-		if ( B_torReduc )  torStep *= torFac;
-		/*
-		**  Output-level dependent diagnostics...
-		*/
-		if (outlev > 0) {
-		    /*pr(logFile, "\n"); / *###*/
-		    pr( logFile, "%d /%d\t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", irun1, irunmax, icycle1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (Real)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
-		    cycEnd = times( &tms_cycEnd );
-		    timesys( cycEnd - cycStart, &tms_cycStart, &tms_cycEnd );
-		    if (outlev > 1) {
-			pr( logFile, "\tEnergy:   \tState:\n\t__________\t____________________________________________________________\nMinimum\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [w,(x,y,z)] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eMin, sMin.T.x, sMin.T.y, sMin.T.z, Deg(sMin.Q.ang) , sMin.Q.nx, sMin.Q.ny, sMin.Q.nz );
-			pr( logFile, "\nLast\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [w,(x,y,z)] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eLast, sLast.T.x, sLast.T.y, sLast.T.z, Deg(sLast.Q.ang) , sLast.Q.nx, sLast.Q.ny, sLast.Q.nz );
-			if (ntor > 0) {
-			    pr( logFile, "Minimum:\t(" );
-			    for (i=0; i<ntor; i++) {
-				pr( logFile, "%.1f%s ", Deg(sMin.tor[i]), (i < ntor1)?",":" deg)" );
-			    }
-			    pr( logFile, "\nLast:\t(" );
-			    for (i=0; i<ntor; i++) {
-				pr( logFile, "%.1f%s ", Deg(sLast.tor[i]), (i < ntor1)?",":" deg)" );
-			    }
-			    pr( logFile, "\n" );
-			}
-			if ( B_trnReduc )
-			    pr( logFile, "\nTranslation step size reduced; now =\t\t +/- %.2f A\n", trnFac);
-			if ( B_qtwReduc )
-			    pr( logFile, "\nQuaternion Rotation step size reduced; now =\t +/- %.2f deg\n", qtwFac);
-			if ( B_torReduc )
-			    pr( logFile, "\nTorsion step size reduced; now =\t\t +/- %.2f deg\n", torFac);
-		    }/*outlev > 1*/
-		    flushLog;
-		}/*outlev > 0*/
-		/*
-		** Reduce temperature,
-		*/
-		if ( B_linear_schedule ) {
-		    RT -= RTreduc;
+                if ( B_trnReduc )  trnStep *= trnFac;       
+                if ( B_qtwReduc )  qtwStep *= qtwFac;
+                if ( B_torReduc )  torStep *= torFac;
+                /*
+                **  Output-level dependent diagnostics...
+                */
+                if (outlev > 0) {
+                    /*pr(logFile, "\n"); / *###*/
+                    pr( logFile, "%d /%d\t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", irun1, irunmax, icycle1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (Real)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
+                    cycEnd = times( &tms_cycEnd );
+                    timesys( cycEnd - cycStart, &tms_cycStart, &tms_cycEnd );
+                    if (outlev > 1) {
+                        pr( logFile, "\tEnergy:   \tState:\n\t__________\t____________________________________________________________\nMinimum\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [w,(x,y,z)] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eMin, sMin.T.x, sMin.T.y, sMin.T.z, Deg(sMin.Q.ang) , sMin.Q.nx, sMin.Q.ny, sMin.Q.nz );
+                        pr( logFile, "\nLast\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [w,(x,y,z)] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eLast, sLast.T.x, sLast.T.y, sLast.T.z, Deg(sLast.Q.ang) , sLast.Q.nx, sLast.Q.ny, sLast.Q.nz );
+                        if (ntor > 0) {
+                            pr( logFile, "Minimum:\t(" );
+                            for (i=0; i<ntor; i++) {
+                                pr( logFile, "%.1f%s ", Deg(sMin.tor[i]), (i < ntor1)?",":" deg)" );
+                            }
+                            pr( logFile, "\nLast:\t(" );
+                            for (i=0; i<ntor; i++) {
+                                pr( logFile, "%.1f%s ", Deg(sLast.tor[i]), (i < ntor1)?",":" deg)" );
+                            }
+                            pr( logFile, "\n" );
+                        }
+                        if ( B_trnReduc )
+                            pr( logFile, "\nTranslation step size reduced; now =\t\t +/- %.2f A\n", trnFac);
+                        if ( B_qtwReduc )
+                            pr( logFile, "\nQuaternion Rotation step size reduced; now =\t +/- %.2f deg\n", qtwFac);
+                        if ( B_torReduc )
+                            pr( logFile, "\nTorsion step size reduced; now =\t\t +/- %.2f deg\n", torFac);
+                    }/*outlev > 1*/
+                    flushLog;
+                }/*outlev > 0*/
+                /*
+                ** Reduce temperature,
+                */
+                if ( B_linear_schedule ) {
+                    RT -= RTreduc;
 
-		    if (RT <= APPROX_ZERO) {
-			inv_RT = 1. / APPROX_ZERO;
-		    } else {
-			inv_RT = 1. / RT;
-		    }
-		} else if ( B_RTChange ) {
-		    inv_RT = 1./( RT *= RTFac );
-		}
-		/*
-		** Start next cycle at minimum state?
-		*/
-		if ( B_selectmin ) {
-		    eLast = eMin;
-		    copyState( &sLast, sMin );
-		}
-	    } /* Prepares for next cycle */
+                    if (RT <= APPROX_ZERO) {
+                        inv_RT = 1. / APPROX_ZERO;
+                    } else {
+                        inv_RT = 1. / RT;
+                    }
+                } else if ( B_RTChange ) {
+                    inv_RT = 1./( RT *= RTFac );
+                }
+                /*
+                ** Start next cycle at minimum state?
+                */
+                if ( B_selectmin ) {
+                    eLast = eMin;
+                    copyState( &sLast, sMin );
+                }
+            } /* Prepares for next cycle */
 
         } /* icycle */
 /*____________________________________________________________________________*/
 
         if ( B_selectmin ) {
-	    copyState( &sSave, sMin );
+            copyState( &sSave, sMin );
         } else {
-	    copyState( &sSave, sLast );
+            copyState( &sSave, sLast );
         }
 
-	sSave.Q.ang = WrpRad( ModRad( sSave.Q.ang ) );
+        sSave.Q.ang = WrpRad( ModRad( sSave.Q.ang ) );
 
         for (i=0; i<ntor; i++) {
             sSave.tor[i] = WrpRad( ModRad( sSave.tor[i] ) );
@@ -560,39 +560,39 @@ void simanneal ( int   *Addr_nconf,
         pr( logFile, "Final Quaternion Rotation Angle = %5.1f deg\n", Deg(sSave.Q.ang) );
         pr( logFile, "Final Quaternion Unit Vector = ( %+.2f, %+.2f, %+.2f )\n", sSave.Q.nx, sSave.Q.ny, sSave.Q.nz );
 
-	copyState( &sHist[ *Addr_nconf ], sSave );
+        copyState( &sHist[ *Addr_nconf ], sSave );
 
         if (ntor > 0) {
             pr( logFile, "Final Torsions:\n" );
             for (i=0; i<ntor; i++) {
-		torTmp = Deg( sSave.tor[i] );
-		torTmp = ModDeg( torTmp );
-		torTmp = WrpDeg( torTmp );
+                torTmp = Deg( sSave.tor[i] );
+                torTmp = ModDeg( torTmp );
+                torTmp = WrpDeg( torTmp );
                 sHist[ *Addr_nconf ].tor[i] = sSave.tor[i];
                 pr( logFile, "          %2d = %7.2f deg", i+1, torTmp);
-		if ((B_isTorConstrained[i] == 1) && B_ShowTorE) {
-		    pr(logFile, ", Energetic penalty = %uhd\n", US_TorE[i]);
-		} else {
-		    pr(logFile, "\n");
-		}
+                if ((B_isTorConstrained[i] == 1) && B_ShowTorE) {
+                    pr(logFile, ", Energetic penalty = %uhd\n", US_TorE[i]);
+                } else {
+                    pr(logFile, "\n");
+                }
             }
         }
 
-	cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
+        cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
 
-	if (ntor > 0) {
-	    eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
-	} else {
-	    eintra = 0.0 - unbound_internal_FE;
-	}
+        if (ntor > 0) {
+            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
+        } else {
+            eintra = 0.0 - unbound_internal_FE;
+        }
         einter = trilinterp( crd, charge, abs_charge, type, natom, map, 
                     info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
                     NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
 
-	writePDBQ( irun, FN_ligand, FN_dpf, sml_center, sSave, ntor,
-	  eintra, einter, natom, atomstuff, crd, emap, elec, 
+        writePDBQ( irun, FN_ligand, FN_dpf, sml_center, sSave, ntor,
+          eintra, einter, natom, atomstuff, crd, emap, elec, 
       charge, abs_charge, qsp_abs_charge,
-	  ligand_is_inhibitor, torsFreeEnergy, outlev, ignore_inter,
+          ligand_is_inhibitor, torsFreeEnergy, outlev, ignore_inter,
       B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE);
 
         econf[(*Addr_nconf)] = eLast;
@@ -601,7 +601,7 @@ void simanneal ( int   *Addr_nconf,
     } /* Loop over runs ======================================================*/
 
     if ( B_writeTrj ) {
-    	fclose( FP_trj );
+            fclose( FP_trj );
     }
 }
 /* EOF */
