@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.41 2006/05/26 03:57:29 garrett Exp $
+ $Id: main.cc,v 1.42 2006/06/03 01:53:26 garrett Exp $
 
 */
 
@@ -3522,7 +3522,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             eintra = 0.0L - unbound_internal_FE;
         }
         // Set the unbound free energy
-        unbound_internal_FE = eintra;
+        // unbound_internal_FE = eintra;
 
         // Calculate the total energy and the intermolecular energy
         etotal = trilinterp( crdpdb, charge, abs_charge, type, natom, map, 
