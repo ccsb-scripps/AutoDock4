@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.3 2006/04/25 22:32:32 garrett Exp $
+ $Id: mkNewState.cc,v 1.4 2006/06/03 02:02:45 garrett Exp $
 
 */
 
@@ -27,7 +27,7 @@ void mkNewState( State *now,
                 Real crdpdb[MAX_ATOMS][NTRN],
                 int   natom,
                 Real trnStep,
-                /*Real qtwStep,*/
+                Real qtwStep,
                 Real torStep,
                 Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                 int N_con[MAX_TORS])
@@ -36,7 +36,7 @@ void mkNewState( State *now,
     register int i;
     double t;
     int I_ranCon;
-    double x0, r1, r2, t1, t2;
+    // double x0, r1, r2, t1, t2;  // for uniformly distributed quaternion calculation
     Real a, b;
 
     /*
@@ -49,26 +49,26 @@ void mkNewState( State *now,
     /*
     ** Quaternion angular displacement
     */
-    /* 
-    **  This code probably does *not* produce a uniformly distributed quaternion
-    **
-    ** change->Q.nx  = Randpm1; 
-    ** change->Q.ny  = Randpm1; 
-    ** change->Q.nz  = Randpm1; 
-    ** change->Q.ang = random_pm( qtwStep );
-    ** mkUnitQuat( &(change->Q) );
-    */
+    // (This code probably does *not* produce a uniformly distributed quaternion)
+    if (qtwStep > APPROX_ZERO) {
+        change->Q.nx  = Randpm1; 
+        change->Q.ny  = Randpm1; 
+        change->Q.nz  = Randpm1; 
+        change->Q.ang = random_pm( qtwStep );
+        mkUnitQuat( &(change->Q) );
+    }
+
     /*
     **  This should produce a uniformly distributed quaternion, according to
     **  Shoemake, Graphics Gems III.6, pp.124-132, "Uniform Random Rotations",
     **  published by Academic Press, Inc., (1992)
-    */
              t1 = TWOPI * local_random();
     change->Q.x = sin( t1 ) * (  r1 = random_sign * sqrt( 1 - (x0 = local_random()) )  );
     change->Q.y = cos( t1 ) * r1;
              t2 = TWOPI * local_random();
     change->Q.z = sin( t2 ) * (  r2 = random_sign * sqrt( x0 )  );
     change->Q.w = cos( t2 ) * r2;
+    */
 
     /*
     **  Apply random change, to Last Quaternion

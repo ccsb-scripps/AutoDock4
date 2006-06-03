@@ -23,7 +23,7 @@ void  mkNewState( State *now,
                   Real crdpdb[MAX_ATOMS][NTRN],
                   int   natom,
                   Real trnStep,
-                  /*Real qtwStep,*/
+                  Real qtwStep,
                   Real torStep,
 	          Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		  int   N_con[MAX_TORS]);
