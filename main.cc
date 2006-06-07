@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.42 2006/06/03 01:53:26 garrett Exp $
+ $Id: main.cc,v 1.43 2006/06/07 00:07:13 garrett Exp $
 
 */
 
@@ -2522,7 +2522,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
             pr(logFile, "\n");
             if (B_havenbp) {
-                nbe( atm_typ_str, ad_energy_tables, num_atom_types );
+                nbe( info, ad_energy_tables, num_atom_types );
             }
             if (B_cluster_mode) {
                 clmode( num_atom_types, clus_rms_tol,
