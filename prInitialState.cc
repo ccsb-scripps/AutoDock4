@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.5 2006/04/25 22:32:46 garrett Exp $
+ $Id: prInitialState.cc,v 1.6 2006/06/07 00:14:08 garrett Exp $
 
 */
 
@@ -79,7 +79,10 @@ void prInitialState(
         emap_total += emap[a];
         elec_total += elec[a];
     }
+
+    pr( logFile, "\n\n" );
     printEnergies( einter, eintra, torsFreeEnergy, "Initial ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
+    pr( logFile, "\n\n" );
 
     flushLog;
 }
