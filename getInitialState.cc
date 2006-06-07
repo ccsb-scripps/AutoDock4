@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.12 2006/04/25 22:32:12 garrett Exp $
+ $Id: getInitialState.cc,v 1.13 2006/06/07 00:04:15 garrett Exp $
 
 */
 
@@ -167,10 +167,12 @@ void getInitialState(
             copyState( sMinm, *sInit );
         }
 
+        /*
         if ( (e0total > e0max) && ((!B_RandomTran0)||(!B_RandomQuat0)) ) {
             B_RandomTran0 = TRUE;
             B_RandomQuat0 = TRUE;
         }
+        */
 
         ++retries;
         if ((retries > 0) && (retries < MaxRetries) &&
