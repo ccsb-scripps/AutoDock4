@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.7 2006/05/26 04:00:37 garrett Exp $
+ $Id: nonbonds.cc,v 1.8 2006/06/07 03:00:32 garrett Exp $
 
 */
 
@@ -39,8 +39,8 @@ void nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
     }
 
     //
-    // in "nbmatrix", the value 1 means this pair of atoms will be included in the internal, non-bonded list
-    //                          0                                  ignored
+    // in "nbmatrix", the values 1 (and 4) mean this pair of atoms will be included in the internal, non-bonded list
+    //                           0                                         ignored
  
     // set all nonbonds in nbmatrix to 1, except "1-1 interactions" (self interaction)
     for (i = 0; i<MAX_ATOMS; i++) {
