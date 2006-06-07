@@ -1,6 +1,6 @@
 /*
 
- $Id: nbe.cc,v 1.4 2006/04/25 22:32:38 garrett Exp $
+ $Id: nbe.cc,v 1.5 2006/06/07 00:06:26 garrett Exp $
 
 */
 
@@ -39,7 +39,7 @@
 
 extern FILE *logFile;
 
-void nbe( char atm_typ_str[ATOM_MAPS],
+void nbe( GridMapSetInfo *info,
           EnergyTables *ptr_ad_energy_tables,
           int num_atm_maps )
 
@@ -57,32 +57,32 @@ void nbe( char atm_typ_str[ATOM_MAPS],
  
     pr( logFile, "    \t\n r  \tLook-up\t" );
     for ( i = 0; i < num_atm_maps; i++) {
-	for ( j = i; j < num_atm_maps; j++) {
-	    pr( logFile, "  E    " );
-	}
+        for ( j = i; j < num_atm_maps; j++) {
+            pr( logFile, "  E    " );
+        }
     }
     pr( logFile, "\n /Ang\tIndex\t" );
     for ( i = 0; i < num_atm_maps; i++) {
-	for ( j = i; j < num_atm_maps; j++) {
-	    pr( logFile, "   %c,%c ", atm_typ_str[i], atm_typ_str[j] );
-	}
+        for ( j = i; j < num_atm_maps; j++) {
+            pr( logFile, "   %2s,%-2s ", info->atom_type_name[i], info->atom_type_name[j] );
+        }
     }
     pr( logFile, "\n______\t_____\t" );
     for ( i = 0; i < num_atm_maps; i++) {
-	for ( j = i; j < num_atm_maps; j++) {
-	    pr( logFile, " ______" );
-	}
+        for ( j = i; j < num_atm_maps; j++) {
+            pr( logFile, " ______" );
+        }
     }
     pr( logFile, "\n" );
     for ( k = 10;  k <= NUMPTS;  k += 10 ) {
-	r = LookUpProc( k );
-	pr( logFile, "%6.3f\t%5d\t", r, k );
-	for ( i = 0;  i < num_atm_maps; i++) {
-	    for ( j = i;  j < num_atm_maps; j++) {
-		pr( logFile, "%7.2f", ptr_ad_energy_tables->e_vdW_Hb[k][j][i] );
-	    } /*  j  */
-	} /*  i  */
-	pr( logFile, "\n" );
+        r = LookUpProc( k );
+        pr( logFile, "%6.3f\t%5d\t", r, k );
+        for ( i = 0;  i < num_atm_maps; i++) {
+            for ( j = i;  j < num_atm_maps; j++) {
+                pr( logFile, "%7.2f", ptr_ad_energy_tables->e_vdW_Hb[k][j][i] );
+            } /*  j  */
+        } /*  i  */
+        pr( logFile, "\n" );
     } /*  k  */
     flushLog;
 }
