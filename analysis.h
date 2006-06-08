@@ -45,9 +45,6 @@ void  analysis( int   Nnb,
 		        Real torsFreeEnergy,
                 Boole B_write_all_clusmem,
                 int ligand_is_inhibitor,
-                Boole B_template,
-                Real template_energy[MAX_ATOMS], // template energy value for each atom
-                Real template_stddev[MAX_ATOMS], // and standard deviation of this energy
                 int   outlev,
                 int   ignore_inter[MAX_ATOMS],
                 const Boole   B_include_1_4_interactions,
@@ -56,5 +53,8 @@ void  analysis( int   Nnb,
                 const ParameterEntry parameterArray[MAX_MAPS],
                 const Real unbound_internal_FE,
                 
-                GridMapSetInfo *info);
+                GridMapSetInfo *info,
+                Boole B_use_non_bond_cutoff,
+                Boole B_have_flexible_residues
+               );
 #endif

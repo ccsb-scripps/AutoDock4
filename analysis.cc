@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.18 2006/04/25 22:31:41 garrett Exp $
+ $Id: analysis.cc,v 1.19 2006/06/08 23:26:50 garrett Exp $
 
 */
 
@@ -21,8 +21,7 @@
 #include "cluster_analysis.h"
 #include "prClusterHist.h"
 #include "getrms.h"
-#include "eintcal.h"
-#include "trilinterp.h"
+#include "calculateEnergies.h"
 #include "print_rem.h"
 #include "strindex.h"
 #include "print_avsfld.h"
@@ -46,8 +45,8 @@ void analysis( int   Nnb,
 
                EnergyTables *ptr_ad_energy_tables,
 
-               Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
-               Real econf[MAX_RUNS], 
+               Real  map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+               Real  econf[MAX_RUNS], 
                int   irunmax, 
                int   natom, 
                int   **nonbondlist, 
@@ -55,27 +54,27 @@ void analysis( int   Nnb,
                int   ntor, 
                State hist[MAX_RUNS], 
                char  smFileName[MAX_CHARS], 
-               Real sml_center[SPACE],
+               Real  sml_center[SPACE],
                Boole B_symmetry_flag, 
                int   tlist[MAX_TORS][MAX_ATOMS], 
                int   type[MAX_ATOMS], 
-               Real vt[MAX_TORS][SPACE],
+               Real  vt[MAX_TORS][SPACE],
                char  FN_rms_ref_crds[MAX_CHARS],
-               Real torsFreeEnergy,
+               Real  torsFreeEnergy,
                Boole B_write_all_clusmem,
-               int ligand_is_inhibitor,
-               Boole B_template,
-               Real template_energy[MAX_ATOMS],
-               Real template_stddev[MAX_ATOMS],
-               int           outlev,
-			   int           ignore_inter[MAX_ATOMS],
+               int   ligand_is_inhibitor,
+               int   outlev,
+			   int   ignore_inter[MAX_ATOMS],
                const Boole   B_include_1_4_interactions,
                const Real scale_1_4,
 
                const ParameterEntry parameterArray[MAX_MAPS],
                const Real unbound_internal_FE,
 
-               GridMapSetInfo *info
+               GridMapSetInfo *info,
+               Boole B_use_non_bond_cutoff,
+               Boole B_have_flexible_residues
+
               )
 
 {
@@ -88,8 +87,6 @@ void analysis( int   Nnb,
     static Real clu_rms[MAX_RUNS][MAX_RUNS];
     static Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
     static Real crd[MAX_ATOMS][SPACE];
-    Real einter = 0.;
-    Real eintra = 0.;
     static Real elec[MAX_ATOMS];
     static Real elec_total;
     static Real emap[MAX_ATOMS];
@@ -217,28 +214,24 @@ void analysis( int   Nnb,
             c1 = c + 1;
 
             (void)memcpy(crd, crdSave[c], natom*3*sizeof(Real));
-     
-            if (ntor > 0) {
-                eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
-            } else {
-                // eintra = torsFreeEnergy;
-                eintra = 0.0 - unbound_internal_FE;
-            }
-            if (!B_template) {
-                // we assume that some atoms might be outside the grid -
-                // we do not know to be honest, but this is a safer usage of trilinterp
-                 einter = trilinterp( crd, charge, abs_charge, type, natom, map, 
-                    info, SOME_ATOMS_OUTSIDE_GRID, ignore_inter, 
-                    elec, emap, &elec_total, &emap_total);
-            } else {
-                 einter = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
-                        info, SOME_ATOMS_OUTSIDE_GRID, ignore_inter, 
-                        template_energy, template_stddev, 
-                        elec /* set */ , emap /* set */, &elec_total, &emap_total );
+
+            Boole B_outside=FALSE;
+            register int ia=0;
+            for (ia=0; (ia<natom)&&(!B_outside); ia++) {
+                B_outside = is_out_grid_info(crd[ia][0], crd[ia][1], crd[ia][2]);
             }
 
+            EnergyBreakdown eb;
+
+            eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+                 crd, charge, abs_charge, type, map, info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID,
+                 ignore_inter, elec, emap, &elec_total, &emap_total,
+                 nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, q1q2, 
+                 B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
+     
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
-            printEnergies( einter, eintra, torsFreeEnergy, "USER    ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE );
+
+            printEnergies( &eb, "USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues);
      
             pr( logFile, "USER  \n");
             pr( logFile, "USER    DPF = %s\n", dock_param_fn);
@@ -263,11 +256,7 @@ void analysis( int   Nnb,
             if (keepresnum > 0) {
                 if (outlev > -11) {
                     // Log File PDBQ coordinates [
-                    if (!B_template) {
-                        pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
-                    } else {
-                        pr( logFile, "USER                              x       y       z    vdW   Template    q     RMS \n" );
-                    }
+                    pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
                     for (j = 0;  j < natom;  j++) {
                         strncpy( rec14, &atomstuff[j][13], (size_t)13);
                         rec14[13]='\0';
@@ -279,11 +268,7 @@ void analysis( int   Nnb,
             } else {
                 if (outlev > -11) {
                     // Log File PDBQ coordinates [
-                    if (!B_template) {
-                        pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
-                    } else {
-                        pr( logFile, "USER                 Rank         x       y       z    vdW   Template    q     RMS \n" );
-                    }
+                    pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
                     for (j = 0;  j < natom;  j++) {
                         strncpy( rec9, &atomstuff[j][13], (size_t)8);
                         rec9[8]='\0';
@@ -311,20 +296,12 @@ void analysis( int   Nnb,
     if (keepresnum > 0) {
         off[6]=11;
         veclen = 7;
-        if (!B_template) {
-            strcpy( label, "x y z vdW Elec q RMS\0" );
-        } else {
-            strcpy( label, "x y z vdW Template q RMS\0" );
-        }
+        strcpy( label, "x y z vdW Elec q RMS\0" );
     } else {
         off[6]=4;
         off[7]=11;
         veclen = 8;
-        if (!B_template) {
-            strcpy( label, "x y z vdW Elec q Rank RMS\0" );
-        } else {
-            strcpy( label, "x y z vdW Template q Rank RMS\0" );
-        }
+        strcpy( label, "x y z vdW Elec q Rank RMS\0" );
     }
     indpf = strindex( dock_param_fn, ".dpf" );
     strncpy( filename, dock_param_fn, (size_t)indpf );
