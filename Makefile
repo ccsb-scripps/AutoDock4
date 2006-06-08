@@ -44,6 +44,7 @@ OBJS = \
 	atom_parameter_manager.o \
     banner.o \
     bestpdb.o \
+	calculateEnergies.o \
     call_glss.o \
     call_gs.o \
     call_ls.o \
@@ -63,7 +64,6 @@ OBJS = \
     readPDBQT.o \
 	read_parameter_library.o \
     eval.o \
-    evaluate_energy.o \
     gencau.o \
     getrms.o \
     get_atom_type.o \
@@ -93,7 +93,6 @@ OBJS = \
     print_atomic_energies.o \
     print_avsfld.o \
     writeMolAsPDBQ.o \
-    writePDBQ.o \
     writePDBQT.o \
     print_rem.o \
     printdate.o \
@@ -132,6 +131,7 @@ OBJS_LSFIT = \
 	atom_parameter_manager.o \
     banner.o \
     bestpdb.o \
+	calculateEnergies.o \
     call_glss.o \
     call_gs.o \
     call_ls.o \
@@ -150,7 +150,6 @@ OBJS_LSFIT = \
     readPDBQT.o \
 	read_parameter_library.o \
     eval.o \
-    evaluate_energy.o \
     gencau.o \
     getrms.o \
     get_atom_type.o \
@@ -180,7 +179,6 @@ OBJS_LSFIT = \
     print_atomic_energies.o \
     print_avsfld.o \
     writeMolAsPDBQ.o \
-    writePDBQ.o \
     writePDBQT.o \
     print_rem.o \
     printdate.o \
@@ -252,7 +250,6 @@ LNS = \
     readmap.ln \
     readPDBQT.ln \
 	read_parameter_library.ln \
-    evaluate_energy.ln \
     getrms.ln \
     get_atom_type.ln \
     getInitialState.ln \
@@ -277,7 +274,6 @@ LNS = \
     print_atomic_energies.ln \
     print_avsfld.ln \
     writeMolAsPDBQ.ln \
-    writePDBQ.ln \
     writePDBQT.ln \
     print_rem.ln \
     printdate.ln \
@@ -347,7 +343,7 @@ CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X
 
 CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; also use Double precision throughout
-# CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X`
+# CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X
 
 OPTLEVEL = -O3 # Agressive optimization
 # OPTLEVEL = -O3 -ffast-math # Agressive optimization, for Intel Itanium, ia64Linux2
@@ -571,6 +567,9 @@ banner.o : banner.cc banner.h
 bestpdb.o : bestpdb.cc bestpdb.h constants.h print_rem.h strindex.h print_avsfld.h
 	$(CC) $(CFLAGS) -c bestpdb.cc
 
+calculateEnergies.o : calculateEnergies.cc calculateEnergies.h constants.h autoglobal.h autocomm.h structs.h
+	$(CC) $(CFLAGS) -c calculateEnergies.cc
+
 call_glss.o : call_glss.cc support.h rep.h eval.h ranlib.h call_glss.h
 	$(CC) $(CFLAGS) -c call_glss.cc
 
@@ -625,9 +624,6 @@ eintcalPrint.o : eintcal.cc eintcal.h constants.h
 eval.o : eval.cc eval.h structs.h constants.h autocomm.h 
 	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c eval.cc
 
-evaluate_energy.o : evaluate_energy.cc evaluate_energy.h constants.h trilinterp.h eintcal.h
-	$(CC) $(CFLAGS) -c evaluate_energy.cc
-
 gencau.o : gencau.cc ranlib.h
 	$(CC) $(CFLAGS) -c gencau.cc
 
@@ -643,7 +639,7 @@ getpdbcrds.o : getpdbcrds.cc getpdbcrds.h constants.h openfile.h
 getrms.o : getrms.cc getrms.h constants.h autocomm.h
 	$(CC) $(CFLAGS) -c getrms.cc
 
-gs.o : gs.cc gs.h ranlib.h eval.h rep.h support.h writePDBQ.h
+gs.o : gs.cc gs.h ranlib.h eval.h rep.h support.h writePDBQT.h
 	$(CC) $(CFLAGS) -DCHECK_ISNAN -c gs.cc -o gs.o
 
 initautodock.o : initautodock.cc initautodock.h constants.h qmultiply.h cnv_state_to_coords.h print_2x.h autocomm.h
@@ -664,7 +660,7 @@ linpack.o : linpack.cc
 ls.o : ls.cc ls.h support.h ranlib.h
 	$(CC) $(CFLAGS) -c ls.cc
 
-main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcal.cc eintcal.h atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h
+main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcal.cc eintcal.h atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h calculateEnergies.cc calculateEnergies.h
 	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c -DEINTCALPRINT -DWRITEPDBQSTATE main.cc
 
 mapping.o : mapping.cc support.h
@@ -732,9 +728,6 @@ print_avsfld.o : print_avsfld.cc print_avsfld.h
 
 writeMolAsPDBQ.o : writeMolAsPDBQ.cc writeMolAsPDBQ.h constants.h autocomm.h
 	$(CC) $(CFLAGS) -c writeMolAsPDBQ.cc -o writeMolAsPDBQ.o
-
-writePDBQ.o : writePDBQ.cc writePDBQ.h constants.h autocomm.h
-	$(CC) $(CFLAGS) -c writePDBQ.cc -o writePDBQ.o
 
 writePDBQT.o : writePDBQT.cc writePDBQT.h constants.h autocomm.h
 	$(CC) $(CFLAGS) -c writePDBQT.cc -o writePDBQT.o
@@ -907,9 +900,6 @@ readmap.ln : readmap.cc
 readPDBQT.ln : readPDBQT.cc
 	$(LINT) $(LINTFLAGS) $?
 
-evaluate_energy.ln : evaluate_energy.cc
-	$(LINT) $(LINTFLAGS) $?
-
 getrms.ln : getrms.cc
 	$(LINT) $(LINTFLAGS) $?
 
@@ -980,9 +970,6 @@ print_avsfld.ln : print_avsfld.cc
 	$(LINT) $(LINTFLAGS) $?
 
 writeMolAsPDBQ.ln : writeMolAsPDBQ.cc
-	$(LINT) $(LINTFLAGS) $?
-
-writePDBQ.ln : writePDBQ.cc
 	$(LINT) $(LINTFLAGS) $?
 
 writePDBQT.ln : writePDBQT.cc
