@@ -21,7 +21,6 @@
 State call_glss(Global_Search *global_method, Local_Search *local_method, 
 		State now, unsigned int num_evals, unsigned int pop_size, 
 		int outlev, unsigned int extOutputEveryNgens, Molecule *mol,
-		Boole B_template,
 		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
         GridMapSetInfo *info, char FN_pop_file[MAX_CHARS] );
 
