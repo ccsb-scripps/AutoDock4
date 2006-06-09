@@ -3,7 +3,7 @@
 #
 # NOTE: Must be run in the $(AUTODOCK_DEV) directory
 #
-# Copyright (C) 1994-2005,  Garrett Matthew Morris,  TSRI
+# Copyright (C) 1994-2006,  Garrett Matthew Morris,  TSRI
 #
 
 #
@@ -487,7 +487,7 @@ $(ADLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
 	@echo "Running ranlib"
 	$(RANLIB) $(RANLIBFLAGS) $(ADLIB)
 
-testad : autodock4 Tests/test_autodock4.py
+test : autodock4 Tests/test_autodock4.py
 	@echo " "
 	@echo "Running the unit tests on autodock4"
 	@echo " "
