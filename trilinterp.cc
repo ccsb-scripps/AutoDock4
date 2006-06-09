@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.9 2006/04/25 22:33:30 garrett Exp $
+ $Id: trilinterp.cc,v 1.10 2006/06/09 10:00:35 garrett Exp $
 
 */
 
@@ -25,11 +25,12 @@ extern FILE *logFile;
 
 Real trilinterp( 
 
+ CONST_INT first_atom, // loop begins at this atom  for (i=first_atom;
+ CONST_INT last_atom, // loop ends at this atom - 1       i<last_atom; i++)
  CONST_FLOAT tcoord[MAX_ATOMS][SPACE], // temporary coordinates
  CONST_FLOAT charge[MAX_ATOMS], // partial atomic charges
  CONST_FLOAT abs_charge[MAX_ATOMS], // absolute magnitude of partial charges
  CONST_INT   type[MAX_ATOMS], // atom type of each atom
- CONST_INT   total_atoms, // number of atoms
  CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    //  intermolecular interaction energies
  GridMapSetInfo *info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
  int some_atoms_outside_grid, // boolean
@@ -66,7 +67,8 @@ Real trilinterp(
     register double elec_total=0, emap_total=0;
     register int i;               /* i-th atom */
 
-    for (i=0; i<total_atoms; i++) {
+    // for (i=0; i<total_atoms; i++) {
+    for (i=first_atom; i<last_atom; i++) {
         register double e, m, d; 
         register double u,   v,   w;
         register double p0u, p0v, p0w;
@@ -163,7 +165,7 @@ Real trilinterp(
         if (elec != NULL) elec[i] = e * charge[i];
         if (emap != NULL) emap[i] = m + d * abs_charge[i];
 
-    } /*for  0 <= i < total_atoms*/
+    } // for (i=first_atom; i<last_atom; i++)
 
     if (p_elec_total != NULL) *p_elec_total = elec_total;
     if (p_emap_total != NULL) *p_emap_total = emap_total;
@@ -172,44 +174,5 @@ Real trilinterp(
 }
 
 /*----------------------------------------------------------------------------*/
-
-Real template_trilinterp( 
-
- CONST_FLOAT tcoord[MAX_ATOMS][SPACE], // temporary coordinates
- CONST_FLOAT charge[MAX_ATOMS], // partial atomic charges
- CONST_FLOAT abs_charge[MAX_ATOMS], // absolute magnitude of partial charges
- CONST_INT   type[MAX_ATOMS], // atom type of each atom
- CONST_INT   total_atoms, // number of atoms
- CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    //  intermolecular interaction energies
- GridMapSetInfo *info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
- int some_atoms_outside_grid, // boolean
- int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
- CONST_FLOAT template_energy[MAX_ATOMS],
- CONST_FLOAT template_stddev[MAX_ATOMS],
- Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
- Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
- Real *p_elec_total, // set if not NULL - total electrostatic energy
- Real *p_emap_total // set if not NULL - total intermolecular energy
- )
-
-{
-    double etotal = 0;
-    register int i;		/* i-th atom */
-
-    if (elec == NULL || emap == NULL || total_atoms <= 0) {
-        return -1.; // ERROR!
-    }
-
-    trilinterp( tcoord, charge, abs_charge, type, total_atoms, map, 
-            info, some_atoms_outside_grid, ignore_inter, elec, emap, p_elec_total, p_emap_total);
-
-    for  (i=0; i < total_atoms; i++) {
-        double diff;
-        diff = (emap[i] + elec[i] - template_energy[i]) / template_stddev[i]; 
-        etotal += diff * diff;
-    }
-
-    return((Real)sqrt(etotal / (Real)total_atoms ));
-}
 
 /* EOF */
