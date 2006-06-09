@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.7 2006/05/11 22:23:15 garrett Exp $
+ $Id: readmap.cc,v 1.8 2006/06/09 09:55:08 garrett Exp $
 
 */
 
@@ -29,17 +29,17 @@ extern int debug;
 char mapf2c(Real);
 
 Statistics readmap( char           line[LINE_LEN],
-              int            outlev,
-              Clock          jobStart,
-              struct tms     tmsJobStart,
-              Boole          B_charMap,
-              Boole          *P_B_HaveMap, 
+                    int            outlev,
+                    Clock          jobStart,
+                    struct tms     tmsJobStart,
+                    Boole          B_charMap,
+                    Boole          *P_B_HaveMap, 
                     int            num_maps, 
-              GridMapSetInfo *info,
+                    GridMapSetInfo *info,
                     Real           map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-              // double *maps 
+                    // double *maps 
                     char           map_type
-             )
+                  )
 
 {
     FILE *map_file;
