@@ -1,5 +1,6 @@
 #ifndef WEEDBONDS
 #define WEEDBONDS
+
 #include "constants.h"
 #include "stop.h"
 
@@ -21,6 +22,7 @@ void  weedbonds( int   natom,
 
 #include "constants.h"
 #include "stop.h"
+
 void print_nonbonds(
                 int natom,
                 char pdbaname[MAX_ATOMS][5],
