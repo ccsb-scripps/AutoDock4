@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.10 2006/04/25 22:32:18 garrett Exp $
+ $Id: gs.cc,v 1.11 2006/06/09 01:55:01 garrett Exp $
 
 */
 
@@ -37,7 +37,7 @@
 #include "constants.h"
 #include "autocomm.h"
 #include "timesyshms.h"
-#include "writePDBQ.h"
+#include "writePDBQT.h"
 
 
 extern FILE *logFile;
