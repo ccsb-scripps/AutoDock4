@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.6 2006/06/07 00:14:08 garrett Exp $
+ $Id: prInitialState.cc,v 1.7 2006/06/09 09:50:13 garrett Exp $
 
 */
 
@@ -24,10 +24,7 @@ extern char *programname;
 
 
 void prInitialState(
-
-    Real einter,
-    Real eintra,
-    Real torsFreeEnergy,
+    EnergyBreakdown *p_eb,
     int natom,
     Real crd[MAX_ATOMS][SPACE],
     char atomstuff[MAX_ATOMS][MAX_CHARS],
@@ -36,8 +33,7 @@ void prInitialState(
     Real elec[MAX_ATOMS],
     Real charge[MAX_ATOMS],
     int ligand_is_inhibitor,
-    Real unbound_internal_FE
-    )
+    Boole B_have_flexible_residues )
 
 {
     char rec8[10];
@@ -79,9 +75,9 @@ void prInitialState(
         emap_total += emap[a];
         elec_total += elec[a];
     }
-
-    pr( logFile, "\n\n" );
-    printEnergies( einter, eintra, torsFreeEnergy, "Initial ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
+    
+	pr( logFile, "\n\n" );
+    printEnergies( p_eb, "Initial ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues );
     pr( logFile, "\n\n" );
 
     flushLog;
