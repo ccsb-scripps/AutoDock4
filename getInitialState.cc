@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.13 2006/06/07 00:04:15 garrett Exp $
+ $Id: getInitialState.cc,v 1.14 2006/06/09 01:54:16 garrett Exp $
 
 */
 
@@ -17,6 +17,8 @@
 #include <sys/param.h>
 #include <time.h>
 #include "getInitialState.h"
+#include "trilinterp.h"
+#include "calculateEnergies.h"
 
 
 extern FILE *logFile;
@@ -74,8 +76,9 @@ void getInitialState(
 
             const Real unbound_internal_FE,
 
-            GridMapSetInfo *info
-
+            GridMapSetInfo *info,
+            Boole B_use_non_bond_cutoff,
+            Boole B_have_flexible_residues
            )
 
 {
@@ -89,6 +92,7 @@ void getInitialState(
     Clock  initEnd;
     struct tms tms_initStart;
     struct tms tms_initEnd;
+    EnergyBreakdown eb;
 
 
     /* Store time at start of initialization process... */
@@ -152,10 +156,10 @@ void getInitialState(
         initautodock( atomstuff, crd, crdpdb, 
             natom, ntor, sInit, tlist, vt, outlev, info);
         
-        e0inter = trilinterp( crd, charge, abs_charge, type, natom, map, 
+        e0inter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                     info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
                     NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-        e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
+        e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
         e0total = e0inter + e0intra;
 
         if (e0total < e0min) {
@@ -195,23 +199,23 @@ void getInitialState(
 
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
-    e0inter = trilinterp( crd, charge, abs_charge, type, natom, map, 
-                info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
-                NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-    e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
-    e0total = e0inter + e0intra;
+    eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+         crd, charge, abs_charge, type, map, info, SOME_ATOMS_OUTSIDE_GRID, 
+         ignore_inter, elec, emap, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
+         nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, q1q2, 
+         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
 
     copyState( sMinm, *sInit );
     copyState( sLast, *sInit );
 
-    prInitialState(e0inter, e0intra, torsFreeEnergy, natom, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor, unbound_internal_FE);
+    prInitialState( &eb, natom, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor, B_have_flexible_residues );
 
     initEnd = times( &tms_initEnd );
     pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);
     pr(logFile, "Time spent initializing: (Real, CPU, System): ");
     timesys( initEnd - initStart, &tms_initStart, &tms_initEnd );
 
-    *Addr_e0total = e0total;
+    *Addr_e0total = eb.e_inter + eb.e_intra;
     fflush( logFile );
 
 }

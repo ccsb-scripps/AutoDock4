@@ -61,7 +61,10 @@ void getInitialState(
 
             const Real unbound_internal_FE,
 
-            GridMapSetInfo *info
+            GridMapSetInfo *info,
+            Boole B_use_non_bond_cutoff,
+            Boole B_have_flexible_residues
+
            );
 
 #endif
