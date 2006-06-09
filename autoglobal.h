@@ -55,6 +55,10 @@ int     keepresnum = 1;
 int     parse_tors_mode = FALSE;
 int	    true_ligand_atoms = 0;
 
+// For energy breakdown of non-bonded interactions
+int     Nnb_array[3] = {0};    // number of nonbonds in the ligand, intermolecular and receptor groups
+Real    nb_group_energy[3] = {0.0};  // total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
+
 FILE    *command_in_fp;
 FILE    *command_out_fp;
 FILE    *parFile;
