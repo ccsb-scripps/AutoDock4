@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.16 2006/04/17 05:20:17 garrett Exp $
+ $Id: call_glss.cc,v 1.17 2006/06/09 01:35:56 garrett Exp $
 
 */
 
@@ -142,7 +142,6 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
                 unsigned int num_evals, unsigned int pop_size, 
                 int outlev, 
                 unsigned int extOutputEveryNgens, Molecule *mol, 
-                Boole B_template,
                 Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
                 GridMapSetInfo *info, char FN_pop_file[MAX_CHARS] )
 {
