@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.13 2006/06/03 02:03:41 garrett Exp $
+ $Id: simanneal.cc,v 1.14 2006/06/09 09:57:31 garrett Exp $
 
 */
 
@@ -40,7 +40,7 @@ void simanneal ( int   *Addr_nconf,
                 Real crdpdb[MAX_ATOMS][SPACE],
                 char  FN_dpf[MAX_CHARS],
         
-                    EnergyTables *ptr_ad_energy_tables,
+        EnergyTables *ptr_ad_energy_tables,
 
                 Real econf[MAX_RUNS],
                 Boole B_either,
@@ -66,7 +66,7 @@ void simanneal ( int   *Addr_nconf,
                 Real qtwStep0,
                 Boole B_selectmin,
                 char  FN_ligand[MAX_CHARS],
-                Real sml_center[SPACE],
+                Real lig_center[SPACE],
                 Real RT0,
                 Boole B_RTChange,
                 Real RTFac,
@@ -122,7 +122,10 @@ void simanneal ( int   *Addr_nconf,
 
         const Real unbound_internal_FE,
 
-        GridMapSetInfo *info
+        GridMapSetInfo *info,
+        Boole B_use_non_bond_cutoff,
+        Boole B_have_flexible_residues, 
+        char PDBQT_record[MAX_RECORDS][LINE_LEN]
         )
 
 {
@@ -186,6 +189,8 @@ void simanneal ( int   *Addr_nconf,
 
     time_t time_seed;
 
+    FourByteLong seed[2];
+
     /* trnStepHi = HI_NRG_JUMP_FACTOR * trnStep; ** qtwStepHi = HI_NRG_JUMP_FACTOR * qtwStep; ** torStepHi = HI_NRG_JUMP_FACTOR * torStep; */
     /* lo[X] = xlo;  lo[Y] = ylo;  lo[Z] = zlo;*/
     /* xloTrn = xlo + maxrad; ** xhiTrn = xhi - maxrad; ** yloTrn = ylo + maxrad; ** yhiTrn = yhi - maxrad; ** zloTrn = zlo + maxrad; ** zhiTrn = zhi - maxrad; */
@@ -220,6 +225,8 @@ void simanneal ( int   *Addr_nconf,
         ** Initialize random number generator with a time-dependent seed...
         */
         time_seed = time( &time_seed );
+        seed[0] = time_seed;
+        seed[1] = 0;
         seed_random( time_seed );
 
         if (outlev > 0) {
@@ -235,20 +242,25 @@ void simanneal ( int   *Addr_nconf,
         }
 
         getInitialState( &e0, e0max,
-                         &sInit, &sMin, &sLast, 
-                         B_RandomTran0, B_RandomQuat0, B_RandomDihe0, 
-                         charge, abs_charge, qsp_abs_charge, q1q2, crd, crdpdb, atomstuff,
-                         elec, emap, ptr_ad_energy_tables, B_calcIntElec,
-                         map, natom, Nnb, nonbondlist,
-                         ntor, tlist, type, vt, irun1, outlev, MaxRetries,
-                         torsFreeEnergy, ligand_is_inhibitor,
-                         ignore_inter,
-                         B_include_1_4_interactions, scale_1_4, 
-                         parameterArray, 
-                         unbound_internal_FE, info);
+                     &sInit, &sMin, &sLast, 
+                     B_RandomTran0, B_RandomQuat0, B_RandomDihe0, 
+                     charge, abs_charge, qsp_abs_charge, q1q2, crd, crdpdb, atomstuff,
+                     elec, emap, ptr_ad_energy_tables, B_calcIntElec,
+                     map, natom, Nnb, nonbondlist,
+                     ntor, tlist, type, vt, irun1, outlev, MaxRetries,
+                     torsFreeEnergy, ligand_is_inhibitor,
+                     ignore_inter,
+                     B_include_1_4_interactions, scale_1_4, 
+                     parameterArray, 
+                     unbound_internal_FE, info, 
+                     B_use_non_bond_cutoff, B_have_flexible_residues);
 
-        RT = RT0;                /* Initialize the "annealing" temperature */
-        if (RT <= APPROX_ZERO) { RT = 616.; }
+        /* Initialize the "annealing" temperature */
+        RT = RT0;                
+
+        if (RT <= APPROX_ZERO) {
+            RT = 616.;
+        }
         inv_RT = 1. / RT;
 
         eMin    = min(BIG_ENERGY, e0);
@@ -360,12 +372,10 @@ void simanneal ( int   *Addr_nconf,
                         /*
                         ** MORE ACCURATE METHOD, (SLOWER):
                         */
-                        e = trilinterp( crd, charge, abs_charge, type, natom, map, 
+                        e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                                         info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW,
                                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
-                                            + (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
-                                   B_calcIntElec, q1q2, B_include_1_4_interactions, 
-                                   scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE);
+                                            + (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE);
 
                         if (B_isGaussTorCon) {
                             /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { ***/
@@ -475,7 +485,8 @@ void simanneal ( int   *Addr_nconf,
                          ignore_inter,
                          B_include_1_4_interactions, scale_1_4, 
                          parameterArray, unbound_internal_FE,
-                         info );
+                         info, B_use_non_bond_cutoff,
+                         B_have_flexible_residues);
 
             } else {
 
@@ -581,19 +592,26 @@ void simanneal ( int   *Addr_nconf,
         cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
 
         if (ntor > 0) {
-            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
+            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
         } else {
             eintra = 0.0 - unbound_internal_FE;
         }
-        einter = trilinterp( crd, charge, abs_charge, type, natom, map, 
+        einter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                     info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
                     NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
 
-        writePDBQ( irun, FN_ligand, FN_dpf, sml_center, sSave, ntor,
-          eintra, einter, natom, atomstuff, crd, emap, elec, 
-      charge, abs_charge, qsp_abs_charge,
-          ligand_is_inhibitor, torsFreeEnergy, outlev, ignore_inter,
-      B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE);
+        writePDBQT( irun, seed, FN_ligand, FN_dpf, lig_center, sSave, ntor,
+                &eintra, &einter, natom, atomstuff, crd, emap, elec, 
+                charge, abs_charge, qsp_abs_charge,
+                ligand_is_inhibitor, torsFreeEnergy, 
+                vt, tlist, crdpdb, nonbondlist, 
+                ptr_ad_energy_tables,
+                type, Nnb, B_calcIntElec, q1q2,
+                map,
+                outlev, ignore_inter,
+                B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
+                info, 1 /* = DOCKED */, PDBQT_record, 
+                B_use_non_bond_cutoff, B_have_flexible_residues);
 
         econf[(*Addr_nconf)] = eLast;
         ++(*Addr_nconf);

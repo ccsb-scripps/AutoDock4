@@ -10,7 +10,7 @@
 #include "output_state.h"
 #include "trilinterp.h"
 #include "eintcal.h"
-#include "writePDBQ.h"
+#include "writePDBQT.h"
 void simanneal( int   *P_nconf, 
                 int   Nnb, 
                 Real WallEnergy, 
@@ -100,7 +100,9 @@ void simanneal( int   *P_nconf,
                 const ParameterEntry parameterArray[MAX_MAPS],
                 const Real unbound_internal_FE,
 
-                GridMapSetInfo *info
-                );
+                GridMapSetInfo *info,
+                Boole B_use_non_bond_cutoff,
+                Boole B_have_flexible_residues,
+                char  PDBQT_record[MAX_RECORDS][LINE_LEN]);
 
 #endif
