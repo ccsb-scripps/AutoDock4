@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.13 2006/04/25 22:32:03 garrett Exp $
+ $Id: eintcal.cc,v 1.14 2006/06/09 01:44:19 garrett Exp $
 
 */
 
@@ -19,46 +19,48 @@
 #include "distdepdiel.h"
 
 extern Linear_FE_Model AD4;
+extern int Nnb_array[3];
+extern Real nb_group_energy[3];
 
 #ifndef EINTCALPRINT
 
-/*
- * Calculate internal energy
- */
-
+// Calculate internal energy
 Real eintcal( int ** const nonbondlist,
-                       const EnergyTables  *ptr_ad_energy_tables,
-                       const Real tcoord[MAX_ATOMS][SPACE],
-                       const int           Nnb,
-                       const Boole         B_calcIntElec,
-                       const Real q1q2[MAX_NONBONDS],
-                       const Boole         B_include_1_4_interactions,
-                       const Real scale_1_4,
-                       const Real qsp_abs_charge[MAX_ATOMS],
-                       const ParameterEntry parameterArray[MAX_MAPS]
-                       )
+              const EnergyTables  *ptr_ad_energy_tables,
+              const Real tcoord[MAX_ATOMS][SPACE],
+              const int           Nnb,
+              const Boole         B_calcIntElec,
+              const Real q1q2[MAX_NONBONDS],
+              const Boole         B_include_1_4_interactions,
+              const Real scale_1_4,
+              const Real qsp_abs_charge[MAX_ATOMS],
+              const ParameterEntry parameterArray[MAX_MAPS],
+              const Boole B_use_non_bond_cutoff,
+              const Boole B_have_flexible_residues  // if the receptor has flexibile residues, this will be set to TRUE
+             )
 
-#else // eintcalPrint [
+#else 
+
+// eintcalPrint [
 
 extern FILE *logFile;
 
-/*
- * Calculate internal energy and print out a detailed report
- */
-
+// Calculate internal energy and print out a detailed report
 Real eintcalPrint( int ** nonbondlist,
-                            const EnergyTables  *ptr_ad_energy_tables,
-                            const Real tcoord[MAX_ATOMS][SPACE],
-                            const int           Nnb,
-                            const Boole         B_calcIntElec,
-                            const Real q1q2[MAX_NONBONDS],
-                            const Boole         B_include_1_4_interactions,
-                            const Real scale_1_4,
-                            const Real qsp_abs_charge[MAX_ATOMS],
-                            const ParameterEntry parameterArray[MAX_MAPS]
-                            )
+                   const EnergyTables  *ptr_ad_energy_tables,
+                   const Real tcoord[MAX_ATOMS][SPACE],
+                   const int           Nnb,
+                   const Boole         B_calcIntElec,
+                   const Real q1q2[MAX_NONBONDS],
+                   const Boole         B_include_1_4_interactions,
+                   const Real scale_1_4,
+                   const Real qsp_abs_charge[MAX_ATOMS],
+                   const ParameterEntry parameterArray[MAX_MAPS],
+                   const Boole B_have_flexible_residues  // if the receptor has flexibile residues, this will be set to TRUE
+                  )
+// eintcalPrint ]
 
-#endif // eintcalPrint ]
+#endif 
 
 /* *****************************************************************************/
 /*       Name: eintcal                                                         */
@@ -125,204 +127,265 @@ Real eintcalPrint( int ** nonbondlist,
 
     register int index_lt_NEINT=0;
     register int index_lt_NDIEL=0;
+    register int nb_group=0;
+    int inb_from=0;
+    int inb_to=0;
+    int nb_group_max = 1;  // By default, we have one nonbond group, (1) intramolecular in the ligand
 
-
-#ifdef EINTCALPRINT
-    pr(logFile, "\n\n\t\tIntramolecular Energy Analysis\n");
-    pr(logFile,     "\t\t==============================\n\n");
-    if (B_calcIntElec) {
-        pr( logFile, "Non-bond  Atom1-Atom2  Distance   Total     Elec      vdW+Hb    Desolv     Sol_fn   Type Dielectric\n"); // eintcalPrint 
-        pr( logFile, "________  ___________  ________   ______  ________  ________  ________   ________   ____ __________\n"); // eintcalPrint 
-    } else {
-        pr( logFile, "Non-bond  Atom1-Atom2  Distance   Total     vdW+Hb    Desolv     Sol_fn   Type Dielectric\n"); // eintcalPrint 
-        pr( logFile, "________  ___________  ________   ______  ________  ________   ________   ____ __________\n"); // eintcalPrint 
+    if (B_have_flexible_residues) {
+        // If we have flexible residues, we need to consider three groups of nonbonds:
+        // (1) intramolecular in the ligand, (2) intermolecular and (3) intramolecular in the receptor
+        nb_group_max = 3;
     }
-#endif
 
-    // Loop over all the non-bonds, "inb",
-    for (inb = 0;  inb < Nnb;  inb++) {
+    // Loop over the nonbonding groups --
+    // Either (intramolecular ligand nonbonds)
+    // or (intramolecular ligand nonbonds, intermolecular nonbonds, and intramolecular receptor nonbonds)
+    for (nb_group = 0;  nb_group < nb_group_max;  nb_group++) {
 
 #ifdef EINTCALPRINT
-        // For each new non-bond, we must reset the internal energy to zero.
-        e_internal = 0.0L;
+        if (nb_group == 0) {
+            pr(logFile, "\n\n\t\tLigand Intramolecular Energy Analysis\n");
+            pr(logFile,     "\t\t=====================================\n\n");
+        }
+        if (nb_group == 1) {
+            pr(logFile, "\n\n\t\tLigand-Receptor Moving-Atom Intermolecular Energy Analysis\n");
+            pr(logFile,     "\t\t==========================================================\n\n");
+        }
+        if (nb_group == 2) {
+            pr(logFile, "\n\n\t\tReceptor Moving-Atom Intramolecular Energy Analysis\n");
+            pr(logFile,     "\t\t===================================================\n\n");
+        }
+        if (B_calcIntElec) {
+            pr( logFile, "Non-bond  Atom1-Atom2  Distance   Total     Elec      vdW+Hb    Desolv     Sol_fn   Type Dielectric\n"); // eintcalPrint 
+            pr( logFile, "________  ___________  ________   ______  ________  ________  ________   ________   ____ __________\n"); // eintcalPrint 
+        } else {
+            pr( logFile, "Non-bond  Atom1-Atom2  Distance   Total     vdW+Hb    Desolv     Sol_fn   Type Dielectric\n"); // eintcalPrint 
+            pr( logFile, "________  ___________  ________   ______  ________  ________   ________   ____ __________\n"); // eintcalPrint 
+        }
 #endif
 
-        a1 = nonbondlist[inb][ATM1];
-        a2 = nonbondlist[inb][ATM2];
-        t1 = nonbondlist[inb][TYPE1]; // Xcode-gmm  // t1 is a map_index
-        t2 = nonbondlist[inb][TYPE2]; // Xcode-gmm  // t2 is a map_index
-        nonbond_type = nonbondlist[inb][NBTYPE];
+        if (nb_group == 0) {
+            inb_from = 0;
+        } else {
+            inb_from = Nnb_array[nb_group-1];
+        }
+        inb_to   = Nnb_array[nb_group];
 
-        dx = tcoord[a1][X] - tcoord[a2][X];
-        dy = tcoord[a1][Y] - tcoord[a2][Y];
-        dz = tcoord[a1][Z] - tcoord[a2][Z];
+        // Loop over the non-bonds in this nonbond "group", "inb",
+        for (inb = inb_from;  inb < inb_to;  inb++) {
+
+#ifdef EINTCALPRINT
+            // For each new non-bond, we must reset the internal energy to zero.
+            e_internal = 0.0L;
+#endif
+
+            a1 = nonbondlist[inb][ATM1];
+            a2 = nonbondlist[inb][ATM2];
+            t1 = nonbondlist[inb][TYPE1]; // Xcode-gmm  // t1 is a map_index
+            t2 = nonbondlist[inb][TYPE2]; // Xcode-gmm  // t2 is a map_index
+            nonbond_type = nonbondlist[inb][NBTYPE];
+
+            dx = tcoord[a1][X] - tcoord[a2][X];
+            dy = tcoord[a1][Y] - tcoord[a2][Y];
+            dz = tcoord[a1][Z] - tcoord[a2][Z];
 
 #ifndef NOSQRT 
-// SQRT  [
+    // SQRT  [
 
-        // Use square-root, slower...
+            // Use square-root, slower...
 
-        // r = the separation between the atoms a1 and a2 in this non-bond, inb, 
-        r = clamp(hypotenuse(dx,dy,dz), RMIN_ELEC); // clamp prevents electrostatic potential becoming too high when shorter than RMIN_ELEC
+            // r = the separation between the atoms a1 and a2 in this non-bond, inb, 
+            r = clamp(hypotenuse(dx,dy,dz), RMIN_ELEC); // clamp prevents electrostatic potential becoming too high when shorter than RMIN_ELEC
 
-        index = Ang_to_index(r); // convert real-valued distance r to an index for energy lookup tables
-        index_lt_NEINT = BoundedNeint(index);  // guarantees that index_lt_NEINT is never greater than (NEINT - 1)
-        index_lt_NDIEL = BoundedNdiel(index);  // guarantees that index_lt_NDIEL is never greater than (NDIEL - 1)
+            index = Ang_to_index(r); // convert real-valued distance r to an index for energy lookup tables
+            index_lt_NEINT = BoundedNeint(index);  // guarantees that index_lt_NEINT is never greater than (NEINT - 1)
+            index_lt_NDIEL = BoundedNdiel(index);  // guarantees that index_lt_NDIEL is never greater than (NDIEL - 1)
 
-        dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
-        r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[index_lt_NDIEL];
-        // r_dielectric = r * ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL]; // gmm 2006-04-17
+            dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
+            r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[index_lt_NDIEL];
+            // r_dielectric = r * ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL]; // gmm 2006-04-17
 
-        if (B_calcIntElec) {
-            //  Calculate  Electrostatic Energy
-            e_elec = (double) q1q2[inb] / (r_dielectric);
+            if (B_calcIntElec) {
+                //  Calculate  Electrostatic Energy
+                e_elec = (double) q1q2[inb] / (r_dielectric);
 #   ifndef EINTCALPRINT
-            total_e_internal += e_elec;     // eintcal
+                total_e_internal += e_elec;     // eintcal
 #   else
-            e_internal = e_elec;     // eintcalPrint
+                e_internal = e_elec;     // eintcalPrint
 #   endif
-        }
+            }
 
-        // if r is less than the non-bond-cutoff,
-        if (r < NBC) {   // if we have defined USE_8A_CUTOFF, then NBC = 8
-
-            // Calculate the van der Waals and/or H-bonding energy & the desolvation energy.
-
-            //| Calculate the desolvation energy
-            //|
-            //| desolvation energy = sol_fn[dist] * ( rec.vol * (lig.solpar + qsolpar * |lig.charge|)
-            //|                                     + lig.vol * (rec.solpar + qsolpar * |rec.charge|) );
-            //|
-            //| lig.solpar = parameterArray[t1].solpar;
-            //| lig.vol    = parameterArray[t1].vol;
-            //| lig.charge = qsp_abs_charge[a1]/qsolpar;
-            //| rec.solpar = parameterArray[t2].solpar;
-            //| rec.vol    = parameterArray[t2].vol;
-            //| rec.charge = qsp_abs_charge[a2]/qsolpar;
-
-            e_desolv = ptr_ad_energy_tables->sol_fn[index_lt_NEINT] * 
-                       ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[a1]) 
-                       + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[a2]) );
-
+            // if r is less than the non-bond-cutoff, 
+            //  -OR-
+            // If we are computing the unbound conformation then we ignore the non bond cutoff, NBC
+            if  ( (r < NBC) 
 #   ifndef EINTCALPRINT
-            if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
-                // Compute a scaled 1-4 interaction, multiply by scale_1_4
-                total_e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
-            } else {
-                total_e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
-            }
+                    || ( B_use_non_bond_cutoff == FALSE ) 
 #   else
-            if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
-                // Compute a scaled 1-4 interaction, multiply by scale_1_4
-                e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
-            } else {
-                e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
-            }
+                    // eintcalPrint does not know about B_use_non_bond_cutoff
 #   endif
 
-        } else {
-            // otherwise, the atoms are too far apart, so don't add anything to the total energy, & save some time
-            e_desolv = 0.0L;
-        }
+                    ) {   // if we have defined USE_8A_CUTOFF, then NBC = 8
 
-// SQRT  ]
+                // Calculate the van der Waals and/or H-bonding energy & the desolvation energy.
+
+                //| Calculate the desolvation energy
+                //|
+                //| desolvation energy = sol_fn[dist] * ( rec.vol * (lig.solpar + qsolpar * |lig.charge|)
+                //|                                     + lig.vol * (rec.solpar + qsolpar * |rec.charge|) );
+                //|
+                //| lig.solpar = parameterArray[t1].solpar;
+                //| lig.vol    = parameterArray[t1].vol;
+                //| lig.charge = qsp_abs_charge[a1]/qsolpar;
+                //| rec.solpar = parameterArray[t2].solpar;
+                //| rec.vol    = parameterArray[t2].vol;
+                //| rec.charge = qsp_abs_charge[a2]/qsolpar;
+
+                e_desolv = ptr_ad_energy_tables->sol_fn[index_lt_NEINT] * 
+                           ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[a1]) 
+                           + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[a2]) );
+
+#   ifndef EINTCALPRINT
+                if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
+                    // Compute a scaled 1-4 interaction, multiply by scale_1_4
+                    total_e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
+                } else {
+                    total_e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
+                }
+#   else
+                if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
+                    // Compute a scaled 1-4 interaction, multiply by scale_1_4
+                    e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
+                } else {
+                    e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
+                }
+#   endif
+
+            } else {
+                // otherwise, the atoms are too far apart, so don't add anything to the total energy, & save some time
+                e_desolv = 0.0L;
+            }
+
+    // SQRT  ]
 #else   // NOSQRT [
-        //  Non-square-rooting version, faster...
+            //  Non-square-rooting version, faster...
 
-        r2 = sqhypotenuse(dx,dy,dz); // r2, the square of the separation between the atoms a1 and a2 in this non-bond, inb, 
-        r2 = clamp(r2, RMIN_ELEC2);
+            r2 = sqhypotenuse(dx,dy,dz); // r2, the square of the separation between the atoms a1 and a2 in this non-bond, inb, 
+            r2 = clamp(r2, RMIN_ELEC2);
 
-        index = SqAng_to_index(r2);
-        index_lt_NEINT = BoundedNeint(index);  // guarantees that index_lt_NEINT is never greater than (NEINT - 1)
-        index_lt_NDIEL = BoundedNdiel(index);  // guarantees that index_lt_NDIEL is never greater than (NDIEL - 1)
+            index = SqAng_to_index(r2);
+            index_lt_NEINT = BoundedNeint(index);  // guarantees that index_lt_NEINT is never greater than (NEINT - 1)
+            index_lt_NDIEL = BoundedNdiel(index);  // guarantees that index_lt_NDIEL is never greater than (NDIEL - 1)
 
-        dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
-        // r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[index_lt_NDIEL];
-        r_dielectric = sqrt(r2) * ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];  // Using sqrt() in NOSQRT is a no-no!  FIXME!
+            dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
+            // r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[index_lt_NDIEL];
+            r_dielectric = sqrt(r2) * ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];  // Using sqrt() in NOSQRT is a no-no!  FIXME!
 
-        if (B_calcIntElec) {
-            //  Calculate  Electrostatic  Energy
-            e_elec = (double) q1q2[inb] / r_dielectric;
+            if (B_calcIntElec) {
+                //  Calculate  Electrostatic  Energy
+                e_elec = (double) q1q2[inb] / r_dielectric;
 #   ifndef EINTCALPRINT
-            total_e_internal += e_elec; // eintcal
+                total_e_internal += e_elec; // eintcal
 #   else
-            e_internal = e_elec; // eintcalPrint
+                e_internal = e_elec; // eintcalPrint
 #   endif
-        }
+            }
 
-        //| if r-squared is less than non-bond-cutoff-squared,
-        if (r2 < NBC2) {  // Xcode-gmm
+            // if r-squared is less than non-bond-cutoff-squared,
+            //  -OR-
+            // If we are computing the unbound conformation then we ignore the non bond cutoff, NBC
+            if  ( (r2 < NBC2) 
+#   ifndef EINTCALPRINT
+                    || ( B_use_non_bond_cutoff == FALSE ) 
+#   else
+                    // eintcalPrint does not know about B_use_non_bond_cutoff
+#   endif
+                    ) {   // if we have defined USE_8A_CUTOFF, then NBC = 8 // Xcode-gmm
 
-            // Calculate the van der Waals and/or H-bonding energy & the desolvation energy.
+                // Calculate the van der Waals and/or H-bonding energy & the desolvation energy.
 
-            //| Calculate the desolvation energy
-            //|
-            //| desolvation energy = sol_fn[dist] * ( rec.vol * (lig.solpar + qsolpar * |lig.charge|)
-            //|                                     + lig.vol * (rec.solpar + qsolpar * |rec.charge|) );
-            //|
-            //| lig.solpar = parameterArray[t1].solpar;
-            //| lig.vol    = parameterArray[t1].vol;
-            //| lig.charge = qsp_abs_charge[a1]/qsolpar;
-            //| rec.solpar = parameterArray[t2].solpar;
-            //| rec.vol    = parameterArray[t2].vol;
-            //| rec.charge = qsp_abs_charge[a2]/qsolpar;
-            
-            e_desolv = ptr_ad_energy_tables->sol_fn[index_lt_NEINT] * 
-                       ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[a1]) 
-                       + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[a2]) );
+                //| Calculate the desolvation energy
+                //|
+                //| desolvation energy = sol_fn[dist] * ( rec.vol * (lig.solpar + qsolpar * |lig.charge|)
+                //|                                     + lig.vol * (rec.solpar + qsolpar * |rec.charge|) );
+                //|
+                //| lig.solpar = parameterArray[t1].solpar;
+                //| lig.vol    = parameterArray[t1].vol;
+                //| lig.charge = qsp_abs_charge[a1]/qsolpar;
+                //| rec.solpar = parameterArray[t2].solpar;
+                //| rec.vol    = parameterArray[t2].vol;
+                //| rec.charge = qsp_abs_charge[a2]/qsolpar;
+                
+                e_desolv = ptr_ad_energy_tables->sol_fn[index_lt_NEINT] * 
+                           ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[a1]) 
+                           + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[a2]) );
 
 #   ifndef EINTCALPRINT
-            if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
-                //| Compute a scaled 1-4 interaction,
-                total_e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
-            } else {
-                total_e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
-            }
+                if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
+                    //| Compute a scaled 1-4 interaction,
+                    total_e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
+                } else {
+                    total_e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
+                }
 #   else
-            if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
-                // Compute a scaled 1-4 interaction,
-                e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
-            } else {
-                e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
-            }
+                if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
+                    // Compute a scaled 1-4 interaction,
+                    e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
+                } else {
+                    e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
+                }
 #   endif
 
-        } else {
-            // otherwise, the atoms are too far apart, so don't add anything to the total energy, & save some time
-            e_desolv = 0.0L;
-        }
+            } else {
+                // otherwise, the atoms are too far apart, so don't add anything to the total energy, & save some time
+                e_desolv = 0.0L;
+            }
 #endif  // NOSQRT ]
 
 
 #ifdef EINTCALPRINT // eintcalPrint [
 
-      total_e_internal += e_internal;
-      total_e_desolv   += e_desolv;
-      total_e_elec     += e_elec;
+          total_e_internal += e_internal;
+          total_e_desolv   += e_desolv;
+          total_e_elec     += e_elec;
 
-      if (B_calcIntElec) {
+          if (B_calcIntElec) {
 
-          e_vdW_Hb = e_internal - e_desolv - e_elec,
-          pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
-                (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
-                (double)e_internal, (double)e_elec, (double)e_vdW_Hb, (double)e_desolv, 
-                (double)ptr_ad_energy_tables->sol_fn[index_lt_NEINT], (int)nonbond_type, (double)dielectric 
-             );
-      } else {
+              e_vdW_Hb = e_internal - e_desolv - e_elec,
+              pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
+                    (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
+                    (double)e_internal, (double)e_elec, (double)e_vdW_Hb, (double)e_desolv, 
+                    (double)ptr_ad_energy_tables->sol_fn[index_lt_NEINT], (int)nonbond_type, (double)dielectric 
+                 );
+          } else {
 
-          e_vdW_Hb = e_internal - e_desolv,
-          pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
-                (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
-                (double)e_internal, (double)e_vdW_Hb, (double)e_desolv, 
-                (double)ptr_ad_energy_tables->sol_fn[index_lt_NEINT], (int)nonbond_type, (double)dielectric 
-             );
-      }
+              e_vdW_Hb = e_internal - e_desolv,
+              pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
+                    (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
+                    (double)e_internal, (double)e_vdW_Hb, (double)e_desolv, 
+                    (double)ptr_ad_energy_tables->sol_fn[index_lt_NEINT], (int)nonbond_type, (double)dielectric 
+                 );
+          }
 
-      total_e_vdW_Hb += e_vdW_Hb;
+          total_e_vdW_Hb += e_vdW_Hb;
 
 #endif // eintcalPrint ]
 
-    } //  inb -- next non-bond interaction
+        } //  inb -- next non-bond interaction
+
+        if (nb_group == INTRA_LIGAND) { // [0]
+            // Intramolecular energy of ligand
+            nb_group_energy[INTRA_LIGAND] = total_e_internal;
+        } else if (nb_group == INTER) { // [1]
+            // intermolecular energy
+            nb_group_energy[INTER] = total_e_internal - nb_group_energy[INTRA_LIGAND];
+        } else if (nb_group == INTRA_RECEPTOR) { // [2]
+            // intramolecular energy of receptor
+            nb_group_energy[INTRA_RECEPTOR] = total_e_internal - nb_group_energy[INTRA_LIGAND] - nb_group_energy[INTER];
+        }
+
+    } // nb_group -- intra lig, inter, intra rec
 
 
 #ifdef EINTCALPRINT
