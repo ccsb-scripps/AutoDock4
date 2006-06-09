@@ -413,6 +413,13 @@
                                                                   
 #endif /* _PDB_FORMATS */
 
+/*
+ * For nonbond calculations
+ */
+#define INTRA_LIGAND   0 // index of last of nonbonds in intramolecular energy calculation of ligand
+#define INTER          1 // index of last nonbond in intermolecular energy calculation
+#define INTRA_RECEPTOR 2 // index of last of nonbonds in intramolecular energy calculation of receptor
+
 /*----------------------------------------------------------------------------* 
  * End of file                                                                * 
  *----------------------------------------------------------------------------*/
