@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.11 2006/04/25 22:32:50 garrett Exp $
+ $Id: printEnergies.cc,v 1.12 2006/06/09 09:53:20 garrett Exp $
 
 */
 
@@ -19,6 +19,7 @@
 extern FILE *logFile;
 extern FILE *stateFile;
 extern int write_stateFile;
+extern Real nb_group_energy[3];
 
 #define print1000(file, x) pr(file,  ((fabs((x)) >= 0.0) && ((fabs(x)) <= 1000.)) ? "%+7.2f" : "%+11.2e" , (x));
 
@@ -57,18 +58,15 @@ void print_molar(FILE* file, double x) {
     }
 }
 
-void printEnergies( 
-        Real einter,
-        Real eintra,
-        Real torsFreeEnergy,
-        char  *prefixString,
-        int ligand_is_inhibitor,
-        Real emap_total,
-        Real elec_total,
-        Real unbound_internal_FE
-        )
+void printEnergies( EnergyBreakdown *eb,
+                    char *prefixString,
+                    int  ligand_is_inhibitor,
+                    Real emap_total,
+                    Real elec_total,
+                    Boole B_have_flexible_residues
+                   )
+
 {
-    Real deltaG = 0.0;
     Real Ki = 1.0;
     // Real RJ = 8.31441;  // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
     Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
@@ -97,17 +95,16 @@ void printEnergies(
     // lose the minus-sign:  deltaG = R*T*lnKi,  _not_ -R*T*lnKi
     // => deltaG/(R*T) = lnKi
     // => Ki = exp(deltaG/(R*T))
-    deltaG = einter + eintra + torsFreeEnergy - unbound_internal_FE;
-    if (deltaG < 0.0) {
-        Ki = exp((deltaG*1000.)/(Rcal*TK));
+    if (eb->deltaG < 0.0) {
+        Ki = exp((eb->deltaG*1000.)/(Rcal*TK));
     }
 
     if (strncmp(prefixString, "UNBOUND", 7) != 0 ) {
         pr( logFile, "%sEstimated Free Energy of Binding    = ", prefixString);
-        print1000(logFile, deltaG);
+        print1000(logFile, eb->deltaG);
         pr( logFile, " kcal/mol  [=(1)+(2)+(3)-(4)]\n");
 
-        if (deltaG < 0.0) {
+        if (eb->deltaG < 0.0) {
             if (ligand_is_inhibitor == 1) {
                 pr( logFile, "%sEstimated Inhibition Constant, Ki   = ", prefixString);
             } else {
@@ -121,35 +118,31 @@ void printEnergies(
         pr( logFile, "%s\n", prefixString);
     }
 
-    pr( logFile, "%s(1) Final Intermolecular Energy     = ", prefixString);
-    print1000(logFile, einter);
-    pr( logFile, " kcal/mol\n");
-    pr( logFile, "%s    vdW + Hbond + desolv Energy     = ", prefixString);
-    print1000(logFile, emap_total);
-    pr( logFile, " kcal/mol\n");
-    pr( logFile, "%s    Electrostatic Energy            = ", prefixString);
-    print1000(logFile, elec_total);
-    pr( logFile, " kcal/mol\n");
+    pr( logFile, "%s(1) Final Intermolecular Energy     = ", prefixString); print1000(logFile, eb->e_inter); pr( logFile, " kcal/mol\n");
+    pr( logFile, "%s    vdW + Hbond + desolv Energy     = ", prefixString); print1000(logFile, emap_total); pr( logFile, " kcal/mol\n");
+    pr( logFile, "%s    Electrostatic Energy            = ", prefixString); print1000(logFile, elec_total); pr( logFile, " kcal/mol\n");
+    if (B_have_flexible_residues) {
+        pr( logFile, "%s    Moving Ligand-Fixed Receptor    = ", prefixString); print1000(logFile, eb->e_inter_moving_fixed ); pr( logFile, " kcal/mol\n");
+        pr( logFile, "%s    Moving Ligand-Moving Receptor   = ", prefixString); print1000(logFile, eb->e_inter_moving_moving ); pr( logFile, " kcal/mol\n");
+    }
 
-    pr( logFile, "%s(2) Final Internal Energy           = ", prefixString);
-    print1000(logFile, eintra);
-    pr( logFile, " kcal/mol\n");
+    pr( logFile, "%s(2) Final Total Internal Energy     = ", prefixString); print1000(logFile, eb->e_intra); pr( logFile, " kcal/mol\n");
+    if (B_have_flexible_residues) {
+        pr( logFile, "%s    Internal Energy Ligand          = ", prefixString); print1000(logFile, eb->e_intra_lig ); pr( logFile, " kcal/mol\n");
+        pr( logFile, "%s    Internal Energy Receptor        = ", prefixString); print1000(logFile, eb->e_intra_rec ); pr( logFile, " kcal/mol\n");
+    }
 
-    pr( logFile, "%s(3) Torsional Free Energy           = ", prefixString);
-    print1000(logFile, torsFreeEnergy);
-    pr( logFile, " kcal/mol\n");
+    pr( logFile, "%s(3) Torsional Free Energy           = ", prefixString); print1000(logFile, eb->e_torsFreeEnergy); pr( logFile, " kcal/mol\n");
 
-    pr( logFile, "%s(4) Unbound System's Energy         = ", prefixString);
-    print1000(logFile, unbound_internal_FE);
-    pr( logFile, " kcal/mol\n");
+    pr( logFile, "%s(4) Unbound System's Energy         = ", prefixString); print1000(logFile, eb->e_unbound_internal_FE); pr( logFile, " kcal/mol\n");
 
     pr( logFile, "%s\n", prefixString);
     pr( logFile, "%s\n", prefixString);
 }
 
-void printStateEnergies( Real einter, Real eintra, Real torsFreeEnergy, char  *prefixString, int ligand_is_inhibitor, Real unbound_internal_FE )
+void printStateEnergies( EnergyBreakdown *eb, char  *prefixString, int ligand_is_inhibitor )
 {
-    Real deltaG = 0.0;
+    // Real deltaG = 0.0;
     Real Ki = 1.0;
     // Real RJ = 8.31441;  // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
     Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
@@ -178,16 +171,15 @@ void printStateEnergies( Real einter, Real eintra, Real torsFreeEnergy, char  *p
     // lose the minus-sign:  deltaG = R*T*lnKi,  _not_ -R*T*lnKi
     // => deltaG/(R*T) = lnKi
     // => Ki = exp(deltaG/(R*T))
-    deltaG = einter + eintra + torsFreeEnergy - unbound_internal_FE;
-    if (deltaG < 0.0) {
-        Ki = exp((deltaG*1000.)/(Rcal*TK));
+    if (eb->deltaG < 0.0) {
+        Ki = exp((eb->deltaG*1000.)/(Rcal*TK));
     }
 
     pr(stateFile, "\t\t<free_NRG_binding>");
-    print1000(stateFile, deltaG);
+    print1000(stateFile, eb->deltaG);
     pr(stateFile, "</free_NRG_binding>\n");
 
-    if (deltaG < 0.0) {
+    if (eb->deltaG < 0.0) {
         if (ligand_is_inhibitor == 1) {
             pr(stateFile, "\t\t<Ki>");
             print1000_no_sign(stateFile, Ki);
@@ -201,14 +193,16 @@ void printStateEnergies( Real einter, Real eintra, Real torsFreeEnergy, char  *p
     } 
 
     pr(stateFile, "\t\t<final_intermol_NRG>");
-    print1000(stateFile, einter);
+    print1000(stateFile, eb->e_inter);
     pr(stateFile, "</final_intermol_NRG>\n");
 
     pr(stateFile, "\t\t<internal_ligand_NRG>");
-    print1000(stateFile, eintra);
+    print1000(stateFile, eb->e_intra);
     pr(stateFile, "</internal_ligand_NRG>\n");
 
     pr(stateFile, "\t\t<torsonial_free_NRG>");
-    print1000(stateFile, torsFreeEnergy);
+    print1000(stateFile, eb->e_torsFreeEnergy);
     pr(stateFile, "</torsonial_free_NRG>\n"); 
 }
+
+// EOF
