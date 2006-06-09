@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.11 2006/04/25 22:32:26 garrett Exp $
+ $Id: investigate.cc,v 1.12 2006/06/09 01:56:46 garrett Exp $
 
 */
 
@@ -71,7 +71,9 @@ void investigate( int   Nnb,
                     const ParameterEntry parameterArray[MAX_MAPS],
 
                     const Real unbound_internal_FE,
-                    GridMapSetInfo *info )
+                    GridMapSetInfo *info,
+                    Boole B_use_non_bond_cutoff,
+                    Boole B_have_flexible_residues)
 
 {
     Boole B_outside = FALSE;
@@ -190,12 +192,8 @@ void investigate( int   Nnb,
                 rms = getrms( crd, ref_crds, B_symmetry_flag, natom, type);
             } while (rms > MaxRms);
             /* Calculate Energy of System, */
-            e = trilinterp( crd, charge, abs_charge, type, natom, map, 
-                    info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW,
-                    NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
-                    + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, 
-                            q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
-                            parameterArray) - unbound_internal_FE;
+            e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
+                    + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
             if (B_isGaussTorCon) {
                 for (Itor = 0; Itor < ntor; Itor++) {
                     if (B_isTorConstrained[Itor] == 1) {
