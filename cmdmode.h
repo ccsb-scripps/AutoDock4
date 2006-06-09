@@ -1,6 +1,6 @@
-
 #ifndef CMDMODE
 #define CMDMODE
+
 #include "constants.h"
 #include "set_cmd_io_std.h"
 #include "print_2x.h"
@@ -19,6 +19,7 @@
 #include "parse_trj_line.h"
 #include "input_state.h"
 #include "openfile.h"
+
 int   cmdmode( int natom,
              Clock jobStart,
              struct tms tms_jobStart,
@@ -51,6 +52,7 @@ int   cmdmode( int natom,
              const ParameterEntry parameterArray[MAX_MAPS],
              const Real unbound_internal_FE,
 
-             GridMapSetInfo *info
+             GridMapSetInfo *info,
+             Boole B_have_flexible_residues
              );
 #endif

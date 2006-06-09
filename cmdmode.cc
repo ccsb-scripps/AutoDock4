@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.15 2006/04/25 22:31:57 garrett Exp $
+ $Id: cmdmode.cc,v 1.16 2006/06/09 01:38:09 garrett Exp $
 
 */
 
@@ -69,7 +69,8 @@ int cmdmode(int   natom,
              const ParameterEntry parameterArray[MAX_MAPS],
              const Real unbound_internal_FE,
 
-             GridMapSetInfo *info
+             GridMapSetInfo *info,
+             Boole B_have_flexible_residues
             )
 
 {
@@ -125,6 +126,8 @@ int cmdmode(int   natom,
     State S;
 
     ParameterEntry thisparm;
+
+    EnergyBreakdown eb;
 
     for (i = 0;  i < natom;  i++) {
         strncpy(rec8[i], &atomstuff[i][13], (size_t)8);
@@ -243,7 +246,7 @@ int cmdmode(int   natom,
                     fclose(pdbFile);
                     natom = nat;
                     if (ntor > 0) {
-                        eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray) - unbound_internal_FE;
+                        eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_have_flexible_residues) - unbound_internal_FE;
                     } else {
                         eintra = 0.0 - unbound_internal_FE;
                     }
@@ -272,7 +275,7 @@ int cmdmode(int   natom,
                     pr(command_out_fp, "%.2f\n", etotal);
                     pr(logFile, "    E_intermolecular_atomic-affinity = %.2f kcal/mol\n", emap_total);
                     pr(logFile, "    E_intermolecular_electrostatic   = %.2f kcal/mol\n", elec_total);
-                    printEnergies(einter, eintra, torsFreeEnergy, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
+                    printEnergies( &eb, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues);
                     pr(logFile, "\n");
                     fflush(logFile);
                     fflush(stderr);
@@ -306,7 +309,7 @@ int cmdmode(int   natom,
                 }
                 cnv_state_to_coords(S,  vt, tlist, ntor,  crdpdb, crd, natom);
                 if (ntor > 0) {
-                    eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray) - unbound_internal_FE;
+                    eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_have_flexible_residues) - unbound_internal_FE;
                 } else {
                     eintra = 0.0 - unbound_internal_FE;
                 }
@@ -348,7 +351,7 @@ int cmdmode(int   natom,
 */
             case COM_OUTE:
                 pr(logFile, "COMMAND: oute\n\n");
-                printEnergies(einter, eintra, torsFreeEnergy, "oute: USER    ", ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
+                printEnergies( &eb, "oute: USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues);
 /*                 prStr(message, "USER    Total Internal Energy of Small Molecule = %.2f\n", eintra); */
 /*                 pr_2x(command_out_fp, logFile, message); */
 /*                 prStr(message, "USER    Total Docked Energy of Complex = %.2f\n", etotal); */
