@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.6 2006/04/25 22:33:06 garrett Exp $
+ $Id: readPDBQT.cc,v 1.7 2006/06/09 09:54:32 garrett Exp $
 
 */
 
@@ -96,11 +96,11 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     int             nligand_record = 0;
 	int             ntor = 0;
 	static int      ntype[MAX_ATOMS];
-	static int      piece[MAX_ATOMS];
+	static int      rigid_piece[MAX_ATOMS];
 	int             found_begin_res = 0; // found_begin_res == 0 means we have not yet found a BEGIN_RES record...
     int             keyword_id = -1;
 	int             nres = 0;
-	int             npiece = 0;
+	int             nrigid_piece = 0;
 
 	Boole           B_has_conect_records = FALSE;
 
@@ -121,7 +121,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 	for (j = 0; j < MAX_ATOMS; j++) {
 		ntype[j] = 0;
-		piece[j] = 0;
+		rigid_piece[j] = 0;
 	}
 
     //  Attempt to open the ligand PDBQT file...
@@ -171,7 +171,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 			pr(logFile, "\n________________________\n\n");
 			for (i = 0; i < nligand_record; i++) {
 				if (fgets(PDBQT_record[i], LINE_LEN, FP_ligand) != NULL) {
-					pr(logFile, "INPUT-PDBQT: %s", PDBQT_record[i]);
+					pr(logFile, "INPUT-LIGAND-PDBQT: %s", PDBQT_record[i]);
 				}
 			} // i
 			pr(logFile, UnderLine);
@@ -185,7 +185,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 pr(logFile, "\n___________________________________\n\n");
                 for (i = nligand_record; i < nrecord; i++) {
                     if (fgets(PDBQT_record[i], LINE_LEN, FP_flexres) != NULL) {
-                        pr(logFile, "INPUT-PDBQT: %s", PDBQT_record[i]);
+                        pr(logFile, "INPUT-FLEXRES-PDBQT: %s", PDBQT_record[i]);
                     }
                 } // i
                 pr(logFile, UnderLine);
@@ -201,7 +201,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	pr(logFile,   "__________________________________________________________\n\n");
 	natom = 0;
 
-    // Loop over all the lines in either the ligand or the combined-ligand-flexible-residues file
+    // Loop over all the lines in either the ligand or the "reconstructed" combined-ligand-flexible-residues file
 	for (i = 0; i < nrecord; i++) {
 		strncpy(input_line, PDBQT_record[i], (size_t) LINE_LEN);
 		// Parse this line in the ligand file
@@ -214,9 +214,9 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 			// Set the serial atomnumber[i] for this atom
 			atomnumber[i] = natom;
 
-			// Set up piece array by reading in the records of the PDBQT file;
-			// each "piece" is a self-contained rigid entity.
-            piece[natom] = npiece;
+			// Set up rigid_piece array by reading in the records of the PDBQT file;
+			// each "rigid_piece" is a self-contained rigid entity.
+            rigid_piece[natom] = nrigid_piece;
 
 			// Read the coordinates, charge, and parameters of this atom
 			// sets "autogrid_type" in this_parameter_entry
@@ -272,7 +272,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 			++natom;
 
 		} else {
-			++npiece;
+			++nrigid_piece;
 		}
 
 		if (!found_begin_res) {
@@ -377,9 +377,9 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 			printbonds(natom, bonded, "\nDEBUG:  4. AFTER nonbonds, bonded[][] array is:\n\n", 0);
 			pr(logFile, "Weeding out non-bonds in rigid parts of the torsion tree.\n\n");
 		}
-		weedbonds(natom, pdbaname, piece, ntor, tlist, nbmatrix, P_Nnb, nonbondlist, outlev, map_index);
+		weedbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, P_Nnb, nonbondlist, outlev, map_index);
 
-		print_nonbonds(natom, pdbaname, piece, ntor, tlist, nbmatrix, *P_Nnb, nonbondlist, outlev, map_index);
+		print_nonbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, *P_Nnb, nonbondlist, outlev, map_index);
 
 		flushLog;
 
