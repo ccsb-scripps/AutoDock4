@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.2 2006/04/25 22:33:35 garrett Exp $
+ $Id: writePDBQT.cc,v 1.3 2006/06/09 10:12:21 garrett Exp $
 
 */
 
@@ -14,11 +14,15 @@
 #include "assert.h"
 #include "writePDBQT.h"
 #include "parse_PDBQT_line.h"
+#include "calculateEnergies.h"
 
 extern int keepresnum;
 extern FILE *logFile;
 extern int write_stateFile;
 extern FILE *stateFile;
+extern int true_ligand_atoms;
+extern int Nnb_array[3];
+extern Real nb_group_energy[3];
 
 void
 writePDBQT(int irun, FourByteLong seed[2],
@@ -50,9 +54,6 @@ writePDBQT(int irun, FourByteLong seed[2],
 		 Boole B_calcIntElec,
 		 Real q1q2[MAX_NONBONDS],
          Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-		 Boole B_template,
-		 Real template_energy[MAX_ATOMS],
-		 Real template_stddev[MAX_ATOMS],
 		 int outlev,
 		 int ignore_inter[MAX_ATOMS],
 		 const Boole B_include_1_4_interactions,
@@ -62,21 +63,40 @@ writePDBQT(int irun, FourByteLong seed[2],
 
          GridMapSetInfo *info,
          int state_type,  // 0 means the state is unbound, 1 means the state is docked
-         char PDBQT_record[MAX_RECORDS][LINE_LEN]
+         char PDBQT_record[MAX_RECORDS][LINE_LEN],
+         Boole B_use_non_bond_cutoff,
+         Boole B_have_flexible_residues
          )
 
 {
-	int             i = 0;
-	Real   emap_total = 0.0L;
-	Real   elec_total = 0.0L;
-	Real   MaxValue = 99.99L;
-	char            AtmNamResNamNum[14], AtmNamResNam[9];
-    char            state_type_string[MAX_CHARS];
-    char            state_type_prefix_string[MAX_CHARS];
-    char            state_type_prefix_USER_string[MAX_CHARS];
-	Boole           B_outside = FALSE;
+	int i = 0;
+    EnergyBreakdown eb;
 
-    // Initialize various character strings
+	Real emap_total = 0.0L;
+	Real elec_total = 0.0L;
+	Real MaxValue = 99.99L;
+
+    Real e_inter_moving_fixed      = 0.0L;  // (1)  // trilinterp( 0, true_ligand_atoms, ...)
+    Real e_intra_moving_fixed_rec  = 0.0L;  // (2)  // trilinterp( true_ligand_atoms, natom, ...)
+    Real e_intra_moving_moving_lig = 0.0L;  // (3)  // eintcal( 0, nb_array[0], ...)            // nb_group_energy[INTRA_LIGAND]
+    Real e_inter_moving_moving     = 0.0L;  // (4)  // eintcal( nb_array[0], nb_array[1], ...)  // nb_group_energy[INTER]
+    Real e_intra_moving_moving_rec = 0.0L;  // (5)  // eintcal( nb_array[1], nb_array[2], ...)  // nb_group_energy[INTRA_RECEPTOR]
+
+    Real e_inter = 0.0;      // total    intermolecular energy = (1) + (4)
+    Real e_intra_lig = 0.0;  // ligand   intramolecular energy = (3)
+    Real e_intra_rec = 0.0;  // receptor intramolecular energy = (2) + (5)
+
+    e_inter     = e_inter_moving_fixed + e_inter_moving_moving;          // total    intermolecular energy = (1) + (4)
+    e_intra_lig = e_intra_moving_moving_lig;                             // ligand   intramolecular energy = (3)
+    e_intra_rec = e_intra_moving_fixed_rec + e_intra_moving_moving_rec;  // receptor intramolecular energy = (2) + (5)
+
+	char AtmNamResNamNum[14], AtmNamResNam[9];
+    char state_type_string[MAX_CHARS];
+    char state_type_prefix_string[MAX_CHARS];
+    char state_type_prefix_USER_string[MAX_CHARS];
+	Boole B_outside = FALSE;
+
+    // Initialise various character strings
     if (state_type == 0) {
         strcpy(state_type_string, "UNBOUND");
         strcpy(state_type_prefix_string, "UNBOUND: ");
@@ -89,6 +109,8 @@ writePDBQT(int irun, FourByteLong seed[2],
 	for (i = 0; i < 14; i++) { AtmNamResNamNum[i] = '\0'; }
 	for (i = 0; i < 9; i++) { AtmNamResNam[i] = '\0'; }
 
+    initialise_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE );
+
     // Write out the state variables
 	if ((outlev > -1) && (outlev < 3)) {
         // "outlev" is the level of detail: 2 is high, 0 is low
@@ -100,34 +122,47 @@ writePDBQT(int irun, FourByteLong seed[2],
 	}
 
     // Convert state variables to x,y,z-coordinates
-	cnv_state_to_coords(state, vt, tlist, ntor, crdpdb, crd, natom);
+	cnv_state_to_coords( state, vt, tlist, ntor, crdpdb, crd, natom );
 
-    // Calculate the internal energy
+    // Check if any atoms are outside the grid box
+    B_outside = FALSE;
+    for (i = 0; (i < natom) && (!B_outside); i++) {
+        B_outside = is_out_grid_info(crd[i][0], crd[i][1], crd[i][2]);
+    }
+
+    // Calculate the energy breakdown
+    eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+         crd, charge, abs_charge, type, map, info, B_outside, 
+         ignore_inter, elec, emap, &elec_total, &emap_total,
+         nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, q1q2, 
+         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
+
+    // Set the total intramolecular energy (sum of intramolecular energies of ligand and of protein)
     if (ntor > 0) {
-        *Ptr_eintra = eintcal(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray) - unbound_internal_FE;
+        if (state_type == 0) {
+            // UNBOUND
+            // Unbound state, do _not_ subtract "unbound_internal_FE", since this has not been calculated yet.
+            // add the intramolecular energy of the receptor, for the (moving, fixed) atom pairs // (2)
+            *Ptr_eintra = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR] + eb.e_intra_moving_fixed_rec;
+        } else {
+            // DOCKED
+            // Docked state, subtract "unbound_internal_FE"
+            // add the intramolecular energy of the receptor, for the (moving, fixed) atom pairs // (2)
+            *Ptr_eintra = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR] + eb.e_intra_moving_fixed_rec 
+                          - unbound_internal_FE;
+        }
     } else {
         *Ptr_eintra = 0.0;
     }
 
-    // Only for DOCKED states, not for UNBOUND states
+    // Set the total intermolecular energy
     if (state_type == 1) {
-        // Calculate the intermolecular energy
-        B_outside = FALSE;
-        for (i = 0; (i < natom) && (!B_outside); i++) {
-            B_outside = is_out_grid_info(crd[i][0], crd[i][1], crd[i][2]);
-        }
-        if (!B_outside) {
-            if (!B_template) {
-                *Ptr_einter = trilinterp( crd, charge, abs_charge, type, natom, map, 
-                        info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap, &elec_total, &emap_total);
-            } else {
-                *Ptr_einter = template_trilinterp( crd, charge, abs_charge, type, natom, map, 
-                        info, ALL_ATOMS_INSIDE_GRID, 
-                        NULL_IGNORE_INTERMOL, template_energy, template_stddev, elec /* set */ , emap /* set */,  &elec_total, &emap_total);
-            }
-        } else {
-            *Ptr_einter = BIG; // BIG is defined in constants.h
-        }
+        // DOCKED
+        // Set *Ptr_einter, the intermolecular energy, only for DOCKED states, not for UNBOUND states
+        *Ptr_einter = eb.e_inter;
+    } else {
+        // intermolecular energy is meaningless for unbound state
+        *Ptr_einter = 0.0;
     }
 
 	if (outlev > -1) {
@@ -137,7 +172,7 @@ writePDBQT(int irun, FourByteLong seed[2],
         pr( logFile, "%s: USER    DPF = %s\n", state_type_string, dpfFN );
         pr( logFile, "%s: USER  \n", state_type_string );
         
-        printEnergies(*Ptr_einter, *Ptr_eintra, torsFreeEnergy, state_type_prefix_USER_string, ligand_is_inhibitor, emap_total, elec_total, unbound_internal_FE);
+        printEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues );
 
         // Write part of the "XML" state file
 		if (write_stateFile) {
@@ -145,7 +180,7 @@ writePDBQT(int irun, FourByteLong seed[2],
 			pr(stateFile, "\t<run id=\"%4d\">\n", irun + 1);
 			pr(stateFile, "\t\t<seed>%ld %ld</seed>\n", seed[0], seed[1]);
 			pr(stateFile, "\t\t<dpf>%s</dpf>\n", dpfFN);
-            printStateEnergies(*Ptr_einter, *Ptr_eintra, torsFreeEnergy, state_type_prefix_USER_string, ligand_is_inhibitor, unbound_internal_FE);
+            printStateEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor );
 		} // End write state file
 
 		(void) fprintf(logFile, "%s: USER    NEWDPF move %s\n", state_type_string, smFileName);
@@ -156,7 +191,7 @@ writePDBQT(int irun, FourByteLong seed[2],
 			(void) fprintf(logFile, "%s: USER    NEWDPF ndihe %d\n", state_type_string, ntor);
 			(void) fprintf(logFile, "%s: USER    NEWDPF dihe0 ", state_type_string);
 			for (i = 0; i < ntor; i++) {
-				(void) fprintf(logFile, "%.2f ", Deg(state.tor[i]));
+				(void) fprintf(logFile, "%.2f ", Deg(WrpRad(ModRad(state.tor[i]))));
 			}
 			(void) fprintf(logFile, "\n");
 

@@ -37,9 +37,6 @@ void writePDBQT(int irun,FourByteLong seed[2],
                     Boole B_calcIntElec,
                     Real q1q2[MAX_NONBONDS],
                     Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-                    Boole B_template,
-                    Real template_energy[MAX_ATOMS],
-                    Real template_stddev[MAX_ATOMS],
                     int outlev,
                     int   ignore_inter[MAX_ATOMS],
                     const Boole         B_include_1_4_interactions,
@@ -48,7 +45,9 @@ void writePDBQT(int irun,FourByteLong seed[2],
                     const Real unbound_internal_FE,
                     GridMapSetInfo *info,
                     int state_type,  // 0 means unbound, 1 means docked
-                    char PDBQT_record[MAX_RECORDS][LINE_LEN]
+                    char PDBQT_record[MAX_RECORDS][LINE_LEN],
+                    Boole B_use_non_bond_cutoff,
+                    Boole B_have_flexible_residues
                     );
 
 #endif
