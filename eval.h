@@ -41,17 +41,14 @@ class Eval
       Real (*map)[MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
       Boole *B_isTorConstrained;
       Molecule mol;
-      Boole B_template; // Use the template-docking scoring function if true 15-jan-2001
-      // Real template_energy[MAX_ATOMS]; // atomic template values
-      // Real template_stddev[MAX_ATOMS]; // atomic template values
-      Real *template_energy; // atomic template values
-      Real *template_stddev; // atomic template values
       int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
       Boole         B_include_1_4_interactions; // gmm 2005-01-8, for scaling 1-4 nonbonds
       Real scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
       ParameterEntry *parameterArray;
       Real  unbound_internal_FE;
       Boole B_compute_intermol_energy; // use for computing unbound state
+      Boole B_use_non_bond_cutoff;  // set this to FALSE if we are computing unbound extended conformations
+      Boole B_have_flexible_residues;
 
    public:
       Eval(void);
@@ -74,15 +71,14 @@ class Eval
           unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
           Real  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS],
           Real  init_crdpdb[MAX_ATOMS][SPACE], State stateInit, Molecule molInit,
-          Boole          init_B_template,
-          Real  init_template_energy[MAX_ATOMS],
-          Real  init_template_stddev[MAX_ATOMS],
           int            init_ignore_inter[MAX_ATOMS],
           Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
           Real  init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
           ParameterEntry init_parameterArray[MAX_MAPS],
           Real  init_unbound_internal_FE,
-          GridMapSetInfo *init_info
+          GridMapSetInfo *init_info,
+          Boole  init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
+          Boole  init_B_have_flexible_residues
           );
 
       double operator()(Representation **);
@@ -128,19 +124,17 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
                         State stateInit,
                         Molecule molInit,
 
-                        Boole init_B_template,
-                        Real init_template_energy[MAX_ATOMS],
-                        Real init_template_stddev[MAX_ATOMS],
+                        int init_ignore_inter[MAX_ATOMS],
 
-                        int   init_ignore_inter[MAX_ATOMS],
-
-                        Boole         init_B_include_1_4_interactions,
+                        Boole init_B_include_1_4_interactions,
                         Real init_scale_1_4,
 
                         ParameterEntry init_parameterArray[MAX_MAPS],
 
                         Real init_unbound_internal_FE,
-                        GridMapSetInfo *init_info
+                        GridMapSetInfo *init_info,
+                        Boole init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
+                        Boole init_B_have_flexible_residues
                        )
 
 {
@@ -174,9 +168,6 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
        ignore_inter[i] = init_ignore_inter[i];
     }
     mol = molInit;
-    B_template = init_B_template;
-    template_energy = init_template_energy;
-    template_stddev = init_template_stddev;
 
     B_include_1_4_interactions = init_B_include_1_4_interactions;
     scale_1_4 = init_scale_1_4;
@@ -187,6 +178,9 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
 
     info = init_info;
     B_compute_intermol_energy = TRUE; // default is "Yes, calculate the intermolecular energy".
+
+    B_use_non_bond_cutoff = init_B_use_non_bond_cutoff;  // set this to FALSE if we are computing unbound extended conformations
+    B_have_flexible_residues = init_B_have_flexible_residues;
 }
 
 inline void Eval::compute_intermol_energy(Boole init_B_compute_intermol_energy)
