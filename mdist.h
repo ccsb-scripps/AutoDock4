@@ -9,7 +9,7 @@
 
 void mdist();
 
-enum {C,N,O,H,XX,P,S};
+enum {C,N,O,H,XX,P,S};  // see "bond_index" in the "AD4_parameters.dat" file.
 //    0 1 2 3 4  5 6
 #define NUM_ENUM_ATOMTYPES 7 // this should be the length of the enumerated atom types above
 	
