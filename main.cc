@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.44 2006/06/09 02:18:14 garrett Exp $
+ $Id: main.cc,v 1.45 2006/06/12 22:05:39 garrett Exp $
 
 */
 
@@ -1334,7 +1334,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         Clock  colinyStart;
         Clock  colinyEnd;
 
-				int coliny_seed;
+        int coliny_seed;
         char algname[64];
         char nruns_str[64];
         (void) sscanf(line, "%*s %s %d", algname, &nruns);
@@ -1423,9 +1423,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             try {
 
                 std::vector<double> initvec, finalpt;
-								// set up initial point 
+                // set up initial point 
                 initvec.resize(7+sInit.ntor);
-								initvec[0] = sInit.T.x;
+                initvec[0] = sInit.T.x;
                 initvec[1] = sInit.T.y;
                 initvec[2] = sInit.T.z;
                 initvec[3] = sInit.Q.nx;
@@ -1453,9 +1453,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   } else {
                       pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
                   }
-									
-									//coliny uses a single seed
-									coliny_seed = seed[0]+seed[1]+j;
+
+                  //coliny uses a single seed
+                  coliny_seed = seed[0]+seed[1]+j;
                   pr(logFile, "Seed: %d [%ld+%ld+%d]\n", coliny_seed, seed[0], seed[1], j);
                   //pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
                   (void) fflush(logFile);
