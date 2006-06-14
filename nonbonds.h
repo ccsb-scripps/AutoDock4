@@ -14,7 +14,8 @@ void  nonbonds( const Real crdpdb[MAX_ATOMS][SPACE],
 #define GETBONDS
 #include "constants.h"
 void getbonds(const Real crdpdb[MAX_ATOMS][SPACE], 
-			  const int natom, 
+              const int from_atom,
+              const int to_atom,
 			  const int bond_index[MAX_ATOMS],
               int bonded[MAX_ATOMS][6]);
 #endif

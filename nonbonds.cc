@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.8 2006/06/07 03:00:32 garrett Exp $
+ $Id: nonbonds.cc,v 1.9 2006/06/14 04:19:34 garrett Exp $
 
 */
 
@@ -91,12 +91,12 @@ void nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
 
 /*----------------------------------------------------------------------------*/
 
-void getbonds(const Real crdpdb[MAX_ATOMS][SPACE], 
-              const int natom, 
+void getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
+              const int from_atom,
+              const int to_atom,
               const int bond_index[MAX_ATOMS],
               int   bonded[MAX_ATOMS][6])
 {
-    /* 2005-01-10 */
 	int i,j;
 	double dist,dx,dy,dz;
 
@@ -104,21 +104,25 @@ void getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
 	mdist();
 
     // determine the bonded atoms or "1-2 interactions"
-	for (i = 0; i<natom; i++) { // loop over atoms, "i", from 1 to natom
-		for (j = i+1; j<natom; j++) { // while on atom"i", loop over atoms "j", from i+1 to natom
+
+    // loop over atoms, "i", from "from_atom" to "to_atom"
+	for (i = from_atom;  i < to_atom;  i++) {
+
+        // while on atom"i", loop over atoms "j", from "i+1" to "to_atom"
+		for (j = i+1;  j < to_atom;  j++) {
 	
 			dx = crdpdb[i][X] - crdpdb[j][X];
 			dy = crdpdb[i][Y] - crdpdb[j][Y];
 			dz = crdpdb[i][Z] - crdpdb[j][Z];
+
 			dist = sqrt(dx*dx + dy*dy + dz*dz);  // calculate the distance from "i" to "j"
 
+            // if distance from "i" to "j" is in range for their atom types, 
+            // set one of the atoms to which "i" is bonded to "j", and vice-versa.
 			if (dist >= mindist[bond_index[i]][bond_index[j]] && 
                 dist <= maxdist[bond_index[i]][bond_index[j]]) {  
-                // if distance from "i" to "j" is in range for their atom types, 
-                // set one of the atoms to which "i" is bonded to "j", and vice-versa.
-                //
+
                 // bonded[x][5] is the current number of bonds that atom "x" has.
-                // 
 	            // Remember:   int bonded[MAX_ATOMS][6];	
 
 				bonded[i][ bonded[i][5] ] = j;
@@ -129,6 +133,7 @@ void getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
 			} //  dist is in bonding range for these atom types
 		} //  j
  	} //  i
+
 	return;
 } // end of get bonds
 
