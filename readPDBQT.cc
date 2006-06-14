@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.7 2006/06/09 09:54:32 garrett Exp $
+ $Id: readPDBQT.cc,v 1.8 2006/06/14 04:24:34 garrett Exp $
 
 */
 
@@ -132,7 +132,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
     if (B_have_flexible_residues) {
         //  Attempt to open the flexible residue PDBQT file...
-        sscanf(input_line, "%*s %s", FN_flexres);
         if (openFile(FN_flexres, "r", &FP_flexres, jobStart, tms_jobStart, TRUE)) {
             pr(logFile, "Flexible Residues PDBQT file = \"%s\"\n\n", FN_flexres);
         }
@@ -302,9 +301,9 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	} // i, next record in PDBQT file 
 	pr(logFile, "\nNumber of atoms found in flexible receptor sidechains (\"residues\") =\t%d atoms\n\n", natom - true_ligand_atoms);
 
-	pr(logFile, "Total number of atoms found in PDBQT file =\t%d atoms\n\n", natom);
+	pr(logFile, "Total number of atoms found =\t%d atoms\n\n", natom);
 
-	pr(logFile, "Number of flexible receptor sidechains found =\t%d residues\n\n", nres);
+	pr(logFile, "Number of flexible residues found in the receptor =\t%d residues\n\n", nres);
 
 	if (natom > MAX_ATOMS) {
 		prStr(error_message, "ERROR: Too many atoms found (i.e. %d); maximum allowed is %d.\nChange the \"#define MAX_ATOMS\" line in \"constants.h\"\n.", natom, MAX_ATOMS);
@@ -365,7 +364,13 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 			if (debug > 0) {
 			printbonds(natom, bonded, "\nDEBUG:  1. BEFORE getbonds, bonded[][] array is:\n\n", 1);
 		}
-		getbonds(crdpdb, natom, bond_index, bonded);
+        // find all the bonds in the ligand
+		getbonds(crdpdb, 0, true_ligand_atoms, bond_index, bonded);
+
+        if (B_have_flexible_residues) {
+            // find all the bonds in the receptor
+            getbonds(crdpdb, true_ligand_atoms, natom, bond_index, bonded);
+        }
 
 		if (debug > 0) {
 			printbonds(natom, bonded, "\nDEBUG:  2. AFTER getbonds, bonded[][] array is:\n\n", 0);
