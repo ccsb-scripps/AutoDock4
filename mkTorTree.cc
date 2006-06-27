@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.7 2006/04/25 22:32:36 garrett Exp $
+ $Id: mkTorTree.cc,v 1.8 2006/06/27 23:06:06 rhuey Exp $
 
 */
 
@@ -20,6 +20,7 @@
     #include "PDBQT_tokens.h"
 
 
+extern int true_ligand_atoms;
 extern FILE *logFile;
 extern char  *programname;
     
@@ -56,6 +57,8 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     int   nres = 0;
     int   natoms_in_res = 0;
     int   thisatom = 0;
+    int   nrestor=0;
+    int   found_first_res=0;
 
     register int   i = 0;
     register int   j = 0;
@@ -176,8 +179,12 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 
     /*____________________________________________________________*/
             case PDBQ_BRANCH:
-
-                sscanf(Rec_line[ i ],"%*s %d %*d", &tlist[ ntor ][ ATM1 ] );
+                if (found_first_res) {
+                    sscanf(Rec_line[ i ],"%*s %d %*d", &nrestor );
+                    tlist[ ntor ][ ATM1 ]= nrestor + true_ligand_atoms;
+                } else {
+                    sscanf(Rec_line[ i ],"%*s %d %*d", &tlist[ ntor ][ ATM1 ] );
+                }
                 tlist[ ntor ][ ATM2 ] = atomnumber[ i+1 ];
                 --tlist[ ntor ][ ATM1 ];
                 if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
@@ -309,6 +316,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     /*____________________________________________________________*/
             case PDBQ_BEGIN_RES:
                 found_new_res = 1;
+                found_first_res++;
                 natoms_in_res = 0; /* reset number of atoms in this residue */
                 break;
 
