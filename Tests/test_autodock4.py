@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.6 2006/06/01 00:06:55 garrett Exp $
+# $Id: test_autodock4.py,v 1.7 2006/06/27 23:06:44 rhuey Exp $
 #
 """
 Unit Tests for AutoDock 4.
@@ -44,13 +44,14 @@ class Autodock4_1pgp_test(unittest.TestCase):
         parser.parse(self.dlg_filename)
         docked = parser.clist[0]  #dictionary of results
         intermol_energy = docked['intermol_energy']  #-6.17
+        #intermol_energy = docked['intermol_energy']  #-6.17
         #d = Docking()
         #d.readDlg(self.dlg_filename)
         #c = d.ch.conformations[0]
         #self.assertAlmostEqual(c.intermol_energy, -6.17, places=6)
         #self.assertAlmostEqual(c.intermol_energy, expected_value, places=6)
         self.assertAlmostEqual(intermol_energy, expected_value, places=6)
-        internal_energy = docked['internal_energy']  # -1.58
+        internal_energy = docked['total_internal']  # -1.58
         self.assertAlmostEqual(internal_energy, expected_internal_energy_value, places=6)
 
 
@@ -89,7 +90,7 @@ class Autodock4_1pgp_no_parameter_file_test(unittest.TestCase):
         #self.assertAlmostEqual(c.intermol_energy, -6.17, places=6)
         #self.assertAlmostEqual(c.intermol_energy, expected_value, places=6)
         self.assertAlmostEqual(intermol_energy, expected_value, places=6)
-        internal_energy = docked['internal_energy']  # -1.58
+        internal_energy = docked['total_internal']  # -1.58
         self.assertAlmostEqual(internal_energy, expected_internal_energy_value, places=6)
 
 
