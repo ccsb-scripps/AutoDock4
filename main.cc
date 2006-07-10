@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.46 2006/07/10 21:23:25 garrett Exp $
+ $Id: main.cc,v 1.47 2006/07/10 22:47:44 garrett Exp $
 
 */
 
@@ -258,9 +258,9 @@ Real qtwStep0 = 5.0;
 Real qtwStepFinal = 5.0;
 Real maxrad = -1.0;
 Real r2sum=0.0;
-Real RJ = 8.31441;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
-Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
-Real T0K = 273.15;        // 0 degrees Celsius, in K
+// Real RJ = 8.31441;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
+// Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
+// Real T0K = 273.15;        // 0 degrees Celsius, in K
 Real RTreduc = 1.0;
 // Real spacing = 0.0;// now part of the GridMapSetInfo structure
 Real RT0 = 616.0;
