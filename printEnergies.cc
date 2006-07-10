@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.12 2006/06/09 09:53:20 garrett Exp $
+ $Id: printEnergies.cc,v 1.13 2006/07/10 22:47:24 garrett Exp $
 
 */
 
@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "printEnergies.h"
+#include "constants.h"
 
 extern FILE *logFile;
 extern FILE *stateFile;
@@ -68,9 +69,6 @@ void printEnergies( EnergyBreakdown *eb,
 
 {
     Real Ki = 1.0;
-    // Real RJ = 8.31441;  // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
-    Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
-    Real TK = 298.15;      // Room temperature, in K
 
     // equilibrium:   E  +  I  <=>    EI
     // binding:       E  +  I   ->    EI         K(binding),      Kb
