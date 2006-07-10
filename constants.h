@@ -420,6 +420,19 @@
 #define INTER          1 // index of last nonbond in intermolecular energy calculation
 #define INTRA_RECEPTOR 2 // index of last of nonbonds in intramolecular energy calculation of receptor
 
+#ifndef __THERMODYNAMIC_CONSTANTS__
+#define __THERMODYNAMIC_CONSTANTS__
+/*
+ * Thermodynamic constants
+ */
+
+const Real RJ = 8.31441;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
+const Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
+const Real T0K = 273.15;     // 0 degrees Celsius, in K
+const Real TK = 298.15;      // Room temperature, in K
+#endif
+
+
 /*----------------------------------------------------------------------------* 
  * End of file                                                                * 
  *----------------------------------------------------------------------------*/
