@@ -1,6 +1,6 @@
 /*
 
- $Id: prClusterHist.cc,v 1.5 2006/07/10 22:51:46 garrett Exp $
+ $Id: prClusterHist.cc,v 1.6 2006/07/15 02:41:22 garrett Exp $
 
 */
 
@@ -129,7 +129,18 @@ void prClusterHist( int ncluster,
         (void)fprintf( logFile, "\nNumber of multi-member conformational clusters found = %d, out of %d runs.\n\n", num_multi_mem_clu, irunmax );
     }
 
+    // Print the Information Entropy values 
+    //
+    /*
+    (void)fprintf( logFile, "\n\n\tINFORMATION ENTROPY ANALYSIS FOR THIS CLUSTERING HISTOGRAM\n" );
+    (void)fprintf( logFile,     "\t___ ______________________________________________________\n" );
     (void)fprintf( logFile, "\n\n" );
+    (void)fprintf( logFile, "Information entropy for this clustering = %8.2f\n", Information_entropy );
+    (void)fprintf( logFile, "\n" );
+    (void)fprintf( logFile, "_______________________________________________________________________\n\n");
+    (void)fprintf( logFile, "\n\n" );
+    */
+
     (void)fprintf( logFile, "\tRMSD TABLE\n" );
     (void)fprintf( logFile, "\t__________\n\n");
 
@@ -168,45 +179,15 @@ void prClusterHist( int ncluster,
     (void)fprintf( logFile, "\n\n\tSTATISTICAL MECHANICAL ANALYSIS\n" );
     (void)fprintf( logFile, "\t_______________________________\n" );
     (void)fprintf( logFile, "\n\n" );
-    (void)fprintf( logFile, "Internal (Boltzmann-weighted) energy, U = %.2f kcal/mol at Temperature, T = %.2f K\n", U_internal_energy, TK );
-    (void)fprintf( logFile, "Partition function, Q = %.2f kcal/mol at Temperature, T = %.2f K\n", Q_partition_function, TK );
-    (void)fprintf( logFile, "Free energy, A = %.2f kcal/mol at Temperature, T = %.2f K\n", A_free_energy, TK );
-    (void)fprintf( logFile, "Entropy, S = %.2f kcal/mol/K at Temperature, T = %.2f K\n", S_entropy, TK );
+    (void)fprintf( logFile, "Internal energy,    U = %8.2f kcal/mol at Temperature, T = %.2f K\n", U_internal_energy, TK );
+    (void)fprintf( logFile, "Partition function, Q = %8.2f kcal/mol at Temperature, T = %.2f K\n", Q_partition_function, TK );
+    (void)fprintf( logFile, "Free energy,        A = %8.2f kcal/mol at Temperature, T = %.2f K\n", A_free_energy, TK );
+    (void)fprintf( logFile, "Entropy,            S = %8.2f kcal/mol/K at Temperature, T = %.2f K\n", S_entropy, TK );
     (void)fprintf( logFile, "\n" );
     (void)fprintf( logFile, "_______________________________________________________________________\n\n");
+
+
 
     fflush( logFile );
 }
 /* EOF */
-        /*
-        ** kend = num_in_clu[Rank] - 1;
-        ** (void)fprintf( logFile, "________________________________________________________________________________\n" );
-        ** (void)fprintf( logFile, "ClusterRank=%d\t", Rank1 );
-        ** (void)fprintf( logFile, "NumberOfMembers= %d:\n", num_in_clu[Rank] );
-        */
-        /*
-        ** for (j=0;  j<num_in_clu[Rank]; j+=OUTNUMCLUST) {
-            ** kmax = min(num_in_clu[Rank],(j + OUTNUMCLUST));
-            ** (void)fprintf( logFile, "\nClusterRank=%d\tNum=         \t", Rank1 );
-            ** for (k = j; k < kmax;  k++ ) {
-                ** (void)fprintf( logFile, "%8d%s", ConfNum, (k == kend)?";":"," );
-                ** ++ConfNum;
-            ** }
-            ** (void)fprintf( logFile, "\nClusterRank=%d\tRun=         \t", Rank1 );
-            ** for (k = j; k < kmax;  k++ ) {
-                ** (void)fprintf( logFile, "%8d%s", 1+cluster[Rank][k], (k == kend)?";":"," );
-            ** }
-            ** (void)fprintf( logFile, "\nClusterRank=%d\tEnergy=      \t", Rank1 );
-            ** for (k = j; k < kmax; k++ ) {
-                ** (void)fprintf( logFile, "%+8.2f%s", (double)econf[cluster[Rank][k]], (k == kend)?";":","  );
-            ** }
-            ** (void)fprintf( logFile, "\nClusterRank=%d\tClusterRMS=  \t", Rank1 );
-            ** for (k = j; k < kmax; k++ ) {
-                ** (void)fprintf( logFile, "%8.2f%s", (double)((k==0)?(0.):(clu_rms[Rank][k])), (k == kend)?";":","  );
-            ** }
-            ** (void)fprintf( logFile, "\nClusterRank=%d\tReferenceRMS=\t", Rank1 );
-            ** for (k = j; k < kmax; k++ ) {
-                ** (void)fprintf( logFile, "%8.2f%s", (double)ref_rms[cluster[Rank][k]], (k == kend)?";":","  );
-            ** }
-            ** (void)fprintf( logFile, "\n" );
-            */
