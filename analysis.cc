@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.19 2006/06/08 23:26:50 garrett Exp $
+ $Id: analysis.cc,v 1.20 2006/07/15 02:38:03 garrett Exp $
 
 */
 
@@ -28,10 +28,11 @@
 #include "printEnergies.h"
 #include "analysis.h"
 
-extern FILE *logFile;
+extern FILE  *logFile;
 extern int   keepresnum;
 extern char  dock_param_fn[];
 extern char  *programname;
+extern int   true_ligand_atoms;
 
 void analysis( int   Nnb, 
                char  atomstuff[MAX_ATOMS][MAX_CHARS], 
@@ -104,12 +105,12 @@ void analysis( int   Nnb,
     int   i1=1;
     int   indpf = 0;
     static int   isort[MAX_RUNS];
-    int   ncluster = 1;
-    int   num_in_clu[MAX_RUNS];
+    int   ncluster = 1; int   num_in_clu[MAX_RUNS];
     int   off[VECLENMAX];
     int   ref_natoms = -1;
     int   veclen = 0;
     int   kmax = 0;
+    int   n_rms_atoms = 0;
 
     register int   i = 0;
     register int   j = 0;
@@ -117,6 +118,9 @@ void analysis( int   Nnb,
     register int   t = 0;
 
     State save;
+
+    // by default, compute rmsd for just the ligand atoms
+    n_rms_atoms = true_ligand_atoms;
 
     pr( logFile, "\n\t\tCLUSTER ANALYSIS OF CONFORMATIONS\n\t\t_________________________________\n\nNumber of conformations = %d\n", nconf );
 
@@ -131,11 +135,15 @@ void analysis( int   Nnb,
     // Read in reference coordinates...
     if (strncmp(FN_rms_ref_crds,"unspecified filename",20) != 0) {
         if ((ref_natoms = getpdbcrds( FN_rms_ref_crds, ref_crds)) == -1) {
-            fprintf( logFile, "%s: Problems while reading reference coordinates file \"%s\".\n", programname, FN_rms_ref_crds);
-            fprintf( logFile, "Will attempt to use the input PDBQ file coordinates as reference instead.\n");
+            fprintf( logFile, "%s: Problems while reading the ligand reference coordinates file \"%s\".\n", programname, FN_rms_ref_crds);
+            fprintf( logFile, "%s: Will attempt to use the input ligand PDBQT coordinates as reference instead.\n", programname);
         } else if (ref_natoms != natom) {
+            // intention is to compare the number of reference atoms with the number of atoms we are comparing
+            // if receptor is flexible, natom will include both the receptor and ligand atoms, but if the
+            // receptor is rigid, natom will be equal to true_ligand_atoms.
             pr( logFile, "%s: ERROR!  Wrong number of atoms in reference structure.\n", programname);
-            pr( logFile, "Input PDBQ structure has %d atoms, but reference structure has %d atoms.\n\n", natom, ref_natoms);
+            pr( logFile, "%s:         The reference structure should consist of only the ligand atoms.\n", programname);
+            pr( logFile, "%s:         Input ligand PDBQT structure has %d atoms, but reference structure has %d atoms.\n\n", programname, true_ligand_atoms, ref_natoms);
             ref_natoms = -1;
         }
     }
@@ -166,8 +174,10 @@ void analysis( int   Nnb,
     if (nconf > 1) {
         sort_enrg( econf, isort, nconf );
 
+        // NOTE:  We are clustering on only the ligand atoms, regardless
+        // of flexibility in the receptor sidechains...
         ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort, 
-                    nconf, natom, type, crdSave, crdpdb, 
+                    nconf, n_rms_atoms, type, crdSave, crdpdb, 
                     sml_center, clu_rms, B_symmetry_flag,
                     ref_crds, ref_natoms, ref_rms);
 
@@ -190,7 +200,7 @@ void analysis( int   Nnb,
         pr( logFile, "\nSorry!  Unable to perform cluster analysis, because not enough conformations were generated.\n\n\n" );
 
         ncluster = 1;
-        ref_rms[0] = getrms( crd, ref_crds, B_symmetry_flag, natom, type);
+        ref_rms[0] = getrms( crd, ref_crds, B_symmetry_flag, n_rms_atoms, type);
         clu_rms[0][0] = 0.;
         num_in_clu[0] = 1;
         cluster[0][0] = 0;
@@ -257,6 +267,7 @@ void analysis( int   Nnb,
                 if (outlev > -11) {
                     // Log File PDBQ coordinates [
                     pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
+                    // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     for (j = 0;  j < natom;  j++) {
                         strncpy( rec14, &atomstuff[j][13], (size_t)13);
                         rec14[13]='\0';
@@ -268,6 +279,7 @@ void analysis( int   Nnb,
             } else {
                 if (outlev > -11) {
                     // Log File PDBQ coordinates [
+                    // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
                     for (j = 0;  j < natom;  j++) {
                         strncpy( rec9, &atomstuff[j][13], (size_t)8);
