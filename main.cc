@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.47 2006/07/10 22:47:44 garrett Exp $
+ $Id: main.cc,v 1.48 2006/07/15 02:40:42 garrett Exp $
 
 */
 
@@ -662,6 +662,8 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 */
 
 banner( version );
+
+(void) fprintf(logFile, "                           $Revision: 1.48 $\n\n\n");
 
 //______________________________________________________________________________
 /*
