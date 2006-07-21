@@ -20,8 +20,8 @@ void  analysis( int   Nnb,
                 Real charge[MAX_ATOMS], 
                 Real abs_charge[MAX_ATOMS], 
                 Real qsp_abs_charge[MAX_ATOMS], 
-	            Boole B_calcIntElec,
-	            Real q1q2[MAX_NONBONDS],
+                Boole B_calcIntElec,
+                Real q1q2[MAX_NONBONDS],
                 Real clus_rms_tol, 
                 Real crdpdb[MAX_ATOMS][SPACE], 
                 
@@ -41,8 +41,8 @@ void  analysis( int   Nnb,
                 int   tlist[MAX_TORS][MAX_ATOMS], 
                 int   type[MAX_ATOMS], 
                 Real vt[MAX_TORS][SPACE],
-		        char  rms_ref_crds[MAX_CHARS],
-		        Real torsFreeEnergy,
+                char  rms_ref_crds[MAX_CHARS],
+                Real torsFreeEnergy,
                 Boole B_write_all_clusmem,
                 int ligand_is_inhibitor,
                 int   outlev,
@@ -55,6 +55,7 @@ void  analysis( int   Nnb,
                 
                 GridMapSetInfo *info,
                 Boole B_use_non_bond_cutoff,
-                Boole B_have_flexible_residues
+                Boole B_have_flexible_residues,
+                Boole B_rms_atoms_ligand_only
                );
 #endif
