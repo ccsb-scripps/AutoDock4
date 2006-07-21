@@ -118,6 +118,8 @@
 #define DPF_FLEXRES 93
 #define DPF_ELECMAP 94
 #define DPF_DESOLVMAP 95
+#define	DPF_UNBOUND_INTNBP_COEFFS	96
+#define	DPF_RMSATOMS	97
 
 #endif
 /* EOF */
