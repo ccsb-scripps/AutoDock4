@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.14 2006/06/09 09:57:31 garrett Exp $
+ $Id: simanneal.cc,v 1.15 2006/07/21 17:52:05 garrett Exp $
 
 */
 
@@ -40,7 +40,7 @@ void simanneal ( int   *Addr_nconf,
                 Real crdpdb[MAX_ATOMS][SPACE],
                 char  FN_dpf[MAX_CHARS],
         
-        EnergyTables *ptr_ad_energy_tables,
+                EnergyTables *ptr_ad_energy_tables,
 
                 Real econf[MAX_RUNS],
                 Boole B_either,
@@ -217,23 +217,24 @@ void simanneal ( int   *Addr_nconf,
     pr( logFile, "     \t\t_________________________________________\n\n\n\n" );
 
 
+    // Update the time-dependent seed just once, before we loop over the
+    // dockings; this will allow very short dockings that take less than
+    // 1 s to turn out differently.
+    time_seed = time( &time_seed );
+    seed[0] = time_seed;
+    seed[1] = 0;
+    seed_random( time_seed );
+    pr( logFile, "Time-dependent Seed:  %ld\n\n", time_seed);
+
     for ( irun = 0;  irun < irunmax;  irun++ ) { /*===========================*/
 
         irun1 = 1 + irun;
 
-        /*
-        ** Initialize random number generator with a time-dependent seed...
-        */
-        time_seed = time( &time_seed );
-        seed[0] = time_seed;
-        seed[1] = 0;
-        seed_random( time_seed );
 
         if (outlev > 0) {
             pr(logFile, "\n\tINITIALIZING AUTOMATED DOCKING SIMULATION\n" );
             pr(logFile, "\t_________________________________________\n\n" );
             pr( logFile, "RUN %d...\n\n", irun1);
-            pr( logFile, "Time-dependent Seed:  %ld\n\n", time_seed);
         }
 
         if ( B_writeTrj ) {
