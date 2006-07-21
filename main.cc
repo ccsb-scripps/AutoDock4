@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.48 2006/07/15 02:40:42 garrett Exp $
+ $Id: main.cc,v 1.49 2006/07/21 18:05:55 garrett Exp $
 
 */
 
@@ -188,6 +188,7 @@ char param[2][MAX_CHARS];
 char c_mode_str[MAX_CHARS];
 char FN_pop_file[MAX_CHARS];
 char FN_flexres[MAX_CHARS];
+char rms_atoms_cmd[MAX_CHARS];
 
 //   MAX_RECORDS
 //
@@ -213,6 +214,8 @@ static ParameterEntry * foundParameter;
 
 Real cA;
 Real cB;
+Real cA_unbound = 20.0;
+Real cB_unbound = 0.0;
 Real epsij;
 Real F_A;
 Real F_Aova;
@@ -332,6 +335,7 @@ Boole B_found_elecmap = FALSE;
 Boole B_found_desolvmap = FALSE;
 Boole B_use_non_bond_cutoff = TRUE;
 Boole B_have_flexible_residues = FALSE;  // if the receptor has flexible residues, this will be set to TRUE
+Boole B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
 
 int atm1=0;
 int atm2=0;
@@ -374,6 +378,8 @@ int trj_begin_cyc = 0;
 int trj_freq = 0;
 int xA;
 int xB;
+int xA_unbound = 1;
+int xB_unbound = 2;
 int I_tor;
 int I_torBarrier;
 int MaxRetries = 1000; /* Default maximum number of retries for ligand init. */
@@ -663,7 +669,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.48 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.49 $\n\n\n");
 
 //______________________________________________________________________________
 /*
@@ -913,20 +919,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  be used for look up in the grid maps, "map_index".
          */
         
-        //  Use "parsetypes" to read in the atom types;
+        //  Use the function "parsetypes" to read in the atom types;
         //  
         //  The array "ligand_atom_type_ptrs" is returned, having been filled with pointers
         //  to the beginning of each "atom type word" (not atom type characters);
-        //  an atom type can be either 1 or 2 characters long.
+        //  In AutoDock 4, an atom type can be either 1 or 2 characters long.
         //
-        //  "atm_typ_str" (in AD3) used to serve a similar role to "atom_type_name" (in AD4).
+        //  Note: "atm_typ_str" (in AD3) served a similar role to "atom_type_name" (now used in AD4).
         num_atom_types = parsetypes(line, ligand_atom_type_ptrs, MAX_ATOM_TYPES);
 
         B_found_ligand_types = TRUE;
 
-        // this is not necessary if we increment num_maps one-at-a-time as read each atom map in
+        // This is not necessary if we increment num_maps one-at-a-time as we read each atom map in
         // num_maps += num_atom_types;
-
         info->num_atom_types = num_atom_types;
 
         for (i=0; i<num_atom_types; i++) {
@@ -1063,7 +1068,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
                     intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables);
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-                    intnbtable( &B_havenbp, a1, a2, info, 20.0, 0.0, 1, 2, AD4.coeff_desolv, sigma, unbound_energy_tables);
+                    intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables);
                     // Increment the atom type numbers, a1 and a2, for the internal non-bond table
                     a2++;
                     if (a2 >= info->num_atom_types) {
@@ -1443,6 +1448,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   fprintf( logFile, "\n\n\tBEGINNING Coliny %s DOCKING\n",algname);
                   pr(logFile, "\nDoing %s run:  %d/%d.\n", algname, j+1, nruns);
 
+                  /*
                   if (timeSeedIsSet[0] == 'T') {
                       seed[0] = (FourByteLong)time( &time_seed );
                   }
@@ -1450,11 +1456,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                       seed[1] = (FourByteLong)time( &time_seed );
                   }
                   if (timeSeedIsSet[0] == 'T' || timeSeedIsSet[1] == 'T') {
-                  setall(seed[0], seed[1]);
-                  initgn(-1); // Reinitializes the state of the current generator
+                      setall(seed[0], seed[1]);
+                      initgn(-1); // Reinitializes the state of the current generator
                   } else {
                       pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
                   }
+                  */
 
                   //coliny uses a single seed
                   coliny_seed = seed[0]+seed[1]+j;
@@ -1885,7 +1892,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
             intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables);
             pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-            intnbtable( &B_havenbp, a1, a2, info, 20.0, 0.0, 1, 2, AD4.coeff_desolv, sigma, unbound_energy_tables);
+            intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables);
             // Increment the atom type numbers, a1 and a2, for the internal non-bond table
             a2++;
             if (a2 >= info->num_atom_types) {
@@ -1915,7 +1922,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
             intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables);
             pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-            intnbtable( &B_havenbp, a1, a2, info, 20.0, 0.0, 1, 2, AD4.coeff_desolv, sigma, unbound_energy_tables);
+            intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables);
             // Increment the atom type numbers, a1 and a2, for the internal non-bond table
             a2++;
             if (a2 >= info->num_atom_types) {
@@ -1927,6 +1934,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             exit(-1);
         }
 
+        (void) fflush(logFile);
+        break;
+
+//______________________________________________________________________________
+
+    case DPF_UNBOUND_INTNBP_COEFFS:
+        /*
+        **  unbound_intnbp_coeffs
+        **  Read internal energy parameters for unbound extended state calculation:
+        */
+        (void) sscanf( line, "%*s " FDFMT2 " %d %d", &cA_unbound, &cB_unbound, &xA_unbound, &xB_unbound );
+
+        pr(logFile, "\nSetting the internal non-bonded interaction energy parameters for the\nunbound docking calculation, E = %.1f / r^%d - %.1f / r^%d\n\n", cA_unbound, xA_unbound, cB_unbound, xB_unbound);
         (void) fflush(logFile);
         break;
 
@@ -2114,6 +2134,41 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) sscanf( line, "%*s %s", FN_rms_ref_crds);
         if (outlev >= 0) {
             pr( logFile, "RMS reference coordinates will taken from \"%s\"\n", FN_rms_ref_crds );
+        }
+        (void) fflush(logFile);
+        break;
+
+//______________________________________________________________________________
+
+    case DPF_RMSATOMS:
+        /*
+        **  rmsatoms ligand_only
+        **  rmsatoms all
+        **
+        **  Set the atoms to compute the RMSD values for cluster analysis
+        **  either "ligand_only" (the default) or "all" moving atoms (ligand + receptor)
+        */
+        retval = sscanf( line, "%*s %s", rms_atoms_cmd);
+        if (retval != 1) {
+            pr( logFile, "%s:  ERROR: please specify an argument (either \"ligand_only\" or \"all\").  By default, only the ligand atoms will be used for the cluster analysis.\n", programname );
+            B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
+        } else {
+            if ( strncmp( rms_atoms_cmd, "ligand_only", 11 ) == 0 ) {
+                if (outlev >= 0) {
+                    pr( logFile, "RMS clustering will be performed on the ligand atoms only.\n" );
+                }
+                B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
+            } else if ( strncmp( rms_atoms_cmd, "all", 3 ) == 0 ) {
+                if (outlev >= 0) {
+                    pr( logFile, "RMS clustering will be performed on the moving atoms of the receptor plus all the ligand atoms.\n" );
+                }
+                B_rms_atoms_ligand_only = FALSE;  // cluster on the ligand atoms plus moving receptor atoms
+            } else {
+                if (outlev >= 0) {
+                    pr( logFile, "RMS clustering will be performed on the ligand atoms only.\n" );
+                }
+                B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
+            }
         }
         (void) fflush(logFile);
         break;
@@ -2659,6 +2714,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       break;
 
 //______________________________________________________________________________
+
     case DPF_GALS:
         (void) fflush( logFile );
         /*
@@ -2699,6 +2755,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "\nRun:\t%d / %d\n", j1, nruns );
 
 
+                /*
                 // Update time-based RNG seeds...
                 if (timeSeedIsSet[0] == 'T') {
                     pr(logFile, "Updating First Time-dependent Seed Now.\n");
@@ -2709,12 +2766,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     seed[1] = (FourByteLong)time( &time_seed );
                 }
                 if (timeSeedIsSet[0] == 'T' || timeSeedIsSet[1] == 'T') {
-                setall(seed[0], seed[1]);
+                    setall(seed[0], seed[1]);
                     initgn(-1); // Reinitializes the state of the current generator
                 } else {
                     pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
                 }
-                pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
+                */
+                // pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
                 pr(logFile, "Date:\t");
                 printdate( logFile, 2 );
                 (void) fflush( logFile );
@@ -2752,7 +2810,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "\n\n\tFINAL LAMARCKIAN GENETIC ALGORITHM DOCKED STATE\n" );
                 pr( logFile,     "\t_______________________________________________\n\n\n" );
 
-                writePDBQT( j,seed,  FN_ligand, dock_param_fn, lig_center,
+                writePDBQT( j, seed,  FN_ligand, dock_param_fn, lig_center,
                     sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
                     crd, emap, elec,
                     charge, abs_charge, qsp_abs_charge,
@@ -2823,21 +2881,25 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
            for (j=0; j<nruns; j++) {
 
-               pr( logFile, "\nDoing Local Search run: %d / %d.\n", j+1, nruns );
+               (void) fprintf( logFile, "\n\n\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
+               pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
+               (void) fflush( logFile );
+
+               /*
                if (timeSeedIsSet[0] == 'T') {
                    seed[0] = (FourByteLong)time( &time_seed );
                }
                if (timeSeedIsSet[1] == 'T') {
                    seed[1] = (FourByteLong)time( &time_seed );
                }
-
                if (timeSeedIsSet[0] == 'T' || timeSeedIsSet[1] == 'T') {
-               setall(seed[0], seed[1]);
-               initgn(-1); // Reinitializes the state of the current generator
+                   setall(seed[0], seed[1]);
+                   initgn(-1); // Reinitializes the state of the current generator
                } else {
                    pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
                }
-               pr(logFile, "Seeds: %ld %ld\n", seed[0], seed[1]);
+               */
+               // pr(logFile, "Seeds: %ld %ld\n", seed[0], seed[1]);
                pr(logFile, "Date:\t");
                printdate( logFile, 2 );
                (void) fflush( logFile );
@@ -2931,21 +2993,23 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
               fprintf( logFile, "\n\n\tBEGINNING GENETIC ALGORITHM DOCKING\n");
               pr(logFile, "\nDoing Genetic Algorithm run:  %d/%d.\n", j+1, nruns);
+              (void) fflush( logFile );
 
+              /*
               if (timeSeedIsSet[0] == 'T') {
                   seed[0] = (FourByteLong)time( &time_seed );
               }
               if (timeSeedIsSet[1] == 'T') {
                   seed[1] = (FourByteLong)time( &time_seed );
               }
-
               if (timeSeedIsSet[0] == 'T' || timeSeedIsSet[1] == 'T') {
-              setall(seed[0], seed[1]);
-              initgn(-1); // Reinitializes the state of the current generator
+                  setall(seed[0], seed[1]);
+                  initgn(-1); // Reinitializes the state of the current generator
               } else {
                   pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
               }
-              pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
+              */
+              // pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
               pr(logFile, "Date:\t");
               printdate( logFile, 2 );
               (void) fflush( logFile );
@@ -3161,7 +3225,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   outlev,
                   ignore_inter, B_include_1_4_interactions, scale_1_4, 
                   parameterArray, unbound_internal_FE,
-                  info, B_use_non_bond_cutoff, B_have_flexible_residues );
+                  info, B_use_non_bond_cutoff, B_have_flexible_residues,
+                  B_rms_atoms_ligand_only);
             (void) fflush(logFile);
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so cluster analysis cannot be performed.\n\n");
@@ -3249,7 +3314,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
          *  compute_unbound_extended
          */
-        // (void) sscanf( line, "%*s %d", &i );
         if (ntor > 0) {
             pr(logFile, "Computing the energy of the unbound state, assuming it is in an extended conformation\ngiven the torsion tree defined in the ligand file.\n\n");
             (void) fflush( logFile );
@@ -3263,12 +3327,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 exit(-1);
             }
      
-            // Use the repulsive unbound energy tables to drive the molecule into an extended conformation
-     
             // Do not use a non-bond cutoff, this helps to produce the "most" extended conformation
             // especially with long inhibitors
             B_use_non_bond_cutoff = FALSE;
      
+            // Use the repulsive unbound energy tables, "unbound_energy_tables",
+            // to drive the molecule into an extended conformation
             evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
               elec, emap, nonbondlist, unbound_energy_tables, Nnb,
               B_calcIntElec, q1q2, B_isGaussTorCon, B_isTorConstrained,
@@ -3284,7 +3348,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             (void) fprintf( logFile, "\n\n\tBEGINNING COMPUTATION OF UNBOUND EXTENDED STATE USING LGA\n");
             (void) fprintf( logFile,     "\t_________________________________________________________\n\n\n");
             (void) fflush( logFile );
-     
+
+            /*
             // Update time-based RNG seeds...
             if (timeSeedIsSet[0] == 'T') {
                 pr(logFile, "Updating First Time-dependent Seed Now.\n");
@@ -3300,11 +3365,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } else {
                 pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
             }
-            pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
+            */
+            // pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
             pr(logFile, "Date:\t");
             printdate( logFile, 2 );
             (void) fflush( logFile );
-     
+
             gaStart = times( &tms_gaStart );
      
             //  Can get rid of the following line
