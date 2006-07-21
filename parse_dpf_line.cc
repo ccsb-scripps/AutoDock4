@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.13 2006/04/27 00:28:47 garrett Exp $
+ $Id: parse_dpf_line.cc,v 1.14 2006/07/21 17:40:59 garrett Exp $
 
 */
 
@@ -13,8 +13,8 @@
 #include <ctype.h>
 #include "parse_dpf_line.h"
 
-#define NUM_LEXEMES_AUTODOCK 105 // this is the length of the tokentable of AutoDock-related lexemes 
-#define NUM_LEXEMES_COLINY 1 // this is the length of the tokentable of Coliny-related lexemes 
+#define NUM_LEXEMES_AUTODOCK 107 // this is the length of the tokentable of AutoDock-related lexemes 
+#define NUM_LEXEMES_COLINY     1 // this is the length of the tokentable of Coliny-related lexemes 
 
 int parse_dpf_line( char line[LINE_LEN] )
 
@@ -156,6 +156,8 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"flexres", DPF_FLEXRES} // 103
               , {"elecmap", DPF_ELECMAP} // 104
               , {"desolvmap", DPF_DESOLVMAP} // 105
+              , {"unbound_intnbp_coeffs", DPF_UNBOUND_INTNBP_COEFFS} // 106
+              , {"rmsatoms", DPF_RMSATOMS} // 107
 			   // Remember to define NUM_LEXEMES_AUTODOCK earlier
 
 #if defined(USING_COLINY)
