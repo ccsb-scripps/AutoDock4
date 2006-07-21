@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.20 2006/07/15 02:38:03 garrett Exp $
+ $Id: analysis.cc,v 1.21 2006/07/21 17:47:29 garrett Exp $
 
 */
 
@@ -74,7 +74,8 @@ void analysis( int   Nnb,
 
                GridMapSetInfo *info,
                Boole B_use_non_bond_cutoff,
-               Boole B_have_flexible_residues
+               Boole B_have_flexible_residues,
+               Boole B_rms_atoms_ligand_only
 
               )
 
@@ -119,17 +120,28 @@ void analysis( int   Nnb,
 
     State save;
 
-    // by default, compute rmsd for just the ligand atoms
-    n_rms_atoms = true_ligand_atoms;
 
     pr( logFile, "\n\t\tCLUSTER ANALYSIS OF CONFORMATIONS\n\t\t_________________________________\n\nNumber of conformations = %d\n", nconf );
 
+    // Initialise these arrays
     for (j = 0; j < MAX_RUNS; j++) {
         num_in_clu[j] = 0;
         isort[j] = j;
         for (i = 0; i < MAX_RUNS; i++) {
             cluster[j][i] = 0;
         }
+    }
+
+    // Set the number of atoms to cluster on
+    pr( logFile, "\n");
+    if (B_rms_atoms_ligand_only == TRUE) {
+        // use only the ligand atoms for clustering
+        n_rms_atoms = true_ligand_atoms;
+        pr( logFile, "RMSD cluster analysis will be performed using the ligand atoms only (%d / %d total atoms).\n", n_rms_atoms, natom);
+    } else {
+        // use all the moving atoms in the receptor plus the ligand atoms for clustering
+        n_rms_atoms = natom;
+        pr( logFile, "RMSD cluster analysis will be performed using all the moving atoms in the receptor\n plus the ligand atoms (%d / %d total atoms).\n", n_rms_atoms, natom);
     }
 
     // Read in reference coordinates...
