@@ -400,12 +400,31 @@
 #define FORMAT_PDBQ_ATOM_RUN_NUM          "ATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f\n"
 
 /* 
- * PDBQT
+ * PDBQT format
  */
-/* serial, name, altLoc, resName, chainID, resSeq, iCode, x, y, z, occupancy, tempFactor, segID, atom_type, "" */
-#define FORMAT_PDBQT_ATOM       "ATOM  %5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s%2s" 
-/*                               ATOM     10  HO4 PGP     1      22.065  29.222  38.002  1.00  0.00     0.210 HD
-                                 65432154321 43211321 143211   876543218765432187654321654321654321    654321 21 */
+//  The numbers in parentheses are the columns that this field spans, using 0-based counting.
+//     e.g. the atom_name spans from column 12 to column 15 inclusive.
+//  The digit immediately below the line of '|' characters is the length of the field.
+//     e.g. the atom_name field is 4 characters long.
+//
+// record (0-5)
+// |     serial_number (6-10)
+// |     |     atom_name (12-15)
+// |     |     |   alternate_locator (16)
+// |     |     |   |residue_name (17-19)
+// |     |     |   ||   chain_ID (21)
+// |     |     |   ||   |residue_number (22-25)
+// |     |     |   ||   ||   insertion_code (26)
+// |     |     |   ||   ||   |   x (30-37)
+// |     |     |   ||   ||   |   |       y (38-45)
+// |     |     |   ||   ||   |   |       |       z (46-53)
+// |     |     |   ||   ||   |   |       |       |       occupancy (54-59)
+// |     |     |   ||   ||   |   |       |       |       |     temperature_factor (60-65)
+// |     |     |   ||   ||   |   |       |       |       |     |         charge (70-75)
+// |     |     |   ||   ||   |   |       |       |       |     |         |      atom_type (77-78)
+// |     |     |   ||   ||   |   |       |       |       |     |         |      |                      
+// 65432154321 43211321 143211   876543218765432187654321654321654321    654321 21
+// ATOM     10  HO4 PGP     1      22.065  29.222  38.002  1.00  0.00     0.210 HD
 #define FORMAT_PDBQT_ATOM_RESSTR         "%sATOM  %5d  %.13s    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
 #define FORMAT_PDBQT_ATOM_RESNUM         "%sATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
 #define FORMAT_PDBQT_ATOM_RANKRUN_STR      "ATOM  %5d  %.13s    %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f %-2s\n"
