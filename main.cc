@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.49 2006/07/21 18:05:55 garrett Exp $
+ $Id: main.cc,v 1.50 2006/07/26 16:49:03 garrett Exp $
 
 */
 
@@ -669,7 +669,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.49 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.50 $\n\n\n");
 
 //______________________________________________________________________________
 /*
@@ -3331,6 +3331,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // especially with long inhibitors
             B_use_non_bond_cutoff = FALSE;
      
+            // Do not compute the electrostatic energy
+            // TODO either set charge, abs_charge, qsp_abs_charge, q1q2 to 0
+            // TODO or add a new method to the eval class to turn off int.
+            // elec. calculations (note: we already have B_calcIntElec)
+
+
             // Use the repulsive unbound energy tables, "unbound_energy_tables",
             // to drive the molecule into an extended conformation
             evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
