@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.15 2006/07/21 17:52:05 garrett Exp $
+ $Id: simanneal.cc,v 1.16 2006/07/27 03:56:38 garrett Exp $
 
 */
 
@@ -194,6 +194,13 @@ void simanneal ( int   *Addr_nconf,
     /* trnStepHi = HI_NRG_JUMP_FACTOR * trnStep; ** qtwStepHi = HI_NRG_JUMP_FACTOR * qtwStep; ** torStepHi = HI_NRG_JUMP_FACTOR * torStep; */
     /* lo[X] = xlo;  lo[Y] = ylo;  lo[Z] = zlo;*/
     /* xloTrn = xlo + maxrad; ** xhiTrn = xhi - maxrad; ** yloTrn = ylo + maxrad; ** yhiTrn = yhi - maxrad; ** zloTrn = zlo + maxrad; ** zhiTrn = zhi - maxrad; */
+    
+    // Initialise these State variables:
+    initialiseState( &sNow );
+    initialiseState( &sChange );
+    initialiseState( &sLast );
+    initialiseState( &sMin );
+    initialiseState( &sSave );
 
 /* Open the trajectory file for writing, =====================================*/
 
