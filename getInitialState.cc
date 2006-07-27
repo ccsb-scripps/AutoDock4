@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.14 2006/06/09 01:54:16 garrett Exp $
+ $Id: getInitialState.cc,v 1.15 2006/07/27 03:53:35 garrett Exp $
 
 */
 
@@ -100,102 +100,104 @@ void getInitialState(
     initStart = times( &tms_initStart );
 
     retries = 0;
-    do {
-        /*
-        ** while e0total, initial energy, is too high,
-        */
-
-        /*
-        ** Initialize all state variables...
-        */
-        if (B_RandomTran0) {
-            sInit->T.x = random_range( info->lo[X], info->hi[X] );
-            sInit->T.y = random_range( info->lo[Y], info->hi[Y] );
-            sInit->T.z = random_range( info->lo[Z], info->hi[Z] );
-            if (outlev > 1) {
-                pr( logFile, "Random initial translation,  tran0 %.3f %.3f %.3f\n", sInit->T.x, sInit->T.y, sInit->T.z);
-            }
-        }/*if*/
-        if (B_RandomQuat0) {
-            sInit->Q.nx  = random_range( -1., 1. );
-            sInit->Q.ny  = random_range( -1., 1. );
-            sInit->Q.nz  = random_range( -1., 1. );
-            sInit->Q.ang = Rad( random_range( 0., 360.) );/*convert to radians*/
-
-            mkUnitQuat( &(sInit->Q) );
-
-            if (outlev > 1) {
-                pr( logFile, "Random initial quaternion,  quat0 %.3f %.3f %.3f %.1f\n", sInit->Q.nx, sInit->Q.ny, sInit->Q.nz, Deg( sInit->Q.ang ) );
-            }
-        }/*if*/
-        if ( B_RandomDihe0 && (ntor > 0) ) {
-            if (outlev > 1) {
-                pr( logFile, "Random initial torsions, ndihe = %d\ndihe0 = ", ntor);
-            }
-            sInit->ntor = ntor;
-            for (i=0; i<ntor; i++) {
-                sInit->tor[i] = random_range(-180.,180.);
-                if (outlev > 1) {
-                    pr( logFile, "%7.2f ", sInit->tor[i] ); /*in degrees*/
-                }
-                sInit->tor[i] = Rad( sInit->tor[i] ); /*now in radians*/
-            }
-            if (outlev > 1) {
-                pr( logFile, "\n");
-            }
-        }/*if*/
-
-        copyState( sMinm, *sInit );
-        copyState( sLast, *sInit );
-
-/* _________________________________________________________________________
-**
-** Initialize the automated docking simulation,
-** _________________________________________________________________________
-*/
-        initautodock( atomstuff, crd, crdpdb, 
-            natom, ntor, sInit, tlist, vt, outlev, info);
-        
-        e0inter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-                    info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
-                    NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-        e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
-        e0total = e0inter + e0intra;
-
-        if (e0total < e0min) {
+    if ((B_RandomTran0 == TRUE) || (B_RandomQuat0 == TRUE) || (B_RandomDihe0 == TRUE)) {
+        do {
             /*
-            ** This energy is lower so update
-            ** the initialization minimum-energy state variables,
+            ** while e0total, initial energy, is too high,
             */
-            e0min = e0total;
+
+            /*
+            ** Initialize all state variables...
+            */
+            if (B_RandomTran0) {
+                sInit->T.x = random_range( info->lo[X], info->hi[X] );
+                sInit->T.y = random_range( info->lo[Y], info->hi[Y] );
+                sInit->T.z = random_range( info->lo[Z], info->hi[Z] );
+                if (outlev > 1) {
+                    pr( logFile, "Random initial translation,  tran0 %.3f %.3f %.3f\n", sInit->T.x, sInit->T.y, sInit->T.z);
+                }
+            }/*if*/
+            if (B_RandomQuat0) {
+                sInit->Q.nx  = random_range( -1., 1. );
+                sInit->Q.ny  = random_range( -1., 1. );
+                sInit->Q.nz  = random_range( -1., 1. );
+                sInit->Q.ang = Rad( random_range( 0., 360.) );/*convert to radians*/
+
+                mkUnitQuat( &(sInit->Q) );
+
+                if (outlev > 1) {
+                    pr( logFile, "Random initial quaternion,  quat0 %.3f %.3f %.3f %.1f\n", sInit->Q.nx, sInit->Q.ny, sInit->Q.nz, Deg( sInit->Q.ang ) );
+                }
+            }/*if*/
+            if ( B_RandomDihe0 && (ntor > 0) ) {
+                if (outlev > 1) {
+                    pr( logFile, "Random initial torsions, ndihe = %d\ndihe0 = ", ntor);
+                }
+                sInit->ntor = ntor;
+                for (i=0; i<ntor; i++) {
+                    sInit->tor[i] = random_range(-180.,180.);
+                    if (outlev > 1) {
+                        pr( logFile, "%7.2f ", sInit->tor[i] ); /*in degrees*/
+                    }
+                    sInit->tor[i] = Rad( sInit->tor[i] ); /*now in radians*/
+                }
+                if (outlev > 1) {
+                    pr( logFile, "\n");
+                }
+            }/*if*/
+
             copyState( sMinm, *sInit );
-        }
+            copyState( sLast, *sInit );
 
-        /*
-        if ( (e0total > e0max) && ((!B_RandomTran0)||(!B_RandomQuat0)) ) {
-            B_RandomTran0 = TRUE;
-            B_RandomQuat0 = TRUE;
-        }
-        */
+    /* _________________________________________________________________________
+    **
+    ** Initialize the automated docking simulation,
+    ** _________________________________________________________________________
+    */
+            initautodock( atomstuff, crd, crdpdb, 
+                natom, ntor, sInit, tlist, vt, outlev, info);
+            
+            e0inter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+                        info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
+                        NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
+            e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
+            e0total = e0inter + e0intra;
 
-        ++retries;
-        if ((retries > 0) && (retries < MaxRetries) &&
-            (e0total > e0max) && (outlev > 1)) {
+            if (e0total < e0min) {
+                /*
+                ** This energy is lower so update
+                ** the initialization minimum-energy state variables,
+                */
+                e0min = e0total;
+                copyState( sMinm, *sInit );
+            }
 
-            pr(logFile, "Initial total energy, e0total = %.3f, too high!\n", e0total);
-            pr(logFile, "Number of attempts = %d (run %d)\n\n", retries, irun1);
-            pr(logFile, "Will try again...\n");
+            /*
+            if ( (e0total > e0max) && ((!B_RandomTran0)||(!B_RandomQuat0)) ) {
+                B_RandomTran0 = TRUE;
+                B_RandomQuat0 = TRUE;
+            }
+            */
 
-        } else if (retries >= MaxRetries) {
+            ++retries;
+            if ((retries > 0) && (retries < MaxRetries) &&
+                (e0total > e0max) && (outlev > 1)) {
 
-            pr( logFile, "Sorry, too many retries (%d).  Continuing...\n\nWill use the state with the lowest energy found, %.2f\n\n", MaxRetries, e0min);
-            e0total = e0min;
-            copyState( sInit, *sMinm );
+                pr(logFile, "Initial total energy, e0total = %.3f, too high!\n", e0total);
+                pr(logFile, "Number of attempts = %d (run %d)\n\n", retries, irun1);
+                pr(logFile, "Will try again...\n");
 
-            break;
-        }
-        fflush( logFile );
-    } while ( e0total > e0max );
+            } else if (retries >= MaxRetries) {
+
+                pr( logFile, "Sorry, too many retries (%d).  Continuing...\n\nWill use the state with the lowest energy found, %.2f\n\n", MaxRetries, e0min);
+                e0total = e0min;
+                copyState( sInit, *sMinm );
+
+                break;
+            }
+            fflush( logFile );
+        } while ( e0total > e0max );
+    } // endif
 
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
