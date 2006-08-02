@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.8 2006/06/14 04:24:34 garrett Exp $
+ $Id: readPDBQT.cc,v 1.9 2006/08/02 01:34:42 garrett Exp $
 
 */
 
@@ -419,33 +419,59 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 /* readPDBQTLine.cc */
 
 void
-readPDBQTLine(char line[LINE_LEN],
-	      Real crd[SPACE],
-	      Real *ptr_q,
-	      ParameterEntry *this_parameter_entry)
+readPDBQTLine( char line[LINE_LEN],
+               Real crd[SPACE],
+               Real *ptr_q,
+               ParameterEntry *this_parameter_entry )
 /*----------------------------------------------------------------------------*/
 {
-	char            str[4][WORDLEN];
+    char char8[9];
+    char char6[7];
+    char char2[3];
+
+    // Initialise char8
+    (void) strcpy( char8, "   0.000" );
+    char8[8] = '\0';
+
+    // Initialise char6
+    (void) strcpy( char6, "  0.00" );
+    char6[6] = '\0';
+
+    // Initialise char2
+    (void) strcpy( char2, "C " );
+    char2[2] = '\0';
+
 
 	// Read in the X, Y, Z coordinates
-    (void) sscanf(&line[30], "%s %s %s", str[X], str[Y], str[Z]);
+    (void) strncpy( char8, &line[30], (size_t)8 );
+    char8[8] = '\0';
+    (void) sscanf( char8, FDFMT, &crd[X] );
 
-	crd[X] = atof(str[X]);
-	crd[Y] = atof(str[Y]);
-	crd[Z] = atof(str[Z]);
+    (void) strncpy( char8, &line[38], (size_t)8 );
+    char8[8] = '\0';
+    (void) sscanf( char8, FDFMT, &crd[Y] );
+
+    (void) strncpy( char8, &line[46], (size_t)8 );
+    char8[8] = '\0';
+    (void) sscanf( char8, FDFMT, &crd[Z] );
 
 #ifdef DEBUG
 	(void) fprintf(stderr, "readPDBQTLine: %s", line);
 #endif				/* DEBUG */
 
-    (void) sscanf(&line[70], "%s", str[3]);
     // partial charge, q
-    *ptr_q = atof(str[3]);
+    (void) strncpy( char6, &line[70], (size_t)6 );
+    char6[6] = '\0';
+    (void) sscanf( char6, FDFMT, ptr_q );
+
     // atom type name
-    (void) sscanf(&line[77], "%s", this_parameter_entry->autogrid_type);
+    (void) strncpy( char2, &line[77], (size_t)2 );
+    char2[2] = '\0';
+    (void) sscanf( char2, "%s", this_parameter_entry->autogrid_type);
 
 #ifdef DEBUG
-	fprintf(stderr, "readPDBQTLine:  %.3f, %.3f, %.3f, %.3f\n", crd[X], crd[Y], crd[Z], *ptr_q);
+	fprintf(stderr, "readPDBQTLine:  %.3f, %.3f, %.3f, %.3f, %s\n", crd[X], crd[Y], crd[Z], *ptr_q,
+     this_parameter_entry->autogrid_type);
 #endif				/* DEBUG */
 }
 
