@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.3 2006/06/09 10:12:21 garrett Exp $
+ $Id: writePDBQT.cc,v 1.4 2006/08/02 01:30:00 garrett Exp $
 
 */
 
@@ -75,6 +75,7 @@ writePDBQT(int irun, FourByteLong seed[2],
 	Real emap_total = 0.0L;
 	Real elec_total = 0.0L;
 	Real MaxValue = 99.99L;
+	Real MinValue = -99.99L;
 
     Real e_inter_moving_fixed      = 0.0L;  // (1)  // trilinterp( 0, true_ligand_atoms, ...)
     Real e_intra_moving_fixed_rec  = 0.0L;  // (2)  // trilinterp( true_ligand_atoms, natom, ...)
@@ -242,12 +243,20 @@ writePDBQT(int irun, FourByteLong seed[2],
                     // Retain the original Residue Numbering
                     strncpy(AtmNamResNamNum, &atomstuff[i][13], (size_t) 13);
                     AtmNamResNamNum[13] = '\0';
-                    (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESSTR, state_type_prefix_string, i + 1, AtmNamResNamNum, crd[i][X], crd[i][Y], crd[i][Z], min(emap[i], MaxValue), min(elec[i], MaxValue), charge[i], parameterArray[type[i]].autogrid_type );
+                    (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESSTR, state_type_prefix_string, 
+                                   i + 1, AtmNamResNamNum, crd[i][X], crd[i][Y], crd[i][Z], 
+                                   (emap[i]>=0.)?min(emap[i], MaxValue):max(emap[i], MinValue), 
+                                   (elec[i]>=0.)?min(elec[i], MaxValue):max(elec[i], MinValue), 
+                                   charge[i], parameterArray[type[i]].autogrid_type );
                 } else {
                     // Change the residue number to the run number
                     strncpy(AtmNamResNam, &atomstuff[i][13], (size_t) 8);
                     AtmNamResNam[8] = '\0';
-                    (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESNUM, state_type_prefix_string, i + 1, AtmNamResNam, irun + 1, crd[i][X], crd[i][Y], crd[i][Z], min(emap[i], MaxValue), min(elec[i], MaxValue), charge[i], parameterArray[type[i]].autogrid_type);
+                    (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESNUM, state_type_prefix_string, 
+                                   i + 1, AtmNamResNam, irun + 1, crd[i][X], crd[i][Y], crd[i][Z], 
+                                   (emap[i]>=0.)?min(emap[i], MaxValue):max(emap[i], MinValue), 
+                                   (elec[i]>=0.)?min(elec[i], MaxValue):max(elec[i], MinValue), 
+                                   charge[i], parameterArray[type[i]].autogrid_type);
                 }
                 (void) fprintf(logFile, "\n");
                 // Increment the atom counter
