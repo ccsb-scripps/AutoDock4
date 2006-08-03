@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.50 2006/07/26 16:49:03 garrett Exp $
+ $Id: main.cc,v 1.51 2006/08/03 19:13:43 garrett Exp $
 
 */
 
@@ -305,6 +305,7 @@ Boole B_isGaussTorCon = FALSE;
 Boole B_constrain_dist;
 Boole B_either = FALSE;
 Boole B_calcIntElec = FALSE;
+Boole B_calcIntElec_saved = FALSE;
 Boole B_write_trj = FALSE;
 Boole B_watch = FALSE;
 Boole B_acconly = FALSE;
@@ -669,7 +670,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.50 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.51 $\n\n\n");
 
 //______________________________________________________________________________
 /*
@@ -3336,6 +3337,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // TODO or add a new method to the eval class to turn off int.
             // elec. calculations (note: we already have B_calcIntElec)
 
+            // Save the current value of B_calcIntElec, so we can restore it later.
+            B_calcIntElec_saved = B_calcIntElec;
+
+            // Set the calculation of internal electrostatics to FALSE:
+            B_calcIntElec = FALSE;
 
             // Use the repulsive unbound energy tables, "unbound_energy_tables",
             // to drive the molecule into an extended conformation
@@ -3400,6 +3406,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // Convert from unbound state to unbound coordinates
             cnv_state_to_coords( sUnbound, vt, tlist, sUnbound.ntor, crdpdb, crd, natom );
      
+            // Restore the AutoDock 4 force field for docking
+
             // Remember to turn on using a non-bond cutoff
             B_use_non_bond_cutoff = TRUE;
      
@@ -3407,6 +3415,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // the flexible and the rigid molecules.
             evaluate.compute_intermol_energy(TRUE);
      
+            // Restore the setting for calculation of internal electrostatics to the saved value:
+            B_calcIntElec = B_calcIntElec_saved;
+
             gaEnd = times( &tms_gaEnd );
             pr( logFile, "\nFinished Lamarckian Genetic Algorithm (LGA), time taken:\n");
             timesyshms( gaEnd - gaStart, &tms_gaStart, &tms_gaEnd );
