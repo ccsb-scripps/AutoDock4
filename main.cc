@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.52 2006/08/09 20:28:24 garrett Exp $
+ $Id: main.cc,v 1.53 2006/08/09 21:13:20 garrett Exp $
 
 */
 
@@ -377,10 +377,10 @@ int status = 0;
 int trj_end_cyc = 0;
 int trj_begin_cyc = 0;
 int trj_freq = 0;
-int xA;
-int xB;
-int xA_unbound = 1;
-int xB_unbound = 2;
+int xA = 12;
+int xB = 6;
+int xA_unbound = 12;
+int xB_unbound = 6;
 int I_tor;
 int I_torBarrier;
 int MaxRetries = 1000; /* Default maximum number of retries for ligand init. */
@@ -670,7 +670,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.52 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.53 $\n\n\n");
 
 //______________________________________________________________________________
 /*
