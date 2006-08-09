@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.4 2006/08/02 01:30:00 garrett Exp $
+ $Id: writePDBQT.cc,v 1.5 2006/08/09 20:26:40 garrett Exp $
 
 */
 
@@ -96,6 +96,8 @@ writePDBQT(int irun, FourByteLong seed[2],
     char state_type_prefix_string[MAX_CHARS];
     char state_type_prefix_USER_string[MAX_CHARS];
 	Boole B_outside = FALSE;
+    Real this_emap = 0.;
+    Real this_elec = 0.;
 
     // Initialise various character strings
     if (state_type == 0) {
@@ -162,6 +164,7 @@ writePDBQT(int irun, FourByteLong seed[2],
         // Set *Ptr_einter, the intermolecular energy, only for DOCKED states, not for UNBOUND states
         *Ptr_einter = eb.e_inter;
     } else {
+        // UNBOUND
         // intermolecular energy is meaningless for unbound state
         *Ptr_einter = 0.0;
     }
@@ -239,14 +242,24 @@ writePDBQT(int irun, FourByteLong seed[2],
             }
             if ((keyword_id == PDBQ_ATOM) || (keyword_id == PDBQ_HETATM)) {
                 assert(i >= 0 && i < natom);
+                // If the state_type is unbound, then ignore the per-atom intermolecular
+                // emap and elec values; set these to 0.
+                if (state_type == 1) {
+                    // DOCKED
+                    this_emap = (emap[i] >= 0.) ? min(emap[i], MaxValue) : max(emap[i], MinValue);
+                    this_elec = (elec[i] >= 0.) ? min(elec[i], MaxValue) : max(elec[i], MinValue);
+                } else {
+                    // UNBOUND
+                    this_emap = 0.;
+                    this_elec = 0.;
+                }
                 if (keepresnum > 0) {
                     // Retain the original Residue Numbering
                     strncpy(AtmNamResNamNum, &atomstuff[i][13], (size_t) 13);
                     AtmNamResNamNum[13] = '\0';
                     (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESSTR, state_type_prefix_string, 
                                    i + 1, AtmNamResNamNum, crd[i][X], crd[i][Y], crd[i][Z], 
-                                   (emap[i]>=0.)?min(emap[i], MaxValue):max(emap[i], MinValue), 
-                                   (elec[i]>=0.)?min(elec[i], MaxValue):max(elec[i], MinValue), 
+                                   this_emap, this_elec,
                                    charge[i], parameterArray[type[i]].autogrid_type );
                 } else {
                     // Change the residue number to the run number
@@ -254,8 +267,7 @@ writePDBQT(int irun, FourByteLong seed[2],
                     AtmNamResNam[8] = '\0';
                     (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESNUM, state_type_prefix_string, 
                                    i + 1, AtmNamResNam, irun + 1, crd[i][X], crd[i][Y], crd[i][Z], 
-                                   (emap[i]>=0.)?min(emap[i], MaxValue):max(emap[i], MinValue), 
-                                   (elec[i]>=0.)?min(elec[i], MaxValue):max(elec[i], MinValue), 
+                                   this_emap, this_elec,
                                    charge[i], parameterArray[type[i]].autogrid_type);
                 }
                 (void) fprintf(logFile, "\n");
