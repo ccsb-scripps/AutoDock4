@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.51 2006/08/03 19:13:43 garrett Exp $
+ $Id: main.cc,v 1.52 2006/08/09 20:28:24 garrett Exp $
 
 */
 
@@ -670,7 +670,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.51 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.52 $\n\n\n");
 
 //______________________________________________________________________________
 /*
@@ -3332,11 +3332,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // especially with long inhibitors
             B_use_non_bond_cutoff = FALSE;
      
-            // Do not compute the electrostatic energy
-            // TODO either set charge, abs_charge, qsp_abs_charge, q1q2 to 0
-            // TODO or add a new method to the eval class to turn off int.
-            // elec. calculations (note: we already have B_calcIntElec)
-
             // Save the current value of B_calcIntElec, so we can restore it later.
             B_calcIntElec_saved = B_calcIntElec;
 
@@ -3361,23 +3356,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             (void) fprintf( logFile,     "\t_________________________________________________________\n\n\n");
             (void) fflush( logFile );
 
-            /*
-            // Update time-based RNG seeds...
-            if (timeSeedIsSet[0] == 'T') {
-                pr(logFile, "Updating First Time-dependent Seed Now.\n");
-                seed[0] = (FourByteLong)time( &time_seed );
-            }
-            if (timeSeedIsSet[1] == 'T') {
-                pr(logFile, "Updating Second Time-dependent Seed Now.\n");
-                seed[1] = (FourByteLong)time( &time_seed );
-            }
-            if (timeSeedIsSet[0] == 'T' || timeSeedIsSet[1] == 'T') {
-                setall(seed[0], seed[1]);
-                initgn(-1); // Reinitializes the state of the current generator
-            } else {
-                pr(logFile, "NOTE: The random number generator was not re-initialized.\n");
-            }
-            */
             // pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
             pr(logFile, "Date:\t");
             printdate( logFile, 2 );
@@ -3407,8 +3385,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             cnv_state_to_coords( sUnbound, vt, tlist, sUnbound.ntor, crdpdb, crd, natom );
      
             // Restore the AutoDock 4 force field for docking
+            // ______________________________________________
 
-            // Remember to turn on using a non-bond cutoff
+            // Remember to turn on the use of the non-bond cutoff
             B_use_non_bond_cutoff = TRUE;
      
             // Remember to reset the energy evaluator back to computing the intermolecular energy between
