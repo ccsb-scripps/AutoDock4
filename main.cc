@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.54 2006/08/15 23:06:22 garrett Exp $
+ $Id: main.cc,v 1.55 2006/08/15 23:28:02 garrett Exp $
 
 */
 
@@ -672,7 +672,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.54 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.55 $\n\n\n");
 
 //______________________________________________________________________________
 /*
@@ -1665,10 +1665,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
         } else {
             if (outlev >= 0) {
-                pr( logFile, "Number of torsions = %d\n", ndihed);
+                pr( logFile, "%s: WARNING!  The \"ndihe\" command is no longer supported.  The number of torsions in the PDBQT file(s) is the number that will be used (i.e. %d)\n", programname, ntor);
             }
             if ( ndihed != ntor ) {
-                pr( logFile, "WARNING! You requested %d torsions, but I found %d in PDBQT-file specifications.\n", ndihed, ntor );
+                pr( logFile, "%s: WARNING!  You requested %d torsions, but I found %d in PDBQT-file specifications.\n", programname, ndihed, ntor );
             } /* if */
         }
         (void) fflush(logFile);
@@ -1687,7 +1687,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         if (equal(param[0],"random",6)) {
             B_RandomDihe0 = TRUE;
-            sInit.ntor = nval = ndihed;
+            sInit.ntor = nval = ntor;
             for ( i=0; i<nval; i++ ) {
                 sInit.tor[i] = random_range( -180.0, 180.0 );
             }
@@ -1698,9 +1698,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "WARNING!  AutoDock could not read any torsions!\n" );
             } else if (retval == EOF) {
                 pr( logFile, "WARNING!  End of file encountered while reading dihe0 line\n");
-            } else if (retval < ndihed) {
+            } else if (retval < ntor) {
                 pr( logFile, "WARNING!  Only %d initial torsion angles were detected on input line.\n",retval);
-                pr( logFile, "WARNING!  I am sorry, you set 'ndihe', the number of dihedrals, to %d torsions.\n", ndihed);
+                pr( logFile, "WARNING!  I am sorry, the number of torsions detected in the PDBQT files was %d torsions.\n", ntor);
             } else {
                 if (outlev >= 0) {
                     pr( logFile, "%d initial torsion angles were detected on input line.\n", retval );
