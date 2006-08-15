@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.53 2006/08/09 21:13:20 garrett Exp $
+ $Id: main.cc,v 1.54 2006/08/15 23:06:22 garrett Exp $
 
 */
 
@@ -365,8 +365,9 @@ int nres = 0;
 int nmol = 0;
 int Nnb = 0;
 int nrejmax = 0;
-int ntor;
-int ntor1;
+int ntor = 0;
+int ntor1 = 1;
+int ntor_ligand = 0;
 int ntorsdof = 0;
 int num_maps = 0;
 int num_atom_types = 0;
@@ -395,6 +396,7 @@ int outside = FALSE;
 int atoms_outside = FALSE;
 // unsigned int min_evals_unbound =  250000;
 unsigned int max_evals_unbound = 1000000;
+int saved_sInit_ntor = 0;
 
 unsigned short US_energy;
 unsigned short US_tD;
@@ -670,7 +672,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.53 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.54 $\n\n\n");
 
 //______________________________________________________________________________
 /*
@@ -1254,7 +1256,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, Htype,
                             &B_constrain_dist, &atomC1, &atomC2,
                             &sqlower, &squpper,
-                            &ntor1, &ntor, tlist, vt,
+                            &ntor1, &ntor, &ntor_ligand,
+                            tlist, vt,
                             &Nnb, nonbondlist,
                             jobStart, tms_jobStart, hostnm, &ntorsdof, outlev,
                             ignore_inter,
@@ -3338,6 +3341,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // Set the calculation of internal electrostatics to FALSE:
             B_calcIntElec = FALSE;
 
+            // Assume the unbound state of the receptor is the same as the input coordinates from the
+            // flexible residues file.  This means we must not change the rotatable bonds in the
+            // flexible residues of the receptor during the unbound extended search.
+            //
+            // Save the current value of "ntor" in the "sInit" state variable, set it to number of torsions
+            // in the ligand for the unbound extended search, then restore it afterwards.
+            saved_sInit_ntor = sInit.ntor;
+            sInit.ntor = ntor_ligand;
+            
             // Use the repulsive unbound energy tables, "unbound_energy_tables",
             // to drive the molecule into an extended conformation
             evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
@@ -3396,6 +3408,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
      
             // Restore the setting for calculation of internal electrostatics to the saved value:
             B_calcIntElec = B_calcIntElec_saved;
+
+            // Restore the number of torsions in the state variables "sInit" and "sUnbound"
+            sInit.ntor = saved_sInit_ntor;
+            sUnbound.ntor = saved_sInit_ntor;
 
             gaEnd = times( &tms_gaEnd );
             pr( logFile, "\nFinished Lamarckian Genetic Algorithm (LGA), time taken:\n");
@@ -3492,7 +3508,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, Htype,
                         &B_constrain_dist, &atomC1, &atomC2,
                         &sqlower, &squpper,
-                        &ntor1, &ntor, tlist, vt,
+                        &ntor1, &ntor, &ntor_ligand,
+                        tlist, vt,
                         &Nnb, nonbondlist,
                         jobStart, tms_jobStart, hostnm, &ntorsdof, outlev,
                         ignore_inter,
