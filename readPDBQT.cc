@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.9 2006/08/02 01:34:42 garrett Exp $
+ $Id: readPDBQT.cc,v 1.10 2006/08/15 23:09:00 garrett Exp $
 
 */
 
@@ -58,6 +58,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
                     int *P_ntor1,
                     int *P_ntor,
+                    int *P_ntor_ligand,   // the number of torsions in the ligand (excluding the flexible residues in receptor)
                     int tlist[MAX_TORS][MAX_ATOMS],
                     Real vt[MAX_TORS][NTRN],
 
@@ -340,7 +341,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	 * intermolecular energy calculation (ignore_inter[MAX_ATOMS]
 	 * array)
 	 */
-	mkTorTree(atomnumber, PDBQT_record, nrecord, tlist, &ntor, FN_ligand, pdbaname,
+	mkTorTree(atomnumber, PDBQT_record, nrecord, tlist, &ntor, P_ntor_ligand, FN_ligand, pdbaname,
               P_B_constrain, P_atomC1, P_atomC2, P_sqlower, P_squpper, P_ntorsdof, ignore_inter);
 
 	*P_ntor = ntor;

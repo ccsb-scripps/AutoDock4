@@ -46,6 +46,7 @@ Molecule readPDBQT( char  line[LINE_LEN],
 
               int   *P_ntor1,
               int   *P_ntor,
+              int *P_ntor_ligand,
               int   tortree[MAX_TORS][MAX_ATOMS],
               Real vt[MAX_TORS][NTRN],
 
