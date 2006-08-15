@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.8 2006/06/27 23:06:06 rhuey Exp $
+ $Id: mkTorTree.cc,v 1.9 2006/08/15 23:08:13 garrett Exp $
 
 */
 
@@ -31,6 +31,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 
                 int   tlist[ MAX_TORS ][ MAX_ATOMS ],
                 int   *P_ntor,
+                int   *P_ntor_ligand,
 
                 char  smFileName[ MAX_CHARS ],
 
@@ -38,10 +39,10 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
                 Boole *P_B_constrain,
                 int   *P_atomC1,
                 int   *P_atomC2,
-                Real *P_sqlower,
-                Real *P_squpper,
-         int   *P_ntorsdof,
-         int   ignore_inter[MAX_ATOMS])
+                Real  *P_sqlower,
+                Real  *P_squpper,
+                int   *P_ntorsdof,
+                int   ignore_inter[MAX_ATOMS])
 
 {
 
@@ -316,6 +317,10 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     /*____________________________________________________________*/
             case PDBQ_BEGIN_RES:
                 found_new_res = 1;
+                // if this is the first BEGIN_RES tag, then set the number of torsions in the ligand
+                if (found_first_res == 0) {
+                    *P_ntor_ligand = ntor;
+                }
                 found_first_res++;
                 natoms_in_res = 0; /* reset number of atoms in this residue */
                 break;
