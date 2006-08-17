@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.55 2006/08/15 23:28:02 garrett Exp $
+ $Id: main.cc,v 1.56 2006/08/17 23:52:10 garrett Exp $
 
 */
 
@@ -214,8 +214,8 @@ static ParameterEntry * foundParameter;
 
 Real cA;
 Real cB;
-Real cA_unbound = 20.0;
-Real cB_unbound = 0.0;
+Real cA_unbound = 392586.8;  // repulsive
+Real cB_unbound = 0.0; // attractive
 Real epsij;
 Real F_A;
 Real F_Aova;
@@ -672,7 +672,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.55 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.56 $\n\n\n");
 
 //______________________________________________________________________________
 /*
