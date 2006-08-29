@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.21 2006/07/21 17:47:29 garrett Exp $
+ $Id: analysis.cc,v 1.22 2006/08/29 21:57:38 garrett Exp $
 
 */
 
@@ -275,8 +275,8 @@ void analysis( int   Nnb,
             pr( logFile, "USER  \n");
             flushLog;
      
-            if (keepresnum > 0) {
-                if (outlev > -11) {
+            if (outlev > -11) {
+                if (keepresnum > 0) {
                     // Log File PDBQ coordinates [
                     pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
@@ -287,9 +287,7 @@ void analysis( int   Nnb,
                         pr(logFile," %6.3f\n", ref_rms[c]); 
                     }
                     //]
-                }
-            } else {
-                if (outlev > -11) {
+                } else {
                     // Log File PDBQ coordinates [
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
@@ -300,8 +298,8 @@ void analysis( int   Nnb,
                         pr(logFile," %6.3f\n", ref_rms[c]); 
                     }/*j*/
                     //]
-                }
-            }/*if*/
+                }/*if*/
+            }
             pr( logFile, "TER\n" );
             pr( logFile, "ENDMDL\n" );
             // End of outputting coordinates of this "MODEL"...
