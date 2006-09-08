@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.9 2006/08/15 23:08:13 garrett Exp $
+ $Id: mkTorTree.cc,v 1.10 2006/09/08 17:02:17 rhuey Exp $
 
 */
 
@@ -356,6 +356,10 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
         exit( -1 );
     } else {
         *P_ntor = ntor;
+    }
+    //if there are no flexible residues, still need to set P_ntor_ligand
+    if (found_first_res == 0) {
+         *P_ntor_ligand = ntor;
     }
 
     itor = 0;
