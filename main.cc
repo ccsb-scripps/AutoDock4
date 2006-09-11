@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.56 2006/08/17 23:52:10 garrett Exp $
+ $Id: main.cc,v 1.57 2006/09/11 17:06:06 rhuey Exp $
 
 */
 
@@ -672,7 +672,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.56 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.57 $\n\n\n");
 
 //______________________________________________________________________________
 /*
@@ -1371,7 +1371,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 prStr(error_message, "ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", nruns, MAX_RUNS);
                 stop(error_message);
                 exit(-1);
+            } else if (!B_found_elecmap) {
+                prStr(error_message, "ERROR:  no 'elecmap' has been specified!\n");
+                stop(error_message);
+                exit(-1);
+            } else if (!B_found_desolvmap) {
+                prStr(error_message, "ERROR:  no 'desolvmap' has been specified!\n");
+                stop(error_message);
+                exit(-1);
             }
+
 
             evaluate.setup(crd,
                            charge,
@@ -2734,7 +2743,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 prStr(error_message, "ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n");
                 stop(error_message);
                 exit(-1);
+            } else if (!B_found_elecmap) {
+                prStr(error_message, "ERROR:  no 'elecmap' has been specified!\n");
+                stop(error_message);
+                exit(-1);
+            } else if (!B_found_desolvmap) {
+                prStr(error_message, "ERROR:  no 'desolvmap' has been specified!\n");
+                stop(error_message);
+                exit(-1);
             }
+
             pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
 
             evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
@@ -2861,11 +2879,18 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                prStr(error_message, "ERROR:  You must use \"set_sw1\" or \"set_psw1\" to allocate a Local Optimization object.\n");
                stop(error_message);
                exit(-1);
+           } else if (!B_found_elecmap) {
+               prStr(error_message, "ERROR:  no 'elecmap' has been specified!\n");
+               stop(error_message);
+               exit(-1);
+           } else if (!B_found_desolvmap) {
+               prStr(error_message, "ERROR:  no 'desolvmap' has been specified!\n");
+               stop(error_message);
+               exit(-1);
            }
 
+
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
-
-
            evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
               elec, emap,
               nonbondlist,
@@ -2968,11 +2993,20 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               exit(-1);
 
           } else if (GlobalSearchMethod==NULL) {
-
               prStr(error_message, "ERROR:  You must use \"set_ga\" to allocate a Global Optimization object.\n");
               stop(error_message);
               exit(-1);
-          }
+          } else if (!B_found_elecmap) {
+               prStr(error_message, "ERROR:  no 'elecmap' has been specified!\n");
+               stop(error_message);
+               exit(-1);
+           }
+           else if (!B_found_desolvmap) {
+               prStr(error_message, "ERROR:  no 'desolvmap' has been specified!\n");
+               stop(error_message);
+               exit(-1);
+           }
+
 
           pr(logFile, "Number of Genetic Algorithm (GA) only dockings = %d run%c\n", nruns, (nruns>1)?'s':' ');
 
@@ -3329,7 +3363,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 prStr(error_message, "ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n");
                 stop(error_message);
                 exit(-1);
+            } else if (!B_found_elecmap) {
+                prStr(error_message, "ERROR:  no 'elecmap' has been specified!\n");
+                stop(error_message);
+                exit(-1);
+            } else if (!B_found_desolvmap) {
+                prStr(error_message, "ERROR:  no 'desolvmap' has been specified!\n");
+                stop(error_message);
+                exit(-1);
             }
+
      
             // Do not use a non-bond cutoff, this helps to produce the "most" extended conformation
             // especially with long inhibitors
