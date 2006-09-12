@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.10 2006/09/08 17:02:17 rhuey Exp $
+ $Id: mkTorTree.cc,v 1.11 2006/09/12 23:18:14 garrett Exp $
 
 */
 
@@ -335,7 +335,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     /*____________________________________________________________*/
             case PDBQ_TORSDOF:
                 sscanf(Rec_line[i], "%*s %d", P_ntorsdof);
-                pr( logFile, "\nTDOF record detected: number of torsional degress of freedom, torsdof, set to %d.\n", *P_ntorsdof );
+                pr( logFile, "\nTORSDOF record detected: number of torsional degress of freedom has been set to %d.\n", *P_ntorsdof );
                 break;
 
     /*____________________________________________________________*/
