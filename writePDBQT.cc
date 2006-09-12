@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.5 2006/08/09 20:26:40 garrett Exp $
+ $Id: writePDBQT.cc,v 1.6 2006/09/12 23:22:53 garrett Exp $
 
 */
 
@@ -192,7 +192,7 @@ writePDBQT(int irun, FourByteLong seed[2],
 		(void) fprintf(logFile, "%s: USER    NEWDPF tran0 %f %f %f\n", state_type_string, state.T.x, state.T.y, state.T.z);
 		(void) fprintf(logFile, "%s: USER    NEWDPF quat0 %f %f %f %f\n", state_type_string, state.Q.nx, state.Q.ny, state.Q.nz, Deg(WrpRad(ModRad(state.Q.ang))));
 		if (ntor > 0) {
-			(void) fprintf(logFile, "%s: USER    NEWDPF ndihe %d\n", state_type_string, ntor);
+			// (void) fprintf(logFile, "%s: USER    NEWDPF ndihe %d\n", state_type_string, ntor);
 			(void) fprintf(logFile, "%s: USER    NEWDPF dihe0 ", state_type_string);
 			for (i = 0; i < ntor; i++) {
 				(void) fprintf(logFile, "%.2f ", Deg(WrpRad(ModRad(state.tor[i]))));
@@ -223,16 +223,16 @@ writePDBQT(int irun, FourByteLong seed[2],
         (void) fprintf(logFile, "%s: USER  \n", state_type_string);
 
         // Count the number of non-NULL records in the PDBQT file
-        int nrecord=0;
-        int r=0;
-        for (r=0; PDBQT_record[r][0] != '\0'; r++) { }
-        nrecord=r;
+        int nrecord = 0;
+        int r = 0;
+        for (r = 0; PDBQT_record[r][0] != '\0'; r++) { }
+        nrecord = r;
 
         int keyword_id = -1;
         int print_header = FALSE;
         // Zero the atom counter,
-        i=0;
-        for (r=0; r<nrecord; r++) {
+        i = 0;
+        for (r = 0; r < nrecord; r++) {
             // If this record is neither an ATOM nor a HETATM then print it,
             // else print the new coordinates of this atom.
             keyword_id = parse_PDBQT_line(PDBQT_record[r]);
@@ -288,7 +288,7 @@ writePDBQT(int irun, FourByteLong seed[2],
 		(void) fprintf(logFile, "%s: ENDMDL\n", state_type_string);
 		//(void) fprintf(logFile, UnderLine);
 		(void) fflush(logFile);
-	}
-}
+	} // outlev > -1
+} // writePDBQT()
 
 /* EOF */
