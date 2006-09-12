@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.57 2006/09/11 17:06:06 rhuey Exp $
+ $Id: main.cc,v 1.58 2006/09/12 23:21:29 garrett Exp $
 
 */
 
@@ -672,7 +672,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.57 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.58 $\n\n\n");
 
 //______________________________________________________________________________
 /*
@@ -1273,6 +1273,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile, "Number of atoms in ligand:  %d\n\n", true_ligand_atoms);
 
         pr(logFile, "Number of vibrational degrees of freedom of ligand:  %d\n\n\n", (3 * true_ligand_atoms) - 6 );
+        pr( logFile, "Number of torsional degrees of freedom = %d\n", ntorsdof);
+
+        torsFreeEnergy = (Real)ntorsdof * AD4.coeff_tors;
+
+        pr( logFile, "Estimated loss of torsional free energy upon binding = %+.4f kcal/mol\n\n", torsFreeEnergy);
  
         for (i=0;i<natom;i++) {
             if (ignore_inter[i] == 1) {
@@ -3282,7 +3287,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "WARNING:  The torsional DOF coefficient is now read in from the parameter file; the value specified here (%.4lf) will be ignored.\n\n", (double)torsdoffac);
         }
         pr( logFile, "Number of torsional degrees of freedom = %d\n", ntorsdof);
-        pr( logFile, "Note: this must exclude any torsions involving -OH and -NH2 groups.\n\n");
         pr( logFile, "Free energy coefficient for torsional degrees of freedom = %.4f", AD4.coeff_tors);
         if (parameter_library_found == 1) {
             pr( logFile, " as specified in parameter library \"%s\".\n\n", FN_parameter_library );
@@ -3681,10 +3685,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case GA_CROSSOVER_MODE:
         /*
-         * crossover_mode OnePt
-         * crossover_mode TwoPt
-         * crossover_mode Uniform
-         * crossover_mode Arithmetic
+         * ga_crossover_mode OnePt
+         * ga_crossover_mode TwoPt
+         * ga_crossover_mode Uniform
+         * ga_crossover_mode Arithmetic
          *
          * Xover_Mode c_mode = OnePt;  //  can be: OnePt, TwoPt, Uniform or Arithmetic
          */
