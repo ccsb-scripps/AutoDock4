@@ -24,7 +24,6 @@ dihe0 0 0 0 0 0 0 0 0 0 0 0          # initial dihedrals (relative) or random
 tstep 0.0                            # translation step/A
 qstep 0.0                            # quaternion step/deg
 dstep 0.0                            # torsion step/deg
-torsdof 14 0.2570                    # torsional degrees of freedom and coeffiecent
 unbound 0.0                          # free energy of the unbound state
 
 rmstol 2.0                           # cluster_tolerance/A
