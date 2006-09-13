@@ -120,6 +120,7 @@
 #define DPF_DESOLVMAP 95
 #define	DPF_UNBOUND_INTNBP_COEFFS	96
 #define	DPF_RMSATOMS	97
+#define DPF_CONFSAMPLER	98
 
 #endif
 /* EOF */

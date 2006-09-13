@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.58 2006/09/12 23:21:29 garrett Exp $
+ $Id: main.cc,v 1.59 2006/09/13 16:40:46 mchang Exp $
 
 */
 
@@ -37,6 +37,7 @@
 #include "support.h"
 #include "distdepdiel.h"
 #include "calculateEnergies.h"
+#include "conformation_sampler.h"
 
 #include "main.h"
 
@@ -189,6 +190,7 @@ char c_mode_str[MAX_CHARS];
 char FN_pop_file[MAX_CHARS];
 char FN_flexres[MAX_CHARS];
 char rms_atoms_cmd[MAX_CHARS];
+char confsampler_type[MAX_CHARS];
 
 //   MAX_RECORDS
 //
@@ -356,7 +358,8 @@ int ltorfmt = 4;
 int nruns = 0;
 int nstepmax = -1;
 int naccmax = 0;
-int natom = 0;
+int natom;
+//int natom = 0;
 int nconf = 0;
 int ncycm1 = 1;
 int ndihed = 0;
@@ -397,6 +400,7 @@ int atoms_outside = FALSE;
 // unsigned int min_evals_unbound =  250000;
 unsigned int max_evals_unbound = 1000000;
 int saved_sInit_ntor = 0;
+int confsampler_samples = 0;
 
 unsigned short US_energy;
 unsigned short US_tD;
@@ -672,7 +676,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.58 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.59 $\n\n\n");
 
 //______________________________________________________________________________
 /*
@@ -3723,6 +3727,30 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) sscanf( line, "%*s %s", FN_pop_file);
         (void) fflush(logFile);
         pr( logFile, "The population will be written to the file \"%s\" at the end of every generation.\n", FN_pop_file);
+        break;
+ 
+ /*____________________________________________________________________________*/
+ 
+     case DPF_CONFSAMPLER:
+        /*
+         * confsampler
+         * 
+         * Scan a region around conformations saved in sHist array.
+         * 
+         */
+
+        (void) sscanf( line, "%*s %s %d", confsampler_type, &confsampler_samples);
+        pr( logFile, "Scanning local regions around each docked conformation.\n");
+
+        if (strcmp(confsampler_type, "systematic") == 0) {
+            systematic_conformation_sampler(sHist, nconf, vt, crdpdb, tlist, lig_center, natom, type, info);
+        }
+        
+        else {
+            random_conformation_sampler(sHist, nconf, confsampler_samples, vt, crdpdb, tlist, lig_center, natom, type, info);
+        }
+        (void) fflush(logFile);
+
         break;
 
 /*_12yy_______________________________________________________________________*/

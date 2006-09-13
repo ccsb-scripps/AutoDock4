@@ -57,6 +57,7 @@ OBJS = \
     cmdmode.o \
     cnv_state_to_coords.o \
     com.o \
+    conformation_sampler.o \
 	distdepdiel.o \
     stateLibrary.o \
     readfield.o \
@@ -143,6 +144,7 @@ OBJS_LSFIT = \
     clmode.o \
     cmdmode.o \
     com.o \
+    conformation_sampler.o \
 	distdepdiel.o \
     stateLibrary.o \
     readfield.o \
@@ -244,6 +246,7 @@ LNS = \
     cluster_analysis.ln \
     clmode.ln \
     cmdmode.ln \
+    conformation_sampler.ln \
     cnv_state_to_coords.ln \
     stateLibrary.ln \
     readfield.ln \
@@ -621,6 +624,9 @@ cnv_state_to_coords_lsfit.o : cnv_state_to_coords.cc cnv_state_to_coords.h const
 
 com.o : com.cc ranlib.h
 	$(CC) $(CFLAGS) -c com.cc
+	
+conformation_sampler.o : conformation_sampler.cc conformation_sampler.h
+	$(CC) $(CFLAGS) -c conformation_sampler.cc
 
 distdepdiel.o : distdepdiel.cc distdepdiel.h
 	$(CC) $(CFLAGS) -c distdepdiel.cc
