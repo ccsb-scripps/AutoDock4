@@ -329,6 +329,8 @@ RANLIBFLAGS = # Linux, SGI, Mac OS X
 # C++ compiler
 
 CC = g++ # HP, Gnu, Cygwin, Linux, Darwin, Mac OS X
+# CC = g++-4.0 -arch i386 # Mac OS X -- Cross-compiling for Intel on PowerPC
+# CC = g++-3.3 -arch ppc # Mac OS X -- Cross-compiling for PowerPC on Intel
 # CC = CC # SGI
 # CC = cxx # Alpha
 
@@ -429,6 +431,17 @@ ifeq ($(COLINY),yes)
 else
   COLINYLIB = # Not using Coliny
 endif
+
+# Uncomment this section with "###" if cross-compiling on Mac OS X (Intel and PowerPC)
+# This section remains the same for either type of cross-compilation.
+### HOST_CC="gcc-4.0"
+### HOST_CXX="g++-4.0"
+### RANLIB=ranlib
+### AR=ar
+### AS=$CC
+### LD=ld
+### STRIP="strip -x -S"
+### CROSS_COMPILE=1
 
 #
 # Makefile targets
