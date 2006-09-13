@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.59 2006/09/13 16:40:46 mchang Exp $
+ $Id: main.cc,v 1.60 2006/09/13 17:05:43 mchang Exp $
 
 */
 
@@ -358,8 +358,7 @@ int ltorfmt = 4;
 int nruns = 0;
 int nstepmax = -1;
 int naccmax = 0;
-int natom;
-//int natom = 0;
+int natom = 0;
 int nconf = 0;
 int ncycm1 = 1;
 int ndihed = 0;
@@ -676,7 +675,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.59 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.60 $\n\n\n");
 
 //______________________________________________________________________________
 /*
