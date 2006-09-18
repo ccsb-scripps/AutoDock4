@@ -22,6 +22,7 @@ class ConformationSampler {
 		Real base_crd[MAX_ATOMS][SPACE]; //probe_crd?;
 		Real base_energy, total_energy, total_favorable_energy;
 		Real min_energy, min_energy_rmsd;
+		Real Boltzmann_sum;
 		int dimensionality, evals, favorable_evals;
 		Real temp_rotation_angle;
 		Real rotation_angles[3];
@@ -35,6 +36,7 @@ class ConformationSampler {
 		Real bin_total_favorable_energy[NUM_BINS];
 		Real bin_min_energy[NUM_BINS];
 		Real bin_max_energy[NUM_BINS];
+		Real bin_Boltzmann_sum[NUM_BINS];
 
 		ConformationSampler(State);
 		~ConformationSampler(void);
@@ -48,12 +50,13 @@ class ConformationSampler {
 		Real fraction_favorable(void);
 		Real average_favorable_energy(void);
 		Real energy_volume(void);
-		void update_bounds(void);
 		Real RK_entropy(void);
 		void output_statistics(void);
+		Real partition_function(void);
+		Real partition_function(int bin);
 	private:
 		Real configurational_integral(void);
-		
+		void update_bounds(void);
 };
 
 void systematic_conformation_sampler(State hist[MAX_RUNS], int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *init_info);

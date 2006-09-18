@@ -6,6 +6,7 @@
 #define AVOGADRO 6.022e23f
 #define RK_CONSTANT 0.0019872065 // constant in entropy calculation
 #define TEMP 298 // temperature in entropy calculation
+#define RT_CONSTANT 1.0
 
 #define RMSD_SYMMETRY TRUE
 #define TRAN_STEP 0.03 // size of translation steps (x,y,z)
@@ -56,6 +57,7 @@ ConformationSampler::ConformationSampler(State init_state) {
 	total_favorable_energy = 0.0;
 	min_energy = base_energy;
 	min_energy_rmsd = 0.0;
+	Boltzmann_sum = 0.0;
 	
 	// set up the temp variables
 	probe_state = base_state;
@@ -83,6 +85,7 @@ ConformationSampler::ConformationSampler(State init_state) {
 		bin_count_favorable[i] = 0;
 		bin_min_energy[i] = 0.0;
 		bin_max_energy[i] = base_energy;
+		bin_Boltzmann_sum[i] = 0.0;
 	}
 }
 
@@ -133,6 +136,7 @@ Real ConformationSampler::current_energy(void) {
 	Real rmsd = current_rmsd();
 	
 	total_energy += energy;
+	Boltzmann_sum += exp(-energy/RT_CONSTANT);
 	
 	// store information on minimum energy conformation
 	if (energy < min_energy) {
@@ -144,6 +148,7 @@ Real ConformationSampler::current_energy(void) {
 	if (bin < NUM_BINS) {
 		bin_count[bin]++;
 		bin_total_energy[bin] += energy;
+		bin_Boltzmann_sum[bin] += exp(-energy/RT_CONSTANT);
 		if (energy < bin_min_energy[bin]) bin_min_energy[bin] = energy;
 		if (energy > bin_max_energy[bin]) bin_max_energy[bin] = energy;
 	}
@@ -300,17 +305,26 @@ Real ConformationSampler::RK_entropy(void) {
 	return RK_CONSTANT * TEMP * log(configurational_integral() * AVOGADRO/ (8 * PI * PI));
 }
 
+Real ConformationSampler::partition_function(void) {
+	return -RT_CONSTANT*log(Boltzmann_sum/evals);
+}
+
+Real ConformationSampler::partition_function(int bin) {
+	return -RT_CONSTANT*log(bin_Boltzmann_sum[bin]/bin_count[bin]);
+}
+
 void ConformationSampler::output_statistics(void) {
 	fprintf(logFile, "Conformation starting energy: %.3f\n", base_energy);
 	fprintf(logFile, "RMSD from reference state: %.3f\n", reference_rmsd());
 	fprintf(logFile, "Fraction of favorable evaluations: %.3f\n", (Real)favorable_evals/evals);
 	fprintf(logFile, "Average favorable energy: %.3f\n", total_favorable_energy/favorable_evals);
 	fprintf(logFile, "Estimated energy volume: %.3f\n", total_favorable_energy/evals);
+	fprintf(logFile, "Boltzmann-weighted energy: %.3f\n", partition_function());
 	fprintf(logFile, "Minimum energy found: %.3f (%.3f A from starting point)\n", min_energy, min_energy_rmsd);
 	//fprintf(logFile, "Bins in local region.\n");
-	fprintf(logFile, "\nRMSD       #     fraction  Volume    Avg. (-)   Min E     Max E\n");
+	fprintf(logFile, "\nRMSD       #     fraction  Volume    Avg. (-)   Min E     Max E    Boltzmann\n");
 	for (int i=0; i < NUM_BINS; i++) {
-		fprintf(logFile, "%.1f    %7d    %2.3f    %2.3f    %2.3f    %2.3f    %2.3f\n", (i+1)*BIN_SIZE, bin_count[i], (Real)bin_count_favorable[i]/bin_count[i], bin_total_favorable_energy[i]/bin_count[i], bin_total_favorable_energy[i]/bin_count_favorable[i], bin_min_energy[i], bin_max_energy[i]);
+		fprintf(logFile, "%.1f    %7d    %2.3f    %2.3f    %2.3f    %2.3f    %2.3f    %2.3f\n", (i+1)*BIN_SIZE, bin_count[i], (Real)bin_count_favorable[i]/bin_count[i], bin_total_favorable_energy[i]/bin_count[i], bin_total_favorable_energy[i]/bin_count_favorable[i], bin_min_energy[i], bin_max_energy[i], partition_function(i));
 	}
 	fprintf(logFile, "%d evaluations.\n\n", evals);
 }
