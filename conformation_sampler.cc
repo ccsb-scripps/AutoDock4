@@ -3,6 +3,7 @@
 #include "ranlib.h"
 #include <math.h>
 
+#define VERBOSE true
 #define AVOGADRO 6.022e23f
 #define RK_CONSTANT 0.0019872065 // constant in entropy calculation
 #define TEMP 298 // temperature in entropy calculation
@@ -134,6 +135,14 @@ Real ConformationSampler::current_energy(void) {
 	evals++;
 	Real energy = probe_point.evaluate(Normal_Eval);
 	Real rmsd = current_rmsd();
+	
+	if (VERBOSE) {
+		fprintf(logFile, "state %d %.3f %.3f", evals, energy, rmsd);
+		for (int i=0; i < dimensionality; i++) {
+			fprintf(logFile, " %.3f", probe_point.gread(i).real);
+		}
+		fprintf(logFile,"\n");
+	}
 	
 	total_energy += energy;
 	Boltzmann_sum += exp(-energy/RT_CONSTANT);
