@@ -55,6 +55,8 @@ class ConformationSampler {
 		Real partition_function(void);
 		Real partition_function(int bin);
 	private:
+		Real normalized_volume(void);
+		Real normalized_Boltzmann(void);
 		Real configurational_integral(void);
 		void update_bounds(void);
 };

@@ -3,7 +3,7 @@
 #include "ranlib.h"
 #include <math.h>
 
-#define VERBOSE true
+#define VERBOSE false
 #define AVOGADRO 6.022e23f
 #define RK_CONSTANT 0.0019872065 // constant in entropy calculation
 #define TEMP 298 // temperature in entropy calculation
@@ -322,13 +322,31 @@ Real ConformationSampler::partition_function(int bin) {
 	return -RT_CONSTANT*log(bin_Boltzmann_sum[bin]/bin_count[bin]);
 }
 
+Real ConformationSampler::normalized_volume(void) {
+	Real volume = 0.0;
+	for (int i=0; i < NUM_BINS; i++) {
+		volume += bin_total_favorable_energy[i]/bin_count[i]/NUM_BINS;
+	}
+	return volume;
+}
+
+Real ConformationSampler::normalized_Boltzmann(void) {
+	Real boltzmann_sum = 0.0;
+	for (int i=0; i < NUM_BINS; i++) {
+		boltzmann_sum += partition_function(i)/NUM_BINS;
+	}
+	return boltzmann_sum;
+}
+
 void ConformationSampler::output_statistics(void) {
 	fprintf(logFile, "Conformation starting energy: %.3f\n", base_energy);
 	fprintf(logFile, "RMSD from reference state: %.3f\n", reference_rmsd());
 	fprintf(logFile, "Fraction of favorable evaluations: %.3f\n", (Real)favorable_evals/evals);
 	fprintf(logFile, "Average favorable energy: %.3f\n", total_favorable_energy/favorable_evals);
 	fprintf(logFile, "Estimated energy volume: %.3f\n", total_favorable_energy/evals);
+	fprintf(logFile, "Normalized estimated energy volume: %.3f\n", normalized_volume());
 	fprintf(logFile, "Boltzmann-weighted energy: %.3f\n", partition_function());
+	fprintf(logFile, "Normalized Boltzmann-weighted energy: %.3f\n", normalized_Boltzmann());
 	fprintf(logFile, "Minimum energy found: %.3f (%.3f A from starting point)\n", min_energy, min_energy_rmsd);
 	//fprintf(logFile, "Bins in local region.\n");
 	fprintf(logFile, "\nRMSD       #     fraction  Volume    Avg. (-)   Min E     Max E    Boltzmann\n");
