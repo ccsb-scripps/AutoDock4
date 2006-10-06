@@ -7,13 +7,14 @@
 #define AVOGADRO 6.022e23f
 #define RK_CONSTANT 0.0019872065 // constant in entropy calculation
 #define TEMP 298 // temperature in entropy calculation
-#define RT_CONSTANT 1.0
+#define RT_CONSTANT 0.592
+#define Vconf 1.0
 
 #define RMSD_SYMMETRY TRUE
 #define TRAN_STEP 0.03 // size of translation steps (x,y,z)
 #define ROT_ANG_STEP 0.025 // size of step for rotation angle
 #define TOR_ANG_STEP 0.03 // size of step for torsion angles
-#define RHO 0.2 // parameter for random sampling
+#define RHO 0.5 // parameter for random sampling
 
 #define DEFAULT_RANDOM_SAMPLES 10000
 #define DEFAULT_INCREMENTAL_STEPS 5 // note that this is steps up and down, i.e. 
@@ -58,7 +59,7 @@ ConformationSampler::ConformationSampler(State init_state) {
 	total_favorable_energy = 0.0;
 	min_energy = base_energy;
 	min_energy_rmsd = 0.0;
-	Boltzmann_sum = 0.0;
+	Boltzmann_sum = Boltzmann_diff_sum = 0.0;
 	
 	// set up the temp variables
 	probe_state = base_state;
@@ -104,16 +105,16 @@ void ConformationSampler::random_sample(int num_samples) {
 
 		// perturb translation and torsion angles randomly
 		for (unsigned int i=0; i < (unsigned int) dimensionality; i++) {
-			if (i >= X_ROTATION_INDEX && i <= Z_ROTATION_INDEX) continue;
-			probe_point.write(probe_point.gread(i).real + gennor(0.0, multiplier*RHO) , i);
-			//probe_point.write(probe_point.gread(i).real + genunf(-1.0 * RHO, RHO) , i);
+			if (i >= X_ROTATION_INDEX && i <= ROTATION_ANGLE_INDEX) continue;
+			//probe_point.write(probe_point.gread(i).real + gennor(0.0, multiplier*RHO) , i);
+			probe_point.write(probe_point.gread(i).real + genunf(-1.0 * RHO, RHO) , i);
 		}
 		
 		// adjust current rotation randomly using multiplication
 		Real random_axis_angle[4];
 		for (int i=0; i < 4; i++) {
-			random_axis_angle[i] = gennor(0.0, multiplier*RHO);
-			//random_axis_angle[i] = genunf(-1.0 * RHO, RHO);
+			//random_axis_angle[i] = gennor(0.0, multiplier*RHO);
+			random_axis_angle[i] = genunf(-1.0 * RHO, RHO);
 		}
 		
 		Real new_axis_angle[4];
@@ -146,6 +147,7 @@ Real ConformationSampler::current_energy(void) {
 	
 	total_energy += energy;
 	Boltzmann_sum += exp(-energy/RT_CONSTANT);
+	Boltzmann_diff_sum += exp(-1.0*(energy - base_energy)/RT_CONSTANT);
 	
 	// store information on minimum energy conformation
 	if (energy < min_energy) {
@@ -338,15 +340,24 @@ Real ConformationSampler::normalized_Boltzmann(void) {
 	return boltzmann_sum;
 }
 
+Real ConformationSampler::entropy_estimate(void) {
+	Real Vtot = AVOGADRO/(8*PI*PI);
+	Vtot *= pow(1/(2*PI), (dimensionality - BASE_DIMENSIONS));
+	//fprintf(logFile, "Vtot: %g\n", Vtot);
+	return RT_CONSTANT*log(Vtot*Vconf*Boltzmann_diff_sum);
+}
+
 void ConformationSampler::output_statistics(void) {
 	fprintf(logFile, "Conformation starting energy: %.3f\n", base_energy);
 	fprintf(logFile, "RMSD from reference state: %.3f\n", reference_rmsd());
 	fprintf(logFile, "Fraction of favorable evaluations: %.3f\n", (Real)favorable_evals/evals);
 	fprintf(logFile, "Average favorable energy: %.3f\n", total_favorable_energy/favorable_evals);
 	fprintf(logFile, "Estimated energy volume: %.3f\n", total_favorable_energy/evals);
-	fprintf(logFile, "Normalized estimated energy volume: %.3f\n", normalized_volume());
+	//fprintf(logFile, "Normalized estimated energy volume: %.3f\n", normalized_volume());
+	fprintf(logFile, "Vb estimate: %.3f\n", Vconf*Boltzmann_diff_sum);
+	fprintf(logFile, "Entropy estimate: %.3f\n", entropy_estimate());
 	fprintf(logFile, "Boltzmann-weighted energy: %.3f\n", partition_function());
-	fprintf(logFile, "Normalized Boltzmann-weighted energy: %.3f\n", normalized_Boltzmann());
+	//fprintf(logFile, "Normalized Boltzmann-weighted energy: %.3f\n", normalized_Boltzmann());
 	fprintf(logFile, "Minimum energy found: %.3f (%.3f A from starting point)\n", min_energy, min_energy_rmsd);
 	//fprintf(logFile, "Bins in local region.\n");
 	fprintf(logFile, "\nRMSD       #     fraction  Volume    Avg. (-)   Min E     Max E    Boltzmann\n");

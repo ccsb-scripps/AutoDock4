@@ -22,7 +22,7 @@ class ConformationSampler {
 		Real base_crd[MAX_ATOMS][SPACE]; //probe_crd?;
 		Real base_energy, total_energy, total_favorable_energy;
 		Real min_energy, min_energy_rmsd;
-		Real Boltzmann_sum;
+		Real Boltzmann_sum, Boltzmann_diff_sum;
 		int dimensionality, evals, favorable_evals;
 		Real temp_rotation_angle;
 		Real rotation_angles[3];
@@ -54,6 +54,7 @@ class ConformationSampler {
 		void output_statistics(void);
 		Real partition_function(void);
 		Real partition_function(int bin);
+		Real entropy_estimate(void);
 	private:
 		Real normalized_volume(void);
 		Real normalized_Boltzmann(void);
