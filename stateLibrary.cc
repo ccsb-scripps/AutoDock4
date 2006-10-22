@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.9 2006/04/25 22:33:19 garrett Exp $
+ $Id: stateLibrary.cc,v 1.10 2006/10/22 20:39:38 garrett Exp $
 
 */
 
@@ -73,6 +73,7 @@ void printState( FILE *fp,
 
     switch( detail ) {
         case 0:
+        case 1:
             writeState(fp,S);
             break;
 
@@ -94,9 +95,6 @@ void printState( FILE *fp,
                     torDegTmp = Deg( S.tor[i] );
                     torDegTmp = ModDeg( torDegTmp );
                     torDegTmp = WrpDeg( torDegTmp );
-                    // Commented out next line to make format more consistent, now all
-                    // numbers are space-delimited.
-                    //pr( fp, " %.2f%c", torDegTmp, (i==(S.ntor-1) ? '.' : ',')); 
                     pr( fp, " %.2f", torDegTmp );
                     //if ((B_isTorConstrained[i] == 1) && B_ShowTorE) {
                         //pr( fp, ", Energetic penalty = %uhd\n", US_TorE[i]);
@@ -127,8 +125,7 @@ void writeState( FILE *fp, State S )
 
     // Write quaternion.
     S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-    (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q.nx, S.Q.ny, S.Q.nz,
-		   Deg(S.Q.ang) );
+    (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q.nx, S.Q.ny, S.Q.nz, Deg(S.Q.ang) );
     
     // Write torsion angles.
     if (S.ntor > 0) {
