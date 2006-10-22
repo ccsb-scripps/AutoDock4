@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.8 2006/04/25 22:33:12 garrett Exp $
+ $Id: rep.cc,v 1.9 2006/10/22 20:35:35 garrett Exp $
 
 */
 
@@ -271,6 +271,9 @@ RealVector::RealVector(int num_els)
    vector = new double[num_els];
    for (; --num_els>=0;) {
       vector[num_els] = double(genunf(low, high));
+#ifdef DEBUG
+      (void)fprintf(logFile, "rep.cc/RealVector::RealVector(num_els)   vector[num_els] = %.3f\n", vector[num_els] );
+#endif /* DEBUG */
    }
 }
 
@@ -288,6 +291,9 @@ RealVector::RealVector(int num_els, double init_low, double init_high)
    vector = new double[num_els];
    for (; --num_els>=0;) {
       vector[num_els] = double(genunf(init_low, init_high));
+#ifdef DEBUG
+      (void)fprintf(logFile, "rep.cc/RealVector::RealVector(num_els, init_low, init_high)   vector[num_els] = %.3f\n", vector[num_els] );
+#endif /* DEBUG */
    }
 }
 
