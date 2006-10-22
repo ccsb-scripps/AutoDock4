@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.6 2006/09/12 23:22:53 garrett Exp $
+ $Id: writePDBQT.cc,v 1.7 2006/10/22 21:12:13 garrett Exp $
 
 */
 
@@ -120,7 +120,7 @@ writePDBQT(int irun, FourByteLong seed[2],
         pr(logFile,"State:\t");
         printState(logFile, state, outlev);
         pr(logFile,"\n\n");
-	} else if (outlev == -1) {
+	} else if (outlev < 0) {
 		printState(logFile, state, 0);
 	}
 
