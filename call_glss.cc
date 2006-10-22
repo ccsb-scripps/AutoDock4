@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.17 2006/06/09 01:35:56 garrett Exp $
+ $Id: call_glss.cc,v 1.18 2006/10/22 21:16:46 garrett Exp $
 
 */
 
@@ -175,36 +175,40 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 #endif
             thisPop[i].mol = mol;
             thisPop[i].age = 0L;
+            // Make sure the phenotype corresponds to the genotype.
+            /// gmm 2006-10-18 thisPop[i].phenotyp = thisPop[i].mapping();
         }
 
-    // If initial values were supplied, put them in thisPop[0]
-    if (!B_RandomTran0) {
-          if (outlev > 1) { (void)fprintf(logFile, "Setting the initial translation (tran0) for individual number %d to %.2lf %.2lf %.2lf\n\n", indiv+1, now.T.x, now.T.y, now.T.z); }
-      thisPop[indiv].genotyp.write( now.T.x, 0);
-      thisPop[indiv].genotyp.write( now.T.y, 1);
-      thisPop[indiv].genotyp.write( now.T.z, 2);
-      // Remember to keep the phenotype up-to-date
-      thisPop[indiv].phenotyp = thisPop[indiv].mapping();
-    };
-    if (!B_RandomQuat0) {
-          if (outlev > 1) { (void)fprintf(logFile, "Setting the initial quaternion (quat0) for individual number %d to %.2lf %.2lf %.2lf  %.2lf deg\n\n", indiv+1, now.Q.nx, now.Q.ny, now.Q.nz, Deg(now.Q.ang)); }
-      thisPop[indiv].genotyp.write( now.Q.nx, 3);
-      thisPop[indiv].genotyp.write( now.Q.ny, 4);
-      thisPop[indiv].genotyp.write( now.Q.nz, 5);
-      thisPop[indiv].genotyp.write( now.Q.ang, 6);
-      // Remember to keep the phenotype up-to-date
-      thisPop[indiv].phenotyp = thisPop[indiv].mapping();
-    };
-    if (!B_RandomDihe0) {
-          if (outlev > 1) { (void)fprintf(logFile, "Setting the initial torsions (dihe0) for individual number %d to ", indiv+1); }
-            for (j=0; j<now.ntor; j++) {
-                thisPop[indiv].genotyp.write( now.tor[j], 7+j);
-                if (outlev > 1) { (void)fprintf(logFile, "%.2lf ", Deg(now.tor[j])); }
-            };
-          if (outlev > 1) { (void)fprintf(logFile, " deg\n\n"); }
-      // Remember to keep the phenotype up-to-date
-      thisPop[indiv].phenotyp = thisPop[indiv].mapping();
-    };
+        // If initial values were supplied, put them in thisPop[0]
+        if (!B_RandomTran0) {
+              if (outlev > 1) { (void)fprintf(logFile, "Setting the initial translation (tran0) for individual number %d to %.2lf %.2lf %.2lf\n\n", indiv+1, now.T.x, now.T.y, now.T.z); }
+          thisPop[indiv].genotyp.write( now.T.x, 0);
+          thisPop[indiv].genotyp.write( now.T.y, 1);
+          thisPop[indiv].genotyp.write( now.T.z, 2);
+          // Remember to keep the phenotype up-to-date
+          thisPop[indiv].phenotyp = thisPop[indiv].mapping();
+        }
+        if (!B_RandomQuat0) {
+              if (outlev > 1) { (void)fprintf(logFile, "Setting the initial quaternion (quat0) for individual number %d to %.2lf %.2lf %.2lf  %.2lf deg\n\n", indiv+1, now.Q.nx, now.Q.ny, now.Q.nz, Deg(now.Q.ang)); }
+          thisPop[indiv].genotyp.write( now.Q.nx, 3);
+          thisPop[indiv].genotyp.write( now.Q.ny, 4);
+          thisPop[indiv].genotyp.write( now.Q.nz, 5);
+          thisPop[indiv].genotyp.write( now.Q.ang, 6);
+          // Remember to keep the phenotype up-to-date
+          thisPop[indiv].phenotyp = thisPop[indiv].mapping();
+        }
+        if (now.ntor > 0) {
+            if (!B_RandomDihe0) {
+                  if (outlev > 1) { (void)fprintf(logFile, "Setting the initial torsions (dihe0) for individual number %d to ", indiv+1); }
+                    for (j=0; j<now.ntor; j++) {
+                        thisPop[indiv].genotyp.write( now.tor[j], 7+j);
+                        if (outlev > 1) { (void)fprintf(logFile, "%.2lf ", Deg(now.tor[j])); }
+                    };
+                  if (outlev > 1) { (void)fprintf(logFile, " deg\n\n"); }
+              // Remember to keep the phenotype up-to-date
+              thisPop[indiv].phenotyp = thisPop[indiv].mapping();
+            }
+        }
 
         // Now ensure that there is some variation in the energies...
         firstEnergy = thisPop[0].value(localEvalMode);
