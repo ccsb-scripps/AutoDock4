@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.13 2006/01/14 00:56:03 garrett Exp $
+ $Id: support.cc,v 1.14 2006/10/22 20:45:05 garrett Exp $
 
 */
 
@@ -183,7 +183,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
    for (i=0; i<num; i++) {
       thisValue = heap[i].value(Always_Eval);
-      (void)fprintf( output, "(%d):\tEnergy= %8.2le\n\t", i+1, thisValue);
+      (void)fprintf( output, "(%d):\tEnergy= %8.2le\t", i+1, thisValue);
       heap[i].printIndividualsState(output, ntor, 0);
 
 #ifdef DEBUG2
@@ -264,6 +264,9 @@ init_rep_vector)
    number_of_genes = 0;
    for (i=0; i<number_of_vectors; i++) {
       number_of_genes += rep_vector[i]->number_of_points();
+#ifdef DEBUG
+      (void)fprintf(logFile, "support.cc/Genotype::Genotype(init_number_of_vectors=%d, **init_rep_vector) number_of_genes=%d   rep_vector[%d]->number_of_points()=%d\n",init_number_of_vectors, number_of_genes, i, rep_vector[i]->number_of_points());
+#endif /* DEBUG */
    }
  
    i=0;
@@ -721,6 +724,7 @@ void Individual::printIndividualsState(FILE *filePtr, int ntor, int detail)
 #endif /* DEBUG */
 
     printState( filePtr, state(ntor), detail ); 
+    fprintf( filePtr, "\n" );
 }
 
 void Individual::incrementAge(void)
