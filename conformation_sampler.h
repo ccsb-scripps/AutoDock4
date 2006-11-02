@@ -10,7 +10,7 @@
 #define _CONFORMATION_SAMPLER_H
 
 #define BASE_DIMENSIONS 7
-#define NUM_BINS 10
+#define NUM_BINS 20
 #define BIN_SIZE 0.1
 
 class ConformationSampler {
@@ -71,6 +71,7 @@ void raaMatrix(Real raa[4], Real matrix[3][3]);
 void matrixraa(Real matrix[3][3], Real raa[4]);
 void multiplyraa(Real raa1[4], Real raa2[4], Real raa_result[4]);
 void matrixMultiply(Real m1[3][3], Real m2[3][3], Real result[3][3]);
+void rand_axis(Real axis[4], Real angle);
 void setup_reference_coordinates(void);
 
 #endif

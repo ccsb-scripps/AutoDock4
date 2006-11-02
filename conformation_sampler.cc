@@ -8,6 +8,7 @@
 #define RK_CONSTANT 0.0019872065 // constant in entropy calculation
 #define TEMP 298 // temperature in entropy calculation
 #define RT_CONSTANT 0.592
+#define ANGSTROMS_TO_LITERS 1.0e-27f // (1 Angstrom^3 = 10^-27 liters)
 #define Vconf 1.0
 
 #define RMSD_SYMMETRY TRUE
@@ -100,24 +101,20 @@ void ConformationSampler::random_sample(int num_samples) {
 	
 	for (int sample=0; sample < num_samples; sample++) {
 		probe_point = base_point;
-		multiplier = ranf();
-		//multiplier = genunf(0.0, 1.25);
+		//multiplier = ranf();
+		multiplier = genunf(0.0, 1.25);
 
 		// perturb translation and torsion angles randomly
 		for (unsigned int i=0; i < (unsigned int) dimensionality; i++) {
 			if (i >= X_ROTATION_INDEX && i <= ROTATION_ANGLE_INDEX) continue;
-			//probe_point.write(probe_point.gread(i).real + gennor(0.0, multiplier*RHO) , i);
-			probe_point.write(probe_point.gread(i).real + genunf(-1.0 * RHO, RHO) , i);
+			probe_point.write(probe_point.gread(i).real + gennor(0.0, multiplier*RHO) , i);
+			//probe_point.write(probe_point.gread(i).real + genunf(-1.0 * RHO, RHO) , i);
 		}
-		
-		// adjust current rotation randomly using multiplication
+
 		Real random_axis_angle[4];
-		for (int i=0; i < 4; i++) {
-			//random_axis_angle[i] = gennor(0.0, multiplier*RHO);
-			random_axis_angle[i] = genunf(-1.0 * RHO, RHO);
-		}
-		
 		Real new_axis_angle[4];
+		Real angle = gennor(0.0, PI/24.0);
+		rand_axis(random_axis_angle, angle);
 		multiplyraa(base_axis_angle, random_axis_angle, new_axis_angle);
 		for (unsigned int i=0; i < 4; i++) {
 			probe_point.write(new_axis_angle[i], i+X_ROTATION_INDEX);
@@ -304,6 +301,8 @@ Real ConformationSampler::configurational_integral(void) {
 	for (int i=0; i < 6; i++) {
 		Vb *= (max_values[i]-min_values[i]);
 	}
+
+	Vb *= ANGSTROMS_TO_LITERS;
 	return Vb;
 }
 
@@ -535,6 +534,15 @@ void matrixMultiply(Real m1[3][3], Real m2[3][3], Real result[3][3]) {
 	result[2][0] = m1[2][0]*m2[0][0] + m1[2][1]*m2[1][0] + m1[2][2]*m2[2][0];
 	result[2][1] = m1[2][0]*m2[0][1] + m1[2][1]*m2[1][1] + m1[2][2]*m2[2][1];
 	result[2][2] = m1[2][0]*m2[0][2] + m1[2][1]*m2[1][2] + m1[2][2]*m2[2][2];
+}
+
+void rand_axis(Real axis[4], Real angle) {
+	axis[2] = genunf(-1.0, 1.0);
+	Real t = genunf(0.0, 2*PI);
+	Real w = sqrt(1 - axis[2]*axis[2]);
+	axis[0] = w * cos(t);
+	axis[1] = w * sin(t);
+	axis[3] = angle;
 }
 
 void setup_reference_coordinates(void) {
