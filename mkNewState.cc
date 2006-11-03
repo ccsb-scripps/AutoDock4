@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.6 2006/11/03 02:10:48 garrett Exp $
+ $Id: mkNewState.cc,v 1.7 2006/11/03 04:12:22 garrett Exp $
 
 */
 
@@ -31,7 +31,7 @@ void mkNewState( State *now,
                 Real torStep,
                 Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                 int N_con[MAX_TORS])
-
+    // Create a new state, based on the current state
 {
     register int i;
     double t;
