@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.3 2006/11/03 02:10:48 garrett Exp $
+ $Id: qmultiply.cc,v 1.4 2006/11/03 03:56:18 garrett Exp $
 
 */
 
@@ -102,8 +102,8 @@ void printQuat( FILE *fp, Quat q )
 } // printQuat( Quat q )
 
 Quat convertQuatToRot( Quat q )
-    // Update the (nx,ny,nz,ang) components of the quaternion q, to reflect
-    // the (x,y,z,w) components
+    // Update the (nx,ny,nz,ang) components of the quaternion q, 
+    // to correspond to the (x,y,z,w) components.
 {
     register double half_angle = acos( q.w );
     register double inv_sin_half_angle = 1. / sin( half_angle );
