@@ -9,10 +9,10 @@
 
 #include "support.h"
 
-enum M_mode {ERR = -1, BitFlip, CauchyDev, IUniformSub};
-enum Selection_Mode {Proportional=0, Tournament=1, Boltzmann=2};
-enum Xover_Mode {TwoPt=0, OnePt=1, Uniform=2, Arithmetic=3};
-enum Worst_Mode {AverageOfN, OfN, Ever};
+enum M_mode { ERR = -1, BitFlip, CauchyDev, IUniformSub };
+enum Selection_Mode { Proportional=0, Tournament=1, Boltzmann=2 };
+enum Xover_Mode { TwoPt=0, OnePt=1, Uniform=2, Arithmetic=3 };
+enum Worst_Mode { AverageOfN, OfN, Ever };
 
 class Global_Search
 {
