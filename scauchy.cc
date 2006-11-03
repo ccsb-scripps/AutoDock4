@@ -1,6 +1,6 @@
 /*
 
- $Id: scauchy.cc,v 1.6 2006/11/03 02:10:48 garrett Exp $
+ $Id: scauchy.cc,v 1.7 2006/11/03 04:05:38 garrett Exp $
 
 $-Id: scauchy.cc,v 3.0 1996/03/11 05:40:00 halliday Exp $
 $-Source: /tmp_mnt/mgl/apps/src/autodock/3.0/autodock/RCS/scauchy.cc,v $
@@ -62,8 +62,10 @@ register Real x, y, r1, r2;
 			 */
 do {
    r1 = ranf();
+   // Using addition is faster than multiplication
    x = r1 + r1 - 1.0;
    r2 = ranf();
+   // Using addition is faster than multiplication
    y = r2 + r2 - 1.0;
    } while (x * x + y * y > 1.0);
 
