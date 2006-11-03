@@ -26,7 +26,7 @@
 // #define REALV_LOW -3.14159265358979323846 //gmm, 1998-07-08
 // #define REALV_HIGH 3.14159265358979323846 //gmm, 1998-07-08
 
-enum RepType {T_BASE, T_IntV, T_RealV, T_CRealV, T_BitV};
+enum RepType { T_BASE, T_IntV, T_RealV, T_CRealV, T_BitV };
 
 typedef union 
 {
@@ -103,6 +103,8 @@ class RealVector : public Representation
       RealVector(int);
       RealVector(int, double *);
       RealVector(int, double, double);
+      RealVector(int, double, double, double); // use this to set the first value in the vector--useful for random quaternions
+      RealVector(double, double, double, int); // use this to create a vector of length 3 with these values--useful for random quaternions
       RealVector(const RealVector &);
       ~RealVector(void);
       void write(unsigned char, int);
