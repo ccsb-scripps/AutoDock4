@@ -409,6 +409,9 @@ DBUG = # Use assert code
 # DBUG = -DDEBUG2 # Just DEBUG2-specific code for tracking prop.selection
 # DBUG = -DDEBUG3 # Just DEBUG3-specific code for print age of individuals
 # DBUG = -g -DDEBUG -DDEBUG2 -DDEBUG3 # Debug everything
+# DBUG = -DDEBUG_MUTATION # Use assert code, & print out information anywhere involving mutation
+# DBUG = -g3 -DDEBUG_MUTATION # dbx + optimization; Use assert code, & print out information anywhere involving mutation
+# DBUG = -g3 -DDEBUG_MUTATION -DDEBUG # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements
 
 PROF = # No profiling
 # PROF = -p # CC Profiling
