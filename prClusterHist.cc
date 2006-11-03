@@ -1,6 +1,6 @@
 /*
 
- $Id: prClusterHist.cc,v 1.7 2006/07/21 17:56:30 garrett Exp $
+ $Id: prClusterHist.cc,v 1.8 2006/11/03 02:10:48 garrett Exp $
 
 */
 
@@ -60,11 +60,11 @@ void prClusterHist( int ncluster,
 
     double U_internal_energy_summation = 0.0;
     double Q_partition_function = 0.0;
-    /*
+    /* */
     double U_internal_energy = 0.0;
     double A_free_energy = 0.0;
     double S_entropy = 0.0;
-    */
+    /* */
     double this_energy = 0.0;
     double RT = Rcal * TK;
 
@@ -178,7 +178,6 @@ void prClusterHist( int ncluster,
     (void)fprintf( logFile, "_______________________________________________________________________\n\n");
 
 
-/*
     // Print the Information Entropy value at this rmstol clustering tolerance
     (void)fprintf( logFile, "\n\n\tINFORMATION ENTROPY ANALYSIS FOR THIS CLUSTERING\n" );
     (void)fprintf( logFile,     "\t________________________________________________\n" );
@@ -205,7 +204,6 @@ void prClusterHist( int ncluster,
     (void)fprintf( logFile, "Entropy,            S = %8.2f kcal/mol/K at Temperature, T = %.2f K\n", S_entropy, TK );
     (void)fprintf( logFile, "\n" );
     (void)fprintf( logFile, "_______________________________________________________________________\n\n");
-*/
 
 
     fflush( logFile );

@@ -1,6 +1,6 @@
 /*
 
- $Id: minmeanmax.cc,v 1.2 2003/02/26 01:20:08 garrett Exp $
+ $Id: minmeanmax.cc,v 1.3 2006/11/03 02:10:48 garrett Exp $
 
 */
 
@@ -69,4 +69,5 @@ void minmeanmax( FILE *fp, Population &pop, int num_its )
    delete [] minimum;
    delete [] sum;
    delete [] maximum;
+   delete [] best;
 }

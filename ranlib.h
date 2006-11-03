@@ -37,5 +37,6 @@ extern Real sgamma(Real a);
 extern Real snorm(void);
 extern Real rcauchy(Real, Real);
 extern Real scauchy1(void);
+extern Real scauchy2(void);
 
 #endif

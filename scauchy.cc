@@ -1,6 +1,6 @@
 /*
 
- $Id: scauchy.cc,v 1.5 2006/04/25 22:33:14 garrett Exp $
+ $Id: scauchy.cc,v 1.6 2006/11/03 02:10:48 garrett Exp $
 
 $-Id: scauchy.cc,v 3.0 1996/03/11 05:40:00 halliday Exp $
 $-Source: /tmp_mnt/mgl/apps/src/autodock/3.0/autodock/RCS/scauchy.cc,v $
@@ -52,6 +52,26 @@ if (fabs(x) < EPS)
 return (y / x);
 }
 
+Real scauchy2()
+{
+register Real x, y, r1, r2;
+ 
+			/* These four lines generate the tangent of a random
+			 *	angle;  this is equivalent to 
+			 *	y/x = tan(PI * ranf())
+			 */
+do {
+   r1 = ranf();
+   x = r1 + r1 - 1.0;
+   r2 = ranf();
+   y = r2 + r2 - 1.0;
+   } while (x * x + y * y > 1.0);
+
+if (fabs(x) < EPS)
+   x = (x < 0.0 ? x - EPS : x + EPS);
+ 
+return (y / x);
+}
 
 
 

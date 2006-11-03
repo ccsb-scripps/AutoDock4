@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.14 2006/10/22 20:45:05 garrett Exp $
+ $Id: support.cc,v 1.15 2006/11/03 02:10:48 garrett Exp $
 
 */
 
@@ -180,7 +180,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    (void)fprintf(logFile, "support.cc/void Population::printPopulationAsStates(FILE *output, int num=%d, int ntor=%d)\n",num,ntor);
 #endif /* DEBUG */
 
-   (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
+   (void)fprintf( output, "<population size=\"%d\">\n", num);
    for (i=0; i<num; i++) {
       thisValue = heap[i].value(Always_Eval);
       (void)fprintf( output, "(%d):\tEnergy= %8.2le\t", i+1, thisValue);
@@ -201,7 +201,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
 #endif /* DEBUG2 */
 
    }// i
-   (void)fprintf( output, "\n");
+   (void)fprintf( output, "</population>\n");
 }
 
 void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor) {

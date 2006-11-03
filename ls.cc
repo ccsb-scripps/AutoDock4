@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.7 2006/04/25 22:32:29 garrett Exp $
+ $Id: ls.cc,v 1.8 2006/11/03 02:10:48 garrett Exp $
 
 */
 
@@ -43,7 +43,7 @@ Phenotype genPh(const Phenotype &original, Real *array1, Real *array2)
    return(retval);
 }
 
-//  What Solis & Wetts does is add random deviates to every
+//  What Solis & Wets does is add random deviates to every
 //  real number in the Phenotype.
 //  
 //  This has only one value of rho, for all genes.

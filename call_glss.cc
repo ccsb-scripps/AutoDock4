@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.18 2006/10/22 21:16:46 garrett Exp $
+ $Id: call_glss.cc,v 1.19 2006/11/03 02:10:48 garrett Exp $
 
 */
 
@@ -24,6 +24,7 @@
 #include "constants.h"
 #include "structs.h"
 #include "openfile.h"
+#include "qmultiply.h"
 
 extern FILE *logFile;
 extern char *programname;
@@ -35,6 +36,7 @@ Eval evaluate;
 Representation **generate_R(int num_torsions, GridMapSetInfo *info)
 {
    Representation **retval;
+   Quat q;
 
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/Representation **generate_R()  about to create a new Representation with 5 elements, retval...\n");
@@ -46,8 +48,15 @@ Representation **generate_R(int num_torsions, GridMapSetInfo *info)
    retval[0] = new RealVector(1, info->lo[X], info->hi[X]);
    retval[1] = new RealVector(1, info->lo[Y], info->hi[Y]);
    retval[2] = new RealVector(1, info->lo[Z], info->hi[Z]);
-   retval[3] = new RealVector(3);
-   retval[4] = new RealVector(num_torsions+1);
+   // Generate a uniformly-distributed random quaternion for a random rotation
+   q = uniformQuat();
+   q = convertQuatToRot( q );
+#ifdef DEBUG
+   printQuat( logFile, q );
+#endif
+   retval[3] = new RealVector(3, -1., 1.);
+   // retval[3] = new RealVector(q.nx, q.ny, q.nz, 3);
+   retval[4] = new RealVector(num_torsions+1, -PI, PI, q.ang);
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/Representation **generate_R()  done assigning each of the retval[0-5] elements...\n");
 #endif
@@ -138,7 +147,7 @@ Individual set_ind(int num_torsions,  GridMapSetInfo *info, State state)
 #endif
 
 State call_glss(Global_Search *global_method, Local_Search *local_method, 
-                State now, 
+                State sInit, 
                 unsigned int num_evals, unsigned int pop_size, 
                 int outlev, 
                 unsigned int extOutputEveryNgens, Molecule *mol, 
@@ -157,11 +166,15 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     local_method->reset();
     evaluate.reset();
 
-    (void)fprintf( logFile, "\nCreating a population of %u individuals.\n", pop_size);
+    (void)fprintf( logFile, "\nCreating a initial population of %u individuals.\n", pop_size);
     Population thisPop(pop_size);
 
-    (void)fprintf( logFile, "\nAssigning a random translation, a random orientation and %d random torsions to each of the %u individuals.\n\n", now.ntor, pop_size);
-    global_ntor = now.ntor;//debug
+    if (sInit.ntor > 0) {
+        (void)fprintf( logFile, "\nAssigning a random translation, a random orientation and %d random torsions to each of the %u individuals.\n\n", sInit.ntor, pop_size);
+    } else {
+        (void)fprintf( logFile, "\nAssigning a random translation and a random orientation to each of the %u individuals.\n\n", pop_size);
+    }
+    global_ntor = sInit.ntor;//debug
     do {
         ++numTries;
         // Create a population of pop_size random individuals...
@@ -169,7 +182,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/State call_glss(): Creating individual i= %d in thisPop[i];  about to call random_ind()...\n", i);
 #endif
-            thisPop[i] = random_ind( now.ntor, info);
+            thisPop[i] = random_ind( sInit.ntor, info);
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/State call_glss(): Created  individual i= %d in thisPop[i]\n", i);
 #endif
@@ -181,28 +194,28 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
         // If initial values were supplied, put them in thisPop[0]
         if (!B_RandomTran0) {
-              if (outlev > 1) { (void)fprintf(logFile, "Setting the initial translation (tran0) for individual number %d to %.2lf %.2lf %.2lf\n\n", indiv+1, now.T.x, now.T.y, now.T.z); }
-          thisPop[indiv].genotyp.write( now.T.x, 0);
-          thisPop[indiv].genotyp.write( now.T.y, 1);
-          thisPop[indiv].genotyp.write( now.T.z, 2);
+              if (outlev > 1) { (void)fprintf(logFile, "Setting the initial translation (tran0) for individual number %d to %.2lf %.2lf %.2lf\n\n", indiv+1, sInit.T.x, sInit.T.y, sInit.T.z); }
+          thisPop[indiv].genotyp.write( sInit.T.x, 0);
+          thisPop[indiv].genotyp.write( sInit.T.y, 1);
+          thisPop[indiv].genotyp.write( sInit.T.z, 2);
           // Remember to keep the phenotype up-to-date
           thisPop[indiv].phenotyp = thisPop[indiv].mapping();
         }
         if (!B_RandomQuat0) {
-              if (outlev > 1) { (void)fprintf(logFile, "Setting the initial quaternion (quat0) for individual number %d to %.2lf %.2lf %.2lf  %.2lf deg\n\n", indiv+1, now.Q.nx, now.Q.ny, now.Q.nz, Deg(now.Q.ang)); }
-          thisPop[indiv].genotyp.write( now.Q.nx, 3);
-          thisPop[indiv].genotyp.write( now.Q.ny, 4);
-          thisPop[indiv].genotyp.write( now.Q.nz, 5);
-          thisPop[indiv].genotyp.write( now.Q.ang, 6);
+              if (outlev > 1) { (void)fprintf(logFile, "Setting the initial quaternion (quat0) for individual number %d to %.2lf %.2lf %.2lf  %.2lf deg\n\n", indiv+1, sInit.Q.nx, sInit.Q.ny, sInit.Q.nz, Deg(sInit.Q.ang)); }
+          thisPop[indiv].genotyp.write( sInit.Q.nx, 3);
+          thisPop[indiv].genotyp.write( sInit.Q.ny, 4);
+          thisPop[indiv].genotyp.write( sInit.Q.nz, 5);
+          thisPop[indiv].genotyp.write( sInit.Q.ang, 6);
           // Remember to keep the phenotype up-to-date
           thisPop[indiv].phenotyp = thisPop[indiv].mapping();
         }
-        if (now.ntor > 0) {
+        if (sInit.ntor > 0) {
             if (!B_RandomDihe0) {
                   if (outlev > 1) { (void)fprintf(logFile, "Setting the initial torsions (dihe0) for individual number %d to ", indiv+1); }
-                    for (j=0; j<now.ntor; j++) {
-                        thisPop[indiv].genotyp.write( now.tor[j], 7+j);
-                        if (outlev > 1) { (void)fprintf(logFile, "%.2lf ", Deg(now.tor[j])); }
+                    for (j=0; j<sInit.ntor; j++) {
+                        thisPop[indiv].genotyp.write( sInit.tor[j], 7+j);
+                        if (outlev > 1) { (void)fprintf(logFile, "%.2lf ", Deg(sInit.tor[j])); }
                     };
                   if (outlev > 1) { (void)fprintf(logFile, " deg\n\n"); }
               // Remember to keep the phenotype up-to-date
@@ -220,28 +233,51 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         }
     } while (allEnergiesEqual);
 
-    if (outlev > 2) { thisPop.printPopulationAsStates(logFile, pop_size, now.ntor); }
+    if (outlev > 2) { 
+        (void)fprintf( logFile, "The initial population consists of the following %d individuals:\n\n", pop_size);
+        (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"initialisation of population\">\n", num_loops);
+        thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
+        (void)fprintf( logFile, "</generation>\n\n\n");
+    }
 
     (void)fprintf( logFile, "Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of %u\nenergy evaluations.\n\n", num_evals);
 
     do {
-        if (outlev > 1) { (void)fprintf( logFile, "Global-local search iteration %d\n", ++num_loops); }
+        ++num_loops;
+
+        if (outlev > 1) { (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", num_loops); }
         
+        if (outlev > 1) { (void)fprintf( logFile, "Performing Global Search.\n"); }
+
         global_method->search(thisPop);
 
-        if (outlev > 2) { thisPop.printPopulationAsStates( logFile, pop_size, now.ntor); }
+        if (outlev > 2) {
+            (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"global search\">\n", num_loops);
+            thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
+            (void)fprintf( logFile, "</generation>\n\n\n");
+        }
+
         if (outlev > 3) { minmeanmax( logFile, thisPop, ++num_iterations ); }
+
+        if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
 
         for (i=0; i<pop_size; i++) {
             local_method->search(thisPop[i]);
         }
-        if (outlev > 2) { thisPop.printPopulationAsStates( logFile, pop_size, now.ntor); }
+
+        if (outlev > 2) {
+            (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"local search\">\n", num_loops);
+            thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
+            (void)fprintf( logFile, "</generation>\n\n\n");
+        }
+
+        if (outlev > 3) { minmeanmax( logFile, thisPop, ++num_iterations ); }
 
         if (strcmp (FN_pop_file, "") != 0) { // YES, do print!
             if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
                 pr(logFile, "\n%s: ERROR:  I'm sorry, I cannot create\"%s\".\n\n", programname, FN_pop_file);
             } else {
-                thisPop.printPopulationAsCoordsEnergies( pop_fileptr, pop_size, now.ntor); 
+                thisPop.printPopulationAsCoordsEnergies( pop_fileptr, pop_size, sInit.ntor); 
                 fclose( pop_fileptr );
             }
         }
@@ -251,5 +287,5 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
     thisPop.msort(3);
     (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
-    return( thisPop[0].state(now.ntor) );
+    return( thisPop[0].state(sInit.ntor) );
 }

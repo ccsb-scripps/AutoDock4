@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.11 2006/06/09 01:55:01 garrett Exp $
+ $Id: gs.cc,v 1.12 2006/11/03 02:10:48 garrett Exp $
 
 */
 
@@ -257,6 +257,10 @@ void Genetic_Algorithm::make_table(int size, Real prob)
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::make_table(int size=%d, Real prob=%f)\n",size, prob);
 #endif /* DEBUG */
 
+#ifdef DEBUG_MUTATION
+   (void)fprintf(logFile, "\ngs.cc/void Genetic_Algorithm::make_table(int size=%d, Real prob=%f)\n",size, prob);
+#endif /* DEBUG */
+
    m_table_size = size;
    mutation_table = new Real[size+1];
 
@@ -268,18 +272,42 @@ void Genetic_Algorithm::make_table(int size, Real prob)
       L = 0.0;
       for (j=1; j<=i; j++) {
          L += log(size+1-j) - log(j);
+#ifdef DEBUG_MUTATION
+         fprintf(logFile,"j= %d (size+1-j)= %d log(_)= %.4f log(j)=%.4f L= %.4f\n", j, (size+1-j), log(size+1-j), log(j), L);
+#endif
       }
       L += i*log(prob) + (size-i)*log(1-prob);
+#ifdef DEBUG_MUTATION
+      fprintf(logFile,"j= %d (size+1-j)= %d log(_)= %.4f log(j)=%.4f L= %.4f\n", j, (size+1-j), log(size+1-j), log(j), L);
+#endif
 
       mutation_table[i] = mutation_table[i-1]+exp(L);
+#ifdef DEBUG_MUTATION
+      fprintf(logFile,"mutation_table[%d] = %.3f\n", i, mutation_table[i]);
+#endif
       i++;
-   }
+   } // end while
 
+#ifdef DEBUG_MUTATION
+      fprintf(logFile,"L= %.3f  exp(L)= %.3f\n", L, exp(L) );
+#endif
    L = exp(L);
    for (; i<size; i++) {
+#ifdef DEBUG_MUTATION
+      fprintf(logFile,"i= %d  L= %.3f  prob= %.3f size= %d  (size+1-i)= %d  i*(1-prob)= %.3f\n", i, L, prob, size, (size+1-i), i*(1-prob) );
+#endif
       L = (L*prob*(size+1-i))/(i*(1-prob));
+#ifdef DEBUG_MUTATION
+      fprintf(logFile,"L= %.3f\n", L );
+#endif
       mutation_table[i] = mutation_table[i-1]+L;
+#ifdef DEBUG_MUTATION
+      fprintf(logFile,"mutation_table[%d] = %.3f\n", i, mutation_table[i]);
+#endif
    }
+#ifdef DEBUG_MUTATION
+      fflush(logFile);
+#endif
 }
 
 int Genetic_Algorithm::check_table(Real prob)
@@ -290,15 +318,35 @@ int Genetic_Algorithm::check_table(Real prob)
    (void)fprintf(logFile, "gs.cc/int Genetic_Algorithm::check_table(Real prob=%f)\n",prob);
 #endif /* DEBUG */
 
+#ifdef DEBUG_MUTATION
+   (void)fprintf(logFile, "\ngs.cc/int Genetic_Algorithm::check_table(Real prob=%f)\n",prob);
+#endif /* DEBUG */
+
    low = 0; high = m_table_size;
+#ifdef DEBUG_MUTATION
+      fprintf(logFile,"prob= %.3f  low= %d  high= %d\n", prob, low, high );
+#endif
 
    while (high-low>1) {
+#ifdef DEBUG_MUTATION
+      fprintf(logFile,"high-low= %d\n", high-low );
+      fprintf(logFile,"(high+low)/2= %d  mutation_table[(high+low)/2]= %.3f  prob= %.3f\n", (high+low)/2,  mutation_table[(high+low)/2], prob );
+#endif
       if (mutation_table[(high+low)/2]<prob) {
          low = (high+low)/2;
+#ifdef DEBUG_MUTATION
+         fprintf(logFile,"low= %d\n", low );
+#endif
       } else if (mutation_table[(high+low)/2]>prob) {
          high = (high+low)/2;
+#ifdef DEBUG_MUTATION
+         fprintf(logFile,"high= %d\n", high );
+#endif
       } else {
          high = low = (high+low)/2;
+#ifdef DEBUG_MUTATION
+         fprintf(logFile,"low= %d  high= %d\n", low, high );
+#endif
       }
    }
    return(low);
@@ -345,6 +393,10 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number=%d)\n",gene_number);
 #endif /* DEBUG */
 
+#ifdef DEBUG_MUTATION
+   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number=%d)\n",gene_number);
+#endif /* DEBUG */
+
    switch(m_type(mutant.gtype(gene_number)))
    {
       case BitFlip:
@@ -356,17 +408,71 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
          //  write it
          mutant.write(tempvar, gene_number);
          break;
+
       case CauchyDev:
-         //((double *)gene)[point] = ((double *)gene)[point] + rcauchy(alpha, beta);
-         //  Read the real
-         //tempvar.real = *((double *)mutant.gread(gene_number));
-         tempvar = mutant.gread(gene_number);
-         //  Add deviate
-         tempvar.real += rcauchy(alpha, beta);
-         //  Write it
-         //mutant.write((void *)(&tempvar.real), gene_number);
-         mutant.write(tempvar, gene_number);
+         // gene_numbers 3, 4 and 5 correspond to the unit vector component and
+         // gene_number 6 corresponds to the twist angle
+         // of the raa, rotation about axis...
+         if ((gene_number > 2) && (gene_number < 7)) {
+            // mutate all three comopnents of the unit vector 
+            // and the twist angle, simultaneously:
+            Quat q;
+            // Generate a uniformly-distributed quaternion
+            q = uniformQuat();
+            // Convert the quaternion into a rotation about an axis
+            q = convertQuatToRot( q );
+#ifdef DEBUG_MUTATION
+            printQuat( logFile, q );
+#endif
+            for (register int g=3; g<7; g++) {
+               tempvar = mutant.gread( g );
+#ifdef DEBUG_MUTATION
+               (void)fprintf(logFile, "   ---CauchyDev---        ---Unit vector genes, 4, 5, & 6---\n" );
+               (void)fprintf(logFile, "   Before mutating:        tempvar= %.3f\n", tempvar.real );
+               (void)fprintf(logFile, "   gene_number = %d\n",  g  );
+               (void)fprintf(logFile, "   tempvar.real = genunf( -1., 1. )\n" );
+#endif /* DEBUG */
+               // set this gene to the appropriate component of the quaternion's raa
+               switch (g) {
+                  case 3:
+                     tempvar.real = q.nx;
+                     break;
+                  case 4:
+                     tempvar.real = q.ny;
+                     break;
+                  case 5:
+                     tempvar.real = q.nz;
+                     break;
+                  case 6:
+                     tempvar.real = q.ang;
+                     break;
+               }
+#ifdef DEBUG_MUTATION
+               (void)fprintf(logFile, "   After mutating:         tempvar= %.3f\n", tempvar.real );
+#endif /* DEBUG */
+               //  Write it
+               mutant.write( tempvar, g );
+            }
+         } else {
+            //  Read the real
+            tempvar = mutant.gread(gene_number);
+#ifdef DEBUG_MUTATION
+            (void)fprintf(logFile, "   ---CauchyDev---\n" );
+            (void)fprintf(logFile, "   Before mutating:        tempvar= %.3f\n", tempvar.real );
+            (void)fprintf(logFile, "   gene_number= %d\n", gene_number );
+            (void)fprintf(logFile, "   tempvar.real += scauchy2()\n" );
+#endif /* DEBUG */
+            //  Add deviate
+            //  We do not care about alpha and beta, so just use the faster "scauchy2()" function:
+            tempvar.real += scauchy2();
+#ifdef DEBUG_MUTATION
+            (void)fprintf(logFile, "   Add Cauchy deviate:     tempvar= %.3f\n", tempvar.real );
+#endif /* DEBUG */
+            //  Write it
+            mutant.write(tempvar, gene_number);
+         }
          break;
+
       case IUniformSub:
          //((int *)gene)[point] = ignuin(low, high);
          //  Generate the new integer
@@ -375,6 +481,7 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
          //mutant.write((void *)(&tempvar.integer), gene_number);
          mutant.write(tempvar, gene_number);
          break;
+
       default:
          (void)fprintf(logFile,"gs.cc/Unrecognized mutation Mode!\n");
          break; 
@@ -389,6 +496,10 @@ void Genetic_Algorithm::mutation(Population &pure)
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::mutation(Population &pure)\n");
 #endif /* DEBUG */
 
+#ifdef DEBUG_MUTATION
+   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::mutation(Population &pure)\n");
+#endif /* DEBUG */
+
    num_mutations = check_table(ranf());
 
    //  Note we don't check to see if we mutate the same gene twice.
@@ -399,6 +510,11 @@ void Genetic_Algorithm::mutation(Population &pure)
       gene_number = ignlgi()%pure[individual].genotyp.num_genes();
       mutate(pure[individual].genotyp, gene_number);
       pure[individual].age = 0L;
+#ifdef DEBUG_MUTATION
+      (void)fprintf(logFile, "num_mutations= %d\n", num_mutations );
+      (void)fprintf(logFile, "   individual= %d\n", individual );
+      (void)fprintf(logFile, "   gene_number= %d\n", gene_number );
+#endif /* DEBUG */
    }
 }
 

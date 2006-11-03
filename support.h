@@ -11,6 +11,9 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.8  2006/11/03 02:10:48  garrett
+** Significant change.  The initial population is now generated in a different way; previously, the axis that defined the rotation was created by generating uniformly-distributed random numbers in the range REALV_LOW to REALV_HIGH.  The same for the rotation angle (and torsion angles).  Now, we use a range of +/- 1 for the initial unit vector, and +/- PI for the rotation angle (and torsion angles).\
+**
 ** Revision 1.7  2005/10/14 03:10:01  garrett
 ** Completed the "printPopulationAsCoordsEnergies" member function of the "Population" class, so that it now prints the nonbonded energy and the electrostatics energy, in addition to the translation and total energy for each member of the population.  These numbers are written to the population file at the end of each generation.  The DPF keyword "output_pop_file" expects the name of this population file; if this keyword is not given before a given "ga_run" command, then no population file will be written.
 **
@@ -191,6 +194,7 @@ class Individual
       void  getMol(Molecule *); /* converts phenotype to mol's state and returns this individual's mol data */
       void printIndividualsState(FILE *, int, int); /* print out the state of this individual */
       void incrementAge(); /* make individual grow 1 generation older */
+      int serial; // serial number of this individual
 };
 
 class Population

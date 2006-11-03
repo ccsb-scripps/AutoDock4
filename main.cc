@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.60 2006/09/13 17:05:43 mchang Exp $
+ $Id: main.cc,v 1.61 2006/11/03 02:10:48 garrett Exp $
 
 */
 
@@ -675,7 +675,9 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.60 $\n\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.61 $\n\n");
+(void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
+
 
 //______________________________________________________________________________
 /*
@@ -695,9 +697,9 @@ pr( logFile, "\nNOTE: \"rus\" stands for:\n\n      r = Real, wall-clock or elaps
 
 //______________________________________________________________________________
 
-(void) fprintf(logFile, "      ________________________________________________________________\n\n");
+(void) fprintf(logFile, "\n      ________________________________________________________________\n\n");
 (void) fprintf(logFile, "                   SETTING UP DEFAULT PARAMETER LIBRARY\n");
-(void) fprintf(logFile, "      ________________________________________________________________\n\n");
+(void) fprintf(logFile, "      ________________________________________________________________\n\n\n");
 
 //______________________________________________________________________________
 //
@@ -708,7 +710,9 @@ setup_parameter_library(outlev);
 // 
 // Compute the look-up table for the distance-dependent dielectric function
 // 
+(void) fprintf(logFile, "\n\nPreparing Energy Tables for Bound Calculation:\n\n");
 setup_distdepdiel(outlev, ad_energy_tables);
+(void) fprintf(logFile, "Preparing Energy Tables for Unbound Calculation:\n\n");
 setup_distdepdiel(outlev, unbound_energy_tables);
 
 //______________________________________________________________________________
@@ -952,6 +956,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         } else {
             prStr( error_message, "%s:  ERROR! No atom types have been found; we cannot continue without this information!\n\n", programname );
             pr_2x( logFile, stderr, error_message );
+            prStr( error_message, "%s:  ERROR! Are you trying to use an AutoDock 3 DPF with AutoDock 4?\n\n", programname );
+            pr_2x( logFile, stderr, error_message );
             exit(-1);
         }
 
@@ -1140,6 +1146,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         } else {
             prStr( error_message, "%s:  ERROR! No atom types have been found; we cannot continue without this information!\n\n", programname );
             pr_2x( logFile, stderr, error_message );
+            prStr( error_message, "%s:  ERROR! Are you trying to use an AutoDock 3 DPF with AutoDock 4?\n\n", programname );
+            pr_2x( logFile, stderr, error_message );
             exit(-1);
         }
         (void) fflush(logFile);
@@ -1192,6 +1200,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             num_maps++;
         } else {
             prStr( error_message, "%s:  ERROR! No atom types have been found; we cannot continue without this information!\n\n", programname );
+            pr_2x( logFile, stderr, error_message );
+            prStr( error_message, "%s:  ERROR! Are you trying to use an AutoDock 3 DPF with AutoDock 4?\n\n", programname );
             pr_2x( logFile, stderr, error_message );
             exit(-1);
         }
@@ -1301,24 +1311,26 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (!B_haveCharges) {
             pr( logFile, "%s: WARNING! No partial atomic charges have been supplied yet.\n\n",programname);
         } else {
-            pr(logFile,"Calculating the product of the partial atomic charges, q1*q2, for all %d non-bonded pairs...\n\n", Nnb);
-            pr(logFile," -- Scaled q1*q2 means multiplied by both  %.1lf (for conversion later on to kcal/mol)\n", (double)ELECSCALE);
-            pr(logFile,"    and by the AD4 FF electrostatics coefficient, %.4lf\n\n", (double)AD4.coeff_estat);
-            if (outlev >= 0) {
-                pr(logFile,"Non-bonded                           Scaled\n");
-                pr(logFile,"   Pair     Atom1-Atom2    q1*q2      q1*q2\n");
-                pr(logFile,"__________  ___________  _________  _________\n");
-                for (i = 0;  i < Nnb;  i++) {
-                    atm1 = nonbondlist[i][ATM1];
-                    atm2 = nonbondlist[i][ATM2];
-                    q1q2[i] = charge[atm1] * charge[atm2];
-                    pr(logFile,"   %4d     %5d-%-5d    %5.2f",i+1,atm1+1,atm2+1,q1q2[i]);
-                    q1q2[i] *= ELECSCALE * AD4.coeff_estat;
-                    pr(logFile,"     %6.2f\n",q1q2[i]);
-                }
-                pr(logFile,"\n");
-            }
-        }
+            if (Nnb > 0) {
+                pr(logFile,"Calculating the product of the partial atomic charges, q1*q2, for all %d non-bonded pairs...\n\n", Nnb);
+                pr(logFile," -- Scaled q1*q2 means multiplied by both  %.1lf (for conversion later on to kcal/mol)\n", (double)ELECSCALE);
+                pr(logFile,"    and by the AD4 FF electrostatics coefficient, %.4lf\n\n", (double)AD4.coeff_estat);
+                if (outlev >= 0) {
+                    pr(logFile,"Non-bonded                           Scaled\n");
+                    pr(logFile,"   Pair     Atom1-Atom2    q1*q2      q1*q2\n");
+                    pr(logFile,"__________  ___________  _________  _________\n");
+                    for (i = 0;  i < Nnb;  i++) {
+                        atm1 = nonbondlist[i][ATM1];
+                        atm2 = nonbondlist[i][ATM2];
+                        q1q2[i] = charge[atm1] * charge[atm2];
+                        pr(logFile,"   %4d     %5d-%-5d    %5.2f",i+1,atm1+1,atm2+1,q1q2[i]);
+                        q1q2[i] *= ELECSCALE * AD4.coeff_estat;
+                        pr(logFile,"     %6.2f\n",q1q2[i]);
+                    }
+                    pr(logFile,"\n");
+                } // if outlev > 0
+            } // if NNb > 0
+        } // else
 
         sInit.ntor = ligand.S.ntor;
         ++nmol;

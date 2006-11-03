@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.2 2003/02/26 01:30:28 garrett Exp $
+ $Id: qmultiply.cc,v 1.3 2006/11/03 02:10:48 garrett Exp $
 
 */
 
@@ -11,10 +11,9 @@
 /* qmultiply.cc */
 
 #include <math.h>
-
-    #include <stdio.h>
-    #include <string.h>
-    #include "qmultiply.h"
+#include <stdio.h>
+#include <string.h>
+#include "qmultiply.h"
 
 
 void qmultiply( Quat *q,
@@ -94,11 +93,69 @@ void mkUnitQuat( Quat *q )
     q->z  = s * q->nz;
     
     /* q->qmag = hypotenuse4( q->x,  q->y,  q->z,  q->w  ); */
+} // mkUnitQuat( Quat *q )
+
+void printQuat( FILE *fp, Quat q )
+{
+    (void) fprintf( fp, "Quat(x,y,z,w)= %.2f %.2f %.2f %.2f\n", q.x, q.y, q.z, q.w);
+    (void) fprintf( fp, "Quat(nx,ny,nz,ang)= %.2f %.2f %.2f %.2f\n", q.nx, q.ny, q.nz, q.ang);
+} // printQuat( Quat q )
+
+Quat convertQuatToRot( Quat q )
+    // Update the (nx,ny,nz,ang) components of the quaternion q, to reflect
+    // the (x,y,z,w) components
+{
+    register double half_angle = acos( q.w );
+    register double inv_sin_half_angle = 1. / sin( half_angle );
+    Quat retval;
+
+    retval.nx = q.x * inv_sin_half_angle;
+    retval.ny = q.y * inv_sin_half_angle;
+    retval.nz = q.z * inv_sin_half_angle;
+    retval.ang = half_angle - HALF_PI; // by our convention, angles range from -pi to +pi
+
+    retval.x = q.x;
+    retval.y = q.y;
+    retval.z = q.z;
+    retval.w = q.w;
+
+    return retval;
+} // convertQuatToRot( Quat q )
+
+Quat uniformQuat( void )
+    // Generate a uniformly-distributed random quaternion
+{
+    double x0, r1, r2, t1, t2;  // for uniformly distributed quaternion calculation
+    Quat q;
+
+    /*
+    **  This should produce a uniformly distributed quaternion, according to
+    **  Shoemake, Graphics Gems III.6, pp.124-132, "Uniform Random Rotations",
+    **  published by Academic Press, Inc., (1992)
+    */
+    t1 = genunf(0., TWOPI);
+    q.x = sin( t1 ) * (  r1 = ( (genunf(0., 1.) < 0.5) ?  (-1.) : (+1.) ) * sqrt( 1. - (x0 = genunf(0., 1.)) )  );
+    q.y = cos( t1 ) * r1;
+    t2 = genunf(0., TWOPI);
+    q.z = sin( t2 ) * (  r2 = ( (genunf(0., 1.) < 0.5) ?  (-1.) : (+1.) ) * sqrt( x0 )  );
+    q.w = cos( t2 ) * r2;
+
+    return q;
 }
 
-void printQuat( Quat q )
+void unitQuat2rotation( Quat *q )
+    // Convert from a unit quaternion to a rotation about an unit 3D-vector
 {
-    printf("Quat(x,y,z,w)= %.2f %.2f %.2f %.2f\n", q.x, q.y, q.z, q.w);
+    double inv_sin_half_ang;
+
+    q->ang = 2. * acos( q->w );
+    inv_sin_half_ang = 1. / sin( 0.5 * q->ang );
+    q->nx  = q->x * inv_sin_half_ang; 
+    q->ny  = q->y * inv_sin_half_ang; 
+    q->nz  = q->z * inv_sin_half_ang; 
+    
+    return;
 }
+
 
 /* EOF */

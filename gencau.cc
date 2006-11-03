@@ -1,6 +1,6 @@
 /*
 
- $Id: gencau.cc,v 1.4 2006/04/25 22:32:11 garrett Exp $
+ $Id: gencau.cc,v 1.5 2006/11/03 02:10:48 garrett Exp $
 
 */
 
@@ -27,7 +27,8 @@ Real rcauchy(Real alpha, Real beta)
 {
 static Real gencau;
 
-    gencau = beta*scauchy1()+alpha;
+    // scauchy2 is faster than scauchy1
+    gencau = beta*scauchy2()+alpha;
     return gencau;
 }
 
