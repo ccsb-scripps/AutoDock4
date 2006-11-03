@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.15 2006/11/03 02:10:48 garrett Exp $
+ $Id: support.cc,v 1.16 2006/11/03 04:08:26 garrett Exp $
 
 */
 
@@ -180,6 +180,8 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    (void)fprintf(logFile, "support.cc/void Population::printPopulationAsStates(FILE *output, int num=%d, int ntor=%d)\n",num,ntor);
 #endif /* DEBUG */
 
+   // Print an XML-like tag indicating this is a population, with attribute size
+   // being the number of individuals in the population
    (void)fprintf( output, "<population size=\"%d\">\n", num);
    for (i=0; i<num; i++) {
       thisValue = heap[i].value(Always_Eval);
