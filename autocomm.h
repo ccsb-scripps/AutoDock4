@@ -35,6 +35,7 @@
 
 #define PI	         3.14159265358979323846   /* Mathematical constant, pi    */
 #define TWOPI	     6.28318530717958647692
+#define HALF_PI      1.57079632679489661923
 
 #define X            0      /* x-coordinate                                   */
 #define Y            1      /* y-coordinate                                   */
