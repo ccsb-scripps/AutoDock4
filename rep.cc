@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.10 2006/11/03 02:10:48 garrett Exp $
+ $Id: rep.cc,v 1.11 2006/11/03 04:01:26 garrett Exp $
 
 */
 
@@ -381,6 +381,7 @@ RealVector::RealVector( double nx, double ny, double nz, int num_els )
 
    mytype = T_RealV;
    vector = new double[3];
+   // Set the unit vector.
    vector[0] = nx;
    vector[1] = ny;
    vector[2] = nz;
