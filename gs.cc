@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.12 2006/11/03 02:10:48 garrett Exp $
+ $Id: gs.cc,v 1.13 2006/11/03 03:45:32 garrett Exp $
 
 */
 
@@ -397,8 +397,8 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number=%d)\n",gene_number);
 #endif /* DEBUG */
 
-   switch(m_type(mutant.gtype(gene_number)))
-   {
+   switch(m_type(mutant.gtype(gene_number))) {
+
       case BitFlip:
          //((unsigned char *)gene)[point] = 1 - ((unsigned char *)gene)[point];
          //  Read the bit
@@ -432,18 +432,22 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
                (void)fprintf(logFile, "   gene_number = %d\n",  g  );
                (void)fprintf(logFile, "   tempvar.real = genunf( -1., 1. )\n" );
 #endif /* DEBUG */
-               // set this gene to the appropriate component of the quaternion's raa
+               // Set this gene to the appropriate component of the quaternion's raa
                switch (g) {
                   case 3:
+                     // x-component of the unit vector of the rotation-about-axis
                      tempvar.real = q.nx;
                      break;
                   case 4:
+                     // y-component of the unit vector of the rotation-about-axis
                      tempvar.real = q.ny;
                      break;
                   case 5:
+                     // z-component of the unit vector of the rotation-about-axis
                      tempvar.real = q.nz;
                      break;
                   case 6:
+                     // twist angle-component of the rotation-about-axis
                      tempvar.real = q.ang;
                      break;
                }
