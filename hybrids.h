@@ -56,6 +56,6 @@ State call_gs(Global_Search *global_method, State now, unsigned int num_evals, u
 #ifndef MMM
 #define MMM
 
-void minmeanmax( FILE *fp, Population &pop, int num_its);
+void minmeanmax( FILE *fp, Population &pop, int num_its, GridMapSetInfo *info );
 
 #endif
