@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.20 2006/11/14 00:40:55 garrett Exp $
+ $Id: call_glss.cc,v 1.21 2006/11/14 02:13:54 garrett Exp $
 
 */
 
@@ -45,18 +45,28 @@ Representation **generate_R(int num_torsions, GridMapSetInfo *info)
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/Representation **generate_R()  done creating   a new Representation with 5 elements, retval...\n");
 #endif
-   retval[0] = new RealVector(1, info->lo[X], info->hi[X]);
-   retval[1] = new RealVector(1, info->lo[Y], info->hi[Y]);
-   retval[2] = new RealVector(1, info->lo[Z], info->hi[Z]);
-   // Generate a uniformly-distributed random quaternion for a random rotation
+   // Set the x-translation
+   retval[0] = new RealVector( 1, info->lo[X], info->hi[X] );
+   // Set the y-translation
+   retval[1] = new RealVector( 1, info->lo[Y], info->hi[Y] );
+   // Set the z-translation
+   retval[2] = new RealVector( 1, info->lo[Z], info->hi[Z] );
+
+   // Generate a uniformly-distributed random quaternion for a random rotation (UDQ)
    q = uniformQuat();
    q = convertQuatToRot( q );
 #ifdef DEBUG
    printQuat( logFile, q );
 #endif
-   retval[3] = new RealVector(3, -1., 1.);
-   // retval[3] = new RealVector(q.nx, q.ny, q.nz, 3);
-   retval[4] = new RealVector(num_torsions+1, -PI, PI, q.ang);
+
+   // Set the unit vector components (the "axis"), for the rotation about axis
+   retval[3] = new RealVector( 3, -1., 1., q.nx, q.ny, q.nz ); // uniformly-distributed quaternion (UDQ)
+
+   // Set the angle (the "rotation") for the rotation about axis, 
+   // and any torsion angles
+   retval[4] = new RealVector( num_torsions+1, -PI, PI, q.ang ); // uniformly-distributed quaternion (UDQ)
+   // retval[4] = new RealVector( num_torsions+1, -PI, PI );  // rotation-about-axis angle is uniformly distributed, -PI to PI, not UDQ
+
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/Representation **generate_R()  done assigning each of the retval[0-5] elements...\n");
 #endif
