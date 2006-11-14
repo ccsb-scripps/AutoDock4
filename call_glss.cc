@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.19 2006/11/03 02:10:48 garrett Exp $
+ $Id: call_glss.cc,v 1.20 2006/11/14 00:40:55 garrett Exp $
 
 */
 
@@ -257,7 +257,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
-        if (outlev > 3) { minmeanmax( logFile, thisPop, ++num_iterations ); }
+        if (outlev > 3) { minmeanmax( logFile, thisPop, ++num_iterations, info ); }
 
         if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
 
@@ -271,7 +271,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
-        if (outlev > 3) { minmeanmax( logFile, thisPop, ++num_iterations ); }
+        if (outlev > 3) { minmeanmax( logFile, thisPop, ++num_iterations, info ); }
 
         if (strcmp (FN_pop_file, "") != 0) { // YES, do print!
             if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
