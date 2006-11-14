@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.16 2006/11/03 04:08:26 garrett Exp $
+ $Id: support.cc,v 1.17 2006/11/14 00:44:15 garrett Exp $
 
 */
 
@@ -185,7 +185,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    (void)fprintf( output, "<population size=\"%d\">\n", num);
    for (i=0; i<num; i++) {
       thisValue = heap[i].value(Always_Eval);
-      (void)fprintf( output, "(%d):\tEnergy= %8.2le\t", i+1, thisValue);
+      (void)fprintf( output, "%d\t%8.2le\t", i+1, thisValue);
       heap[i].printIndividualsState(output, ntor, 0);
 
 #ifdef DEBUG2
