@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.11 2006/11/03 04:01:26 garrett Exp $
+ $Id: rep.cc,v 1.12 2006/11/14 02:29:36 garrett Exp $
 
 */
 
@@ -372,7 +372,7 @@ RealVector::RealVector(int num_els, double init_low, double init_high, double in
 //  nx, ny, and nz.
 //  This is useful for specifying an initial quaternion rotation' unit vector.
 //
-RealVector::RealVector( double nx, double ny, double nz, int num_els )
+RealVector::RealVector( int num_els, double init_low, double init_high, double nx, double ny, double nz )
 : Representation(num_els)
 {
 #ifdef DEBUG
@@ -380,6 +380,8 @@ RealVector::RealVector( double nx, double ny, double nz, int num_els )
 #endif /* DEBUG */
 
    mytype = T_RealV;
+   low = init_low;
+   high = init_high;
    vector = new double[3];
    // Set the unit vector.
    vector[0] = nx;

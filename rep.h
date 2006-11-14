@@ -106,7 +106,7 @@ class RealVector : public Representation
       // Use this to set the first value in the vector--useful for random quaternions
       RealVector(int, double, double, double); 
       // Use this to create a vector of length 3 with these values--useful for random quaternions
-      RealVector(double, double, double, int); 
+      RealVector(int, double, double, double, double, double ); 
       RealVector(const RealVector &);
       ~RealVector(void);
       void write(unsigned char, int);
