@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.17 2006/11/14 00:44:15 garrett Exp $
+ $Id: support.cc,v 1.18 2006/11/16 08:13:22 garrett Exp $
 
 */
 
@@ -9,6 +9,7 @@
 #endif
 
 #include <stdio.h>
+#include <assert.h>
 #include "eval.h"
 #include "support.h"
 #include "stateLibrary.h"
@@ -185,7 +186,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    (void)fprintf( output, "<population size=\"%d\">\n", num);
    for (i=0; i<num; i++) {
       thisValue = heap[i].value(Always_Eval);
-      (void)fprintf( output, "%d\t%8.2le\t", i+1, thisValue);
+      (void)fprintf( output, "%4d\t%9.4lg\t", i+1, thisValue);
       heap[i].printIndividualsState(output, ntor, 0);
 
 #ifdef DEBUG2
@@ -476,6 +477,7 @@ Phenotype::Phenotype(unsigned int init_number_of_dimensions, Representation **in
    lookup = new Lookup[number_of_points];
    for (j=0; j<number_of_dimensions; j++) {
       for (k=0; k<value_vector[j]->number_of_points(); k++) {
+         assert ( i < number_of_points ); // mp!
          lookup[i].vector = j;
          lookup[i].index = k;
          i++;
