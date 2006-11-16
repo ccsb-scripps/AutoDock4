@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.13 2006/11/03 03:45:32 garrett Exp $
+ $Id: gs.cc,v 1.14 2006/11/16 04:35:38 garrett Exp $
 
 */
 
@@ -1142,7 +1142,7 @@ int Genetic_Algorithm::search(Population &solutions)
    // 
    crossover(newPop);
 
-#ifdef DEBUG3 /* DEBUG3 } */
+#ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform mutation on the population, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
@@ -1155,7 +1155,7 @@ int Genetic_Algorithm::search(Population &solutions)
    // 
    mutation(newPop);
 
-#ifdef DEBUG3 /* DEBUG3 } */
+#ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform elitism, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
@@ -1173,7 +1173,7 @@ int Genetic_Algorithm::search(Population &solutions)
       }
    }
 
-#ifdef DEBUG3 /* DEBUG3 } */
+#ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to Update the Current Generation, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", newPop[i].age);
