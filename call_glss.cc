@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.21 2006/11/14 02:13:54 garrett Exp $
+ $Id: call_glss.cc,v 1.22 2006/11/16 06:29:45 garrett Exp $
 
 */
 
@@ -166,7 +166,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 {
     register unsigned int i;
     register int j;
-    int num_iterations = 0, num_loops = 0, allEnergiesEqual = 1, numTries = 0;
+    int num_generations = 0, allEnergiesEqual = 1, numTries = 0;
     int indiv = 0; // Number of Individual in Population to set initial state variables for.
     double firstEnergy = 0.0;
     EvalMode localEvalMode = Normal_Eval;
@@ -245,29 +245,31 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
     if (outlev > 2) { 
         (void)fprintf( logFile, "The initial population consists of the following %d individuals:\n\n", pop_size);
-        (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"initialisation of population\">\n", num_loops);
+        (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"initialisation of population\">\n", num_generations);
         thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
         (void)fprintf( logFile, "</generation>\n\n\n");
     }
 
+    if (outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
+
     (void)fprintf( logFile, "Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of %u\nenergy evaluations.\n\n", num_evals);
 
     do {
-        ++num_loops;
+        ++num_generations;
 
-        if (outlev > 1) { (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", num_loops); }
+        if (outlev > 1) { (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", num_generations); }
         
         if (outlev > 1) { (void)fprintf( logFile, "Performing Global Search.\n"); }
 
         global_method->search(thisPop);
 
         if (outlev > 2) {
-            (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"global search\">\n", num_loops);
+            (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"global search\">\n", num_generations);
             thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
-        if (outlev > 3) { minmeanmax( logFile, thisPop, ++num_iterations, info ); }
+        if (outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
 
         if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
 
@@ -276,12 +278,12 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         }
 
         if (outlev > 2) {
-            (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"local search\">\n", num_loops);
+            (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"local search\">\n", num_generations);
             thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
-        if (outlev > 3) { minmeanmax( logFile, thisPop, ++num_iterations, info ); }
+        if (outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
 
         if (strcmp (FN_pop_file, "") != 0) { // YES, do print!
             if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
