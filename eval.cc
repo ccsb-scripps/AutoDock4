@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.16 2006/06/09 01:49:04 garrett Exp $
+ $Id: eval.cc,v 1.17 2006/11/16 06:42:34 garrett Exp $
 
 */
 
@@ -17,6 +17,7 @@
 
 #include <math.h>
 #include "eval.h"
+#include "stateLibrary.h"
 
 extern FILE *logFile;
 
@@ -39,10 +40,10 @@ extern FILE *logFile;
        x is the x translation
        y is the y translation
        z is the z translation
-       nx is the x component of the quaternion
-       ny is the y component of the quaternion
-       nz is the z component of the quaternion
-       ang is the angle portion of the quaternion
+       nx is the x component of the unit-vector of the rotation about axis
+       ny is the y component of the unit-vector of the rotation about axis
+       nz is the z component of the unit-vector of the rotation about axis
+       ang is the angle portion of the rotation about axis
        tor 1, ..., tor N are the ntor torsion angles
 */
 
@@ -112,8 +113,9 @@ double Eval::eval()
 
 #ifdef DEBUG
     (void)fprintf(logFile,"eval.cc/Converting state to coordinates...\n");
+    printState( logFile, stateNow, 2 );
 #endif /* DEBUG */
- 
+
    // Ligand could be inside or could still be outside, check all the atoms...
    cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
 
