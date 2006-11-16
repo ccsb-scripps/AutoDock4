@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.4 2006/11/03 03:56:18 garrett Exp $
+ $Id: qmultiply.cc,v 1.5 2006/11/16 08:11:37 garrett Exp $
 
 */
 
@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 #include "qmultiply.h"
 
 
@@ -105,14 +106,16 @@ Quat convertQuatToRot( Quat q )
     // Update the (nx,ny,nz,ang) components of the quaternion q, 
     // to correspond to the (x,y,z,w) components.
 {
-    register double half_angle = acos( q.w );
-    register double inv_sin_half_angle = 1. / sin( half_angle );
+    assert( fabs( q.w ) <= 1.0 );
+    register double angle = 2 * acos( q.w );
+    register double inv_sin_half_angle = 1 / sin( angle / 2 );
     Quat retval;
 
     retval.nx = q.x * inv_sin_half_angle;
     retval.ny = q.y * inv_sin_half_angle;
     retval.nz = q.z * inv_sin_half_angle;
-    retval.ang = half_angle - HALF_PI; // by our convention, angles range from -pi to +pi
+    if (angle > PI)  angle -= TWOPI;  // by convention, angles should be in the range -PI to +PI.
+    retval.ang = angle;
 
     retval.x = q.x;
     retval.y = q.y;
