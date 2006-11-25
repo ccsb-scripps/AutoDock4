@@ -1,199 +1,189 @@
 #
-# $Id: test_autodock4.py,v 1.8 2006/09/11 17:08:02 rhuey Exp $
+# $Id: test_autodock4.py,v 1.9 2006/11/25 10:00:39 garrett Exp $
 #
+
 """
 Unit Tests for AutoDock 4.
 """
 
+#______________________________________________________________________________
+
 import os
 import unittest
 from DlgParser import DlgParser
+
+#______________________________________________________________________________
+#
+# Global variables
+
+autodock_to_test = "../autodock4"
 
 computed_dlg = False
 computed_dlg_no_parameter_library = False
 computed_dlg_no_elecmap = False
 computed_dlg_no_desolvmap = False
 computed_dlg_no_elec_desolv_maps = False
-expected_value = -6.17
-expected_internal_energy_value = -1.58
 
+expected_intermol_energy = -6.17
+expected_internal_energy = -1.58
 
-class Autodock4_1pgp_test(unittest.TestCase):
+#______________________________________________________________________________
+
+def run_AutoDock( autodock_executable, dpf_filename, dlg_filename ):
+    """Launch AutoDock, using the specified AutoDock executable and DPF,
+    create the specified DLG, and trap all the outputs from standard output
+    and standard error."""
+    command = "rm -f " + dlg_filename
+    os.system( command )
+    command = "%s -p %s -l %s" % ( autodock_executable, dpf_filename, dlg_filename )
+    print "\nRunning " + autodock_executable + ", saving results in \"" + dlg_filename + "\":"
+    try:
+        ( i, o, e ) = os.popen3( command ) # trap all the outputs
+        os.wait() # for the child process to finish
+        return True
+    except:
+        print "\nUnable to run " + autodock_executable + "."
+        return False
+
+#______________________________________________________________________________
+
+def parse_energy_from_DLG( dlg_filename ):
+    """Parse the AutoDock DLG, and return the intermolecular and internal
+    energies as a tuple."""
+    parser = DlgParser()
+    parser.parse( dlg_filename )
+    docked = parser.clist[0]  #dictionary of results
+    intermol_energy = docked['intermol_energy']  #-6.17
+    internal_energy = docked['total_internal']  # -1.58
+    return ( intermol_energy, internal_energy )
+
+#______________________________________________________________________________
+
+def find_success_in_DLG( dlg_filename ):
+    """Open the AutoDock DLG, and look for the string "Successful Completion"
+    in the last 10 lines of the file."""
+    fptr = open( dlg_filename )
+    lines = fptr.readlines()
+    fptr.close()
+    success = False
+    for l in lines[-10:]:
+        if l.find( "Successful Completion" ) > -1:
+            success = True
+    return success
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_test( unittest.TestCase ):
     """Test that autodock4 executes using an extremely short run."""
-    def setUp(self):
+    def setUp( self ):
         """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
         global computed_dlg
         self.dlg_filename = "test_1pgp.dlg"
         if computed_dlg is False:
-            self.autodock = "../autodock4"
-            dpf_filename = "1pgp.dpf"
-            command = "rm -f " + self.dlg_filename
-            os.system(command)
-            cmd_str = "%s -p %s -l %s" % \
-                      (self.autodock, dpf_filename, self.dlg_filename)
-            print "\ncomputing new " + self.dlg_filename + ":"
-            (i,o,e) = os.popen3(cmd_str) # trap all the outputs
-            os.wait() # for the child process to finish
-            computed_dlg = True
+            computed_dlg = run_AutoDock( autodock_to_test, "1pgp.dpf", self.dlg_filename )
 
-    def test_check_result_exists(self):
+    def test_check_result_exists( self ):
         """Check that run finished and a new dlg has been computed."""
-        self.assertEqual(computed_dlg, True)
+        self.assertEqual( computed_dlg, True )
 
-    def test_check_result_energy(self):
+    def test_check_result_energy( self ):
         """Check the final energy is expected value."""
-        global expected_value, expected_internal_energy_value
-        parser = DlgParser()
-        parser.parse(self.dlg_filename)
-        docked = parser.clist[0]  #dictionary of results
-        intermol_energy = docked['intermol_energy']  #-6.17
-        #intermol_energy = docked['intermol_energy']  #-6.17
-        #d = Docking()
-        #d.readDlg(self.dlg_filename)
-        #c = d.ch.conformations[0]
-        #self.assertAlmostEqual(c.intermol_energy, -6.17, places=6)
-        #self.assertAlmostEqual(c.intermol_energy, expected_value, places=6)
-        self.assertAlmostEqual(intermol_energy, expected_value, places=6)
-        internal_energy = docked['total_internal']  # -1.58
-        self.assertAlmostEqual(internal_energy, expected_internal_energy_value, places=6)
+        global expected_intermol_energy, expected_internal_energy
+        (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename )
+        self.assertAlmostEqual( intermol_energy, expected_intermol_energy, places=6 )
+        self.assertAlmostEqual( internal_energy, expected_internal_energy, places=6 )
 
+#______________________________________________________________________________
 
-class Autodock4_1pgp_no_parameter_file_test(unittest.TestCase):
+class AutoDock4_1pgp_no_parameter_file_test( unittest.TestCase ):
     """Test that autodock4 works using default parameter library."""
-    def setUp(self):
+    def setUp( self ):
         """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
         global computed_dlg_no_parameter_library
         self.dlg_filename = "test_1pgp_no_parameter_file.dlg"
         if computed_dlg_no_parameter_library is False:
-            self.autodock = "../autodock4"
-            dpf_filename = "1pgp_no_parameter_file.dpf"
-            command = "rm -f " + self.dlg_filename
-            os.system(command)
-            cmd_str = "%s -p %s -l %s" % \
-                      (self.autodock, dpf_filename, self.dlg_filename)
-            print "\ncomputing new " + self.dlg_filename + ":"
-            (i,o,e) = os.popen3(cmd_str) # trap all the outputs
-            os.wait() # for the child process to finish
-            computed_dlg_no_parameter_library = True
+            computed_dlg_no_parameter_library = run_AutoDock( autodock_to_test, "1pgp_no_parameter_file.dpf", self.dlg_filename )
 
-    def test_check_result_exists_default_parameter_file(self):
+    def test_check_result_exists_default_parameter_file( self ):
         """Using default parameter file: check that a run finished... """
-        self.assertEqual(computed_dlg_no_parameter_library, True)
+        self.assertEqual( computed_dlg_no_parameter_library, True )
 
-    def test_check_result_energy_default_parameter_file(self):
+    def test_check_result_energy_default_parameter_file( self ):
         """ check the final energy is expected value """
-        global expected_value, expected_internal_energy_value
-        parser = DlgParser()
-        parser.parse(self.dlg_filename)
-        docked = parser.clist[0]  #dictionary of results
-        intermol_energy = docked['intermol_energy']  #-6.17
-        #d = Docking()
-        #d.readDlg(self.dlg_filename)
-        #c = d.ch.conformations[0]
-        #self.assertAlmostEqual(c.intermol_energy, -6.17, places=6)
-        #self.assertAlmostEqual(c.intermol_energy, expected_value, places=6)
-        self.assertAlmostEqual(intermol_energy, expected_value, places=6)
-        internal_energy = docked['total_internal']  # -1.58
-        self.assertAlmostEqual(internal_energy, expected_internal_energy_value, places=6)
+        global expected_intermol_energy, expected_internal_energy
+        (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename )
+        self.assertAlmostEqual( intermol_energy, expected_intermol_energy, places=6 )
+        self.assertAlmostEqual( internal_energy, expected_internal_energy, places=6 )
 
+#______________________________________________________________________________
 
-class Autodock4_1pgp_no_elecmap_test(unittest.TestCase):
-    """Test that autodock4 stops early if no elecmap parameter is specified."""
-    def setUp(self):
+class AutoDock4_1pgp_no_elecmap_test( unittest.TestCase ):
+    """Test that autodock4 stops early if no "elecmap" keyword is specified."""
+    def setUp( self ):
         """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
         global computed_dlg_no_elecmap
         self.dlg_filename = "test_1pgp_no_elecmap.dlg"
         if computed_dlg_no_elecmap is False:
-            self.autodock = "../autodock4"
-            dpf_filename = "1pgp_no_elecmap.dpf"
-            command = "rm -f " + self.dlg_filename
-            os.system(command)
-            cmd_str = "%s -p %s -l %s" % \
-                      (self.autodock, dpf_filename, self.dlg_filename)
-            print "\ncomputing new " + self.dlg_filename + ":"
-            (i,o,e) = os.popen3(cmd_str) # trap all the outputs
-            os.wait() # for the child process to finish
-            computed_dlg_no_elecmap = True
+            computed_dlg_no_elecmap = run_AutoDock( autodock_to_test, "1pgp_no_elecmap.dpf", self.dlg_filename )
 
-    def test_check_result_not_successful(self):
+    def test_check_result_not_successful( self ):
         """Using parameter file with no 'elecmap': check that run does not reach Successful Completion... """
-        fptr = open(self.dlg_filename)
-        lines = fptr.readlines()
-        success = False
-        for l in lines[-10:]:
-            if l.find("Successful Completion")>-1:
-                success = True
-        self.assertEqual(success, False)
+        success = find_success_in_DLG( self.dlg_filename )
+        self.assertEqual( success, False )
+        
+#______________________________________________________________________________
 
-
-class Autodock4_1pgp_no_desolvmap_test(unittest.TestCase):
-    """Test that autodock4 stops early if no desolvmap parameter is specified."""
-    def setUp(self):
+class AutoDock4_1pgp_no_desolvmap_test( unittest.TestCase ):
+    """Test that autodock4 stops early if no "desolvmap" keyword is specified."""
+    def setUp( self ):
         """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
         global computed_dlg_no_desolvmap
         self.dlg_filename = "test_1pgp_no_desolvmap.dlg"
         if computed_dlg_no_desolvmap is False:
-            self.autodock = "../autodock4"
-            dpf_filename = "1pgp_no_desolvmap.dpf"
-            command = "rm -f " + self.dlg_filename
-            os.system(command)
-            cmd_str = "%s -p %s -l %s" % \
-                      (self.autodock, dpf_filename, self.dlg_filename)
-            print "\ncomputing new " + self.dlg_filename + ":"
-            (i,o,e) = os.popen3(cmd_str) # trap all the outputs
-            os.wait() # for the child process to finish
-            computed_dlg_no_desolvmap = True
+            computed_dlg_no_desolvmap = run_AutoDock( autodock_to_test, "1pgp_no_desolvmap.dpf", self.dlg_filename )
 
-    def test_check_result_not_successful(self):
-        """Using parameter file with no 'desolvmap': check that run does not reach Successful Completion... """
-        fptr = open(self.dlg_filename)
-        lines = fptr.readlines()
-        success = False
-        for l in lines[-10:]:
-            if l.find("Successful Completion")>-1:
-                success = True
-        self.assertEqual(success, False)
+    def test_check_result_not_successful( self ):
+        """Using parameter file with no "desolvmap": 
+        check that run does not reach Successful Completion... """
+        success = find_success_in_DLG( self.dlg_filename )
+        self.assertEqual( success, False )
 
+#______________________________________________________________________________
 
-
-class Autodock4_1pgp_no_elec_desolv_maps_test(unittest.TestCase):
-    """Test that autodock4 stops early if no elecmap and no desolvmap parameters are specified."""
-    def setUp(self):
+class AutoDock4_1pgp_no_elec_desolv_maps_test( unittest.TestCase ):
+    """Test that autodock4 stops early if no elecmap and no desolvmap 
+    keywords are specified."""
+    def setUp( self ):
         """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
-        global computed_dlg_no_elecmap
+        global computed_dlg_no_elec_desolv_maps
         self.dlg_filename = "test_1pgp_no_elec_desolv_maps.dlg"
         if computed_dlg_no_elec_desolv_maps is False:
-            self.autodock = "../autodock4"
-            dpf_filename = "1pgp_no_elecmap.dpf"
-            command = "rm -f " + self.dlg_filename
-            os.system(command)
-            cmd_str = "%s -p %s -l %s" % \
-                      (self.autodock, dpf_filename, self.dlg_filename)
-            print "\ncomputing new " + self.dlg_filename + ":"
-            (i,o,e) = os.popen3(cmd_str) # trap all the outputs
-            os.wait() # for the child process to finish
-            computed_dlg_no_elecmap = True
+            computed_dlg_no_elec_desolv_maps = run_AutoDock( autodock_to_test, "1pgp_no_elec_desolv_maps.dpf", self.dlg_filename )
 
-    def test_check_result_not_successful(self):
-        """Using parameter file with no 'elecmap' and no 'desolvmap': check that run does not reach Successful Completion... """
-        fptr = open(self.dlg_filename)
-        lines = fptr.readlines()
-        success = False
-        for l in lines[-10:]:
-            if l.find("Successful Completion")>-1:
-                success = True
-        self.assertEqual(success, False)
+    def test_check_result_not_successful( self ):
+        """Using parameter file with no 'elecmap' and no "desolvmap": 
+        check that run does not reach Successful Completion..."""
+        success = find_success_in_DLG( self.dlg_filename )
+        self.assertEqual( success, False )
 
+#______________________________________________________________________________
 
 if __name__ == '__main__':
-    #this syntax allows you to run all tests or conveniently comment out tests you're not interested in
+    #  This syntax lets us run all the tests,
+    #  or conveniently comment out tests we're not interested in.
+    #  NOTE:  Remember to add new TestCase class names to the list "test_cases"
     test_cases = [
-        'Autodock4_1pgp_test',
-        'Autodock4_1pgp_no_parameter_file_test',
-        'Autodock4_1pgp_no_elecmap_test',
-        'Autodock4_1pgp_no_desolvmap_test',
-        'Autodock4_1pgp_no_elec_desolv_maps_test',
+        'AutoDock4_1pgp_test',
+        'AutoDock4_1pgp_no_parameter_file_test',
+        'AutoDock4_1pgp_no_elecmap_test',
+        'AutoDock4_1pgp_no_desolvmap_test',
+        'AutoDock4_1pgp_no_elec_desolv_maps_test',
     ]
-    unittest.main( argv=([__name__ ,] + test_cases) )
-    #for verbose output use this:
-    #unittest.main(argv=([__name__, '-v'] + test_cases))
+    unittest.main( argv=( [__name__ ,] + test_cases ) )
+    #  The call "unittest.main()" automatically runs all the TestCase classes in
+    #  alphabetical order; calling with argv=([]), lets us specify the order.
+    #  NOTE: "unittest.main()" saves us having to remember to add new tests to the 
+    #  list of test cases.
+    #unittest.main()
+    #  For verbose output, use this:
+    #unittest.main( argv=( [__name__, '-v'] + test_cases ) )
