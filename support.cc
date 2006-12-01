@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.18 2006/11/16 08:13:22 garrett Exp $
+ $Id: support.cc,v 1.19 2006/12/01 04:58:03 garrett Exp $
 
 */
 
@@ -187,6 +187,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    for (i=0; i<num; i++) {
       thisValue = heap[i].value(Always_Eval);
       (void)fprintf( output, "%4d\t%9.4lg\t", i+1, thisValue);
+      (void)fprintf( output, "%4lu\t", heap[i].age );
       heap[i].printIndividualsState(output, ntor, 0);
 
 #ifdef DEBUG2
