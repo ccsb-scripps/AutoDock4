@@ -76,7 +76,7 @@ class Genetic_Algorithm : public Global_Search
       Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, Real, Real, int, unsigned int, unsigned int); // after 2000.11.1
       ~Genetic_Algorithm(void);
       void initialize(unsigned int, unsigned int);
-      void mutation_values(int, int, Real, Real);
+      void mutation_values(int, int, Real, Real,  Real, Real, Real );
       unsigned int num_generations(void);
       void reset(void);
       void reset(unsigned int);
@@ -103,7 +103,7 @@ inline Genetic_Algorithm::Genetic_Algorithm(void)
    c_rate = 0.80;
    alpha = beta = 0.0;
    tranStep = 2.0;
-   quatStep = torsStep = Rad( 50.0 );
+   quatStep = torsStep = DegreesToRadians( 30.0 );
    worst = avg = 0.0L;
    converged = 0; // gmm 7-jan-98
    outputEveryNgens = OUTLEV1_GENS; // gmm 2000-nov-1
@@ -128,12 +128,17 @@ inline Genetic_Algorithm::~Genetic_Algorithm(void)
    }
 }
 
-inline void Genetic_Algorithm::mutation_values(int init_low, int init_high, Real init_alpha, Real init_beta)
+inline void Genetic_Algorithm::mutation_values(int init_low, int init_high, 
+        Real init_alpha, Real init_beta, 
+        Real init_tranStep, Real init_quatStep, Real init_torStep )
 {
    low = init_low;
    high = init_high;
    alpha = init_alpha;
    beta = init_beta;
+   tranStep = init_tranStep;
+   quatStep = init_quatStep;
+   torsStep = init_torStep;
 }
 
 inline unsigned int Genetic_Algorithm::num_generations(void)
