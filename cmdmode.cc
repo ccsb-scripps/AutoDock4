@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.16 2006/06/09 01:38:09 garrett Exp $
+ $Id: cmdmode.cc,v 1.17 2006/12/01 01:19:24 garrett Exp $
 
 */
 
@@ -298,14 +298,14 @@ int cmdmode(int   natom,
                 pr(logFile, "COMMAND: eval %lf %lf %lf %lf %lf %lf %lf\n         ", 
                     S.T.x, S.T.y, S.T.z, S.Q.nx, S.Q.ny, S.Q.nz, S.Q.ang);
                 /**/
-                S.Q.ang = Rad(S.Q.ang);
+                S.Q.ang = DegreesToRadians(S.Q.ang);
                 mkUnitQuat(&(S.Q));
                 /**/
                 for (i=0; i<ntor; i++) {
                     fgets(command, LINE_LEN, command_in_fp);
                     sscanf(command, "%lf", &(S.tor[i])); /* S.tor in degrees */
                     pr(logFile, "%lf ", S.tor[i]); /* S.tor in degrees */
-                    S.tor[i] = Rad(S.tor[i]); /* S.tor converted to radians */
+                    S.tor[i] = DegreesToRadians(S.tor[i]); /* S.tor converted to radians */
                 }
                 cnv_state_to_coords(S,  vt, tlist, ntor,  crdpdb, crd, natom);
                 if (ntor > 0) {
