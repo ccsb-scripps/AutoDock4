@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.22 2006/08/29 21:57:38 garrett Exp $
+ $Id: analysis.cc,v 1.23 2006/12/01 01:17:05 garrett Exp $
 
 */
 
@@ -260,15 +260,15 @@ void analysis( int   Nnb,
             pr( logFile, "USER    NEWDPF move\t%s\n", smFileName );
             pr( logFile, "USER    NEWDPF about\t%f %f %f\n", sml_center[X],sml_center[Y],sml_center[Z]);
             pr( logFile, "USER    NEWDPF tran0\t%f %f %f\n", hist[c].T.x, hist[c].T.y, hist[c].T.z );
-            pr( logFile, "USER    NEWDPF quat0\t%f %f %f %f\n", hist[c].Q.nx, hist[c].Q.ny, hist[c].Q.nz, Deg(hist[c].Q.ang) );
+            pr( logFile, "USER    NEWDPF quat0\t%f %f %f %f\n", hist[c].Q.nx, hist[c].Q.ny, hist[c].Q.nz, RadiansToDegrees(hist[c].Q.ang) );
             if (ntor > 0) {
                 pr( logFile, "USER    NEWDPF ndihe\t%d\n", hist[c].ntor );
                 pr( logFile, "USER    NEWDPF dihe0\t" );
                 flushLog;
                 for ( t = 0;  t < hist[c].ntor;  t++ ) {
-                    torDeg = Deg(hist[c].tor[t]);
+                    torDeg = RadiansToDegrees(hist[c].tor[t]);
                     modtorDeg = ModDeg(torDeg);
-                    pr( logFile, "%.2f ", Wrp(modtorDeg) );
+                    pr( logFile, "%.2f ", WrpDeg(modtorDeg) );
                 }/*t*/
                 pr( logFile, "\n" );
             }/*if*/
