@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.cc,v 1.4 2006/04/25 22:32:59 garrett Exp $
+ $Id: qtransform.cc,v 1.5 2006/12/01 02:26:56 garrett Exp $
 
 */
 
@@ -91,13 +91,13 @@ void qtransform( const Coord T,
     tzz = z*tz;
 
     r11 = 1. - tyy - tzz;
-    r12 =      txy + twz;
-    r13 =      txz - twy;
-    r21 =      txy - twz;
+    r12 =      txy - twz;
+    r13 =      txz + twy;
+    r21 =      txy + twz;
     r22 = omtxx    - tzz;
-    r23 =      tyz + twx;
-    r31 =      txz + twy;
-    r32 =      tyz - twx;
+    r23 =      tyz - twx;
+    r31 =      txz - twy;
+    r32 =      tyz + twx;
     r33 = omtxx    - tyy;
 
     for (a = 0;  a < natom;  a++) {
