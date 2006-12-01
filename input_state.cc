@@ -1,6 +1,6 @@
 /*
 
- $Id: input_state.cc,v 1.4 2006/04/25 22:32:22 garrett Exp $
+ $Id: input_state.cc,v 1.5 2006/12/01 01:52:42 garrett Exp $
 
 */
 
@@ -38,7 +38,7 @@ int input_state( State *S,
     status = sscanf(line, "%*s %d %1s " FDFMT " " FDFMT " %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T.x), &(S->T.y), &(S->T.z),  &(S->Q.nx), &(S->Q.ny), &(S->Q.nz),  &(S->Q.ang) );
 
     if (status != 0) {
-	S->Q.ang = Rad( S->Q.ang );
+	S->Q.ang = DegreesToRadians( S->Q.ang );
 	mkUnitQuat( &(S->Q) );
 
     *p_istep = istep;
@@ -49,7 +49,7 @@ int input_state( State *S,
         for (i=0; i<ntor; i++) {
 	    (void) fgets(myline, LINELEN, fp);
             sscanf(myline, "%lf", &(S->tor[i]) ); /* input torsions are in degrees */
-            S->tor[i] = Rad( S->tor[i] );    /* now in radians */
+            S->tor[i] = DegreesToRadians( S->tor[i] );    /* now in radians */
         }
     }
     return( status );
