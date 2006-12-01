@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.12 2006/06/09 01:56:46 garrett Exp $
+ $Id: investigate.cc,v 1.13 2006/12/01 01:53:09 garrett Exp $
 
 */
 
@@ -197,7 +197,7 @@ void investigate( int   Nnb,
             if (B_isGaussTorCon) {
                 for (Itor = 0; Itor < ntor; Itor++) {
                     if (B_isTorConstrained[Itor] == 1) {
-                        indx = Rad2Div( sNow.tor[Itor] );
+                        indx = RadiansToDivs( sNow.tor[Itor] );
                         if (B_ShowTorE) {
                             e += (Real)( US_TorE[Itor] 
                                           = US_torProfile[Itor][indx] );
