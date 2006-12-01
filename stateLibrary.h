@@ -6,6 +6,8 @@
 
 void initialiseState( State *S );
 
+void initialiseQuat( Quat *Q );
+
 void copyState( State *destination,
 		State  source);
 
