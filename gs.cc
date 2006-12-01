@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.14 2006/11/16 04:35:38 garrett Exp $
+ $Id: gs.cc,v 1.15 2006/12/01 01:47:07 garrett Exp $
 
 */
 
@@ -416,44 +416,108 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
          if ((gene_number > 2) && (gene_number < 7)) {
             // mutate all three comopnents of the unit vector 
             // and the twist angle, simultaneously:
-            Quat q;
+            Quat q_change;
             // Generate a uniformly-distributed quaternion
-            q = uniformQuat();
-            // Convert the quaternion into a rotation about an axis
-            q = convertQuatToRot( q );
+            q_change = uniformQuat();
 #ifdef DEBUG_MUTATION
-            printQuat( logFile, q );
+            fprintf( logFile, "q_change -- after uniformQuat\n" );
+            printQuat( logFile, q_change );
 #endif
+            // Create a random uniformly-distributed angle
+            q_change.w = genunf( -quatStep, quatStep );
+#ifdef DEBUG_MUTATION
+            fprintf( logFile, "q_change -- after changing .w, using genunf( %.1f, %.1f )\n", -quatStep, quatStep );
+            printQuat( logFile, q_change );
+#endif
+            // Renormalise the change quaternion (x,y,z,w-components)
+            q_change = normQuat( q_change );
+#ifdef DEBUG_MUTATION
+            fprintf( logFile, "q_change -- after normQuat( q_change )\n" );
+            printQuat( logFile, q_change );
+#endif
+            // Convert quat to rot
+            q_change = convertQuatToRot( q_change );
+#ifdef DEBUG_MUTATION
+            fprintf( logFile, "q_change -- after convertQuatToRot( q_change )\n" );
+            printQuat( logFile, q_change );
+#endif
+            // Build a quaternion, q_current, out of the current individual's
+            // rotation-about-axis genes (nx,ny,nz),ang:
+            Quat q_current;
+            q_current.nx = mutant.gread( 3 ).real;
+            q_current.ny = mutant.gread( 4 ).real;
+            q_current.nz = mutant.gread( 5 ).real;
+            q_current.ang = mutant.gread( 6 ).real;
+            q_current.x = 0.5;
+            q_current.y = 0.5;
+            q_current.z = 0.5;
+            q_current.w = 0.5;
+#ifdef DEBUG_MUTATION
+            fprintf( logFile, "q_current -- after reading mutant.gread\n" );
+            printQuat( logFile, q_current );
+#endif
+            // Renormalise the current quaternion (x,y,z,w-components)
+            q_current = normRot( q_current );
+#ifdef DEBUG_MUTATION
+            fprintf( logFile, "q_current -- after normRot( q_current )\n" );
+            printQuat( logFile, q_current );
+#endif
+            // Convert q_current's rotation-about-axis components (nx,ny,nz),ang 
+            // to quaternion components(x,y,z,w) 
+            q_current = convertRotToQuat( q_current );
+#ifdef DEBUG_MUTATION
+            fprintf( logFile, "q_current -- after convertRotToQuat( q_current )\n" );
+            printQuat( logFile, q_current );
+#endif
+            // Multiply the quaternions, applying the rotation to
+            // the current orientation
+            Quat q_new;
+#ifdef DEBUG_MUTATION
+            fprintf( logFile, "q_current -- about to call qmultiply\n" );
+#endif
+            qmultiply( &q_new, &q_current, &q_change );
+#ifdef DEBUG_MUTATION
+            fprintf( logFile, "q_new - after qmultiply\n" );
+            printQuat( logFile, q_new );
+#endif
+            // Convert the quaternion into a rotation about an axis
+            q_new = convertQuatToRot( q_new );
+#ifdef DEBUG_MUTATION
+            fprintf( logFile, "q_new -- after convertQuatToRot\n" );
+            printQuat( logFile, q_new );
+#endif
+            
             for (register int g=3; g<7; g++) {
                tempvar = mutant.gread( g );
 #ifdef DEBUG_MUTATION
                (void)fprintf(logFile, "   ---CauchyDev---        ---Unit vector genes, 4, 5, & 6---\n" );
                (void)fprintf(logFile, "   Before mutating:        tempvar= %.3f\n", tempvar.real );
                (void)fprintf(logFile, "   gene_number = %d\n",  g  );
-               (void)fprintf(logFile, "   tempvar.real = genunf( -1., 1. )\n" );
-#endif /* DEBUG */
+               (void)fprintf(logFile, "   tempvar.real = UDQ-modified quaternion components\n" );
+#endif
                // Set this gene to the appropriate component of the quaternion's raa
                switch (g) {
                   case 3:
                      // x-component of the unit vector of the rotation-about-axis
-                     tempvar.real = q.nx;
+                     tempvar.real = q_new.nx;
                      break;
                   case 4:
                      // y-component of the unit vector of the rotation-about-axis
-                     tempvar.real = q.ny;
+                     tempvar.real = q_new.ny;
                      break;
                   case 5:
                      // z-component of the unit vector of the rotation-about-axis
-                     tempvar.real = q.nz;
+                     tempvar.real = q_new.nz;
                      break;
                   case 6:
                      // twist angle-component of the rotation-about-axis
-                     tempvar.real = q.ang;
+                     tempvar.real = q_new.ang;
                      break;
                }
 #ifdef DEBUG_MUTATION
                (void)fprintf(logFile, "   After mutating:         tempvar= %.3f\n", tempvar.real );
-#endif /* DEBUG */
+               (void)fflush(logFile );
+#endif
                //  Write it
                mutant.write( tempvar, g );
             }
@@ -465,13 +529,14 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
             (void)fprintf(logFile, "   Before mutating:        tempvar= %.3f\n", tempvar.real );
             (void)fprintf(logFile, "   gene_number= %d\n", gene_number );
             (void)fprintf(logFile, "   tempvar.real += scauchy2()\n" );
-#endif /* DEBUG */
+#endif
             //  Add deviate
-            //  We do not care about alpha and beta, so just use the faster "scauchy2()" function:
+            //  We never vary alpha and beta, so just use the faster "scauchy2()" function:
             tempvar.real += scauchy2();
 #ifdef DEBUG_MUTATION
             (void)fprintf(logFile, "   Add Cauchy deviate:     tempvar= %.3f\n", tempvar.real );
-#endif /* DEBUG */
+            (void)fflush(logFile );
+#endif
             //  Write it
             mutant.write(tempvar, gene_number);
          }
