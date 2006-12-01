@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.7 2006/10/22 21:12:13 garrett Exp $
+ $Id: writePDBQT.cc,v 1.8 2006/12/01 04:58:32 garrett Exp $
 
 */
 
@@ -190,12 +190,12 @@ writePDBQT(int irun, FourByteLong seed[2],
 		(void) fprintf(logFile, "%s: USER    NEWDPF move %s\n", state_type_string, smFileName);
 		(void) fprintf(logFile, "%s: USER    NEWDPF about %f %f %f\n", state_type_string, sml_center[X], sml_center[Y], sml_center[Z]);
 		(void) fprintf(logFile, "%s: USER    NEWDPF tran0 %f %f %f\n", state_type_string, state.T.x, state.T.y, state.T.z);
-		(void) fprintf(logFile, "%s: USER    NEWDPF quat0 %f %f %f %f\n", state_type_string, state.Q.nx, state.Q.ny, state.Q.nz, Deg(WrpRad(ModRad(state.Q.ang))));
+		(void) fprintf(logFile, "%s: USER    NEWDPF quat0 %f %f %f %f\n", state_type_string, state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
 		if (ntor > 0) {
 			// (void) fprintf(logFile, "%s: USER    NEWDPF ndihe %d\n", state_type_string, ntor);
 			(void) fprintf(logFile, "%s: USER    NEWDPF dihe0 ", state_type_string);
 			for (i = 0; i < ntor; i++) {
-				(void) fprintf(logFile, "%.2f ", Deg(WrpRad(ModRad(state.tor[i]))));
+				(void) fprintf(logFile, "%.2f ", RadiansToDegrees(WrpRad(ModRad(state.tor[i]))));
 			}
 			(void) fprintf(logFile, "\n");
 
@@ -207,12 +207,12 @@ writePDBQT(int irun, FourByteLong seed[2],
 			pr(stateFile, "\t\t<about>%f %f %f</about>\n", sml_center[X], sml_center[Y], sml_center[Z]);
 
 			pr(stateFile, "\t\t<tran0>%f %f %f</tran0>\n", state.T.x, state.T.y, state.T.z);
-			pr(stateFile, "\t\t<quat0>%f %f %f %f</quat0>\n", state.Q.nx, state.Q.ny, state.Q.nz, Deg(WrpRad(ModRad(state.Q.ang))));
+			pr(stateFile, "\t\t<quat0>%f %f %f %f</quat0>\n", state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
 			if (ntor > 0) {
 				pr(stateFile, "\t\t<ndihe>%d</ndihe>\n", ntor);
 				pr(stateFile, "\t\t<dihe0>");
 				for (i = 0; i < ntor; i++) {
-					(void) fprintf(stateFile, "%.2f ", Deg(WrpRad(ModRad(state.tor[i]))));
+					(void) fprintf(stateFile, "%.2f ", RadiansToDegrees(WrpRad(ModRad(state.tor[i]))));
 				}
 				(void) fprintf(stateFile, "\n");
 				pr(stateFile, "</dihe0>\n");
