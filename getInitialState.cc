@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.15 2006/07/27 03:53:35 garrett Exp $
+ $Id: getInitialState.cc,v 1.16 2006/12/01 01:32:44 garrett Exp $
 
 */
 
@@ -121,12 +121,12 @@ void getInitialState(
                 sInit->Q.nx  = random_range( -1., 1. );
                 sInit->Q.ny  = random_range( -1., 1. );
                 sInit->Q.nz  = random_range( -1., 1. );
-                sInit->Q.ang = Rad( random_range( 0., 360.) );/*convert to radians*/
+                sInit->Q.ang = DegreesToRadians( random_range( 0., 360.) );/*convert to radians*/
 
                 mkUnitQuat( &(sInit->Q) );
 
                 if (outlev > 1) {
-                    pr( logFile, "Random initial quaternion,  quat0 %.3f %.3f %.3f %.1f\n", sInit->Q.nx, sInit->Q.ny, sInit->Q.nz, Deg( sInit->Q.ang ) );
+                    pr( logFile, "Random initial quaternion,  quat0 %.3f %.3f %.3f %.1f\n", sInit->Q.nx, sInit->Q.ny, sInit->Q.nz, RadiansToDegrees( sInit->Q.ang ) );
                 }
             }/*if*/
             if ( B_RandomDihe0 && (ntor > 0) ) {
@@ -139,7 +139,7 @@ void getInitialState(
                     if (outlev > 1) {
                         pr( logFile, "%7.2f ", sInit->tor[i] ); /*in degrees*/
                     }
-                    sInit->tor[i] = Rad( sInit->tor[i] ); /*now in radians*/
+                    sInit->tor[i] = DegreesToRadians( sInit->tor[i] ); /*now in radians*/
                 }
                 if (outlev > 1) {
                     pr( logFile, "\n");
