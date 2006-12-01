@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.16 2006/07/27 03:56:38 garrett Exp $
+ $Id: simanneal.cc,v 1.17 2006/12/01 02:29:44 garrett Exp $
 
 */
 
@@ -389,7 +389,7 @@ void simanneal ( int   *Addr_nconf,
                             /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { ***/
                             for (Itor = 0; Itor < ntor; Itor++) {
                                 if (B_isTorConstrained[Itor] == 1) {
-                                    indx = Rad2Div( sNow.tor[Itor] );
+                                    indx = RadiansToDivs( sNow.tor[Itor] );
                                     if (B_ShowTorE) {
                                         e += (Real)( US_TorE[Itor] 
                                                   = US_torProfile[Itor][indx] );
@@ -510,16 +510,16 @@ void simanneal ( int   *Addr_nconf,
                     cycEnd = times( &tms_cycEnd );
                     timesys( cycEnd - cycStart, &tms_cycStart, &tms_cycEnd );
                     if (outlev > 1) {
-                        pr( logFile, "\tEnergy:   \tState:\n\t__________\t____________________________________________________________\nMinimum\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [w,(x,y,z)] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eMin, sMin.T.x, sMin.T.y, sMin.T.z, Deg(sMin.Q.ang) , sMin.Q.nx, sMin.Q.ny, sMin.Q.nz );
-                        pr( logFile, "\nLast\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [w,(x,y,z)] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eLast, sLast.T.x, sLast.T.y, sLast.T.z, Deg(sLast.Q.ang) , sLast.Q.nx, sLast.Q.ny, sLast.Q.nz );
+                        pr( logFile, "\tEnergy:   \tState:\n\t__________\t____________________________________________________________\nMinimum\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [w,(x,y,z)] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eMin, sMin.T.x, sMin.T.y, sMin.T.z, RadiansToDegrees(sMin.Q.ang) , sMin.Q.nx, sMin.Q.ny, sMin.Q.nz );
+                        pr( logFile, "\nLast\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [w,(x,y,z)] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eLast, sLast.T.x, sLast.T.y, sLast.T.z, RadiansToDegrees(sLast.Q.ang) , sLast.Q.nx, sLast.Q.ny, sLast.Q.nz );
                         if (ntor > 0) {
                             pr( logFile, "Minimum:\t(" );
                             for (i=0; i<ntor; i++) {
-                                pr( logFile, "%.1f%s ", Deg(sMin.tor[i]), (i < ntor1)?",":" deg)" );
+                                pr( logFile, "%.1f%s ", RadiansToDegrees(sMin.tor[i]), (i < ntor1)?",":" deg)" );
                             }
                             pr( logFile, "\nLast:\t(" );
                             for (i=0; i<ntor; i++) {
-                                pr( logFile, "%.1f%s ", Deg(sLast.tor[i]), (i < ntor1)?",":" deg)" );
+                                pr( logFile, "%.1f%s ", RadiansToDegrees(sLast.tor[i]), (i < ntor1)?",":" deg)" );
                             }
                             pr( logFile, "\n" );
                         }
@@ -576,7 +576,7 @@ void simanneal ( int   *Addr_nconf,
         pr( logFile, "Run Number %d, \n\nFinal Energy = %+.2f\n", irun1, eLast);
 
         pr( logFile, "Final Translation = %.2f, %.2f, %.2f\n", sSave.T.x, sSave.T.y, sSave.T.z );
-        pr( logFile, "Final Quaternion Rotation Angle = %5.1f deg\n", Deg(sSave.Q.ang) );
+        pr( logFile, "Final Quaternion Rotation Angle = %5.1f deg\n", RadiansToDegrees(sSave.Q.ang) );
         pr( logFile, "Final Quaternion Unit Vector = ( %+.2f, %+.2f, %+.2f )\n", sSave.Q.nx, sSave.Q.ny, sSave.Q.nz );
 
         copyState( &sHist[ *Addr_nconf ], sSave );
@@ -584,7 +584,7 @@ void simanneal ( int   *Addr_nconf,
         if (ntor > 0) {
             pr( logFile, "Final Torsions:\n" );
             for (i=0; i<ntor; i++) {
-                torTmp = Deg( sSave.tor[i] );
+                torTmp = RadiansToDegrees( sSave.tor[i] );
                 torTmp = ModDeg( torTmp );
                 torTmp = WrpDeg( torTmp );
                 sHist[ *Addr_nconf ].tor[i] = sSave.tor[i];
