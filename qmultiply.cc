@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.5 2006/11/16 08:11:37 garrett Exp $
+ $Id: qmultiply.cc,v 1.6 2006/12/01 02:23:51 garrett Exp $
 
 */
 
@@ -15,6 +15,10 @@
 #include <string.h>
 #include <assert.h>
 #include "qmultiply.h"
+
+#ifdef DEBUG_MUTATION
+extern  FILE    *logFile;
+#endif
 
 
 void qmultiply( Quat *q,
@@ -77,6 +81,7 @@ void qmultiply( Quat *q,
 }
 
 void mkUnitQuat( Quat *q )
+    // essentially, convertQuatToRot( Quat *q )
 {	
     double inv_nmag, hqang, s;
 	     
@@ -98,14 +103,46 @@ void mkUnitQuat( Quat *q )
 
 void printQuat( FILE *fp, Quat q )
 {
-    (void) fprintf( fp, "Quat(x,y,z,w)= %.2f %.2f %.2f %.2f\n", q.x, q.y, q.z, q.w);
-    (void) fprintf( fp, "Quat(nx,ny,nz,ang)= %.2f %.2f %.2f %.2f\n", q.nx, q.ny, q.nz, q.ang);
+    (void) fprintf( fp, "Quat(x,y,z,w)=      %5.2f %5.2f %5.2f %5.2f\n", q.x, q.y, q.z, q.w);
+    (void) fprintf( fp, "Mag(Quat(x,y,z,w))= %5.2f\n", sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w) );
+    (void) fprintf( fp, "Quat(nx,ny,nz,ang)= %5.2f %5.2f %5.2f %5.2f\n", q.nx, q.ny, q.nz, q.ang);
+    (void) fprintf( fp, "Mag(nx,ny,nz)=      %5.2f\n", sqrt(q.nx*q.nx + q.ny*q.ny + q.nz*q.nz) );
 } // printQuat( Quat q )
+
+Quat normQuat( Quat q )
+    // Normalise the 4D quaternion, x,y,z,w
+{
+    double mag4 = hypotenuse4( q.x, q.y, q.z, q.w );
+    if (mag4 > APPROX_ZERO) {
+        double inv_mag4 = 1. / mag4;
+        q.x *= inv_mag4;
+        q.y *= inv_mag4;
+        q.z *= inv_mag4;
+        q.w *= inv_mag4;
+    }
+    return q;
+}
+
+Quat normRot( Quat q )
+    // Normalise the 3D rotation axis or vector nx,ny,nz
+{
+    double mag3 = hypotenuse( q.nx, q.ny, q.nz );
+    if (mag3 > APPROX_ZERO) {
+        double inv_mag3 = 1. / mag3;
+        q.nx *= inv_mag3;
+        q.ny *= inv_mag3;
+        q.nz *= inv_mag3;
+    }
+    return q;
+}
 
 Quat convertQuatToRot( Quat q )
     // Update the (nx,ny,nz,ang) components of the quaternion q, 
     // to correspond to the (x,y,z,w) components.
 {
+#ifdef DEBUG_MUTATION
+    fprintf( logFile, "q.w = %.3f\n", q.w );
+#endif
     assert( fabs( q.w ) <= 1.0 );
     register double angle = 2 * acos( q.w );
     register double inv_sin_half_angle = 1 / sin( angle / 2 );
@@ -114,6 +151,9 @@ Quat convertQuatToRot( Quat q )
     retval.nx = q.x * inv_sin_half_angle;
     retval.ny = q.y * inv_sin_half_angle;
     retval.nz = q.z * inv_sin_half_angle;
+
+    retval = normRot( retval );
+
     if (angle > PI)  angle -= TWOPI;  // by convention, angles should be in the range -PI to +PI.
     retval.ang = angle;
 
@@ -124,6 +164,33 @@ Quat convertQuatToRot( Quat q )
 
     return retval;
 } // convertQuatToRot( Quat q )
+
+Quat convertRotToQuat( Quat q )
+    // Normalize the rotation-about-axis vector 
+    // and convert the rotation-about-axis components (nx,ny,nz,ang)
+    // to the corresponding quaternion components (x,y,z,w)
+{	
+    double hqang, s;
+    Quat retval;
+
+    retval.nx = q.nx;
+    retval.ny = q.ny;
+    retval.nz = q.nz;
+    retval = normRot( retval );
+
+    retval.ang = q.ang;
+      
+    hqang = 0.5 * q.ang;
+    s = sin( hqang );
+    
+    retval.x = s * q.nx;
+    retval.y = s * q.ny;
+    retval.z = s * q.nz;
+    retval.w = cos( hqang );
+    
+    /* q.qmag = hypotenuse4( q.x,  q.y,  q.z,  q.w  ); */
+    return retval;
+} // Quat convertRotToQuat( Quat q )
 
 Quat uniformQuat( void )
     // Generate a uniformly-distributed random quaternion
@@ -137,10 +204,12 @@ Quat uniformQuat( void )
     **  published by Academic Press, Inc., (1992)
     */
     t1 = genunf(0., TWOPI);
-    q.x = sin( t1 ) * (  r1 = ( (genunf(0., 1.) < 0.5) ?  (-1.) : (+1.) ) * sqrt( 1. - (x0 = genunf(0., 1.)) )  );
+    // q.x = sin( t1 ) * (  r1 = ( (genunf(0., 1.) < 0.5) ?  (-1.) : (+1.) ) * sqrt( 1. - (x0 = genunf(0., 1.)) )  );  // random sign version
+    q.x = sin( t1 ) * (  r1 = sqrt( 1. - (x0 = genunf(0., 1.)) )  );  // strict Shoemake version
     q.y = cos( t1 ) * r1;
     t2 = genunf(0., TWOPI);
-    q.z = sin( t2 ) * (  r2 = ( (genunf(0., 1.) < 0.5) ?  (-1.) : (+1.) ) * sqrt( x0 )  );
+    // q.z = sin( t2 ) * (  r2 = ( (genunf(0., 1.) < 0.5) ?  (-1.) : (+1.) ) * sqrt( x0 )  );  // random sign version
+    q.z = sin( t2 ) * (  r2 = sqrt( x0 )  );  // strict Shoemake version
     q.w = cos( t2 ) * r2;
 
     return q;
