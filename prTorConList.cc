@@ -1,6 +1,6 @@
 /*
 
- $Id: prTorConList.cc,v 1.3 2006/04/25 22:32:48 garrett Exp $
+ $Id: prTorConList.cc,v 1.4 2006/12/01 02:12:44 garrett Exp $
 
 */
 
@@ -105,7 +105,7 @@ void prTorConList( int ntor,
 		pr(logFile,"\n\nTors\tAngle\tDegs\tPenalty\n");
 		pr(logFile,"____\t_____\t_____\t_______\n\n");
 		for (j=0; j<NTORDIVS; j++) {
-		    pr(logFile,"%3d\t%3d\t%5.1f\t%6uhd\n",i+1,j,Wrp( ModDeg( Deg( Div2Rad(j) )) ), US_torProfile[ i ][j]);
+		    pr(logFile,"%3d\t%3d\t%5.1f\t%6uhd\n",i+1,j,WrpDeg( ModDeg( RadiansToDegrees( DivsToRadians(j) )) ), US_torProfile[ i ][j]);
 		}
 		flushLog;
 		break;
@@ -151,8 +151,8 @@ void prTorConList( int ntor,
 		}/*j*/
 		for (j=0; j<N_con[i]; j++) {
 		    pr(logFile,"HardCon %d, Allowed Torsion Angles are from %.1f to %.1f degrees.\n", j+1, F_TorConRange[i][j][LOWER], F_TorConRange[i][j][UPPER]);
-		    F_TorConRange[i][j][LOWER] = Rad( F_TorConRange[i][j][LOWER] );
-		    F_TorConRange[i][j][UPPER] = Rad( F_TorConRange[i][j][UPPER] );
+		    F_TorConRange[i][j][LOWER] = DegreesToRadians( F_TorConRange[i][j][LOWER] );
+		    F_TorConRange[i][j][UPPER] = DegreesToRadians( F_TorConRange[i][j][UPPER] );
 		}/*j*/
 		break;
 	}/*switch*/
