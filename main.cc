@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.61 2006/11/03 02:10:48 garrett Exp $
+ $Id: main.cc,v 1.62 2006/12/01 02:07:05 garrett Exp $
 
 */
 
@@ -113,11 +113,11 @@ int main (int argc, char * const argv[], char * const envp[])
 
 //   ATOM_MAPS
 //
-char            atm_typ_str[ATOM_MAPS]; //  "atm_typ_str" (in AD3) used to serve a similar role to "atom_type_name" (in AD4).
+char   atm_typ_str[ATOM_MAPS]; //  "atm_typ_str" (in AD3) used to serve a similar role to "atom_type_name" (in AD4).
 
 //   MAX_MAPS
 //
-char            *ligand_atom_type_ptrs[MAX_MAPS]; /* array of ptrs used to parse input line of atom type names */
+char   *ligand_atom_type_ptrs[MAX_MAPS]; /* array of ptrs used to parse input line of atom type names */
 //char            atom_type_name[MAX_MAPS][3];  // now part of the GridMapSetInfo structure
 ParameterEntry  parameterArray[MAX_MAPS];
 //Real   mapmax[MAX_MAPS];  // now part of the GridMapSetInfo structure
@@ -132,8 +132,8 @@ GridMapSetInfo *info;  // this information is from the AVS field file
 
 //   MAX_ATOMS
 //
-char            atomstuff[MAX_ATOMS][MAX_CHARS];
-char            pdbaname[MAX_ATOMS][5];
+char   atomstuff[MAX_ATOMS][MAX_CHARS];
+char   pdbaname[MAX_ATOMS][5];
 Real   crdpdb[MAX_ATOMS][SPACE];
 Real   crd[MAX_ATOMS][SPACE];
 Real   charge[MAX_ATOMS];
@@ -141,19 +141,19 @@ Real   abs_charge[MAX_ATOMS];
 Real   qsp_abs_charge[MAX_ATOMS];
 Real   elec[MAX_ATOMS];
 Real   emap[MAX_ATOMS];
-int             type[MAX_ATOMS];
-int             bond_index[MAX_ATOMS];
-int             ignore_inter[MAX_ATOMS];
-Atom            atoms[MAX_ATOMS];
+int    type[MAX_ATOMS];
+int    bond_index[MAX_ATOMS];
+int    ignore_inter[MAX_ATOMS];
+Atom   atoms[MAX_ATOMS];
 
 //   MAX_TORS
 //
-int             tlist[MAX_TORS][MAX_ATOMS];
+int    tlist[MAX_TORS][MAX_ATOMS];
 Real   vt[MAX_TORS][SPACE];
 Real   F_TorConRange[MAX_TORS][MAX_TOR_CON][2];
 unsigned short  US_TorE[MAX_TORS];
-Boole           B_isTorConstrained[MAX_TORS];
-int             N_con[MAX_TORS];
+Boole  B_isTorConstrained[MAX_TORS];
+int    N_con[MAX_TORS];
 unsigned short  US_torProfile[MAX_TORS][NTORDIVS];
 
 //   MAX_NONBONDS
@@ -415,6 +415,8 @@ int j1 = 1;
 
 State sInit;            /* Real qtn0[QUAT], tor0[MAX_TORS]; */
 
+Quat q_reorient;
+
 Molecule ligand;        /* ligand */
 
 static Real F_A_from;
@@ -462,10 +464,18 @@ EvalMode e_mode = Normal_Eval;
 Global_Search *GlobalSearchMethod = NULL;
 Local_Search *LocalSearchMethod = NULL;
 
+// For outputting the PDBQT files
+char AtmNamResNamNum[14];
+
 info = (GridMapSetInfo *) malloc( sizeof(GridMapSetInfo) );
 ad_energy_tables = (EnergyTables *) malloc( sizeof(EnergyTables) );
 unbound_energy_tables = (EnergyTables *) malloc( sizeof(EnergyTables) );
 
+// Create a coordinate at the origin:
+Coord origin;
+origin.x = 0.;
+origin.y = 0.;
+origin.z = 0.;
 
 //______________________________________________________________________________
 /*
@@ -553,6 +563,8 @@ for (i = 0; i  < MAX_TORS;  i++ ) {
 initialiseState( &sInit );
 initialiseState( &(ligand.S) );
 
+initialiseQuat( &q_reorient );
+
 F_W      =  360.0 / NTORDIVS;
 F_hW     =  F_W  / 2.0;
 F_A_from = -360.0 + F_hW;
@@ -566,7 +578,7 @@ for (k = 0; k < MAX_RUNS; k++) {
 
 for (i = 0; i < MAX_TORS;  i++ ) {
     if ( (ltorfmt += 4) > LINE_LEN ) {
-        prStr( error_message, "ERROR: MAX_TORS = %d torsions declared in \"constants.h\";\n\t LINE_LEN = %d, Therefore you must change \"LINE_LEN\" to exceed %d...\n", MAX_TORS, LINE_LEN, 4+4*MAX_TORS );
+        prStr( error_message, "%s:  ERROR: MAX_TORS = %d torsions declared in \"constants.h\";\n\t LINE_LEN = %d, Therefore you must change \"LINE_LEN\" to exceed %d...\n", programname, MAX_TORS, LINE_LEN, 4+4*MAX_TORS );
         stop( error_message );
         exit( -1 );
     } else {
@@ -675,7 +687,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.61 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.62 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -717,9 +729,9 @@ setup_distdepdiel(outlev, unbound_energy_tables);
 
 //______________________________________________________________________________
 
-(void) fprintf(logFile, "\n      ________________________________________________________________\n\n");
-(void) fprintf(logFile, "             BEGINNING PARSING OF INPUT DOCKING PARAMETER FILE\n");
-(void) fprintf(logFile, "      ________________________________________________________________\n\n");
+(void) fprintf(logFile, "\n      ___________________________________________________\n\n");
+(void) fprintf(logFile,   "             PARSING INPUT DOCKING PARAMETER FILE\n");
+(void) fprintf(logFile,   "      ___________________________________________________\n\n");
 
 //______________________________________________________________________________
 /*
@@ -830,7 +842,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *        command, since "include_1_4_interactions" affects how the Ligand
          *        PDBQT specified by the "move" command will be interpreted.
          */
-        if (B_found_move_keyword == TRUE) {  // If we have found the move keyword already, warn the user that his command should be given first!
+        if (B_found_move_keyword == TRUE) {
+            // If we have found the move keyword already, warn the user 
+            // that this command ("include_1_4_interactions 0.5") should have
+            // been given before this!
             pr(logFile, "\nWARNING:  This command will be ignored.\n\nYou must put this command _before_ the \"move ligand.pdbqt\" command, since this command affects how the PDBQT file will be interpreted.\n\n");
         }
         (void) sscanf( line, "%*s " FDFMT, &scale_1_4 );
@@ -987,7 +1002,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 }
             } else {
                 // We could not find this parameter -- return error here
-                prStr( error_message,"%s: ERROR:  Unknown ligand atom type \"%s\"; add parameters for it to the parameter library first!\n", programname, info->atom_type_name[i]);
+                prStr( error_message,"%s:  ERROR:  Unknown ligand atom type \"%s\"; add parameters for it to the parameter library first!\n", programname, info->atom_type_name[i]);
                 pr_2x( logFile, stderr, error_message );
                 if (parameter_library_found == 1) {
                     prStr( error_message,"%s:         Edit the parameter library file \"%s\" and try again.\n", programname, FN_parameter_library );
@@ -1247,6 +1262,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         initialiseState( &sInit );
         initialiseState( &(ligand.S) );
+        initialiseQuat( &q_reorient );
         B_constrain_dist = B_haveCharges = FALSE;
         ntor1 = ntor = atomC1 = atomC2 = 0;
         sqlower = squpper = 0.0;
@@ -1374,29 +1390,29 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (strcmp(algname,"help")==0) {
             std::vector<double> initvec;
             coliny_init(algname, "");
-            prStr(error_message, "ERROR:  no optimizer type specified.");
+            prStr(error_message, "%s:  ERROR:  no optimizer type specified.", programname);
             stop(error_message);
             exit(-1);
         }
         else if (strcmp(nruns_str,"help")==0) {
             std::vector<double> initvec;
             coliny_init(algname, nruns_str);
-            prStr(error_message, "ERROR:  no optimizer type specified.");
+            prStr(error_message, "%s:  ERROR:  no optimizer type specified.", programname);
             stop(error_message);
             exit(-1);
         }
 
         if (!command_mode) {
             if (nruns>MAX_RUNS) {
-                prStr(error_message, "ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", nruns, MAX_RUNS);
+                prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop(error_message);
                 exit(-1);
             } else if (!B_found_elecmap) {
-                prStr(error_message, "ERROR:  no 'elecmap' has been specified!\n");
+                prStr(error_message, "%s:  ERROR:  no \"elecmap\" command has been specified!\n", programname);
                 stop(error_message);
                 exit(-1);
             } else if (!B_found_desolvmap) {
-                prStr(error_message, "ERROR:  no 'desolvmap' has been specified!\n");
+                prStr(error_message, "%s:  ERROR:  no \"desolvmap\" command has been specified!\n", programname);
                 stop(error_message);
                 exit(-1);
             }
@@ -1471,9 +1487,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 initvec[3] = sInit.Q.nx;
                 initvec[4] = sInit.Q.ny;
                 initvec[5] = sInit.Q.nz;
-                initvec[6] = Rad( sInit.Q.ang );
+                initvec[6] = DegreesToRadians( sInit.Q.ang );
                 for (j=0; j < sInit.ntor ; j++) {
-                  initvec[j+7] = Rad(sInit.tor[j]);
+                  initvec[j+7] = DegreesToRadians(sInit.tor[j]);
                 }
                 coliny_init(algname, domain);
 
@@ -1607,6 +1623,214 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) fflush(logFile);
         break;
 
+/*____________________________________________________________________________*/
+
+    case DPF_REORIENT:
+        /*
+         *  reorient random
+         *      # applies a random rotation to the input ligand
+         * -OR-
+         *  reorient standard
+         *      # moves the ligand such that 
+         *      # the first three atoms lie parallel to the xy-plane, and 
+         *      # the first two atoms lie parallel to the x-axis
+         * -OR-
+         *  reorient <axis-x> <axis-y> <axis-z> <angle>
+         *      # applies the specified rotation to the input ligand
+         */
+        (void) sscanf( line, "%*s %s", param[0] );
+        for (i=0; i<6; i++) {
+            param[0][i] = (char)tolower( (int)param[0][i] );
+        }
+        if (equal(param[0],"random",6)) {
+
+            // Generate a random initial orientation for the ligand
+            Quat q_random;
+            // generate a uniformly-distributed quaternion:
+            // setting the x,y,z,w components
+            q_random = uniformQuat();
+            q_reorient.x = q_random.x;
+            q_reorient.y = q_random.y;
+            q_reorient.z = q_random.z;
+            q_reorient.w = q_random.w;
+            // update the (nx,ny,nz,ang) components of the quaternion, q_reorient:
+            q_reorient = convertQuatToRot( q_reorient );
+
+        } else if (equal(param[0],"standard",8)) {
+
+            if (true_ligand_atoms >= 3 ) {
+                // Move the ligand such that 
+                // the first three atoms lie parallel to the xy-plane, and 
+                // the first two atoms lie parallel to the x-axis
+                Vector vec_01,     // vector between ligand atoms 0 and 1
+                       vec_12,     // vector between ligand atoms 1 and 2
+                       vec_normal, // vector perpendicular to plane of vec_01 and vec_12
+                       vec_x_axis, // vector along the X-axis
+                       vec_z_axis, // vector along the Z-axis
+                       vec_reorient_axis; // vector describing the axis about which to reorient
+                // Set the X and Z axes:
+                vec_x_axis[X] = 1.;
+                vec_x_axis[Y] = 0.;
+                vec_x_axis[Z] = 0.;
+                vec_z_axis[X] = 0.;
+                vec_z_axis[Y] = 0.;
+                vec_z_axis[Z] = 1.;
+                for (xyz = 0;  xyz < SPACE;  xyz++) {
+                    vec_01[xyz] = (double)( crdpdb[1][xyz] - crdpdb[0][xyz] );
+                    vec_12[xyz] = (double)( crdpdb[2][xyz] - crdpdb[1][xyz] );
+                }
+                // Compute the normal to vec_01 and vec_12
+                Cross_product( vec_normal, vec_01, vec_12 );
+                Print_vector( logFile, "vec_01", vec_01 );
+                Print_vector( logFile, "vec_12", vec_12 );
+                Print_vector( logFile, "vec_normal", vec_normal );
+                Print_vector( logFile, "vec_z_axis", vec_z_axis );
+                // Compute the angle between vec_01 and vec_12
+                double angle_012 = 0.; 
+                angle_012 = Angle_between( vec_01, vec_12 );
+                pr( logFile, "Angle between vectors 01 and 12 = %.2f degrees\n", RadiansToDegrees( angle_012 ) );
+                if ( ( fabs(angle_012) < APPROX_ZERO ) || ( ( fabs(angle_012) > (PI - APPROX_ZERO) ) && ( fabs(angle_012) < (PI + APPROX_ZERO) ) ) ) {
+                    // angle is too small or "too linear" to align the molecule into the xy-plane
+                    pr( logFile, "%s:  WARNING!  The angle between the first three atoms is not suitable (%6.3f degrees) to align them with the xy-plane.\n", programname, RadiansToDegrees( angle_012 ) );
+                } else {
+                    // Calculate angle between vec_normal and the z-axis
+                    double angle_n1z = 0.;  // Angle between vec_normal and the z-axis
+                    angle_n1z = Angle_between( vec_normal, vec_z_axis );
+                    pr( logFile, "Angle between vec_normal and vec_z_axis = %.2f degrees\n", RadiansToDegrees( angle_n1z ) );
+                    //
+                    // We need to rotate the molecule about the normal to vec_normal and vec_z_axis
+                    Cross_product( vec_reorient_axis, vec_normal, vec_z_axis );
+                    //
+                    // Set the rotation axis for reorientation
+                    q_reorient.nx = vec_reorient_axis[X];
+                    q_reorient.ny = vec_reorient_axis[Y];
+                    q_reorient.nz = vec_reorient_axis[Z];
+                    //
+                    // Normalise the vector defining the axis of rotation:
+                    q_reorient = normRot( q_reorient );
+                    //
+                    // Set the angle for reorientation of the first 3 atoms
+                    // into the xy-plane
+                    q_reorient.ang = -angle_n1z;
+                    //
+                    // Convert the rotation-about-axis components (nx,ny,nz,ang)
+                    // to a rotation-quaternion (x,y,z,w):
+                    q_reorient = convertRotToQuat( q_reorient );
+     
+                    // Rotate ligand into the xy-plane...
+                    qtransform( origin, q_reorient, crdpdb, true_ligand_atoms );
+     
+                    // Compute the updated vec_01, the vector between atom 0 and atom 1,
+                    // since the preceding "qtransform" changed the coordinates.
+                    for (xyz = 0;  xyz < SPACE;  xyz++) {
+                        vec_01[xyz] = (double)( crdpdb[1][xyz] - crdpdb[0][xyz] );
+                    }
+                    //
+                    // Compute the angle between vec_01 and the x-axis:
+                    double angle_01x = 0.;
+                    angle_01x = Angle_between( vec_01, vec_x_axis );
+                    //
+                    pr( logFile, "Angle between vector 01 and the x-axis = %.2f degrees\n", RadiansToDegrees( angle_01x ) );
+                    //
+                    // The rotation axis to rotate the first two atoms, 0 and 1, 
+                    // to be parallel to the x-axis, will be 
+                    // perpendicular to the xy-plane, i.e. the z-axis,
+                    // since the molecule's first 3 atoms are now in the xy-plane.
+                    q_reorient.nx = vec_z_axis[X];
+                    q_reorient.ny = vec_z_axis[Y];
+                    q_reorient.nz = vec_z_axis[Z];
+                    //
+                    // Set the rotation angle:
+                    q_reorient.ang = angle_01x;
+                    //
+                    // Build the quaternion from the axis-angle rotation values:
+                    q_reorient = convertRotToQuat( q_reorient );
+                } // angle_012 is appropriate to align into xy-plane
+
+            } else {
+                prStr( error_message, "%s: ERROR! Insufficient atoms in the ligand.  There must be at least three atoms in the ligand to use this command.\n", programname );
+                stop( error_message );
+                exit( -1 );
+            }
+
+        } else {
+
+            // Read the specified initial orientation for the ligand
+            retval = (int)sscanf( line,"%*s %lf %lf %lf %lf", &(q_reorient.nx), &(q_reorient.ny), &(q_reorient.nz), &(q_reorient.ang) );
+            if ( retval == 4 ) {
+                // Normalise the vector defining the axis of rotation:
+                q_reorient = normRot( q_reorient );
+                // Make sure angle is in radians, and ranges from -PI to PI
+                q_reorient.ang = DegreesToRadians( q_reorient.ang ); // convert from degrees to radians
+                q_reorient.ang = ModRad( q_reorient.ang ); // wrap to range (0, 2*PI) using modulo 2*PI
+                q_reorient.ang = WrpRad( q_reorient.ang ); // wrap to range (-PI, PI)
+                pr( logFile, "After normalising the vector, and converting the angle to radians, the rotation becomes ((%.3f, %.3f, %.3f), %.2f radians)\n",
+                        q_reorient.nx, q_reorient.ny, q_reorient.ny, q_reorient.ang);
+                // Convert the rotation-about-axis components (nx,ny,nz,ang)
+                // to a rotation-quaternion (x,y,z,w):
+                q_reorient = convertRotToQuat( q_reorient );
+            } else {
+                prStr( error_message, "%s: ERROR! Please specify the vector and rotation angle using four real numbers.\n", programname );
+                stop( error_message );
+                exit( -1 );
+            }
+        } // endif
+
+        // Print out the un-reoriented coordinates
+        pr( logFile, "Un-reoriented ligand's coordinates:\n" );
+        pr( logFile, "-----------------------------------\n\n" );
+        for (i=0; i<true_ligand_atoms; i++) {
+            strncpy( AtmNamResNamNum, &atomstuff[i][13], (size_t) 13 );
+            AtmNamResNamNum[13] = '\0';
+            (void) fprintf( logFile, FORMAT_PDBQT_ATOM_RESSTR, "UN-REORIENTED:  ", 
+                            i + 1, AtmNamResNamNum, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z], 
+                            1., 0.,
+                            charge[i], parameterArray[type[i]].autogrid_type );
+            (void) fprintf( logFile, "\n" ); 
+        }
+        pr( logFile, "\n\n" );
+
+        // Apply the rotation defined by q_reorient to the input coordinates of the ligand, "crdpdb"
+        pr( logFile, "\nRe-orienting the ligand using the following quaternion (nx, ny, nz) and angle values:\n");
+        pr( logFile, "NEWDPF   reorient %.3lf %.3lf %.3lf %.2lf\n",
+                q_reorient.nx, q_reorient.ny, q_reorient.nz, RadiansToDegrees( q_reorient.ang ) );
+        qtransform( origin, q_reorient, crdpdb, true_ligand_atoms );
+
+        pr( logFile, "q_reorient:\n");
+        printQuat( logFile, q_reorient );
+
+        // Print out the re-oriented coordinates
+        pr( logFile, "Reoriented ligand's coordinates:\n" );
+        pr( logFile, "--------------------------------\n\n" );
+        for (i=0; i<true_ligand_atoms; i++) {
+            strncpy( AtmNamResNamNum, &atomstuff[i][13], (size_t) 13 );
+            AtmNamResNamNum[13] = '\0';
+            (void) fprintf( logFile, FORMAT_PDBQT_ATOM_RESSTR, "REORIENTED:  ", 
+                            i + 1, AtmNamResNamNum, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z], 
+                            1., 0.,
+                            charge[i], parameterArray[type[i]].autogrid_type );
+            (void) fprintf( logFile, "\n" ); 
+        }
+        pr( logFile, "\n\n" );
+
+        // Update the unit vectors for the torsion rotations
+		if (debug > 0) {
+			pr(logFile, "Calculating unit vectors for each torsion.\n\n");
+		}
+		torNorVec(crdpdb, ntor, tlist, vt);
+		for (i = 0; i < MAX_TORS; i++) {
+			ligand.vt[i][X] = vt[i][X];
+			ligand.vt[i][Y] = vt[i][Y];
+			ligand.vt[i][Z] = vt[i][Z];
+			for (j = 0; j < MAX_ATOMS; j++) {
+				ligand.tlist[i][j] = tlist[i][j];
+			}
+		}
+
+        (void) fflush(logFile);
+        break;
+
+
 //______________________________________________________________________________
 
     case DPF_TRAN0:
@@ -1670,7 +1894,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ligand.S.Q.nz  = sInit.Q.nz;
         ligand.S.Q.ang = sInit.Q.ang;
 
-        ligand.S.Q.ang = sInit.Q.ang = Rad( sInit.Q.ang ); /*convert to radians*/
+        ligand.S.Q.ang = sInit.Q.ang = DegreesToRadians( sInit.Q.ang ); /*convert to radians*/
         mkUnitQuat( &sInit.Q );
         mkUnitQuat( &(ligand.S.Q) );
 
@@ -1742,7 +1966,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "\tInitial torsion %2d = %7.2f deg\n", (i+1), sInit.tor[i] ); /* sInit.tor is in degrees */
                 /* Convert sInit.tor[i] into radians */
             }
-            ligand.S.tor[i] = sInit.tor[i] = Rad( sInit.tor[i] ); /* sInit.tor is now in radians  Added:05-01-95 */
+            ligand.S.tor[i] = sInit.tor[i] = DegreesToRadians( sInit.tor[i] ); /* sInit.tor is now in radians  Added:05-01-95 */
         }
         (void) fflush(logFile);
         break;
@@ -1789,7 +2013,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "Initial cycle, maximum quaternion angle step = +/- %-.1f deg\n", qtwStep0);
             }
             /* convert to radians */
-            qtwStep0 = Rad( qtwStep0 );
+            qtwStep0 = DegreesToRadians( qtwStep0 );
         }
         if (retval == 2) {
             B_CalcQtwRF = TRUE;
@@ -1798,7 +2022,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "Reduction factor will be calculated when number of cycles has been read in.\n");
             }
             /* convert to radians */
-            qtwStepFinal = Rad( qtwStepFinal );
+            qtwStepFinal = DegreesToRadians( qtwStepFinal );
         }
         (void) fflush(logFile);
         break;
@@ -1820,7 +2044,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "Initial cycle, maximum torsion angle step = +/- %-.1f deg\n", torStep0);
             }
             /* convert to radians */
-            torStep0 = Rad( torStep0 );
+            torStep0 = DegreesToRadians( torStep0 );
         }
         if (retval == 2) {
             B_CalcTorRF = TRUE;
@@ -1829,7 +2053,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "Reduction factor will be calculated when number of cycles has been read in.\n");
             }
             /* convert to radians */
-            torStepFinal = Rad( torStepFinal );
+            torStepFinal = DegreesToRadians( torStepFinal );
         }
         (void) fflush(logFile);
         break;
@@ -2041,7 +2265,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         (void) sscanf( line, "%*s %d", &nruns );
         if ( nruns > MAX_RUNS ) {
-            prStr( error_message, "ERROR: %d runs were requested, but AutoDock is only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", nruns, MAX_RUNS);
+            prStr( error_message, "%s:  ERROR: %d runs were requested, but AutoDock is only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
             stop( error_message );
             exit( -1 );
         }
@@ -2455,10 +2679,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } else {
                 (void) strcpy( S_contype, " " );
             }
-                /*
+            /*
             ** F_torPref ranges from -180.0 to +180.0 degrees...
             */
-            F_torPref = Wrp(ModDeg(F_torPref));
+            F_torPref = WrpDeg(ModDeg(F_torPref));
             if (F_torHWdth < 0.) {
                 pr(logFile,"\nI'm sorry, negative%swidths (%.1f) are not allowed. I will use the default (%.1f) instead.\n\n", S_contype, F_torHWdth, DEFHWDTH);
                 F_torHWdth = DEFHWDTH;
@@ -2480,7 +2704,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     /*
                     ** if F_A(<-180.or>180), wrap to -180to180,
                     */
-                    F_tor = Wrp(ModDeg(F_A));
+                    F_tor = WrpDeg(ModDeg(F_A));
                     /*
                     ** Convert from F_tor to US_tD
                     */
@@ -2669,8 +2893,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       if (debug > 0) {
           pr( logFile, "\n\tOutput every %u generations.\n", outputEveryNgens );
       }
-      GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate, window_size, num_generations, outputEveryNgens);
-      ((Genetic_Algorithm *)GlobalSearchMethod)->mutation_values(low, high, alpha, beta);
+      GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate, 
+                                                 window_size, num_generations, outputEveryNgens );
+      ((Genetic_Algorithm *)GlobalSearchMethod)->mutation_values( low, high, alpha, beta, trnStep0, qtwStep0, torStep0  );
       ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
 
       (void) fflush(logFile);
@@ -2756,19 +2981,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (!command_mode) {
             (void) sscanf( line, "%*s %d", &nruns );
             if ( nruns > MAX_RUNS ) {
-                prStr( error_message, "ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", nruns, MAX_RUNS);
+                prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
                 exit( -1 );
             } else if ((GlobalSearchMethod==NULL)||(LocalSearchMethod==NULL)) {
-                prStr(error_message, "ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n");
+                prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n", programname);
                 stop(error_message);
                 exit(-1);
             } else if (!B_found_elecmap) {
-                prStr(error_message, "ERROR:  no 'elecmap' has been specified!\n");
+                prStr(error_message, "%s:  ERROR:  no \"elecmap\" command has been specified!\n", programname);
                 stop(error_message);
                 exit(-1);
             } else if (!B_found_desolvmap) {
-                prStr(error_message, "ERROR:  no 'desolvmap' has been specified!\n");
+                prStr(error_message, "%s:  ERROR:  no \"desolvmap\" command has been specified!\n", programname);
                 stop(error_message);
                 exit(-1);
             }
@@ -2827,14 +3052,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 // Reiterate output level...
                 pr(logFile, "Output level is set to %d.\n\n", outlev);
 
-                // Start Lamarckian GA run
+                // Start Lamarckian GA run -- Bound simulation
                 sHist[nconf] = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                           sInit,
                                           num_evals, pop_size,
                                           outlev,
                                           outputEveryNgens, &ligand,
                                           B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
-                                          info, FN_pop_file);
+                                          info, FN_pop_file );
                 // State of best individual at end
                 // of GA-LS run is returned.
                 // Finished Lamarckian GA run
@@ -2890,21 +3115,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (!command_mode) {
             if ( nruns > MAX_RUNS ) {
 
-               prStr( error_message, "ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", nruns, MAX_RUNS);
+               prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                stop( error_message );
                exit( -1 );
 
            } else if (LocalSearchMethod==NULL) {
 
-               prStr(error_message, "ERROR:  You must use \"set_sw1\" or \"set_psw1\" to allocate a Local Optimization object.\n");
+               prStr(error_message, "%s:  ERROR:  You must use \"set_sw1\" or \"set_psw1\" to allocate a Local Optimization object.\n", programname);
                stop(error_message);
                exit(-1);
            } else if (!B_found_elecmap) {
-               prStr(error_message, "ERROR:  no 'elecmap' has been specified!\n");
+               prStr(error_message, "%s:  ERROR:  no \"elecmap\" command has been specified!\n", programname);
                stop(error_message);
                exit(-1);
            } else if (!B_found_desolvmap) {
-               prStr(error_message, "ERROR:  no 'desolvmap' has been specified!\n");
+               prStr(error_message, "%s:  ERROR:  no \"desolvmap\" command has been specified!\n", programname);
                stop(error_message);
                exit(-1);
            }
@@ -3008,21 +3233,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       if (!command_mode) {
           if (nruns>MAX_RUNS) {
 
-              prStr(error_message, "ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", nruns, MAX_RUNS);
+              prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
               stop(error_message);
               exit(-1);
 
           } else if (GlobalSearchMethod==NULL) {
-              prStr(error_message, "ERROR:  You must use \"set_ga\" to allocate a Global Optimization object.\n");
+              prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate a Global Optimization object.\n", programname);
               stop(error_message);
               exit(-1);
           } else if (!B_found_elecmap) {
-               prStr(error_message, "ERROR:  no 'elecmap' has been specified!\n");
+               prStr(error_message, "%s:  ERROR:  no \"elecmap\" command has been specified!\n", programname);
                stop(error_message);
                exit(-1);
            }
            else if (!B_found_desolvmap) {
-               prStr(error_message, "ERROR:  no 'desolvmap' has been specified!\n");
+               prStr(error_message, "%s:  ERROR:  no \"desolvmap\" command has been specified!\n", programname);
                stop(error_message);
                exit(-1);
            }
@@ -3379,15 +3604,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             */
      
             if ((GlobalSearchMethod==NULL)||(LocalSearchMethod==NULL)) {
-                prStr(error_message, "ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n");
+                prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n", programname);
                 stop(error_message);
                 exit(-1);
             } else if (!B_found_elecmap) {
-                prStr(error_message, "ERROR:  no 'elecmap' has been specified!\n");
+                prStr(error_message, "%s:  ERROR:  no \"elecmap\" command has been specified!\n", programname);
                 stop(error_message);
                 exit(-1);
             } else if (!B_found_desolvmap) {
-                prStr(error_message, "ERROR:  no 'desolvmap' has been specified!\n");
+                prStr(error_message, "%s:  ERROR:  no \"desolvmap\" command has been specified!\n", programname);
                 stop(error_message);
                 exit(-1);
             }
@@ -3444,14 +3669,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // if num_evals is less than this, then a shorter unbound docking will be performed
             max_evals_unbound = 1000000;
      
-            // Start Lamarckian GA run
+            // Start Lamarckian GA run -- Unbound simulation
             sUnbound = call_glss( GlobalSearchMethod, LocalSearchMethod,
-                                      sInit,
-                                      (num_evals > max_evals_unbound? max_evals_unbound : num_evals), pop_size,
-                                      outlev,
-                                      outputEveryNgens, &ligand,
-                                      B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
-                                      info, FN_pop_file);
+                                  sInit,
+                                  (num_evals > max_evals_unbound? max_evals_unbound : num_evals), pop_size,
+                                  outlev,
+                                  outputEveryNgens, &ligand,
+                                  B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
+                                  info, FN_pop_file );
             // State of best individual at end of GA-LS run is returned.
             // Finished Lamarckian GA run
      
