@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.10 2006/08/15 23:09:00 garrett Exp $
+ $Id: readPDBQT.cc,v 1.11 2006/12/01 02:28:53 garrett Exp $
 
 */
 
@@ -387,13 +387,10 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 		print_nonbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, *P_Nnb, nonbondlist, outlev, map_index);
 
-		flushLog;
-
 		if (debug > 0) {
 			pr(logFile, "Calculating unit vectors for each torsion.\n\n");
 		}
 		torNorVec(crdpdb, ntor, tlist, vt);
-
 		for (i = 0; i < MAX_TORS; i++) {
 			mol.vt[i][X] = vt[i][X];
 			mol.vt[i][Y] = vt[i][Y];
@@ -402,6 +399,9 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 				mol.tlist[i][j] = tlist[i][j];
 			}
 		}
+
+		flushLog;
+
 	} else {
 		fprintf(logFile, ">>> No torsions detected, so skipping \"nonbonds\", \"weedbonds\" and \"torNorVec\" <<<\n\n");
 	}
