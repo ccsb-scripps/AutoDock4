@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.17 2006/11/16 06:42:34 garrett Exp $
+ $Id: eval.cc,v 1.18 2006/12/01 01:31:18 garrett Exp $
 
 */
 
@@ -145,7 +145,7 @@ double Eval::eval()
     if (B_isGaussTorCon) {
         for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
             if (B_isTorConstrained[I_tor] == 1) {
-                indx = Rad2Div( WrpModRad(stateNow.tor[I_tor]) );
+                indx = RadiansToDivs( WrpModRad(stateNow.tor[I_tor]) );
                 if (B_ShowTorE) {
                     energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
                 } else {
@@ -251,7 +251,7 @@ double Eval::eval(int term)
     if (B_isGaussTorCon) {
         for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
             if (B_isTorConstrained[I_tor] == 1) {
-                indx = Rad2Div( WrpModRad(stateNow.tor[I_tor]) );
+                indx = RadiansToDivs( WrpModRad(stateNow.tor[I_tor]) );
                 if (B_ShowTorE) {
                     energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
                 } else {
