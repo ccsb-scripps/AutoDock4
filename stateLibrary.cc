@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.10 2006/10/22 20:39:38 garrett Exp $
+ $Id: stateLibrary.cc,v 1.11 2006/12/01 02:31:54 garrett Exp $
 
 */
 
@@ -36,6 +36,19 @@ void initialiseState( State *S )
     for (i = 0; i  < MAX_TORS;  i++ ) {
         S->tor[i] = 0.0;
     }
+}
+
+void initialiseQuat( Quat *Q )
+{
+    Q->nx = 1.0;
+    Q->ny = 0.0;
+    Q->nz = 0.0;
+    Q->ang = 0.0;
+    Q->x = 1.0;
+    Q->y = 0.0;
+    Q->z = 0.0;
+    Q->w = 0.0;
+    Q->qmag = 1.0;
 }
 
 void copyState( State *D,  /* Destination -- copy to here */
@@ -82,7 +95,7 @@ void printState( FILE *fp,
             (void)fprintf( fp, "\nSTATE VARIABLES:\n________________\n\n" );
             (void)fprintf( fp, "Translation x,y,z         = %.3f %.3f %.3f\n", S.T.x, S.T.y, S.T.z );
             S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-            (void)fprintf( fp, "Quaternion nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, Deg(S.Q.ang) );
+            (void)fprintf( fp, "Quaternion nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
             (void)fprintf( fp, "Quaternion x,y,z,w        = %.3f %.3f %.3f %.3f\n", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
             //(void)fprintf( fp, "Quaternion qmag           = %.3f\n", S.Q.qmag );
             (void)fprintf( fp, "Number of Torsions        = %d\n", S.ntor );
@@ -92,7 +105,7 @@ void printState( FILE *fp,
                     S.tor[i] = WrpRad( ModRad( S.tor[i] ) );
                 }
                 for (i=0; i<S.ntor; i++) {
-                    torDegTmp = Deg( S.tor[i] );
+                    torDegTmp = RadiansToDegrees( S.tor[i] );
                     torDegTmp = ModDeg( torDegTmp );
                     torDegTmp = WrpDeg( torDegTmp );
                     pr( fp, " %.2f", torDegTmp );
@@ -125,7 +138,7 @@ void writeState( FILE *fp, State S )
 
     // Write quaternion.
     S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-    (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q.nx, S.Q.ny, S.Q.nz, Deg(S.Q.ang) );
+    (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
     
     // Write torsion angles.
     if (S.ntor > 0) {
@@ -133,7 +146,7 @@ void writeState( FILE *fp, State S )
             S.tor[i] = WrpRad( ModRad( S.tor[i] ) );
         }
         for (i=0; i<S.ntor; i++) {
-            torDegTmp = Deg( S.tor[i] );
+            torDegTmp = RadiansToDegrees( S.tor[i] );
             torDegTmp = ModDeg( torDegTmp );
             torDegTmp = WrpDeg( torDegTmp );
             // Commented out next line to make format more consistent, now all
