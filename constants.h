@@ -94,10 +94,10 @@
 /* #define ONE_RAD_IN_DIVS 81.48733086 512,256,1 radian = NTORDIVS / (2*PI) divisions */
 
 /* Convert angle to index */
-#define Rad2Div(radians) ((int)((radians)*ONE_RAD_IN_DIVS) + NTORDIVS_2)
+#define RadiansToDivs(radians) ((int)((radians)*ONE_RAD_IN_DIVS) + NTORDIVS_2)
 
 /* Convert index to angle */
-#define Div2Rad(divs) (((Real)((divs) - NTORDIVS_2))/ONE_RAD_IN_DIVS)
+#define DivsToRadians(divs) (((Real)((divs) - NTORDIVS_2))/ONE_RAD_IN_DIVS)
 
 #define TORBARMAX    65535    /* Torsion barrier-energy maximum value */
 #define DEFHWDTH     10.      /* Default half-width (deg)for torsion-constraints*/
@@ -222,13 +222,16 @@
 #define min(x,y)     ( ((x) < (y)) ? (x) : (y) )
 #define clamp(x,lowerbound)        ( ((x) < (lowerbound)) ? (lowerbound) : (x) )
 
-#define Rad(deg)     ( (deg) * 0.01745329252 )
-#define Deg(rad)     ( (rad) * 57.29577951 )
+// Convert from degrees to radians
+#define DegreesToRadians(deg)     ( (deg) * 0.01745329252 )
+// Convert from radians to degrees
+#define RadiansToDegrees(rad)     ( (rad) * 57.29577951 )
 
+// Wrap the angle supplied to be in the range 0. to 360.
 #define ModDeg(a)    fmod((double)(a),(double)360.)
+// Wrap the angle supplied to be in the range 0. to 2*PI
 #define ModRad(a)    fmod((double)(a),(double)TWOPI)
 
-#define Wrp(a)       (((a)>180.)? ((a)-360.) :(((a)<-180.)? ((a)+360.) :(a)))
 #define WrpDeg(a)    (((a)>180.)? ((a)-360.) :(((a)<-180.)? ((a)+360.) :(a)))
 #define WrpRad(a)    (((a)> PI)? ((a)-TWOPI) :(((a)< -PI)?  ((a)+TWOPI) :(a)))
 #define WrpModRad(a) (((a)> PI)? (ModRad(a)-TWOPI) :(((a)< -PI)?  (ModRad(a)+TWOPI) :(a)))
@@ -450,6 +453,40 @@ const Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
 const Real T0K = 273.15;     // 0 degrees Celsius, in K
 const Real TK = 298.15;      // Room temperature, in K
 #endif
+
+/*
+ * Vectors
+ */
+
+#define Dot_product( a, b )  \
+    ( (a)[X] * (b)[X]  +  (a)[Y] * (b)[Y]  +  (a)[Z] * (b)[Z] )
+
+#define Cross_product( n, a, b )  \
+    ( (n)[X] = (a)[Y] * (b)[Z]  -  (a)[Z] * (b)[Y],  \
+      (n)[Y] = (a)[Z] * (b)[X]  -  (a)[X] * (b)[Z],  \
+      (n)[Z] = (a)[X] * (b)[Y]  -  (a)[Y] * (b)[X] )
+
+#define Length( a )  sqrt( Dot_product( (a), (a) ) )
+
+#define Magnitude( a )  Length( (a) )
+
+#define Angle_between( a, b ) \
+    ( acos( Dot_product( (a), (b) ) / ( Length( (a) ) * Length( (b) ) ) ) )
+
+#define Add_vectors( result, a, b )  \
+    ( (result)[X] = (a)[X] + (b)[X], \
+      (result)[Y] = (a)[Y] + (b)[Y], \
+      (result)[Z] = (a)[Z] + (b)[Z] )
+
+#define Subtract_vectors( result, a, b )  \
+    ( (result)[X] = (a)[X] - (b)[X], \
+      (result)[Y] = (a)[Y] - (b)[Y], \
+      (result)[Z] = (a)[Z] - (b)[Z] )
+
+#define Print_vector( fileptr, string, vector ) \
+    (void) fprintf( (fileptr), "%s  [ %.3f, %.3f, %.3f ]\n", \
+                    (string), (vector)[X], (vector)[Y], (vector)[Z] )
+
 
 
 /*----------------------------------------------------------------------------* 
