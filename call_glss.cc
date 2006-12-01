@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.22 2006/11/16 06:29:45 garrett Exp $
+ $Id: call_glss.cc,v 1.23 2006/12/01 01:18:28 garrett Exp $
 
 */
 
@@ -192,7 +192,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/State call_glss(): Creating individual i= %d in thisPop[i];  about to call random_ind()...\n", i);
 #endif
-            thisPop[i] = random_ind( sInit.ntor, info);
+            thisPop[i] = random_ind( sInit.ntor, info );
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/State call_glss(): Created  individual i= %d in thisPop[i]\n", i);
 #endif
@@ -212,7 +212,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
           thisPop[indiv].phenotyp = thisPop[indiv].mapping();
         }
         if (!B_RandomQuat0) {
-              if (outlev > 1) { (void)fprintf(logFile, "Setting the initial quaternion (quat0) for individual number %d to %.2lf %.2lf %.2lf  %.2lf deg\n\n", indiv+1, sInit.Q.nx, sInit.Q.ny, sInit.Q.nz, Deg(sInit.Q.ang)); }
+              if (outlev > 1) { (void)fprintf(logFile, "Setting the initial quaternion (quat0) for individual number %d to %.2lf %.2lf %.2lf  %.2lf deg\n\n", indiv+1, sInit.Q.nx, sInit.Q.ny, sInit.Q.nz, RadiansToDegrees(sInit.Q.ang)); }
           thisPop[indiv].genotyp.write( sInit.Q.nx, 3);
           thisPop[indiv].genotyp.write( sInit.Q.ny, 4);
           thisPop[indiv].genotyp.write( sInit.Q.nz, 5);
@@ -225,7 +225,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
                   if (outlev > 1) { (void)fprintf(logFile, "Setting the initial torsions (dihe0) for individual number %d to ", indiv+1); }
                     for (j=0; j<sInit.ntor; j++) {
                         thisPop[indiv].genotyp.write( sInit.tor[j], 7+j);
-                        if (outlev > 1) { (void)fprintf(logFile, "%.2lf ", Deg(sInit.tor[j])); }
+                        if (outlev > 1) { (void)fprintf(logFile, "%.2lf ", RadiansToDegrees(sInit.tor[j])); }
                     };
                   if (outlev > 1) { (void)fprintf(logFile, " deg\n\n"); }
               // Remember to keep the phenotype up-to-date
