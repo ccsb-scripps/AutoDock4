@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.cc,v 1.7 2006/04/25 22:32:20 garrett Exp $
+ $Id: initautodock.cc,v 1.8 2006/12/01 01:52:23 garrett Exp $
 
 */
 
@@ -122,7 +122,7 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 	    pr( logFile, "\nApplying initial translation...\n");
 	    pr( logFile, "Ligand translated to:  %+.3f  %+.3f  %+.3f\n\n", s0->T.x, s0->T.y, s0->T.z );
 	    pr( logFile, "Applying initial quaternion...\n");
-	    pr( logFile, "Ligand rigid-body-rotated by: %+.1f degrees,   about unit vector: %+.3f %+.3f %+.3f.\n\n", Deg(s0->Q.ang), s0->Q.nx, s0->Q.ny, s0->Q.nz );
+	    pr( logFile, "Ligand rigid-body-rotated by: %+.1f degrees,   about unit vector: %+.3f %+.3f %+.3f.\n\n", RadiansToDegrees(s0->Q.ang), s0->Q.nx, s0->Q.ny, s0->Q.nz );
 	    flushLog;
 	}
 
@@ -227,10 +227,10 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 		prStr( note, ">>> Trying a new, randomly-generated rigid body rotation. (quat0 override)\n");
 		pr_2x( stderr, logFile, note );
 
-         s0->Q.nx  = random_range( -1., 1. );
-         s0->Q.ny  = random_range( -1., 1. );
-         s0->Q.nz  = random_range( -1., 1. );
-		s0->Q.ang = Rad( random_range( 0., 360. ) );  /*radians*/
+        s0->Q.nx  = random_range( -1., 1. );
+        s0->Q.ny  = random_range( -1., 1. );
+        s0->Q.nz  = random_range( -1., 1. );
+		s0->Q.ang = DegreesToRadians( random_range( 0., 360. ) );  /*radians*/
 
 		mkUnitQuat( &(s0->Q) );
 
