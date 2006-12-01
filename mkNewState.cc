@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.7 2006/11/03 04:12:22 garrett Exp $
+ $Id: mkNewState.cc,v 1.8 2006/12/01 02:10:24 garrett Exp $
 
 */
 
@@ -65,10 +65,12 @@ void mkNewState( State *now,
         **  published by Academic Press, Inc., (1992)
         */
         t1 = TWOPI * local_random();
-        change->Q.x = sin( t1 ) * (  r1 = random_sign * sqrt( 1 - (x0 = local_random()) )  );
+        // change->Q.x = sin( t1 ) * (  r1 = random_sign * sqrt( 1 - (x0 = local_random()) )  );  // random sign version
+        change->Q.x = sin( t1 ) * (  r1 = sqrt( 1 - (x0 = local_random()) )  ); // strict Shoemake version
         change->Q.y = cos( t1 ) * r1;
         t2 = TWOPI * local_random();
-        change->Q.z = sin( t2 ) * (  r2 = random_sign * sqrt( x0 )  );
+        // change->Q.z = sin( t2 ) * (  r2 = random_sign * sqrt( x0 )  );  // random sign version
+        change->Q.z = sin( t2 ) * (  r2 = sqrt( x0 )  ); // strict Shoemake version
         change->Q.w = cos( t2 ) * r2;
 
         /*
