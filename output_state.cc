@@ -1,6 +1,6 @@
 /*
 
- $Id: output_state.cc,v 1.4 2006/04/25 22:32:41 garrett Exp $
+ $Id: output_state.cc,v 1.5 2006/12/01 02:11:21 garrett Exp $
 
 */
 
@@ -49,10 +49,10 @@ void output_state( FILE *fp,
 
     fprintf(fp, "state %d %c %f %f  %lf %lf %lf  %lf %lf %lf %lf\n",
         istep, lastmove, energy, eint, S.T.x, S.T.y, S.T.z,
-        S.Q.nx, S.Q.ny, S.Q.nz, Deg( S.Q.ang ) );
+        S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees( S.Q.ang ) );
 
     for (i=0; i<ntor; i++) {
-        fprintf(fp, "%f\n", Deg( S.tor[i]) );
+        fprintf(fp, "%f\n", RadiansToDegrees( S.tor[i]) );
     }
 
 /* >>>> NOW USES lockf !!!! <<<< */
