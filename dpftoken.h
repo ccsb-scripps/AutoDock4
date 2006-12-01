@@ -121,6 +121,7 @@
 #define	DPF_UNBOUND_INTNBP_COEFFS	96
 #define	DPF_RMSATOMS	97
 #define DPF_CONFSAMPLER	98
+#define DPF_REORIENT	99
 
 #endif
 /* EOF */
