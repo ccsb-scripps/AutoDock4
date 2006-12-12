@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.23 2006/12/01 01:17:05 garrett Exp $
+ $Id: analysis.cc,v 1.24 2006/12/12 23:57:16 garrett Exp $
 
 */
 
@@ -40,7 +40,6 @@ void analysis( int   Nnb,
                Real abs_charge[MAX_ATOMS], 
                Real qsp_abs_charge[MAX_ATOMS], 
                Boole B_calcIntElec,
-               Real q1q2[MAX_NONBONDS],
                Real clus_rms_tol, 
                Real crdpdb[MAX_ATOMS][SPACE], 
 
@@ -50,7 +49,7 @@ void analysis( int   Nnb,
                Real  econf[MAX_RUNS], 
                int   irunmax, 
                int   natom, 
-               int   **nonbondlist, 
+               NonbondParam *nonbondlist, 
                int   nconf, 
                int   ntor, 
                State hist[MAX_RUNS], 
@@ -248,7 +247,7 @@ void analysis( int   Nnb,
             eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
                  crd, charge, abs_charge, type, map, info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID,
                  ignore_inter, elec, emap, &elec_total, &emap_total,
-                 nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, q1q2, 
+                 nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
                  B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
      
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
