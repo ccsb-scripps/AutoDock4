@@ -51,7 +51,7 @@ Molecule readPDBQT( char  line[LINE_LEN],
               Real vt[MAX_TORS][NTRN],
 
               int   *P_Nnb,
-              int   **nonbondlist,
+              NonbondParam *nonbondlist,
 
               Clock jobStart,
               struct tms tms_jobStart,
