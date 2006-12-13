@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.18 2006/12/01 01:31:18 garrett Exp $
+ $Id: eval.cc,v 1.19 2006/12/13 02:20:01 garrett Exp $
 
 */
 
@@ -137,7 +137,7 @@ double Eval::eval()
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval() after trilinterp, energy= %.5lf\n",energy);
 #endif /* DEBUG */
-    energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues ) - unbound_internal_FE;
+    energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues ) - unbound_internal_FE;
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
 #endif /* DEBUG */
@@ -243,7 +243,7 @@ double Eval::eval(int term)
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after trilinterp, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
-    energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues ) - unbound_internal_FE;
+    energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues ) - unbound_internal_FE;
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after eintcal, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
