@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.7 2006/04/25 22:32:24 garrett Exp $
+ $Id: intnbtable.cc,v 1.8 2006/12/13 02:23:24 garrett Exp $
 
 */
 
@@ -165,6 +165,8 @@ void setup_distdepdiel( int outlev,
                         i, distance, ptr_ad_energy_tables->epsilon_fn[i], ptr_ad_energy_tables->r_epsilon_fn[i]);
             }
         }
+        // pre-compute reciprocal to avoid having to do it later in eintcal.
+        ptr_ad_energy_tables->r_epsilon_fn[i] = 1.0 /  ptr_ad_energy_tables->r_epsilon_fn[i];
     } // next i
 }
 /* end of setup_distdepdiel */
