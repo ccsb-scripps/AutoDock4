@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.15 2006/12/01 01:47:07 garrett Exp $
+ $Id: gs.cc,v 1.16 2006/12/13 02:20:51 garrett Exp $
 
 */
 
@@ -522,23 +522,23 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
                mutant.write( tempvar, g );
             }
          } else {
-            //  Read the real
-            tempvar = mutant.gread(gene_number);
+         //  Read the real
+         tempvar = mutant.gread(gene_number);
 #ifdef DEBUG_MUTATION
             (void)fprintf(logFile, "   ---CauchyDev---\n" );
             (void)fprintf(logFile, "   Before mutating:        tempvar= %.3f\n", tempvar.real );
             (void)fprintf(logFile, "   gene_number= %d\n", gene_number );
             (void)fprintf(logFile, "   tempvar.real += scauchy2()\n" );
 #endif
-            //  Add deviate
+         //  Add deviate
             //  We never vary alpha and beta, so just use the faster "scauchy2()" function:
             tempvar.real += scauchy2();
 #ifdef DEBUG_MUTATION
             (void)fprintf(logFile, "   Add Cauchy deviate:     tempvar= %.3f\n", tempvar.real );
             (void)fflush(logFile );
 #endif
-            //  Write it
-            mutant.write(tempvar, gene_number);
+         //  Write it
+         mutant.write(tempvar, gene_number);
          }
          break;
 
