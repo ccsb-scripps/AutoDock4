@@ -1,6 +1,6 @@
 /*
 
- $Id: minmeanmax.cc,v 1.4 2006/11/14 00:38:37 garrett Exp $
+ $Id: minmeanmax.cc,v 1.5 2006/12/13 03:11:51 garrett Exp $
 
 */
 
@@ -29,7 +29,7 @@ void minmeanmax( FILE *fp, Population &pop, int num_generations, GridMapSetInfo 
    fprintf( fp, "minmeanmax.cc/minmeanmax(); initialization\n" );
 #endif
    register int i=0, g=0, b=0;
-   int num_indvs=1, num_genes=1;
+   int     num_indvs=1, num_genes=1;
    int last_bin = NUM_BINS - 1;
    // double  value=0., *minimum, *sum, *maximum, *best;
    double  value=0.;
@@ -152,7 +152,7 @@ void minmeanmax( FILE *fp, Population &pop, int num_generations, GridMapSetInfo 
          }
          if (maximum[g] < value) {
             maximum[g] = value;
-         }
+      }
          sum[g] += value;
          // build up the histogram, accumulating each gene's value in the appropriate bin:
          b = which_bin( value, bin_min[g], bin_max[g], NUM_BINS );
@@ -194,9 +194,9 @@ void minmeanmax( FILE *fp, Population &pop, int num_generations, GridMapSetInfo 
           fprintf( fp, "gene= %2d    bin= %2d  binmin= %5.1lf  binmax= %5.1lf  num= %3d  %c|", g, b, bmin, bmax, num[ g ][ b ], binchar );
           for ( i=0; i<num[ g ][ b ]; i++ ) {
              fprintf( fp, "#" );
-          }
+   }
           fprintf( fp, "\n" );
-       }
+   }
    } // g
 
    return;
