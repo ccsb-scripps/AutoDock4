@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.13 2006/12/01 01:53:09 garrett Exp $
+ $Id: investigate.cc,v 1.14 2006/12/13 02:23:46 garrett Exp $
 
 */
 
@@ -34,7 +34,6 @@ void investigate( int   Nnb,
                     Real abs_charge[MAX_ATOMS],
                     Real qsp_abs_charge[MAX_ATOMS],
                     Boole B_calcIntElec,
-                    Real q1q2[MAX_NONBONDS],
                     Real crd[MAX_ATOMS][SPACE],
                     Real crdpdb[MAX_ATOMS][SPACE],
 
@@ -43,7 +42,7 @@ void investigate( int   Nnb,
                     int   maxTests,
                     Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
                     int   natom,
-                    int   **nonbondlist,
+                    NonbondParam *nonbondlist,
                     int   ntor,
                     int   outlev,
                     int   tlist[MAX_TORS][MAX_ATOMS],
@@ -193,7 +192,7 @@ void investigate( int   Nnb,
             } while (rms > MaxRms);
             /* Calculate Energy of System, */
             e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
-                    + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
+                    + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
             if (B_isGaussTorCon) {
                 for (Itor = 0; Itor < ntor; Itor++) {
                     if (B_isTorConstrained[Itor] == 1) {
