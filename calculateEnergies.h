@@ -27,11 +27,10 @@ EnergyBreakdown calculateEnergies(
     Real                 *p_emap_total,             // output if not NULL - total intermolecular energy
 
     // eintcal
-    int ** const         nonbondlist,               // input  list of nonbonds
+    NonbondParam * const         nonbondlist,       // input  list of nonbonds
     const EnergyTables   *ptr_ad_energy_tables,     // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
     const int            Nnb,                       // input  total number of nonbonds
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
-    const Real           q1q2[MAX_NONBONDS],        // input  product of partial charges for each nonbonded pair of atoms
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
