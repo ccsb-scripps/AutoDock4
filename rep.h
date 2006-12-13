@@ -99,7 +99,14 @@ class RealVector : public Representation
       Representation *clone(void) const;
 
    public:
-      RealVector(void);
+      RealVector(void)
+      : Representation(0), 
+        high(REALV_HIGH), low(REALV_LOW), 
+        vector((double *)NULL)
+        { 
+            mytype = T_RealV;
+        }
+
       RealVector(int);
       RealVector(int, double *);
       RealVector(int, double, double);
@@ -111,12 +118,29 @@ class RealVector : public Representation
       ~RealVector(void);
       void write(unsigned char, int);
       void write(FourByteLong, int);
-      void write(double, int);
 //      void write(const void *, int);
       void write(const Element, int);
       Representation &operator=(const Representation &);
 //      const void *gene(unsigned int) const;
+#ifdef DEBUG
+      inline const Element gene(unsigned int) const
+      {
+          Element retval;
+          retval.real = vector[gene_number];
+          return retval;
+      }
+      inline void write(double value, int gene)
+      {
+          value = value < low  ? low  : 
+                  value > high ? high :
+                  value;
+          vector[gene] = value;
+      }
+#else
+      // non-inlined versions, possibly with range checking
+      void write(double, int);
       const Element gene(unsigned int) const;
+#endif
 };
 
 //  Maybe this should be derived from RealVector
@@ -181,14 +205,14 @@ class BitVector : public Representation
 **************************************************************************/
 
 inline Representation::Representation(void)
+    : number_of_pts(0) 
 {
-   number_of_pts = 0;
-   mytype = T_BASE;
+    mytype = T_BASE;
 }
 
 inline Representation::Representation(unsigned int pts)
+    : number_of_pts(pts) 
 {
-   number_of_pts = pts;
 }
 
 inline Representation::~Representation(void)
@@ -224,10 +248,9 @@ inline IntVector::IntVector(void)
 
 //  This constructor does a shallow copy of the array
 inline IntVector::IntVector(int num_els, FourByteLong *array)
-: Representation(num_els)
+: Representation(num_els), vector(array)
 {
-   vector = array;
-   mytype = T_IntV;
+    mytype = T_IntV;
 }
 
 inline IntVector::~IntVector(void)
@@ -243,23 +266,12 @@ inline Representation *IntVector::clone(void) const
    return(new IntVector(*this));
 }
 
-inline RealVector::RealVector(void)
-: Representation(0)
-{
-   low = REALV_LOW;
-   high = REALV_HIGH;
-   vector = (double *)NULL;
-   mytype = T_RealV;
-}
-
 //  This performs a shallow copy of the array
 inline RealVector::RealVector(int num_els, double *array)
-: Representation(num_els)
+: Representation(num_els), high(REALV_HIGH), low(REALV_LOW), 
+        vector(array)
 {
-   low = REALV_LOW;
-   high = REALV_HIGH;
-   vector = array;
-   mytype = T_RealV;
+    mytype = T_RealV;
 }
 
 inline RealVector::~RealVector(void)
