@@ -8,13 +8,12 @@
 
 extern FILE *logFile;
 
-Real eintcalPrint( int ** nonbondlist,
+Real eintcalPrint( NonbondParam * nonbondlist,
                             Real eint_table[NEINT][ATOM_MAPS][ATOM_MAPS],
                             Real tcoord[MAX_ATOMS][SPACE],
                             int type[MAX_ATOMS],
                             int Nnb,
                             Boole B_calcIntElec,
-                            Real q1q2[MAX_NONBONDS],
                             Real abs_charge[MAX_ATOMS]
                             )
 
@@ -51,7 +50,7 @@ Real eintcalPrint( int ** nonbondlist,
 
     for (inb = 0;  inb < Nnb;  inb++) {
 
-	dx = tcoord[(a1 = nonbondlist[inb][ATM1])][X] - tcoord[(a2 = nonbondlist[inb][ATM2])][X];
+	dx = tcoord[(a1 = nonbondlist[inb].a1)][X] - tcoord[(a2 = nonbondlist[inb].a2)][X];
 	dy = tcoord[a1][Y] - tcoord[a2][Y];
 	dz = tcoord[a1][Z] - tcoord[a2][Z];
 
@@ -63,7 +62,7 @@ Real eintcalPrint( int ** nonbondlist,
 	*/
 	d = sqrt( r2 );
         if (B_calcIntElec) {
-            epair = eint_table[ Ang_to_index(d) ][type[a2]][type[a1]] + q1q2[inb]/r2;
+            epair = eint_table[ Ang_to_index(d) ][type[a2]][type[a1]] + nonbondlist[inb].q1q2/r2;
         } else {
 	    epair = eint_table[ Ang_to_index(d) ][type[a2]][type[a1]];
         }
@@ -72,7 +71,7 @@ Real eintcalPrint( int ** nonbondlist,
 	**  NOSQRT *was* defined,
 	*/
         if (B_calcIntElec) {
-            epair = eint_table[ SqAng_to_index(r2) ][type[a2]][type[a1]] + q1q2[inb]/r2;
+            epair = eint_table[ SqAng_to_index(r2) ][type[a2]][type[a1]] + nonbondlist[inb].q1q2/r2;
         } else {
 	    epair = eint_table[ SqAng_to_index(r2) ][type[a2]][type[a1]];
         }
