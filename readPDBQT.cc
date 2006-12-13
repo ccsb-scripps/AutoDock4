@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.11 2006/12/01 02:28:53 garrett Exp $
+ $Id: readPDBQT.cc,v 1.12 2006/12/13 03:12:15 garrett Exp $
 
 */
 
@@ -63,7 +63,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     Real vt[MAX_TORS][NTRN],
 
                     int *P_Nnb,
-                    int **nonbondlist,
+                    NonbondParam *nonbondlist,
 
                     Clock jobStart,
                     struct tms tms_jobStart,
