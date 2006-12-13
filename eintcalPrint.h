@@ -8,6 +8,5 @@ Real  eintcalPrint( int   **nonbondlist,
                              int   atmtyp[MAX_ATOMS], 
                              int   Nnb,
                              Boole B_calcIntElec,
-                             Real q1q2[MAX_NONBONDS],
                              Real abs_charge[MAX_ATOMS]);
 #endif
