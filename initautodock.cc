@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.cc,v 1.8 2006/12/01 01:52:23 garrett Exp $
+ $Id: initautodock.cc,v 1.9 2006/12/13 02:21:10 garrett Exp $
 
 */
 
@@ -227,9 +227,9 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 		prStr( note, ">>> Trying a new, randomly-generated rigid body rotation. (quat0 override)\n");
 		pr_2x( stderr, logFile, note );
 
-        s0->Q.nx  = random_range( -1., 1. );
-        s0->Q.ny  = random_range( -1., 1. );
-        s0->Q.nz  = random_range( -1., 1. );
+         s0->Q.nx  = random_range( -1., 1. );
+         s0->Q.ny  = random_range( -1., 1. );
+         s0->Q.nz  = random_range( -1., 1. );
 		s0->Q.ang = DegreesToRadians( random_range( 0., 360. ) );  /*radians*/
 
 		mkUnitQuat( &(s0->Q) );
