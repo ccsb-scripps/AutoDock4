@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.17 2006/12/01 01:19:24 garrett Exp $
+ $Id: cmdmode.cc,v 1.18 2006/12/13 00:11:14 garrett Exp $
 
 */
 
@@ -50,7 +50,7 @@ int cmdmode(int   natom,
              int   tlist[MAX_TORS][MAX_ATOMS],
              int   ntor,
              int   Nnb,
-             int   **nonbondlist,
+             NonbondParam *nonbondlist,
              char  atomstuff[MAX_ATOMS][MAX_CHARS],
              Real crdpdb[MAX_ATOMS][SPACE],
              char  hostnm[MAX_CHARS],
@@ -59,7 +59,6 @@ int cmdmode(int   natom,
              Real abs_charge[MAX_ATOMS],
              Real qsp_abs_charge[MAX_ATOMS],
              Boole B_calcIntElec,
-             Real q1q2[MAX_NONBONDS],
              char  atm_typ_str[ATOM_MAPS],
              Real torsFreeEnergy,
              int ligand_is_inhibitor,
@@ -246,7 +245,7 @@ int cmdmode(int   natom,
                     fclose(pdbFile);
                     natom = nat;
                     if (ntor > 0) {
-                        eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_have_flexible_residues) - unbound_internal_FE;
+                        eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_have_flexible_residues) - unbound_internal_FE;
                     } else {
                         eintra = 0.0 - unbound_internal_FE;
                     }
@@ -309,7 +308,7 @@ int cmdmode(int   natom,
                 }
                 cnv_state_to_coords(S,  vt, tlist, ntor,  crdpdb, crd, natom);
                 if (ntor > 0) {
-                    eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_have_flexible_residues) - unbound_internal_FE;
+                    eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_have_flexible_residues) - unbound_internal_FE;
                 } else {
                     eintra = 0.0 - unbound_internal_FE;
                 }
