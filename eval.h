@@ -34,8 +34,9 @@ class Eval
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
       State stateNow;
       unsigned short *US_TorE, (*US_torProfile)[NTORDIVS];
-      int *type, (**nonbondlist), (*tlist)[MAX_ATOMS];
-      Real *q1q2, *charge, *abs_charge, *qsp_abs_charge;
+      int *type, (*tlist)[MAX_ATOMS];
+      NonbondParam *nonbondlist;
+      Real *charge, *abs_charge, *qsp_abs_charge;
       Real (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE];
       EnergyTables *ptr_ad_energy_tables;
       Real (*map)[MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
@@ -62,10 +63,10 @@ class Eval
           Real  init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
           Real  init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
 
-          int            **init_nonbondlist,
+          NonbondParam *init_nonbondlist,
           EnergyTables   *init_ptr_ad_energy_tables,
           int init_Nnb,
-          Boole          init_B_calcIntElec, Real init_q1q2[MAX_NONBONDS],
+          Boole          init_B_calcIntElec,
           Boole          init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS],
           Boole          init_B_ShowTorE, unsigned short init_US_TorE[MAX_TORS],
           unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
@@ -109,10 +110,10 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
 
                         Real init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
                         Real init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-                        int **init_nonbondlist,
+                        NonbondParam *init_nonbondlist,
                         EnergyTables   *init_ptr_ad_energy_tables,
                         int init_Nnb,
-                        Boole init_B_calcIntElec, Real init_q1q2[MAX_NONBONDS],
+                        Boole init_B_calcIntElec, 
                         Boole init_B_isGaussTorCon,
                         Boole init_B_isTorConstrained[MAX_TORS],
                         Boole init_B_ShowTorE,
@@ -152,7 +153,6 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
     ptr_ad_energy_tables = init_ptr_ad_energy_tables;
     Nnb = init_Nnb;
     B_calcIntElec = init_B_calcIntElec;
-    q1q2 = init_q1q2;
     B_isGaussTorCon = init_B_isGaussTorCon;
     B_isTorConstrained = init_B_isTorConstrained;
     B_ShowTorE = init_B_ShowTorE;
