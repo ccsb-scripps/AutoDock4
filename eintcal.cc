@@ -1,8 +1,10 @@
 /*
 
- $Id: eintcal.cc,v 1.14 2006/06/09 01:44:19 garrett Exp $
+ $Id: eintcal.cc,v 1.15 2006/12/13 02:19:02 garrett Exp $
 
 */
+
+#include <stdio.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -25,12 +27,11 @@ extern Real nb_group_energy[3];
 #ifndef EINTCALPRINT
 
 // Calculate internal energy
-Real eintcal( int ** const nonbondlist,
+Real eintcal( NonbondParam * const nonbondlist,
               const EnergyTables  *ptr_ad_energy_tables,
               const Real tcoord[MAX_ATOMS][SPACE],
               const int           Nnb,
               const Boole         B_calcIntElec,
-              const Real q1q2[MAX_NONBONDS],
               const Boole         B_include_1_4_interactions,
               const Real scale_1_4,
               const Real qsp_abs_charge[MAX_ATOMS],
@@ -46,12 +47,11 @@ Real eintcal( int ** const nonbondlist,
 extern FILE *logFile;
 
 // Calculate internal energy and print out a detailed report
-Real eintcalPrint( int ** nonbondlist,
+Real eintcalPrint( NonbondParam * const nonbondlist,
                    const EnergyTables  *ptr_ad_energy_tables,
                    const Real tcoord[MAX_ATOMS][SPACE],
                    const int           Nnb,
                    const Boole         B_calcIntElec,
-                   const Real q1q2[MAX_NONBONDS],
                    const Boole         B_include_1_4_interactions,
                    const Real scale_1_4,
                    const Real qsp_abs_charge[MAX_ATOMS],
@@ -89,15 +89,25 @@ Real eintcalPrint( int ** nonbondlist,
 
 {
 
+  // if r is less than the non-bond-cutoff, 
+  //  -OR-
+  // If we are computing the unbound conformation then we ignore the non bond cutoff, NBC
 #ifndef  EINTCALPRINT //  eintcal [
 #   ifndef  NOSQRT
         register double r=0.0L; //  SQRT
+        // if we have defined USE_8A_CUTOFF, then NBC = 8
+        const double nbc  = B_use_non_bond_cutoff ? NBC  : 999;
+#   else
+        // if we have defined USE_8A_CUTOFF, then NBC = 8 // Xcode-gmm
+        const double nbc2 = B_use_non_bond_cutoff ? NBC2 : 999 * 999;
 #   endif
     //  eintcal ]
 #else // eintcalPrint [
-    register double e_internal=0.0L;  // e_internal = epair
 #   ifndef  NOSQRT
     register double d=0.0L; //  SQRT 
+    const double nbc  = NBC;
+#   else
+    const double nbc2 = NBC2;
 #   endif
 #endif // eintcalPrint ]
 
@@ -106,11 +116,7 @@ Real eintcalPrint( int ** nonbondlist,
 
     register double total_e_internal=0.0L; // total_e_internal = eint
 
-    register double e_desolv=0.0L; // e_desolv = dpair
     register double e_elec=0.0L;
-
-    register double dielectric = 1.0L;
-    register double r_dielectric = 1.0L;
 
 #ifdef EINTCALPRINT
     double total_e_elec=0.0L;
@@ -123,8 +129,6 @@ Real eintcalPrint( int ** nonbondlist,
     register int a1=0, a2=0;
     register int t1=0, t2=0; // Xcode-gmm
     register int nonbond_type=0; // if = 4, it is a 1_4;  otherwise it is another kind of nonbond
-    register int index=0;
-
     register int index_lt_NEINT=0;
     register int index_lt_NDIEL=0;
     register int nb_group=0;
@@ -175,180 +179,74 @@ Real eintcalPrint( int ** nonbondlist,
         // Loop over the non-bonds in this nonbond "group", "inb",
         for (inb = inb_from;  inb < inb_to;  inb++) {
 
-#ifdef EINTCALPRINT
-            // For each new non-bond, we must reset the internal energy to zero.
-            e_internal = 0.0L;
-#endif
+            double e_internal=0;  // e_internal = epair
+            double e_desolv=0;    // e_desolv = dpair
 
-            a1 = nonbondlist[inb][ATM1];
-            a2 = nonbondlist[inb][ATM2];
-            t1 = nonbondlist[inb][TYPE1]; // Xcode-gmm  // t1 is a map_index
-            t2 = nonbondlist[inb][TYPE2]; // Xcode-gmm  // t2 is a map_index
-            nonbond_type = nonbondlist[inb][NBTYPE];
+            a1 = nonbondlist[inb].a1;
+            a2 = nonbondlist[inb].a2;
+            t1 = nonbondlist[inb].t1; // Xcode-gmm  // t1 is a map_index
+            t2 = nonbondlist[inb].t2; // Xcode-gmm  // t2 is a map_index
+            nonbond_type = nonbondlist[inb].nonbond_type;
+            double nb_desolv = nonbondlist[inb].desolv;
+            double q1q2 = nonbondlist[inb].q1q2;
 
             dx = tcoord[a1][X] - tcoord[a2][X];
             dy = tcoord[a1][Y] - tcoord[a2][Y];
             dz = tcoord[a1][Z] - tcoord[a2][Z];
 
+            // Calculate the van der Waals and/or H-bonding energy & the desolvation energy.
+            //|
+            //| desolvation energy = sol_fn[dist] * ( rec.vol * (lig.solpar + qsolpar * |lig.charge|)
+            //|                                     + lig.vol * (rec.solpar + qsolpar * |rec.charge|) );
+            //|
+            //| lig.solpar = parameterArray[t1].solpar;
+            //| lig.vol    = parameterArray[t1].vol;
+            //| lig.charge = qsp_abs_charge[a1]/qsolpar;
+            //| rec.solpar = parameterArray[t2].solpar;
+            //| rec.vol    = parameterArray[t2].vol;
+            //| rec.charge = qsp_abs_charge[a2]/qsolpar;
 #ifndef NOSQRT 
-    // SQRT  [
-
             // Use square-root, slower...
 
             // r = the separation between the atoms a1 and a2 in this non-bond, inb, 
             r = clamp(hypotenuse(dx,dy,dz), RMIN_ELEC); // clamp prevents electrostatic potential becoming too high when shorter than RMIN_ELEC
+            r2 = r*r;
+            register const int index = Ang_to_index(r); // convert real-valued distance r to an index for energy lookup tables
 
-            index = Ang_to_index(r); // convert real-valued distance r to an index for energy lookup tables
-            index_lt_NEINT = BoundedNeint(index);  // guarantees that index_lt_NEINT is never greater than (NEINT - 1)
-            index_lt_NDIEL = BoundedNdiel(index);  // guarantees that index_lt_NDIEL is never greater than (NDIEL - 1)
-
-            dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
-            r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[index_lt_NDIEL];
-            // r_dielectric = r * ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL]; // gmm 2006-04-17
-
-            if (B_calcIntElec) {
-                //  Calculate  Electrostatic Energy
-                e_elec = (double) q1q2[inb] / (r_dielectric);
-#   ifndef EINTCALPRINT
-                total_e_internal += e_elec;     // eintcal
-#   else
-                e_internal = e_elec;     // eintcalPrint
-#   endif
-            }
-
-            // if r is less than the non-bond-cutoff, 
-            //  -OR-
-            // If we are computing the unbound conformation then we ignore the non bond cutoff, NBC
-            if  ( (r < NBC) 
-#   ifndef EINTCALPRINT
-                    || ( B_use_non_bond_cutoff == FALSE ) 
-#   else
-                    // eintcalPrint does not know about B_use_non_bond_cutoff
-#   endif
-
-                    ) {   // if we have defined USE_8A_CUTOFF, then NBC = 8
-
-                // Calculate the van der Waals and/or H-bonding energy & the desolvation energy.
-
-                //| Calculate the desolvation energy
-                //|
-                //| desolvation energy = sol_fn[dist] * ( rec.vol * (lig.solpar + qsolpar * |lig.charge|)
-                //|                                     + lig.vol * (rec.solpar + qsolpar * |rec.charge|) );
-                //|
-                //| lig.solpar = parameterArray[t1].solpar;
-                //| lig.vol    = parameterArray[t1].vol;
-                //| lig.charge = qsp_abs_charge[a1]/qsolpar;
-                //| rec.solpar = parameterArray[t2].solpar;
-                //| rec.vol    = parameterArray[t2].vol;
-                //| rec.charge = qsp_abs_charge[a2]/qsolpar;
-
-                e_desolv = ptr_ad_energy_tables->sol_fn[index_lt_NEINT] * 
-                           ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[a1]) 
-                           + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[a2]) );
-
-#   ifndef EINTCALPRINT
-                if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
-                    // Compute a scaled 1-4 interaction, multiply by scale_1_4
-                    total_e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
-                } else {
-                    total_e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
-                }
-#   else
-                if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
-                    // Compute a scaled 1-4 interaction, multiply by scale_1_4
-                    e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
-                } else {
-                    e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
-                }
-#   endif
-
-            } else {
-                // otherwise, the atoms are too far apart, so don't add anything to the total energy, & save some time
-                e_desolv = 0.0L;
-            }
-
-    // SQRT  ]
-#else   // NOSQRT [
+#else   
             //  Non-square-rooting version, faster...
-
             r2 = sqhypotenuse(dx,dy,dz); // r2, the square of the separation between the atoms a1 and a2 in this non-bond, inb, 
             r2 = clamp(r2, RMIN_ELEC2);
+            register const int index = SqAng_to_index(r2);
 
-            index = SqAng_to_index(r2);
+#endif  // NOSQRT ]
+
             index_lt_NEINT = BoundedNeint(index);  // guarantees that index_lt_NEINT is never greater than (NEINT - 1)
             index_lt_NDIEL = BoundedNdiel(index);  // guarantees that index_lt_NDIEL is never greater than (NDIEL - 1)
-
-            dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
-            // r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[index_lt_NDIEL];
-            r_dielectric = sqrt(r2) * ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];  // Using sqrt() in NOSQRT is a no-no!  FIXME!
 
             if (B_calcIntElec) {
                 //  Calculate  Electrostatic  Energy
-                e_elec = (double) q1q2[inb] / r_dielectric;
-#   ifndef EINTCALPRINT
-                total_e_internal += e_elec; // eintcal
-#   else
-                e_internal = e_elec; // eintcalPrint
-#   endif
+                double r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[index_lt_NDIEL];
+                e_elec = q1q2 * r_dielectric;
+                e_internal = e_elec;
             }
-
-            // if r-squared is less than non-bond-cutoff-squared,
-            //  -OR-
-            // If we are computing the unbound conformation then we ignore the non bond cutoff, NBC
-            if  ( (r2 < NBC2) 
-#   ifndef EINTCALPRINT
-                    || ( B_use_non_bond_cutoff == FALSE ) 
-#   else
-                    // eintcalPrint does not know about B_use_non_bond_cutoff
-#   endif
-                    ) {   // if we have defined USE_8A_CUTOFF, then NBC = 8 // Xcode-gmm
-
-                // Calculate the van der Waals and/or H-bonding energy & the desolvation energy.
-
-                //| Calculate the desolvation energy
-                //|
-                //| desolvation energy = sol_fn[dist] * ( rec.vol * (lig.solpar + qsolpar * |lig.charge|)
-                //|                                     + lig.vol * (rec.solpar + qsolpar * |rec.charge|) );
-                //|
-                //| lig.solpar = parameterArray[t1].solpar;
-                //| lig.vol    = parameterArray[t1].vol;
-                //| lig.charge = qsp_abs_charge[a1]/qsolpar;
-                //| rec.solpar = parameterArray[t2].solpar;
-                //| rec.vol    = parameterArray[t2].vol;
-                //| rec.charge = qsp_abs_charge[a2]/qsolpar;
-                
-                e_desolv = ptr_ad_energy_tables->sol_fn[index_lt_NEINT] * 
-                           ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[a1]) 
-                           + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[a2]) );
-
-#   ifndef EINTCALPRINT
+            if  ( r2 < nbc2 ) {   
+                e_desolv = ptr_ad_energy_tables->sol_fn[index_lt_NEINT] * nb_desolv;
                 if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
                     //| Compute a scaled 1-4 interaction,
-                    total_e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
-                } else {
-                    total_e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
-                }
-#   else
-                if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
-                    // Compute a scaled 1-4 interaction,
                     e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
                 } else {
                     e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
                 }
-#   endif
-
-            } else {
-                // otherwise, the atoms are too far apart, so don't add anything to the total energy, & save some time
-                e_desolv = 0.0L;
             }
-#endif  // NOSQRT ]
 
-
-#ifdef EINTCALPRINT // eintcalPrint [
 
           total_e_internal += e_internal;
+#ifdef EINTCALPRINT // eintcalPrint [
+
           total_e_desolv   += e_desolv;
           total_e_elec     += e_elec;
+          double dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
 
           if (B_calcIntElec) {
 
