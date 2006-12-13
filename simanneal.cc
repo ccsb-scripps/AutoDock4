@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.17 2006/12/01 02:29:44 garrett Exp $
+ $Id: simanneal.cc,v 1.18 2006/12/13 03:15:39 garrett Exp $
 
 */
 
@@ -35,7 +35,6 @@ void simanneal ( int   *Addr_nconf,
                 Real abs_charge[MAX_ATOMS],
                 Real qsp_abs_charge[MAX_ATOMS],
                 Boole B_calcIntElec,
-                Real q1q2[MAX_NONBONDS],
                 Real crd[MAX_ATOMS][SPACE],
                 Real crdpdb[MAX_ATOMS][SPACE],
                 char  FN_dpf[MAX_CHARS],
@@ -52,7 +51,7 @@ void simanneal ( int   *Addr_nconf,
                 Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
                 int   naccmax,
                 int   natom,
-                int   **nonbondlist,
+                NonbondParam *nonbondlist,
                 int   nrejmax,
                 int   ntor1,
                 int   ntor,
@@ -252,7 +251,7 @@ void simanneal ( int   *Addr_nconf,
         getInitialState( &e0, e0max,
                      &sInit, &sMin, &sLast, 
                      B_RandomTran0, B_RandomQuat0, B_RandomDihe0, 
-                     charge, abs_charge, qsp_abs_charge, q1q2, crd, crdpdb, atomstuff,
+                     charge, abs_charge, qsp_abs_charge, crd, crdpdb, atomstuff,
                      elec, emap, ptr_ad_energy_tables, B_calcIntElec,
                      map, natom, Nnb, nonbondlist,
                      ntor, tlist, type, vt, irun1, outlev, MaxRetries,
@@ -383,7 +382,7 @@ void simanneal ( int   *Addr_nconf,
                         e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                                         info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW,
                                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
-                                            + (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE);
+                                            + (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE);
 
                         if (B_isGaussTorCon) {
                             /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { ***/
@@ -485,7 +484,7 @@ void simanneal ( int   *Addr_nconf,
                 getInitialState( &e0, e0max,
                          &sInit, &sMin, &sLast, 
                          TRUE, TRUE, TRUE, 
-                         charge, abs_charge, qsp_abs_charge, q1q2, crd, crdpdb, atomstuff,
+                         charge, abs_charge, qsp_abs_charge, crd, crdpdb, atomstuff,
                          elec, emap, ptr_ad_energy_tables, B_calcIntElec,
                          map, natom, Nnb, nonbondlist,
                          ntor, tlist, type, vt, irun1, outlev, MaxRetries,
@@ -600,7 +599,7 @@ void simanneal ( int   *Addr_nconf,
         cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
 
         if (ntor > 0) {
-            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
+            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
         } else {
             eintra = 0.0 - unbound_internal_FE;
         }
@@ -614,7 +613,7 @@ void simanneal ( int   *Addr_nconf,
                 ligand_is_inhibitor, torsFreeEnergy, 
                 vt, tlist, crdpdb, nonbondlist, 
                 ptr_ad_energy_tables,
-                type, Nnb, B_calcIntElec, q1q2,
+                type, Nnb, B_calcIntElec,
                 map,
                 outlev, ignore_inter,
                 B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
