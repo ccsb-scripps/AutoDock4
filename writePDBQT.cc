@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.8 2006/12/01 04:58:32 garrett Exp $
+ $Id: writePDBQT.cc,v 1.9 2006/12/13 03:17:19 garrett Exp $
 
 */
 
@@ -47,12 +47,11 @@ writePDBQT(int irun, FourByteLong seed[2],
 		 Real vt[MAX_TORS][SPACE],
 		 int tlist[MAX_TORS][MAX_ATOMS],
 		 Real crdpdb[MAX_ATOMS][SPACE],
-		 int **nonbondlist,
+		 NonbondParam *nonbondlist,
          EnergyTables *ptr_ad_energy_tables,
 		 int type[MAX_ATOMS],  // aka 'map_index' in 'ParameterEntry' structures
 		 int Nnb,
 		 Boole B_calcIntElec,
-		 Real q1q2[MAX_NONBONDS],
          Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 		 int outlev,
 		 int ignore_inter[MAX_ATOMS],
@@ -137,7 +136,7 @@ writePDBQT(int irun, FourByteLong seed[2],
     eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
          crd, charge, abs_charge, type, map, info, B_outside, 
          ignore_inter, elec, emap, &elec_total, &emap_total,
-         nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, q1q2, 
+         nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
          B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
 
     // Set the total intramolecular energy (sum of intramolecular energies of ligand and of protein)
