@@ -26,7 +26,6 @@ void investigate(
                 Real abs_charge[MAX_ATOMS],
                 Real qsp_abs_charge[MAX_ATOMS],
                 Boole B_calcIntElec,
-                Real q1q2[MAX_NONBONDS],
                 Real crd[MAX_ATOMS][SPACE],
                 Real crdpdb[MAX_ATOMS][SPACE],
 
@@ -35,7 +34,7 @@ void investigate(
                 int   maxTests,
                 Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
                 int   natom,
-                int   **nonbondlist,
+                NonbondParam *nonbondlist,
                 int   ntor,
                 int   outlev,
                 int   tlist[MAX_TORS][MAX_ATOMS],
