@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.16 2006/12/01 01:32:44 garrett Exp $
+ $Id: getInitialState.cc,v 1.17 2006/12/13 03:18:17 garrett Exp $
 
 */
 
@@ -41,7 +41,6 @@ void getInitialState(
             Real charge[MAX_ATOMS],
             Real abs_charge[MAX_ATOMS],
             Real qsp_abs_charge[MAX_ATOMS],
-            Real q1q2[MAX_NONBONDS],
             Real crd[MAX_ATOMS][SPACE],
             Real crdpdb[MAX_ATOMS][SPACE],
             char  atomstuff[MAX_ATOMS][MAX_CHARS],
@@ -54,7 +53,7 @@ void getInitialState(
             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
             int   natom,
             int   Nnb,
-            int   **nonbondlist,
+            NonbondParam *nonbondlist,
             int   ntor,
             int   tlist[MAX_TORS][MAX_ATOMS],
             int   type[MAX_ATOMS],
@@ -160,7 +159,7 @@ void getInitialState(
             e0inter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                         info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-            e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
+            e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
             e0total = e0inter + e0intra;
 
             if (e0total < e0min) {
@@ -204,7 +203,7 @@ void getInitialState(
     eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
          crd, charge, abs_charge, type, map, info, SOME_ATOMS_OUTSIDE_GRID, 
          ignore_inter, elec, emap, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
-         nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, q1q2, 
+         nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
          B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
 
     copyState( sMinm, *sInit );
