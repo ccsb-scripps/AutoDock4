@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.1 2006/06/09 10:15:34 garrett Exp $
+ $Id: calculateEnergies.cc,v 1.2 2006/12/13 00:08:05 garrett Exp $
 
 */
 
@@ -27,7 +27,7 @@ extern Real nb_group_energy[3];
 // eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
 //      tcoord, charge, abs_charge, type, map, ptr_info, B_outside, 
 //      ignore_inter, elec, emap, p_elec_total, p_emap_total,
-//      nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, q1q2, 
+//      nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, 
 //      B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
 
 EnergyBreakdown calculateEnergies(
@@ -52,11 +52,10 @@ EnergyBreakdown calculateEnergies(
     Real                 *p_emap_total,             // output if not NULL - total intermolecular energy
 
     // eintcal
-    int ** const         nonbondlist,               // input  list of nonbonds
+    NonbondParam * const         nonbondlist,       // input  list of nonbonds
     const EnergyTables   *ptr_ad_energy_tables,     // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
     const int            Nnb,                       // input  total number of nonbonds
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
-    const Real           q1q2[MAX_NONBONDS],        // input  product of partial charges for each nonbonded pair of atoms
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
@@ -90,7 +89,7 @@ EnergyBreakdown calculateEnergies(
     if (ntor > 0) {
         // computing all the nonbond interaction energies fills nb_group_energy[3] array
         // with intramolecular energy of ligand, intermolecular energy, and intramolecular energy of receptor
-        (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, B_calcIntElec, q1q2, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues ) ;
+        (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues ) ;
         
         eb.e_intra_moving_moving_lig = nb_group_energy[INTRA_LIGAND];
         eb.e_inter_moving_moving = nb_group_energy[INTER];
