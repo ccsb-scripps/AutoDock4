@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.8 2006/06/09 10:06:45 garrett Exp $
+ $Id: weedbonds.cc,v 1.9 2006/12/13 03:17:01 garrett Exp $
 
 */
 
@@ -28,7 +28,7 @@ void weedbonds( int natom,
                 int tlist[MAX_TORS][MAX_ATOMS],
                 int nbmatrix[MAX_ATOMS][MAX_ATOMS],
                 int *Addr_Nnb,
-                int **nonbondlist,
+                NonbondParam *nonbondlist,
                 int outlev,
                 int type[MAX_ATOMS] )
 
@@ -153,11 +153,11 @@ void weedbonds( int natom,
     for ( i = 0;  i < (true_ligand_atoms-1);  i++ ) {
         for ( j = i+1;  j < true_ligand_atoms;  j++ ) {
             if ( ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1)) || ((nbmatrix[i][j] == 4) && (nbmatrix[j][i] == 4)) ) {
-                nonbondlist[Nnb][ATM1] = i;
-                nonbondlist[Nnb][ATM2] = j;
-                nonbondlist[Nnb][TYPE1] = type[i];
-                nonbondlist[Nnb][TYPE2] = type[j];
-                nonbondlist[Nnb][NBTYPE] = nbmatrix[i][j];
+                nonbondlist[Nnb].a1 = i;
+                nonbondlist[Nnb].a2 = j;
+                nonbondlist[Nnb].t1 = type[i];
+                nonbondlist[Nnb].t2 = type[j];
+                nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0) && (nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] != 0) ) {
                 pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
@@ -170,11 +170,11 @@ void weedbonds( int natom,
     for ( i = 0;  i < true_ligand_atoms;  i++ ) {
         for ( j = true_ligand_atoms;  j < natom;  j++ ) {
             if ( ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1)) || ((nbmatrix[i][j] == 4) && (nbmatrix[j][i] == 4)) ) {
-                nonbondlist[Nnb][ATM1] = i;
-                nonbondlist[Nnb][ATM2] = j;
-                nonbondlist[Nnb][TYPE1] = type[i];
-                nonbondlist[Nnb][TYPE2] = type[j];
-                nonbondlist[Nnb][NBTYPE] = nbmatrix[i][j];
+                nonbondlist[Nnb].a1 = i;
+                nonbondlist[Nnb].a2 = j;
+                nonbondlist[Nnb].t1 = type[i];
+                nonbondlist[Nnb].t2 = type[j];
+                nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0) && (nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] != 0) ) {
                 pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
@@ -187,11 +187,11 @@ void weedbonds( int natom,
     for ( i = true_ligand_atoms;  i < natom-1;  i++ ) {
         for ( j = i+1;  j < natom;  j++ ) {
             if ( ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1)) || ((nbmatrix[i][j] == 4) && (nbmatrix[j][i] == 4)) ) {
-                nonbondlist[Nnb][ATM1] = i;
-                nonbondlist[Nnb][ATM2] = j;
-                nonbondlist[Nnb][TYPE1] = type[i];
-                nonbondlist[Nnb][TYPE2] = type[j];
-                nonbondlist[Nnb][NBTYPE] = nbmatrix[i][j];
+                nonbondlist[Nnb].a1 = i;
+                nonbondlist[Nnb].a2 = j;
+                nonbondlist[Nnb].t1 = type[i];
+                nonbondlist[Nnb].t2 = type[j];
+                nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0) && (nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] != 0) ) {
                 pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
@@ -221,7 +221,7 @@ void print_nonbonds(
                 int tlist[MAX_TORS][MAX_ATOMS],
                 int nbmatrix[MAX_ATOMS][MAX_ATOMS],
                 int Nnb,
-                int **nonbondlist,
+                NonbondParam *nonbondlist,
                 int outlev,
                 int type[MAX_ATOMS])
 
@@ -269,8 +269,8 @@ void print_nonbonds(
 
     for (i = 0;  i < Nnb;  i++) {
 
-        i_atmnum = nonbondlist[i][ATM1];
-        j_atmnum = nonbondlist[i][ATM2];
+        i_atmnum = nonbondlist[i].a1;
+        j_atmnum = nonbondlist[i].a2;
 
 #ifdef DEBUG
             pr( logFile, "* Assigning nbmatrix[%d][%d] to %d *\n", Nnbonds[i_atmnum], i_atmnum, j_atmnum );
