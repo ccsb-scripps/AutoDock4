@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.9 2006/12/13 03:17:01 garrett Exp $
+ $Id: weedbonds.cc,v 1.10 2007/01/03 23:27:51 garrett Exp $
 
 */
 
@@ -263,7 +263,7 @@ void print_nonbonds(
 
 #ifdef DEBUG
         for (i = 0;  i < Nnb;  i++) {
-            pr( logFile,"> nonbondlist[%2d][0,1] = %2d,%2d\n", i,nonbondlist[i][ATM1],nonbondlist[i][ATM2] );
+            pr( logFile,"> nonbondlist[%2d][0,1] = %2d,%2d\n", i,nonbondlist[i].a1,nonbondlist[i].a2 );
         } //  i 
 #endif // DEBUG
 
