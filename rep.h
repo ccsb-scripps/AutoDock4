@@ -118,12 +118,13 @@ class RealVector : public Representation
       ~RealVector(void);
       void write(unsigned char, int);
       void write(FourByteLong, int);
-//      void write(const void *, int);
+//    void write(const void *, int);
       void write(const Element, int);
       Representation &operator=(const Representation &);
-//      const void *gene(unsigned int) const;
+//    const void *gene(unsigned int) const;
 #ifdef DEBUG
-      inline const Element gene(unsigned int) const
+      /*
+      inline const Element gene(unsigned int gene_number) const
       {
           Element retval;
           retval.real = vector[gene_number];
@@ -136,6 +137,10 @@ class RealVector : public Representation
                   value;
           vector[gene] = value;
       }
+      */
+      // non-inlined versions, possibly with range checking
+      void write(double, int);
+      const Element gene(unsigned int) const;
 #else
       // non-inlined versions, possibly with range checking
       void write(double, int);
