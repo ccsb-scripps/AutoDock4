@@ -347,6 +347,7 @@ CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X
 # CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP
 
 CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DQUATERNION_MUTATION # As above, but treat quaternion genes properly when doing mutations--note, this is slow!
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; also use Double precision throughout
 # CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X
 
