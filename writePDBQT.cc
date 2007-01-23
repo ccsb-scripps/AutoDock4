@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.9 2006/12/13 03:17:19 garrett Exp $
+ $Id: writePDBQT.cc,v 1.10 2007/01/23 08:03:19 garrett Exp $
 
 */
 
@@ -141,18 +141,8 @@ writePDBQT(int irun, FourByteLong seed[2],
 
     // Set the total intramolecular energy (sum of intramolecular energies of ligand and of protein)
     if (ntor > 0) {
-        if (state_type == 0) {
-            // UNBOUND
-            // Unbound state, do _not_ subtract "unbound_internal_FE", since this has not been calculated yet.
-            // add the intramolecular energy of the receptor, for the (moving, fixed) atom pairs // (2)
-            *Ptr_eintra = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR] + eb.e_intra_moving_fixed_rec;
-        } else {
-            // DOCKED
-            // Docked state, subtract "unbound_internal_FE"
-            // add the intramolecular energy of the receptor, for the (moving, fixed) atom pairs // (2)
-            *Ptr_eintra = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR] + eb.e_intra_moving_fixed_rec 
-                          - unbound_internal_FE;
-        }
+        // Add the intramolecular energy of the receptor, for the (moving, fixed) atom pairs // (2)
+        *Ptr_eintra = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR] + eb.e_intra_moving_fixed_rec;
     } else {
         *Ptr_eintra = 0.0;
     }
