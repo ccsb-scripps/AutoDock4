@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.63 2006/12/13 03:11:33 garrett Exp $
+ $Id: main.cc,v 1.64 2007/01/24 02:50:36 garrett Exp $
 
 */
 
@@ -682,7 +682,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.63 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.64 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1795,18 +1795,18 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr( logFile, "\n\n" );
 
         // Update the unit vectors for the torsion rotations
-		if (debug > 0) {
-			pr(logFile, "Calculating unit vectors for each torsion.\n\n");
-		}
-		torNorVec(crdpdb, ntor, tlist, vt);
-		for (i = 0; i < MAX_TORS; i++) {
-			ligand.vt[i][X] = vt[i][X];
-			ligand.vt[i][Y] = vt[i][Y];
-			ligand.vt[i][Z] = vt[i][Z];
-			for (j = 0; j < MAX_ATOMS; j++) {
-				ligand.tlist[i][j] = tlist[i][j];
-			}
-		}
+        if (debug > 0) {
+            pr(logFile, "Calculating unit vectors for each torsion.\n\n");
+        }
+        torNorVec(crdpdb, ntor, tlist, vt);
+        for (i = 0; i < MAX_TORS; i++) {
+            ligand.vt[i][X] = vt[i][X];
+            ligand.vt[i][Y] = vt[i][Y];
+            ligand.vt[i][Z] = vt[i][Z];
+            for (j = 0; j < MAX_ATOMS; j++) {
+                ligand.tlist[i][j] = tlist[i][j];
+            }
+        }
 
         (void) fflush(logFile);
         break;
