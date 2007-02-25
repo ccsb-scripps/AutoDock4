@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.cc,v 1.5 2006/12/01 02:26:56 garrett Exp $
+ $Id: qtransform.cc,v 1.6 2007/02/25 05:35:13 garrett Exp $
 
 */
 
@@ -108,5 +108,40 @@ void qtransform( const Coord T,
         tcoord[a][Y] = tmp.y;
         tcoord[a][Z] = tmp.z;
     }
+}
+
+void reorient( FILE *logFile, 
+               const int true_ligand_atoms, 
+               char atomstuff[MAX_ATOMS][MAX_CHARS],
+               Real crdpdb[MAX_ATOMS][SPACE],  // original PDB coordinates from input
+               Real charge[MAX_ATOMS],
+               int type[MAX_ATOMS],
+               ParameterEntry  parameterArray[MAX_MAPS],
+               Quat q_reorient,
+               Coord origin,
+               const int ntor,
+               int tlist[MAX_TORS][MAX_ATOMS],
+               Real vt[MAX_TORS][SPACE],
+               Molecule *ptr_ligand,
+               const int debug )
+ {
+    // Print out the un-reoriented coordinates
+    pr( logFile, "\nUn-reoriented ligand's coordinates:\n" );
+    pr( logFile, "-----------------------------------\n\n" );
+    print_PDBQT( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, parameterArray, type, "UN-REORIENTED:  " );
+
+    // Print message about q_reorient
+    print_q_reorient_message( logFile, q_reorient );
+
+    // Apply the rotation defined by q_reorient to the input coordinates of the ligand, "crdpdb"
+    qtransform( origin, q_reorient, crdpdb, true_ligand_atoms );
+
+    // Update the unit vectors for the torsion rotations
+    update_torsion_vectors( crdpdb, ntor, tlist, vt, ptr_ligand, debug );
+    
+    // Print out the re-oriented coordinates
+    pr( logFile, "Reoriented ligand's coordinates:\n" );
+    pr( logFile, "--------------------------------\n\n" );
+    print_PDBQT( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, parameterArray, type, "REORIENTED:  " );
 }
 /* EOF */
