@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.19 2006/12/13 02:20:01 garrett Exp $
+ $Id: eval.cc,v 1.20 2007/02/25 04:50:43 garrett Exp $
 
 */
 
@@ -117,6 +117,7 @@ double Eval::eval()
 #endif /* DEBUG */
 
    // Ligand could be inside or could still be outside, check all the atoms...
+   // cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdreo, crd, natom);
    cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
 
 #ifdef DEBUG
@@ -217,6 +218,7 @@ double Eval::eval(int term)
 #endif /* DEBUG */
  
    // Ligand could be inside or could still be outside, check all the atoms...
+   // cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdreo, crd, natom);
    cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
 
 #ifdef DEBUG
@@ -311,6 +313,7 @@ int Eval::write(FILE *out_file, Representation **rep)
 #endif /*DEBUG*/
 
     make_state_from_rep(rep, &stateNow);
+    // cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdreo, crd, natom);
     cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
     for (i=0; i<natom; i++) {
         // strncpy( rec14, &atomstuff[i][13], (size_t)13);
