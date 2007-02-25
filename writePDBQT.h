@@ -49,4 +49,13 @@ void writePDBQT(int irun,FourByteLong seed[2],
                     Boole B_have_flexible_residues
                     );
 
+void print_PDBQT( FILE *logFile, 
+                  const int true_ligand_atoms,
+                  const char atomstuff[MAX_ATOMS][MAX_CHARS],
+                  const Real crdpdb[MAX_ATOMS][SPACE],
+                  const Real charge[MAX_ATOMS],
+                  const ParameterEntry parameterArray[MAX_MAPS],
+                  const int type[MAX_ATOMS],
+                  const char prefix[MAX_CHARS] );
+
 #endif

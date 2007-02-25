@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.10 2007/01/23 08:03:19 garrett Exp $
+ $Id: writePDBQT.cc,v 1.11 2007/02/25 05:52:02 garrett Exp $
 
 */
 
@@ -273,11 +273,34 @@ writePDBQT(int irun, FourByteLong seed[2],
             }
         } // r
 
-		(void) fprintf(logFile, "%s: TER\n", state_type_string);
-		(void) fprintf(logFile, "%s: ENDMDL\n", state_type_string);
-		//(void) fprintf(logFile, UnderLine);
-		(void) fflush(logFile);
-	} // outlev > -1
+        (void) fprintf(logFile, "%s: TER\n", state_type_string);
+        (void) fprintf(logFile, "%s: ENDMDL\n", state_type_string);
+        //(void) fprintf(logFile, UnderLine);
+        (void) fflush(logFile);
+    } // outlev > -1
 } // writePDBQT()
+
+void print_PDBQT( FILE *logFile, 
+                  const int true_ligand_atoms,
+                  const char atomstuff[MAX_ATOMS][MAX_CHARS],
+                  const Real crdpdb[MAX_ATOMS][SPACE],
+                  const Real charge[MAX_ATOMS],
+                  const ParameterEntry parameterArray[MAX_MAPS],
+                  const int type[MAX_ATOMS],
+                  const char prefix[MAX_CHARS] )
+{ // Print out the coordinates
+    register int i=0;
+    char AtmNamResNamNum[14];
+    for (i=0; i<true_ligand_atoms; i++) {
+        strncpy( AtmNamResNamNum, &atomstuff[i][13], (size_t) 13 );
+        AtmNamResNamNum[13] = '\0';
+        (void) fprintf( logFile, FORMAT_PDBQT_ATOM_RESSTR, prefix, 
+                        i + 1, AtmNamResNamNum, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z], 
+                        1., 0.,
+                        charge[i], parameterArray[type[i]].autogrid_type );
+        (void) fprintf( logFile, "\n" ); 
+    }
+    pr( logFile, "\n\n" );
+} // end Print out the coordinates
 
 /* EOF */
