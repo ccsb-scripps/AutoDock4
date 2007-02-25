@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.12 2006/12/13 03:12:15 garrett Exp $
+ $Id: readPDBQT.cc,v 1.13 2007/02/25 05:38:38 garrett Exp $
 
 */
 
@@ -37,6 +37,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
                     int *P_natom,
                     Real crdpdb[MAX_ATOMS][NTRN],
+                    Real crdreo[MAX_ATOMS][NTRN],
                     Real charge[MAX_ATOMS],
                     Boole * P_B_haveCharges,
                     int map_index[MAX_ATOMS], //was:int type[MAX_ATOMS]
@@ -218,16 +219,17 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 			// each "rigid_piece" is a self-contained rigid entity.
             rigid_piece[natom] = nrigid_piece;
 
-			// Read the coordinates, charge, and parameters of this atom
-			// sets "autogrid_type" in this_parameter_entry
+			// Read the coordinates and store them in crdpdb[], 
+            // read the partial atomic charge and store it in charge[],
+            // and read the parameters of this atom and store them in this_parameter_entry
+			// set the "autogrid_type" in this_parameter_entry
             readPDBQTLine(input_line, crdpdb[natom], &charge[natom], &this_parameter_entry);
 
-			mol.crdpdb[natom][X] = crdpdb[natom][X];
-			mol.crdpdb[natom][Y] = crdpdb[natom][Y];
-			mol.crdpdb[natom][Z] = crdpdb[natom][Z];
-			mol.crd[natom][X] = crdpdb[natom][X];
-			mol.crd[natom][Y] = crdpdb[natom][Y];
-			mol.crd[natom][Z] = crdpdb[natom][Z];
+			for (j = 0; j < NTRN; j++) {
+                mol.crdpdb[natom][j] = crdpdb[natom][j];
+                mol.crd[natom][j] = crdpdb[natom][j];
+                // crdreo[natom][j] = crdpdb[natom][j];
+            }
 
 			if (!found_begin_res) {
                 // Only accumulate charges on the ligand...
@@ -387,18 +389,8 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 		print_nonbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, *P_Nnb, nonbondlist, outlev, map_index);
 
-		if (debug > 0) {
-			pr(logFile, "Calculating unit vectors for each torsion.\n\n");
-		}
-		torNorVec(crdpdb, ntor, tlist, vt);
-		for (i = 0; i < MAX_TORS; i++) {
-			mol.vt[i][X] = vt[i][X];
-			mol.vt[i][Y] = vt[i][Y];
-			mol.vt[i][Z] = vt[i][Z];
-			for (j = 0; j < MAX_ATOMS; j++) {
-				mol.tlist[i][j] = tlist[i][j];
-			}
-		}
+        // Update the unit vectors for the torsion rotations
+        update_torsion_vectors( crdpdb, ntor, tlist, vt, &mol, debug );
 
 		flushLog;
 

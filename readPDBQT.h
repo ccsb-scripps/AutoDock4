@@ -25,6 +25,7 @@ Molecule readPDBQT( char  line[LINE_LEN],
 
               int   *P_natom,
               Real crdpdb[MAX_ATOMS][NTRN],
+              Real crdreo[MAX_ATOMS][NTRN],
               Real charge[MAX_ATOMS],
               Boole *P_B_haveCharges,
               int   type[MAX_ATOMS],
