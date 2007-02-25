@@ -1,6 +1,6 @@
 /*
 
- $Id: torNorVec.cc,v 1.4 2006/04/25 22:33:26 garrett Exp $
+ $Id: torNorVec.cc,v 1.5 2007/02/25 05:47:19 garrett Exp $
 
 */
 
@@ -74,5 +74,30 @@ void torNorVec( Real crdpdb[MAX_ATOMS][SPACE],
 
     } /* j */
     flushLog;
+    return;
 }
+
+void update_torsion_vectors( Real crdpdb[MAX_ATOMS][SPACE],
+                             int ntor,
+                             int  tlist[MAX_TORS][MAX_ATOMS],
+                             Real vt[MAX_TORS][SPACE],
+                             Molecule *ligand,
+                             int debug )
+{ // Update the unit vectors for the torsion rotations
+    register int i=0, j=0;
+    if (debug > 0) {
+        pr(logFile, "Calculating unit vectors for each torsion.\n\n");
+    }
+    torNorVec(crdpdb, ntor, tlist, vt);
+    for (i = 0; i < MAX_TORS; i++) {
+        ligand->vt[i][X] = vt[i][X];
+        ligand->vt[i][Y] = vt[i][Y];
+        ligand->vt[i][Z] = vt[i][Z];
+        for (j = 0; j < MAX_ATOMS; j++) {
+            ligand->tlist[i][j] = tlist[i][j];
+        }
+    }
+    return;
+} // Update the unit vectors for the torsion rotations
+
 /* EOF */
