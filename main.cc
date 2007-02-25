@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.64 2007/01/24 02:50:36 garrett Exp $
+ $Id: main.cc,v 1.65 2007/02/25 05:27:21 garrett Exp $
 
 */
 
@@ -118,10 +118,7 @@ char            atm_typ_str[ATOM_MAPS]; //  "atm_typ_str" (in AD3) used to serve
 //   MAX_MAPS
 //
 char            *ligand_atom_type_ptrs[MAX_MAPS]; /* array of ptrs used to parse input line of atom type names */
-//char            atom_type_name[MAX_MAPS][3];  // now part of the GridMapSetInfo structure
 ParameterEntry  parameterArray[MAX_MAPS];
-//Real   mapmax[MAX_MAPS];  // now part of the GridMapSetInfo structure
-//Real   mapmin[MAX_MAPS];  // now part of the GridMapSetInfo structure
 
 //   MAX_GRID_PTS & MAX_MAPS
 //
@@ -132,29 +129,30 @@ GridMapSetInfo *info;  // this information is from the AVS field file
 
 //   MAX_ATOMS
 //
-char            atomstuff[MAX_ATOMS][MAX_CHARS];
-char            pdbaname[MAX_ATOMS][5];
-Real   crdpdb[MAX_ATOMS][SPACE];
-Real   crd[MAX_ATOMS][SPACE];
-Real   charge[MAX_ATOMS];
-Real   abs_charge[MAX_ATOMS];
-Real   qsp_abs_charge[MAX_ATOMS];
-Real   elec[MAX_ATOMS];
-Real   emap[MAX_ATOMS];
-int             type[MAX_ATOMS];
-int             bond_index[MAX_ATOMS];
-int             ignore_inter[MAX_ATOMS];
-Atom            atoms[MAX_ATOMS];
+char atomstuff[MAX_ATOMS][MAX_CHARS];
+char pdbaname[MAX_ATOMS][5];
+Real crdpdb[MAX_ATOMS][SPACE];  // original PDB coordinates from input
+Real crdreo[MAX_ATOMS][SPACE];  // reoriented coordinates
+Real crd[MAX_ATOMS][SPACE];     // current coordinates
+Real charge[MAX_ATOMS];
+Real abs_charge[MAX_ATOMS];
+Real qsp_abs_charge[MAX_ATOMS];
+Real elec[MAX_ATOMS];
+Real emap[MAX_ATOMS];
+int type[MAX_ATOMS];
+int bond_index[MAX_ATOMS];
+int ignore_inter[MAX_ATOMS];
+Atom atoms[MAX_ATOMS];
 
 //   MAX_TORS
 //
-int             tlist[MAX_TORS][MAX_ATOMS];
-Real   vt[MAX_TORS][SPACE];
-Real   F_TorConRange[MAX_TORS][MAX_TOR_CON][2];
+int  tlist[MAX_TORS][MAX_ATOMS];
+Real vt[MAX_TORS][SPACE];
+Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2];
 unsigned short  US_TorE[MAX_TORS];
-Boole           B_isTorConstrained[MAX_TORS];
-int             N_con[MAX_TORS];
-unsigned short  US_torProfile[MAX_TORS][NTORDIVS];
+Boole B_isTorConstrained[MAX_TORS];
+int N_con[MAX_TORS];
+unsigned short US_torProfile[MAX_TORS][NTORDIVS];
 
 //   MAX_NONBONDS
 //
@@ -334,6 +332,7 @@ Boole B_found_desolvmap = FALSE;
 Boole B_use_non_bond_cutoff = TRUE;
 Boole B_have_flexible_residues = FALSE;  // if the receptor has flexible residues, this will be set to TRUE
 Boole B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
+Boole B_reorient_random = FALSE; // if true, create a new random orientation before docking
 
 int atm1=0;
 int atm2=0;
@@ -458,9 +457,6 @@ Worst_Mode w_mode = AverageOfN;
 EvalMode e_mode = Normal_Eval;
 Global_Search *GlobalSearchMethod = NULL;
 Local_Search *LocalSearchMethod = NULL;
-
-// For outputting the PDBQT files
-char AtmNamResNamNum[14];
 
 info = (GridMapSetInfo *) malloc( sizeof(GridMapSetInfo) );
 ad_energy_tables = (EnergyTables *) malloc( sizeof(EnergyTables) );
@@ -682,7 +678,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.64 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.65 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1272,7 +1268,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ligand = readPDBQT( line,
                             num_atom_types,
                             &natom,
-                            crdpdb, charge, &B_haveCharges,
+                            crdpdb, crdreo, charge, &B_haveCharges,
                             type, bond_index,
                             pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, Htype,
                             &B_constrain_dist, &atomC1, &atomC2,
@@ -1414,44 +1410,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 exit(-1);
             }
 
-
-            evaluate.setup(crd,
-                           charge,
-                           abs_charge,
-                           qsp_abs_charge,
-                           type,
-                           natom, 
-                           
-                           map,
-
-                           elec,
-                           emap,
-                           nonbondlist,
-                           ad_energy_tables,
-
-                           Nnb,
-                           B_calcIntElec,
-                           B_isGaussTorCon,
-                           B_isTorConstrained,
-                           B_ShowTorE,
-                           US_TorE,
-                           US_torProfile,
-                           vt,
-                           tlist,
-                           crdpdb,
-                           sInit,
-                           ligand,
-                           ignore_inter,
-                           B_include_1_4_interactions,
-                           scale_1_4,
-
-                           parameterArray,
-
-                           unbound_internal_FE,
-                           
-                           info,
-                           
-                           B_use_non_bond_cutoff, B_have_flexible_residues);
+            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, 
+                            map, elec, emap, nonbondlist, ad_energy_tables,
+                            Nnb, B_calcIntElec, B_isGaussTorCon, B_isTorConstrained, B_ShowTorE,
+                            US_TorE, US_torProfile,
+                            vt, tlist,
+                            crdpdb, crdreo, sInit, ligand, ignore_inter, B_include_1_4_interactions, scale_1_4,
+                            parameterArray, unbound_internal_FE, info,
+                            B_use_non_bond_cutoff, B_have_flexible_residues);
 
             evaluate.compute_intermol_energy(TRUE);
 
@@ -1526,19 +1492,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   (void) fflush(logFile);
 
                   writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
-                        sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                        crd, emap, elec, 
-                        charge, abs_charge, qsp_abs_charge,
-                        ligand_is_inhibitor,
-                        torsFreeEnergy,
-                        vt, tlist, crdpdb, nonbondlist, 
-                        ad_energy_tables,
-                        type, Nnb, B_calcIntElec,
-                        map,
-                        outlev,
-                        ignore_inter,
-                        B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                        info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+                              sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
+                              crd, emap, elec, 
+                              charge, abs_charge, qsp_abs_charge,
+                              ligand_is_inhibitor,
+                              torsFreeEnergy,
+                              vt, tlist, crdpdb, nonbondlist, 
+                              ad_energy_tables,
+                              type, Nnb, B_calcIntElec,
+                              map,
+                              outlev,
+                              ignore_inter,
+                              B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
+                              info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
 
                   econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
                   evaluate.reset();
@@ -1620,193 +1586,147 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *      # applies the specified rotation to the input ligand
          */
         (void) sscanf( line, "%*s %s", param[0] );
-        for (i=0; i<6; i++) {
-            param[0][i] = (char)tolower( (int)param[0][i] );
-        }
-        if (equal(param[0],"random",6)) {
+        { // Parse the reorient command
+            for (i=0; i<6; i++) {
+                param[0][i] = (char)tolower( (int)param[0][i] );
+            }
+            if (equal(param[0],"random",6)) {
+                // reorient random
+                B_reorient_random = TRUE; // create a new random orientation before docking
 
-            // Generate a random initial orientation for the ligand
-            Quat q_random;
-            // generate a uniformly-distributed quaternion:
-            // setting the x,y,z,w components
-            q_random = uniformQuat();
-            q_reorient.x = q_random.x;
-            q_reorient.y = q_random.y;
-            q_reorient.z = q_random.z;
-            q_reorient.w = q_random.w;
-            // update the (nx,ny,nz,ang) components of the quaternion, q_reorient:
-            q_reorient = convertQuatToRot( q_reorient );
+                create_random_orientation( &q_reorient );
 
-        } else if (equal(param[0],"standard",8)) {
+            } else if (equal(param[0],"standard",8)) {
+                { // reorient standard
+                B_reorient_random = FALSE; // do not create a new random orientation before docking
 
-            if (true_ligand_atoms >= 3 ) {
-                // Move the ligand such that 
-                // the first three atoms lie parallel to the xy-plane, and 
-                // the first two atoms lie parallel to the x-axis
-                Vector vec_01,     // vector between ligand atoms 0 and 1
-                       vec_12,     // vector between ligand atoms 1 and 2
-                       vec_normal, // vector perpendicular to plane of vec_01 and vec_12
-                       vec_x_axis, // vector along the X-axis
-                       vec_z_axis, // vector along the Z-axis
-                       vec_reorient_axis; // vector describing the axis about which to reorient
-                // Set the X and Z axes:
-                vec_x_axis[X] = 1.;
-                vec_x_axis[Y] = 0.;
-                vec_x_axis[Z] = 0.;
-                vec_z_axis[X] = 0.;
-                vec_z_axis[Y] = 0.;
-                vec_z_axis[Z] = 1.;
-                for (xyz = 0;  xyz < SPACE;  xyz++) {
-                    vec_01[xyz] = (double)( crdpdb[1][xyz] - crdpdb[0][xyz] );
-                    vec_12[xyz] = (double)( crdpdb[2][xyz] - crdpdb[1][xyz] );
-                }
-                // Compute the normal to vec_01 and vec_12
-                Cross_product( vec_normal, vec_01, vec_12 );
-                Print_vector( logFile, "vec_01", vec_01 );
-                Print_vector( logFile, "vec_12", vec_12 );
-                Print_vector( logFile, "vec_normal", vec_normal );
-                Print_vector( logFile, "vec_z_axis", vec_z_axis );
-                // Compute the angle between vec_01 and vec_12
-                double angle_012 = 0.; 
-                angle_012 = Angle_between( vec_01, vec_12 );
-                pr( logFile, "Angle between vectors 01 and 12 = %.2f degrees\n", RadiansToDegrees( angle_012 ) );
-                if ( ( fabs(angle_012) < APPROX_ZERO ) || ( ( fabs(angle_012) > (PI - APPROX_ZERO) ) && ( fabs(angle_012) < (PI + APPROX_ZERO) ) ) ) {
-                    // angle is too small or "too linear" to align the molecule into the xy-plane
-                    pr( logFile, "%s:  WARNING!  The angle between the first three atoms is not suitable (%6.3f degrees) to align them with the xy-plane.\n", programname, RadiansToDegrees( angle_012 ) );
-                } else {
-                    // Calculate angle between vec_normal and the z-axis
-                    double angle_n1z = 0.;  // Angle between vec_normal and the z-axis
-                    angle_n1z = Angle_between( vec_normal, vec_z_axis );
-                    pr( logFile, "Angle between vec_normal and vec_z_axis = %.2f degrees\n", RadiansToDegrees( angle_n1z ) );
-                    //
-                    // We need to rotate the molecule about the normal to vec_normal and vec_z_axis
-                    Cross_product( vec_reorient_axis, vec_normal, vec_z_axis );
-                    //
-                    // Set the rotation axis for reorientation
-                    q_reorient.nx = vec_reorient_axis[X];
-                    q_reorient.ny = vec_reorient_axis[Y];
-                    q_reorient.nz = vec_reorient_axis[Z];
-                    //
-                    // Normalise the vector defining the axis of rotation:
-                    q_reorient = normRot( q_reorient );
-                    //
-                    // Set the angle for reorientation of the first 3 atoms
-                    // into the xy-plane
-                    q_reorient.ang = -angle_n1z;
-                    //
-                    // Convert the rotation-about-axis components (nx,ny,nz,ang)
-                    // to a rotation-quaternion (x,y,z,w):
-                    q_reorient = convertRotToQuat( q_reorient );
-     
-                    // Rotate ligand into the xy-plane...
-                    qtransform( origin, q_reorient, crdpdb, true_ligand_atoms );
-     
-                    // Compute the updated vec_01, the vector between atom 0 and atom 1,
-                    // since the preceding "qtransform" changed the coordinates.
+                if (true_ligand_atoms >= 3 ) {
+                    // Move the ligand such that 
+                    // the first three atoms lie parallel to the xy-plane, and 
+                    // the first two atoms lie parallel to the x-axis
+                    Vector vec_01,     // vector between ligand atoms 0 and 1
+                           vec_12,     // vector between ligand atoms 1 and 2
+                           vec_normal, // vector perpendicular to plane of vec_01 and vec_12
+                           vec_x_axis, // vector along the X-axis
+                           vec_z_axis, // vector along the Z-axis
+                           vec_reorient_axis; // vector describing the axis about which to reorient
+                    // Set the X and Z axes:
+                    vec_x_axis[X] = 1.;
+                    vec_x_axis[Y] = 0.;
+                    vec_x_axis[Z] = 0.;
+                    vec_z_axis[X] = 0.;
+                    vec_z_axis[Y] = 0.;
+                    vec_z_axis[Z] = 1.;
                     for (xyz = 0;  xyz < SPACE;  xyz++) {
                         vec_01[xyz] = (double)( crdpdb[1][xyz] - crdpdb[0][xyz] );
+                        vec_12[xyz] = (double)( crdpdb[2][xyz] - crdpdb[1][xyz] );
                     }
-                    //
-                    // Compute the angle between vec_01 and the x-axis:
-                    double angle_01x = 0.;
-                    angle_01x = Angle_between( vec_01, vec_x_axis );
-                    //
-                    pr( logFile, "Angle between vector 01 and the x-axis = %.2f degrees\n", RadiansToDegrees( angle_01x ) );
-                    //
-                    // The rotation axis to rotate the first two atoms, 0 and 1, 
-                    // to be parallel to the x-axis, will be 
-                    // perpendicular to the xy-plane, i.e. the z-axis,
-                    // since the molecule's first 3 atoms are now in the xy-plane.
-                    q_reorient.nx = vec_z_axis[X];
-                    q_reorient.ny = vec_z_axis[Y];
-                    q_reorient.nz = vec_z_axis[Z];
-                    //
-                    // Set the rotation angle:
-                    q_reorient.ang = angle_01x;
-                    //
-                    // Build the quaternion from the axis-angle rotation values:
-                    q_reorient = convertRotToQuat( q_reorient );
-                } // angle_012 is appropriate to align into xy-plane
+                    // Compute the normal to vec_01 and vec_12
+                    Cross_product( vec_normal, vec_01, vec_12 );
+                    Print_vector( logFile, "vec_01", vec_01 );
+                    Print_vector( logFile, "vec_12", vec_12 );
+                    Print_vector( logFile, "vec_normal", vec_normal );
+                    Print_vector( logFile, "vec_z_axis", vec_z_axis );
+                    // Compute the angle between vec_01 and vec_12
+                    double angle_012 = 0.; 
+                    angle_012 = Angle_between( vec_01, vec_12 );
+                    pr( logFile, "Angle between vectors 01 and 12 = %.2f degrees\n", RadiansToDegrees( angle_012 ) );
+                    if ( ( fabs(angle_012) < APPROX_ZERO ) || ( ( fabs(angle_012) > (PI - APPROX_ZERO) ) && ( fabs(angle_012) < (PI + APPROX_ZERO) ) ) ) {
+                        // angle is too small or "too linear" to align the molecule into the xy-plane
+                        pr( logFile, "%s:  WARNING!  The angle between the first three atoms is not suitable (%6.3f degrees) to align them with the xy-plane.\n", programname, RadiansToDegrees( angle_012 ) );
+                    } else {
+                        // Calculate angle between vec_normal and the z-axis
+                        double angle_n1z = 0.;  // Angle between vec_normal and the z-axis
+                        angle_n1z = Angle_between( vec_normal, vec_z_axis );
+                        pr( logFile, "Angle between vec_normal and vec_z_axis = %.2f degrees\n", RadiansToDegrees( angle_n1z ) );
+                        //
+                        // We need to rotate the molecule about the normal to vec_normal and vec_z_axis
+                        Cross_product( vec_reorient_axis, vec_normal, vec_z_axis );
+                        //
+                        // Set the rotation axis for reorientation
+                        q_reorient.nx = vec_reorient_axis[X];
+                        q_reorient.ny = vec_reorient_axis[Y];
+                        q_reorient.nz = vec_reorient_axis[Z];
+                        //
+                        // Normalise the vector defining the axis of rotation:
+                        q_reorient = normRot( q_reorient );
+                        //
+                        // Set the angle for reorientation of the first 3 atoms
+                        // into the xy-plane
+                        q_reorient.ang = -angle_n1z;
+                        //
+                        // Convert the rotation-about-axis components (nx,ny,nz,ang)
+                        // to a rotation-quaternion (x,y,z,w):
+                        q_reorient = convertRotToQuat( q_reorient );
 
+                        // Rotate ligand into the xy-plane...
+                        // qtransform( origin, q_reorient, crdreo, true_ligand_atoms );
+                        qtransform( origin, q_reorient, crdpdb, true_ligand_atoms );
+
+                        // Compute the updated vec_01, the vector between atom 0 and atom 1,
+                        // since the preceding "qtransform" changed the coordinates.
+                        for (xyz = 0;  xyz < SPACE;  xyz++) {
+                            // vec_01[xyz] = (double)( crdreo[1][xyz] - crdreo[0][xyz] );
+                            vec_01[xyz] = (double)( crdpdb[1][xyz] - crdpdb[0][xyz] );
+                        }
+                        //
+                        // Compute the angle between vec_01 and the x-axis:
+                        double angle_01x = 0.;
+                        angle_01x = Angle_between( vec_01, vec_x_axis );
+                        //
+                        pr( logFile, "Angle between vector 01 and the x-axis = %.2f degrees\n", RadiansToDegrees( angle_01x ) );
+                        //
+                        // The rotation axis to rotate the first two atoms, 0 and 1, 
+                        // to be parallel to the x-axis, will be 
+                        // perpendicular to the xy-plane, i.e. the z-axis,
+                        // since the molecule's first 3 atoms are now in the xy-plane.
+                        q_reorient.nx = vec_z_axis[X];
+                        q_reorient.ny = vec_z_axis[Y];
+                        q_reorient.nz = vec_z_axis[Z];
+                        //
+                        // Set the rotation angle:
+                        q_reorient.ang = angle_01x;
+                        //
+                        // Build the quaternion from the axis-angle rotation values:
+                        q_reorient = convertRotToQuat( q_reorient );
+                    } // angle_012 is appropriate to align into xy-plane
+
+                } else {
+                    prStr( error_message, "%s: ERROR! Insufficient atoms in the ligand.  There must be at least three atoms in the ligand to use this command.\n", programname );
+                    stop( error_message );
+                    exit( -1 );
+                }
+                } // reorient standard
             } else {
-                prStr( error_message, "%s: ERROR! Insufficient atoms in the ligand.  There must be at least three atoms in the ligand to use this command.\n", programname );
-                stop( error_message );
-                exit( -1 );
-            }
+                { // reorient <nx> <ny> <nz> <angle>
+                    B_reorient_random = FALSE; // do not create a new random orientation before docking
 
-        } else {
+                    // Read the specified initial orientation for the ligand
+                    retval = (int)sscanf( line,"%*s %lf %lf %lf %lf", &(q_reorient.nx), &(q_reorient.ny), &(q_reorient.nz), &(q_reorient.ang) );
+                    if ( retval == 4 ) {
+                        // Normalise the vector defining the axis of rotation:
+                        q_reorient = normRot( q_reorient );
+                        // Make sure angle is in radians, and ranges from -PI to PI
+                        q_reorient.ang = DegreesToRadians( q_reorient.ang ); // convert from degrees to radians
+                        q_reorient.ang = ModRad( q_reorient.ang ); // wrap to range (0, 2*PI) using modulo 2*PI
+                        q_reorient.ang = WrpRad( q_reorient.ang ); // wrap to range (-PI, PI)
+                        pr( logFile, "After normalising the vector, and converting the angle to radians, the rotation becomes ((%.3f, %.3f, %.3f), %.2f radians)\n",
+                                q_reorient.nx, q_reorient.ny, q_reorient.ny, q_reorient.ang);
+                        // Convert the rotation-about-axis components (nx,ny,nz,ang)
+                        // to a rotation-quaternion (x,y,z,w):
+                        q_reorient = convertRotToQuat( q_reorient );
+                    } else {
+                        prStr( error_message, "%s: ERROR! Please specify the vector and rotation angle using four real numbers.\n", programname );
+                        stop( error_message );
+                        exit( -1 );
+                    }
+                } // reorient <nx> <ny> <nz> <angle>
+            } // endif
+        } // end parsing reorient command line
 
-            // Read the specified initial orientation for the ligand
-            retval = (int)sscanf( line,"%*s %lf %lf %lf %lf", &(q_reorient.nx), &(q_reorient.ny), &(q_reorient.nz), &(q_reorient.ang) );
-            if ( retval == 4 ) {
-                // Normalise the vector defining the axis of rotation:
-                q_reorient = normRot( q_reorient );
-                // Make sure angle is in radians, and ranges from -PI to PI
-                q_reorient.ang = DegreesToRadians( q_reorient.ang ); // convert from degrees to radians
-                q_reorient.ang = ModRad( q_reorient.ang ); // wrap to range (0, 2*PI) using modulo 2*PI
-                q_reorient.ang = WrpRad( q_reorient.ang ); // wrap to range (-PI, PI)
-                pr( logFile, "After normalising the vector, and converting the angle to radians, the rotation becomes ((%.3f, %.3f, %.3f), %.2f radians)\n",
-                        q_reorient.nx, q_reorient.ny, q_reorient.ny, q_reorient.ang);
-                // Convert the rotation-about-axis components (nx,ny,nz,ang)
-                // to a rotation-quaternion (x,y,z,w):
-                q_reorient = convertRotToQuat( q_reorient );
-            } else {
-                prStr( error_message, "%s: ERROR! Please specify the vector and rotation angle using four real numbers.\n", programname );
-                stop( error_message );
-                exit( -1 );
-            }
-        } // endif
-
-        // Print out the un-reoriented coordinates
-        pr( logFile, "Un-reoriented ligand's coordinates:\n" );
-        pr( logFile, "-----------------------------------\n\n" );
-        for (i=0; i<true_ligand_atoms; i++) {
-            strncpy( AtmNamResNamNum, &atomstuff[i][13], (size_t) 13 );
-            AtmNamResNamNum[13] = '\0';
-            (void) fprintf( logFile, FORMAT_PDBQT_ATOM_RESSTR, "UN-REORIENTED:  ", 
-                            i + 1, AtmNamResNamNum, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z], 
-                            1., 0.,
-                            charge[i], parameterArray[type[i]].autogrid_type );
-            (void) fprintf( logFile, "\n" ); 
-        }
-        pr( logFile, "\n\n" );
-
-        // Apply the rotation defined by q_reorient to the input coordinates of the ligand, "crdpdb"
-        pr( logFile, "\nRe-orienting the ligand using the following quaternion (nx, ny, nz) and angle values:\n");
-        pr( logFile, "NEWDPF   reorient %.3lf %.3lf %.3lf %.2lf\n",
-                q_reorient.nx, q_reorient.ny, q_reorient.nz, RadiansToDegrees( q_reorient.ang ) );
-        qtransform( origin, q_reorient, crdpdb, true_ligand_atoms );
-
-        pr( logFile, "q_reorient:\n");
-        printQuat( logFile, q_reorient );
-
-        // Print out the re-oriented coordinates
-        pr( logFile, "Reoriented ligand's coordinates:\n" );
-        pr( logFile, "--------------------------------\n\n" );
-        for (i=0; i<true_ligand_atoms; i++) {
-            strncpy( AtmNamResNamNum, &atomstuff[i][13], (size_t) 13 );
-            AtmNamResNamNum[13] = '\0';
-            (void) fprintf( logFile, FORMAT_PDBQT_ATOM_RESSTR, "REORIENTED:  ", 
-                            i + 1, AtmNamResNamNum, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z], 
-                            1., 0.,
-                            charge[i], parameterArray[type[i]].autogrid_type );
-            (void) fprintf( logFile, "\n" ); 
-        }
-        pr( logFile, "\n\n" );
-
-        // Update the unit vectors for the torsion rotations
-        if (debug > 0) {
-            pr(logFile, "Calculating unit vectors for each torsion.\n\n");
-        }
-        torNorVec(crdpdb, ntor, tlist, vt);
-        for (i = 0; i < MAX_TORS; i++) {
-            ligand.vt[i][X] = vt[i][X];
-            ligand.vt[i][Y] = vt[i][Y];
-            ligand.vt[i][Z] = vt[i][Z];
-            for (j = 0; j < MAX_ATOMS; j++) {
-                ligand.tlist[i][j] = tlist[i][j];
-            }
-        }
+        // reorient( logFile, true_ligand_atoms, atomstuff, crdreo, charge, type, 
+        reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type, 
+                  parameterArray, q_reorient, origin, ntor, tlist, vt, &ligand, debug );
 
         (void) fflush(logFile);
         break;
@@ -2543,9 +2463,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "Cluster mode is now set.\n\n" );
         }
         clmode( num_atom_types, clus_rms_tol,
-          hostnm, jobStart, tms_jobStart,
-          B_write_all_clusmem, FN_clus, crdpdb, lig_center,
-          B_symmetry_flag, FN_rms_ref_crds );
+                hostnm, jobStart, tms_jobStart,
+                B_write_all_clusmem, FN_clus, crdpdb, lig_center,
+                B_symmetry_flag, FN_rms_ref_crds );
         (void) fflush(logFile);
         break;
 
@@ -2814,9 +2734,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
             if (B_cluster_mode) {
                 clmode( num_atom_types, clus_rms_tol,
-                  hostnm, jobStart, tms_jobStart,
-                  B_write_all_clusmem, FN_clus, crdpdb, lig_center,
-                  B_symmetry_flag, FN_rms_ref_crds );
+                        hostnm, jobStart, tms_jobStart,
+                        B_write_all_clusmem, FN_clus, crdpdb, lig_center,
+                        B_symmetry_flag, FN_rms_ref_crds );
             }
             for (j = 0; j < MAX_RUNS; j++) {
                 econf[j] = torsFreeEnergy - unbound_internal_FE;
@@ -2827,32 +2747,33 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             ** ___________________________________________________________________
             */
             simanneal( &nconf, Nnb, WallEnergy, atomstuff, charge, abs_charge, qsp_abs_charge, B_calcIntElec,
-                    crd, crdpdb, dock_param_fn, 
-                    ad_energy_tables,
-                    econf, B_either, 
-                    elec, emap, 
-                    ncycles, nruns, jobStart, 
-                    map,
-                    naccmax, natom, nonbondlist, nrejmax, ntor1, ntor, outlev,
-                    sInit, sHist,   qtwFac, B_qtwReduc, qtwStep0,
-                    B_selectmin, FN_ligand, lig_center, RT0, B_tempChange, RTFac, 
-                    tms_jobStart, tlist, torFac, B_torReduc, torStep0,
-                    FN_trj, trj_end_cyc, trj_begin_cyc, trj_freq, trnFac,
-                    B_trnReduc, trnStep0, type, vt, B_write_trj,
-                    B_constrain_dist, atomC1, atomC2, sqlower, squpper,
-                    B_linear_schedule, RTreduc,
-                    /*maxrad,*/
-                    B_watch, FN_watch,
-                    B_isGaussTorCon, US_torProfile, B_isTorConstrained,
-                    B_ShowTorE, US_TorE, F_TorConRange, N_con,
-                    B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
-                    e0max, torsFreeEnergy, MaxRetries, ligand_is_inhibitor,
-                    ignore_inter,
-                    B_include_1_4_interactions, scale_1_4,
-                    parameterArray, unbound_internal_FE,
-                    info, B_use_non_bond_cutoff,
-                    B_have_flexible_residues,
-                    PDBQT_record);
+                        crd, crdpdb, dock_param_fn, 
+                        ad_energy_tables,
+                        econf, B_either, 
+                        elec, emap, 
+                        ncycles, nruns, jobStart, 
+                        map,
+                        naccmax, natom, nonbondlist, nrejmax, ntor1, ntor, outlev,
+                        sInit, sHist,   qtwFac, B_qtwReduc, qtwStep0,
+                        B_selectmin, FN_ligand, lig_center, RT0, B_tempChange, RTFac, 
+                        tms_jobStart, tlist, torFac, B_torReduc, torStep0,
+                        FN_trj, trj_end_cyc, trj_begin_cyc, trj_freq, trnFac,
+                        B_trnReduc, trnStep0, type, vt, B_write_trj,
+                        B_constrain_dist, atomC1, atomC2, sqlower, squpper,
+                        B_linear_schedule, RTreduc,
+                        /*maxrad,*/
+                        B_watch, FN_watch,
+                        B_isGaussTorCon, US_torProfile, B_isTorConstrained,
+                        B_ShowTorE, US_TorE, F_TorConRange, N_con,
+                        B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
+                        e0max, torsFreeEnergy, MaxRetries, ligand_is_inhibitor,
+                        ignore_inter,
+                        B_include_1_4_interactions, scale_1_4,
+                        parameterArray, unbound_internal_FE,
+                        info, B_use_non_bond_cutoff,
+                        B_have_flexible_residues,
+                        PDBQT_record);
+
             (void) fflush(logFile);
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so simulated annealing cannot be performed.\n\n");
@@ -2981,13 +2902,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
             pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
 
-            evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
-              elec, emap, nonbondlist, ad_energy_tables, Nnb,
-              B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
-              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
-              ignore_inter,
-              B_include_1_4_interactions, scale_1_4, 
-              parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+                            elec, emap, nonbondlist, ad_energy_tables, Nnb,
+                            B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
+                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                            ignore_inter,
+                            B_include_1_4_interactions, scale_1_4, 
+                            parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
             evaluate.compute_intermol_energy(TRUE);
 
@@ -2996,7 +2917,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               fprintf(stateFile,"\t<runs>\n");
             }
             for (j=0; j<nruns; j++) {
-                j1 = j + 1;
+                j1=j+1;
 
                 (void) fprintf( logFile, "\n\n\tBEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING\n");
                 (void) fflush( logFile );
@@ -3007,6 +2928,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 (void) fflush( logFile );
 
                 gaStart = times( &tms_gaStart );
+
+                if (B_reorient_random == TRUE) {
+                    // create a new random orientation before docking
+                    create_random_orientation( &q_reorient );
+                    // reorient the ligand
+                    reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type, 
+                              parameterArray, q_reorient, origin, ntor, tlist, vt, &ligand, debug );
+                    // update the evaluate object
+                    evaluate.update_crds( crdpdb, vt );
+                }
 
                 //  Can get rid of the following line
                 ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
@@ -3039,18 +2970,18 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile,     "\t_______________________________________________\n\n\n" );
 
                 writePDBQT( j, seed,  FN_ligand, dock_param_fn, lig_center,
-                    sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                    crd, emap, elec,
-                    charge, abs_charge, qsp_abs_charge,
-                    ligand_is_inhibitor,
-                    torsFreeEnergy,
-                    vt, tlist, crdpdb, nonbondlist,
-                    ad_energy_tables,
-                    type, Nnb, B_calcIntElec, 
-                    map, 
-                    outlev, ignore_inter,
-                    B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                    info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+                            sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
+                            crd, emap, elec,
+                            charge, abs_charge, qsp_abs_charge,
+                            ligand_is_inhibitor,
+                            torsFreeEnergy,
+                            vt, tlist, crdpdb, nonbondlist,
+                            ad_energy_tables,
+                            type, Nnb, B_calcIntElec, 
+                            map, 
+                            outlev, ignore_inter,
+                            B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
+                            info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
 
                 econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 
@@ -3097,15 +3028,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
-           evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
-              elec, emap,
-              nonbondlist,
-              ad_energy_tables, 
-              Nnb, B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
-              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
-              ignore_inter,
-              B_include_1_4_interactions, scale_1_4, 
-              parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+           evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+                           elec, emap,
+                           nonbondlist,
+                           ad_energy_tables, 
+                           Nnb, B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
+                           B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                           ignore_inter,
+                           B_include_1_4_interactions, scale_1_4, 
+                           parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
             evaluate.compute_intermol_energy(TRUE);
 
@@ -3140,19 +3071,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                pr( logFile,     "\t_______________________________\n\n\n" );
 
                writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
-                    sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                    crd, emap, elec, 
-                    charge, abs_charge, qsp_abs_charge, 
-                    ligand_is_inhibitor,
-                    torsFreeEnergy,
-                    vt, tlist, crdpdb, nonbondlist, 
-                    ad_energy_tables,
-                    type, Nnb, B_calcIntElec,
-                    map, 
-                    outlev,
-                    ignore_inter,
-                    B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                    info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+                           sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
+                           crd, emap, elec, 
+                           charge, abs_charge, qsp_abs_charge, 
+                           ligand_is_inhibitor,
+                           torsFreeEnergy,
+                           vt, tlist, crdpdb, nonbondlist, 
+                           ad_energy_tables,
+                           type, Nnb, B_calcIntElec,
+                           map, 
+                           outlev,
+                           ignore_inter,
+                           B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
+                           info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
 
                econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 
@@ -3202,15 +3133,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
           pr(logFile, "Number of Genetic Algorithm (GA) only dockings = %d run%c\n", nruns, (nruns>1)?'s':' ');
 
 
-          evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
-             elec, emap,
-             nonbondlist,
-             ad_energy_tables, 
-             Nnb, B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
-             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
-             ignore_inter,
-             B_include_1_4_interactions, scale_1_4, 
-             parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+          evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+                          elec, emap,
+                          nonbondlist,
+                          ad_energy_tables, 
+                          Nnb, B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
+                          B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                          ignore_inter,
+                          B_include_1_4_interactions, scale_1_4, 
+                          parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
             evaluate.compute_intermol_energy(TRUE);
 
@@ -3250,19 +3181,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               pr( logFile,     "\t____________________________________\n\n\n" );
 
               writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
-                    sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                    crd, emap, elec, 
-                    charge, abs_charge, qsp_abs_charge, 
-                    ligand_is_inhibitor,
-                    torsFreeEnergy,
-                    vt, tlist, crdpdb, nonbondlist, 
-                    ad_energy_tables,
-                    type, Nnb, B_calcIntElec,
-                    map, 
-                    outlev,
-                    ignore_inter,
-                    B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                    info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+                          sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
+                          crd, emap, elec, 
+                          charge, abs_charge, qsp_abs_charge, 
+                          ligand_is_inhibitor,
+                          torsFreeEnergy,
+                          vt, tlist, crdpdb, nonbondlist, 
+                          ad_energy_tables,
+                          type, Nnb, B_calcIntElec,
+                          map, 
+                          outlev,
+                          ignore_inter,
+                          B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
+                          info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
 
               econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 
@@ -3432,15 +3363,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         if (!command_mode) {
             analysis( Nnb, atomstuff, charge, abs_charge, qsp_abs_charge, B_calcIntElec, clus_rms_tol,
-                  crdpdb, ad_energy_tables, map, econf, nruns,
-                  natom, nonbondlist, nconf, ntor, sHist, FN_ligand,
-                  lig_center, B_symmetry_flag, tlist, type, vt, FN_rms_ref_crds,
-                  torsFreeEnergy, B_write_all_clusmem, ligand_is_inhibitor,
-                  outlev,
-                  ignore_inter, B_include_1_4_interactions, scale_1_4, 
-                  parameterArray, unbound_internal_FE,
-                  info, B_use_non_bond_cutoff, B_have_flexible_residues,
-                  B_rms_atoms_ligand_only);
+                      crdpdb, ad_energy_tables, map, econf, nruns,
+                      natom, nonbondlist, nconf, ntor, sHist, FN_ligand,
+                      lig_center, B_symmetry_flag, tlist, type, vt, FN_rms_ref_crds,
+                      torsFreeEnergy, B_write_all_clusmem, ligand_is_inhibitor,
+                      outlev,
+                      ignore_inter, B_include_1_4_interactions, scale_1_4, 
+                      parameterArray, unbound_internal_FE,
+                      info, B_use_non_bond_cutoff, B_have_flexible_residues,
+                      B_rms_atoms_ligand_only);
+
             (void) fflush(logFile);
         } else {
             (void)fprintf(logFile, "NOTE: Command mode has been set, so cluster analysis cannot be performed.\n\n");
@@ -3484,17 +3416,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) fprintf( logFile, "maxTests= %d\n", maxTests );
         (void) fprintf( logFile, "NumLocalTests= %d\n\n", NumLocalTests );
         (void) investigate( Nnb, charge, abs_charge, qsp_abs_charge, B_calcIntElec,
-                crd, crdpdb, ad_energy_tables,
-                maxTests, 
-                map, natom, nonbondlist, ntor,
-                outlev, tlist, type, vt, B_isGaussTorCon, US_torProfile,
-                B_isTorConstrained, B_ShowTorE, US_TorE,
-                F_TorConRange, N_con, B_symmetry_flag, FN_rms_ref_crds,
-                OutputEveryNTests, NumLocalTests, trnStep0, torStep0,
-                ignore_inter,
-                B_include_1_4_interactions, scale_1_4, 
-                parameterArray, unbound_internal_FE,
-                info, B_use_non_bond_cutoff, B_have_flexible_residues );
+                            crd, crdpdb, ad_energy_tables,
+                            maxTests, 
+                            map, natom, nonbondlist, ntor,
+                            outlev, tlist, type, vt, B_isGaussTorCon, US_torProfile,
+                            B_isTorConstrained, B_ShowTorE, US_TorE,
+                            F_TorConRange, N_con, B_symmetry_flag, FN_rms_ref_crds,
+                            OutputEveryNTests, NumLocalTests, trnStep0, torStep0,
+                            ignore_inter,
+                            B_include_1_4_interactions, scale_1_4, 
+                            parameterArray, unbound_internal_FE,
+                            info, B_use_non_bond_cutoff, B_have_flexible_residues );
 
         (void) fflush(logFile);
         break;
@@ -3570,14 +3502,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             
             // Use the repulsive unbound energy tables, "unbound_energy_tables",
             // to drive the molecule into an extended conformation
-            evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
-              elec, emap, nonbondlist, unbound_energy_tables, Nnb,
-              B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
-              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
-              ignore_inter,
-              B_include_1_4_interactions, scale_1_4, 
-              parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
-     
+            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
+                            elec, emap, nonbondlist, unbound_energy_tables, Nnb,
+                            B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
+                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                            ignore_inter,
+                            B_include_1_4_interactions, scale_1_4, 
+                            parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+
             // Turn off computing the intermolecular energy, we will only consider the intramolecular energy
             // to determine the unbound state of the flexible molecule:
             evaluate.compute_intermol_energy(FALSE);  
@@ -3642,13 +3574,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
      
             // Use the standard AutoDock energy tables to compute the internal energy
             // Use this value to set unbound_internal_FE
-            evaluate.setup(crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
-              elec, emap, nonbondlist, ad_energy_tables, Nnb,
-              B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
-              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
-              ignore_inter,
-              B_include_1_4_interactions, scale_1_4, 
-              parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+                            elec, emap, nonbondlist, ad_energy_tables, Nnb,
+                            B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
+                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                            ignore_inter,
+                            B_include_1_4_interactions, scale_1_4, 
+                            parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
             // Calculate the unbound internal energy using the standard AutoDock energy function
             (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_have_flexible_residues);
@@ -3662,19 +3594,20 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile,     "\t____________________________\n\n\n" );
      
             writePDBQT( -1, seed,  FN_ligand, dock_param_fn, lig_center,
-                sUnbound, ntor, &eintra, &einter, natom, atomstuff,
-                crd, emap, elec,
-                charge, abs_charge, qsp_abs_charge,
-                ligand_is_inhibitor,
-                torsFreeEnergy,
-                vt, tlist, crdpdb, nonbondlist,
-                ad_energy_tables,
-                type, Nnb, B_calcIntElec,
-                map, 
-                outlev,
-                ignore_inter,
-                B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                info, UNBOUND, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+                        sUnbound, ntor, &eintra, &einter, natom, atomstuff,
+                        crd, emap, elec,
+                        charge, abs_charge, qsp_abs_charge,
+                        ligand_is_inhibitor,
+                        torsFreeEnergy,
+                        vt, tlist, crdpdb, nonbondlist,
+                        ad_energy_tables,
+                        type, Nnb, B_calcIntElec,
+                        map, 
+                        outlev,
+                        ignore_inter,
+                        B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
+                        info, UNBOUND, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+
         } else {
             pr(logFile, "NOTE:  AutoDock cannot compute the energy of the unbound state, since the ligand is rigid.\n\n");
             pr(logFile, "NOTE:  Use the \"unbound\" command to set the energy of the unbound state, if known from a previous calculation where the ligand was treated as flexible.\n\n");
@@ -3717,21 +3650,22 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         natom = 0;
         print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
         //
-        ligand = readPDBQT(line,
-                        num_atom_types,
-                        &natom,
-                        crdpdb, charge, &B_haveCharges,
-                        type, bond_index,
-                        pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, Htype,
-                        &B_constrain_dist, &atomC1, &atomC2,
-                        &sqlower, &squpper,
-                        &ntor1, &ntor, &ntor_ligand,
-                        tlist, vt,
-                        &Nnb, nonbondlist,
-                        jobStart, tms_jobStart, hostnm, &ntorsdof, outlev,
-                        ignore_inter,
-                        B_include_1_4_interactions,
-                        atoms, PDBQT_record );
+        ligand = readPDBQT( line,
+                            num_atom_types,
+                            &natom,
+                            crdpdb, crdreo, charge, &B_haveCharges,
+                            type, bond_index,
+                            pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, Htype,
+                            &B_constrain_dist, &atomC1, &atomC2,
+                            &sqlower, &squpper,
+                            &ntor1, &ntor, &ntor_ligand,
+                            tlist, vt,
+                            &Nnb, nonbondlist,
+                            jobStart, tms_jobStart, hostnm, &ntorsdof, outlev,
+                            ignore_inter,
+                            B_include_1_4_interactions,
+                            atoms, PDBQT_record );
+
         //
         // pre-calculate some values we will need later in computing the desolvation energy
         //
