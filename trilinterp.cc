@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.10 2006/06/09 10:00:35 garrett Exp $
+ $Id: trilinterp.cc,v 1.11 2007/02/25 05:50:11 garrett Exp $
 
 */
 
@@ -25,13 +25,13 @@ extern FILE *logFile;
 
 Real trilinterp( 
 
- CONST_INT first_atom, // loop begins at this atom  for (i=first_atom;
- CONST_INT last_atom, // loop ends at this atom - 1       i<last_atom; i++)
- CONST_FLOAT tcoord[MAX_ATOMS][SPACE], // temporary coordinates
- CONST_FLOAT charge[MAX_ATOMS], // partial atomic charges
- CONST_FLOAT abs_charge[MAX_ATOMS], // absolute magnitude of partial charges
- CONST_INT   type[MAX_ATOMS], // atom type of each atom
- CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    //  intermolecular interaction energies
+ const int first_atom, // loop begins at this atom  for (i=first_atom;
+ const int last_atom, // loop ends at this atom - 1       i<last_atom; i++)
+ const Real tcoord[MAX_ATOMS][SPACE], // temporary coordinates
+ const Real charge[MAX_ATOMS], // partial atomic charges
+ const Real abs_charge[MAX_ATOMS], // absolute magnitude of partial charges
+ const int   type[MAX_ATOMS], // atom type of each atom
+ const Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    //  intermolecular interaction energies
  GridMapSetInfo *info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
  int some_atoms_outside_grid, // boolean
  int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
