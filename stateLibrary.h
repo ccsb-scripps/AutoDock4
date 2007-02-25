@@ -18,7 +18,7 @@ void printState( FILE *fp,
 void writeState( FILE *fp, 
 		 State state );
 
-int checkState(State *D);
+int checkState( const State *D );
 
 Molecule copyStateToMolecule(State *source, Molecule *mol);
 #endif

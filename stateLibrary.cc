@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.11 2006/12/01 02:31:54 garrett Exp $
+ $Id: stateLibrary.cc,v 1.12 2007/02/25 05:43:21 garrett Exp $
 
 */
 
@@ -159,10 +159,11 @@ void writeState( FILE *fp, State S )
     //    (void)fprintf( fp, "\n");
 }
 
-int checkState(State *D)
+int checkState( const State *D )
 {
     register int i;
     int retval = 1;
+    double magnitude_q = 0.;
         
     if (ISNAN(D->T.x)) {
         (void)fprintf(logFile,"checkState: (NaN) detected in x translation\n");
@@ -209,9 +210,9 @@ int checkState(State *D)
         (void)fprintf(logFile,"checkState: (NaN) detected in w quaternion\n");
         retval = 0;
     }
-    D->Q.qmag = hypotenuse4(D->Q.x,  D->Q.y,  D->Q.z,  D->Q.w);
-    if (ISNAN(D->Q.qmag)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in magnitude of quaternion\n");
+    magnitude_q = hypotenuse4(D->Q.x,  D->Q.y,  D->Q.z,  D->Q.w);
+    if (ISNAN(magnitude_q)) {
+        (void)fprintf(logFile,"checkState: After computing the magnitude of quaternion, (NaN) was detected\n");
         retval = 0;
     }
  
