@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.6 2006/12/01 02:23:51 garrett Exp $
+ $Id: qmultiply.cc,v 1.7 2007/02/25 05:31:22 garrett Exp $
 
 */
 
@@ -103,10 +103,10 @@ void mkUnitQuat( Quat *q )
 
 void printQuat( FILE *fp, Quat q )
 {
-    (void) fprintf( fp, "Quat(x,y,z,w)=      %5.2f %5.2f %5.2f %5.2f\n", q.x, q.y, q.z, q.w);
-    (void) fprintf( fp, "Mag(Quat(x,y,z,w))= %5.2f\n", sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w) );
-    (void) fprintf( fp, "Quat(nx,ny,nz,ang)= %5.2f %5.2f %5.2f %5.2f\n", q.nx, q.ny, q.nz, q.ang);
-    (void) fprintf( fp, "Mag(nx,ny,nz)=      %5.2f\n", sqrt(q.nx*q.nx + q.ny*q.ny + q.nz*q.nz) );
+    (void) fprintf( fp, "Quat(x,y,z,w)=        %5.2f %5.2f %5.2f %5.2f\n", q.x, q.y, q.z, q.w);
+    (void) fprintf( fp, "Mag(Quat(x,y,z,w))=   %5.2f\n", sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w) );
+    (void) fprintf( fp, "Axis(nx,ny,nz),Angle= %5.2f %5.2f %5.2f  %5.2f\n", q.nx, q.ny, q.nz, q.ang);
+    (void) fprintf( fp, "Mag(Axis(nx,ny,nz))=  %5.2f\n", sqrt(q.nx*q.nx + q.ny*q.ny + q.nz*q.nz) );
 } // printQuat( Quat q )
 
 Quat normQuat( Quat q )
@@ -229,5 +229,34 @@ void unitQuat2rotation( Quat *q )
     return;
 }
 
+void print_q_reorient_message( FILE *logFile, Quat q_reorient )
+    // Print message about q_reorient
+{
+    pr( logFile, "\nRe-orienting the ligand using the following axis (nx, ny, nz) and angle values:\n");
+    pr( logFile, "NEWDPF   reorient %.3lf %.3lf %.3lf %.2lf\n",
+        q_reorient.nx, q_reorient.ny, q_reorient.nz, RadiansToDegrees( q_reorient.ang ) );
+
+    pr( logFile, "\n");
+    pr( logFile, "q_reorient:\n");
+    printQuat( logFile, q_reorient );
+    pr( logFile, "\n");
+
+    return;
+} // Print message about q_reorient
+
+void create_random_orientation( Quat *ptr_quat ) 
+{
+    // Generate a random initial orientation for the ligand
+    Quat q_random;
+    // Generate a uniformly-distributed quaternion:
+    // setting the x,y,z,w components
+    q_random = uniformQuat();
+    ptr_quat->x = q_random.x;
+    ptr_quat->y = q_random.y;
+    ptr_quat->z = q_random.z;
+    ptr_quat->w = q_random.w;
+    // Update the (nx,ny,nz,ang) components of the quaternion, ptr_quat:
+    *ptr_quat = convertQuatToRot( *ptr_quat );
+}
 
 /* EOF */

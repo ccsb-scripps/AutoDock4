@@ -16,4 +16,6 @@ Quat convertQuatToRot( Quat q );
 Quat convertRotToQuat( Quat q );
 Quat normQuat( Quat q );
 Quat normRot( Quat q );
+void print_q_reorient_message( FILE *logFile, Quat q_reorient );
+void create_random_orientation( Quat *ptr_quat );
 #endif
