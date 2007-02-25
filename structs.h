@@ -116,7 +116,9 @@ typedef struct charge
 
 typedef struct atom
 {
-  double    coords[3];			    /* transformed point */
+  double    coords[3];			    /* transformed coordinates */
+  double    crdpdb[3];			    /* input PDB coordintates */
+  double    crdreo[3];			    /* reoriented coordintates */
   Boole     has_charge;			    /* TRUE if the atom has a charge */
 
   double    charge;
