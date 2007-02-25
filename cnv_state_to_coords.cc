@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.cc,v 1.5 2006/04/25 22:31:59 garrett Exp $
+ $Id: cnv_state_to_coords.cc,v 1.6 2007/02/25 04:46:05 garrett Exp $
 
 */
 
@@ -26,13 +26,13 @@
 extern FILE *logFile;
 extern int true_ligand_atoms;
 
-void cnv_state_to_coords( State now,
+void cnv_state_to_coords( const State now,
                           Real vt[MAX_TORS][SPACE],
-                          int   tlist[MAX_TORS][MAX_ATOMS],
-                          int   ntor,
+                          int tlist[MAX_TORS][MAX_ATOMS],
+                          const int ntor,
                           Real crdpdb[MAX_ATOMS][SPACE],
                           Real crd[MAX_ATOMS][SPACE],
-                          int   natom)
+                          const int natom)
 
 {
 #ifdef DEBUG
