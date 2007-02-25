@@ -1,6 +1,6 @@
 /*
 
- $Id: torsion.cc,v 1.4 2006/04/25 22:33:28 garrett Exp $
+ $Id: torsion.cc,v 1.5 2007/02/25 05:48:21 garrett Exp $
 
 */
 
@@ -18,11 +18,11 @@
 
 
 
-void torsion( State now,
+void torsion( const State now,
               Real crd[MAX_ATOMS][SPACE],
-              Real v[MAX_TORS][SPACE],
-              int   tlist[MAX_TORS][MAX_ATOMS],
-              int   ntor )
+              const Real v[MAX_TORS][SPACE],
+              const int tlist[MAX_TORS][MAX_ATOMS],
+              const int ntor )
 
 /******************************************************************************/
 /*      Name: torsion                                                         */

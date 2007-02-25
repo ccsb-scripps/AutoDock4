@@ -1,9 +1,9 @@
 #ifndef TORSION
 #define TORSION
 
-void  torsion( State now,
+void  torsion( const State now,
                Real crd[MAX_ATOMS][SPACE], 
-	       Real vt[MAX_TORS][SPACE], 
-               int   tlist[MAX_TORS][MAX_ATOMS], 
-               int   ntor );
+               const Real vt[MAX_TORS][SPACE], 
+               const int tlist[MAX_TORS][MAX_ATOMS], 
+               const int ntor );
 #endif
