@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.16 2006/12/13 02:20:51 garrett Exp $
+ $Id: gs.cc,v 1.17 2007/03/21 06:30:55 garrett Exp $
 
 */
 
@@ -24,8 +24,8 @@
 #include "ranlib.h"
 #include "eval.h"
 #include "rep.h"
+#include "rep_constants.h"
 #include "assert.h"
-#include "writeMolAsPDBQ.h"
 
 #ifdef sgi
     #include <ieeefp.h>
@@ -164,9 +164,9 @@ m_rate(init_m_rate),
 window_size(init_window_size),
 alpha(1.0),
 beta(0.0),
-tranStep(2.0),
-quatStep(0.872664626),
-torsStep(0.872664626),
+tranStep(2.0),                         //  2 Angstroms
+quatStep( DegreesToRadians( 30.0 ) ),  // 30 degrees
+torsStep( DegreesToRadians( 30.0 ) ),  // 30 degrees
 low(-100),
 high(100),
 generations(0),
@@ -410,135 +410,73 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
          break;
 
       case CauchyDev:
-         // gene_numbers 3, 4 and 5 correspond to the unit vector component and
-         // gene_number 6 corresponds to the twist angle
-         // of the raa, rotation about axis...
-         if ((gene_number > 2) && (gene_number < 7)) {
-            // mutate all three comopnents of the unit vector 
-            // and the twist angle, simultaneously:
-            Quat q_change;
+         // gene_numbers 3, 4, 5 and 6 correspond to the 
+         // four components of the quaternion, (x,y,z,w)
+         if ( is_rotation_index( gene_number ) ) {
+            // Mutate all four comopnents of the quaternion, (x,y,z,w) simultaneously:
             // Generate a uniformly-distributed quaternion
+            Quat q_change;
             q_change = uniformQuat();
 #ifdef DEBUG_MUTATION
             fprintf( logFile, "q_change -- after uniformQuat\n" );
-            printQuat( logFile, q_change );
+            printQuat_q( logFile, q_change );
 #endif
-            // Create a random uniformly-distributed angle
-            q_change.w = genunf( -quatStep, quatStep );
-#ifdef DEBUG_MUTATION
-            fprintf( logFile, "q_change -- after changing .w, using genunf( %.1f, %.1f )\n", -quatStep, quatStep );
-            printQuat( logFile, q_change );
-#endif
-            // Renormalise the change quaternion (x,y,z,w-components)
-            q_change = normQuat( q_change );
-#ifdef DEBUG_MUTATION
-            fprintf( logFile, "q_change -- after normQuat( q_change )\n" );
-            printQuat( logFile, q_change );
-#endif
-            // Convert quat to rot
-            q_change = convertQuatToRot( q_change );
-#ifdef DEBUG_MUTATION
-            fprintf( logFile, "q_change -- after convertQuatToRot( q_change )\n" );
-            printQuat( logFile, q_change );
-#endif
-            // Build a quaternion, q_current, out of the current individual's
-            // rotation-about-axis genes (nx,ny,nz),ang:
-            Quat q_current;
-            q_current.nx = mutant.gread( 3 ).real;
-            q_current.ny = mutant.gread( 4 ).real;
-            q_current.nz = mutant.gread( 5 ).real;
-            q_current.ang = mutant.gread( 6 ).real;
-            q_current.x = 0.5;
-            q_current.y = 0.5;
-            q_current.z = 0.5;
-            q_current.w = 0.5;
+            Quat q_current = mutant.readQuat();
 #ifdef DEBUG_MUTATION
             fprintf( logFile, "q_current -- after reading mutant.gread\n" );
-            printQuat( logFile, q_current );
+            printQuat_q( logFile, q_current );
 #endif
-            // Renormalise the current quaternion (x,y,z,w-components)
-            q_current = normRot( q_current );
-#ifdef DEBUG_MUTATION
-            fprintf( logFile, "q_current -- after normRot( q_current )\n" );
-            printQuat( logFile, q_current );
-#endif
-            // Convert q_current's rotation-about-axis components (nx,ny,nz),ang 
-            // to quaternion components(x,y,z,w) 
-            q_current = convertRotToQuat( q_current );
-#ifdef DEBUG_MUTATION
-            fprintf( logFile, "q_current -- after convertRotToQuat( q_current )\n" );
-            printQuat( logFile, q_current );
-#endif
-            // Multiply the quaternions, applying the rotation to
-            // the current orientation
             Quat q_new;
 #ifdef DEBUG_MUTATION
             fprintf( logFile, "q_current -- about to call qmultiply\n" );
 #endif
+#ifdef DEBUG_QUAT
+#ifdef DEBUG_QUAT_PRINT
+            pr( logFile, "DEBUG_QUAT: mutate() -- q_current\n" );
+            (void) fflush(logFile);
+#endif // DEBUG_QUAT_PRINT
+            //  Make sure the quaternion is suitable for 3D rotation
+            assertQuatOK( q_current );
+#ifdef DEBUG_QUAT_PRINT
+            pr( logFile, "DEBUG_QUAT: mutate() -- q_change\n" );
+            (void) fflush(logFile);
+#endif // DEBUG_QUAT_PRINT
+            //  Make sure the quaternion is suitable for 3D rotation
+            assertQuatOK( q_change );
+#endif // DEBUG_QUAT
+            // Multiply the quaternions, applying the rotation to the current orientation
             qmultiply( &q_new, &q_current, &q_change );
+#ifdef DEBUG_QUAT
+#ifdef DEBUG_QUAT_PRINT
+            pr( logFile, "DEBUG_QUAT: mutate() -- q_current\n" );
+            (void) fflush(logFile);
+#endif
+            //  Make sure the quaternion is suitable for 3D rotation
+            assertQuatOK( q_new );
+#endif // DEBUG_QUAT
 #ifdef DEBUG_MUTATION
             fprintf( logFile, "q_new - after qmultiply\n" );
-            printQuat( logFile, q_new );
+            printQuat_q( logFile, q_new );
 #endif
-            // Convert the quaternion into a rotation about an axis
-            q_new = convertQuatToRot( q_new );
-#ifdef DEBUG_MUTATION
-            fprintf( logFile, "q_new -- after convertQuatToRot\n" );
-            printQuat( logFile, q_new );
-#endif
-            
-            for (register int g=3; g<7; g++) {
-               tempvar = mutant.gread( g );
-#ifdef DEBUG_MUTATION
-               (void)fprintf(logFile, "   ---CauchyDev---        ---Unit vector genes, 4, 5, & 6---\n" );
-               (void)fprintf(logFile, "   Before mutating:        tempvar= %.3f\n", tempvar.real );
-               (void)fprintf(logFile, "   gene_number = %d\n",  g  );
-               (void)fprintf(logFile, "   tempvar.real = UDQ-modified quaternion components\n" );
-#endif
-               // Set this gene to the appropriate component of the quaternion's raa
-               switch (g) {
-                  case 3:
-                     // x-component of the unit vector of the rotation-about-axis
-                     tempvar.real = q_new.nx;
-                     break;
-                  case 4:
-                     // y-component of the unit vector of the rotation-about-axis
-                     tempvar.real = q_new.ny;
-                     break;
-                  case 5:
-                     // z-component of the unit vector of the rotation-about-axis
-                     tempvar.real = q_new.nz;
-                     break;
-                  case 6:
-                     // twist angle-component of the rotation-about-axis
-                     tempvar.real = q_new.ang;
-                     break;
-               }
-#ifdef DEBUG_MUTATION
-               (void)fprintf(logFile, "   After mutating:         tempvar= %.3f\n", tempvar.real );
-               (void)fflush(logFile );
-#endif
-               //  Write it
-               mutant.write( tempvar, g );
-            }
+            mutant.writeQuat( q_new );
          } else {
-         //  Read the real
-         tempvar = mutant.gread(gene_number);
+             //  Read the real
+             tempvar = mutant.gread(gene_number);
 #ifdef DEBUG_MUTATION
-            (void)fprintf(logFile, "   ---CauchyDev---\n" );
-            (void)fprintf(logFile, "   Before mutating:        tempvar= %.3f\n", tempvar.real );
-            (void)fprintf(logFile, "   gene_number= %d\n", gene_number );
-            (void)fprintf(logFile, "   tempvar.real += scauchy2()\n" );
+             (void)fprintf(logFile, "   ---CauchyDev---\n" );
+             (void)fprintf(logFile, "   Before mutating:        tempvar= %.3f\n", tempvar.real );
+             (void)fprintf(logFile, "   gene_number= %d\n", gene_number );
+             (void)fprintf(logFile, "   tempvar.real += scauchy2()\n" );
 #endif
-         //  Add deviate
-            //  We never vary alpha and beta, so just use the faster "scauchy2()" function:
-            tempvar.real += scauchy2();
+             //  Add deviate
+             //  We never vary alpha and beta, so just use the faster "scauchy2()" function:
+             tempvar.real += scauchy2();
 #ifdef DEBUG_MUTATION
-            (void)fprintf(logFile, "   Add Cauchy deviate:     tempvar= %.3f\n", tempvar.real );
-            (void)fflush(logFile );
+             (void)fprintf(logFile, "   Add Cauchy deviate:     tempvar= %.3f\n", tempvar.real );
+             (void)fflush(logFile );
 #endif
-         //  Write it
-         mutant.write(tempvar, gene_number);
+             //  Write it
+             mutant.write(tempvar, gene_number);
          }
          break;
 
@@ -590,13 +528,14 @@ void Genetic_Algorithm::mutation(Population &pure)
 void Genetic_Algorithm::crossover(Population &original_population)
 {
    register unsigned int i;
-   int starting_point, temp_index, temp_ordering;
+   int first_point, second_point, temp_index, temp_ordering;
    Real alpha = 0.5;
    
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover(Population &original_population)\n");
 #endif /* DEBUG */
 
+   //  Shuffle the population
    //  Permute the ordering of the population, "original_population"
    for (i=0; i<original_population.num_individuals(); i++) {
       temp_ordering = ordering[i];
@@ -619,23 +558,38 @@ void Genetic_Algorithm::crossover(Population &original_population)
          
          switch(c_mode) {
             case TwoPt:
-                // first crossover point is a random integer from 0 to the number of genes minus 1
-                starting_point = ignuin(0, original_population[i].genotyp.num_genes()-1);
+                // First crossover point is a random integer from 0 to the number of genes minus 1
+#ifdef DO_NOT_CROSSOVER_IN_QUAT
+                // Make sure we do not crossover inside a quaternion...
+                do {
+                    first_point = ignuin(0, original_population[i].genotyp.num_genes()-1);
+                } while ( is_rotation_index( first_point ) ) ;
+                do {
+                    second_point = first_point+ignuin(0, original_population[i].genotyp.num_genes()-first_point-1);
+                } while ( is_rotation_index( second_point ) );
+#else
+                first_point = ignuin(0, original_population[i].genotyp.num_genes()-1);
+                second_point = first_point+ignuin(0, original_population[i].genotyp.num_genes()-first_point-1);
+#endif
+                // Do two-point crossover, with the crossed-over offspring replacing the parents in place:
                 crossover_2pt( original_population[ordering[i]].genotyp, 
                                original_population[ordering[i+1]].genotyp, 
-                               starting_point, 
-                               starting_point+ignuin(0, original_population[i].genotyp.num_genes()-starting_point-1));
+                               first_point, 
+                               second_point );
                 original_population[ordering[i]].age = 0L;
                 original_population[ordering[i+1]].age = 0L;
                 break;
             case OnePt:
-                // first crossover point is a random integer from 0 to the number of genes minus 1
-                starting_point = ignlgi()%original_population[i].genotyp.num_genes();
+                // First crossover point is a random integer from 0 to the number of genes minus 1
+                // Make sure we do not crossover inside a quaternion...
+                do {
+                    first_point = ignlgi()%original_population[i].genotyp.num_genes();
+                } while ( is_rotation_index( first_point ) ) ;
                 //  We can accomplish one point crossover by using the 2pt crossover operator
                 crossover_2pt( original_population[ordering[i]].genotyp, 
                                original_population[ordering[i+1]].genotyp,
-                               starting_point, 
-                               original_population[ordering[i]].genotyp.num_genes()-1);
+                               first_point, 
+                               original_population[ordering[i]].genotyp.num_genes()-1 );
                 original_population[ordering[i]].age = 0L;
                 original_population[ordering[i+1]].age = 0L;
                 break;
@@ -698,6 +652,42 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
       //i, *((double *)father.gread(i)), *((double *)mother.gread(i)) );
 #endif /* DEBUG */
    }
+
+#ifdef DEBUG_QUAT
+   Quat q_father, q_mother;
+
+#ifdef DEBUG_QUAT_PRINT
+   pr( logFile, "DEBUG_QUAT: crossover_2pt()  q_father\n" );
+   pr( logFile, "DEBUG_QUAT: crossover_2pt()  pt1=%d, pt2=%d\n", pt1, pt2 );
+#endif // endif DEBUG_QUAT_PRINT
+
+   //  Make sure the quaternion is suitable for 3D rotation
+   q_father = father.readQuat();
+#ifndef DO_NOT_CROSSOVER_IN_QUAT
+   q_father = normQuat( q_father );
+   father.writeQuat( q_father );
+#endif
+#ifdef DEBUG_QUAT_PRINT
+   printQuat( logFile, q_father );
+   (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+   assertQuatOK( q_father );
+#ifdef DEBUG_QUAT_PRINT
+   pr( logFile, "DEBUG_QUAT: crossover_2pt()  q_mother\n" );
+   (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+   //  Make sure the quaternion is suitable for 3D rotation
+   q_mother = mother.readQuat();
+#ifndef DO_NOT_CROSSOVER_IN_QUAT
+   q_mother = normQuat( q_mother );
+   mother.writeQuat( q_mother );
+#endif
+#ifdef DEBUG_QUAT_PRINT
+   printQuat( logFile, q_mother );
+   (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+   assertQuatOK( q_mother );
+#endif // endif DEBUG_QUAT
 }
 
 
@@ -873,13 +863,6 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
           for (i=0;  i < original_population.num_individuals();  i++) {
              alloc[i] = (worst - original_population[i].value(e_mode)) * invdiffwa;
 
-#ifdef DEBUG2
-             (void)fprintf(logFile,"gs.cc:allocLoop:  worst= %.3f\toriginal_population[%d].value(e_mode)= %.3f\talloc[%d]= %.3e\tinvdiffwa= %.3e\n",worst, i, original_population[i].value(e_mode), i, alloc[i], invdiffwa);//debug
-             if (!finite(original_population[i].value(e_mode) || ISNAN(original_population[i].value(e_mode))) ) {
-                 original_population[i].getMol(individualMol); // individualMol is returned...
-                 (void) writeMolAsPDBQ( individualMol, logFile);//debug
-             }
-#endif
              assert(finite(original_population[i].value(e_mode)));
              assert(finite(alloc[i]));
              assert(!ISNAN(original_population[i].value(e_mode)));
@@ -956,7 +939,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
 
 #ifdef DEBUG2
    allzero = 1; //debug
-   int J;//debug
+   unsigned int J;//debug
    (void)fprintf(logFile, "gs.cc: checking that all alloc[] variables are not all zero...\n"); //debug
    for (J=0;  J < original_population.num_individuals();  J++) {//debug
        allzero = allzero & (alloc[J] == (Real)0.0);//debug
@@ -1169,7 +1152,7 @@ int Genetic_Algorithm::search(Population &solutions)
 #ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform Mapping on the solutions.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
-       (void)fprintf(logFile,"%d ", solutions[i].age);
+       (void)fprintf(logFile,"%ld ", solutions[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
@@ -1289,7 +1272,7 @@ int Genetic_Algorithm::search(Population &solutions)
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), 
                outputEveryNgens);
     #else
-               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %uld, energy: %.3f    Lowest energy individual: %u/%u, age: %uld, energy: %.3f    Time taken for last %d generations: ", 
+               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Time taken for last %d generations: ", 
                generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
                solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
                solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), outputEveryNgens);
@@ -1299,7 +1282,7 @@ int Genetic_Algorithm::search(Population &solutions)
                (void)fprintf(logFile,"Generation: %3u   Oldest individual's energy: %.3f    Lowest energy: %.3f    Time taken: ", 
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval));
     #else
-               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %uld, energy: %.3f    Lowest energy individual: %u/%u, age: %uld, energy: %.3f    Time taken: ", 
+               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Time taken: ", 
                generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
                solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
                solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval));

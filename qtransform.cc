@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.cc,v 1.6 2007/02/25 05:35:13 garrett Exp $
+ $Id: qtransform.cc,v 1.7 2007/03/21 06:30:56 garrett Exp $
 
 */
 
@@ -26,8 +26,7 @@ void qtransform( const Coord T,
 /*      Name: qtransform                                                      */
 /*  Function: Accelerated quaternion transformation                           */
 /*            Performs both a rigid-body translation and rotation.            */
-/*            Assumes quaternion vector q.nx,q.ny,q.nz is normalized outside  */
-/*            this routine.                                                   */
+/*            Assumes quaternion is normalized outside this routine.          */
 /* Copyright: (C) 1995, TSRI                                                  */
 /*----------------------------------------------------------------------------*/
 /*   Authors: Garrett M. Morris, The Scripps Research Institute               */

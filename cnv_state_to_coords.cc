@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.cc,v 1.6 2007/02/25 04:46:05 garrett Exp $
+ $Id: cnv_state_to_coords.cc,v 1.7 2007/03/21 06:30:55 garrett Exp $
 
 */
 
@@ -62,6 +62,15 @@ void cnv_state_to_coords( const State now,
     // rotlsqfit(crd, crdpdb, crdfit, weights, natom, matrix, vector)
     (void) rotlsqfit( crd, crdpdb, crdfit, NULL, natom, NULL, NULL);
     (void) memcpy( crd, crdfit,  natom * 3 * sizeof(Real));
+#endif
+
+#ifdef DEBUG_QUAT
+#ifdef DEBUG_QUAT_PRINT
+    pr( logFile, "DEBUG_QUAT: cnv_state_to_coords()\n" );
+    (void) fflush(logFile);
+#endif
+    //  Make sure the quaternion is suitable for 3D rotation
+    assertQuatOK( now.Q );
 #endif
 
     //  Apply quaternion rigid-body rotation and translation...

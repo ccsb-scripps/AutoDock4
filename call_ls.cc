@@ -1,6 +1,6 @@
 /*
 
- $Id: call_ls.cc,v 1.5 2006/02/14 18:06:11 mchang Exp $
+ $Id: call_ls.cc,v 1.6 2007/03/21 06:30:55 garrett Exp $
 
 */
 
@@ -40,15 +40,14 @@ Representation **cnv_state_to_rep(const State &state)
    retval[1]->write(state.T.y, 0);
    retval[2] = new RealVector(1);
    retval[2]->write(state.T.z, 0);
-   retval[3] = new RealVector(3);
-   retval[3]->write(state.Q.nx, 0);
-   retval[3]->write(state.Q.ny, 1);
-   retval[3]->write(state.Q.nz, 2);
-   retval[4] = new RealVector(1+state.ntor);
-   retval[4]->write(state.Q.ang, 0);
-   for(i=1; i<=state.ntor; i++)
-   {
-      retval[4]->write(state.tor[i-1], i);
+   retval[3] = new RealVector(4);
+   retval[3]->write(state.Q.x, 0);
+   retval[3]->write(state.Q.y, 1);
+   retval[3]->write(state.Q.z, 2);
+   retval[3]->write(state.Q.w, 3);
+   retval[4] = new RealVector(state.ntor);
+   for(i=0; i<state.ntor; i++) {
+      retval[4]->write(state.tor[i], i);
    }
 
    return(retval);

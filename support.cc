@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.19 2006/12/01 04:58:03 garrett Exp $
+ $Id: support.cc,v 1.20 2007/03/21 06:30:56 garrett Exp $
 
 */
 
@@ -210,10 +210,6 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
 
 void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor) {
    register int i;
-#ifdef DEBUG2
-   register int j;
-   char resstr[LINE_LEN];
-#endif // DEBUG2
    double thisValue;
 
 #ifdef DEBUG
@@ -365,7 +361,7 @@ Genotype &Genotype::operator=(const Genotype &original)
    register unsigned int i;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/Genotype &Genotype::operator=(const Genotype &original)\n");
+   (void)fprintf(logFile, "\nsupport.cc/Genotype &Genotype::operator=(const Genotype &original)\n\n");
 #endif /* DEBUG */
 
 
@@ -457,6 +453,44 @@ void Genotype::write(const Representation &value, int gene_number)
    *(rep_vector[gene_number]) = value;
 }
 
+Quat Genotype::readQuat()
+{
+    Quat q;
+    q.x = gread(3).real;
+    q.y = gread(4).real;
+    q.z = gread(5).real;
+    q.w = gread(6).real;
+    // q = convertQuatToRot( q );
+    return q;
+}
+
+void Genotype::writeQuat( Quat q )
+{
+    write( q.x, 3 );
+    write( q.y, 4 );
+    write( q.z, 5 );
+    write( q.w, 6 );
+}
+
+Quat Phenotype::readQuat()
+{
+    Quat q;
+    q.x = gread(3).real;
+    q.y = gread(4).real;
+    q.z = gread(5).real;
+    q.w = gread(6).real;
+    // q = convertQuatToRot( q );
+    return q;
+}
+
+void Phenotype::writeQuat( Quat q )
+{
+    write( q.x, 3 );
+    write( q.y, 4 );
+    write( q.z, 5 );
+    write( q.w, 6 );
+}
+
 //  Maybe we should evaluate the Phenotype?
 Phenotype::Phenotype(unsigned int init_number_of_dimensions, Representation **init_value_vector)
 : number_of_dimensions(init_number_of_dimensions), value_vector(init_value_vector),
@@ -522,7 +556,7 @@ Phenotype &Phenotype::operator=(const Phenotype &original)
    register unsigned int i;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/Phenotype &Phenotype::operator=(const Phenotype &original)\n");
+   (void)fprintf(logFile, "\nsupport.cc/Phenotype &Phenotype::operator=(const Phenotype &original)\n\n");
 #endif /* DEBUG */
 
 
@@ -742,7 +776,7 @@ Population &Population::operator=(const Population &original)
    register int i;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/Population &Population::operator=(const Population &original)\n");
+   (void)fprintf(logFile, "\nsupport.cc/Population &Population::operator=(const Population &original)\n\n");
 #endif /* DEBUG */
 
 

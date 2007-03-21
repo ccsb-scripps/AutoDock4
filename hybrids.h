@@ -26,6 +26,8 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
 Representation **generate_R(int num_torsions, GridMapSetInfo *info );
 
+Representation **generate_R_quaternion(int num_torsions, GridMapSetInfo *info );
+
 Genotype generate_Gtype(int num_torsions, GridMapSetInfo *info );
 
 Phenotype generate_Ptype(int num_torsions, GridMapSetInfo *info );

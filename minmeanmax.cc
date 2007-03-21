@@ -1,6 +1,6 @@
 /*
 
- $Id: minmeanmax.cc,v 1.5 2006/12/13 03:11:51 garrett Exp $
+ $Id: minmeanmax.cc,v 1.6 2007/03/21 06:30:55 garrett Exp $
 
 */
 
@@ -67,19 +67,18 @@ void minmeanmax( FILE *fp, Population &pop, int num_generations, GridMapSetInfo 
    }
 
    // Set bin maxima and minima
-   // Translation x,y,z corresponds to 0, 1, 2
+   // Translation x,y,z components correspond to 0, 1, 2
    for (g=0; g < 3; g++) {
        bin_min[g] = info->lo[g];
        bin_max[g] = info->hi[g];
    }
-   // Rotation-about-axis unit vector nx,ny,nz corresponds to 3, 4, 5
-   for (g=3; g < 6; g++) {
+   // Quaternion qx,qy,qz,qw components correspond to 3, 4, 5, 6
+   for (g=3; g < 7; g++) {
        bin_min[g] = -1.;
        bin_max[g] = 1.;
    }
-   // Rotation-about-axis twist angle corresponds to 6
    // Torsion angles corresponds to 7 to (7+MAX_TORS - 1)
-   for (g=6; g < 7+MAX_TORS; g++) {
+   for (g=7; g < 7+MAX_TORS; g++) {
        bin_min[g] = -PI;
        bin_max[g] = PI;
    }

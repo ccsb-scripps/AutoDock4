@@ -1,6 +1,7 @@
 #include "conformation_sampler.h"
 #include "hybrids.h"
 #include "ranlib.h"
+#include "rep_constants.h"
 #include <math.h>
 
 #define VERBOSE false
@@ -20,11 +21,6 @@
 #define DEFAULT_RANDOM_SAMPLES 10000
 #define DEFAULT_INCREMENTAL_STEPS 5 // note that this is steps up and down, i.e. 
 									// X +/- 3
-#define ROTATION_ANGLE_INDEX 6
-#define Z_TRANSLATON_INDEX 2
-#define X_ROTATION_INDEX 3
-#define Y_ROTATION_INDEX 4
-#define Z_ROTATION_INDEX 5
 
 #define ICO_X 0.525731112119133606
 #define ICO_Y 0.850650808352039932
@@ -68,16 +64,14 @@ ConformationSampler::ConformationSampler(State init_state) {
 	probe_point = base_point;
 
 	// store axis/angle representation in an array
-	for (unsigned int i=0; i < 4; i++) {
-		base_axis_angle[i] = probe_point.gread(i+X_ROTATION_INDEX).real;
-	}
-	
+
+    // read the quaternion
+    Quat base_q = probe_point.readQuat();
+
 	// initialize bounds
 	for (int i=0; i < 3; i++) {
 		max_values[i] = min_values[i] = base_point.gread(i).real;
 		max_values[i+3] = min_values[i+3] = 0.0; // Eulerian angles set to 0
-		
-		rotation_angles[i] = 0.0;
 	}
 	
 	// reset bins
@@ -106,7 +100,7 @@ void ConformationSampler::random_sample(int num_samples) {
 
 		// perturb translation and torsion angles randomly
 		for (unsigned int i=0; i < (unsigned int) dimensionality; i++) {
-			if (i >= X_ROTATION_INDEX && i <= ROTATION_ANGLE_INDEX) continue;
+			if (is_rotation_index(i)) continue;
 			probe_point.write(probe_point.gread(i).real + gennor(0.0, multiplier*RHO) , i);
 			//probe_point.write(probe_point.gread(i).real + genunf(-1.0 * RHO, RHO) , i);
 		}
@@ -116,9 +110,16 @@ void ConformationSampler::random_sample(int num_samples) {
 		Real angle = gennor(0.0, PI/24.0);
 		rand_axis(random_axis_angle, angle);
 		multiplyraa(base_axis_angle, random_axis_angle, new_axis_angle);
-		for (unsigned int i=0; i < 4; i++) {
-			probe_point.write(new_axis_angle[i], i+X_ROTATION_INDEX);
-		}
+
+        Quat q;
+        q.nx = new_axis_angle[0];
+        q.ny = new_axis_angle[1];
+        q.nz = new_axis_angle[2];
+        q.ang = new_axis_angle[3];
+
+        q = convertRotToQuat( q );
+
+        probe_point.writeQuat( q );
 
 		current_energy();
 	}
@@ -190,11 +191,20 @@ void ConformationSampler::update_bounds(void) {
 	Real euler[3];
 	Real raa[4];
 	Real current_value;
+    Quat q;
 	
+    // read the quaternion
+    q = probe_point.readQuat();
+
+    // convert to axis-angle
+    q = convertQuatToRot( q );
+
 	// set up axis-angle array
-	for (int i=0; i < 4; i++) {
-		raa[i] = probe_point.gread(i+3).real;
-	}
+    raa[0] = q.nx;
+    raa[1] = q.ny;
+    raa[2] = q.nz;
+    raa[3] = q.ang;
+
 	raaEuler(raa, euler);
 	
 	// check existing translation bounds
@@ -214,26 +224,17 @@ void ConformationSampler::update_bounds(void) {
 void ConformationSampler::systematic_search(int index) {
 	
 	// for rotation axes, rotate using the pre-defined vertices 
-	if (index <= Z_ROTATION_INDEX && index >= X_ROTATION_INDEX) {
-		
-		Real temp_axis_angle[4];
-		Real new_axis_angle[4];
+	if ( is_axis_index( index ) ) {
+        Quat increment_q;
+        Quat new_q;
 		
 		for (int i=0; i < 12; i++) {
-			
 			// set up rotation
-			temp_axis_angle[0] = vertices[i][0];
-			temp_axis_angle[1] = vertices[i][1];
-			temp_axis_angle[2] = vertices[i][2];
-			temp_axis_angle[3] = temp_rotation_angle;
-			multiplyraa(base_axis_angle, temp_axis_angle, new_axis_angle);
-			
-			probe_point.write(new_axis_angle[0], X_ROTATION_INDEX);
-			probe_point.write(new_axis_angle[1], Y_ROTATION_INDEX);
-			probe_point.write(new_axis_angle[2], Z_ROTATION_INDEX);
-			probe_point.write(new_axis_angle[3], ROTATION_ANGLE_INDEX);
-			
-			systematic_search(Z_TRANSLATON_INDEX); // go to translation
+            // temp_rotation_angle must have been set before doing this... Potential BUG!
+            increment_q = raaToQuat( vertices[i], temp_rotation_angle );
+            qmultiply( &new_q, &base_q, &increment_q );
+			probe_point.writeQuat( new_q );
+			systematic_search(Z_TRANSLATION_INDEX); // go to translation
 		}
 	}
 	
@@ -244,42 +245,40 @@ void ConformationSampler::systematic_search(int index) {
 		Real start, step_size;
 			
 		// set step sizes for different dimensions
-		if (index <= Z_TRANSLATON_INDEX) step_size = TRAN_STEP;
-		else if (index == ROTATION_ANGLE_INDEX) step_size = ROT_ANG_STEP;
+		if ( is_translation_index( index ) ) step_size = TRAN_STEP;
+		else if ( is_angle_index( index ) ) step_size = ROT_ANG_STEP;
 		else step_size = TOR_ANG_STEP;
 		
 		// for the rotation angle, use different bounds in order to avoid
 		// symmetry problems
-		if (index == ROTATION_ANGLE_INDEX) start = -2*num_steps*step_size;
+		if ( is_angle_index( index ) )  start = -2*num_steps*step_size;
 		else start = base_point.gread(index).real - num_steps * step_size;
 		
 		for (int current = 0; current <= 2 * num_steps; current++) {
 
-			if (index == ROTATION_ANGLE_INDEX) {
+			if ( is_angle_index( index ) ) {
 				temp_rotation_angle = start + current*step_size;
 			}
 			else {
 				probe_point.write(start + current * step_size, index);
-			}		
+			}
 			
 			if (index == 0) {
+                // End recursion
 				(void)current_energy();
 			}
-			else {				
+			else {
 				// check if the rotation angle is 0, to avoid shifting axis unnecessarily
-				if (index == ROTATION_ANGLE_INDEX && current == 2 * num_steps) {
-					probe_point.write(base_point.gread(X_ROTATION_INDEX), X_ROTATION_INDEX);
-					probe_point.write(base_point.gread(Y_ROTATION_INDEX), Y_ROTATION_INDEX);
-					probe_point.write(base_point.gread(Z_ROTATION_INDEX), Z_ROTATION_INDEX);
-					probe_point.write(base_point.gread(ROTATION_ANGLE_INDEX), ROTATION_ANGLE_INDEX);
-					systematic_search(Z_TRANSLATON_INDEX); // skip to translation
+				if ( is_angle_index( index ) && current == 2 * num_steps) {
+                    probe_point.writeQuat( base_point.readQuat() );
+					systematic_search(Z_TRANSLATION_INDEX); // skip to translation
 					//current_energy();// DEBUGGING
 				}
 				else {
 					systematic_search(index-1);
 				}
 			}
-		} 
+		}
 	}
 }
 
@@ -426,21 +425,21 @@ Individual set_ind(GridMapSetInfo *info, State state)
    temp_Ptype = generate_Ptype(state.ntor, info);
 
    // use the state to generate a Genotype
-   temp_Gtype.write(state.T.x, 0);
-   temp_Gtype.write(state.T.y, 1);
-   temp_Gtype.write(state.T.z, 2);
-   temp_Gtype.write(state.Q.nx, 3);
-   temp_Gtype.write(state.Q.ny, 4);
-   temp_Gtype.write(state.Q.nz, 5);
-   temp_Gtype.write(state.Q.ang, 6);
+   temp_Gtype.write( state.T.x, 0 );
+   temp_Gtype.write( state.T.y, 1 );
+   temp_Gtype.write( state.T.z, 2 );
+   temp_Gtype.write( state.Q.x, 3 );
+   temp_Gtype.write( state.Q.y, 4 );
+   temp_Gtype.write( state.Q.z, 5 );
+   temp_Gtype.write( state.Q.w, 6 );
    for (i=0;i<state.ntor; i++) {
-       temp_Gtype.write(state.tor[i], 7+i);
+       temp_Gtype.write( state.tor[i], 7+i );
    };
 
    Individual temp(temp_Gtype, temp_Ptype);   
 
    // use mapping to generate a Phenotype
-   temp.phenotyp =  temp.mapping();
+   temp.phenotyp = temp.mapping();
 
    return(temp);
 }

@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.8 2006/11/03 02:10:48 garrett Exp $
+ $Id: ls.cc,v 1.9 2007/03/21 06:30:55 garrett Exp $
 
 */
 
@@ -20,8 +20,8 @@ extern class Eval evaluate;
 
 extern FILE *logFile;
 
-//  This function adds array1 + array2 to all the reals in the representation
-Phenotype genPh(const Phenotype &original, Real *array1, Real *array2)
+//  This function adds sign * (array1 + array2) to all the reals in the representation
+Phenotype genPh(const Phenotype &original, Real sign, Real *array1, Real *array2)
 {
    RepType genetype;
    register unsigned int i, index = 0;
@@ -31,14 +31,24 @@ Phenotype genPh(const Phenotype &original, Real *array1, Real *array2)
    (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, Real *array1, Real *array2)\n");
 #endif /* DEBUG */
 
-
    for (i=0; i < retval.num_pts(); i++) {
       genetype = retval.gtype(i);
       if ((genetype == T_RealV)||(genetype == T_CRealV)) {
-         retval.write(retval.gread(i).real + array1[index] + array2[index], i);
+         retval.write(retval.gread(i).real + sign * (array1[index] + array2[index]), i);
          index++;
       }
    }
+
+   Quat q;
+   q = retval.readQuat();
+
+#ifdef DEBUG_QUAT
+   pr( logFile, "DEBUG_QUAT: genPh()  q\n" );
+   printQuat( logFile, q );
+   assertQuatOK( q );
+#endif // endif DEBUG_QUAT
+
+   retval.writeQuat( normQuat( q ) );
 
    return(retval);
 }
@@ -69,32 +79,32 @@ void Solis_Wets::SW(Phenotype &vector)
          deviates[j] = gen_deviates(temp_rho);
       }
 
-      newPh = genPh(vector, deviates, bias);
+      // zeta = x + bias + deviates
+      newPh = genPh(vector, +1., deviates, bias); // zeta
       // Evaluate
       if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
          num_successes++;
          num_failures = 0;
          vector = newPh;
          for (j=0; j < size; j++) {
-            bias[j] = 0.20*bias[j] + 0.40*deviates[j];
+            // bias[j] = 0.20*bias[j] + 0.40*deviates[j];  // original & questionable
+            bias[j] = 0.60*bias[j] + 0.40*deviates[j]; // strict Solis+Wets
          }
-      } else  {
-         //  We need to check if the opposite deviates do any good
-         for (j=0; j < vector.num_pts(); j++) {
-            deviates[j] *= -1.0;
-         }
-
-         newPh = genPh(vector, deviates, bias);
+      } else {
+         // We need to check if the opposite move does any good (move = bias[j] + deviates[j])
+         newPh = genPh(vector, -1., deviates, bias); // 2x - zeta = x - move
          if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
             num_successes++;
             num_failures = 0;
             vector = newPh;
             for (j=0; j < size; j++) {
-               bias[j] -= 0.40*deviates[j];
+               // bias[j] -= 0.40*deviates[j]; // incorrect
+               bias[j] = 0.60*bias[j] - 0.40*deviates[j]; // correct if deviates is not changed
             }
          } else {
             num_failures++;
             num_successes = 0;
+            // vector is unchanged  // x
             for (j=0; j < size; j++) {
                bias[j] *= 0.50;
             }
@@ -146,32 +156,31 @@ void Pseudo_Solis_Wets::SW(Phenotype &vector)
          deviates[j] = gen_deviates(temp_rho[j]);
       }
 
-      newPh = genPh(vector, deviates, bias);
+      newPh = genPh(vector, +1., deviates, bias);
       // Evaluate
       if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
          num_successes++;
          num_failures = 0;
          vector = newPh;
          for (j=0; j < size; j++) {
-            bias[j] = 0.20*bias[j] + 0.40*deviates[j];
+            // bias[j] = 0.20*bias[j] + 0.40*deviates[j];
+            bias[j] = 0.60*bias[j] + 0.40*deviates[j]; // strict Solis+Wets
          }
       } else  {
-         //  We need to check if the opposite deviates do any good
-         for (j=0; j < vector.num_pts(); j++) {
-            deviates[j] *= -1.0;
-         }
-
-         newPh = genPh(vector, deviates, bias);
+         //  We need to check if the opposite move does any good (move = bias[j] + deviates[j])
+         newPh = genPh(vector, -1., deviates, bias);
          if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
             num_successes++;
             num_failures = 0;
             vector = newPh;
             for (j=0; j < size; j++) {
-               bias[j] -= 0.40*deviates[j];
+               // bias[j] -= 0.40*deviates[j];
+               bias[j] = 0.60*bias[j] - 0.40*deviates[j]; // correct if deviates is not changed
             }
          } else {
             num_failures++;
             num_successes = 0;
+            // vector is unchanged  // x
             for (j=0; j < size; j++) {
                bias[j] *= 0.50;
             }

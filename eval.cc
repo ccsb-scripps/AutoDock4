@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.20 2007/02/25 04:50:43 garrett Exp $
+ $Id: eval.cc,v 1.21 2007/03/21 06:30:55 garrett Exp $
 
 */
 
@@ -18,6 +18,7 @@
 #include <math.h>
 #include "eval.h"
 #include "stateLibrary.h"
+#include "assert.h"
 
 extern FILE *logFile;
 
@@ -34,16 +35,13 @@ extern FILE *logFile;
 
 /*  The chromosome is assumed to have a layout like this -
 
-       | x | y | z | nx | ny | nz | ang | tor1 | ... | tor N |
+       | x | y | z | qx | qy | qz | qw | tor1 | ... | tor N |
 
     where:
        x is the x translation
        y is the y translation
        z is the z translation
-       nx is the x component of the unit-vector of the rotation about axis
-       ny is the y component of the unit-vector of the rotation about axis
-       nz is the z component of the unit-vector of the rotation about axis
-       ang is the angle portion of the rotation about axis
+       qx, qy, qz, qw are the components of a 4D-normalized quaternion
        tor 1, ..., tor N are the ntor torsion angles
 */
 
@@ -60,22 +58,40 @@ void make_state_from_rep(Representation **rep, State *stateNow)
 #endif /* DEBUG */
 
    //  Do the translations
+   assert( !ISNAN( rep[0]->gene(0).real ) );
    stateNow->T.x = rep[0]->gene(0).real;
+   assert( !ISNAN( rep[1]->gene(0).real ) );
    stateNow->T.y = rep[1]->gene(0).real;
+   assert( !ISNAN( rep[2]->gene(0).real ) );
    stateNow->T.z = rep[2]->gene(0).real;
 
    //  Set up the quaternion
-   stateNow->Q.nx = rep[3]->gene(0).real;
-   stateNow->Q.ny = rep[3]->gene(1).real;
-   stateNow->Q.nz = rep[3]->gene(2).real;
-   stateNow->Q.ang = rep[4]->gene(0).real;
+   assert( !ISNAN( rep[3]->gene(0).real ) );
+   stateNow->Q.x = rep[3]->gene(0).real;
+   assert( !ISNAN( rep[3]->gene(1).real ) );
+   stateNow->Q.y = rep[3]->gene(1).real;
+   assert( !ISNAN( rep[3]->gene(2).real ) );
+   stateNow->Q.z = rep[3]->gene(2).real;
+   assert( !ISNAN( rep[3]->gene(3).real ) );
+   stateNow->Q.w = rep[3]->gene(3).real;
+
+   // Generate the corresponding axis-angle ("rotation")
+   Quat q_axis_angle;
+   q_axis_angle = convertQuatToRot( stateNow->Q );
+
+   // Update the axis-angle values in stateNow
+   stateNow->Q.nx = q_axis_angle.nx;
+   stateNow->Q.ny = q_axis_angle.ny;
+   stateNow->Q.nz = q_axis_angle.nz;
+   stateNow->Q.ang = q_axis_angle.ang;
    
    //  Copy the angles
-   for (i=1; i<=stateNow->ntor; i++) {
-      stateNow->tor[i-1] = rep[4]->gene(i).real;
+   for (i=0; i<stateNow->ntor; i++) {
+      assert( !ISNAN( rep[4]->gene(i).real ) );
+      stateNow->tor[i] = rep[4]->gene(i).real;
    }
 
-   mkUnitQuat(&(stateNow->Q));
+   // mkUnitQuat(&(stateNow->Q));
 }
 
 double Eval::operator()(Representation **rep)
@@ -112,7 +128,7 @@ double Eval::eval()
 #endif /* DEBUG */
 
 #ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/Converting state to coordinates...\n");
+    (void)fprintf(logFile,"eval.cc/eval()  Converting state to coordinates...\n");
     printState( logFile, stateNow, 2 );
 #endif /* DEBUG */
 
@@ -214,7 +230,8 @@ double Eval::eval(int term)
 #endif /* DEBUG */
 
 #ifdef DEBUG
-    (void)fprintf(logFile,"eval.cc/Converting state to coordinates...\n");
+    (void)fprintf(logFile,"eval.cc/eval(int term)  Converting state to coordinates...\n");
+    printState( logFile, stateNow, 2 );
 #endif /* DEBUG */
  
    // Ligand could be inside or could still be outside, check all the atoms...
@@ -337,26 +354,29 @@ double Eval::operator()(double* vec, int len)
 void make_state_from_rep(double *rep, int n, State *now)
 {
 #   ifdef DEBUG
-(void)fprintf(logFile, "eval.cc/make_state_from_rep(double *rep, int n, State *now)\n");
+    (void)fprintf(logFile, "eval.cc/make_state_from_rep(double *rep, int n, State *now)\n");
 #   endif /* DEBUG */
 
-//  Do the translations
-now->T.x = rep[0];
-now->T.y = rep[1];
-now->T.z = rep[2];
+    //  Do the translations
+    now->T.x = rep[0];
+    now->T.y = rep[1];
+    now->T.z = rep[2];
 
-//  Set up the quaternion
-now->Q.nx = rep[3];
-now->Q.ny = rep[4];
-now->Q.nz = rep[5];
-now->Q.ang = rep[6];
+    //  Set up the quaternion
+    now->Q.x = rep[3];
+    now->Q.y = rep[4];
+    now->Q.z = rep[5];
+    now->Q.w = rep[6];
 
-//  Copy the angles
-now->ntor = n - 7;
-for (int i=0, j=7; j<n; i++, j++)
-  now->tor[i] = rep[j];
+    now->Q = convertQuatToRot( now->Q );
 
-mkUnitQuat(&(now->Q));
+    //  Copy the angles
+    now->ntor = n - 7;
+    for (int i=0, j=7; j<n; i++, j++) {
+      now->tor[i] = rep[j];
+    }
+
+    //mkUnitQuat(&(now->Q));
 }
 
 extern Eval evaluate;

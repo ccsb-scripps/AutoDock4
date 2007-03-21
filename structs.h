@@ -53,12 +53,33 @@ typedef struct quat
   double ny;			/* unit vector's y-component */
   double nz;			/* unit vector's z-component */
   double ang;			/* angle of rotation about unit-vector */
+  double w;			/* quaternion's w-component */
   double x;			/* quaternion's x-component */
   double y;			/* quaternion's y-component */
   double z;			/* quaternion's z-component */
-  double w;			/* quaternion's w-component */
   double qmag;			/* quaternion's 4-D magnitude */
 } Quat;
+
+typedef struct quaternion
+{
+    double v[4];
+} Quaternion;
+
+#define NX 0
+#define NY 1
+#define NZ 2
+
+typedef struct axis
+{
+    double v[3];
+} Axis;
+
+typedef struct axisangle
+{
+    Axis axis;
+    double angle;
+} AxisAngle;
+
 
 /* ____________________________________________________________________________ */
 

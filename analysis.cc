@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.24 2006/12/12 23:57:16 garrett Exp $
+ $Id: analysis.cc,v 1.25 2007/03/21 06:30:55 garrett Exp $
 
 */
 
@@ -259,7 +259,8 @@ void analysis( int   Nnb,
             pr( logFile, "USER    NEWDPF move\t%s\n", smFileName );
             pr( logFile, "USER    NEWDPF about\t%f %f %f\n", sml_center[X],sml_center[Y],sml_center[Z]);
             pr( logFile, "USER    NEWDPF tran0\t%f %f %f\n", hist[c].T.x, hist[c].T.y, hist[c].T.z );
-            pr( logFile, "USER    NEWDPF quat0\t%f %f %f %f\n", hist[c].Q.nx, hist[c].Q.ny, hist[c].Q.nz, RadiansToDegrees(hist[c].Q.ang) );
+            pr( logFile, "USER    NEWDPF axisangle0\t%f %f %f %f\n", hist[c].Q.nx, hist[c].Q.ny, hist[c].Q.nz, RadiansToDegrees(hist[c].Q.ang) );
+            pr( logFile, "USER    NEWDPF quaternion0\t%f %f %f %f\n", hist[c].Q.x, hist[c].Q.y, hist[c].Q.z, hist[c].Q.w );
             if (ntor > 0) {
                 pr( logFile, "USER    NEWDPF ndihe\t%d\n", hist[c].ntor );
                 pr( logFile, "USER    NEWDPF dihe0\t" );

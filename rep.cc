@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.12 2006/11/14 02:29:36 garrett Exp $
+ $Id: rep.cc,v 1.13 2007/03/21 06:30:56 garrett Exp $
 
 */
 
@@ -157,28 +157,6 @@ void IntVector::write(double value, int gene)
 
 //______________________________________________________________________________
 //
-/*
-void IntVector::write(const void *value, int gene)
-{
-
-#ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/void IntVector::write(const void *value, int gene=%d) \n",gene);
-#endif // * DEBUG * /
-
-   if (*((FourByteLong *)value)<low) {
-      (void)fprintf(logFile,"Writing out-of-bounds Int!\n"); // used to be "stderr"
-      vector[gene] = low;
-   } else if (*((FourByteLong *)value)>high) {
-      (void)fprintf(logFile,"Writing out-of-bounds Int!\n"); // used to be "stderr"
-      vector[gene] = high;
-   } else {
-      vector[gene] = *((FourByteLong *)value);
-   }
-}
-*/
-
-//______________________________________________________________________________
-//
 void IntVector::write(const Element value, int gene)
 {
 
@@ -197,24 +175,6 @@ void IntVector::write(const Element value, int gene)
    }
 }
 
-//______________________________________________________________________________
-//
-/*
-const void *IntVector::gene(unsigned int gene_number) const
-{
-
-#ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/const void *IntVector::gene(unsigned int gene_number=%d) const \n",gene_number);
-#endif // * DEBUG * /
-
-   if (gene_number>=number_of_pts) {
-      (void)fprintf(logFile,"Trying to access an out-of-bounds gene!\n"); // used to be "stderr"
-      return(NULL);
-   } else {
-      return((void *)(&vector[gene_number]));
-   }
-}
-*/
 
 //______________________________________________________________________________
 //
@@ -228,7 +188,7 @@ const Element IntVector::gene(unsigned int gene_number) const
 
 
    if (gene_number>=number_of_pts) {
-      (void)fprintf(logFile,"Trying to access an out-of-bounds gene!\n"); // used to be "stderr"
+      (void)fprintf(logFile,"ERROR: Trying to access an out-of-bounds IntVector gene! (gene_number=%d >= number_of_pts=%d)\n", gene_number, number_of_pts); // used to be "stderr"
       retval.integer = 0;
       return(retval);
    } else {
@@ -257,7 +217,7 @@ Representation &IntVector::operator=(const Representation &original)
    FourByteLong *array;
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/Representation &IntVector::operator=(const Representation &original) \n");
+    (void)fprintf(logFile, "\nrep.cc/Representation &IntVector::operator=(const Representation &original) \n");
 #endif /* DEBUG */
 
 
@@ -338,7 +298,7 @@ RealVector::RealVector(int num_els, double init_low, double init_high)
 //  vector (if any) to a uniformly-distributed random number between 
 //  the user-specified bounds, init_low and init_high;
 //  but the first value in this vector is set to the value supplied as the last argument.
-//  This is useful for specifying an initial quaternion rotation angle.
+//  This is useful for specifying an initial axis-angle rotation angle.
 //
 RealVector::RealVector(int num_els, double init_low, double init_high, double init_first_value)
 : Representation(num_els)
@@ -370,7 +330,7 @@ RealVector::RealVector(int num_els, double init_low, double init_high, double in
 //  This constructor is used to initialize the starting population, 
 //  with elements of a vector of length 3 being set to the user specified values
 //  nx, ny, and nz.
-//  This is useful for specifying an initial quaternion rotation' unit vector.
+//  This is useful for specifying an initial orientation's axis components
 //
 RealVector::RealVector( int num_els, double init_low, double init_high, double nx, double ny, double nz )
 : Representation(num_els)
@@ -394,6 +354,36 @@ RealVector::RealVector( int num_els, double init_low, double init_high, double n
 #endif /* DEBUG */
 } // RealVector::RealVector(double nx, double ny, double nz, int num_els)
 
+//______________________________________________________________________________
+//
+//  This constructor is used to initialize the starting population, 
+//  with elements of a vector of length 4 being set to the user specified values
+//  w, x, y, z
+//  This is useful for specifying an initial quaternion rotation' unit vector.
+//
+RealVector::RealVector( int num_els,  double init_low, double init_high,  double x, double y, double z, double w)
+: Representation(num_els)
+{
+#ifdef DEBUG
+    (void)fprintf(logFile, "rep.cc/RealVector::RealVector(int num_els=%d, double x=%lf, double y=%lf, double z=%lf, double w=%lf) \n", num_els, x, y, z, w );
+#endif /* DEBUG */
+
+   mytype = T_RealV;
+   low = init_low;
+   high = init_high;
+   vector = new double[4];
+   // Set the x,y,z,w components of the quaternion.
+   vector[0] = x;
+   vector[1] = y;
+   vector[2] = z;
+   vector[3] = w;
+#ifdef DEBUG
+   (void)fprintf(logFile, "rep.cc/RealVector::RealVector(num_els,x,y,z,w)   vector[0] = %.3f\n", vector[0] );
+   (void)fprintf(logFile, "rep.cc/RealVector::RealVector(num_els,x,y,z,w)   vector[1] = %.3f\n", vector[1] );
+   (void)fprintf(logFile, "rep.cc/RealVector::RealVector(num_els,x,y,z,w)   vector[2] = %.3f\n", vector[2] );
+   (void)fprintf(logFile, "rep.cc/RealVector::RealVector(num_els,x,y,z,w)   vector[3] = %.3f\n", vector[3] );
+#endif /* DEBUG */
+}
 //______________________________________________________________________________
 //
 //  Do a deep copy of the original
@@ -473,25 +463,6 @@ void RealVector::write(double value, int gene)
    }
 }
 
-//______________________________________________________________________________
-//
-/*
-void RealVector::write(const void *value, int gene)
-{
-
-#ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/void RealVector::write(const void *value, int gene=%d) \n",gene);
-#endif // * DEBUG * /
-
-   if (*((double *)value)<low) {
-      vector[gene] = low;
-   } else if (*((double *)value)>high) {
-      vector[gene] = high;
-   } else {
-      vector[gene] = *((double *)value);
-   }
-}
-*/
 
 //______________________________________________________________________________
 //
@@ -513,25 +484,6 @@ void RealVector::write(const Element value, int gene)
 
 //______________________________________________________________________________
 //
-/*
- *const void *RealVector::gene(unsigned int gene_number) const
- *{
- *
- *#ifdef DEBUG
-     *(void)fprintf(logFile, "rep.cc/const void *RealVector::gene(unsigned int gene_number=%d) const \n",gene_number);
- *#endif // * DEBUG * /
- *
-    *if (gene_number>=number_of_pts) {
-       *(void)fprintf(logFile,"Trying to access out-of-bounds gene\n"); // used to be "stderr"
-       *return(NULL);
-    *} else {
-       *return((void *)(&vector[gene_number]));
-    *}
- *}
- */
-
-//______________________________________________________________________________
-//
 const Element RealVector::gene(unsigned int gene_number) const
 {
 
@@ -542,11 +494,17 @@ const Element RealVector::gene(unsigned int gene_number) const
    Element retval;
 
    if (gene_number>=number_of_pts) {
-      (void)fprintf(logFile,"Trying to access out-of-bounds gene\n"); // used to be "stderr"
+      (void)fprintf(logFile,"ERROR: Trying to access an out-of-bounds RealVector gene (gene_number=%d >= number_of_pts=%d)\n", gene_number, number_of_pts); // used to be "stderr"
       retval.real = 0.0;
       return(retval);
    } else {
+#ifdef DEBUG
+      pr( logFile, "rep.cc /  retval.real = vector[gene_number=%d] = %lf\n", gene_number, vector[gene_number] );
+#endif
       retval.real = vector[gene_number];
+#ifdef DEBUG
+      pr( logFile, "rep.cc / retval.real = %lf\n", retval.real );
+#endif
       return(retval);
    }
 }
@@ -569,7 +527,7 @@ Representation &RealVector::operator=(const Representation &original)
 {
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/Representation &RealVector::operator=(const Representation &original) \n");
+    (void)fprintf(logFile, "\nrep.cc/Representation &RealVector::operator=(const Representation &original) \n");
 #endif /* DEBUG */
 
    register unsigned int i;
@@ -711,27 +669,6 @@ void ConstrainedRealVector::write(double value, int gene)
    normalized = 0;
 }
 
-//______________________________________________________________________________
-//
-/*
-void ConstrainedRealVector::write(const void *value, int gene)
-{
-
-#ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/void ConstrainedRealVector::write(const void *value, int gene=%d) \n",gene);
-#endif // * DEBUG * /
-
-   if (*((double *)value)<low) {
-      vector[gene] = low;
-   } else if (*((double *)value)>high) {
-      vector[gene] = high;
-   } else {
-      vector[gene] = *((double *)value);
-   }
-
-   normalized = 0;
-}
-*/
 
 //______________________________________________________________________________
 //
@@ -755,55 +692,33 @@ void ConstrainedRealVector::write(const Element value, int gene)
 
 //______________________________________________________________________________
 //
-void ConstrainedRealVector::normalize(void) const
+void ConstrainedRealVector::normalize(void)
 {
-   //unsigned char *kluge; commented out by gmm, 9-17-97
-
 #ifdef DEBUG
     (void)fprintf(logFile, "rep.cc/void ConstrainedRealVector::normalize(void) const \n");
 #endif /* DEBUG */
 
-
-//   kluge = &normalized;
    if (!normalized) {
       register unsigned int i;
       register double tempsum = 0.0, hypotenuse;
 
       for (i=0; i<number_of_pts; i++) {
-         tempsum+=vector[i]*vector[i];
+         tempsum += vector[i] * vector[i];
       }
 
-      if ((tempsum-sum>ACCURACY)||(sum-tempsum>ACCURACY)) {
+      if ((tempsum - sum  >  ACCURACY) || (sum - tempsum  >  ACCURACY)) {
          hypotenuse = sqrt(tempsum);
+         // normalize the vector[]
          for (i=0; i<number_of_pts; i++) {
             vector[i] /= hypotenuse;
          }
       }
 
       //normalized = 1;
-      //*kluge = 1; commented out by gmm, 9-17-97
+      set_normalized_true();
    }
 }
 
-//______________________________________________________________________________
-//
-/*
-const void *ConstrainedRealVector::gene(unsigned int gene_number) const
-{
-
-#ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/const void *ConstrainedRealVector::gene(unsigned int gene_number=%d) const \n",gene_number);
-#endif // * DEBUG * /
-
-   if (gene_number>=number_of_pts) {
-      (void)fprintf(logFile,"Trying to access an out-of-bounds gene\n"); // used to be "stderr"
-      return(NULL);
-   } else {
-//      normalize();
-      return((void *)(&vector[gene_number]));
-   }
-}
-*/
 
 //______________________________________________________________________________
 //
@@ -817,7 +732,7 @@ const Element ConstrainedRealVector::gene(unsigned int gene_number) const
 
 
    if (gene_number>=number_of_pts) {
-      (void)fprintf(logFile,"Trying to access an out-of-bounds gene\n"); // used to be "stderr"
+      (void)fprintf(logFile,"ERROR: Trying to access an out-of-bounds ConstrainedRealVector gene (gene_number=%d >= number_of_pts=%d)\n", gene_number, number_of_pts); // used to be "stderr"
       retval.real = 0.0;
       return(retval);
    } else {
@@ -847,7 +762,7 @@ Representation &ConstrainedRealVector::operator=(const Representation &original)
    double *array;
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/Representation &ConstrainedRealVector::operator=(const Representation &original) \n");
+    (void)fprintf(logFile, "\nrep.cc/Representation &ConstrainedRealVector::operator=(const Representation &original) \n");
 #endif /* DEBUG */
 
 
@@ -974,19 +889,6 @@ void BitVector::write(double value, int gene)
    (void)fprintf(logFile,"value= %lf, gene= %d\n",value,gene); // used to be "stderr"
 }
 
-//______________________________________________________________________________
-//
-/*
-void BitVector::write(const void *value, int gene)
-{
-
-#ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/void BitVector::write(const void *value, int gene=%d) \n",gene);
-#endif // * DEBUG * /
-
-   vector[gene] = *((unsigned char *)value);
-}
-*/
 
 //______________________________________________________________________________
 //
@@ -1000,24 +902,6 @@ void BitVector::write(const Element value, int gene)
    vector[gene] = value.bit;
 }
 
-//______________________________________________________________________________
-//
-/*
-const void *BitVector::gene(unsigned int gene_number) const
-{
-
-#ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/const void *BitVector::gene(unsigned int gene_number=%d) const \n",gene_number);
-#endif // * DEBUG * /
-
-   if (gene_number>=number_of_pts) {
-      (void)fprintf(logFile,"Trying to access an out-of-bounds gene\n"); // used to be "stderr"
-      return(NULL);
-   } else {
-      return((void *)(&vector[gene_number]));
-   }
-}
-*/
 
 //______________________________________________________________________________
 //
@@ -1031,7 +915,7 @@ const Element BitVector::gene(unsigned int gene_number) const
 
 
    if (gene_number>=number_of_pts) {
-      (void)fprintf(logFile,"Trying to access an out-of-bounds gene\n"); // used to be "stderr"
+      (void)fprintf(logFile,"ERROR: Trying to access an out-of-bounds BitVector gene (gene_number=%d >= number_of_pts=%d)\n", gene_number, number_of_pts); // used to be "stderr"
       retval.bit = 0;
       return(retval);
    } else {
@@ -1060,7 +944,7 @@ Representation &BitVector::operator=(const Representation &original)
    unsigned char *array;
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/Representation &BitVector::operator=(const Representation &original) \n");
+    (void)fprintf(logFile, "\nrep.cc/Representation &BitVector::operator=(const Representation &original) \n");
 #endif /* DEBUG */
 
 

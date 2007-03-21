@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.8 2006/12/01 02:10:24 garrett Exp $
+ $Id: mkNewState.cc,v 1.9 2007/03/21 06:30:56 garrett Exp $
 
 */
 
@@ -36,7 +36,6 @@ void mkNewState( State *now,
     register int i;
     double t;
     int I_ranCon;
-    double x0, r1, r2, t1, t2;  // for uniformly distributed quaternion calculation
     Real a, b;
 
     /*
@@ -64,14 +63,7 @@ void mkNewState( State *now,
         **  Shoemake, Graphics Gems III.6, pp.124-132, "Uniform Random Rotations",
         **  published by Academic Press, Inc., (1992)
         */
-        t1 = TWOPI * local_random();
-        // change->Q.x = sin( t1 ) * (  r1 = random_sign * sqrt( 1 - (x0 = local_random()) )  );  // random sign version
-        change->Q.x = sin( t1 ) * (  r1 = sqrt( 1 - (x0 = local_random()) )  ); // strict Shoemake version
-        change->Q.y = cos( t1 ) * r1;
-        t2 = TWOPI * local_random();
-        // change->Q.z = sin( t2 ) * (  r2 = random_sign * sqrt( x0 )  );  // random sign version
-        change->Q.z = sin( t2 ) * (  r2 = sqrt( x0 )  ); // strict Shoemake version
-        change->Q.w = cos( t2 ) * r2;
+        change->Q = uniformQuat();
 
         /*
         **  Apply random change, to Last Quaternion

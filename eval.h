@@ -16,6 +16,9 @@
 #include "eintcal.h"
 #include "energy.h"
 
+#ifdef DEBUG
+extern FILE *logFile;
+#endif
 
 #if defined(USING_COLINY)
 void make_state_from_rep(double *x, int n, State *now);
@@ -167,7 +170,12 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
     tlist = init_tlist;
     crdpdb = init_crdpdb;
     crdreo = init_crdreo;
-    stateNow = stateInit;
+    // set all of the components of the State, one at a time...
+    copyState( &stateNow, stateInit );
+#ifdef DEBUG
+    pr(logFile, "\n\nstateNow:\n");
+    printState( logFile, stateNow, 2 );
+#endif
     num_evals = 0;
     for (i=0; i<MAX_ATOMS; i++) {
        init_elec[i] = init_emap[i] = 0.0;

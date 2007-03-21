@@ -93,7 +93,6 @@ OBJS = \
     print_2x.o \
     print_atomic_energies.o \
     print_avsfld.o \
-    writeMolAsPDBQ.o \
     writePDBQT.o \
     print_rem.o \
     printdate.o \
@@ -180,7 +179,6 @@ OBJS_LSFIT = \
     print_2x.o \
     print_atomic_energies.o \
     print_avsfld.o \
-    writeMolAsPDBQ.o \
     writePDBQT.o \
     print_rem.o \
     printdate.o \
@@ -276,7 +274,6 @@ LNS = \
     print_2x.ln \
     print_atomic_energies.ln \
     print_avsfld.ln \
-    writeMolAsPDBQ.ln \
     writePDBQT.ln \
     print_rem.ln \
     printdate.ln \
@@ -346,7 +343,8 @@ CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X
 # CSTD = -std arm -verbose $(PROF) $(DBUG) $(WARN) # Alpha. sarah
 # CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP
 
-CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
+CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; no crossover in quaternion
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DQUATERNION_MUTATION # As above, but treat quaternion genes properly when doing mutations--note, this is slow!
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; also use Double precision throughout
 # CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X
@@ -411,8 +409,12 @@ DBUG = # Use assert code
 # DBUG = -DDEBUG3 # Just DEBUG3-specific code for print age of individuals
 # DBUG = -g -DDEBUG -DDEBUG2 -DDEBUG3 # Debug everything
 # DBUG = -DDEBUG_MUTATION # Use assert code, & print out information anywhere involving mutation
+# DBUG = -g3 -DDEBUG_QUAT # Use assert code, & assert quaternions are 4D-normalised
+# DBUG = -g3 -DDEBUG_QUAT -DDEBUG_QUAT_PRINT # Use assert code, & assert quaternions are 4D-normalised, and print out
+# DBUG = -g3 -DDEBUG_QUAT -DDEBUG_QUAT_PRINT -DDEBUG # Use assert code, & assert quaternions are 4D-normalised, and use DEBUG-specific code, and print out
 # DBUG = -g3 -DDEBUG_MUTATION # dbx + optimization; Use assert code, & print out information anywhere involving mutation
 # DBUG = -g3 -DDEBUG_MUTATION -DDEBUG # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements
+# DBUG = -g3 -DDEBUG_MUTATION -DDEBUG -DDEBUG3 # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements incl. 3
 
 PROF = # No profiling
 # PROF = -p # CC Profiling
@@ -629,7 +631,7 @@ cnv_state_to_coords_lsfit.o : cnv_state_to_coords.cc cnv_state_to_coords.h const
 com.o : com.cc ranlib.h
 	$(CC) $(CFLAGS) -c com.cc
 	
-conformation_sampler.o : conformation_sampler.cc conformation_sampler.h
+conformation_sampler.o : conformation_sampler.cc conformation_sampler.h rep_constants.h
 	$(CC) $(CFLAGS) -c conformation_sampler.cc
 
 distdepdiel.o : distdepdiel.cc distdepdiel.h
@@ -748,9 +750,6 @@ print_atomic_energies.o : print_atomic_energies.cc print_atomic_energies.h const
 
 print_avsfld.o : print_avsfld.cc print_avsfld.h
 	$(CC) $(CFLAGS) -c print_avsfld.cc 
-
-writeMolAsPDBQ.o : writeMolAsPDBQ.cc writeMolAsPDBQ.h constants.h autocomm.h
-	$(CC) $(CFLAGS) -c writeMolAsPDBQ.cc -o writeMolAsPDBQ.o
 
 writePDBQT.o : writePDBQT.cc writePDBQT.h constants.h autocomm.h
 	$(CC) $(CFLAGS) -c writePDBQT.cc -o writePDBQT.o
@@ -990,9 +989,6 @@ print_atomic_energies.ln : print_atomic_energies.cc
 	$(LINT) $(LINTFLAGS) $?
 
 print_avsfld.ln : print_avsfld.cc
-	$(LINT) $(LINTFLAGS) $?
-
-writeMolAsPDBQ.ln : writeMolAsPDBQ.cc
 	$(LINT) $(LINTFLAGS) $?
 
 writePDBQT.ln : writePDBQT.cc

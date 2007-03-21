@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.7 2007/02/25 05:31:22 garrett Exp $
+ $Id: qmultiply.cc,v 1.8 2007/03/21 06:30:56 garrett Exp $
 
 */
 
@@ -22,28 +22,22 @@ extern  FILE    *logFile;
 
 
 void qmultiply( Quat *q,
-                Quat *ql,
-                Quat *qr )
+                register const Quat *ql,
+                register const Quat *qr )
 
 /******************************************************************************/
-/*      Name: qultiply                                                        */
+/*      Name: qmultiply                                                       */
 /*  Function: Quaternion Multiplication (Accelerated)                         */
 /*            [q]  =  [ql] [qr]                                               */
 /*            [s1,v1][s2,v2] = [(s1*s2 - v1.v2), (s1*v2 + s2*v1 + v1^v2)]     */
 /*                ~~     ~~              ~~ ~~       ~~      ~~   ~~ ~~       */
-/*            Quaternion vector q[3,4,5] need not be normalized outside this  */
-/*            routine.                                                        */
-/*            q[] contains (xt,yt,zt, x,y,z,w(radians))                       */
-/*            if ql[QW] is zero, qr is new vector                             */
-/*            if qr[QW] is zero, ql is new vector                             */
 /* Copyright: (C) 1994, TSRI                                                  */
 /*----------------------------------------------------------------------------*/
 /*   Authors: Garrett M. Morris, The Scripps Research Institute.              */
 /*            David Goodsell, TSRI                                            */
 /*      Date: 12/03/92                                                        */
 /*----------------------------------------------------------------------------*/
-/*    Inputs: ql = last quaternion                                            */
-/*            qr = (random) rotation to be applied to ql                      */
+/*    Inputs: ql = rotation to be applied to quaternion in qr                 */
 /*   Returns: q  = resultant quaternion                                       */
 /*   Globals: none.                                                           */
 /*----------------------------------------------------------------------------*/
@@ -54,34 +48,31 @@ void qmultiply( Quat *q,
 /* 12/03/92 GMM     Replaced rqtot by inv_qag; was '/rqtot', now '*inv_qag'   */
 /******************************************************************************/
 { 
-    if (ql->w == 0.) {
-        q->x = qr->x;
-        q->y = qr->y;
-        q->z = qr->z;
-        q->w = qr->w;
-        return;
-    }
+    register double x,y,z,w;
 
-    if (qr->w == 0.) {
-        q->x = ql->x;
-        q->y = ql->y;
-        q->z = ql->z;
-        q->w = ql->w;
-        return;
-    }
-    
-    q->x = (double) (ql->w*qr->x + ql->x*qr->w + ql->y*qr->z - ql->z*qr->y);
-    q->y = (double) (ql->w*qr->y + ql->y*qr->w + ql->z*qr->x - ql->x*qr->z);
-    q->z = (double) (ql->w*qr->z + ql->z*qr->w + ql->x*qr->y - ql->y*qr->x);
-    q->w = (double) (ql->w*qr->w - ql->x*qr->x - ql->y*qr->y - ql->z*qr->z);
+    x = (double) (ql->w*qr->x + ql->x*qr->w + ql->y*qr->z - ql->z*qr->y);
+    y = (double) (ql->w*qr->y + ql->y*qr->w + ql->z*qr->x - ql->x*qr->z);
+    z = (double) (ql->w*qr->z + ql->z*qr->w + ql->x*qr->y - ql->y*qr->x);
+    w = (double) (ql->w*qr->w - ql->x*qr->x - ql->y*qr->y - ql->z*qr->z);
 
-    // q->qmag  = hypotenuse4( q->x,  q->y,  q->z,  q->w  );
+    q->x = x;
+    q->y = y;
+    q->z = z;
+    q->w = w;
+}
 
-/* make sure you put in the conversion from x to nx, w to ang */
+void qconjmultiply( Quat *q,
+                    register const Quat *ql,
+                    register const Quat *qr )
+//     __     
+// q = ql . qr
+{
+    Quat conj_ql = conjugate( *ql );
+    qmultiply( q, &conj_ql, qr );
 }
 
 void mkUnitQuat( Quat *q )
-    // essentially, convertQuatToRot( Quat *q )
+    // essentially, convertRotToQuat( Quat q )
 {	
     double inv_nmag, hqang, s;
 	     
@@ -101,26 +92,46 @@ void mkUnitQuat( Quat *q )
     /* q->qmag = hypotenuse4( q->x,  q->y,  q->z,  q->w  ); */
 } // mkUnitQuat( Quat *q )
 
-void printQuat( FILE *fp, Quat q )
+void printQuat_q( FILE *fp, Quat q )
 {
     (void) fprintf( fp, "Quat(x,y,z,w)=        %5.2f %5.2f %5.2f %5.2f\n", q.x, q.y, q.z, q.w);
     (void) fprintf( fp, "Mag(Quat(x,y,z,w))=   %5.2f\n", sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w) );
+} // printQuat_q( Quat q )
+
+void printQuat_r( FILE *fp, Quat q )
+{
+    q = convertQuatToRot( q );
     (void) fprintf( fp, "Axis(nx,ny,nz),Angle= %5.2f %5.2f %5.2f  %5.2f\n", q.nx, q.ny, q.nz, q.ang);
     (void) fprintf( fp, "Mag(Axis(nx,ny,nz))=  %5.2f\n", sqrt(q.nx*q.nx + q.ny*q.ny + q.nz*q.nz) );
+} // printQuat_r( Quat q )
+
+void printQuat( FILE *fp, Quat q )
+{
+    printQuat_q( fp, q );
+    printQuat_r( fp, q );
 } // printQuat( Quat q )
 
 Quat normQuat( Quat q )
     // Normalise the 4D quaternion, x,y,z,w
 {
-    double mag4 = hypotenuse4( q.x, q.y, q.z, q.w );
+    register double mag4 = hypotenuse4( q.x, q.y, q.z, q.w );
     if (mag4 > APPROX_ZERO) {
-        double inv_mag4 = 1. / mag4;
+        register double inv_mag4 = 1. / mag4;
         q.x *= inv_mag4;
         q.y *= inv_mag4;
         q.z *= inv_mag4;
         q.w *= inv_mag4;
     }
     return q;
+}
+
+#define ONE_MINUS_EPSILON 0.999
+#define ONE_PLUS_EPSILON 1.001
+
+void assertQuatOK( const Quat q )
+{
+    register double mag4 = hypotenuse4( q.x, q.y, q.z, q.w );
+    assert((mag4 > ONE_MINUS_EPSILON) && (mag4 < ONE_PLUS_EPSILON));
 }
 
 Quat normRot( Quat q )
@@ -137,26 +148,34 @@ Quat normRot( Quat q )
 }
 
 Quat convertQuatToRot( Quat q )
-    // Update the (nx,ny,nz,ang) components of the quaternion q, 
-    // to correspond to the (x,y,z,w) components.
+    // Convert the quaternion components (x,y,z,w) of the quaternion q,
+    // to the corresponding rotation-about-axis components (nx,ny,nz,ang)
 {
-#ifdef DEBUG_MUTATION
-    fprintf( logFile, "q.w = %.3f\n", q.w );
-#endif
-    assert( fabs( q.w ) <= 1.0 );
-    register double angle = 2 * acos( q.w );
-    register double inv_sin_half_angle = 1 / sin( angle / 2 );
+    // TODO handle big W!  Singularities...
     Quat retval;
+#ifdef DEBUG_MUTATION
+    fprintf( logFile, "convertQuatToRot:  q.w = %.3f\n", q.w );
+#endif
+    assert( fabs( q.w ) <= 1. );
+    register double angle = 2. * acos( q.w );
+    register double inv_sin_half_angle = 1.;
+    if ( q.w == 1. ) {
+        retval.nx = 1.;
+        retval.ny = 0.;
+        retval.nz = 0.;
+    } else {
+        inv_sin_half_angle = 1. / sin( angle / 2. );
 
-    retval.nx = q.x * inv_sin_half_angle;
-    retval.ny = q.y * inv_sin_half_angle;
-    retval.nz = q.z * inv_sin_half_angle;
+        retval.nx = q.x * inv_sin_half_angle;
+        retval.ny = q.y * inv_sin_half_angle;
+        retval.nz = q.z * inv_sin_half_angle;
 
-    retval = normRot( retval );
-
-    if (angle > PI)  angle -= TWOPI;  // by convention, angles should be in the range -PI to +PI.
+        retval = normRot( retval );
+    }
+    angle = WrpModRad( angle );  // by convention, angles should be in the range -PI to +PI.
     retval.ang = angle;
 
+    // Copy the existing x,y,z,w components
     retval.x = q.x;
     retval.y = q.y;
     retval.z = q.z;
@@ -192,8 +211,20 @@ Quat convertRotToQuat( Quat q )
     return retval;
 } // Quat convertRotToQuat( Quat q )
 
+Quat raaToQuat( const Real raa[3], Real angle )
+{
+    Quat input;
+
+    input.nx = raa[0];
+    input.ny = raa[1];
+    input.nz = raa[2];
+    input.ang = angle;
+
+    return convertRotToQuat( input );
+} // Quat raaToQuat( Real raa[4] )
+
 Quat uniformQuat( void )
-    // Generate a uniformly-distributed random quaternion
+    // Generate a uniformly-distributed random quaternion (UDQ)
 {
     double x0, r1, r2, t1, t2;  // for uniformly distributed quaternion calculation
     Quat q;
@@ -258,5 +289,82 @@ void create_random_orientation( Quat *ptr_quat )
     // Update the (nx,ny,nz,ang) components of the quaternion, ptr_quat:
     *ptr_quat = convertQuatToRot( *ptr_quat );
 }
+
+Quat conjugate( const Quat q )
+{
+    Quat conj;
+
+    conj.x = -q.x;
+    conj.y = -q.y;
+    conj.z = -q.z;
+    conj.w = q.w;
+
+    return conj;
+}
+
+Quat inverse( const Quat q )
+{
+    register Quat conj, inv;
+    register double inv_squared_magnitude;
+
+    conj = conjugate( q );
+
+    inv_squared_magnitude = 1. / sqhypotenuse4( conj.x, conj.y, conj.z, conj.w );
+
+    inv.x = conj.x * inv_squared_magnitude;
+    inv.y = conj.y * inv_squared_magnitude;
+    inv.z = conj.z * inv_squared_magnitude;
+    inv.w = conj.w * inv_squared_magnitude;
+
+    return inv;
+}
+
+Quat slerp( const Quat q1, const Quat q2, const double u )
+    // See: Shoemake, K. (1985), "Animating Rotation with Quaternion Curves", 
+    //      Computer Graphics, 19 (3): 245-254
+    //
+    // A formula for spherical linear interpolation from q1 to
+    // q2, with parameter u moving from 0 to 1.
+{
+    Quat slerp;
+
+    assert( u >= 0.  &&  u <= 1. );
+
+    // q1 . q2 = cos( theta)
+    double theta = acos( q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w );
+
+    double w1 = sin( (1. - u) * theta ) / sin( theta );
+    double w2 = sin(     u    * theta ) / sin( theta );
+
+    slerp.x = w1 * q1.x  +  w2 * q2.x;
+    slerp.y = w1 * q1.y  +  w2 * q2.y;
+    slerp.z = w1 * q1.z  +  w2 * q2.z;
+    slerp.w = w1 * q1.w  +  w2 * q2.w;
+
+    return slerp;
+}
+
+Quat axisRadianToQuat( const Real ax, const Real ay, const Real az, const Real angle )
+{
+    Real raa[3] = { ax, ay, az };
+    return raaToQuat( raa, angle );
+}
+
+Quat axisDegreeToQuat( const Real ax, const Real ay, const Real az, const Real angle )
+{
+    Real raa[3] = { ax, ay, az };
+    return raaToQuat( raa, DegreesToRadians( angle ) );
+}
+
+Quat quatComponentsToQuat( const Real qx, const Real qy, const Real qz, const Real qw )
+{
+    Quat Q;
+    Q.x = qx;
+    Q.y = qy;
+    Q.z = qz;
+    Q.w = qw;
+    return normQuat( Q );
+}
+
 
 /* EOF */

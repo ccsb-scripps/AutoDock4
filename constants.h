@@ -234,7 +234,8 @@
 
 #define WrpDeg(a)    (((a)>180.)? ((a)-360.) :(((a)<-180.)? ((a)+360.) :(a)))
 #define WrpRad(a)    (((a)> PI)? ((a)-TWOPI) :(((a)< -PI)?  ((a)+TWOPI) :(a)))
-#define WrpModRad(a) (((a)> PI)? (ModRad(a)-TWOPI) :(((a)< -PI)?  (ModRad(a)+TWOPI) :(a)))
+// #define WrpModRad(a) (((a)> PI)? (ModRad(a)-TWOPI) :(((a)< -PI)?  (ModRad(a)+TWOPI) :(a)))
+#define WrpModRad(a) WrpRad( ModRad( (a) ) )
 
 /*
  * #define        RedFac(s0,sN,N)                expf( logf((sN)/(s0)) / ((N)-1))
@@ -248,11 +249,14 @@
 
 #define sq(a)                     ( (a) * (a) )
 #define SQ(a)                     ( (a) * (a) )
+
 #define sqhypotenuse(x,y,z)       ( sq(x) + sq(y) + sq(z) )
-#define hypotenuse(x,y,z)         (sqrt((double)(sq(x) + sq(y) + sq(z)) )  )
-#define hypotenuse_F(x,y,z)       (sqrtf( sq(x) + sq(y) + sq(z) )  )
-#define hypotenuse4(x,y,z,w)      (sqrt((double)(sq(x) + sq(y) + sq(z) + sq(w))))
-#define hypotenuse4_F(x,y,z,w)    (sqrtf( sq(x) + sq(y) + sq(z) + sq(w) )  )
+#define hypotenuse(x,y,z)         (sqrt( sqhypotenuse((x), (y), (z)) ))
+#define hypotenuse_F(x,y,z)       (sqrtf( sqhypotenuse((x), (y), (z)) ))
+
+#define sqhypotenuse4(x,y,z,w)    ((double)(sq(x) + sq(y) + sq(z) + sq(w)))
+#define hypotenuse4(x,y,z,w)      (sqrt( sqhypotenuse4((x), (y), (z), (w)) ))
+#define hypotenuse4_F(x,y,z,w)    (sqrtf( sqhypotenuse4((x), (y), (z), (w)) ))
 
 
 /* index_to_Ang converts from an array index to a distance */

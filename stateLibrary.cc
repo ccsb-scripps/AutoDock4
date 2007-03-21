@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.12 2007/02/25 05:43:21 garrett Exp $
+ $Id: stateLibrary.cc,v 1.13 2007/03/21 06:30:56 garrett Exp $
 
 */
 
@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include "stateLibrary.h"
+#include "qmultiply.h"
 
 extern FILE *logFile;
 
@@ -23,15 +24,7 @@ void initialiseState( State *S )
     S->T.x = 0.0;
     S->T.y = 0.0;
     S->T.z = 0.0;
-    S->Q.nx = 1.0;
-    S->Q.ny = 0.0;
-    S->Q.nz = 0.0;
-    S->Q.ang = 0.0;
-    S->Q.x = 1.0;
-    S->Q.y = 0.0;
-    S->Q.z = 0.0;
-    S->Q.w = 0.0;
-    S->Q.qmag = 1.0;
+    initialiseQuat( &(S->Q) );
     S->ntor = 0;
     for (i = 0; i  < MAX_TORS;  i++ ) {
         S->tor[i] = 0.0;
@@ -44,10 +37,10 @@ void initialiseQuat( Quat *Q )
     Q->ny = 0.0;
     Q->nz = 0.0;
     Q->ang = 0.0;
-    Q->x = 1.0;
+    Q->x = 0.0;
     Q->y = 0.0;
     Q->z = 0.0;
-    Q->w = 0.0;
+    Q->w = 1.0;
     Q->qmag = 1.0;
 }
 
@@ -56,10 +49,14 @@ void copyState( State *D,  /* Destination -- copy to here */
 {
     register int i;
         
+    /*
     D->T.x    = S.T.x;
     D->T.y    = S.T.y;
     D->T.z    = S.T.z;
+    */
+    D->T = S.T;
     
+    /*
     D->Q.nx   = S.Q.nx;
     D->Q.ny   = S.Q.ny;
     D->Q.nz   = S.Q.nz;
@@ -69,12 +66,24 @@ void copyState( State *D,  /* Destination -- copy to here */
     D->Q.z    = S.Q.z;
     D->Q.w    = S.Q.w;
     D->Q.qmag = S.Q.qmag;
+    */
+    D->Q = S.Q;
  
     D->ntor   = S.ntor;
  
     for ( i=0; i < S.ntor; i++ ) {
             D->tor[i] = S.tor[i];
     }
+
+    D->hasEnergy = S.hasEnergy;
+
+    /*
+    D->e.total = S.e.total;
+    D->e.intra = S.e.intra;
+    D->e.inter = S.e.inter;
+    D->e.FE = S.e.FE;
+    */
+    D->e = S.e;
 }
 
 void printState( FILE *fp, 
@@ -94,9 +103,10 @@ void printState( FILE *fp,
         default:
             (void)fprintf( fp, "\nSTATE VARIABLES:\n________________\n\n" );
             (void)fprintf( fp, "Translation x,y,z         = %.3f %.3f %.3f\n", S.T.x, S.T.y, S.T.z );
-            S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-            (void)fprintf( fp, "Quaternion nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
             (void)fprintf( fp, "Quaternion x,y,z,w        = %.3f %.3f %.3f %.3f\n", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
+            S.Q = convertQuatToRot( S.Q );
+            S.Q.ang = WrpRad( ModRad( S.Q.ang ));
+            (void)fprintf( fp, "Axis-Angle nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
             //(void)fprintf( fp, "Quaternion qmag           = %.3f\n", S.Q.qmag );
             (void)fprintf( fp, "Number of Torsions        = %d\n", S.ntor );
             if (S.ntor > 0) {
@@ -136,7 +146,10 @@ void writeState( FILE *fp, State S )
     // Write translation.
     (void)fprintf( fp, "%.3f %.3f %.3f  ", S.T.x, S.T.y, S.T.z );
 
-    // Write quaternion.
+    // Convert quaternion to axis-angle.
+    S.Q = convertQuatToRot( S.Q );
+
+    // Write axis-angle.
     S.Q.ang = WrpRad( ModRad( S.Q.ang ));
     (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
     
@@ -178,22 +191,7 @@ int checkState( const State *D )
         retval = 0;
     
     }
-    if (ISNAN(D->Q.nx)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in nx quaternion\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.ny)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in ny quaternion\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.nz)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in nz quaternion\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.ang)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in quaternion angle\n");
-        retval = 0;
-    }
+
     if (ISNAN(D->Q.x)) {
         (void)fprintf(logFile,"checkState: (NaN) detected in x quaternion\n");
         retval = 0;
@@ -222,6 +220,24 @@ int checkState( const State *D )
                 retval = 0;
             }
     }
+
+    if (ISNAN(D->Q.nx)) {
+        (void)fprintf(logFile,"checkState: (NaN) detected in nx component of axis-angle\n");
+        retval = 0;
+    }
+    if (ISNAN(D->Q.ny)) {
+        (void)fprintf(logFile,"checkState: (NaN) detected in ny component of axis-angle\n");
+        retval = 0;
+    }
+    if (ISNAN(D->Q.nz)) {
+        (void)fprintf(logFile,"checkState: (NaN) detected in nz component of axis-angle\n");
+        retval = 0;
+    }
+    if (ISNAN(D->Q.ang)) {
+        (void)fprintf(logFile,"checkState: (NaN) detected in ang component of axis-angle\n");
+        retval = 0;
+    }
+
 
     return(retval);
 }

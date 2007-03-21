@@ -26,7 +26,7 @@
 // #define REALV_LOW -3.14159265358979323846 //gmm, 1998-07-08
 // #define REALV_HIGH 3.14159265358979323846 //gmm, 1998-07-08
 
-enum RepType { T_BASE, T_IntV, T_RealV, T_CRealV, T_BitV };
+enum RepType { T_BASE, T_IntV, T_RealV, T_CRealV, T_BitV, T_Orientation };
 
 typedef union 
 {
@@ -49,6 +49,8 @@ class Representation
       virtual Representation &operator=(const Representation &) = 0;
       unsigned int number_of_points(void) const;
       int is_normalized(void) const;
+      void set_normalized_true(void);
+      void set_normalized_false(void);
       virtual RepType type(void) const; 
       virtual void write(unsigned char, int) = 0;
       virtual void write(FourByteLong, int) = 0;
@@ -112,6 +114,7 @@ class RealVector : public Representation
       RealVector(int, double, double);
       // Use this to set the first value in the vector--useful for random quaternions
       RealVector(int, double, double, double); 
+      RealVector(int, double, double, double, double, double, double);  // sets a quaternion's x,y,z,w values
       // Use this to create a vector of length 3 with these values--useful for random quaternions
       RealVector(int, double, double, double, double, double ); 
       RealVector(const RealVector &);
@@ -159,7 +162,7 @@ class ConstrainedRealVector : public Representation
 
       const void *internals(void) const;
       Representation *clone(void) const;
-      void normalize(void) const;
+      void normalize(void);
 
    public:
       ConstrainedRealVector(void);
@@ -232,6 +235,16 @@ inline unsigned int Representation::number_of_points(void) const
 inline int Representation::is_normalized(void) const
 {
    return(normalized);
+}
+
+inline void Representation::set_normalized_true(void)
+{
+    normalized = 1;
+}
+
+inline void Representation::set_normalized_false(void)
+{
+    normalized = 0;
 }
 
 inline RepType Representation::type(void) const

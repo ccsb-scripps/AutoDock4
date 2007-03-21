@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.65 2007/02/25 05:27:21 garrett Exp $
+ $Id: main.cc,v 1.66 2007/03/21 06:30:55 garrett Exp $
 
 */
 
@@ -252,8 +252,8 @@ Real einter = 0.0; // intermolecular energy between the ligand and the protein
 Real etotal = 0.0;
 Real AD3_FE_coeff_estat   = 1.000;
 Real qtwFac = 1.0;
-Real qtwStep0 = 5.0;
-Real qtwStepFinal = 5.0;
+Real qtwStep0 = DegreesToRadians( 5.0 );
+Real qtwStepFinal = DegreesToRadians( 0.5 );
 Real maxrad = -1.0;
 Real r2sum=0.0;
 // Real RJ = 8.31441;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
@@ -662,14 +662,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         break;
     } // switch( dpf_keyword )
 } // while
-// Close DPF, so we can resume normal parsing
-(void) fclose( parFile );
-// Re-open DPF for normal parsing
-if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
-    fprintf(stderr, "\n%s: can't find or open parameter file %s\n", programname, dock_param_fn);
-    fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
-    exit(-1);
-}
+
+// Rewind DPF, so we can resume normal parsing
+(void) rewind( parFile );
 
 //______________________________________________________________________________
 /*
@@ -678,7 +673,7 @@ if ((parFile = ad_fopen(dock_param_fn, "r")) == NULL) {
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.65 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.66 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1446,10 +1441,18 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 initvec[0] = sInit.T.x;
                 initvec[1] = sInit.T.y;
                 initvec[2] = sInit.T.z;
+                /*
+                 * axis-angle (nx,ny,nz,ang) suffers from bias
                 initvec[3] = sInit.Q.nx;
                 initvec[4] = sInit.Q.ny;
                 initvec[5] = sInit.Q.nz;
                 initvec[6] = DegreesToRadians( sInit.Q.ang );
+                */
+                sInit.Q = convertRotToQuat( sInit.Q );
+                initvec[3] = sInit.Q.x;
+                initvec[4] = sInit.Q.y;
+                initvec[5] = sInit.Q.z;
+                initvec[6] = sInit.Q.w;
                 for (j=0; j < sInit.ntor ; j++) {
                   initvec[j+7] = DegreesToRadians(sInit.tor[j]);
                 }
@@ -1710,7 +1713,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         q_reorient.ang = DegreesToRadians( q_reorient.ang ); // convert from degrees to radians
                         q_reorient.ang = ModRad( q_reorient.ang ); // wrap to range (0, 2*PI) using modulo 2*PI
                         q_reorient.ang = WrpRad( q_reorient.ang ); // wrap to range (-PI, PI)
-                        pr( logFile, "After normalising the vector, and converting the angle to radians, the rotation becomes ((%.3f, %.3f, %.3f), %.2f radians)\n",
+                        pr( logFile, "After normalising the vector, and converting the angle to radians, the axis-angle rotation becomes ((%.3f, %.3f, %.3f), %.2f radians)\n",
                                 q_reorient.nx, q_reorient.ny, q_reorient.ny, q_reorient.ang);
                         // Convert the rotation-about-axis components (nx,ny,nz,ang)
                         // to a rotation-quaternion (x,y,z,w):
@@ -1763,46 +1766,62 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
-    case DPF_QUAT0:
+    case DPF_AXISANGLE0:
+    case DPF_QUATERNION0:
         /*
-        **  quat0
-        **  Initial_quaternion,
-        */
+         * Handles both axisangle0 and quaternion0
+         *
+         *  axisangle0 1. 0. 0. 0.
+         *  axisangle0 random
+         *  ( quat0 <--- deprecated )
+         *  Initial_quaternion, specified as an axis and angle
+         *
+         *  quaternion0 0. 0. 0. 1.
+         *  quaternion0 random
+         *  Initial_quaternion, specified as the four components (qx, qy, qz, qw)
+         */
+        {
+        // Local Block...
+        double a, b, c, d;
         (void) sscanf( line, "%*s %s", param[0]);
         for (i=0; i<6; i++) {
             param[0][i] = (char)tolower( (int)param[0][i] );
         }
         if (equal(param[0],"random",6)) {
+            // Make a random initial quaternion,
+            // and set the boolean B_RandomQuat0 to true,
+            // so we can generate random quaternions in population-based methods.
             B_RandomQuat0 = TRUE;
-            sInit.Q.nx  = random_range( -1.0,   1.0 );
-            sInit.Q.ny  = random_range( -1.0,   1.0 );
-            sInit.Q.nz  = random_range( -1.0,   1.0 );
-            sInit.Q.ang = random_range(  0.0, 360.0 );
-
+            create_random_orientation( &(sInit.Q) );
             if (outlev >= 0) {
-                pr( logFile, "Each run will begin with a new, random initial quaternion.\n");
-                }
+                pr( logFile, "Each run will begin with a new, random initial orientation.\n");
+            }
         } else {
+            // Read in the user-defined axis-angle values for the initial quaternion
+            // and set the boolean B_RandomQuat0 to false,
             B_RandomQuat0 = FALSE;
-
+            (void) sscanf( line, "%*s %lf %lf %lf %lf", &a, &b, &c, &d);
+            sInit.Q = (dpf_keyword == DPF_QUATERNION0) ? 
+                      quatComponentsToQuat(a,b,c,d) :
+                      axisDegreeToQuat(a,b,c,d);
         }
-        (void) sscanf( line, "%*s %lf %lf %lf %lf", &sInit.Q.nx, &sInit.Q.ny, &sInit.Q.nz, &sInit.Q.ang);
+        ligand.S.Q = sInit.Q;
         if (outlev >= 0) {
-            pr( logFile, "Initial quaternion,  q = [(x,y,z),w] =\t[ (%.3f, %.3f, %.3f), %.1f deg ],\n", sInit.Q.nx, sInit.Q.ny, sInit.Q.nz, sInit.Q.ang);
-        }
-        ligand.S.Q.nx  = sInit.Q.nx;
-        ligand.S.Q.ny  = sInit.Q.ny;
-        ligand.S.Q.nz  = sInit.Q.nz;
-        ligand.S.Q.ang = sInit.Q.ang;
-
-        ligand.S.Q.ang = sInit.Q.ang = DegreesToRadians( sInit.Q.ang ); /*convert to radians*/
-        mkUnitQuat( &sInit.Q );
-        mkUnitQuat( &(ligand.S.Q) );
-
-        if (outlev >= 0) {
-            pr( logFile, "Quaternion Vector Normalized to:  %.3f %.3f %.3f\n", sInit.Q.nx, sInit.Q.ny, sInit.Q.nz );
+            if (dpf_keyword == DPF_QUATERNION0) {
+                pr( logFile, "Initial quaternion,  (x,y,z,w) =\t( %.3f, %.3f, %.3f, %.3f ),\n", sInit.Q.x, sInit.Q.y, sInit.Q.z, sInit.Q.w);
+            } else {
+                pr( logFile, "Initial axis-angle,  (nx,ny,nz,ang) =\t( %.3f, %.3f, %.3f, %.1f deg ),\n", a, b, c, d );
+                pr( logFile, "Normalized axis,     (nx,ny,nz)     =\t( %.3f %.3f %.3f )\n", sInit.Q.nx, sInit.Q.ny, sInit.Q.nz );
+            }
+#ifdef DEBUG
+            pr( logFile, "Initial Quaternion sInit.Q:\n\n");
+            printQuat( logFile, sInit.Q );
+            pr( logFile, "Initial Quaternion ligand.S.Q:\n\n");
+            printQuat( logFile, ligand.S.Q );
+#endif
         }
         (void) fflush(logFile);
+        }
         break;
 
 //______________________________________________________________________________
@@ -2834,21 +2853,33 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       lb_rho_ptr = new Real[7+sInit.ntor];
 
       //  Initialize the rho's corresponding to the translation
+      //  0,1,2   x,y,z
+      //  3,4,5,6 qx,qy,qz,qw
+      //  7,...   tor1
       for (j=0; j<3; j++) {
+         // j=0,1,2
          rho_ptr[j] = trnStep0;
-         lb_rho_ptr[j] = trnStepFinal;
+         // lb_rho_ptr[j] = trnStepFinal;
+#define LB_RHO_FRACTION 0.10 // fraction of step size for Solis & Wets local search
+         lb_rho_ptr[j] = LB_RHO_FRACTION * trnStep0;
       }
 
       //  Initialize the rho's corresponding to the quaterion
       for (; j<7; j++) {
-         rho_ptr[j] = qtwStep0;
-         lb_rho_ptr[j] = qtwStepFinal;
+         // j=3,4,5,6
+         // rho_ptr[j] = qtwStep0;
+         rho_ptr[j] = 1.0; // 4D normalized quaternion's components
+         // lb_rho_ptr[j] = qtwStepFinal;
+         // lb_rho_ptr[j] = LB_RHO_FRACTION * qtwStep0;
+         lb_rho_ptr[j] = LB_RHO_FRACTION * 1.0;
       }
 
       //  Initialize the rho's corresponding to the torsions
       for (; j<7+sInit.ntor; j++) {
+         // j=7,...
          rho_ptr[j] = torStep0;
-         lb_rho_ptr[j] = torStepFinal;
+         // lb_rho_ptr[j] = torStepFinal;
+         lb_rho_ptr[j] = LB_RHO_FRACTION * torStep0;
       }
 
       LocalSearchMethod = new Pseudo_Solis_Wets1(7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, search_freq, rho_ptr, lb_rho_ptr);
@@ -2901,6 +2932,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
 
             pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
+
+#ifdef DEBUG
+            pr( logFile, "\nAbout to call evaluate.setup(), sInit:\n\n");
+            printState( logFile, sInit, 2 );
+#endif
 
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
                             elec, emap, nonbondlist, ad_energy_tables, Nnb,
@@ -3002,6 +3038,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case DPF_LS:
+       // do_local_only
        (void) sscanf(line, "%*s %d", &nruns);
 
         if (!command_mode) {
@@ -3013,7 +3050,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
            } else if (LocalSearchMethod==NULL) {
 
-               prStr(error_message, "%s:  ERROR:  You must use \"set_sw1\" or \"set_psw1\" to allocate a Local Optimization object.\n", programname);
+               prStr(error_message, "%s:  ERROR:  You must use \"set_sw1\", \"set_psw1\" or \"set_pattern\" to create a Local Optimization object.\n", programname);
                stop(error_message);
                exit(-1);
            } else if (!B_found_elecmap) {

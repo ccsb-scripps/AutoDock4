@@ -19,13 +19,13 @@ class ConformationSampler {
 		Individual base_ind, probe_ind;
 		Phenotype base_point, probe_point;
 		Real base_axis_angle[4];
+        Quat base_q;
 		Real base_crd[MAX_ATOMS][SPACE]; //probe_crd?;
 		Real base_energy, total_energy, total_favorable_energy;
 		Real min_energy, min_energy_rmsd;
 		Real Boltzmann_sum, Boltzmann_diff_sum;
 		int dimensionality, evals, favorable_evals;
 		Real temp_rotation_angle;
-		Real rotation_angles[3];
 
 		Real min_values[BASE_DIMENSIONS-1];
 		Real max_values[BASE_DIMENSIONS-1];

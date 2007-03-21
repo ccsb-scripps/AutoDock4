@@ -30,7 +30,7 @@
 #define	DPF_MOVE	 5
 #define	DPF_ABOUT	 6
 #define	DPF_TRAN0	 7
-#define	DPF_QUAT0	 8
+#define	DPF_AXISANGLE0	 8
 #define	DPF_NDIHE	 9
 #define	DPF_DIHE0	10
 #define	DPF_TSTEP	11
@@ -122,6 +122,7 @@
 #define	DPF_RMSATOMS	97
 #define DPF_CONFSAMPLER	98
 #define DPF_REORIENT	99
+#define	DPF_QUATERNION0	 100
 
 #endif
 /* EOF */

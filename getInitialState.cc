@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.17 2006/12/13 03:18:17 garrett Exp $
+ $Id: getInitialState.cc,v 1.18 2007/03/21 06:30:55 garrett Exp $
 
 */
 
@@ -117,15 +117,19 @@ void getInitialState(
                 }
             }/*if*/
             if (B_RandomQuat0) {
+                /*
                 sInit->Q.nx  = random_range( -1., 1. );
                 sInit->Q.ny  = random_range( -1., 1. );
                 sInit->Q.nz  = random_range( -1., 1. );
-                sInit->Q.ang = DegreesToRadians( random_range( 0., 360.) );/*convert to radians*/
-
+                sInit->Q.ang = DegreesToRadians( random_range( 0., 360.) );//convert to radians
                 mkUnitQuat( &(sInit->Q) );
+                */
+                sInit->Q = uniformQuat(); // generate a uniformly-distributed quaternion
+                sInit->Q = convertQuatToRot( sInit->Q ); // convert from qx,qy,qz,qw to axis-angle (nx,ny,nz,ang)
 
                 if (outlev > 1) {
-                    pr( logFile, "Random initial quaternion,  quat0 %.3f %.3f %.3f %.1f\n", sInit->Q.nx, sInit->Q.ny, sInit->Q.nz, RadiansToDegrees( sInit->Q.ang ) );
+                    pr( logFile, "Random initial axis-angle,  axisangle0 %.3f %.3f %.3f %.1f\n", sInit->Q.nx, sInit->Q.ny, sInit->Q.nz, RadiansToDegrees( sInit->Q.ang ) );
+                    pr( logFile, "Random initial quaternion,  quaternion0 %.3f %.3f %.3f %.3f\n", sInit->Q.x, sInit->Q.y, sInit->Q.z,  sInit->Q.w );
                 }
             }/*if*/
             if ( B_RandomDihe0 && (ntor > 0) ) {

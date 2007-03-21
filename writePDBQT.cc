@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.11 2007/02/25 05:52:02 garrett Exp $
+ $Id: writePDBQT.cc,v 1.12 2007/03/21 06:30:56 garrett Exp $
 
 */
 
@@ -179,8 +179,12 @@ writePDBQT(int irun, FourByteLong seed[2],
 		(void) fprintf(logFile, "%s: USER    NEWDPF move %s\n", state_type_string, smFileName);
 		(void) fprintf(logFile, "%s: USER    NEWDPF about %f %f %f\n", state_type_string, sml_center[X], sml_center[Y], sml_center[Z]);
 		(void) fprintf(logFile, "%s: USER    NEWDPF tran0 %f %f %f\n", state_type_string, state.T.x, state.T.y, state.T.z);
-		(void) fprintf(logFile, "%s: USER    NEWDPF quat0 %f %f %f %f\n", state_type_string, state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
+		(void) fprintf(logFile, "%s: USER    NEWDPF quaternion0 %f %f %f %f\n", state_type_string, state.Q.x, state.Q.y, state.Q.z, state.Q.w);
+        state.Q = convertQuatToRot( state.Q );
+		(void) fprintf(logFile, "%s: USER    NEWDPF axisangle0 %f %f %f %f\n", state_type_string, state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
+		(void) fprintf(logFile, "%s: USER    NEWDPF quat0 %f %f %f %f # deprecated\n", state_type_string, state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
 		if (ntor > 0) {
+            // ndihe is deprecated; uses the number of torsions in the PDBQT's torsion tree
 			// (void) fprintf(logFile, "%s: USER    NEWDPF ndihe %d\n", state_type_string, ntor);
 			(void) fprintf(logFile, "%s: USER    NEWDPF dihe0 ", state_type_string);
 			for (i = 0; i < ntor; i++) {
@@ -196,7 +200,10 @@ writePDBQT(int irun, FourByteLong seed[2],
 			pr(stateFile, "\t\t<about>%f %f %f</about>\n", sml_center[X], sml_center[Y], sml_center[Z]);
 
 			pr(stateFile, "\t\t<tran0>%f %f %f</tran0>\n", state.T.x, state.T.y, state.T.z);
+			pr(stateFile, "\t\t<quaternion0>%f %f %f %f</quaternion0>\n", state.Q.x, state.Q.y, state.Q.z, state.Q.w);
+            state.Q = convertQuatToRot( state.Q );
 			pr(stateFile, "\t\t<quat0>%f %f %f %f</quat0>\n", state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
+			pr(stateFile, "\t\t<axisangle0>%f %f %f %f</axisangle0>\n", state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
 			if (ntor > 0) {
 				pr(stateFile, "\t\t<ndihe>%d</ndihe>\n", ntor);
 				pr(stateFile, "\t\t<dihe0>");

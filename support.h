@@ -11,6 +11,9 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.9  2007/03/21 06:30:56  garrett
+** Created a branch of AutoDock 4 with internal representation of orientations changed from axis-angle nx,ny,nz,ang to quaternion-components qx,qy,qz,qw.  This is intended to avoid rotation singularities of axis-angles near ((1,0,0),0 radians), and to avoid orientational bias in dockings.
+**
 ** Revision 1.8  2006/11/03 02:10:48  garrett
 ** Significant change.  The initial population is now generated in a different way; previously, the axis that defined the rotation was created by generating uniformly-distributed random numbers in the range REALV_LOW to REALV_HIGH.  The same for the rotation angle (and torsion angles).  Now, we use a range of +/- 1 for the initial unit vector, and +/- PI for the rotation angle (and torsion angles).\
 **
@@ -135,6 +138,8 @@ class Genotype
       void write(FourByteLong, int);
       void write(double, int);
       void write(const Representation &, int);
+      Quat readQuat();
+      void writeQuat( Quat q );
 };
 
 //  Should Phenotype automatically evaluate itself upon construction?
@@ -167,6 +172,8 @@ class Phenotype
       State make_state(int);
       unsigned int num_dimensions(void);
       unsigned int num_pts(void);
+      Quat readQuat();
+      void writeQuat( Quat q );
 };
 
 //  This should be an encapsulated class within Population

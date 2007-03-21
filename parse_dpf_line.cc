@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.16 2006/12/01 02:12:11 garrett Exp $
+ $Id: parse_dpf_line.cc,v 1.17 2007/03/21 06:30:56 garrett Exp $
 
 */
 
@@ -13,7 +13,7 @@
 #include <ctype.h>
 #include "parse_dpf_line.h"
 
-#define NUM_LEXEMES_AUTODOCK 109 // this is the length of the tokentable of AutoDock-related lexemes 
+#define NUM_LEXEMES_AUTODOCK 111 // this is the length of the tokentable of AutoDock-related lexemes 
 #define NUM_LEXEMES_COLINY     1 // this is the length of the tokentable of Coliny-related lexemes 
 
 int parse_dpf_line( char line[LINE_LEN] )
@@ -57,7 +57,7 @@ int parse_dpf_line( char line[LINE_LEN] )
                       {"move", DPF_MOVE}, // 4
                       {"about", DPF_ABOUT}, // 5
                       {"tran0", DPF_TRAN0}, // 6
-                      {"quat0", DPF_QUAT0}, // 7
+                      {"quat0", DPF_AXISANGLE0}, // 7
                       {"ndihe", DPF_NDIHE}, // 8
                       {"dihe0", DPF_DIHE0}, // 9
                       {"torsdof", DPF_TORSDOF}, // 10
@@ -160,6 +160,8 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"rmsatoms", DPF_RMSATOMS} // 107
               , {"confsampler", DPF_CONFSAMPLER} // 108
               , {"reorient", DPF_REORIENT} // 109
+              , {"axisangle0", DPF_AXISANGLE0} // 110
+              , {"quaternion0", DPF_QUATERNION0} // 111
 			   // Remember to define NUM_LEXEMES_AUTODOCK earlier
 
 #if defined(USING_COLINY)
