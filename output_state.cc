@@ -1,6 +1,6 @@
 /*
 
- $Id: output_state.cc,v 1.5 2006/12/01 02:11:21 garrett Exp $
+ $Id: output_state.cc,v 1.6 2007/03/30 21:53:27 garrett Exp $
 
 */
 
@@ -42,8 +42,11 @@ void output_state( FILE *fp,
     int i;
 	/*int lockf_status;*/
 	
-#ifndef __ppc__
-	int FD_watch;
+//#ifndef __ppc__
+#if defined( __ppc__ ) || defined( __CYGWIN__ )
+    // F_LOCK is not supported
+#else
+    int FD_watch;
     FILE *FP_watch;
 #endif
 
@@ -57,9 +60,11 @@ void output_state( FILE *fp,
 
 /* >>>> NOW USES lockf !!!! <<<< */
 
-#ifndef __ppc__
+// #ifndef __ppc__
+#if defined( __ppc__ ) || defined( __CYGWIN__ )
+	// F_LOCK is not supported
+#else
     if (B_watch) {
-
         if ((FD_watch = creat( FN_watch, PERMS )) != -1) {;
             /* creates new file, or re-write old one */
 
