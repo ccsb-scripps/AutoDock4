@@ -343,8 +343,8 @@ CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X
 # CSTD = -std arm -verbose $(PROF) $(DBUG) $(WARN) # Alpha. sarah
 # CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP
 
-# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
 CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; no crossover in quaternion
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DQUATERNION_MUTATION # As above, but treat quaternion genes properly when doing mutations--note, this is slow!
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; also use Double precision throughout
 # CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X
@@ -381,14 +381,15 @@ OPT = $(OPTLEVEL) # Alpha, HP, Sun, Convex, Cygwin, Linux, MacOS X
 LNO_OPT = # SGI, no special optimization at link time; Sun, Cygwin, Linux, MacOS X
 # LNO_OPT = -LNO:auto_dist=ON:gather_scatter=2 # SGI
 
-LINKOPT = $(CSTD) $(OPT) # 
+# LINKOPT = $(CSTD) $(OPT) # 
 # LINKOPT = $(CSTD) $(OPT) -fno-stack-limit # Cygwin, 32MB stacksize
-# LINKOPT = $(CSTD) $(OPT) -Wl,--stack=0x2000000 # Cygwin, 32MB stacksize
+LINKOPT = $(CSTD) $(OPT) -Wl,--stack=0x2000000 # Cygwin, 32MB stacksize
 # LINKOPT = $(CSTD) $(OPT) -L/opt/sfw/lib # Sun
 
 LINK = $(LINKOPT) # Linking flags
 # LINK = $(LINKOPT) -cord # Procedure rearranger on SGI
 
+LIB = -lm # for all platforms
 # LIB = -lSaturn # for profiling using Mac OS X Saturn
 
 LINT = lint # lint C code checking
