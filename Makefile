@@ -383,7 +383,7 @@ LNO_OPT = # SGI, no special optimization at link time; Sun, Cygwin, Linux, MacOS
 
 # LINKOPT = $(CSTD) $(OPT) # 
 # LINKOPT = $(CSTD) $(OPT) -fno-stack-limit # Cygwin, 32MB stacksize
-LINKOPT = $(CSTD) $(OPT) -Wl,--stack=0x2000000 # Cygwin, 32MB stacksize
+LINKOPT = $(CSTD) $(OPT) -Wl,--stack=0x4000000 # Cygwin, 64MB stacksize
 # LINKOPT = $(CSTD) $(OPT) -L/opt/sfw/lib # Sun
 
 LINK = $(LINKOPT) # Linking flags
