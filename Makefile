@@ -21,15 +21,15 @@
 
 # Abbreviations:
 #
-# SGI     = Silicon Graphics Inc., sgi4D
 # Alpha   = Compaq/Digital Equipment Corp., Alpha
-# Sun     = Sun Microsystems, sun4
-# HP      = Hewlett Packard Precision Architecture, hppa
 # Convex  = Convex, c2
-# Linux   = Any platform that runs Linux, Linux
-# MacOS X = Apple Mac OS X 10.0 & higher, MacOS X
-# Darwin  = Darwin
 # Cygwin  = Cygwin running on Microsoft Windows
+# Darwin  = Darwin
+# HP      = Hewlett Packard Precision Architecture, hppa
+# Linux   = Any platform that runs GNU/Linux, Linux
+# MacOSX  = Apple Mac OS X 10.0 & higher, MacOSX
+# SGI     = Silicon Graphics Inc., sgi4D
+# Sun     = Sun Microsystems, sun4
 
 
 # Define the destination directory for the executables:
@@ -318,45 +318,45 @@ LNSSQRT = \
 # Libraries
 
 ADLIB = libad.a
-ARFLAGS = r # SGI, Sun, Alpha, Linux, Darwin, Mac OS X
+ARFLAGS = r # SGI, Sun, Alpha, Linux, Darwin, MacOSX
 
 # RANLIB = file # SGI
-RANLIB = ranlib # Linux, Darwin, Mac OS X
+RANLIB = ranlib # Linux, Darwin, MacOSX
 
-RANLIBFLAGS = # Linux, SGI, Mac OS X
+RANLIBFLAGS = # Linux, SGI, MacOSX
 
 
 # C++ compiler
 
-CC = g++ # HP, Gnu, Cygwin, Linux, Darwin, Mac OS X
-# CC = g++-4.0 -arch i386 # Mac OS X -- Cross-compiling for Intel on PowerPC
-# CC = g++-3.3 -arch ppc # Mac OS X -- Cross-compiling for PowerPC on Intel
+CC = g++ # HP, Gnu, Cygwin, Linux, Darwin, MacOSX
+# CC = g++-4.0 -arch i386 # MacOSX -- Cross-compiling for Intel on PowerPC
+# CC = g++-3.3 -arch ppc # MacOSX -- Cross-compiling for PowerPC on Intel
 # CC = CC # SGI
 # CC = cxx # Alpha
 
-CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X
+CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOSX
 # CSTD = $(DBUG) $(PROF) $(WARN) -DUSE_XCODE # Smaller memory footprint, good for Xcode
-# CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOS X
+# CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOSX
 # CSTD = $(DBUG) $(PROF) $(WARN) -I/opt/sfw/include # Sun Soliaris 8
 # CSTD = $(DBUG) $(PROF) $(WARN) -std # Convex
 # CSTD = -std -verbose $(PROF) $(DBUG) $(WARN) # Alpha. Not sarah
 # CSTD = -std arm -verbose $(PROF) $(DBUG) $(WARN) # Alpha. sarah
 # CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP
 
-CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; no crossover in quaternion
-# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster
+CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX: Standard accuracy, but faster; no crossover in quaternion
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOSX: Standard accuracy, but faster
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DQUATERNION_MUTATION # As above, but treat quaternion genes properly when doing mutations--note, this is slow!
-# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOS X: Standard accuracy, but faster; also use Double precision throughout
-# CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOS X
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOSX: Standard accuracy, but faster; also use Double precision throughout
+# CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX
 
 OPTLEVEL = -O3 # Agressive optimization
 # OPTLEVEL = -O3 -ffast-math # Agressive optimization, for Intel Itanium, ia64Linux2
-# OPTLEVEL = -fast # Agressive optimization for the G5 on Mac OS X
+# OPTLEVEL = -fast # Agressive optimization for the G5 on MacOSX
 # OPTLEVEL = -O2 # High optimization
 # OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing
 # OPTLEVEL = -O0 # Do not optimize
 
-OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOS X
+OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOSX
 # OPT_SGI_IPNUM = -Ofast=ip19 # SGI, 'uname -a' says 'IP19'
 # OPT_SGI_IPNUM = -Ofast=ip21 # SGI, 'uname -a' says 'IP21'
 # OPT_SGI_IPNUM = -Ofast=ip25 # SGI, 'uname -a' says 'IP25' PowerChallenge is R10000, IP25
@@ -364,7 +364,7 @@ OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOS X
 # OPT_SGI_IPNUM = -Ofast=ip30 # SGI, 'uname -a' says 'IP30'
 # OPT_SGI_IPNUM = `uname -m | sed 's/IP/-Ofast=ip/'` # SGI, dynamic
 
-OPT_SGI_R000 = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOS X
+OPT_SGI_R000 = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOSX
 # OPT_SGI_R000 = -r4000 -mips2 # SGI, 'hinv' says MIPS Processor is R4000
 # OPT_SGI_R000 = -r8000 -mips4 # SGI, 'hinv' says MIPS Processor is R8000
 # OPT_SGI_R000 = -r10000 -mips4 # SGI, 'hinv' says MIPS Processor is R10000
@@ -372,29 +372,29 @@ OPT_SGI_R000 = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOS X
 # OPT_SGI_R000 = -r14000 -mips4 # SGI, 'hinv' says MIPS Processor is R14000
 # OPT_SGI_R000 = `hinv | grep '^CPU:' | awk '{print $3}' | sed 's/R/-r/'` -mips4 # SGI, dynamic, -mips4 (works with -r8000 to -r14000, not -r4000)
 
-OPT = $(OPTLEVEL) # Alpha, HP, Sun, Convex, Cygwin, Linux, MacOS X
+OPT = $(OPTLEVEL) # Alpha, HP, Sun, Convex, Cygwin, Linux, MacOSX
 # OPT = $(OPTLEVEL) -ffast-math # Gnu cc, fast-math is dangerous!
 # OPT = $(OPTLEVEL) -n32 $(OPT_SGI_IPNUM) $(OPT_SGI_R000) -IPA $(LNO_OPT) # SGI
 # OPT = $(OPTLEVEL) -n32 $(OPT_SGI_IPNUM) $(OPT_SGI_R000) -IPA $(LNO_OPT) -DUSE_INT_AS_LONG # SGI (long is 8bytes)
 # OPT = $(OPTLEVEL) $(OPT_SGI_IPNUM) $(OPT_SGI_R000) $(LNO_OPT) # SGI, not new 32-bit
 
-LNO_OPT = # SGI, no special optimization at link time; Sun, Cygwin, Linux, MacOS X
+LNO_OPT = # SGI, no special optimization at link time; Sun, Cygwin, Linux, MacOSX
 # LNO_OPT = -LNO:auto_dist=ON:gather_scatter=2 # SGI
 
-# LINKOPT = $(CSTD) $(OPT) # 
+LINKOPT = $(CSTD) $(OPT) # All platforms except Cygwin and Sun
 # LINKOPT = $(CSTD) $(OPT) -fno-stack-limit # Cygwin, 32MB stacksize
-LINKOPT = $(CSTD) $(OPT) -Wl,--stack=0x4000000 # Cygwin, 64MB stacksize
+# LINKOPT = $(CSTD) $(OPT) -Wl,--stack=0x4000000 # Cygwin, 64MB stacksize
 # LINKOPT = $(CSTD) $(OPT) -L/opt/sfw/lib # Sun
 
 LINK = $(LINKOPT) # Linking flags
 # LINK = $(LINKOPT) -cord # Procedure rearranger on SGI
 
 LIB = -lm # for all platforms
-# LIB = -lSaturn # for profiling using Mac OS X Saturn
+# LIB = -lSaturn # for profiling using MacOSX Saturn
 
 LINT = lint # lint C code checking
 
-LINTFLAGS = $(LIB) -c # SGI, Linux, MacOS X
+LINTFLAGS = $(LIB) -c # SGI, Linux, MacOSX
 # LINTFLAGS = $(LIB) -MA -c # Alpha
 # LINTFLAGS = -DHPPA -D_HPUX_SOURCE $(LIB) -c # HP
 # LINTFLAGS = -u -n -lm # Sun
@@ -427,11 +427,11 @@ WARN = -Wall # All warnings, gcc -- Recommended for developers
 # WARN = -fullwarn -ansiE -ansiW # For full warnings during compilation
 
 ifeq ($(COLINY),yes)
-  ACRO_OS = -DDARWIN # Darwin, Mac OS X
+  ACRO_OS = -DDARWIN # Darwin, MacOSX
   # ACRO_OS = -DLINUX # Linux
 
   # ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -lg2c # Linux
-  ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw/lib -lg2c # Darwin, Mac OS X (Fink needed)
+  ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw/lib -lg2c # Darwin, MacOSX (Fink needed)
 
   ACRO_INCLUDES = -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
   ACRO_FLAGS = -DDEBUGGING -DUNIX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES $(ACRO_OS)
@@ -442,7 +442,7 @@ else
   COLINYLIB = # Not using Coliny
 endif
 
-# Uncomment this section with "###" if cross-compiling on Mac OS X (Intel and PowerPC)
+# Uncomment this section with "###" if cross-compiling on MacOSX (Intel and PowerPC)
 # This section remains the same for either type of cross-compilation.
 ### HOST_CC="gcc-4.0"
 ### HOST_CXX="g++-4.0"
