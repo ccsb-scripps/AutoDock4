@@ -24,6 +24,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
         GridMapSetInfo *info, char FN_pop_file[MAX_CHARS] );
 
+
 Representation **generate_R(int num_torsions, GridMapSetInfo *info );
 
 Representation **generate_R_quaternion(int num_torsions, GridMapSetInfo *info );
@@ -33,6 +34,26 @@ Genotype generate_Gtype(int num_torsions, GridMapSetInfo *info );
 Phenotype generate_Ptype(int num_torsions, GridMapSetInfo *info );
 
 Individual random_ind(int num_torsions, GridMapSetInfo *info );
+
+#endif
+
+
+#ifndef CALL_GLSS_TORS
+#define CALL_GLSS_TORS
+
+State call_glss_tors(Global_Search *global_method, Local_Search *local_method, 
+		State now, unsigned int num_evals, unsigned int pop_size, 
+		int outlev, unsigned int extOutputEveryNgens, Molecule *mol,
+		Boole B_RandomDihe0,
+        GridMapSetInfo *info, char FN_pop_file[MAX_CHARS] );
+
+Representation **generate_R_tors(int num_torsions, GridMapSetInfo *info );
+
+Genotype generate_Gtype_tors(int num_torsions, GridMapSetInfo *info );
+
+Phenotype generate_Ptype_tors(int num_torsions, GridMapSetInfo *info );
+
+Individual random_ind_tors(int num_torsions, GridMapSetInfo *info );
 
 #endif
 
