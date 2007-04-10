@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.13 2007/02/25 05:38:38 garrett Exp $
+ $Id: readPDBQT.cc,v 1.14 2007/04/10 08:55:25 garrett Exp $
 
 */
 
@@ -105,6 +105,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	int             nrigid_piece = 0;
 
 	Boole           B_has_conect_records = FALSE;
+	Boole           B_is_in_branch = FALSE;
 
 	int             bonded[MAX_ATOMS][6];
 
@@ -208,74 +209,103 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 		// Parse this line in the ligand file
 		keyword_id = parse_PDBQT_line(input_line);
 
-		if ((keyword_id == PDBQ_ATOM) || (keyword_id == PDBQ_HETATM)) {
+        switch ( keyword_id ) {
+            case PDBQ_ATOM:
+            case PDBQ_HETATM:
+                if ( ! B_is_in_branch ) {
+                    // Flag this as an error
+                    // Incorrectly nested BRANCH/ENDBRANCH records
+                    pr( logFile, "%s: ERROR:  All ATOM and HETATM records must be given before any nested BRANCHes; see line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
+                    pr( stderr, "%s: ERROR:  All ATOM and HETATM records must be given before any nested BRANCHes; see line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
+                    exit( -1 );
+                }
 
-			ParameterEntry * found_parm;
+                ParameterEntry * found_parm;
+                int serial;
 
-			// Set the serial atomnumber[i] for this atom
-			atomnumber[i] = natom;
+                // Set up rigid_piece array by reading in the records of the PDBQT file;
+                // each "rigid_piece" is a self-contained rigid entity.
+                rigid_piece[natom] = nrigid_piece;
 
-			// Set up rigid_piece array by reading in the records of the PDBQT file;
-			// each "rigid_piece" is a self-contained rigid entity.
-            rigid_piece[natom] = nrigid_piece;
+                // Read the coordinates and store them in crdpdb[],
+                // read the partial atomic charge and store it in charge[],
+                // and read the parameters of this atom and store them in this_parameter_entry
+                // set the "autogrid_type" in this_parameter_entry
+                readPDBQTLine(input_line, &serial, crdpdb[natom], &charge[natom], &this_parameter_entry);
 
-			// Read the coordinates and store them in crdpdb[], 
-            // read the partial atomic charge and store it in charge[],
-            // and read the parameters of this atom and store them in this_parameter_entry
-			// set the "autogrid_type" in this_parameter_entry
-            readPDBQTLine(input_line, crdpdb[natom], &charge[natom], &this_parameter_entry);
+                // Verify the serial number for this atom
+                if ( serial != (natom + 1) ) {
+                    pr( logFile, "%s: ERROR:  ATOM and HETATM records must be numbered sequentially from 1.  See line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
+                    pr( stderr, "%s: ERROR:  ATOM and HETATM records must be numbered sequentially from 1.  See line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
+                    exit( -1 );
+                }
 
-			for (j = 0; j < NTRN; j++) {
-                mol.crdpdb[natom][j] = crdpdb[natom][j];
-                mol.crd[natom][j] = crdpdb[natom][j];
-                // crdreo[natom][j] = crdpdb[natom][j];
-            }
+                // Set the serial atomnumber[i] for this atom
+                atomnumber[i] = natom;
 
-			if (!found_begin_res) {
-                // Only accumulate charges on the ligand...
-				total_charge_ligand += charge[natom];
-			}
-			*P_B_haveCharges = TRUE;
+                for (j = 0; j < NTRN; j++) {
+                    mol.crdpdb[natom][j] = crdpdb[natom][j];
+                    mol.crd[natom][j] = crdpdb[natom][j];
+                    // crdreo[natom][j] = crdpdb[natom][j];
+                }
 
-			strncpy(atomstuff[natom], input_line, (size_t) 30);
-			atomstuff[natom][30] = '\0';
-			strcpy(mol.atomstr[natom], atomstuff[natom]);
+                if (!found_begin_res) {
+                    // Only accumulate charges on the ligand...
+                    total_charge_ligand += charge[natom];
+                }
+                *P_B_haveCharges = TRUE;
 
-			sscanf(&input_line[12], "%s", pdbaname[natom]);
+                strncpy(atomstuff[natom], input_line, (size_t) 30);
+                atomstuff[natom][30] = '\0';
+                strcpy(mol.atomstr[natom], atomstuff[natom]);
 
-			// "map_index" is used as an index into the AutoGrid "map" array to look up 
-            // the correct energies in the current grid cell, thus:	map[][][][map_index[natom]]
-			map_index[natom] = -1;
+                sscanf(&input_line[12], "%s", pdbaname[natom]);
 
-            // "apm_find" is the new AutoDock 4 atom typing mechanism
-            found_parm = apm_find(this_parameter_entry.autogrid_type);
-			if (found_parm != NULL) {
-				map_index[natom] = found_parm->map_index;
-				bond_index[natom] = found_parm->bond_index;
-				if (outlev > 0) {
-					(void) fprintf(logFile, "Found parameters for ligand atom %d, atom type \"%s\", grid map index = %d\n",
-						       natom + 1, found_parm->autogrid_type, found_parm->map_index);
-				}
-			} else {
-				// We could not find this parameter -- return an error
-                prStr(message, "\n%s: *** WARNING!  Unknown ligand atom type \"%s\" found.  You should add  parameters for it to the parameter library first! ***\n\n", programname, this_parameter_entry.autogrid_type);
-				pr_2x(stderr, logFile, message);
-			}
+                // "map_index" is used as an index into the AutoGrid "map" array to look up 
+                // the correct energies in the current grid cell, thus:	map[][][][map_index[natom]]
+                map_index[natom] = -1;
 
-            if (map_index[natom] == -1) {
-				pr(logFile, "%s: WARNING:  atom type could not found; calculation will use the default atom type = 1, instead.\n", programname);
-				map_index[natom] = 0; // we are 0-based internally, 1-based in printed output
-			}
+                // "apm_find" is the new AutoDock 4 atom typing mechanism
+                found_parm = apm_find(this_parameter_entry.autogrid_type);
+                if (found_parm != NULL) {
+                    map_index[natom] = found_parm->map_index;
+                    bond_index[natom] = found_parm->bond_index;
+                    if (outlev > 0) {
+                        (void) fprintf(logFile, "Found parameters for ligand atom %d, atom type \"%s\", grid map index = %d\n",
+                                   natom + 1, found_parm->autogrid_type, found_parm->map_index);
+                    }
+                } else {
+                    // We could not find this parameter -- return an error
+                    prStr(message, "\n%s: *** WARNING!  Unknown ligand atom type \"%s\" found.  You should add  parameters for it to the parameter library first! ***\n\n", programname, this_parameter_entry.autogrid_type);
+                    pr_2x(stderr, logFile, message);
+                }
 
-            // Increment the number of atoms having this atomtype
-			++ntype[map_index[natom]];
+                if (map_index[natom] == -1) {
+                    pr(logFile, "%s: WARNING:  atom type could not found; calculation will use the default atom type = 1, instead.\n", programname);
+                    map_index[natom] = 0; // we are 0-based internally, 1-based in printed output
+                }
 
-            // Increment the number of atoms found in PDBQT file
-			++natom;
+                // Increment the number of atoms having this atomtype
+                ++ntype[map_index[natom]];
 
-		} else {
-			++nrigid_piece;
-		}
+                // Increment the number of atoms found in PDBQT file
+                ++natom;
+                break;
+
+            case PDBQ_ROOT:
+            case PDBQ_BRANCH:
+                B_is_in_branch = TRUE;
+                ++nrigid_piece;
+                break;
+
+            case PDBQ_ENDROOT:
+            case PDBQ_ENDBRANCH:
+                B_is_in_branch = FALSE;
+                break;
+
+            default:
+                break;
+        }
 
 		if (!found_begin_res) {
 			// No BEGIN_RES tag has been found yet.
@@ -413,6 +443,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 void
 readPDBQTLine( char line[LINE_LEN],
+               int  *ptr_serial,
                Real crd[SPACE],
                Real *ptr_q,
                ParameterEntry *this_parameter_entry )
@@ -420,6 +451,7 @@ readPDBQTLine( char line[LINE_LEN],
 {
     char char8[9];
     char char6[7];
+    char char5[6];
     char char2[3];
 
     // Initialise char8
@@ -430,10 +462,19 @@ readPDBQTLine( char line[LINE_LEN],
     (void) strcpy( char6, "  0.00" );
     char6[6] = '\0';
 
+    // Initialise char5
+    (void) strcpy( char5, "    0" );
+    char5[5] = '\0';
+
     // Initialise char2
     (void) strcpy( char2, "C " );
     char2[2] = '\0';
 
+
+    // Read in the serial number of this atom
+    (void) strncpy( char5, &line[6], (size_t)5 );
+    char5[5] = '\0';
+    (void) sscanf( char5, "%d", ptr_serial );
 
 	// Read in the X, Y, Z coordinates
     (void) strncpy( char8, &line[30], (size_t)8 );
@@ -463,8 +504,8 @@ readPDBQTLine( char line[LINE_LEN],
     (void) sscanf( char2, "%s", this_parameter_entry->autogrid_type);
 
 #ifdef DEBUG
-	fprintf(stderr, "readPDBQTLine:  %.3f, %.3f, %.3f, %.3f, %s\n", crd[X], crd[Y], crd[Z], *ptr_q,
-     this_parameter_entry->autogrid_type);
+	fprintf(stderr, "readPDBQTLine:  %d, %.3f, %.3f, %.3f, %.3f, %s\n", *ptr_serial, crd[X], crd[Y], crd[Z], *ptr_q,
+    this_parameter_entry->autogrid_type);
 #endif				/* DEBUG */
 }
 
