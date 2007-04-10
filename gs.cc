@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.17 2007/03/21 06:30:55 garrett Exp $
+ $Id: gs.cc,v 1.18 2007/04/10 07:39:21 garrett Exp $
 
 */
 
@@ -1268,24 +1268,25 @@ int Genetic_Algorithm::search(Population &solutions)
            // (void)fprintf(logFile, "___\noutputEveryNgens = %d, OUTLEV0_GENS=%d\n___\n", outputEveryNgens, OUTLEV0_GENS);
            if (outputEveryNgens > 1) {
     #ifndef DEBUG3
-               (void)fprintf(logFile,"Generation: %3u   Oldest individual's energy: %.3f    Lowest energy: %.3f    Time taken for last %d generations: ", 
+               (void)fprintf(logFile,"Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), 
-               outputEveryNgens);
+               evaluate.evals() );
     #else
-               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Time taken for last %d generations: ", 
+               (void)fprintf(logFile,"Generation: %3u   Oldest ind.: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Num.evals.: %ld    Timing: ", 
                generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
                solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
-               solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), outputEveryNgens);
+               solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), 
+               evaluate.evals() );
     #endif /* DEBUG3 */
            } else {
     #ifndef DEBUG3
-               (void)fprintf(logFile,"Generation: %3u   Oldest individual's energy: %.3f    Lowest energy: %.3f    Time taken: ", 
-               generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval));
+               (void)fprintf(logFile,"Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
+               generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), evaluate.evals() );
     #else
-               (void)fprintf(logFile,"Generation: %3u   Oldest individual: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Time taken: ", 
+               (void)fprintf(logFile,"Generation: %3u   Oldest: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Num.evals.: %ld   Timing: ", 
                generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
                solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
-               solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval));
+               solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), evaluate.evals() );
     #endif /* DEBUG3 */
            }
        }
