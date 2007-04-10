@@ -581,8 +581,10 @@ dualmap : dualmap.c
 #
 
 analysis.o : analysis.cc analysis.h constants.h getpdbcrds.h stateLibrary.h cnv_state_to_coords.h sort_enrg.h cluster_analysis.h prClusterHist.h getrms.h eintcal.h trilinterp.h print_rem.h strindex.h print_avsfld.h
-	# $(CC) $(CFLAGS) -DEINTCALPRINT -c analysis.cc # Use this to print out detailed nonbond energy breakdown for each cluster
 	$(CC) $(CFLAGS) -c analysis.cc
+
+#analysis.o : analysis.cc analysis.h constants.h getpdbcrds.h stateLibrary.h cnv_state_to_coords.h sort_enrg.h cluster_analysis.h prClusterHist.h getrms.h eintcal.h trilinterp.h print_rem.h strindex.h print_avsfld.h
+#	$(CC) $(CFLAGS) -DEINTCALPRINT -c analysis.cc # Use this to print out detailed nonbond energy breakdown for each cluster
 
 atom_parameter_manager.o : atom_parameter_manager.cc atom_parameter_manager.h structs.h
 	$(CC) $(CFLAGS) -c atom_parameter_manager.cc
