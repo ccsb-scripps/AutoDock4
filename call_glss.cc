@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.27 2007/03/21 06:30:55 garrett Exp $
+ $Id: call_glss.cc,v 1.28 2007/04/10 07:27:09 garrett Exp $
 
 */
 
@@ -111,6 +111,7 @@ Representation **generate_R_quaternion(int num_torsions, GridMapSetInfo *info)
 
    // Set the quaternion (x,y,z,w) genes
    retval[3] = new RealVector( 4, -1., 1., q.x, q.y, q.z, q.w ); // uniformly-distributed quaternion (UDQ)
+   // TODO retval[3] = new ConstrainedRealVector( 4, -1., 1., q.x, q.y, q.z, q.w ); // uniformly-distributed quaternion (UDQ)
 
    // Set the torsion angles
    retval[4] = new RealVector( num_torsions, -PI, PI );
