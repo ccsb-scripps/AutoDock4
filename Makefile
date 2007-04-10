@@ -46,6 +46,7 @@ OBJS = \
     bestpdb.o \
 	calculateEnergies.o \
     call_glss.o \
+    call_glss_tors.o \
     call_gs.o \
     call_ls.o \
     changeState.o \
@@ -133,6 +134,7 @@ OBJS_LSFIT = \
     bestpdb.o \
 	calculateEnergies.o \
     call_glss.o \
+    call_glss_tors.o \
     call_gs.o \
     call_ls.o \
     changeState.o \
@@ -579,6 +581,7 @@ dualmap : dualmap.c
 #
 
 analysis.o : analysis.cc analysis.h constants.h getpdbcrds.h stateLibrary.h cnv_state_to_coords.h sort_enrg.h cluster_analysis.h prClusterHist.h getrms.h eintcal.h trilinterp.h print_rem.h strindex.h print_avsfld.h
+	# $(CC) $(CFLAGS) -DEINTCALPRINT -c analysis.cc # Use this to print out detailed nonbond energy breakdown for each cluster
 	$(CC) $(CFLAGS) -c analysis.cc
 
 atom_parameter_manager.o : atom_parameter_manager.cc atom_parameter_manager.h structs.h
@@ -595,6 +598,9 @@ calculateEnergies.o : calculateEnergies.cc calculateEnergies.h constants.h autog
 
 call_glss.o : call_glss.cc support.h rep.h eval.h ranlib.h call_glss.h
 	$(CC) $(CFLAGS) -c call_glss.cc
+
+call_glss_tors.o : call_glss_tors.cc support.h rep.h eval.h ranlib.h call_glss_tors.h
+	$(CC) $(CFLAGS) -c call_glss_tors.cc
 
 call_gs.o : call_gs.cc support.h rep.h eval.h ranlib.h call_gs.h autocomm.h timesyshms.h
 	$(CC) $(CFLAGS) -c call_gs.cc
