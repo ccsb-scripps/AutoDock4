@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.12 2007/03/21 06:30:56 garrett Exp $
+ $Id: writePDBQT.cc,v 1.13 2007/04/10 09:03:58 garrett Exp $
 
 */
 
@@ -154,8 +154,13 @@ writePDBQT(int irun, FourByteLong seed[2],
         *Ptr_einter = eb.e_inter;
     } else {
         // UNBOUND
-        // intermolecular energy is meaningless for unbound state
+        // "intermolecular" energy is meaningless for unbound state, so set this to zero
         *Ptr_einter = 0.0;
+        eb.e_inter = 0.0;
+        emap_total = 0.0;
+        elec_total = 0.0;
+        eb.e_inter_moving_fixed = 0.0;
+        eb.e_inter_moving_moving = 0.0;
     }
 
 	if (outlev > -1) {
