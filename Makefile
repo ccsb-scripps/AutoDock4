@@ -46,7 +46,6 @@ OBJS = \
     bestpdb.o \
 	calculateEnergies.o \
     call_glss.o \
-    call_glss_tors.o \
     call_gs.o \
     call_ls.o \
     changeState.o \
@@ -134,7 +133,6 @@ OBJS_LSFIT = \
     bestpdb.o \
 	calculateEnergies.o \
     call_glss.o \
-    call_glss_tors.o \
     call_gs.o \
     call_ls.o \
     changeState.o \
@@ -600,9 +598,6 @@ calculateEnergies.o : calculateEnergies.cc calculateEnergies.h constants.h autog
 
 call_glss.o : call_glss.cc support.h rep.h eval.h ranlib.h call_glss.h
 	$(CC) $(CFLAGS) -c call_glss.cc
-
-call_glss_tors.o : call_glss_tors.cc support.h rep.h eval.h ranlib.h call_glss_tors.h
-	$(CC) $(CFLAGS) -c call_glss_tors.cc
 
 call_gs.o : call_gs.cc support.h rep.h eval.h ranlib.h call_gs.h autocomm.h timesyshms.h
 	$(CC) $(CFLAGS) -c call_gs.cc
