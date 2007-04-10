@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.13 2007/03/21 06:30:56 garrett Exp $
+ $Id: rep.cc,v 1.14 2007/04/10 09:00:25 garrett Exp $
 
 */
 
@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <limits.h>
+#include <assert.h>
 #include "rep.h"
 #include "ranlib.h"
 #include "structs.h"
@@ -575,7 +576,7 @@ ConstrainedRealVector::ConstrainedRealVector(int num_els)
       vector[num_els] = double(genunf(low, high));
    }
 
-//   normalize();
+   normalize();
 }
 
 //______________________________________________________________________________
@@ -595,7 +596,7 @@ ConstrainedRealVector::ConstrainedRealVector(int num_els, double init_low, doubl
       vector[num_els] = double(genunf(init_low, init_high));
    }
 
-//   normalize();
+   normalize();
 }
 
 //______________________________________________________________________________
@@ -672,6 +673,35 @@ void ConstrainedRealVector::write(double value, int gene)
 
 //______________________________________________________________________________
 //
+void ConstrainedRealVector::write(double a, double b, double c, double d)
+{
+
+#ifdef DEBUG
+    (void)fprintf(logFile, "rep.cc/void ConstrainedRealVector::write( double a=%lf, double b=%lf, double c=%lf, double d=%lf ) \n", a, b, c, d );
+#endif /* DEBUG */
+
+#define clamp_and_set_vector( value, gene ) \
+   if (value<low) { \
+      (void)fprintf(logFile,"Writing out-of-bounds Constrained Real\n"); \
+      vector[gene] = low; \
+   } else if (value>high) { \
+      (void)fprintf(logFile,"Writing out-of-bounds Constrained Real\n"); \
+      vector[gene] = high; \
+   } else { \
+      vector[gene] = value; \
+   }
+
+   assert( number_of_pts >= 4 );
+
+   clamp_and_set_vector( a, 0 );
+   clamp_and_set_vector( b, 1 );
+   clamp_and_set_vector( c, 2 );
+   clamp_and_set_vector( d, 3 );
+
+   normalize();
+}
+//______________________________________________________________________________
+//
 void ConstrainedRealVector::write(const Element value, int gene)
 {
 
@@ -736,8 +766,8 @@ const Element ConstrainedRealVector::gene(unsigned int gene_number) const
       retval.real = 0.0;
       return(retval);
    } else {
-//      normalize();
-      retval.real = 0.0;
+      // normalize();  // cannot normalize because gene(int) is const
+      retval.real = vector[gene_number];
       return(retval);
    }
 }
