@@ -30,6 +30,7 @@ Real  eintcalPrint( NonbondParam * const nonbondlist,
                      const Real scale_1_4,
                      const Real qsp_abs_charge[MAX_ATOMS],
                      const ParameterEntry parameterArray[MAX_MAPS],
+                     const Boole B_use_non_bond_cutoff,
                      const Boole B_have_flexible_residues);  // if the receptor has flexibile residues, this will be set to TRUE
 
 #endif        /*EINTCALPRINT*/
