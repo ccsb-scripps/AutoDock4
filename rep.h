@@ -13,6 +13,8 @@
 #ifndef _REP_H
 #define _REP_H
 
+#include "rep_constants.h"
+
 // appears not to be used //  #include <iostream.h>
 
 #include <stdio.h>
@@ -55,8 +57,6 @@ class Representation
       virtual void write(unsigned char, int) = 0;
       virtual void write(FourByteLong, int) = 0;
       virtual void write(double, int) = 0;
-//      virtual void write(const void *, int) = 0;
-//      virtual const void *gene(unsigned int) const = 0;
       virtual void write(const Element, int) = 0;
       virtual const Element gene(unsigned int) const = 0;
       virtual Representation *clone(void) const = 0;
@@ -83,10 +83,8 @@ class IntVector : public Representation
       void write(unsigned char, int);
       void write(FourByteLong, int);
       void write(double, int);
-//      void write(const void *, int);
       void write(const Element, int);
       Representation &operator=(const Representation &);
-//      const void *gene(unsigned int) const;
       const Element gene(unsigned int) const;
 };
 
@@ -174,10 +172,9 @@ class ConstrainedRealVector : public Representation
       void write(unsigned char, int);
       void write(FourByteLong, int);
       void write(double, int);
-//      void write(const void *, int);
       void write(const Element, int);
+      void write(double, double, double, double);
       Representation &operator=(const Representation &);
-//      const void *gene(unsigned int) const;
       const Element gene(unsigned int) const;
 };
 
