@@ -24,7 +24,7 @@ void  analysis( int   Nnb,
                 Real clus_rms_tol, 
                 Real crdpdb[MAX_ATOMS][SPACE], 
                 
-                EnergyTables *ptr_ad_energy_tables,
+                const EnergyTables *ptr_ad_energy_tables,
 
                 Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
                 Real econf[MAX_RUNS], 
