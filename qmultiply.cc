@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.8 2007/03/21 06:30:56 garrett Exp $
+ $Id: qmultiply.cc,v 1.9 2007/04/10 08:48:49 garrett Exp $
 
 */
 
@@ -110,6 +110,12 @@ void printQuat( FILE *fp, Quat q )
     printQuat_q( fp, q );
     printQuat_r( fp, q );
 } // printQuat( Quat q )
+
+void debugQuat( FILE *fp, Quat q, unsigned int linenumber, char *message )
+{
+    pr( fp, "DEBUG_QUAT: %s   (line %u)\n", message,  linenumber );
+    printQuat( fp, q );
+}
 
 Quat normQuat( Quat q )
     // Normalise the 4D quaternion, x,y,z,w
@@ -246,6 +252,16 @@ Quat uniformQuat( void )
     return q;
 }
 
+Quat uniformQuatByAmount( Real amount )
+    // returns a quaternion from a random axis and specified angle
+    // amount is an angle in radians
+{
+    Quat q = uniformQuat();
+    q = convertQuatToRot( q );
+    q = axisRadianToQuat( q.nx, q.ny, q.nz, amount );
+    return q;
+}
+
 void unitQuat2rotation( Quat *q )
     // Convert from a unit quaternion to a rotation about an unit 3D-vector
 {
@@ -319,7 +335,7 @@ Quat inverse( const Quat q )
     return inv;
 }
 
-Quat slerp( const Quat q1, const Quat q2, const double u )
+Quat slerp0( const Quat q1, const Quat q2, const double u )
     // See: Shoemake, K. (1985), "Animating Rotation with Quaternion Curves", 
     //      Computer Graphics, 19 (3): 245-254
     //
@@ -344,6 +360,45 @@ Quat slerp( const Quat q1, const Quat q2, const double u )
     return slerp;
 }
 
+Quat slerp( const Quat qa, const Quat qb, const double t )
+    // See Martin Baker's web site
+    // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
+{
+	// quaternion to return
+    Quat qm;
+
+    assert( t >= 0.  &&  t <= 1. );
+
+	// Calculate angle between them.
+	double cosHalfTheta = qa.w * qb.w + qa.x * qb.x + qa.y * qb.y + qa.z * qb.z;
+	// if qa=qb or qa=-qb then theta = 0 and we can return qa
+	if (fabs(cosHalfTheta) >= 1.0){
+		qm.w = qa.w;qm.x = qa.x;qm.y = qa.y;qm.z = qa.z;
+		return qm;
+	}
+	// Calculate temporary values.
+	double halfTheta = acos(cosHalfTheta);
+	double sinHalfTheta = sqrt(1.0 - cosHalfTheta*cosHalfTheta);
+	// if theta = 180 degrees then result is not fully defined
+	// we could rotate around any axis normal to qa or qb
+	if (fabs(sinHalfTheta) < 0.001){ // fabs is floating point absolute
+		qm.w = (qa.w * 0.5 + qb.w * 0.5);
+		qm.x = (qa.x * 0.5 + qb.x * 0.5);
+		qm.y = (qa.y * 0.5 + qb.y * 0.5);
+		qm.z = (qa.z * 0.5 + qb.z * 0.5);
+		return qm;
+	}
+	double ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
+	double ratioB = sin(t * halfTheta) / sinHalfTheta; 
+	//calculate Quaternion.
+	qm.w = (qa.w * ratioA + qb.w * ratioB);
+	qm.x = (qa.x * ratioA + qb.x * ratioB);
+	qm.y = (qa.y * ratioA + qb.y * ratioB);
+	qm.z = (qa.z * ratioA + qb.z * ratioB);
+	return qm;
+
+}
+
 Quat axisRadianToQuat( const Real ax, const Real ay, const Real az, const Real angle )
 {
     Real raa[3] = { ax, ay, az };
@@ -366,5 +421,12 @@ Quat quatComponentsToQuat( const Real qx, const Real qy, const Real qz, const Re
     return normQuat( Q );
 }
 
+const Quat identityQuat()
+{
+    Quat Q;
+    Q.x = Q.y = Q.z = 0.;
+    Q.w = 1.;
+    return Q;
+}
 
 /* EOF */
