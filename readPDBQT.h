@@ -14,7 +14,8 @@
 #include "openfile.h"
 
 #include "constants.h"
-void  readPDBQTLine( char  line[LINE_LEN],
+void  readPDBQTLine( char line[LINE_LEN],
+                     int  *ptr_serial,
                      Real crd[SPACE], 
                      Real *P_q,
                      ParameterEntry *thisparm);
