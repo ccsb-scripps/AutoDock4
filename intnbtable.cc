@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.8 2006/12/13 02:23:24 garrett Exp $
+ $Id: intnbtable.cc,v 1.9 2007/04/10 07:44:34 garrett Exp $
 
 */
 
@@ -19,6 +19,7 @@
 #include "intnbtable.h"
 #include "structs.h"
 #include "distdepdiel.h"
+#include "autocomm.h"
 
 #ifdef NOSQRT
     /*  ACCELERATED NON-SQUARE-ROOTING VERSION  *  Look-up internal non-bond energy based on square-of-the-distance, in square Angstroms. */
@@ -43,22 +44,19 @@ void intnbtable( Boole *P_B_havenbp,
                  int xB,
                  double coeff_desolv,
                  double sigma,
-                 EnergyTables *ad_tables)
+                 EnergyTables *ad_tables,
+                 Boole B_is_unbound_calculation )
 {
     /* Local variables: */
 
     Clock  nbeEnd;
     Clock  nbeStart;
 
-    double dxA;
-    double dxB;
     double rA;
     double rB;
     double r;
     double minus_inv_two_sigma_sqd = -0.5L / (sigma * sigma);
 
-    int Ais2B = FALSE;
-    int Bis2A = FALSE;
     register int i;
 
     struct tms tms_nbeEnd;
@@ -66,7 +64,7 @@ void intnbtable( Boole *P_B_havenbp,
 
     char calc_type[128];
 
-    if ((xA == 1) && (xB == 2)) {
+    if (B_is_unbound_calculation == TRUE) {
         strcpy(calc_type, "unbound");
     } else {
         strcpy(calc_type, "internal");
@@ -79,27 +77,22 @@ void intnbtable( Boole *P_B_havenbp,
     } else {
         pr( logFile, "\nNon-bonded parameters for %s-%s interactions, used in %s energy calculations:\n", info->atom_type_name[a1], info->atom_type_name[a2], calc_type );
     }
-    pr( logFile, "\n               %9.1lf       %9.1lf \n", cA, cB );
-    pr( logFile, "    E      =  -----------  -  -----------\n");
-    pr( logFile, "     %2s,%-2s         %2d              %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA, xB );
-    pr( logFile, "                  r               r \n\n");
+    // Output the form of the potential energy equation:
+    if ( B_is_unbound_calculation ) {
+        pr( logFile, "\n               %9.1lf\n", cA );
+        pr( logFile, "    E      =  -----------  -  r\n");
+        pr( logFile, "     %2s,%-2s         %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA );
+        pr( logFile, "                  r\n\n");
+    } else {
+        pr( logFile, "\n               %9.1lf       %9.1lf \n", cA, cB );
+        pr( logFile, "    E      =  -----------  -  -----------\n");
+        pr( logFile, "     %2s,%-2s         %2d              %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA, xB );
+        pr( logFile, "                  r               r \n\n");
+    }
     pr( logFile, "Calculating %s-%-s interaction energy versus atomic separation (%d data points).\n", info->atom_type_name[a1], info->atom_type_name[a2], NEINT );
     flushLog;
 
     nbeStart = times( &tms_nbeStart );
-
-    dxA = (double) xA;
-    dxB = (double) xB;
-    if (xB == (2*xA)) {
-        Bis2A = TRUE;
-        Ais2B = FALSE;
-    } else if (xA == (2*xB)) {
-        Ais2B = TRUE;
-        Bis2A = FALSE;
-    } else {
-        Ais2B = FALSE;
-        Bis2A = FALSE;
-    }
 
     // loop up to a maximum distance of  (NEINT * INV_A_DIV), 
     //                          usually    2048 * 0.01,       or 20.48 Angstroms
@@ -107,31 +100,39 @@ void intnbtable( Boole *P_B_havenbp,
     for ( i = 1;  i < NEINT;  i++ ) {
         // i is the lookup-table index that corresponds to the distance
 
-        r = IndexToDistance(i); // r is the distance that corresponds to index
+        // r is the distance that corresponds to the lookup index
+        r = IndexToDistance(i); 
 
         // Compute the distance-dependent gaussian component of the desolvation energy, sol_fn[i];
         // Weight this by the coefficient for desolvation, coeff_desolv.
-
         ad_tables->sol_fn[i] = coeff_desolv * exp( minus_inv_two_sigma_sqd * sq(r) );
 
-        if (Bis2A) {
-            rA = pow( r, dxA );
-            rB = rA * rA;
-        } else if (Ais2B) {
-            rB = pow( r, dxB );
-            rA = rB * rB;
+        // Compute r^xA and r^xB:
+        rA = pow( r, (double)xA );
+        rB = pow( r, (double)xB );
+
+        if ( B_is_unbound_calculation ) {
+            // Calculate the unbound potential for computing the 
+            // unbound extended conformation of the ligand:
+            // E = -|r|
+            // ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  = -1. * fabs( r );
+            // Calculate the interaction energy at this distance, r, using an equation 
+            // of the form E  =  cA / r^xA  i.e. just the repulsive term
+            // minus r, to make the potential long range
+            ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA) ) - r;
         } else {
-            rA = pow( r, dxA );
-            rB = pow( r, dxB );
+            // Calculate the bound potential for docking:
+
+            // Calculate the interaction energy at this distance, r, using an equation 
+            // of the form E  =  cA / r^xA  -  cB / r^xB
+            ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA - cB/rB) );
+
+            if (debug > 1) {
+                pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %.3f,   r=%.4lf\n",i, ad_tables->e_vdW_Hb[i][a1][a2], r ); // Xcode-gmm
+            }
         }
 
-        ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA - cB/rB) );
-
-        if (debug > 1) {
-            pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %.3f,   r=%.4lf\n",i, ad_tables->e_vdW_Hb[i][a1][a2], r ); // Xcode-gmm
-        }
-
-    } // 1 <= i < NEINT
+    } // next i // for ( i = 1;  i < NEINT;  i++ )
     
     nbeEnd = times( &tms_nbeEnd );
     pr( logFile, "Time taken: ");
