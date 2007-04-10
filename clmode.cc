@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.5 2006/04/25 22:31:53 garrett Exp $
+ $Id: clmode.cc,v 1.6 2007/04/10 07:29:05 garrett Exp $
 
 */
 
@@ -138,12 +138,14 @@ void  clmode( int   num_atm_maps,
 
         } else if (equal( rec5,"atom", 4) || equal( rec5,"heta", 4)) {
 
+            int serial;
+
             /* 
              * This line should contain coordinates, partial charge & 
              * atom type for one atom.
              * Let's save the coordinates for this atom, atomCounter.
              */
-            readPDBQTLine( line, crdSave[confCounter][atomCounter], &q, &thisparm );
+            readPDBQTLine( line, &serial, crdSave[confCounter][atomCounter], &q, &thisparm );
 
             if ( ! haveAtoms ) {
                 /*
