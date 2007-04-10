@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.18 2006/12/13 00:11:14 garrett Exp $
+ $Id: cmdmode.cc,v 1.19 2007/04/10 07:31:57 garrett Exp $
 
 */
 
@@ -69,7 +69,8 @@ int cmdmode(int   natom,
              const Real unbound_internal_FE,
 
              GridMapSetInfo *info,
-             Boole B_have_flexible_residues
+             Boole B_have_flexible_residues,
+             Boole B_use_non_bond_cutoff
             )
 
 {
@@ -223,7 +224,8 @@ int cmdmode(int   natom,
                             rec5[ii] = (char) tolower((int)line[ii]);
                         }
                         if (equal(rec5, "atom", 4) || equal(rec5, "heta", 4)) {
-                            readPDBQTLine(line, crd[nat], &charge[nat], &thisparm);
+                            int serial;
+                            readPDBQTLine(line, &serial, crd[nat], &charge[nat], &thisparm);
                             strncpy(pdbaname[natom], &line[12], (size_t)4);
                             type[nat]=get_atom_type(pdbaname[natom]);
                             if (type[nat] == -1) {
@@ -245,7 +247,7 @@ int cmdmode(int   natom,
                     fclose(pdbFile);
                     natom = nat;
                     if (ntor > 0) {
-                        eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_have_flexible_residues) - unbound_internal_FE;
+                        eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
                     } else {
                         eintra = 0.0 - unbound_internal_FE;
                     }
@@ -308,7 +310,7 @@ int cmdmode(int   natom,
                 }
                 cnv_state_to_coords(S,  vt, tlist, ntor,  crdpdb, crd, natom);
                 if (ntor > 0) {
-                    eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_have_flexible_residues) - unbound_internal_FE;
+                    eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
                 } else {
                     eintra = 0.0 - unbound_internal_FE;
                 }
