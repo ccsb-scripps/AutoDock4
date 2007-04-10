@@ -14,5 +14,6 @@ void intnbtable(Boole *P_B_havenbp,
                 int   xB,
                 double coeff_desolv,
                 double sigma,
-                EnergyTables *ad_tables);
+                EnergyTables *ad_tables,
+                Boole B_is_unbound_calculation );
 #endif
