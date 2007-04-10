@@ -20,12 +20,15 @@ Quat quatComponentsToQuat( const Real qx, const Real qy, const Real qz, const Re
 
 void qmultiply( Quat *q, register const Quat *ql, register const Quat *qr );
 void qconjmultiply( Quat *q, register const Quat *ql, register const Quat *qr );
-void  mkUnitQuat( Quat *q );
+void mkUnitQuat( Quat *q );
 void printQuat_q( FILE *fp, Quat q );
 void printQuat_r( FILE *fp, Quat q );
 void printQuat( FILE *fp, Quat q );
+void debugQuat( FILE *fp, Quat q, unsigned int linenumber, char *message );
+Quat uniformQuatByAmount( Real amount );
 void unitQuat2rotation( Quat *q );
 void print_q_reorient_message( FILE *logFile, Quat q_reorient );
 void create_random_orientation( Quat *ptr_quat );
 void assertQuatOK( const Quat q );
+const Quat identityQuat();
 #endif
