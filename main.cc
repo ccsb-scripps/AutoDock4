@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.66 2007/03/21 06:30:55 garrett Exp $
+ $Id: main.cc,v 1.67 2007/04/10 08:39:55 garrett Exp $
 
 */
 
@@ -199,6 +199,9 @@ Real lig_center[SPACE];
 Real econf[MAX_RUNS];  // this is the list of energies printed in the histogram in "analysis"
 State sHist[MAX_RUNS];  /* qtnHist[MAX_RUNS][QUAT],torHist[MAX_RUNS][MAX_TORS];*/
 State sUnbound; // State of the unbound ligand's conformation
+State sUnbound_ext; // State of the unbound ligand's conformation after extended-conformation search
+//// UNCOMMENT if using Step 2 in unbound calculation ---> State sUnbound_ls; // State of the unbound ligand's conformation after a local search
+State sUnbound_ad; // State of the unbound ligand's conformation after an AutoDock search
 
 char out_acc_rej = '?';
 char timeSeedIsSet[2];
@@ -283,6 +286,8 @@ Real lb_rho = 0.01;
 Real *rho_ptr = NULL;
 Real *lb_rho_ptr = NULL;
 Real unbound_internal_FE = 0.0;
+Real unbound_ext_internal_FE = 0.0;
+Real unbound_ad_internal_FE = 0.0;
 Real unbound_internal_FE_saved = 0.0;
 Real emap_total = 0.;
 Real elec_total = 0.;
@@ -333,7 +338,6 @@ Boole B_use_non_bond_cutoff = TRUE;
 Boole B_have_flexible_residues = FALSE;  // if the receptor has flexible residues, this will be set to TRUE
 Boole B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
 Boole B_reorient_random = FALSE; // if true, create a new random orientation before docking
-
 int atm1=0;
 int atm2=0;
 int a1=0;
@@ -442,6 +446,7 @@ FourByteLong seed[2];
 unsigned int pop_size = 200;
 unsigned int num_generations = 0;  //  Don't terminate on the basis of number of generations
 unsigned int num_evals = 250000;
+unsigned int num_evals_unbound = num_evals;
 unsigned int max_its = 300;
 unsigned int max_succ = 4;
 unsigned int max_fail = 4;
@@ -457,6 +462,7 @@ Worst_Mode w_mode = AverageOfN;
 EvalMode e_mode = Normal_Eval;
 Global_Search *GlobalSearchMethod = NULL;
 Local_Search *LocalSearchMethod = NULL;
+//// Local_Search *UnboundLocalSearchMethod = NULL;
 
 info = (GridMapSetInfo *) malloc( sizeof(GridMapSetInfo) );
 ad_energy_tables = (EnergyTables *) malloc( sizeof(EnergyTables) );
@@ -673,7 +679,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version );
 
-(void) fprintf(logFile, "                           $Revision: 1.66 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.67 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1079,9 +1085,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
                     cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-                    intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables);
+                    intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-                    intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables);
+                    intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
                     // Increment the atom type numbers, a1 and a2, for the internal non-bond table
                     a2++;
                     if (a2 >= info->num_atom_types) {
@@ -2067,9 +2073,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
             cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
             pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-            intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables);
+            intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
             pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-            intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables);
+            intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
             // Increment the atom type numbers, a1 and a2, for the internal non-bond table
             a2++;
             if (a2 >= info->num_atom_types) {
@@ -2097,9 +2103,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /* Defend against division by zero... */
         if (xA != xB) {
             pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-            intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables);
+            intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
             pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-            intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables);
+            intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
             // Increment the atom type numbers, a1 and a2, for the internal non-bond table
             a2++;
             if (a2 >= info->num_atom_types) {
@@ -3497,12 +3503,37 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  compute_unbound_extended
          */
         if (ntor > 0) {
-            pr(logFile, "Computing the energy of the unbound state, assuming it is in an extended conformation\ngiven the torsion tree defined in the ligand file.\n\n");
+
+            pr(logFile, "Computing the energy of the unbound state of the ligand,\ngiven the torsion tree defined in the ligand file.\n\n");
             (void) fflush( logFile );
+
+            // The initial goal is to obtain an extended conformation of the ligand.
+
+            // Step 0 // {
+            //
+            // Set termination criteria for unbound calculations
+            // -------------------------------------------------
+            //
+            // Set the maximum number of energy evaluations for finding the unbound conformation
+            // if num_evals is less than this, then a shorter unbound docking will be performed
+            max_evals_unbound = 1000000; // 1 million
+            num_evals_unbound = num_evals > max_evals_unbound ?  max_evals_unbound :  num_evals;
+            // end of Step 0 // }
+
+            // Step 1 // {
+            //
+            // Run a hybrid global-local search using the unbound energy tables (set to be repulsive-only)
+            // -------------------------------------------------------------------------------------------
+            //
+            //  *  Turn off the use of the non-bond cutoff
+            //  *  Turn off internal electrostatics
+            //  *  Turn off intermolecular energy calculations
+            // TODO Do not translate or rotate the ligand in unbound searches
+            //
             /*
-            ** Genetic Algorithm-Local search,  a.k.a. Lamarckian Genetic Algorithm
-            */
-     
+             *  Genetic Algorithm-Local search,  a.k.a. 
+             *  Lamarckian Genetic Algorithm
+             */
             if ((GlobalSearchMethod==NULL)||(LocalSearchMethod==NULL)) {
                 prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n", programname);
                 stop(error_message);
@@ -3516,27 +3547,26 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 stop(error_message);
                 exit(-1);
             }
-
-     
+            //
             // Do not use a non-bond cutoff, this helps to produce the "most" extended conformation
             // especially with long inhibitors
             B_use_non_bond_cutoff = FALSE;
-     
+            //
             // Save the current value of B_calcIntElec, so we can restore it later.
             B_calcIntElec_saved = B_calcIntElec;
-
+            //
             // Set the calculation of internal electrostatics to FALSE:
-            B_calcIntElec = FALSE;
-
+            // B_calcIntElec = FALSE;
+            //
             // Assume the unbound state of the receptor is the same as the input coordinates from the
             // flexible residues file.  This means we must not change the rotatable bonds in the
             // flexible residues of the receptor during the unbound extended search.
-            //
+            // We can turn off rotation of the flexres by setting ntor to ntor_ligand.
             // Save the current value of "ntor" in the "sInit" state variable, set it to number of torsions
             // in the ligand for the unbound extended search, then restore it afterwards.
             saved_sInit_ntor = sInit.ntor;
             sInit.ntor = ntor_ligand;
-            
+            //
             // Use the repulsive unbound energy tables, "unbound_energy_tables",
             // to drive the molecule into an extended conformation
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
@@ -3546,69 +3576,103 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, 
                             parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
-
+            //
             // Turn off computing the intermolecular energy, we will only consider the intramolecular energy
             // to determine the unbound state of the flexible molecule:
-            evaluate.compute_intermol_energy(FALSE);  
-     
+            evaluate.compute_intermol_energy(FALSE);
+            //
             (void) fprintf( logFile, "\n\n\tBEGINNING COMPUTATION OF UNBOUND EXTENDED STATE USING LGA\n");
             (void) fprintf( logFile,     "\t_________________________________________________________\n\n\n");
             (void) fflush( logFile );
-
+            //
             pr(logFile, "Date:\t");
             printdate( logFile, 2 );
             (void) fflush( logFile );
-
             gaStart = times( &tms_gaStart );
-     
             //  Can get rid of the following line
             ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
-     
-            // Set the maximum number of energy evaluations for finding the unbound conformation
-            // if num_evals is less than this, then a shorter unbound docking will be performed
-            max_evals_unbound = 1000000;
-     
-            // Start Lamarckian GA run -- Unbound simulation
-            sUnbound = call_glss( GlobalSearchMethod, LocalSearchMethod,
+            //
+            // Start Lamarckian GA run searching only torsions -- Unbound simulation
+            // sUnbound_ext = call_glss_tors( GlobalSearchMethod, LocalSearchMethod,
+            sUnbound_ext = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                       sInit,
-                                      (num_evals > max_evals_unbound? max_evals_unbound : num_evals), pop_size,
+                                      num_evals_unbound, pop_size,
                                       outlev,
                                       outputEveryNgens, &ligand,
+                                      // B_RandomDihe0, // use this line with call_glss_tors()
                                       B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
-                                  info, FN_pop_file );
-            // State of best individual at end of GA-LS run is returned.
+                                      info, FN_pop_file );
+            // State of best individual at end of GA-LS run, sUnbound_ext, is returned.
             // Finished Lamarckian GA run
-     
-            // Convert from unbound state to unbound coordinates
-            cnv_state_to_coords( sUnbound, vt, tlist, sUnbound.ntor, crdpdb, crd, natom );
-     
-            // Restore the AutoDock 4 force field for docking
-            // ______________________________________________
-
-            // Remember to turn on the use of the non-bond cutoff
-            B_use_non_bond_cutoff = TRUE;
-     
-            // Remember to reset the energy evaluator back to computing the intermolecular energy between
-            // the flexible and the rigid molecules.
-            evaluate.compute_intermol_energy(TRUE);
-     
-            // Restore the setting for calculation of internal electrostatics to the saved value:
-            B_calcIntElec = B_calcIntElec_saved;
-
-            // Restore the number of torsions in the state variables "sInit" and "sUnbound"
-            sInit.ntor = saved_sInit_ntor;
-            sUnbound.ntor = saved_sInit_ntor;
-
             gaEnd = times( &tms_gaEnd );
             pr( logFile, "\nFinished Lamarckian Genetic Algorithm (LGA), time taken:\n");
             timesyshms( gaEnd - gaStart, &tms_gaStart, &tms_gaEnd );
             pr( logFile, "\n");
             printdate( logFile, 1 );
             (void) fflush( logFile );
-     
             pr(logFile, "\nTotal number of Energy Evaluations: %lu\n", evaluate.evals() );
             pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
-     
+            // end of Step 1 // }
+
+            // Step 2 // {
+            //
+            // Do a short local search using the standard internal energy tables
+            // -----------------------------------------------------------------
+            //
+            // turn on internal electrostatics
+            // but keep intermolecular energy calculations off
+            //
+            // Turn on calculation of internal electrostatics:
+            //// B_calcIntElec = TRUE;
+            //
+            // Use the standard AutoDock energy tables to compute the internal energy
+            // Use this value to set unbound_internal_FE
+            //// evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+                            //// elec, emap, nonbondlist, ad_energy_tables, Nnb,
+                            //// B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
+                            //// B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                            //// ignore_inter,
+                            //// B_include_1_4_interactions, scale_1_4, 
+                            //// parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+            //
+            // --- Start Local Search ---
+            //// pr( logFile, "\nPerforming local search using standard AutoDock scoring function\n" );
+            //// pr( logFile, "\nUsing UnboundLocalSearchMethod = new Solis_Wets1(7+sInit.ntor, 300, 4, 4, 1., 0.01, 2., 0.5, 1.);\n\n" );
+            // Create a local search object
+            // * Use an initial rho value of 0.1 (default is set in DPF by "sw_rho 1.0") 
+            //   to ensure smaller, 'more local' steps.
+            // * Use a search frequency of 1.0 (default is set in DPF by "ls_search_freq 0.06")
+            //// unsigned int ls_pop_size = 150;
+            // max_its = 300
+            // max_succ = 4
+            // max_fail = 4
+            // rho = 1.
+            // lb_rho = 0.01
+            // expansion = 2.
+            // contraction = 0.5
+            // search_freq = 1.
+            //// UnboundLocalSearchMethod = new Solis_Wets1(7+sInit.ntor, 300, 4, 4, 1., 0.01, 2., 0.5, 1.);
+            // Perform a local search, using the standard AutoDock 4 scoring function
+            //// sUnbound_ls = call_ls( UnboundLocalSearchMethod, sUnbound_ext, ls_pop_size, &ligand );
+            //// // sUnbound_ext = sUnbound_ls; // if you want to update sUnbound_ext to be sUnbound_ls...
+            // --- Finished Local Search ---
+            // end of Step 2 // }
+
+            // Step 3 // {
+            //
+            // Restore the AutoDock 4 force field for docking
+            // ----------------------------------------------
+            //
+            // Remember to turn on the use of the non-bond cutoff
+            B_use_non_bond_cutoff = TRUE;
+            //
+            // Restore the setting for calculation of internal electrostatics to the saved value:
+            B_calcIntElec = B_calcIntElec_saved;
+            //
+            // Restore the number of torsions in the state variables "sInit" and "sUnbound_ext"
+            sInit.ntor = saved_sInit_ntor;
+            sUnbound_ext.ntor = saved_sInit_ntor;
+            //
             // Use the standard AutoDock energy tables to compute the internal energy
             // Use this value to set unbound_internal_FE
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
@@ -3618,18 +3682,131 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, 
                             parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+            // end of Step 3 // }
 
+            // Step 4 // {
+            //
+            // Compute the energy of the unbound extended state
+            // ------------------------------------------------
+            //
+            // Convert from unbound state to unbound coordinates
+            cnv_state_to_coords( sUnbound_ext, vt, tlist, sUnbound_ext.ntor, crdpdb, crd, natom );
+            //
             // Calculate the unbound internal energy using the standard AutoDock energy function
-            (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_have_flexible_residues);
+            (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
+            //
+            // eintcal() and eintcalPrint() set the values of the hideously-global nb_group_energy[]
+            unbound_ext_internal_FE = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR];
+            //
+            pr(logFile, "\n\nThe internal energy of the unbound extended state was computed to be %+.3lf kcal/mol\n\n", unbound_ext_internal_FE);
+            // end of Step 4 // }
 
-            // TODO don't move the torsions in the receptor... assuming input conformation of protein is unbound state of protein
-            unbound_internal_FE = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR];
+            // Step 5 // {
+            //
+            // Decide whether to use extended or AutoDock state for unbound state
+            // ------------------------------------------------------------------
+            //
+            if (unbound_ext_internal_FE > 0.0) {
+                // Unbound extended state has an internal energy that is positive
 
-            pr(logFile, "\n\nThe internal energy of the unbound state was computed to be %+.3lf kcal/mol\n\n", unbound_internal_FE);
-     
-            pr( logFile, "\n\n\tFINAL UNBOUND EXTENDED STATE\n" );
-            pr( logFile,     "\t____________________________\n\n\n" );
-     
+                // Step 5.1 // {
+                //
+                // Repeat Step 1 with the standard AutoDock internal energy potentials
+                //
+                // Run a hybrid global-local search using the autodock energy tables
+                // -----------------------------------------------------------------
+                //
+                //  *  Turn off the use of the non-bond cutoff
+                //  *  Turn off internal electrostatics
+                //  *  Turn off intermolecular energy calculations
+                // TODO Do not translate or rotate the ligand in unbound searches
+                //
+                /*
+                 *  Genetic Algorithm-Local search,  a.k.a. 
+                 *  Lamarckian Genetic Algorithm
+                 */
+                (void) fprintf( logFile, "\n\n\tBEGINNING COMPUTATION OF UNBOUND AUTODOCK STATE USING LGA\n");
+                (void) fprintf( logFile,     "\t_________________________________________________________\n\n\n");
+                (void) fflush( logFile );
+                //
+                pr(logFile, "Date:\t");
+                printdate( logFile, 2 );
+                (void) fflush( logFile );
+                gaStart = times( &tms_gaStart );
+                //  Can get rid of the following line
+                ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
+                //
+                // Start Lamarckian GA run searching only torsions -- Unbound simulation
+                // sUnbound_ad = call_glss_tors( GlobalSearchMethod, LocalSearchMethod,
+                sUnbound_ad = call_glss( GlobalSearchMethod, LocalSearchMethod,
+                                         sInit,
+                                         num_evals_unbound, pop_size,
+                                         outlev,
+                                         outputEveryNgens, &ligand,
+                                         B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
+                                         info, FN_pop_file );
+                // State of best individual at end of GA-LS run, sUnbound_ad, is returned.
+                // Finished Lamarckian GA run
+                gaEnd = times( &tms_gaEnd );
+                pr( logFile, "\nFinished Lamarckian Genetic Algorithm (LGA), time taken:\n");
+                timesyshms( gaEnd - gaStart, &tms_gaStart, &tms_gaEnd );
+                pr( logFile, "\n");
+                printdate( logFile, 1 );
+                (void) fflush( logFile );
+                pr(logFile, "\nTotal number of Energy Evaluations: %lu\n", evaluate.evals() );
+                pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
+                // Restore the number of torsions in the state variable "sUnbound_ad"
+                sUnbound_ad.ntor = saved_sInit_ntor;
+                // end of Step 5.1 // }
+
+                // Step 5.2 // {
+                //
+                // Compute the energy of the unbound AutoDock state
+                // ------------------------------------------------
+                //
+                // Convert from unbound state to unbound coordinates
+                cnv_state_to_coords( sUnbound_ad, vt, tlist, sUnbound_ad.ntor, crdpdb, crd, natom );
+                //
+                // Calculate the unbound internal energy using the standard AutoDock energy function
+                (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
+                //
+                // eintcal() and eintcalPrint() set the values of the hideously-global nb_group_energy[]
+                unbound_ad_internal_FE = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR];
+                //
+                pr(logFile, "\n\nThe internal energy of the unbound AutoDock state was computed to be %+.3lf kcal/mol\n\n", unbound_ad_internal_FE);
+                // end of Step 5.2 // }
+
+                if (unbound_ad_internal_FE < unbound_ext_internal_FE) {
+                    pr(logFile, "NOTE:   The AutoDock internal energy of the \"extended\" state was higher\nNOTE:   than that of the state obtained by searching using the AutoDock internal\nNOTE:   energy potentials.\nNOTE:   The unbound state was set to the AutoDock optimum state, not the \"extended\" state.\n\n");
+                    unbound_internal_FE = unbound_ad_internal_FE;
+                    sUnbound = sUnbound_ad;
+                } else {
+                    pr(logFile, "NOTE:   Although the AutoDock internal energy of the \"extended\" state was positive, it was lower\nNOTE:   than that of the state obtained by searching using the AutoDock internal\nNOTE:   energy potentials.\nNOTE:   The unbound state was set to the \"extended\" state.\n\n");
+                    unbound_internal_FE = unbound_ext_internal_FE;
+                    sUnbound = sUnbound_ext;
+                }
+            } else {
+                // Unbound extended state has an internal energy that is negative
+                unbound_internal_FE = unbound_ext_internal_FE;
+                sUnbound = sUnbound_ext;
+                pr(logFile, "NOTE:   The AutoDock internal energy of the \"extended\" state was negative.\n\nNOTE:   The unbound state was set to the \"extended\" state.\n\n");
+            }
+            //
+            pr(logFile, "\n\nThe internal energy of the unbound state was set to %+.3lf kcal/mol\n\n", unbound_internal_FE);
+            // end of Step 5 // }
+
+            // Step 6 // {
+            //
+            // Convert from unbound state to unbound coordinates
+            cnv_state_to_coords( sUnbound, vt, tlist, sUnbound.ntor, crdpdb, crd, natom );
+            // end of Step 6 // }
+
+            // Step 7 // {
+            //
+            // Output the coordinates of the unbound state
+            pr( logFile, "\n\n\tFINAL UNBOUND STATE\n" );
+            pr( logFile,     "\t___________________\n\n\n" );
+            //
             writePDBQT( -1, seed,  FN_ligand, dock_param_fn, lig_center,
                         sUnbound, ntor, &eintra, &einter, natom, atomstuff,
                         crd, emap, elec,
@@ -3644,6 +3821,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         ignore_inter,
                         B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                         info, UNBOUND, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+            // end of Step 7 // }
+
+            // Step 8 // {
+            //
+            // Remember to reset the energy evaluator back to computing the intermolecular energy between
+            // the flexible and the rigid molecules.
+            evaluate.compute_intermol_energy(TRUE);
+            // end of Step 8 // }
 
         } else {
             pr(logFile, "NOTE:  AutoDock cannot compute the energy of the unbound state, since the ligand is rigid.\n\n");
@@ -3758,7 +3943,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         // Calculate the internal energy
         if (ntor > 0) {
-            (void) eintcalPrint(nonbondlist, ad_energy_tables, crdpdb, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_have_flexible_residues);
+            (void) eintcalPrint(nonbondlist, ad_energy_tables, crdpdb, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
         }
 
         // calculate the energy breakdown for the input coordinates, "crdpdb"
@@ -3941,7 +4126,7 @@ if (command_mode) {
                       ignore_inter,
                       B_include_1_4_interactions, scale_1_4, 
                       parameterArray, unbound_internal_FE,
-                      info, B_have_flexible_residues );
+                      info, B_have_flexible_residues, B_use_non_bond_cutoff );
     exit( status );  /* "command_mode" exits here... */
 }
 
