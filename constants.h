@@ -289,6 +289,7 @@
 
 #define is_out_grid_info(x,y,z) (((x)<=(info->lo[X])) || ((x)>=(info->hi[X])) || ((y)<=(info->lo[Y])) || ((y)>=(info->hi[Y])) || ((z)<=(info->lo[Z])) || ((z)>=(info->hi[Z])))
 
+#define is_zero(x) ((x) > -APPROX_ZERO) && ((x) < APPROX_ZERO) ? 1 : 0
 
 /*----------------------------------------------------------------------------* 
  * Random numbers,                                                            * 
@@ -492,6 +493,12 @@ const Real TK = 298.15;      // Room temperature, in K
                     (string), (vector)[X], (vector)[Y], (vector)[Z] )
 
 
+/*
+ * For unbound and bound internal energy calculations,
+ * used when calling intnbtable()
+ */
+#define UNBOUND_CALCULATION TRUE
+#define BOUND_CALCULATION FALSE
 
 /*----------------------------------------------------------------------------* 
  * End of file                                                                * 
