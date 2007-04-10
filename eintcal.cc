@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.15 2006/12/13 02:19:02 garrett Exp $
+ $Id: eintcal.cc,v 1.16 2007/04/10 07:35:57 garrett Exp $
 
 */
 
@@ -56,6 +56,7 @@ Real eintcalPrint( NonbondParam * const nonbondlist,
                    const Real scale_1_4,
                    const Real qsp_abs_charge[MAX_ATOMS],
                    const ParameterEntry parameterArray[MAX_MAPS],
+                   const Boole B_use_non_bond_cutoff,
                    const Boole B_have_flexible_residues  // if the receptor has flexibile residues, this will be set to TRUE
                   )
 // eintcalPrint ]
@@ -104,10 +105,14 @@ Real eintcalPrint( NonbondParam * const nonbondlist,
     //  eintcal ]
 #else // eintcalPrint [
 #   ifndef  NOSQRT
-    register double d=0.0L; //  SQRT 
-    const double nbc  = NBC;
+        register double d=0.0L; //  SQRT 
+        //const double nbc  = NBC;
+        // if we have defined USE_8A_CUTOFF, then NBC = 8
+        const double nbc  = B_use_non_bond_cutoff ? NBC  : 999;
 #   else
-    const double nbc2 = NBC2;
+        //const double nbc2 = NBC2;
+        // if we have defined USE_8A_CUTOFF, then NBC = 8 // Xcode-gmm
+        const double nbc2 = B_use_non_bond_cutoff ? NBC2 : 999 * 999;
 #   endif
 #endif // eintcalPrint ]
 
