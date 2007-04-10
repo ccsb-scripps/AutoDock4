@@ -52,6 +52,7 @@ int   cmdmode( int natom,
              const Real unbound_internal_FE,
 
              GridMapSetInfo *info,
-             Boole B_have_flexible_residues
+             Boole B_have_flexible_residues,
+             Boole B_use_non_bond_cutoff
              );
 #endif
