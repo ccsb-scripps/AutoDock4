@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.11 2006/09/12 23:18:14 garrett Exp $
+ $Id: mkTorTree.cc,v 1.12 2007/04/10 08:42:41 garrett Exp $
 
 */
 
@@ -57,7 +57,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     int   found_new_res = 0;
     int   nres = 0;
     int   natoms_in_res = 0;
-    int   thisatom = 0;
+    int   natoms = 0;
     int   nrestor=0;
     int   found_first_res=0;
 
@@ -143,7 +143,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 
              /* This is an ATOM or HETATM. */
 
-                    atomlast = atomnumber[ i ];
+             atomlast = atomnumber[ i ];
 
              if (found_new_res) {
                     /* We are in a residue. */
@@ -152,7 +152,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
                          * residue to prevent them being
                          * included in the intermolecular
                          * energy calculation.  */
-                         ignore_inter[thisatom] = 1;
+                         ignore_inter[natoms] = 1;
                     }
                     /* Keep counting the number of atoms in the residue. */
                     natoms_in_res++;
@@ -167,7 +167,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
                     natoms_in_res = 0;
                 }
                 /* Increment atom counter for all atoms in PDBQT file */
-                thisatom++;
+                natoms++;
 
 #ifdef DEBUG
                 C = 'A';
@@ -360,6 +360,22 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     //if there are no flexible residues, still need to set P_ntor_ligand
     if (found_first_res == 0) {
          *P_ntor_ligand = ntor;
+    }
+
+#define check_atomnumber_ok( a )  (((a) >= 0) && ((a) < natoms))
+
+    Boole B_atom_number_OK = TRUE;
+
+    for (itor=0; itor<ntor; itor++ ) {
+        B_atom_number_OK &= check_atomnumber_ok( tlist[ itor ][ ATM1 ] );
+        B_atom_number_OK &= check_atomnumber_ok( tlist[ itor ][ ATM2 ] );
+        if (B_atom_number_OK) for (int i=0;  i < tlist[ itor ][ NUM_ATM_MOVED ]; i++ ) {
+                B_atom_number_OK &= check_atomnumber_ok( tlist[ itor ][ 3+i ] );
+            }
+        if (B_atom_number_OK) continue;
+        pr( logFile, "%s: ERROR:  Torsion number %d between atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n", programname, itor+1, 1+tlist[itor][ATM1], 1+tlist[itor][ATM2], tlist[itor][NUM_ATM_MOVED] );
+        pr( stderr, "%s: ERROR:  Torsion number %d between atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n", programname, itor+1, 1+tlist[itor][ATM1], 1+tlist[itor][ATM2], tlist[itor][NUM_ATM_MOVED] );
+        exit(-1);
     }
 
     itor = 0;
