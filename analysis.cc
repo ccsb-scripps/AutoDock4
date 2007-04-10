@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.25 2007/03/21 06:30:55 garrett Exp $
+ $Id: analysis.cc,v 1.26 2007/04/10 07:25:01 garrett Exp $
 
 */
 
@@ -27,6 +27,7 @@
 #include "print_avsfld.h"
 #include "printEnergies.h"
 #include "analysis.h"
+#include "eintcal.h"
 
 extern FILE  *logFile;
 extern int   keepresnum;
@@ -43,7 +44,7 @@ void analysis( int   Nnb,
                Real clus_rms_tol, 
                Real crdpdb[MAX_ATOMS][SPACE], 
 
-               EnergyTables *ptr_ad_energy_tables,
+               const EnergyTables *ptr_ad_energy_tables,
 
                Real  map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
                Real  econf[MAX_RUNS], 
@@ -303,6 +304,10 @@ void analysis( int   Nnb,
             pr( logFile, "TER\n" );
             pr( logFile, "ENDMDL\n" );
             // End of outputting coordinates of this "MODEL"...
+#ifdef EINTCALPRINT
+            // Print detailed breakdown of internal energies of all non-bonds
+            (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
+#endif
             flushLog;
         } /*k*/
     } /*i   (Next cluster.) */
