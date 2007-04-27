@@ -1,3 +1,30 @@
+/*
+
+ $Id: support.h,v 1.10 2007/04/27 06:01:51 garrett Exp $
+
+ AutoDock 
+
+ Copyright (C) 1989-2007,  Scott Halliday, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, Richard Belew
+ All Rights Reserved.
+
+ AutoDock is a Trade Mark of The Scripps Research Institute.
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+ */
+
 //  These are the class used to support the Representation classes.
 //  Genotypes are the representations that the Global_Search class 
 //  and its derivations acts on.  Local_Search and its children act
@@ -11,6 +38,9 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.10  2007/04/27 06:01:51  garrett
+** Added the files necessary for GNU Autotools and the "dot-slash-configure dance"...
+**
 ** Revision 1.9  2007/03/21 06:30:56  garrett
 ** Created a branch of AutoDock 4 with internal representation of orientations changed from axis-angle nx,ny,nz,ang to quaternion-components qx,qy,qz,qw.  This is intended to avoid rotation singularities of axis-angles near ((1,0,0),0 radians), and to avoid orientational bias in dockings.
 **

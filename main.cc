@@ -1,16 +1,34 @@
 /*
 
- $Id: main.cc,v 1.67 2007/04/10 08:39:55 garrett Exp $
+ $Id: main.cc,v 1.68 2007/04/27 06:01:49 garrett Exp $
 
-*/
+ AutoDock 
+
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, Scott Halliday, Max Chang, Bill Hart, Richard Belew
+ All Rights Reserved.
+
+ AutoDock is a Trade Mark of The Scripps Research Institute.
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+ */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-/* main.cc */
-
-// possibly unnecessary // #include <iostream.h>
 #include <math.h>
 #include <sys/types.h> // time_t time(time_t *tloc);
 #include <time.h>      // time_t time(time_t *tloc);
@@ -38,7 +56,6 @@
 #include "distdepdiel.h"
 #include "calculateEnergies.h"
 #include "conformation_sampler.h"
-
 #include "main.h"
 
 #ifdef sun
@@ -56,6 +73,8 @@ extern Eval evaluate;
 extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
+
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.68 2007/04/27 06:01:49 garrett Exp $"};
 
 
 int sel_prop_count = 0;
@@ -110,7 +129,6 @@ int main (int argc, char * const argv[], char * const envp[])
 *******************************************************************************/
 
 {
-
 //   ATOM_MAPS
 //
 char            atm_typ_str[ATOM_MAPS]; //  "atm_typ_str" (in AD3) used to serve a similar role to "atom_type_name" (in AD4).
@@ -424,7 +442,7 @@ static Real F_W;
 static Real F_hW;
 static FourByteLong clktck = 0;
 
-static Real version = 4.00;
+static Real version_num = 4.00;
 
 struct tms tms_jobStart;
 struct tms tms_gaStart;
@@ -677,9 +695,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 ** Output banner...
 */
 
-banner( version );
+banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.67 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.68 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -4073,6 +4091,26 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         (void) fflush(logFile);
 
+        break;
+
+/*____________________________________________________________________________*/
+
+    case DPF_COPYRIGHT:
+        /*
+         * 'copyright' to show the Gnu GPL copyright
+         */
+        show_copyright(logFile);
+        (void) fflush(logFile);
+        break;
+
+/*____________________________________________________________________________*/
+
+    case DPF_WARRANTY:
+        /*
+         * 'warranty' to show the Gnu GPL warranty
+         */
+        show_warranty(logFile);
+        (void) fflush(logFile);
         break;
 
 /*_12yy_______________________________________________________________________*/
