@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.1 2007/04/27 06:01:47 garrett Exp $
+# $Id: Makefile.am,v 1.2 2007/04/30 23:52:06 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -29,17 +29,12 @@
 # NOTE: Must be run in the $(AUTODOCK_DEV) directory
 #
 
-
-
-# Define the destination directory for the executables:
-
-EXE = .  # Change this to the directory path holding binaries for your platform
-
-# AM_CPPFLAGS = #
-
 # Autotools
 
-EXTRA_DIST = Tests AD4_PARM99.dat AD4_parameters.dat paramdat2h.csh
+EXTRA_DIST = AD4_PARM99.dat AD4_parameters.dat paramdat2h.csh Tests
+
+dist-hook:
+	rm -rf `find $(distdir)/Tests -name CVS -o -name '*.dlg'` 
 
 bin_PROGRAMS = autodock4
 
