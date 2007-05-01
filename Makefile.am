@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.2 2007/04/30 23:52:06 garrett Exp $
+# $Id: Makefile.am,v 1.3 2007/05/01 00:11:23 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -243,19 +243,22 @@ libad_a_SOURCES = \
 		weedbonds.h \
 		writePDBQT.h
 
-AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization
+#AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
+AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
 
 AM_CPPFLAGS = -DNOSQRT \
               -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
               -DWRITEPDBQSTATE \
               -I$(srcdir)/../acro/include # Standard accuracy, but faster; no crossover in quaternion
 
-autodock4_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization
+#autodock4_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
+autodock4_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 
 autodock4_CPPFLAGS = -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
                      -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
 
-CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization
+#CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
+CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization + GCC vectorization
 
 CPPFLAGS = -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
            -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
