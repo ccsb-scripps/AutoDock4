@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.9 2006/11/25 10:00:39 garrett Exp $
+# $Id: test_autodock4.py,v 1.10 2007/05/01 23:43:34 rhuey Exp $
 #
 
 """
@@ -90,8 +90,8 @@ class AutoDock4_1pgp_test( unittest.TestCase ):
         """Check the final energy is expected value."""
         global expected_intermol_energy, expected_internal_energy
         (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename )
-        self.assertAlmostEqual( intermol_energy, expected_intermol_energy, places=6 )
-        self.assertAlmostEqual( internal_energy, expected_internal_energy, places=6 )
+        self.assertEqual( round(intermol_energy,6), round(expected_intermol_energy,6))
+        self.assertEqual( round(internal_energy,6), round(expected_internal_energy,6))
 
 #______________________________________________________________________________
 
@@ -112,8 +112,8 @@ class AutoDock4_1pgp_no_parameter_file_test( unittest.TestCase ):
         """ check the final energy is expected value """
         global expected_intermol_energy, expected_internal_energy
         (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename )
-        self.assertAlmostEqual( intermol_energy, expected_intermol_energy, places=6 )
-        self.assertAlmostEqual( internal_energy, expected_internal_energy, places=6 )
+        self.assertEqual( round(intermol_energy,6), round(expected_intermol_energy,6))
+        self.assertEqual( round(internal_energy,6), round(expected_internal_energy,6))
 
 #______________________________________________________________________________
 
