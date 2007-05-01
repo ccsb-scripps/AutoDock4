@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.4 2007/05/01 00:19:44 garrett Exp $
+# $Id: Makefile.am,v 1.5 2007/05/01 02:42:38 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -458,14 +458,21 @@ gs.o : gs.cc gs.h ranlib.h eval.h rep.h support.h writePDBQT.h
 ### main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcalPrint.cc eintcalPrint.h eintcal.cc atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h calculateEnergies.cc calculateEnergies.h
 ### $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ACRO_INCLUDES) -c main.cc
 
+# 2007-04-30 MP & GMM: this line is necessary to be able to compile read_parameter_library.o
+read_parameter_library.o : default_parameters.h
+
 default_parameters.h : AD4_parameters.dat paramdat2h.csh
-    cd $(srcdir)
 	rm -f $@
 	./paramdat2h.csh > tmp-paramdat
 	mv -f tmp-paramdat $@
 
 #coliny.o : coliny.h
 #	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ACRO_INCLUDES) -c coliny.cc -o coliny.o
+
+# see Autoconf manual 4.7.3 (p. 25) support for VPATH
+# enabling multi-platform builds
+srcdir = @srcdir@
+VPATH  = @srcdir@
 
 #
 # EOF
