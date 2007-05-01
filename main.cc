@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.68 2007/04/27 06:01:49 garrett Exp $
+ $Id: main.cc,v 1.69 2007/05/01 02:40:12 garrett Exp $
 
  AutoDock 
 
@@ -58,14 +58,6 @@
 #include "conformation_sampler.h"
 #include "main.h"
 
-#ifdef sun
-    extern "C"
-    {
-        /* Needed on Sun */
-        int gethostname(char *name,int namelen);
-    }
-#endif
-
 extern int debug;
 extern int keepresnum;
 extern Real idct;
@@ -74,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.68 2007/04/27 06:01:49 garrett Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.69 2007/05/01 02:40:12 garrett Exp $"};
 
 
 int sel_prop_count = 0;
@@ -697,7 +689,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.68 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.69 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
