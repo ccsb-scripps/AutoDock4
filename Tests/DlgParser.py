@@ -7,9 +7,9 @@
 #############################################################################
 
 
-# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.6 2006/06/27 23:06:44 rhuey Exp $
+# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.7 2007/05/01 21:37:04 rhuey Exp $
 #
-# $Id: DlgParser.py,v 1.6 2006/06/27 23:06:44 rhuey Exp $
+# $Id: DlgParser.py,v 1.7 2007/05/01 21:37:04 rhuey Exp $
 #
 #
 #
@@ -25,7 +25,7 @@ This Object parses the result of an AutoDock job and returns a dictionary.
 import os
 from string import find, join, replace, split, rfind, strip
 import re
-import Numeric
+#import Numeric
 
 #from AutoDockTools.ResultParser import ResultParser
 
@@ -235,7 +235,13 @@ class DlgParser:
         ind = self.allLines.index(lines[0])
         ct = self.ligand_atom_count
         nb_lines = self.allLines[ind+2:ind+2+ct]
-        self.nb_array = Numeric.zeros((ct, ct))
+        #self.nb_array = Numeric.zeros((ct, ct))
+        self.nb_array = []
+        for i in range(ct):
+            self.nb_array.append([])
+            for j in range(ct):
+                self.nb_array[i].append(0)
+                
         if echo:
             for l in nb_lines:
                 print l,
@@ -734,7 +740,10 @@ class DlgParser:
             d['coords'] = coords
             d['vdw_energies'] = vdW
             d['estat_energies'] = Elec
-            d['total_energies'] = Numeric.array(Numeric.array(vdW)+Numeric.array(Elec)).tolist()
+            d['total_energies'] = []
+            for i in range(len(vdW)):
+                d['total_energies'].append(vdW[i]+Elec[i])
+            #d['total_energies'] = Numeric.array(Numeric.array(vdW)+Numeric.array(Elec)).tolist()
             if binding_energy2 and not d.has_key('binding_energy'):
                 d['binding_energy'] = binding_energy2
                 d['docking_energy'] = binding_energy2
