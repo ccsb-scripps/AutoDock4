@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.3 2007/05/01 00:11:23 garrett Exp $
+# $Id: Makefile.am,v 1.4 2007/05/01 00:19:44 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -459,6 +459,7 @@ gs.o : gs.cc gs.h ranlib.h eval.h rep.h support.h writePDBQT.h
 ### $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ACRO_INCLUDES) -c main.cc
 
 default_parameters.h : AD4_parameters.dat paramdat2h.csh
+    cd $(srcdir)
 	rm -f $@
 	./paramdat2h.csh > tmp-paramdat
 	mv -f tmp-paramdat $@
