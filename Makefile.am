@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.5 2007/05/01 02:42:38 garrett Exp $
+# $Id: Makefile.am,v 1.6 2007/05/03 20:21:17 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -244,7 +244,7 @@ libad_a_SOURCES = \
 		writePDBQT.h
 
 #AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
-AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
+AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 
 AM_CPPFLAGS = -DNOSQRT \
               -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
@@ -258,10 +258,10 @@ autodock4_CPPFLAGS = -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
                      -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
 
 #CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
-CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization + GCC vectorization
+#CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 
-CPPFLAGS = -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
-           -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
+#CPPFLAGS = -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
+#           -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
 
 
 autodock4_LDADD = libad.a -lm
@@ -420,11 +420,18 @@ autodock4.html :
 	@echo " "
 	enscript -E --color -Whtml --toc -p$@ *.h *.cc
 
-check : autodock4 Tests/test_autodock4.py
+check : autodock4 $(srcdir)/Tests/test_autodock4.py
+if HAVE_PYTHON
 	@echo " "
 	@echo "Running the Python test_autodock4.py unit-tests on autodock4"
 	@echo " "
-	cd Tests ; python ./test_autodock4.py
+	cd $(srcdir)/Tests ; chmod u+w . ; python ./test_autodock4.py
+else
+	@echo " "
+	@echo "Python version 2.1 or higher needed for 'make check', but not found."
+	@echo "Skipping AutoDock4 unit tests."
+	@echo " "
+endif
 
 #$(COLINYLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
 #	@echo " "
@@ -463,7 +470,7 @@ read_parameter_library.o : default_parameters.h
 
 default_parameters.h : AD4_parameters.dat paramdat2h.csh
 	rm -f $@
-	./paramdat2h.csh > tmp-paramdat
+	csh ./paramdat2h.csh > tmp-paramdat
 	mv -f tmp-paramdat $@
 
 #coliny.o : coliny.h
