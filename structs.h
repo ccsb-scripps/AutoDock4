@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.17 2007/04/27 06:01:51 garrett Exp $
+ $Id: structs.h,v 1.18 2007/05/03 23:25:44 garrett Exp $
 
  AutoDock 
 
@@ -152,7 +152,7 @@ typedef struct rotamer
 
 /* ____________________________________________________________________________ */
 
-typedef struct charge
+typedef struct chargestruct
 {
     double charge;
     double abs_charge;
