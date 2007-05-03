@@ -1,0 +1,1227 @@
+# $Id: Makefile.pre-autoconf,v 1.1 2007/05/03 20:17:00 garrett Exp $
+# 
+# AutoDock 
+# 
+# Copyright (C) 1989-2007,  Garrett M. Morris
+# All Rights Reserved.
+# 
+# AutoDock is a Trade Mark of The Scripps Research Institute.
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+#
+# Makefile to build AutoDock 4
+#
+# NOTE: Must be run in the $(AUTODOCK_DEV) directory
+#
+# Copyright (C) 1994-2006,  Garrett Matthew Morris,  TSRI
+#
+
+#
+# Edit this Makefile to reflect your machine architecture and OS
+#
+# Specifically, change these variables:
+# 	LIB, CSTD, CFLAGS, OPT, LINT, LINTFLAGS, LINK, WARN, & CC
+#
+# If you need to use debugging or profiling, these should also be 
+# modified appropriately:
+# 	DBUG & PROF
+#
+# If you want to use the Coliny solver library, uncomment the following:
+# COLINY = yes
+
+# Abbreviations:
+#
+# Alpha   = Compaq/Digital Equipment Corp., Alpha
+# Convex  = Convex, c2
+# Cygwin  = Cygwin running on Microsoft Windows
+# Darwin  = Darwin
+# HP      = Hewlett Packard Precision Architecture, hppa
+# Linux   = Any platform that runs GNU/Linux, Linux
+# MacOSX  = Apple Mac OS X 10.0 & higher, MacOSX
+# SGI     = Silicon Graphics Inc., sgi4D
+# Sun     = Sun Microsystems, sun4
+
+
+# Define the destination directory for the executables:
+
+EXE = .  # Change this to the directory path holding binaries for your platform
+
+
+# Define the object files:
+
+OBJS = \
+    analysis.o \
+	atom_parameter_manager.o \
+    banner.o \
+    bestpdb.o \
+	calculateEnergies.o \
+    call_glss.o \
+    call_gs.o \
+    call_ls.o \
+    changeState.o \
+    check_header_float.o \
+    check_header_int.o \
+    check_header_line.o \
+    cluster_analysis.o \
+    clmode.o \
+    cmdmode.o \
+    cnv_state_to_coords.o \
+    com.o \
+    conformation_sampler.o \
+	distdepdiel.o \
+    stateLibrary.o \
+    readfield.o \
+    readmap.o \
+    readPDBQT.o \
+	read_parameter_library.o \
+    eval.o \
+    gencau.o \
+    getrms.o \
+    get_atom_type.o \
+    getInitialState.o \
+    getpdbcrds.o \
+    gs.o \
+    initautodock.o \
+    input_state.o \
+    investigate.o \
+    linpack.o \
+    ls.o \
+    mapping.o \
+    minmeanmax.o \
+    mkNewState.o \
+    mkTorTree.o \
+    mkRandomState.o \
+    nonbonds.o \
+    openfile.o \
+    output_state.o \
+    parse_com_line.o \
+    parse_dpf_line.o \
+    parse_param_line.o \
+    parse_PDBQT_line.o \
+    parse_trj_line.o \
+	parsetypes.o \
+    print_2x.o \
+    print_atomic_energies.o \
+    print_avsfld.o \
+    writePDBQT.o \
+    print_rem.o \
+    printdate.o \
+    printEnergies.o \
+    printhms.o \
+    prClusterHist.o \
+    prInitialState.o \
+    prTorConList.o \
+    qmultiply.o \
+    qtransform.o \
+    quicksort.o \
+    ranlib.o \
+    rep.o \
+    scauchy.o \
+    set_cmd_io_std.o \
+    setflags.o \
+    simanneal.o \
+    sort_enrg.o \
+    stop.o \
+    strindex.o \
+    success.o \
+    summarizegrids.o \
+    support.o \
+    swap.o \
+    timesys.o \
+    timesyshms.o \
+    torNorVec.o \
+    torsion.o \
+    usage.o \
+    weedbonds.o \
+    warn_bad_file.o \
+    coliny.o
+
+OBJS_LSFIT = \
+    analysis.o \
+	atom_parameter_manager.o \
+    banner.o \
+    bestpdb.o \
+	calculateEnergies.o \
+    call_glss.o \
+    call_gs.o \
+    call_ls.o \
+    changeState.o \
+    check_header_float.o \
+    check_header_int.o \
+    check_header_line.o \
+    cluster_analysis.o \
+    clmode.o \
+    cmdmode.o \
+    com.o \
+    conformation_sampler.o \
+	distdepdiel.o \
+    stateLibrary.o \
+    readfield.o \
+    readmap.o \
+    readPDBQT.o \
+	read_parameter_library.o \
+    eval.o \
+    gencau.o \
+    getrms.o \
+    get_atom_type.o \
+    getInitialState.o \
+    getpdbcrds.o \
+    gs.o \
+    initautodock.o \
+    input_state.o \
+    investigate.o \
+    linpack.o \
+    ls.o \
+    mapping.o \
+    minmeanmax.o \
+    mkNewState.o \
+    mkTorTree.o \
+    mkRandomState.o \
+    nonbonds.o \
+    openfile.o \
+    output_state.o \
+    parse_com_line.o \
+    parse_dpf_line.o \
+    parse_param_line.o \
+    parse_PDBQT_line.o \
+    parse_trj_line.o \
+	parsetypes.o \
+    print_2x.o \
+    print_atomic_energies.o \
+    print_avsfld.o \
+    writePDBQT.o \
+    print_rem.o \
+    printdate.o \
+    printEnergies.o \
+    printhms.o \
+    prClusterHist.o \
+    prInitialState.o \
+    prTorConList.o \
+    qmultiply.o \
+    qtransform.o \
+    quicksort.o \
+    ranlib.o \
+    rep.o \
+    scauchy.o \
+    set_cmd_io_std.o \
+    setflags.o \
+    simanneal.o \
+    sort_enrg.o \
+    stop.o \
+    strindex.o \
+    success.o \
+    summarizegrids.o \
+    support.o \
+    swap.o \
+    timesys.o \
+    timesyshms.o \
+    torNorVec.o \
+    torsion.o \
+    usage.o \
+    weedbonds.o \
+    warn_bad_file.o \
+    coliny.o
+
+OBJNOSQRT = \
+    eintcal.o \
+    eintcalPrint.o \
+    intnbtable.o \
+    nbe.o
+
+OBJSQRT = \
+    eintcal.sqrt.o \
+    eintcalPrint.sqrt.o \
+    intnbtable.sqrt.o \
+    nbe.sqrt.o
+
+OBJNOMINPT = \
+    trilinterp.o
+
+OBJMINPT = \
+    trilinterp.MINPT.o
+
+# Define lint files:
+
+LNS = \
+    analysis.ln \
+    atom_parameter_manager.ln \
+    banner.ln \
+    bestpdb.ln \
+    changeState.ln \
+    check_header_float.ln \
+    check_header_int.ln \
+    check_header_line.ln \
+    cluster_analysis.ln \
+    clmode.ln \
+    cmdmode.ln \
+    conformation_sampler.ln \
+    cnv_state_to_coords.ln \
+    stateLibrary.ln \
+    readfield.ln \
+    readmap.ln \
+    readPDBQT.ln \
+	read_parameter_library.ln \
+    getrms.ln \
+    get_atom_type.ln \
+    getInitialState.ln \
+    getpdbcrds.ln \
+    initautodock.ln \
+    input_state.ln \
+    investigate.ln \
+    main.ln \
+    mkNewState.ln \
+    mkTorTree.ln \
+    mkRandomState.o \
+    nonbonds.ln \
+    openfile.ln \
+    output_state.ln \
+    parse_com_line.ln \
+    parse_dpf_line.ln \
+    parse_param_line.ln \
+    parse_PDBQT_line.ln \
+    parse_trj_line.ln \
+    parsetypes.ln \
+    print_2x.ln \
+    print_atomic_energies.ln \
+    print_avsfld.ln \
+    writePDBQT.ln \
+    print_rem.ln \
+    printdate.ln \
+    printEnergies.ln \
+    printhms.ln \
+    prClusterHist.ln \
+    prInitialState.ln \
+    prTorConList.ln \
+    qmultiply.ln \
+    qtransform.ln \
+    quicksort.ln \
+    set_cmd_io_std.ln \
+    setflags.ln \
+    simanneal.ln \
+    sort_enrg.ln \
+    stop.ln \
+    strindex.ln \
+    success.ln \
+    summarizegrids.ln \
+    swap.ln \
+    timesys.ln \
+    timesyshms.ln \
+    torNorVec.ln \
+    torsion.ln \
+    trilinterp.ln \
+    usage.ln \
+    weedbonds.ln \
+    warn_bad_file.ln
+
+LNSNOSQRT = \
+    eintcal.ln \
+    eintcalPrint.ln \
+    intnbtable.ln \
+    nbe.ln
+
+LNSSQRT = \
+    eintcal.sqrt.ln \
+    eintcalPrint.sqrt.ln \
+    intnbtable.sqrt.ln \
+    nbe.sqrt.ln
+
+# Libraries
+
+ADLIB = libad.a
+ARFLAGS = r # SGI, Sun, Alpha, Linux, Darwin, MacOSX
+
+# RANLIB = file # SGI
+RANLIB = ranlib # Linux, Darwin, MacOSX
+
+RANLIBFLAGS = # Linux, SGI, MacOSX
+
+
+# C++ compiler
+
+CC = g++ # HP, Gnu, Cygwin, Linux, Darwin, MacOSX
+# CC = g++-4.0 -arch i386 # MacOSX -- Cross-compiling for Intel on PowerPC
+# CC = g++-3.3 -arch ppc # MacOSX -- Cross-compiling for PowerPC on Intel
+# CC = CC # SGI
+# CC = cxx # Alpha
+
+CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOSX
+# CSTD = $(DBUG) $(PROF) $(WARN) -DUSE_XCODE # Smaller memory footprint, good for Xcode
+# CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOSX
+# CSTD = $(DBUG) $(PROF) $(WARN) -I/opt/sfw/include # Sun Soliaris 8
+# CSTD = $(DBUG) $(PROF) $(WARN) -std # Convex
+# CSTD = -std -verbose $(PROF) $(DBUG) $(WARN) # Alpha. Not sarah
+# CSTD = -std arm -verbose $(PROF) $(DBUG) $(WARN) # Alpha. sarah
+# CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP
+
+CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX: Standard accuracy, but faster; no crossover in quaternion
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOSX: Standard accuracy, but faster
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DQUATERNION_MUTATION # As above, but treat quaternion genes properly when doing mutations--note, this is slow!
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOSX: Standard accuracy, but faster; also use Double precision throughout
+# CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX
+
+# OPTLEVEL = -O3 -ftree-vectorize # Agressive optimization + GCC vectorization
+# OPTLEVEL = -O3 # Agressive optimization
+# OPTLEVEL = -O3 -ffast-math # Agressive optimization, for Intel Itanium, ia64Linux2
+# OPTLEVEL = -fast # Agressive optimization for the G5 on MacOSX
+# OPTLEVEL = -O2 # High optimization
+# OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing
+OPTLEVEL = -O0 # Do not optimize
+
+OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOSX
+# OPT_SGI_IPNUM = -Ofast=ip19 # SGI, 'uname -a' says 'IP19'
+# OPT_SGI_IPNUM = -Ofast=ip21 # SGI, 'uname -a' says 'IP21'
+# OPT_SGI_IPNUM = -Ofast=ip25 # SGI, 'uname -a' says 'IP25' PowerChallenge is R10000, IP25
+# OPT_SGI_IPNUM = -Ofast=ip27 # SGI, 'uname -a' says 'IP27'
+# OPT_SGI_IPNUM = -Ofast=ip30 # SGI, 'uname -a' says 'IP30'
+# OPT_SGI_IPNUM = `uname -m | sed 's/IP/-Ofast=ip/'` # SGI, dynamic
+
+OPT_SGI_R000 = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOSX
+# OPT_SGI_R000 = -r4000 -mips2 # SGI, 'hinv' says MIPS Processor is R4000
+# OPT_SGI_R000 = -r8000 -mips4 # SGI, 'hinv' says MIPS Processor is R8000
+# OPT_SGI_R000 = -r10000 -mips4 # SGI, 'hinv' says MIPS Processor is R10000
+# OPT_SGI_R000 = -r12000 -mips4 # SGI, 'hinv' says MIPS Processor is R12000
+# OPT_SGI_R000 = -r14000 -mips4 # SGI, 'hinv' says MIPS Processor is R14000
+# OPT_SGI_R000 = `hinv | grep '^CPU:' | awk '{print $3}' | sed 's/R/-r/'` -mips4 # SGI, dynamic, -mips4 (works with -r8000 to -r14000, not -r4000)
+
+OPT = $(OPTLEVEL) # Alpha, HP, Sun, Convex, Cygwin, Linux, MacOSX
+# OPT = $(OPTLEVEL) -ffast-math # Gnu cc, fast-math is dangerous!
+# OPT = $(OPTLEVEL) -n32 $(OPT_SGI_IPNUM) $(OPT_SGI_R000) -IPA $(LNO_OPT) # SGI
+# OPT = $(OPTLEVEL) -n32 $(OPT_SGI_IPNUM) $(OPT_SGI_R000) -IPA $(LNO_OPT) -DUSE_INT_AS_LONG # SGI (long is 8bytes)
+# OPT = $(OPTLEVEL) $(OPT_SGI_IPNUM) $(OPT_SGI_R000) $(LNO_OPT) # SGI, not new 32-bit
+
+LNO_OPT = # SGI, no special optimization at link time; Sun, Cygwin, Linux, MacOSX
+# LNO_OPT = -LNO:auto_dist=ON:gather_scatter=2 # SGI
+
+LINKOPT = $(CSTD) $(OPT) # All platforms except Cygwin and Sun
+# LINKOPT = $(CSTD) $(OPT) -fno-stack-limit # Cygwin, 32MB stacksize
+# LINKOPT = $(CSTD) $(OPT) -Wl,--stack=0x4000000 # Cygwin, 64MB stacksize
+# LINKOPT = $(CSTD) $(OPT) -L/opt/sfw/lib # Sun
+
+LINK = $(LINKOPT) # Linking flags
+# LINK = $(LINKOPT) -cord # Procedure rearranger on SGI
+
+LIB = -lm # for all platforms
+# LIB = -lSaturn # for profiling using MacOSX Saturn
+
+LINT = lint # lint C code checking
+
+LINTFLAGS = $(LIB) -c # SGI, Linux, MacOSX
+# LINTFLAGS = $(LIB) -MA -c # Alpha
+# LINTFLAGS = -DHPPA -D_HPUX_SOURCE $(LIB) -c # HP
+# LINTFLAGS = -u -n -lm # Sun
+
+DBUG = # Use assert code
+# DBUG = -DNDEBUG # No debugging and no assert code
+# DBUG = -g # dbx, or Gnu gdb
+# DBUG = -g -DDEBUG # dbx + DEBUG-specific code
+# DBUG = -g3 # dbx + optimization
+# DBUG = -g3 -DDEBUG # dbx + optimization, + DEBUG-specific code
+# DBUG = -DDEBUG # Just DEBUG-specific code
+# DBUG = -DDEBUG2 # Just DEBUG2-specific code for tracking prop.selection
+# DBUG = -DDEBUG3 # Just DEBUG3-specific code for print age of individuals
+# DBUG = -g -DDEBUG -DDEBUG2 -DDEBUG3 # Debug everything
+# DBUG = -DDEBUG_MUTATION # Use assert code, & print out information anywhere involving mutation
+# DBUG = -g3 -DDEBUG_QUAT # Use assert code, & assert quaternions are 4D-normalised
+# DBUG = -g3 -DDEBUG_QUAT -DDEBUG_QUAT_PRINT # Use assert code, & assert quaternions are 4D-normalised, and print out
+# DBUG = -g3 -DDEBUG_QUAT -DDEBUG_QUAT_PRINT -DDEBUG # Use assert code, & assert quaternions are 4D-normalised, and use DEBUG-specific code, and print out
+# DBUG = -g3 -DDEBUG_MUTATION # dbx + optimization; Use assert code, & print out information anywhere involving mutation
+# DBUG = -g3 -DDEBUG_MUTATION -DDEBUG # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements
+# DBUG = -g3 -DDEBUG_MUTATION -DDEBUG -DDEBUG3 # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements incl. 3
+
+PROF = # No profiling
+# PROF = -p # CC Profiling
+# PROF = -pg # For GNU gcc & GNU g++ Profiling with GNU gprof
+
+# WARN = # Default warning level
+# WARN = -woff all # For no warnings
+WARN = -Wall # All warnings, gcc -- Recommended for developers
+# WARN = -fullwarn -ansiE -ansiW # For full warnings during compilation
+
+ifeq ($(COLINY),yes)
+  ACRO_OS = -DDARWIN # Darwin, MacOSX
+  # ACRO_OS = -DLINUX # Linux
+
+  # ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -lg2c # Linux
+  ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw/lib -lg2c # Darwin, MacOSX (Fink needed)
+
+  ACRO_INCLUDES = -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
+  ACRO_FLAGS = -DDEBUGGING -DUNIX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES $(ACRO_OS)
+  LIB = $(ACRO_LINK)
+  ACRO = acro
+  COLINYLIB = libcoliny.a # Using Coliny
+else
+  COLINYLIB = # Not using Coliny
+endif
+
+# Uncomment this section with "###" if cross-compiling on MacOSX (Intel and PowerPC)
+# This section remains the same for either type of cross-compilation.
+### HOST_CC="gcc-4.0"
+### HOST_CXX="g++-4.0"
+### RANLIB=ranlib
+### AR=ar
+### AS=$CC
+### LD=ld
+### STRIP="strip -x -S"
+### CROSS_COMPILE=1
+
+#
+# Makefile targets
+#
+
+autodock4o : main.o $(ADLIB)
+	@echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	@echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4
+	@echo " "
+	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
+
+autodock4sqrt : main.o $(ADLIB)
+	@echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	@echo 'Flags: '$(CC) $(LINK) -L. -lad $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4sqrt
+	@echo " "
+	$(CC) $(CFLAGS) -o $@ main.o -L. -lad $(LIB)
+
+autodock4minpt : main.o $(ADLIB)
+	@echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	@echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4minpt
+	@echo " "
+	$(CC) $(CFLAGS) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
+
+autodock4alt : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+	@echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	@echo 'Flags: '$(CC) $(LINK) -DNOSQRT $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT) $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4alt
+	@echo " "
+	$(CC) $(LINK) -DNOSQRT -o $@ $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT) $(LIB)
+
+install :
+	@echo " "
+	@echo Moving autodock4 to $(AUTODOCK_BIN)
+	@echo " "
+	mv autodock4 $(AUTODOCK_BIN)
+
+autodock4.html :
+	@echo " "
+	@echo "Creating a colour-coded HTML report of the AutoDock source code"
+	@echo " "
+	enscript -E --color -Whtml --toc -p$@ *.h *.cc
+
+$(ADLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+	@echo " "
+	@echo Making the AutoDock library
+	@echo " "
+	@echo "Running ar"
+	$(AR) $(ARFLAGS) $(ADLIB) $(?:.cc=.o)
+	@echo "Running ranlib"
+	$(RANLIB) $(RANLIBFLAGS) $(ADLIB)
+
+test : autodock4 Tests/test_autodock4.py
+	@echo " "
+	@echo "Running the unit tests on autodock4"
+	@echo " "
+	cd Tests ; python ./test_autodock4.py
+
+OFILES= eigen.o matvec.o rot.o rotate.o rotlsqfit.o
+
+lsfit: lsfit.o $(OFILES)
+	gcc $(CFLAGS) lsfit.o $(OFILES) -lm -o lsfit
+
+testdriver: testdriver.o $(OFILES)
+	gcc $(CFLAGS) testdriver.o $(OFILES) -lm -o testdriver
+
+lsfitclean:
+	rm -f $(OFILES) lsfit.o lsfit testdriver.o testdriver
+
+autodock4lsfit : main.o cnv_state_to_coords_lsfit.o $(OBJS_LSFIT) $(OFILES)
+	echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
+	echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
+	@echo " "
+	@echo Making autodock4lsfit
+	@echo " "
+	$(CC) $(LINK) -DNOSQRT -o $@ main.o -L. -lad $(LIB)
+
+#$(COLINYLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
+#	@echo " "
+#	@echo Making the Coliny library
+#	@echo " "
+#	$(AR) $(ARFLAGS) $(COLINYLIB) $(?:.cc=.o)
+#	$(RANLIB) $(RANLIBFLAGS) $(COLINYLIB)
+###
+### competing alternative from another CVS user
+###
+# coliny: $(ACRO)
+
+acro:
+	@echo " "
+	@echo Making the Coliny library
+	@echo " "
+	@(cd ../acro;\
+	if [ ! -e Makefile ]; then\
+	   ./setup configure;\
+	fi;\
+	$(MAKE))
+
+lcheck : $(LNS) $(LNSNOSQRT)
+	$(LINT) $(LIB) $(LNS) $(LNSNOSQRT)
+
+lchecksqrt : $(LNS) $(LNSSQRT)
+	$(LINT) $(LIB) $(LNS) $(LNSSQRT)
+
+dualmap : dualmap.c
+	$(CC) $(CFLAGS) -lm dualmap.c -o $@
+
+.SUFFIXES: .cc .c .i
+
+.cc.i:
+	$(CC) $(CFLAGS) -E $< > $*.i
+
+.c.i:
+	$(CC) $(CFLAGS) -E $< > $*.i
+
+
+#
+# Object dependencies:
+#
+
+analysis.o : analysis.cc analysis.h constants.h getpdbcrds.h stateLibrary.h cnv_state_to_coords.h sort_enrg.h cluster_analysis.h prClusterHist.h getrms.h eintcal.h trilinterp.h print_rem.h strindex.h print_avsfld.h
+	$(CC) $(CFLAGS) -c analysis.cc
+
+#analysis.o : analysis.cc analysis.h constants.h getpdbcrds.h stateLibrary.h cnv_state_to_coords.h sort_enrg.h cluster_analysis.h prClusterHist.h getrms.h eintcal.h trilinterp.h print_rem.h strindex.h print_avsfld.h
+#	$(CC) $(CFLAGS) -DEINTCALPRINT -c analysis.cc # Use this to print out detailed nonbond energy breakdown for each cluster
+
+atom_parameter_manager.o : atom_parameter_manager.cc atom_parameter_manager.h structs.h
+	$(CC) $(CFLAGS) -c atom_parameter_manager.cc
+
+banner.o : banner.cc banner.h
+	$(CC) $(CFLAGS) -c banner.cc
+
+bestpdb.o : bestpdb.cc bestpdb.h constants.h print_rem.h strindex.h print_avsfld.h
+	$(CC) $(CFLAGS) -c bestpdb.cc
+
+calculateEnergies.o : calculateEnergies.cc calculateEnergies.h constants.h autoglobal.h autocomm.h structs.h
+	$(CC) $(CFLAGS) -c calculateEnergies.cc
+
+call_glss.o : call_glss.cc support.h rep.h eval.h ranlib.h call_glss.h
+	$(CC) $(CFLAGS) -c call_glss.cc
+
+call_gs.o : call_gs.cc support.h rep.h eval.h ranlib.h call_gs.h autocomm.h timesyshms.h
+	$(CC) $(CFLAGS) -c call_gs.cc
+
+call_ls.o : call_ls.cc support.h rep.h eval.h ranlib.h call_ls.h
+	$(CC) $(CFLAGS) -c call_ls.cc
+
+changeState.o : changeState.cc changeState.h constants.h qmultiply.h
+	$(CC) $(CFLAGS) -c changeState.cc
+
+check_header_float.o : check_header_float.cc check_header_float.h
+	$(CC) $(CFLAGS) -c check_header_float.cc
+
+check_header_int.o : check_header_int.cc check_header_int.h constants.h print_2x.h stop.h
+	$(CC) $(CFLAGS) -c check_header_int.cc
+
+check_header_line.o : check_header_line.cc check_header_line.h constants.h
+	$(CC) $(CFLAGS) -c check_header_line.cc
+
+clmode.o : clmode.cc clmode.h constants.h openfile.h strindex.h readPDBQT.h get_atom_type.h getpdbcrds.h sort_enrg.h cluster_analysis.h prClusterHist.h bestpdb.h success.h
+	$(CC) $(CFLAGS) -c clmode.cc
+
+cluster_analysis.o : cluster_analysis.cc cluster_analysis.h constants.h getrms.h
+	$(CC) $(CFLAGS) -c cluster_analysis.cc
+
+cmdmode.o : cmdmode.cc cmdtokens.h trjtokens.h cmdmode.h constants.h set_cmd_io_std.h print_2x.h parse_com_line.h strindex.h print_avsfld.h success.h openfile.h readPDBQT.h get_atom_type.h timesys.h eintcal.h trilinterp.h qmultiply.h cnv_state_to_coords.h parse_trj_line.h input_state.h autocomm.h
+	$(CC) $(CFLAGS) -c -DEINTCALPRINT cmdmode.cc
+
+cnv_state_to_coords.o : cnv_state_to_coords.cc cnv_state_to_coords.h constants.h torsion.h qtransform.h stateLibrary.h
+	$(CC) $(CFLAGS) -c cnv_state_to_coords.cc
+
+cnv_state_to_coords_lsfit.o : cnv_state_to_coords.cc cnv_state_to_coords.h constants.h torsion.h qtransform.h stateLibrary.h rotlsqfit.c rotate.c rot.c eigen.c matvec.c useful.h q.h mymacs.h graph.h frac.h
+	$(CC) $(CFLAGS) -DLSQFIT -c cnv_state_to_coords.cc
+
+com.o : com.cc ranlib.h
+	$(CC) $(CFLAGS) -c com.cc
+	
+conformation_sampler.o : conformation_sampler.cc conformation_sampler.h rep_constants.h
+	$(CC) $(CFLAGS) -c conformation_sampler.cc
+
+distdepdiel.o : distdepdiel.cc distdepdiel.h
+	$(CC) $(CFLAGS) -c distdepdiel.cc
+
+stateLibrary.o : stateLibrary.cc stateLibrary.h constants.h
+	$(CC) $(CFLAGS) -c stateLibrary.cc
+
+eintcal.o : eintcal.cc eintcal.h constants.h
+	$(CC) $(CFLAGS) -DNOSQRT -DBOUNDED -c eintcal.cc -o eintcal.o
+
+eintcalPrint.o : eintcal.cc eintcal.h constants.h
+	$(CC) $(CFLAGS) -DNOSQRT -DBOUNDED -DEINTCALPRINT -c eintcal.cc -o eintcalPrint.o
+
+eval.o : eval.cc eval.h structs.h constants.h autocomm.h 
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c eval.cc
+
+gencau.o : gencau.cc ranlib.h
+	$(CC) $(CFLAGS) -c gencau.cc
+
+getInitialState.o : getInitialState.cc getInitialState.h constants.h qmultiply.h stateLibrary.h initautodock.h trilinterp.h eintcal.h cnv_state_to_coords.h prInitialState.h timesys.h autocomm.h
+	$(CC) $(CFLAGS) -c getInitialState.cc
+
+get_atom_type.o : get_atom_type.cc get_atom_type.h constants.h
+	$(CC) $(CFLAGS) -c get_atom_type.cc
+
+getpdbcrds.o : getpdbcrds.cc getpdbcrds.h constants.h openfile.h
+	$(CC) $(CFLAGS) -c getpdbcrds.cc
+
+getrms.o : getrms.cc getrms.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c getrms.cc
+
+gs.o : gs.cc gs.h ranlib.h eval.h rep.h support.h writePDBQT.h
+	$(CC) $(CFLAGS) -DCHECK_ISNAN -c gs.cc -o gs.o
+
+initautodock.o : initautodock.cc initautodock.h constants.h qmultiply.h cnv_state_to_coords.h print_2x.h autocomm.h
+	$(CC) $(CFLAGS) -c initautodock.cc
+
+input_state.o : input_state.cc input_state.h constants.h qmultiply.h
+	$(CC) $(CFLAGS) -c input_state.cc
+
+investigate.o : investigate.cc investigate.h constants.h changeState.h mkRandomState.h cnv_state_to_coords.h getrms.h trilinterp.h eintcal.h getpdbcrds.h stateLibrary.h
+	$(CC) $(CFLAGS) -c investigate.cc
+
+intnbtable.o : intnbtable.cc intnbtable.h constants.h
+	$(CC) $(CFLAGS) -DNOSQRT -c intnbtable.cc
+
+linpack.o : linpack.cc
+	$(CC) $(CFLAGS) -c linpack.cc
+
+ls.o : ls.cc ls.h support.h ranlib.h
+	$(CC) $(CFLAGS) -c ls.cc
+
+main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcal.cc eintcal.h atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h calculateEnergies.cc calculateEnergies.h
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c -DEINTCALPRINT -DWRITEPDBQSTATE main.cc
+
+mapping.o : mapping.cc support.h
+	$(CC) $(CFLAGS) -c mapping.cc
+
+minmeanmax.o : minmeanmax.cc  rep.h support.h
+	$(CC) $(CFLAGS) -c minmeanmax.cc
+
+mkNewState.o : mkNewState.cc mkNewState.h constants.h
+	$(CC) $(CFLAGS) -c mkNewState.cc
+
+mkTorTree.o : mkTorTree.cc PDBQT_tokens.h mkTorTree.h constants.h
+	$(CC) $(CFLAGS) -c mkTorTree.cc
+
+mkRandomState.o : mkRandomState.cc mkRandomState.h constants.h
+	$(CC) $(CFLAGS) -c mkRandomState.cc
+
+nbe.o : nbe.cc nbe.h constants.h
+	$(CC) $(CFLAGS) -DNOSQRT -c nbe.cc
+
+nonbonds.o : nonbonds.cc nonbonds.h constants.h mdist.h
+	$(CC) $(CFLAGS) -c nonbonds.cc
+
+openfile.o : openfile.cc openfile.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c openfile.cc
+
+output_state.o : output_state.cc output_state.h constants.h
+	$(CC) $(CFLAGS) -c output_state.cc
+
+parse_com_line.o : parse_com_line.cc cmdtokens.h parse_com_line.h constants.h
+	$(CC) $(CFLAGS) -c parse_com_line.cc
+
+parse_dpf_line.o : parse_dpf_line.cc parse_dpf_line.h constants.h dpftoken.h
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c parse_dpf_line.cc
+
+parse_param_line.o : parse_param_line.cc partokens.h  parse_param_line.h constants.h
+	$(CC) $(CFLAGS) -c parse_param_line.cc
+
+parse_PDBQT_line.o : parse_PDBQT_line.cc PDBQT_tokens.h  parse_PDBQT_line.h constants.h
+	$(CC) $(CFLAGS) -c parse_PDBQT_line.cc
+
+parse_trj_line.o : parse_trj_line.cc trjtokens.h parse_trj_line.h constants.h
+	$(CC) $(CFLAGS) -c parse_trj_line.cc
+
+parsetypes.o : parsetypes.cc parsetypes.h
+	$(CC) $(CFLAGS) -c parsetypes.cc
+
+prClusterHist.o : prClusterHist.cc prClusterHist.h constants.h
+	$(CC) $(CFLAGS) -c prClusterHist.cc
+
+prInitialState.o : prInitialState.cc prInitialState.h constants.h
+	$(CC) $(CFLAGS) -c prInitialState.cc
+
+prTorConList.o : prTorConList.cc prTorConList.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c prTorConList.cc
+
+print_2x.o : print_2x.cc print_2x.h
+	$(CC) $(CFLAGS) -c print_2x.cc
+
+print_atomic_energies.o : print_atomic_energies.cc print_atomic_energies.h constants.h
+	$(CC) $(CFLAGS) -c print_atomic_energies.cc
+
+print_avsfld.o : print_avsfld.cc print_avsfld.h
+	$(CC) $(CFLAGS) -c print_avsfld.cc 
+
+writePDBQT.o : writePDBQT.cc writePDBQT.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c writePDBQT.cc -o writePDBQT.o
+
+print_rem.o : print_rem.cc print_rem.h
+	$(CC) $(CFLAGS) -c print_rem.cc
+
+printdate.o : printdate.cc printdate.h
+	$(CC) $(CFLAGS) -c printdate.cc
+
+printEnergies.o : printEnergies.cc printEnergies.h
+	$(CC) $(CFLAGS) -c printEnergies.cc
+
+printhms.o : printhms.cc printhms.h
+	$(CC) $(CFLAGS) -c printhms.cc
+
+qmultiply.o : qmultiply.cc qmultiply.h
+	$(CC) $(CFLAGS) -c qmultiply.cc
+
+qtransform.o : qtransform.cc qtransform.h constants.h
+	$(CC) $(CFLAGS) -c qtransform.cc
+
+quicksort.o : quicksort.cc quicksort.h
+	$(CC) $(CFLAGS) -c quicksort.cc
+
+ranlib.o : ranlib.cc ranlib.h
+	$(CC) $(CFLAGS) -c ranlib.cc
+
+readfield.o : readfield.cc readfield.h constants.h openfile.h stop.h
+	$(CC) $(CFLAGS) -c readfield.cc
+
+readmap.o : readmap.cc readmap.h constants.h openfile.h warn_bad_file.h strindex.h print_2x.h check_header_line.h warn_bad_file.h check_header_float.h check_header_int.h timesys.h autocomm.h
+	$(CC) $(CFLAGS) -c readmap.cc
+
+readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_PDBQT_line.cc parse_PDBQT_line.h mdist.h atom_parameter_manager.cc atom_parameter_manager.h 
+	$(CC) $(CFLAGS) -c readPDBQT.cc
+
+default_parameters.h : AD4_parameters.dat paramdat2h.csh
+	rm -f $@
+	./paramdat2h.csh > tmp-paramdat
+	mv -f tmp-paramdat $@
+
+read_parameter_library.o : read_parameter_library.cc autocomm.h default_parameters.h
+	$(CC) $(CFLAGS) -c read_parameter_library.cc
+
+rep.o: rep.cc rep.h ranlib.h
+	$(CC) $(CFLAGS) -c rep.cc
+
+scauchy.o  : scauchy.cc ranlib.h
+	$(CC) $(CFLAGS) -c scauchy.cc
+
+set_cmd_io_std.o : set_cmd_io_std.cc set_cmd_io_std.h
+	$(CC) $(CFLAGS) -c set_cmd_io_std.cc
+
+setflags.o : setflags.cc setflags.h
+	$(CC) $(CFLAGS) -c setflags.cc
+
+simanneal.o : simanneal.cc simanneal.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c simanneal.cc
+
+sort_enrg.o : sort_enrg.cc sort_enrg.h constants.h
+	$(CC) $(CFLAGS) -c sort_enrg.cc
+
+stop.o : stop.cc stop.h constants.h
+	$(CC) $(CFLAGS) -c stop.cc
+
+strindex.o : strindex.cc strindex.h
+	$(CC) $(CFLAGS) -c strindex.cc
+
+success.o : success.cc success.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c success.cc
+
+summarizegrids.o : summarizegrids.cc summarizegrids.h constants.h autocomm.h
+	$(CC) $(CFLAGS) -c summarizegrids.cc
+
+support.o : support.cc support.h eval.h
+	$(CC) $(CFLAGS) -c support.cc
+
+swap.o : swap.cc swap.h
+	$(CC) $(CFLAGS) -c swap.cc
+
+timesys.o : timesys.cc timesys.h
+	$(CC) $(CFLAGS) -c timesys.cc
+
+timesyshms.o : timesyshms.cc timesyshms.h
+	$(CC) $(CFLAGS) -c timesyshms.cc
+
+torNorVec.o : torNorVec.cc torNorVec.h constants.h
+	$(CC) $(CFLAGS) -c torNorVec.cc
+
+torsion.o : torsion.cc torsion.h constants.h
+	$(CC) $(CFLAGS) -c torsion.cc
+
+trilinterp.o : trilinterp.cc trilinterp.h constants.h
+	$(CC) $(CFLAGS) -c trilinterp.cc
+
+trilinterp.MINPT.o : trilinterp.cc trilinterp.h constants.h
+	$(CC) $(CFLAGS) -DMINPT -c trilinterp.cc -o trilinterp.MINPT.o
+
+usage.o : usage.cc usage.h constants.h
+	$(CC) $(CFLAGS) -c usage.cc
+
+warn_bad_file.o : warn_bad_file.cc warn_bad_file.h constants.h
+	$(CC) $(CFLAGS) -c warn_bad_file.cc
+
+weedbonds.o : weedbonds.cc weedbonds.h constants.h
+	$(CC) $(CFLAGS) -c weedbonds.cc
+
+eintcal.sqrt.o : eintcal.cc eintcal.h constants.h
+	$(CC) $(CFLAGS) -c -DBOUNDED eintcal.cc -o eintcal.sqrt.o
+
+eintcalPrint.sqrt.o : eintcal.cc eintcal.h constants.h
+	$(CC) $(CFLAGS) -c -DBOUNDED -DEINTCALPRINT eintcal.cc -o eintcalPrint.sqrt.o
+
+intnbtable.sqrt.o : intnbtable.cc intnbtable.h constants.h
+	$(CC) $(CFLAGS) -c intnbtable.cc -o intnbtable.sqrt.o
+
+nbe.sqrt.o : nbe.cc nbe.h constants.h
+	$(CC) $(CFLAGS) -c nbe.cc -o nbe.sqrt.o
+
+coliny.o : coliny.h
+	$(CC) $(CFLAGS) $(ACRO_INCLUDES) -c coliny.cc -o coliny.o
+
+#
+# lcheck dependencies...
+#
+
+analysis.ln : analysis.cc
+	$(LINT) $(LINTFLAGS) $?
+
+banner.ln : banner.cc
+	$(LINT) $(LINTFLAGS) $?
+
+bestpdb.ln : bestpdb.cc
+	$(LINT) $(LINTFLAGS) $?
+
+changeState.ln : changeState.cc
+	$(LINT) $(LINTFLAGS) $?
+
+check_header_float.ln : check_header_float.cc
+	$(LINT) $(LINTFLAGS) $?
+
+check_header_int.ln : check_header_int.cc
+	$(LINT) $(LINTFLAGS) $?
+
+check_header_line.ln : check_header_line.cc
+	$(LINT) $(LINTFLAGS) $?
+
+cluster_analysis.ln : cluster_analysis.cc
+	$(LINT) $(LINTFLAGS) $?
+
+clmode.ln : clmode.cc
+	$(LINT) $(LINTFLAGS) $?
+
+cmdmode.ln : cmdmode.cc
+	$(LINT) $(LINTFLAGS) $?
+
+cnv_state_to_coords.ln : cnv_state_to_coords.cc
+	$(LINT) $(LINTFLAGS) $?
+
+stateLibrary.ln : stateLibrary.cc
+	$(LINT) $(LINTFLAGS) $?
+
+readfield.ln : readfield.cc
+	$(LINT) $(LINTFLAGS) $?
+
+readmap.ln : readmap.cc
+	$(LINT) $(LINTFLAGS) $?
+
+readPDBQT.ln : readPDBQT.cc
+	$(LINT) $(LINTFLAGS) $?
+
+getrms.ln : getrms.cc
+	$(LINT) $(LINTFLAGS) $?
+
+get_atom_type.ln : get_atom_type.cc
+	$(LINT) $(LINTFLAGS) $?
+
+getInitialState.ln : getInitialState.cc
+	$(LINT) $(LINTFLAGS) $?
+
+getpdbcrds.ln : getpdbcrds.cc
+	$(LINT) $(LINTFLAGS) $?
+
+initautodock.ln : initautodock.cc
+	$(LINT) $(LINTFLAGS) $?
+
+input_state.ln : input_state.cc
+	$(LINT) $(LINTFLAGS) $?
+
+investigate.ln : investigate.cc
+	$(LINT) $(LINTFLAGS) $?
+
+main.ln : main.cc
+	$(LINT) $(LINTFLAGS) $?
+
+mkNewState.ln : mkNewState.cc
+	$(LINT) $(LINTFLAGS) $?
+
+mkTorTree.ln : mkTorTree.cc
+	$(LINT) $(LINTFLAGS) $?
+
+mkRandomState.ln : mkRandomState.cc
+	$(LINT) $(LINTFLAGS) $?
+
+nonbonds.ln : nonbonds.cc
+	$(LINT) $(LINTFLAGS) $?
+
+openfile.ln : openfile.cc
+	$(LINT) $(LINTFLAGS) $?
+
+output_state.ln : output_state.cc
+	$(LINT) $(LINTFLAGS) $?
+
+parse_com_line.ln : parse_com_line.cc
+	$(LINT) $(LINTFLAGS) $?
+
+parse_dpf_line.ln : parse_dpf_line.cc
+	$(LINT) $(LINTFLAGS) $?
+
+parse_param_line.ln : parse_param_line.cc
+	$(LINT) $(LINTFLAGS) $?
+
+parse_PDBQT_line.ln : parse_PDBQT_line.cc
+	$(LINT) $(LINTFLAGS) $?
+
+parse_trj_line.ln : parse_trj_line.cc
+	$(LINT) $(LINTFLAGS) $?
+
+parsetypes.ln : parsetypes.cc
+	$(LINT) $(LINTFLAGS) $?
+
+print_2x.ln : print_2x.cc
+	$(LINT) $(LINTFLAGS) $?
+
+print_atomic_energies.ln : print_atomic_energies.cc
+	$(LINT) $(LINTFLAGS) $?
+
+print_avsfld.ln : print_avsfld.cc
+	$(LINT) $(LINTFLAGS) $?
+
+writePDBQT.ln : writePDBQT.cc
+	$(LINT) $(LINTFLAGS) $?
+
+print_rem.ln : print_rem.cc
+	$(LINT) $(LINTFLAGS) $?
+
+printdate.ln : printdate.cc
+	$(LINT) $(LINTFLAGS) $?
+
+printEnergies.ln : printEnergies.cc
+	$(LINT) $(LINTFLAGS) $?
+
+printhms.ln : printhms.cc
+	$(LINT) $(LINTFLAGS) $?
+
+prClusterHist.ln : prClusterHist.cc
+	$(LINT) $(LINTFLAGS) $?
+
+prInitialState.ln : prInitialState.cc
+	$(LINT) $(LINTFLAGS) $?
+
+prTorConList.ln : prTorConList.cc
+	$(LINT) $(LINTFLAGS) $?
+
+qmultiply.ln : qmultiply.cc
+	$(LINT) $(LINTFLAGS) $?
+
+qtransform.ln : qtransform.cc
+	$(LINT) $(LINTFLAGS) $?
+
+quicksort.ln : quicksort.cc
+	$(LINT) $(LINTFLAGS) $?
+
+set_cmd_io_std.ln : set_cmd_io_std.cc
+	$(LINT) $(LINTFLAGS) $?
+
+setflags.ln : setflags.cc
+	$(LINT) $(LINTFLAGS) $?
+
+simanneal.ln : simanneal.cc
+	$(LINT) $(LINTFLAGS) $?
+
+sort_enrg.ln : sort_enrg.cc
+	$(LINT) $(LINTFLAGS) $?
+
+stop.ln : stop.cc
+	$(LINT) $(LINTFLAGS) $?
+
+strindex.ln : strindex.cc
+	$(LINT) $(LINTFLAGS) $?
+
+success.ln : success.cc
+	$(LINT) $(LINTFLAGS) $?
+
+summarizegrids.ln : summarizegrids.cc
+	$(LINT) $(LINTFLAGS) $?
+
+swap.ln : swap.cc
+	$(LINT) $(LINTFLAGS) $?
+
+timesys.ln : timesys.cc
+	$(LINT) $(LINTFLAGS) $?
+
+timesyshms.ln : timesyshms.cc
+	$(LINT) $(LINTFLAGS) $?
+
+torNorVec.ln : torNorVec.cc
+	$(LINT) $(LINTFLAGS) $?
+
+torsion.ln : torsion.cc
+	$(LINT) $(LINTFLAGS) $?
+
+trilinterp.ln : trilinterp.cc
+	$(LINT) $(LINTFLAGS) $?
+
+usage.ln : usage.cc
+	$(LINT) $(LINTFLAGS) $?
+
+weedbonds.ln : weedbonds.cc
+	$(LINT) $(LINTFLAGS) $?
+
+warn_bad_file.ln : warn_bad_file.cc
+	$(LINT) $(LINTFLAGS) $?
+
+
+#
+# NOSQRT conditionals activated:
+#
+
+eintcal.ln : eintcal.cc
+	$(LINT) $(LINTFLAGS) -DNOSQRT $?
+
+eintcalPrint.ln : eintcal.cc
+	$(LINT) $(LINTFLAGS) -DNOSQRT -DEINTCALPRINT $?
+
+intnbtable.ln : intnbtable.cc
+	$(LINT) $(LINTFLAGS) -DNOSQRT $?
+
+nbe.ln : nbe.cc
+	$(LINT) $(LINTFLAGS) -DNOSQRT $?
+
+
+#
+# NOSQRT conditionals NOT activated:
+#
+
+eintcal.sqrt.ln : eintcal.cc
+	$(LINT) $(LINTFLAGS) $?
+
+eintcalPrint.sqrt.ln : eintcal.cc
+	$(LINT) $(LINTFLAGS) -DEINTCALPRINT $?
+
+intnbtable.sqrt.ln : intnbtable.cc
+	$(LINT) $(LINTFLAGS) $?
+
+nbe.sqrt.ln : nbe.cc
+	$(LINT) $(LINTFLAGS) $?
+
+#
+# Clean up...
+#
+
+clean :
+	/bin/rm -f *.o *.s *.ln a.out mon.out autodock4 autodock4sqrt autodock4minpt dualmap libad.a default_parameters.h
+
+cleanlcheck :
+	/bin/rm -f *.ln
+
+#
+# Compaq/DEC Alpha
+#
+openalpha :
+	/bin/cp -p obj.alpha/*.o .
+openlintalpha :
+	/bin/cp -p obj.alpha/*.ln .
+#
+closealpha :
+	/bin/cp -p *.o obj.alpha
+	/bin/rm -f *.o
+closelintalpha :
+	/bin/cp -p *.ln obj.alpha
+	/bin/rm -f *.ln
+
+#
+# Hewlett-Packard Precision Architecture
+#
+openhppa :
+	/bin/cp -p obj.hppa/*.o .
+openlinthppa :
+	/bin/cp -p obj.hppa/*.ln .
+#
+closehppa :
+	/bin/cp -p *.o obj.hppa
+	/bin/rm -f *.o
+closelinthppa :
+	/bin/cp -p *.ln obj.hppa
+	/bin/rm -f *.ln
+
+#
+# SGI/sgi4D/Silicon Graphics
+#
+opensgi4D :
+	/bin/cp -p obj.sgi4D/*.o .
+openlintsgi4D :
+	/bin/cp -p obj.sgi4D/*.ln .
+#
+closesgi4D :
+	/bin/cp -p *.o obj.sgi4D
+	/bin/rm -f *.o
+closelintsgi4D :
+	/bin/cp -p *.ln obj.sgi4D
+	/bin/rm -f *.ln
+
+#
+# Convex
+#
+openc2 :
+	/bin/cp -p obj.c2/*.o .
+openlintc2 :
+	/bin/cp -p obj.c2/*.ln .
+#
+closec2 :
+	/bin/cp -p *.o obj.c2
+	/bin/rm -f *.o
+closelintc2 :
+	/bin/cp -p *.ln obj.c2
+	/bin/rm -f *.ln
+
+#
+# Sun
+#
+opensun4 :
+	/bin/cp -p obj.sun4/*.o .
+openlintsun4 :
+	/bin/cp -p obj.sun4/*.ln .
+#
+closesun4 :
+	/bin/cp -p *.o obj.sun4
+	/bin/rm -f *.o
+closelintsun4 :
+	/bin/cp -p *.ln obj.sun4
+	/bin/rm -f *.ln
+
+#
+# EOF
+#
