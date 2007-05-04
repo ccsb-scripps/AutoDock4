@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.10 2007/05/01 23:43:34 rhuey Exp $
+# $Id: test_autodock4.py,v 1.11 2007/05/04 08:04:49 garrett Exp $
 #
 
 """
@@ -8,16 +8,36 @@ Unit Tests for AutoDock 4.
 
 #______________________________________________________________________________
 
+import sys
 import os
 import unittest
+import getopt
 from DlgParser import DlgParser
 
 #______________________________________________________________________________
 #
 # Global variables
 
-autodock_to_test = "../autodock4"
+autodock_executable = "../autodock4" # where the AutoDock executable resides
+dpf_directory = '.' # where the input DPF files reside
+test_output_directory = '.' # where the DLG files will be written
 
+try:
+    opts, argv = getopt.getopt(sys.argv[1:], "d:e:o:",
+    ["dpf-directory=","executable=","test-output-directory="]) 
+except getopt.GetoptError, v:
+    usage() 
+    sys.exit(2)
+
+for o,a in opts:
+    if o in ("-d", "--dpf-directory"):
+        dpf_directory = a
+    if o in ("-e", "--executable"):
+        autodock_executable = a
+    if o in ("-o","--test-output-directory"):
+        test_output_directory = a
+
+        
 computed_dlg = False
 computed_dlg_no_parameter_library = False
 computed_dlg_no_elecmap = False
@@ -29,14 +49,36 @@ expected_internal_energy = -1.58
 
 #______________________________________________________________________________
 
-def run_AutoDock( autodock_executable, dpf_filename, dlg_filename ):
+def usage():
+    """Print out the usage of this command."""
+    print """Usage:  python test_autodock4.py [-d <string>] [-e <string>] [-o <string>]
+
+where:
+    -d, --dpf-directory
+        specifies the directory containing the DPFs to be tested;
+        this flag is optional; default is '.'
+    -e, --executable
+        specifies the path to the AutoDock executable to be tested;
+        this flag is optional; default is '../autodock4'
+    -o, --test-output-directory
+        specifies the directory where the output DLGs will be written;
+        this flag is optional; default is '.'
+
+NOTE:  these may be relative to the directory where this script was invoked.
+"""
+
+#______________________________________________________________________________
+
+def run_AutoDock( dpf_filename, dlg_filename ):
     """Launch AutoDock, using the specified AutoDock executable and DPF,
     create the specified DLG, and trap all the outputs from standard output
     and standard error."""
-    command = "rm -f " + dlg_filename
+    dpf = dpf_directory + os.sep + dpf_filename
+    dlg = test_output_directory + os.sep + dlg_filename
+    command = "rm -f " + dlg
     os.system( command )
-    command = "%s -p %s -l %s" % ( autodock_executable, dpf_filename, dlg_filename )
-    print "\nRunning " + autodock_executable + ", saving results in \"" + dlg_filename + "\":"
+    command = "%s -p %s -l %s" % ( autodock_executable, dpf, dlg )
+    print '\nRunning ' + autodock_executable + ' using DPF "'+dpf+'", saving results in "'+dlg+'":'
     try:
         ( i, o, e ) = os.popen3( command ) # trap all the outputs
         os.wait() # for the child process to finish
@@ -51,7 +93,8 @@ def parse_energy_from_DLG( dlg_filename ):
     """Parse the AutoDock DLG, and return the intermolecular and internal
     energies as a tuple."""
     parser = DlgParser()
-    parser.parse( dlg_filename )
+    dlg = test_output_directory + os.sep + dlg_filename
+    parser.parse( dlg )
     docked = parser.clist[0]  #dictionary of results
     intermol_energy = docked['intermol_energy']  #-6.17
     internal_energy = docked['total_internal']  # -1.58
@@ -62,7 +105,8 @@ def parse_energy_from_DLG( dlg_filename ):
 def find_success_in_DLG( dlg_filename ):
     """Open the AutoDock DLG, and look for the string "Successful Completion"
     in the last 10 lines of the file."""
-    fptr = open( dlg_filename )
+    dlg = test_output_directory + os.sep + dlg_filename
+    fptr = open( dlg )
     lines = fptr.readlines()
     fptr.close()
     success = False
@@ -80,10 +124,10 @@ class AutoDock4_1pgp_test( unittest.TestCase ):
         global computed_dlg
         self.dlg_filename = "test_1pgp.dlg"
         if computed_dlg is False:
-            computed_dlg = run_AutoDock( autodock_to_test, "1pgp.dpf", self.dlg_filename )
+            computed_dlg = run_AutoDock( "1pgp.dpf", self.dlg_filename )
 
     def test_check_result_exists( self ):
-        """Check that run finished and a new dlg has been computed."""
+        """Check that run finished and a new DLG has been computed."""
         self.assertEqual( computed_dlg, True )
 
     def test_check_result_energy( self ):
@@ -102,7 +146,7 @@ class AutoDock4_1pgp_no_parameter_file_test( unittest.TestCase ):
         global computed_dlg_no_parameter_library
         self.dlg_filename = "test_1pgp_no_parameter_file.dlg"
         if computed_dlg_no_parameter_library is False:
-            computed_dlg_no_parameter_library = run_AutoDock( autodock_to_test, "1pgp_no_parameter_file.dpf", self.dlg_filename )
+            computed_dlg_no_parameter_library = run_AutoDock( "1pgp_no_parameter_file.dpf", self.dlg_filename )
 
     def test_check_result_exists_default_parameter_file( self ):
         """Using default parameter file: check that a run finished... """
@@ -124,7 +168,7 @@ class AutoDock4_1pgp_no_elecmap_test( unittest.TestCase ):
         global computed_dlg_no_elecmap
         self.dlg_filename = "test_1pgp_no_elecmap.dlg"
         if computed_dlg_no_elecmap is False:
-            computed_dlg_no_elecmap = run_AutoDock( autodock_to_test, "1pgp_no_elecmap.dpf", self.dlg_filename )
+            computed_dlg_no_elecmap = run_AutoDock( "1pgp_no_elecmap.dpf", self.dlg_filename )
 
     def test_check_result_not_successful( self ):
         """Using parameter file with no 'elecmap': check that run does not reach Successful Completion... """
@@ -140,7 +184,7 @@ class AutoDock4_1pgp_no_desolvmap_test( unittest.TestCase ):
         global computed_dlg_no_desolvmap
         self.dlg_filename = "test_1pgp_no_desolvmap.dlg"
         if computed_dlg_no_desolvmap is False:
-            computed_dlg_no_desolvmap = run_AutoDock( autodock_to_test, "1pgp_no_desolvmap.dpf", self.dlg_filename )
+            computed_dlg_no_desolvmap = run_AutoDock( "1pgp_no_desolvmap.dpf", self.dlg_filename )
 
     def test_check_result_not_successful( self ):
         """Using parameter file with no "desolvmap": 
@@ -158,7 +202,7 @@ class AutoDock4_1pgp_no_elec_desolv_maps_test( unittest.TestCase ):
         global computed_dlg_no_elec_desolv_maps
         self.dlg_filename = "test_1pgp_no_elec_desolv_maps.dlg"
         if computed_dlg_no_elec_desolv_maps is False:
-            computed_dlg_no_elec_desolv_maps = run_AutoDock( autodock_to_test, "1pgp_no_elec_desolv_maps.dpf", self.dlg_filename )
+            computed_dlg_no_elec_desolv_maps = run_AutoDock( "1pgp_no_elec_desolv_maps.dpf", self.dlg_filename )
 
     def test_check_result_not_successful( self ):
         """Using parameter file with no 'elecmap' and no "desolvmap": 
