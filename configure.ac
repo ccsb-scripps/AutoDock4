@@ -39,8 +39,8 @@ esac
 AM_CONDITIONAL([WANT_BIGSTACK], [test "$CYGWIN" = yes])
 
 # See "automake" manual, version 1.10, section 10.5 (Python)
-AM_PATH_PYTHON([2.1],, [:])
-AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
+#AM_PATH_PYTHON([2.1],, [:])
+#AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 
 AC_CONFIG_FILES([Makefile])
 

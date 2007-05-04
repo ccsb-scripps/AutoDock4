@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.6 2007/05/03 20:21:17 garrett Exp $
+# $Id: Makefile.am,v 1.7 2007/05/04 01:41:13 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -421,17 +421,17 @@ autodock4.html :
 	enscript -E --color -Whtml --toc -p$@ *.h *.cc
 
 check : autodock4 $(srcdir)/Tests/test_autodock4.py
-if HAVE_PYTHON
+#if HAVE_PYTHON
 	@echo " "
 	@echo "Running the Python test_autodock4.py unit-tests on autodock4"
 	@echo " "
 	cd $(srcdir)/Tests ; chmod u+w . ; python ./test_autodock4.py
-else
-	@echo " "
-	@echo "Python version 2.1 or higher needed for 'make check', but not found."
-	@echo "Skipping AutoDock4 unit tests."
-	@echo " "
-endif
+#else
+#	@echo " "
+#	@echo "Python version 2.1 or higher needed for 'make check', but not found."
+#	@echo "Skipping AutoDock4 unit tests."
+#	@echo " "
+#endif
 
 #$(COLINYLIB) : $(OBJS) $(OBJNOSQRT) $(OBJNOMINPT)
 #	@echo " "
