@@ -8,10 +8,15 @@ AM_INIT_AUTOMAKE()
 #AM_INIT_AUTOMAKE([foreign])
 #AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
+
 # Checks for programs.
 AC_PROG_AWK
+
+# don't let AC_PROG_CXX force "-g -O2"
+saved_CXXFLAGS=${CXXFLAGS}
 AC_PROG_CXX
-#AC_PROG_CC
+CXXFLAGS=${saved_CXXFLAGS}
+
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 

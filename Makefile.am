@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.8 2007/05/04 08:06:00 garrett Exp $
+# $Id: Makefile.am,v 1.9 2007/05/12 04:51:41 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -243,25 +243,20 @@ libad_a_SOURCES = \
 		weedbonds.h \
 		writePDBQT.h
 
-#AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
+
 AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
+#AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
 
 AM_CPPFLAGS = -DNOSQRT \
               -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
               -DWRITEPDBQSTATE \
               -I$(srcdir)/../acro/include # Standard accuracy, but faster; no crossover in quaternion
 
+#autodock4_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #autodock4_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
-autodock4_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 
-autodock4_CPPFLAGS = -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
-                     -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
-
-#CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
-#CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
-
-#CPPFLAGS = -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
-#           -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
+#autodock4_CPPFLAGS = -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
+#                     -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
 
 
 autodock4_LDADD = libad.a -lm
@@ -461,10 +456,10 @@ check : autodock4 $(srcdir)/Tests/test_autodock4.py
 #
 
 gs.o : gs.cc gs.h ranlib.h eval.h rep.h support.h writePDBQT.h
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DCHECK_ISNAN -c $(srcdir)/gs.cc
+	$(CXXCOMPILE) -DCHECK_ISNAN -c $(srcdir)/gs.cc
 
 ### main.o : main.cc hybrids.h ranlib.h gs.h ls.h rep.h support.h main.h constants.h autocomm.h dpftoken.h structs.h autoglobal.h  autocomm.h coliny.h parse_param_line.cc partokens.h eintcalPrint.cc eintcalPrint.h eintcal.cc atom_parameter_manager.cc atom_parameter_manager.h read_parameter_library.h calculateEnergies.cc calculateEnergies.h
-### $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ACRO_INCLUDES) -c main.cc
+### $(CXXCOMPILE) $(ACRO_INCLUDES) -c main.cc
 
 # 2007-04-30 MP & GMM: this line is necessary to be able to compile read_parameter_library.o
 read_parameter_library.o : default_parameters.h
