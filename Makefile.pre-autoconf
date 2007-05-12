@@ -1,4 +1,4 @@
-# $Id: Makefile.pre-autoconf,v 1.1 2007/05/03 20:17:00 garrett Exp $
+# $Id: Makefile.pre-autoconf,v 1.2 2007/05/12 04:45:38 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -64,10 +64,10 @@ EXE = .  # Change this to the directory path holding binaries for your platform
 
 OBJS = \
     analysis.o \
-	atom_parameter_manager.o \
+    atom_parameter_manager.o \
     banner.o \
     bestpdb.o \
-	calculateEnergies.o \
+    calculateEnergies.o \
     call_glss.o \
     call_gs.o \
     call_ls.o \
@@ -81,12 +81,12 @@ OBJS = \
     cnv_state_to_coords.o \
     com.o \
     conformation_sampler.o \
-	distdepdiel.o \
+    distdepdiel.o \
     stateLibrary.o \
     readfield.o \
     readmap.o \
     readPDBQT.o \
-	read_parameter_library.o \
+    read_parameter_library.o \
     eval.o \
     gencau.o \
     getrms.o \
@@ -112,7 +112,7 @@ OBJS = \
     parse_param_line.o \
     parse_PDBQT_line.o \
     parse_trj_line.o \
-	parsetypes.o \
+    parsetypes.o \
     print_2x.o \
     print_atomic_energies.o \
     print_avsfld.o \
@@ -151,10 +151,10 @@ OBJS = \
 
 OBJS_LSFIT = \
     analysis.o \
-	atom_parameter_manager.o \
+    atom_parameter_manager.o \
     banner.o \
     bestpdb.o \
-	calculateEnergies.o \
+    calculateEnergies.o \
     call_glss.o \
     call_gs.o \
     call_ls.o \
@@ -167,12 +167,12 @@ OBJS_LSFIT = \
     cmdmode.o \
     com.o \
     conformation_sampler.o \
-	distdepdiel.o \
+    distdepdiel.o \
     stateLibrary.o \
     readfield.o \
     readmap.o \
     readPDBQT.o \
-	read_parameter_library.o \
+    read_parameter_library.o \
     eval.o \
     gencau.o \
     getrms.o \
@@ -198,7 +198,7 @@ OBJS_LSFIT = \
     parse_param_line.o \
     parse_PDBQT_line.o \
     parse_trj_line.o \
-	parsetypes.o \
+    parsetypes.o \
     print_2x.o \
     print_atomic_energies.o \
     print_avsfld.o \
@@ -273,7 +273,7 @@ LNS = \
     readfield.ln \
     readmap.ln \
     readPDBQT.ln \
-	read_parameter_library.ln \
+    read_parameter_library.ln \
     getrms.ln \
     get_atom_type.ln \
     getInitialState.ln \
@@ -373,12 +373,12 @@ CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT # SGI, HP, 
 # CFLAGS = $(CSTD) $(OPT) # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX
 
 # OPTLEVEL = -O3 -ftree-vectorize # Agressive optimization + GCC vectorization
-# OPTLEVEL = -O3 # Agressive optimization
+OPTLEVEL = -O3 # Agressive optimization
 # OPTLEVEL = -O3 -ffast-math # Agressive optimization, for Intel Itanium, ia64Linux2
 # OPTLEVEL = -fast # Agressive optimization for the G5 on MacOSX
 # OPTLEVEL = -O2 # High optimization
 # OPTLEVEL = -O1 # Do optimizations that can be done quickly; default.  Recommended for unit testing
-OPTLEVEL = -O0 # Do not optimize
+# OPTLEVEL = -O0 # Do not optimize
 
 OPT_SGI_IPNUM = # Alpha, HP, Sun, Convex, SGI, Cygwin, Linux, MacOSX
 # OPT_SGI_IPNUM = -Ofast=ip19 # SGI, 'uname -a' says 'IP19'
@@ -450,20 +450,21 @@ PROF = # No profiling
 WARN = -Wall # All warnings, gcc -- Recommended for developers
 # WARN = -fullwarn -ansiE -ansiW # For full warnings during compilation
 
+# WARNING!  "ifeq" is a GNU make extension, this may not work everywhere
 ifeq ($(COLINY),yes)
-  ACRO_OS = -DDARWIN # Darwin, MacOSX
-  # ACRO_OS = -DLINUX # Linux
+	ACRO_OS = -DDARWIN # Darwin, MacOSX
+	# ACRO_OS = -DLINUX # Linux
 
-  # ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -lg2c # Linux
-  ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw/lib -lg2c # Darwin, MacOSX (Fink needed)
+	# ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -lg2c # Linux
+	ACRO_LINK = -L../acro/lib -lcoliny -lcolin -lpico -lutilib -lappspack -l3po -L/sw/lib -lg2c # Darwin, MacOSX (Fink needed)
 
-  ACRO_INCLUDES = -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
-  ACRO_FLAGS = -DDEBUGGING -DUNIX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES $(ACRO_OS)
-  LIB = $(ACRO_LINK)
-  ACRO = acro
-  COLINYLIB = libcoliny.a # Using Coliny
+	ACRO_INCLUDES = -I../acro/include -DUSING_COLINY $(ACRO_FLAGS)
+	ACRO_FLAGS = -DDEBUGGING -DUNIX -DMULTITASK -DANSI_HDRS -DANSI_NAMESPACES $(ACRO_OS)
+	LIB = $(ACRO_LINK)
+	ACRO = acro
+	COLINYLIB = libcoliny.a # Using Coliny
 else
-  COLINYLIB = # Not using Coliny
+	COLINYLIB = # Not using Coliny
 endif
 
 # Uncomment this section with "###" if cross-compiling on MacOSX (Intel and PowerPC)
@@ -481,7 +482,7 @@ endif
 # Makefile targets
 #
 
-autodock4o : main.o $(ADLIB)
+autodock4 : main.o $(ADLIB)
 	@echo $(EXE)'  on  '`date`', by $(USER) using '`hostname` >> LATEST_MAKE
 	@echo 'Flags: '$(CC) $(LINK) -DNOSQRT -L. -lad $(LIB) >> LATEST_MAKE
 	@echo " "
