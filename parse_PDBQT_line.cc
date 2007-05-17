@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_PDBQT_line.cc,v 1.3 2007/05/17 23:11:47 garrett Exp $
+ $Id: parse_PDBQT_line.cc,v 1.4 2007/05/17 23:21:48 garrett Exp $
 
  AutoDock 
 
@@ -101,6 +101,8 @@ int parse_PDBQT_line( char line[LINE_LEN] )
             token = PDBQ_END_RES;
         } else if (strncmp(c,"conect",6)==0) {
             token = PDBQ_CONECT;
+        } else if (strncmp(c,"user",4)==0) {
+            token = PDBQ_NULL;
         }
     } else {
 		token = PDBQ_UNRECOGNIZED;
