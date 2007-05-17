@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_PDBQT_line.cc,v 1.2 2007/04/27 06:01:50 garrett Exp $
+ $Id: parse_PDBQT_line.cc,v 1.3 2007/05/17 23:11:47 garrett Exp $
 
  AutoDock 
 
@@ -69,41 +69,41 @@ int parse_PDBQT_line( char line[LINE_LEN] )
     c[i] = '\0';
 
     if ((c[0]=='\n')||(c[0]=='\0')) {
-	token = PDBQ_NULL;
+		token = PDBQ_NULL;
     } else if (l >= 4) {
-	if ((strncmp(c,"rema",4)==0) || (strncmp(c,"user",4)==0)) {
-	    token = PDBQ_REMARK;
-	} else if (strncmp(c,"root",4)==0) {
-	    token = PDBQ_ROOT;
-	} else if (strncmp(c,"endr",4)==0) {
-	    token = PDBQ_ENDROOT;
-	} else if (strncmp(c,"atom",4)==0) {
-	    token = PDBQ_ATOM;
-	} else if (strncmp(c,"heta",4)==0) {
-	    token = PDBQ_HETATM;
-	} else if ((strncmp(c,"tors",4)==0) && (strncmp(c,"torsdof",7)!=0)) {
-	    token = PDBQ_TORS;
-	} else if ((strlen(c) >= 7) && (strncmp(c,"torsdof",7)==0)) {
-	    token = PDBQ_TORSDOF;
-	} else if (strncmp(c,"tdof",4)==0) {
-	    token = PDBQ_TORSDOF;
-	} else if (strncmp(c,"endt",4)==0) {
-	    token = PDBQ_ENDTORS;
-	} else if (strncmp(c,"bran",4)==0) {
-	    token = PDBQ_BRANCH;
-	} else if (strncmp(c,"endb",4)==0) {
-	    token = PDBQ_ENDBRANCH;
-	} else if (strncmp(c,"cons",4)==0) {
-	    token = PDBQ_CONSTRAINT;
-	} else if (strncmp(c,"begin_res",9)==0) {
-	    token = PDBQ_BEGIN_RES;
-	} else if (strncmp(c,"end_res",7)==0) {
-	    token = PDBQ_END_RES;
-	} else if (strncmp(c,"conect",6)==0) {
-	    token = PDBQ_CONECT;
-	}
+        if ((strncmp(c,"rema",4)==0) || (strncmp(c,"user",4)==0)) {
+            token = PDBQ_REMARK;
+        } else if (strncmp(c,"root",4)==0) {
+            token = PDBQ_ROOT;
+        } else if (strncmp(c,"endr",4)==0) {
+            token = PDBQ_ENDROOT;
+        } else if (strncmp(c,"atom",4)==0) {
+            token = PDBQ_ATOM;
+        } else if (strncmp(c,"heta",4)==0) {
+            token = PDBQ_HETATM;
+        } else if ((strncmp(c,"tors",4)==0) && (strncmp(c,"torsdof",7)!=0)) {
+            token = PDBQ_TORS;
+        } else if ((strlen(c) >= 7) && (strncmp(c,"torsdof",7)==0)) {
+            token = PDBQ_TORSDOF;
+        } else if (strncmp(c,"tdof",4)==0) {
+            token = PDBQ_TORSDOF;
+        } else if (strncmp(c,"endt",4)==0) {
+            token = PDBQ_ENDTORS;
+        } else if (strncmp(c,"bran",4)==0) {
+            token = PDBQ_BRANCH;
+        } else if (strncmp(c,"endb",4)==0) {
+            token = PDBQ_ENDBRANCH;
+        } else if (strncmp(c,"cons",4)==0) {
+            token = PDBQ_CONSTRAINT;
+        } else if (strncmp(c,"begin_res",9)==0) {
+            token = PDBQ_BEGIN_RES;
+        } else if (strncmp(c,"end_res",7)==0) {
+            token = PDBQ_END_RES;
+        } else if (strncmp(c,"conect",6)==0) {
+            token = PDBQ_CONECT;
+        }
     } else {
-	token = PDBQ_NULL;
+		token = PDBQ_UNRECOGNIZED;
     }
 
     return( token );
