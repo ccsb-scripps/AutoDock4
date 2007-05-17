@@ -1,6 +1,6 @@
 /*
 
- $Id: version.h,v 1.2 2007/04/27 06:01:52 garrett Exp $
+ $Id: version.h,v 1.3 2007/05/17 21:29:24 garrett Exp $
 
  AutoDock 
 
@@ -26,7 +26,7 @@
  */
 
 #define AUTOGRID_MAJ_VERSION "4"
-#define AUTOGRID_MIN_VERSION "03"
+#define AUTOGRID_MIN_VERSION "00"
 #define AUTODOCK_MAJ_VERSION "4"
-#define AUTODOCK_MIN_VERSION "03"
+#define AUTODOCK_MIN_VERSION "01"
 #define OUTPUT_XML_VERSION 0.1
