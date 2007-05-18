@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.15 2007/04/27 06:01:50 garrett Exp $
+ $Id: readPDBQT.cc,v 1.16 2007/05/18 09:47:50 garrett Exp $
 
  AutoDock 
 
@@ -240,6 +240,15 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     pr( stderr, "%s: ERROR:  All ATOM and HETATM records must be given before any nested BRANCHes; see line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
                     exit( -1 );
                 }
+                
+                // Check that the line is at least 78 characters long
+                if (strlen(input_line) < 78) {
+                    pr(logFile, "%s: FATAL ERROR: line %d is too short!\n", programname, i+1);
+                    pr(logFile, "%s: FATAL ERROR: line \"%s\".\n", programname, input_line);
+                    pr(stderr, "%s: FATAL ERROR: line %d is too short!\n", programname, i+1);
+                    pr(stderr, "%s: FATAL ERROR: line \"%s\".\n", programname, input_line);
+                    exit(-1);
+                }
 
                 ParameterEntry * found_parm;
                 int serial;
@@ -254,12 +263,14 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 // set the "autogrid_type" in this_parameter_entry
                 readPDBQTLine(input_line, &serial, crdpdb[natom], &charge[natom], &this_parameter_entry);
 
+                /*
                 // Verify the serial number for this atom
                 if ( serial != (natom + 1) ) {
                     pr( logFile, "%s: ERROR:  ATOM and HETATM records must be numbered sequentially from 1.  See line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
                     pr( stderr, "%s: ERROR:  ATOM and HETATM records must be numbered sequentially from 1.  See line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
                     exit( -1 );
                 }
+                */
 
                 // Set the serial atomnumber[i] for this atom
                 atomnumber[i] = natom;
@@ -292,17 +303,18 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     map_index[natom] = found_parm->map_index;
                     bond_index[natom] = found_parm->bond_index;
                     if (outlev > 0) {
-                        (void) fprintf(logFile, "Found parameters for ligand atom %d, atom type \"%s\", grid map index = %d\n",
+                        (void) fprintf(logFile, "Found parameters for atom %d, atom type \"%s\", grid map index = %d\n",
                                    natom + 1, found_parm->autogrid_type, found_parm->map_index);
                     }
                 } else {
                     // We could not find this parameter -- return an error
-                    prStr(message, "\n%s: *** WARNING!  Unknown ligand atom type \"%s\" found.  You should add  parameters for it to the parameter library first! ***\n\n", programname, this_parameter_entry.autogrid_type);
+                    prStr(message, "\n%s: *** WARNING!  Unknown atom type \"%s\" found.  You should add parameters for it to the parameter library first! ***\n\n", programname, this_parameter_entry.autogrid_type);
                     pr_2x(stderr, logFile, message);
                 }
 
                 if (map_index[natom] == -1) {
-                    pr(logFile, "%s: WARNING:  atom type could not found; calculation will use the default atom type = 1, instead.\n", programname);
+                    prStr(message, "%s: WARNING: the atom type (%s) of atom number %d could not be found;\n\tcheck that this atom type is listed after the \"ligand_types\" keyword in the DPF,\n\tand make sure to add a \"map\" keyword to the DPF for this atom type.\n\tNote that AutoDock will use the default atom type = 1, instead.\n\n", programname, this_parameter_entry.autogrid_type, natom+1);
+                    pr_2x(stderr, logFile, message);
                     map_index[natom] = 0; // we are 0-based internally, 1-based in printed output
                 }
 
@@ -324,35 +336,50 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 B_is_in_branch = FALSE;
                 break;
 
-            default:
+            case PDBQ_NULL:
+            case PDBQ_REMARK:
+            case PDBQ_TORS:
+            case PDBQ_ENDTORS:
+            case PDBQ_TORSDOF:
+            case PDBQ_CONSTRAINT:
+            case PDBQ_END_RES:
                 break;
-        }
+
+            case PDBQ_CONECT:
+                // At least some of the atoms in the "ligand" may have their connectivity specified
+                // so we could set up their bonded entries. For future versions...
+                B_has_conect_records = TRUE;
+                break;
+
+            case PDBQ_BEGIN_RES:
+                if (!found_begin_res) {
+                    // Then a flexible receptor sidechain was found in the PDBQ file.
+                    // Flag that we've found a BEGIN_RES record.
+                    found_begin_res = 1;
+                    pr(logFile, "\nNumber of atoms in movable ligand = %d\n\n", true_ligand_atoms);
+                }
+                // Increment the number of residues
+                nres++;
+                break;
+
+            case PDBQ_UNRECOGNIZED:
+            default:
+                pr(logFile, "%s: WARNING: Unrecognized PDBQT record type in line:\n", programname );
+                pr(logFile, "%s: WARNING: %s\n", programname, input_line );
+                break;
+
+        } // end switch( keyword_id )
 
 		if (!found_begin_res) {
 			// No BEGIN_RES tag has been found yet.
-
             // Keep updating "true_ligand_atoms" until we find a "BEGIN_RES".
-
-            // "true_ligand_atoms" is the number of atoms in the moving ligand, and excludes all atoms in the flexible sidechain residues of the receptor.
+            // "true_ligand_atoms" is the number of atoms in the moving ligand, 
+            // and excludes all atoms in the flexible sidechain residues of the receptor.
 			true_ligand_atoms = natom;
+        }
 
-			if (keyword_id == PDBQ_BEGIN_RES) {
-				// Then a flexible receptor sidechain was found in the PDBQ file.
-                // Flag that we've found a BEGIN_RES record.
-				found_begin_res = 1;
-				pr(logFile, "\nNumber of atoms in movable ligand = %d\n\n", true_ligand_atoms);
-			}
-		}
-		if (keyword_id == PDBQ_BEGIN_RES) {
-			// Increment the number of residues
-			nres++;
-		}
-		if (keyword_id == PDBQ_CONECT) {
-			// At least some of the atoms in the "ligand" may have their connectivity specified
-			// so we could set up their bonded entries. For future versions...
-			B_has_conect_records = TRUE;
-		}
 	} // i, next record in PDBQT file 
+
 	pr(logFile, "\nNumber of atoms found in flexible receptor sidechains (\"residues\") =\t%d atoms\n\n", natom - true_ligand_atoms);
 
 	pr(logFile, "Total number of atoms found =\t%d atoms\n\n", natom);
@@ -474,6 +501,11 @@ readPDBQTLine( char line[LINE_LEN],
     char char6[7];
     char char5[6];
     char char2[3];
+	static char message[LINE_LEN];
+
+    // Initialise char5
+    (void) strcpy( char5, "    0" );
+    char5[5] = '\0';
 
     // Initialise char8
     (void) strcpy( char8, "   0.000" );
@@ -483,32 +515,31 @@ readPDBQTLine( char line[LINE_LEN],
     (void) strcpy( char6, "  0.00" );
     char6[6] = '\0';
 
-    // Initialise char5
-    (void) strcpy( char5, "    0" );
-    char5[5] = '\0';
-
     // Initialise char2
     (void) strcpy( char2, "C " );
     char2[2] = '\0';
 
+#define check_sscanf( str, fmt, val, fieldname )  if (1 != sscanf( str, fmt, val ))  {\
+    sprintf(message, "\n%s: WARNING! Could not read " fieldname " in PDBQT line \"%s\".\n", programname, line );\
+    pr_2x(stderr, logFile, message); }
 
     // Read in the serial number of this atom
     (void) strncpy( char5, &line[6], (size_t)5 );
     char5[5] = '\0';
-    (void) sscanf( char5, "%d", ptr_serial );
+    check_sscanf( char5, "%d", ptr_serial, "serial number" );
 
 	// Read in the X, Y, Z coordinates
     (void) strncpy( char8, &line[30], (size_t)8 );
     char8[8] = '\0';
-    (void) sscanf( char8, FDFMT, &crd[X] );
+    check_sscanf( char8, FDFMT, &crd[X], "x-coordinate" );
 
     (void) strncpy( char8, &line[38], (size_t)8 );
     char8[8] = '\0';
-    (void) sscanf( char8, FDFMT, &crd[Y] );
+    check_sscanf( char8, FDFMT, &crd[Y], "y-coordinate" );
 
     (void) strncpy( char8, &line[46], (size_t)8 );
     char8[8] = '\0';
-    (void) sscanf( char8, FDFMT, &crd[Z] );
+    check_sscanf( char8, FDFMT, &crd[Z], "z-coordinate" );
 
 #ifdef DEBUG
 	(void) fprintf(stderr, "readPDBQTLine: %s", line);
@@ -517,12 +548,14 @@ readPDBQTLine( char line[LINE_LEN],
     // partial charge, q
     (void) strncpy( char6, &line[70], (size_t)6 );
     char6[6] = '\0';
-    (void) sscanf( char6, FDFMT, ptr_q );
+    check_sscanf( char6, FDFMT, ptr_q, "partial charge" );
 
     // atom type name
     (void) strncpy( char2, &line[77], (size_t)2 );
     char2[2] = '\0';
-    (void) sscanf( char2, "%s", this_parameter_entry->autogrid_type);
+    check_sscanf( char2, "%s", this_parameter_entry->autogrid_type, "atom type" );
+
+#undef check_sscanf
 
 #ifdef DEBUG
 	fprintf(stderr, "readPDBQTLine:  %d, %.3f, %.3f, %.3f, %.3f, %s\n", *ptr_serial, crd[X], crd[Y], crd[Z], *ptr_q,
