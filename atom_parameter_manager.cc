@@ -1,10 +1,10 @@
 /*
 
- $Id: atom_parameter_manager.cc,v 1.2 2007/04/27 06:01:47 garrett Exp $
+ $Id: atom_parameter_manager.cc,v 1.3 2007/05/18 09:40:30 garrett Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ Copyright (C) 1989-2007,  Michael Pique, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson,  
  All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
@@ -26,26 +26,35 @@
  */
 
 #define MAXKEY (256*256)
+
 #include <stdlib.h>
 #include <string.h>
 #include "structs.h" // needed for ParameterEntry structure
 #include "atom_parameter_manager.h"
+
 typedef ParameterEntry PE;
+
 static PE *dictionary[MAXKEY];
-static unsigned int hash(const char key[]) {
+
+static unsigned int 
+hash(const char key[]) {
     switch (strlen(key)) {
         case 0: return 0;
         case 1: return (unsigned int)key[0];
         default: return (unsigned int)key[0] + 256*(unsigned int)key[1];
     }
 }
-void apm_enter(const char key[], PE value) {
+
+void 
+apm_enter(const char key[], PE value) {
     if (dictionary[hash(key)] == NULL) {
         dictionary[hash(key)] = (PE *) calloc(1, sizeof(PE));
     }
     *(dictionary[hash(key)]) = value;  // this replaces, as well as inserts
     return;
 }
-PE * apm_find(const char key[]) {
+
+PE * 
+apm_find(const char key[]) {
     return dictionary[hash(key)];
 }
