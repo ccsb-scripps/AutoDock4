@@ -1,6 +1,6 @@
 /*
 
- $Id: coliny.cc,v 1.12 2007/04/27 06:01:48 garrett Exp $
+ $Id: coliny.cc,v 1.13 2007/06/06 15:12:25 billhart Exp $
 
  AutoDock 
 
@@ -50,6 +50,10 @@ using namespace utilib;
 // The AutoDock 'objective function' used within Coliny
 //
 double ADEvalFn(double* x, int n);
+
+#ifdef COLIN_3_0
+
+#else
 
 //
 // Global COLIN problem
@@ -162,7 +166,6 @@ colin::real best_value;
 coliny_solver.minimize(coliny_problem, initpt_, seed, false, false, finalpt_, best_value);
 finalpt << finalpt_;
 }
-
 
 #endif
 
