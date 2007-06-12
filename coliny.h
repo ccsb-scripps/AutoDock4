@@ -1,6 +1,6 @@
 /*
 
- $Id: coliny.h,v 1.4 2007/04/27 06:01:48 garrett Exp $
+ $Id: coliny.h,v 1.5 2007/06/12 05:48:45 billhart Exp $
 
  AutoDock 
 
@@ -41,7 +41,7 @@
 //
 // Initialize the 'algname' coliny optimizer over 'domain'
 //
-void coliny_init(char* algname, char* domain);
+void coliny_init(char* algname, char* domain, int num_vars);
 
 //
 // Perform minimization with a given seed and initial point. Return

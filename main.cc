@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.69 2007/05/01 02:40:12 garrett Exp $
+ $Id: main.cc,v 1.70 2007/06/12 05:48:45 billhart Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.69 2007/05/01 02:40:12 garrett Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.70 2007/06/12 05:48:45 billhart Exp $"};
 
 
 int sel_prop_count = 0;
@@ -689,7 +689,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.69 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.70 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1393,14 +1393,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         if (strcmp(algname,"help")==0) {
             std::vector<double> initvec;
-            coliny_init(algname, "");
+            coliny_init(algname, "", 0);
             prStr(error_message, "%s:  ERROR:  no optimizer type specified.", programname);
             stop(error_message);
             exit(-1);
         }
         else if (strcmp(nruns_str,"help")==0) {
             std::vector<double> initvec;
-            coliny_init(algname, nruns_str);
+            coliny_init(algname, nruns_str, 0);
             prStr(error_message, "%s:  ERROR:  no optimizer type specified.", programname);
             stop(error_message);
             exit(-1);
@@ -1472,7 +1472,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 for (j=0; j < sInit.ntor ; j++) {
                   initvec[j+7] = DegreesToRadians(sInit.tor[j]);
                 }
-                coliny_init(algname, domain);
+                coliny_init(algname, domain, sInit.ntor+7);
 
                 for (j=0; j<nruns; j++) {
                   fprintf( logFile, "\n\n\tBEGINNING Coliny %s DOCKING\n",algname);

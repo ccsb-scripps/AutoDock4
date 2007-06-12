@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.9 2007/05/12 04:51:41 garrett Exp $
+# $Id: Makefile.am,v 1.10 2007/06/12 05:48:45 billhart Exp $
 # 
 # AutoDock 
 # 
@@ -259,7 +259,7 @@ AM_CPPFLAGS = -DNOSQRT \
 #                     -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
 
 
-autodock4_LDADD = libad.a -lm
+autodock4_LDADD = libad.a $(COLINY_LDFLAGS) -lm
 
 if WANT_BIGSTACK
     autodock4_LDFLAGS = -fno-stack-limit # Cygwin, 32MB stacksize
@@ -391,7 +391,7 @@ endif
 ###   ACRO = acro
 ###   COLINYLIB = libcoliny.a # Using Coliny
 ### else
-COLINYLIB = # Not using Coliny
+#COLINY_LDADD = # Not using Coliny
 ### endif
 
 # Uncomment this section with "###" if cross-compiling on MacOSX (Intel and PowerPC)
