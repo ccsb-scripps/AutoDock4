@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.70 2007/06/12 05:48:45 billhart Exp $
+ $Id: main.cc,v 1.71 2007/06/18 23:00:41 garrett Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.70 2007/06/12 05:48:45 billhart Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.71 2007/06/18 23:00:41 garrett Exp $"};
 
 
 int sel_prop_count = 0;
@@ -689,7 +689,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.70 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.71 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2289,7 +2289,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  select
         **  Select either minimum or last state from previous cycle,
         */
-        (void) sscanf( line, "%*s %1s", &selminpar );
+        (void) sscanf( line, "%*s %c", &selminpar );
         B_selectmin = (selminpar == 'm');
         if ( B_selectmin ) {
             if (outlev >= 0) {
@@ -2454,7 +2454,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  trjsel
         **  Trajectory select,
         */
-        (void) sscanf( line, "%*s %1s", &out_acc_rej );
+        (void) sscanf( line, "%*s %c", &out_acc_rej );
         B_acconly = (out_acc_rej == 'A');
         B_either  = (out_acc_rej == 'E');
         if (B_acconly) {
