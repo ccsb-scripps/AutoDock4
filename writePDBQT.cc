@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.14 2007/04/27 06:01:52 garrett Exp $
+ $Id: writePDBQT.cc,v 1.15 2007/07/05 17:21:39 rhuey Exp $
 
  AutoDock 
 
@@ -111,7 +111,7 @@ writePDBQT(int irun, FourByteLong seed[2],
     e_intra_lig = e_intra_moving_moving_lig;                             // ligand   intramolecular energy = (3)
     e_intra_rec = e_intra_moving_fixed_rec + e_intra_moving_moving_rec;  // receptor intramolecular energy = (2) + (5)
 
-	char AtmNamResNamNum[14], AtmNamResNam[9];
+	char AtmNamResNamNum[15], AtmNamResNam[10];
     char state_type_string[MAX_CHARS];
     char state_type_prefix_string[MAX_CHARS];
     char state_type_prefix_USER_string[MAX_CHARS];
@@ -129,8 +129,8 @@ writePDBQT(int irun, FourByteLong seed[2],
         strcpy(state_type_prefix_string, "DOCKED: ");
         strcpy(state_type_prefix_USER_string, "DOCKED: USER    ");
     }
-	for (i = 0; i < 14; i++) { AtmNamResNamNum[i] = '\0'; }
-	for (i = 0; i < 9; i++) { AtmNamResNam[i] = '\0'; }
+	for (i = 0; i < 15; i++) { AtmNamResNamNum[i] = '\0'; }
+	for (i = 0; i < 10; i++) { AtmNamResNam[i] = '\0'; }
 
     initialise_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE );
 
@@ -277,16 +277,16 @@ writePDBQT(int irun, FourByteLong seed[2],
                 }
                 if (keepresnum > 0) {
                     // Retain the original Residue Numbering
-                    strncpy(AtmNamResNamNum, &atomstuff[i][13], (size_t) 13);
-                    AtmNamResNamNum[13] = '\0';
+                    strncpy(AtmNamResNamNum, &atomstuff[i][12], (size_t) 14);
+                    AtmNamResNamNum[14] = '\0';
                     (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESSTR, state_type_prefix_string, 
                                    i + 1, AtmNamResNamNum, crd[i][X], crd[i][Y], crd[i][Z], 
                                    this_emap, this_elec,
                                    charge[i], parameterArray[type[i]].autogrid_type );
                 } else {
                     // Change the residue number to the run number
-                    strncpy(AtmNamResNam, &atomstuff[i][13], (size_t) 8);
-                    AtmNamResNam[8] = '\0';
+                    strncpy(AtmNamResNam, &atomstuff[i][12], (size_t) 9);
+                    AtmNamResNam[9] = '\0';
                     (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESNUM, state_type_prefix_string, 
                                    i + 1, AtmNamResNam, irun + 1, crd[i][X], crd[i][Y], crd[i][Z], 
                                    this_emap, this_elec,
@@ -323,10 +323,10 @@ void print_PDBQT( FILE *logFile,
                   const char prefix[MAX_CHARS] )
 { // Print out the coordinates
     register int i=0;
-    char AtmNamResNamNum[14];
+    char AtmNamResNamNum[15];
     for (i=0; i<true_ligand_atoms; i++) {
-        strncpy( AtmNamResNamNum, &atomstuff[i][13], (size_t) 13 );
-        AtmNamResNamNum[13] = '\0';
+        strncpy( AtmNamResNamNum, &atomstuff[i][14], (size_t) 14 );
+        AtmNamResNamNum[14] = '\0';
         (void) fprintf( logFile, FORMAT_PDBQT_ATOM_RESSTR, prefix, 
                         i + 1, AtmNamResNamNum, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z], 
                         1., 0.,
