@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.10 2007/06/12 05:48:45 billhart Exp $
+# $Id: Makefile.am,v 1.11 2007/09/02 05:19:13 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -31,7 +31,7 @@
 
 # Autotools
 
-EXTRA_DIST = AD4_PARM99.dat AD4_parameters.dat paramdat2h.csh Tests
+EXTRA_DIST = AD4_PARM99.dat AD4_parameters.dat AD4.1_bound.dat AD4.1_extended.dat AD4.1_compact.dat paramdat2h.csh Tests
 
 dist-hook:
 	rm -rf `find $(distdir)/Tests -name CVS -o -name '*.dlg'` 
@@ -464,7 +464,7 @@ gs.o : gs.cc gs.h ranlib.h eval.h rep.h support.h writePDBQT.h
 # 2007-04-30 MP & GMM: this line is necessary to be able to compile read_parameter_library.o
 read_parameter_library.o : default_parameters.h
 
-default_parameters.h : AD4_parameters.dat paramdat2h.csh
+default_parameters.h : AD4.1_bound.dat paramdat2h.csh
 	rm -f $@
 	csh ./paramdat2h.csh > tmp-paramdat
 	mv -f tmp-paramdat $@
