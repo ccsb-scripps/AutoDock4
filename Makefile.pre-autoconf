@@ -1,4 +1,4 @@
-# $Id: Makefile.pre-autoconf,v 1.2 2007/05/12 04:45:38 garrett Exp $
+# $Id: Makefile.pre-autoconf,v 1.3 2007/09/02 05:15:58 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -816,7 +816,7 @@ readmap.o : readmap.cc readmap.h constants.h openfile.h warn_bad_file.h strindex
 readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_PDBQT_line.cc parse_PDBQT_line.h mdist.h atom_parameter_manager.cc atom_parameter_manager.h 
 	$(CC) $(CFLAGS) -c readPDBQT.cc
 
-default_parameters.h : AD4_parameters.dat paramdat2h.csh
+default_parameters.h : AD4.1_bound.dat paramdat2h.csh
 	rm -f $@
 	./paramdat2h.csh > tmp-paramdat
 	mv -f tmp-paramdat $@
