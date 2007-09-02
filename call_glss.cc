@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.29 2007/04/27 06:01:47 garrett Exp $
+ $Id: call_glss.cc,v 1.30 2007/09/02 03:09:42 garrett Exp $
 
  AutoDock 
 
@@ -259,6 +259,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     register int j;
     int num_generations = 0, allEnergiesEqual = 1, numTries = 0;
     int indiv = 0; // Number of Individual in Population to set initial state variables for.
+    int max_numTries = 1000;
     double firstEnergy = 0.0;
     EvalMode localEvalMode = Normal_Eval;
     FILE *pop_fileptr;
@@ -346,6 +347,10 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         }
         if (allEnergiesEqual) {
             (void)fprintf(logFile,"NOTE: All energies are equal in population; re-initializing. (Try Number %d)\n", numTries);
+        }
+        if (numTries > max_numTries) {
+            (void)fprintf(logFile,"WARNING: the number of tries has exceeded the maximum number of tries permitted.\nWARNING: AutoDock will attempt continue with the currently-generated random population.\n");
+            break;
         }
     } while (allEnergiesEqual);
 
