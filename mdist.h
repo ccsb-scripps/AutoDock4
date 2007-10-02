@@ -1,6 +1,6 @@
 /*
 
- $Id: mdist.h,v 1.7 2007/09/02 05:22:35 garrett Exp $
+ $Id: mdist.h,v 1.8 2007/10/02 22:56:32 garrett Exp $
 
  AutoDock 
 
@@ -26,6 +26,9 @@
  */
 
 #include "autocomm.h"
+
+#define set_minmax( a1, a2, min, max)  mindist[(a1)][(a2)] = (min); mindist[(a2)][(a1)] = (min); maxdist[(a1)][(a2)] = (max); maxdist[(a2)][(a1)] = (max)
+#define BOND_LENGTH_TOLERANCE 0.1
 
 void mdist();
 
@@ -84,33 +87,49 @@ void mdist() {
     mindist[S][S] = 2.018;
     maxdist[S][S] = 2.058;
      */
-    mindist[C][H] = 1.07;
-    maxdist[C][H] = 1.15;
-    mindist[H][C] = mindist[C][H];
-    maxdist[H][C] = maxdist[C][H];
 
-    mindist[N][H] = 0.99;
-    maxdist[N][H] = 1.10;
-    mindist[H][N] = mindist[N][H];
-    maxdist[H][N] = maxdist[N][H];
+    /*
+     * These values, unless otherwise stated,
+     * are taken from "handbook of Chemistry and Physics"
+     * 44th edition(!)
+     */
+    set_minmax(C, C, 1.20, 1.545); // mindist[C][C] = 1.20, p. 3510 ; maxdist[C][C] = 1.545, p. 3511
+    set_minmax(C, N, 1.1, 1.479); // mindist[C][N] = 1.1, p. 3510 ; maxdist[C][N] = 1.479, p. 3511
+    set_minmax(C, O, 1.15, 1.47); // mindist[C][O] = 1.15, p. 3510 ; maxdist[C][O] = 1.47, p. 3512
+    set_minmax(C, H, 1.022, 1.12);  // p. 3518, p. 3517
+    set_minmax(C, XX, 0.9, 1.545); // mindist[C][XX] = 0.9, AutoDock 3 defaults ; maxdist[C][XX] = 1.545, p. 3511
+    set_minmax(C, P, 1.85, 1.89); // mindist[C][P] = 1.85, p. 3510 ; maxdist[C][P] = 1.89, p. 3510
+    set_minmax(C, S, 1.55, 1.835); // mindist[C][S] = 1.55, p. 3510 ; maxdist[C][S] = 1.835, p. 3512
+    set_minmax(N, N, 1.0974, 1.128); // mindist[N][N] = 1.0974, p. 3513 ; maxdist[N][N] = 1.128, p. 3515
+    set_minmax(N, O, 1.0619, 1.25); // mindist[N][O] = 1.0975, p. 3515 ; maxdist[N][O] = 1.128, p. 3515
+    set_minmax(N, H, 1.004, 1.041); // mindist[N][H] = 1.004, p. 3516 ; maxdist[N][H] = 1.041, p. 3515
+    set_minmax(N, XX, 0.9, 1.041); // mindist[N][XX] = 0.9, AutoDock 3 defaults ; maxdist[N][XX] = 1.041, p. 3515
+    set_minmax(N, P, 1.4910, 1.4910); // mindist[N][P] = 1.4910, p. 3515 ; maxdist[N][P] = 1.4910, p. 3515
+    set_minmax(N, S, 1.58, 1.672); // mindist[N][S] = 1.58, 1czm.pdb sulfonamide ; maxdist[N][S] = 1.672, J. Chem. SOC., Dalton Trans., 1996, Pages 4063-4069 
+    set_minmax(O, O, 1.208, 1.51); // p.3513, p.3515
+    set_minmax(O, H, 0.955, 1.0289); // mindist[O][H] = 0.955, p. 3515 ; maxdist[O][H] = 1.0289, p. 3515
+    set_minmax(O, XX, 0.955, 2.1); // AutoDock 3 defaults
+    set_minmax(O, P, 1.36, 1.67); // mindist[O][P] = 1.36, p. 3516 ; maxdist[O][P] = 1.67, p. 3517
+    set_minmax(O, S, 1.41, 1.47); // p. 3517, p. 3515
+    set_minmax(H, H, 99., 100.); // AutoDock 4 defaults -- large values to prevent such bonds from forming.
+    set_minmax(H, XX, 0.9, 1.5); // AutoDock 4 defaults
+    set_minmax(H, P, 1.40, 1.44); // mindist[H][P] = 1.40, p. 3515 ; maxdist[H][P] = 1.44, p. 3515
+    set_minmax(H, S, 1.325, 1.3455); // mindist[H][S] = 1.325, p. 3518 ; maxdist[H][S] = 1.3455, p. 3516
+    set_minmax(XX, XX, 0.9, 2.1); // AutoDock 3 defaults
+    set_minmax(XX, P, 0.9, 2.1); // AutoDock 3 defaults
+    set_minmax(XX, S, 1.325, 2.1); // mindist[XX][S] = 1.325, p. 3518 ; maxdist[XX][S] = 2.1, AutoDock 3 defaults
+    set_minmax(P, P, 2.18, 2.23); // mindist[P][P] = 2.18, p. 3513 ; maxdist[P][P] = 2.23, p. 3513
+    set_minmax(P, S, 1.83, 1.88); // mindist[P][S] = 1.83, p. 3516 ; maxdist[P][S] = 1.88, p. 3515
+    set_minmax(S, S, 2.03, 2.05); // mindist[S][S] = 2.03, p. 3515 ; maxdist[S][S] = 2.05, p. 3515
+    /* end values from Handbook of Chemistry and Physics */
 
-    mindist[O][H] = 0.94;
-    maxdist[O][H] = 1.10;
-    mindist[H][O] = mindist[O][H];
-    maxdist[H][O] = maxdist[O][H];
-
-    mindist[S][H] = 1.316;
-    maxdist[S][H] = 1.356;
-    mindist[H][S] = mindist[S][H];
-    maxdist[H][S] = maxdist[S][H];
-
-    mindist[P][H] = 1.35;
-    maxdist[P][H] = 1.40;
-    mindist[H][P] = mindist[P][H];
-    maxdist[H][P] = maxdist[P][H];
-
-    mindist[N][O] = 1.11;  // N=O is ~ 1.21 Å, minus 0.1Å error
-    maxdist[N][O] = 1.50;  // N-O is ~ 1.40 Å, plus 0.1 Å error
-    mindist[O][N] = mindist[N][O];  // N=O is ~ 1.21 Å, minus 0.1Å error
-    maxdist[O][N] = maxdist[N][O];  // N-O is ~ 1.40 Å, plus 0.1 Å error
-}; 
+    // expand the allowed bond length ranges by the BOND_LENGTH_TOLERANCE
+	for (i=0;  i < NUM_ENUM_ATOMTYPES;  i++) {
+		for (j=i;  j < NUM_ENUM_ATOMTYPES;  j++) {
+			mindist[i][j] = mindist[i][j] - BOND_LENGTH_TOLERANCE;
+			mindist[j][i] = mindist[j][i] - BOND_LENGTH_TOLERANCE;
+			maxdist[i][j] = maxdist[i][j] + BOND_LENGTH_TOLERANCE;
+			maxdist[j][i] = maxdist[j][i] + BOND_LENGTH_TOLERANCE;
+		}
+	}
+}
