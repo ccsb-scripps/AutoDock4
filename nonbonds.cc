@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.10 2007/04/27 06:01:50 garrett Exp $
+ $Id: nonbonds.cc,v 1.11 2007/10/02 23:09:00 garrett Exp $
 
  AutoDock 
 
@@ -32,16 +32,13 @@
 #include <math.h>
 #include <stdio.h>
 #include "nonbonds.h"
+#include "quicksort.h"
 #include "mdist.h"  /* mindist and maxdist are here */
 
 
 extern int debug;
 extern  FILE    *logFile;
-
-#ifdef DEBUG
-extern int debug;
-extern  FILE    *logFile;
-#endif /* DEBUG */
+extern char *programname;
 
 using namespace std;
 
@@ -79,8 +76,8 @@ void nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
         } // j
     } // i
 
-	for (i=0; i<natom; i++) {  // loop over all atoms, "i"
-		for (j=0; j<bonded[i][5]; j++) {  // loop over each atom "j" bonded to the current atom, "i"
+	for (i=0; i<natom; i++) {  // loop over all the atoms, "i"; there are "natom" atoms
+		for (j=0; j<bonded[i][5]; j++) {  // loop over all the atoms "j" bonded to the current atom, "i"; there are "bonded[i][5]" bonded atoms
 			for (k=0; k<bonded[bonded[i][j]][5]; k++) {  // loop over each atom "k" bonded to the current atom "j"
 
 				// Ignore "1-3 Interactions"
@@ -98,11 +95,25 @@ void nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
                 } //  end if we are ignoring "1-4 interactions"
 
                 // Loop over each atom "l" bonded to the atom "k" bonded to the atom "j" bonded to the atom "i"...
+                if (debug>0) {
+                    (void)fprintf(logFile, "bonded[ %d ][ %d ] = %d\n", bonded[i][j], k, bonded[bonded[i][j]][k] );
+                    (void)fprintf(logFile, "bonded[ %d ][ 5 ] = %d\n", bonded[bonded[i][j]][k], bonded[bonded[bonded[i][j]][k]][5] );
+                }
+                // validate the bonded[][] values before they used as indices in the for l-loop.
+                if (bonded[i][j] < 0) {
+                    (void)fprintf(logFile, "%s:  WARNING! The count of bonds, %d, to atom %d does not match the list of bonded atoms.\n\n", programname, bonded[i][5], i);
+                    (void)fprintf(logFile, "%s:  WARNING! bonded[%d][] = %d, %d, %d, %d, %d, %d.\n\n", programname, i, bonded[i][0], bonded[i][1], bonded[i][2], bonded[i][3], bonded[i][4], bonded[i][5]);
+                    continue;
+                }
+                if (bonded[ bonded[i][j] ][k] < 0) {
+                    (void)fprintf(logFile, "%s:  WARNING! The count of bonds, %d, to atom %d does not match the list of bonded atoms.\n\n", programname, bonded[bonded[i][j]][5], bonded[i][j]);
+                    (void)fprintf(logFile, "%s:  WARNING! bonded[%d][] = %d, %d, %d, %d, %d, %d.\n\n", programname, bonded[i][j], bonded[bonded[i][j]][0], bonded[bonded[i][j]][1], bonded[bonded[i][j]][2], bonded[bonded[i][j]][3], bonded[bonded[i][j]][4], bonded[bonded[i][j]][5]);
+                    continue;
+                }
                 for (l=0; l<bonded[bonded[bonded[i][j]][k]][5]; l++) { 
                     nbmatrix[i][bonded[bonded[bonded[i][j]][k]][l]] = nonbond_type;
                     nbmatrix[bonded[bonded[bonded[i][j]][k]][l]][i] = nonbond_type;
                 } //  l
-
 
 			} //  k
 		} //  j
@@ -120,6 +131,8 @@ void getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
 {
 	int i,j;
 	double dist,dx,dy,dz;
+    Real distance[MAX_ATOMS];
+    int isort[MAX_ATOMS];
 
     // set up all the minimum and maximum possible distances for bonds
 	mdist();
@@ -129,14 +142,39 @@ void getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
     // loop over atoms, "i", from "from_atom" to "to_atom"
 	for (i = from_atom;  i < to_atom;  i++) {
 
-        // while on atom"i", loop over atoms "j", from "i+1" to "to_atom"
-		for (j = i+1;  j < to_atom;  j++) {
-	
+        // compute the distance to all the atoms
+        for (j = i+1; j < to_atom; j++) {
+            isort[j] = j;
+        }
+        for (j = i+1; j < to_atom; j++) {
 			dx = crdpdb[i][X] - crdpdb[j][X];
 			dy = crdpdb[i][Y] - crdpdb[j][Y];
 			dz = crdpdb[i][Z] - crdpdb[j][Z];
+			distance[j] = sqrt(dx*dx + dy*dy + dz*dz);  // calculate the distance from "i" to "j"
+        }
+        // sort by distance
+        quicksort( distance, isort, i+1, to_atom-1 );
+        if (debug>0) {
+            // print out distances
+            for (j = i+1; j < to_atom; j++) {
+                (void)fprintf(logFile, "i=%d, j=%d, distance[j]=%.3lf, distance[%2d]=%.3lf, isort[j]=%d\n", i, j, distance[j], isort[j], distance[isort[j]], isort[j]);
+            }
+        }
 
-			dist = sqrt(dx*dx + dy*dy + dz*dz);  // calculate the distance from "i" to "j"
+        // loop over the remaining atoms, from closest to furthest...
+        // while on atom "i", loop over atoms "j_index", from "i+1" to "to_atom"
+		for (int j_index = i+1;  j_index < to_atom;  j_index++) {
+	
+            // the isort array points to the indices sorted by distance
+            j = isort[ j_index ];
+
+            // find the shortest distance
+			dist = distance[ j ];
+
+            if (debug>0) {
+                // print out distances
+                (void)fprintf(logFile,"j_index=%d, j=%d, dist=%.3lf\n", j_index, j, dist);
+            }
 
             // if distance from "i" to "j" is in range for their atom types, 
             // set one of the atoms to which "i" is bonded to "j", and vice-versa.
@@ -146,10 +184,34 @@ void getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
                 // bonded[x][5] is the current number of bonds that atom "x" has.
 	            // Remember:   int bonded[MAX_ATOMS][6];	
 
+                if ((bonded[i][5] >= 5) || (bonded[j][5] >= 5)) {
+                    if (bonded[i][5] >= 5) {
+                        // bonded array for the i-th atom is full; we could return a failure code here.
+                        fprintf( logFile, "%s: WARNING!  Atom %d has too many bonds (%d is the maximum)!\n\n", programname, i, 5 );
+                    } else {
+                        // bonded array for the j-th atom is full; we could return a failure code here.
+                        fprintf( logFile, "%s: WARNING!  Atom %d has too many bonds (%d is the maximum)!\n\n", programname, j, 5 );
+                    }
+                    // Skip the addition of this bond, between i and j, and go onto the next j-th atom
+                    continue;
+                }
+
+                // add a bond between i and j
 				bonded[i][ bonded[i][5] ] = j;
 				bonded[j][ bonded[j][5] ] = i;
+                // increment the number of bonds to i and j
 				bonded[i][5] += 1;
 				bonded[j][5] += 1;
+
+                if (debug>0) {
+                    // print out distances
+                    (void)fprintf(logFile,"Adding a bond between %d and %d (dist=%.3lf, mindist=%.3lf, maxdist=%.3lf)\n", i, j, 
+                                  dist, mindist[bond_index[i]][bond_index[j]], maxdist[bond_index[i]][bond_index[j]]);
+                    (void)fprintf(logFile,"  bonded[%d][ bonded[%d][5]=%d ] = %d\n", i, i, bonded[i][5], j);
+                    (void)fprintf(logFile,"  bonded[%d][ bonded[%d][5]=%d ] = %d\n", j, j, bonded[j][5], i);
+                    (void)fprintf(logFile,"  bonded[%d][5]=%d\n", i, bonded[i][5]);
+                    (void)fprintf(logFile,"  bonded[%d][5]=%d\n", j, bonded[j][5]);
+                }
 				
 			} //  dist is in bonding range for these atom types
 		} //  j
