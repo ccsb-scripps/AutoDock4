@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_param_line.cc,v 1.3 2007/04/27 06:01:50 garrett Exp $
+ $Id: parse_param_line.cc,v 1.4 2007/10/20 04:12:00 garrett Exp $
 
  AutoDock 
 
@@ -62,7 +62,7 @@ int parse_param_line( char line[LINE_LEN] )
 
     // tokentablesize should be set to the length of the tokentable
     // 
-    const int tokentablesize = 6;
+    const int tokentablesize = 7;
 
     const struct {
        char *lexeme;
@@ -72,8 +72,9 @@ int parse_param_line( char line[LINE_LEN] )
                       {"FE_coeff_estat", PAR_ESTAT}, // 3
                       {"FE_coeff_desolv", PAR_DESOLV}, // 4
                       {"FE_coeff_tors", PAR_TORS}, // 5
-                      {"atom_par", PAR_ATOM_PAR} // 6
-              }; // 6 tokens  // remember to set tokentablesize earlier
+                      {"FE_unbound_model", PAR_UNBOUND}, // 6
+                      {"atom_par", PAR_ATOM_PAR} // 7
+              }; // 7 tokens  // remember to set tokentablesize earlier
 
     c[0] = '\0';
     for (j=0; ((line[j]!='\0')&&(line[j]!=' ')&&(line[j]!='\t')&&(line[j]!='\n')); j++) {
