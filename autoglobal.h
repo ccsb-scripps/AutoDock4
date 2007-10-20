@@ -1,6 +1,6 @@
 /*
 
- $Id: autoglobal.h,v 1.12 2007/04/27 06:01:47 garrett Exp $
+ $Id: autoglobal.h,v 1.13 2007/10/20 04:06:09 garrett Exp $
 
  AutoDock 
 
@@ -99,6 +99,8 @@ FILE    *stateFile;
 Linear_FE_Model AD3;
 Linear_FE_Model AD4_wrt_3;
 Linear_FE_Model AD4;
+
+Unbound_Model ad4_unbound_model = Unbound_Same_As_Bound;
 
 #endif /*_AUTOGLOBAL*/
 /* EOF */
