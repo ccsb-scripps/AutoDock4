@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.5 2007/04/27 06:01:50 garrett Exp $
+ $Id: read_parameter_library.cc,v 1.6 2007/10/20 04:10:38 garrett Exp $
 
  AutoDock 
 
@@ -41,6 +41,7 @@ extern FILE *logFile;
 extern char *programname;
 extern int debug;
 extern Linear_FE_Model AD4;
+extern Unbound_Model ad4_unbound_model;
 
 
 void read_parameter_library(
@@ -51,6 +52,7 @@ void read_parameter_library(
     static ParameterEntry thisParameter;
     FILE *parameter_library_file;
     char parameter_library_line[MAX_CHARS];
+    char unbound_model_type[MAX_CHARS];
     int nfields;
     int param_keyword = -1;
     int int_hbond_type = 0;
@@ -119,6 +121,28 @@ void read_parameter_library(
                     continue; // skip any parameter_library_line without enough info
                 }
                 pr( logFile, "Free energy coefficient for the torsional term     = \t%.4lf\n\n", AD4.coeff_tors);
+                break;
+
+            case PAR_UNBOUND:
+                nfields = sscanf(parameter_library_line, "%*s %s", unbound_model_type);
+                if (nfields < 1) {
+                    pr( logFile, "%s: WARNING:  Please supply a string describing the unbound model ('unbound_same_as_bound', 'extended' or 'compact').\n\n", programname);
+                    continue; // skip any parameter_library_line without enough info
+                }
+
+                if (equal( unbound_model_type, "unboun", 6 )) {
+                    ad4_unbound_model = Unbound_Same_As_Bound;
+                } else if (equal( unbound_model_type, "extend", 6 )) {
+                    ad4_unbound_model = Extended;
+                } else 
+                if (equal( unbound_model_type, "compact", 6 )) {
+                    ad4_unbound_model = Compact;
+                } else {
+                    pr( logFile, "%s:  WARNING:  Unrecognized unboound model type \"%s\" found in parameter library \"%s\".\n\n",
+                            programname, unbound_model_type, FN_parameter_library);
+                }
+
+                pr( logFile, "Unbound model = %s\n\n", unbound_model_type);
                 break;
 
             case PAR_ATOM_PAR:
