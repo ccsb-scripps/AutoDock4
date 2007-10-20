@@ -1,6 +1,6 @@
 /*
 
- $Id: partokens.h,v 1.2 2007/04/27 06:01:50 garrett Exp $
+ $Id: partokens.h,v 1.3 2007/10/20 04:06:41 garrett Exp $
 
  AutoDock 
 
@@ -54,6 +54,7 @@
 #define	PAR_TORS	 5
 #define	PAR_ATOM_PAR	 6
 #define	PAR_COMMENT	 7
+#define	PAR_UNBOUND	 8
 
 #endif
 /* EOF */
