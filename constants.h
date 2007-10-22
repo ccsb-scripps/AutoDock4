@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.19 2007/10/20 04:05:00 garrett Exp $
+ $Id: constants.h,v 1.20 2007/10/22 01:12:49 garrett Exp $
 
  AutoDock 
 
@@ -526,10 +526,13 @@ const Real TK = 298.15;      // Room temperature, in K
 #define UNBOUND_CALCULATION TRUE
 #define BOUND_CALCULATION FALSE
 
+#ifndef _UNBOUND_MODEL
+#define _UNBOUND_MODEL
 /*
  * Set the options for unbound model
  */
 enum Unbound_Model { Unbound_Same_As_Bound=0, Extended=1, Compact=2 };
+#endif
 
 /*----------------------------------------------------------------------------* 
  * End of file                                                                * 
