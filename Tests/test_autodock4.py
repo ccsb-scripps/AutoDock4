@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.11 2007/05/04 08:04:49 garrett Exp $
+# $Id: test_autodock4.py,v 1.12 2007/10/22 01:16:43 garrett Exp $
 #
 
 """
@@ -45,7 +45,7 @@ computed_dlg_no_desolvmap = False
 computed_dlg_no_elec_desolv_maps = False
 
 expected_intermol_energy = -6.17
-expected_internal_energy = -1.58
+expected_internal_energy = -1.80
 
 #______________________________________________________________________________
 
