@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.6 2007/10/20 04:10:38 garrett Exp $
+ $Id: read_parameter_library.cc,v 1.7 2008/03/25 01:20:11 garrett Exp $
 
  AutoDock 
 
@@ -57,11 +57,12 @@ void read_parameter_library(
     int param_keyword = -1;
     int int_hbond_type = 0;
 
-    pr(logFile, "Using read_parameter_library\n");
+    pr(logFile, "Using read_parameter_library() to try to open and read \"%s\".\n\n", FN_parameter_library);
 
     // Open and read the parameter library
     //
     if ((parameter_library_file = ad_fopen(FN_parameter_library, "r")) == NULL) {
+         fprintf(logFile,"Sorry, I can't find or open %s\n", FN_parameter_library);
          fprintf(stderr,"Sorry, I can't find or open %s\n", FN_parameter_library);
          exit(-1);
     }
