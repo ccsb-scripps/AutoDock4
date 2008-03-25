@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.19 2007/04/27 06:01:48 garrett Exp $
+ $Id: gs.cc,v 1.20 2008/03/25 00:07:34 garrett Exp $
 
  AutoDock 
 
@@ -620,6 +620,8 @@ void Genetic_Algorithm::crossover(Population &original_population)
                                    original_population[ordering[i+1]].genotyp,
                                    original_population[ordering[i]].genotyp.num_genes() - 1);
 
+                original_population[ordering[i]].age = 0L;
+                original_population[ordering[i+1]].age = 0L;
                 break;
             case Arithmetic:
                // select the parents A and B
@@ -633,6 +635,9 @@ void Genetic_Algorithm::crossover(Population &original_population)
                crossover_arithmetic( original_population[ i ].genotyp, 
                                      original_population[i+1].genotyp, 
                                      alpha );
+
+                original_population[ordering[i]].age = 0L;
+                original_population[ordering[i+1]].age = 0L;
                break;
             default:
                 (void)fprintf(logFile,"gs.cc/ Unrecognized crossover mode!\n");
