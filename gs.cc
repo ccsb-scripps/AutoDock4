@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.20 2008/03/25 00:07:34 garrett Exp $
+ $Id: gs.cc,v 1.21 2008/03/25 00:27:24 garrett Exp $
 
  AutoDock 
 
@@ -581,7 +581,6 @@ void Genetic_Algorithm::crossover(Population &original_population)
          switch(c_mode) {
             case TwoPt:
                 // First crossover point is a random integer from 0 to the number of genes minus 1
-#ifdef DO_NOT_CROSSOVER_IN_QUAT
                 // Make sure we do not crossover inside a quaternion...
                 do {
                     first_point = ignuin(0, original_population[i].genotyp.num_genes()-1);
@@ -589,10 +588,6 @@ void Genetic_Algorithm::crossover(Population &original_population)
                 do {
                     second_point = first_point+ignuin(0, original_population[i].genotyp.num_genes()-first_point-1);
                 } while ( is_rotation_index( second_point ) );
-#else
-                first_point = ignuin(0, original_population[i].genotyp.num_genes()-1);
-                second_point = first_point+ignuin(0, original_population[i].genotyp.num_genes()-first_point-1);
-#endif
                 // Do two-point crossover, with the crossed-over offspring replacing the parents in place:
                 crossover_2pt( original_population[ordering[i]].genotyp, 
                                original_population[ordering[i+1]].genotyp, 
@@ -690,10 +685,6 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
 
    //  Make sure the quaternion is suitable for 3D rotation
    q_father = father.readQuat();
-#ifndef DO_NOT_CROSSOVER_IN_QUAT
-   q_father = normQuat( q_father );
-   father.writeQuat( q_father );
-#endif
 #ifdef DEBUG_QUAT_PRINT
    printQuat( logFile, q_father );
    (void) fflush(logFile);
@@ -705,10 +696,6 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
 #endif // endif DEBUG_QUAT_PRINT
    //  Make sure the quaternion is suitable for 3D rotation
    q_mother = mother.readQuat();
-#ifndef DO_NOT_CROSSOVER_IN_QUAT
-   q_mother = normQuat( q_mother );
-   mother.writeQuat( q_mother );
-#endif
 #ifdef DEBUG_QUAT_PRINT
    printQuat( logFile, q_mother );
    (void) fflush(logFile);
