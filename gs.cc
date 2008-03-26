@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.21 2008/03/25 00:27:24 garrett Exp $
+ $Id: gs.cc,v 1.22 2008/03/26 23:36:53 garrett Exp $
 
  AutoDock 
 
@@ -707,8 +707,8 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
 
 void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, unsigned int num_genes)
 {
-    register unsigned int i;
-    Element temp;
+    register unsigned int i, j, k;
+    Element temp, temp_rot_genes[4];
 
 #ifdef DEBUG
     (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_uniform(Genotype");
@@ -716,13 +716,27 @@ void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, un
 #endif /* DEBUG */
 
     for (i=0; i<num_genes; i++) {
-        // Choose either father's or mother's gene, with a 50/50 probability
+        // Choose either father's or mother's gene/rotation gene set, with a 50/50 probability
         if (ranf() > 0.5) {
-            temp = father.gread(i);
-            father.write(mother.gread(i), i);
-            mother.write(temp, i);
+            if ( ! is_rotation_index( i ) ) {
+                // Exchange parent's genes
+                temp = father.gread(i);
+                father.write(mother.gread(i), i);
+                mother.write(temp, i);
+            } else {
+                // Exchange father's or mother's set of rotation genes
+                k=0;
+                for (j=i; j<i+4; j++) {
+                    temp_rot_genes[k] = father.gread(j);
+                    father.write(mother.gread(j), j);
+                    mother.write(temp_rot_genes[k], j);
+                    k++;
+                }
+                // Increment gene counter, i, by 3, to skip the 3 remaining rotation genes
+                i=i+3;
+            }
         }
-    }
+    } // next i
 }
 
 void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, Real alpha)
