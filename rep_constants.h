@@ -1,6 +1,6 @@
 /*
 
- $Id: rep_constants.h,v 1.2 2007/04/27 06:01:51 garrett Exp $
+ $Id: rep_constants.h,v 1.3 2008/03/28 21:18:11 garrett Exp $
 
  AutoDock 
 
@@ -49,5 +49,6 @@
 #define is_axis_index(i) (((i) >= X_ROTATION_INDEX) && ((i) <= Z_ROTATION_INDEX))
 #define is_angle_index(i) ((i) == ROTATION_ANGLE_INDEX)
 #define is_rotation_index(i) (((i) >= QX_ROTATION_INDEX) && ((i) <= QW_ROTATION_INDEX))
+#define is_conformation_index(i) ((i) > ROTATION_ANGLE_INDEX)
 
 #endif
