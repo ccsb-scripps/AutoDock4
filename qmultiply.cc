@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.10 2007/04/27 06:01:50 garrett Exp $
+ $Id: qmultiply.cc,v 1.11 2008/04/02 05:46:32 garrett Exp $
 
  AutoDock 
 
@@ -447,5 +447,55 @@ const Quat identityQuat()
     Q.w = 1.;
     return Q;
 }
+
+/* Radians */
+#define ONE_ROTATION TWOPI // Degrees // #define ONE_ROTATION 360.
+#define HALF_ROTATION PI // Degrees // #define HALF_ROTATION 180.
+
+/* Angles that go from -half-a-rotation to half-a-rotation */
+#define MIN_ANGLE -HALF_ROTATION // Angles that go from 0 to one-rotation // #define MIN_ANGLE 0.
+#define MAX_ANGLE HALF_ROTATION // Angles that go from 0 to one-rotation // #define MAX_ANGLE ONE_ROTATION
+
+Real a_range_reduction( Real a )
+{
+    if (a <= MIN_ANGLE) {
+        do a += ONE_ROTATION;
+        while (a <= MIN_ANGLE);
+    } else if (a >= MAX_ANGLE) {
+        do a -= ONE_ROTATION;
+        while (a >= MAX_ANGLE);
+    }
+    return a;
+}
+
+Real alerp( Real a, Real b, Real fract )
+{
+    Real delta;
+    a = a_range_reduction( a );
+    b = a_range_reduction( b );
+    delta = b - a;
+    if (delta > HALF_ROTATION) {
+        delta -= ONE_ROTATION;
+    } else if (delta < -HALF_ROTATION) {
+        delta += ONE_ROTATION;
+    }
+    return a_range_reduction( a + delta*fract );
+}
+
+/* test for alerp and a_range_reduction
+int main() {
+    Real start = -ONE_ROTATION;
+    Real stop = ONE_ROTATION;
+    Real step = ONE_ROTATION/8.;
+    Real i, j;
+    for (i=start; i<stop; i=i+step) {
+        printf(" %.3f:\n", i); 
+        for (j=start; j<stop; j=j+step) {
+            printf("      %6.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", j, alerp(i,j,0.0), alerp(i,j,0.1), alerp(i,j,0.5), alerp(i,j,0.9), alerp(i,j,1.0));
+        }
+    }
+    return 0;
+}
+*/
 
 /* EOF */
