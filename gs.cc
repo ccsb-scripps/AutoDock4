@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.22 2008/03/26 23:36:53 garrett Exp $
+ $Id: gs.cc,v 1.23 2008/04/02 06:32:17 garrett Exp $
 
  AutoDock 
 
@@ -60,6 +60,7 @@
 #include "autocomm.h"
 #include "timesyshms.h"
 #include "writePDBQT.h"
+#include "qmultiply.h"
 
 
 extern FILE *logFile;
@@ -756,28 +757,44 @@ void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, Real alph
 #endif /* DEBUG */
 
    // loop over genes to be crossed over
+   // a = alpha*A + (1-alpha)*B
+   // b = (1-alpha)*A + alpha*B
    for (i=0; i<A.num_genes(); i++) {
+       if ( is_translation_index(i) ) {
 #ifdef DEBUG
-       (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
-       (void)fprintf(logFile, "/looping over genes to be crossed over, i = %d\n", i);
-       (void)fflush(logFile);
+           (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
+           (void)fprintf(logFile, "/looping over genes to be crossed over, i = %d\n", i);
+           (void)fflush(logFile);
 #endif /* DEBUG */
-      temp_A = A.gread(i);
-      temp_B = B.gread(i);
+           temp_A = A.gread(i);
+           temp_B = B.gread(i);
 #ifdef DEBUG
-       (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
-       (void)fprintf(logFile, "/temp_A = %.3f  &  temp_B = %.3f\n", temp_A.real, temp_B.real);
-       (void)fflush(logFile);
+           (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
+           (void)fprintf(logFile, "/temp_A = %.3f  &  temp_B = %.3f\n", temp_A.real, temp_B.real);
+           (void)fflush(logFile);
 #endif
-      // a = alpha*A + (1-alpha)*B
-      // b = (1-alpha)*A + alpha*B
-      A.write( (alpha * temp_A.real  +  one_minus_alpha * temp_B.real), i);
-      B.write( (one_minus_alpha * temp_A.real  +  alpha * temp_B.real), i);
+           A.write( (alpha * temp_A.real  +  one_minus_alpha * temp_B.real), i);
+           B.write( (one_minus_alpha * temp_A.real  +  alpha * temp_B.real), i);
 #ifdef DEBUG
-       (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
-       (void)fprintf(logFile, "/A = %.3f  &  B = %.3f\n", A.gread(i).real, B.gread(i).real);
-       (void)fflush(logFile);
+           (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
+           (void)fprintf(logFile, "/A = %.3f  &  B = %.3f\n", A.gread(i).real, B.gread(i).real);
+           (void)fflush(logFile);
 #endif
+       } else if ( is_rotation_index(i) ) {
+           // Interpolate the father's and mother's set of 4 quaternion genes
+           Quat q_A;
+           q_A = slerp( A.readQuat(), B.readQuat(), alpha );
+           B.writeQuat( slerp( A.readQuat(), B.readQuat(), one_minus_alpha ) );
+           A.writeQuat( q_A );
+           // Increment gene counter, i, by 3, to skip the 3 remaining quaternion genes
+           i=i+3;
+       } else if ( is_conformation_index(i) ) {
+           // Use anglular interpolation, alerp(a,b,fract), to generate properly interpolated torsion angles
+           temp_A = A.gread(i);
+           temp_B = B.gread(i);
+           A.write( alerp(temp_A.real, temp_B.real, alpha), i);
+           B.write( alerp(temp_A.real, temp_B.real, one_minus_alpha), i);
+       }
    }
 }
 
