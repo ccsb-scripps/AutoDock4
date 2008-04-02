@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.h,v 1.7 2007/04/27 06:01:50 garrett Exp $
+ $Id: qmultiply.h,v 1.8 2008/04/02 06:03:24 garrett Exp $
 
  AutoDock 
 
@@ -58,4 +58,6 @@ void print_q_reorient_message( FILE *logFile, Quat q_reorient );
 void create_random_orientation( Quat *ptr_quat );
 void assertQuatOK( const Quat q );
 const Quat identityQuat();
+Real a_range_reduction( Real a );
+Real alerp( Real a, Real b, Real fract );
 #endif
