@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.23 2008/04/02 06:32:17 garrett Exp $
+ $Id: gs.cc,v 1.24 2008/04/03 00:55:09 garrett Exp $
 
  AutoDock 
 
@@ -794,6 +794,11 @@ void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, Real alph
            temp_B = B.gread(i);
            A.write( alerp(temp_A.real, temp_B.real, alpha), i);
            B.write( alerp(temp_A.real, temp_B.real, one_minus_alpha), i);
+       } else {
+           // MP: BUG CHECK!
+           (void)fprintf(logFile, "Invalid gene type at i=%d\n", i);
+           (void)fflush(logFile);
+           exit(-1);
        }
    }
 }
