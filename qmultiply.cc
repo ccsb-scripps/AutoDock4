@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.11 2008/04/02 05:46:32 garrett Exp $
+ $Id: qmultiply.cc,v 1.12 2008/04/05 06:24:01 garrett Exp $
 
  AutoDock 
 
@@ -150,6 +150,7 @@ Quat normQuat( Quat q )
     return q;
 }
 
+/*
 #define ONE_MINUS_EPSILON 0.999
 #define ONE_PLUS_EPSILON 1.001
 
@@ -158,6 +159,10 @@ void assertQuatOK( const Quat q )
     register double mag4 = hypotenuse4( q.x, q.y, q.z, q.w );
     assert((mag4 > ONE_MINUS_EPSILON) && (mag4 < ONE_PLUS_EPSILON));
 }
+*/
+/* this is in another header
+#define assertQuatOK( q ) {register double aQOK_mag4 = hypotenuse4( (q).x, (q).y, (q).z, (q).w ); assert((aQOK_mag4 > ONE_MINUS_EPSILON) && (aQOK_mag4 < ONE_PLUS_EPSILON)); }
+*/
 
 Quat normRot( Quat q )
     // Normalise the 3D rotation axis or vector nx,ny,nz
@@ -405,6 +410,11 @@ Quat slerp( const Quat qa, const Quat qb, const double t )
 		qm.x = (qa.x * 0.5 + qb.x * 0.5);
 		qm.y = (qa.y * 0.5 + qb.y * 0.5);
 		qm.z = (qa.z * 0.5 + qb.z * 0.5);
+#ifdef DEBUG_MUTATION
+    fprintf( logFile, "slerp:  WARNING!  theta = 180 degrees   " );
+    printQuat_q( logFile, qm );
+    fflush(logFile);
+#endif
 		return qm;
 	}
 	double ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
@@ -470,6 +480,8 @@ Real a_range_reduction( Real a )
 
 Real alerp( Real a, Real b, Real fract )
 {
+    // if fract==0, return a
+    // if fract==1, return b
     Real delta;
     a = a_range_reduction( a );
     b = a_range_reduction( b );
