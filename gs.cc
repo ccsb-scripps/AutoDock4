@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.24 2008/04/03 00:55:09 garrett Exp $
+ $Id: gs.cc,v 1.25 2008/04/05 06:34:10 garrett Exp $
 
  AutoDock 
 
@@ -423,6 +423,9 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
    switch(m_type(mutant.gtype(gene_number))) {
 
       case BitFlip:
+#ifdef DEBUG_MUTATION
+         fprintf( logFile, "case BitFlip:  gene_number=%d\n", gene_number );
+#endif
          //((unsigned char *)gene)[point] = 1 - ((unsigned char *)gene)[point];
          //  Read the bit
          tempvar = mutant.gread(gene_number);
@@ -433,9 +436,15 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
          break;
 
       case CauchyDev:
+#ifdef DEBUG_MUTATION
+         fprintf( logFile, "case CauchyDev:  gene_number=%d\n", gene_number );
+#endif
          // gene_numbers 3, 4, 5 and 6 correspond to the 
          // four components of the quaternion, (x,y,z,w)
          if ( is_rotation_index( gene_number ) ) {
+#ifdef DEBUG_MUTATION
+            fprintf( logFile, "is_rotation_index( gene_number=%d )\n", gene_number );
+#endif
             // Mutate all four comopnents of the quaternion, (x,y,z,w) simultaneously:
             // Generate a uniformly-distributed quaternion
             Quat q_change;
@@ -446,7 +455,7 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
 #endif
             Quat q_current = mutant.readQuat();
 #ifdef DEBUG_MUTATION
-            fprintf( logFile, "q_current -- after reading mutant.gread\n" );
+            fprintf( logFile, "q_current -- after mutant.readQuat()\n" );
             printQuat_q( logFile, q_current );
 #endif
             Quat q_new;
@@ -504,6 +513,9 @@ void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
          break;
 
       case IUniformSub:
+#ifdef DEBUG_MUTATION
+         fprintf( logFile, "case IUniformSub:  gene_number=%d\n", gene_number );
+#endif
          //((int *)gene)[point] = ignuin(low, high);
          //  Generate the new integer
          tempvar.integer = ignuin(low, high);
@@ -531,6 +543,9 @@ void Genetic_Algorithm::mutation(Population &pure)
 #endif /* DEBUG */
 
    num_mutations = check_table(ranf());
+#ifdef DEBUG_MUTATION
+   (void)fprintf(logFile, "num_mutations= %d\n", num_mutations );
+#endif /* DEBUG */
 
    //  Note we don't check to see if we mutate the same gene twice.
    //  So, effectively we are lowering the mutation rate, etc...
@@ -538,13 +553,11 @@ void Genetic_Algorithm::mutation(Population &pure)
    for (; num_mutations>0; num_mutations--) {
       individual = ignlgi()%pure.num_individuals();
       gene_number = ignlgi()%pure[individual].genotyp.num_genes();
+#ifdef DEBUG_MUTATION
+      (void)fprintf(logFile, "  @__@  mutate(pure[individual=%d].genotyp, gene_number=%d);\n\n", individual, gene_number );
+#endif /* DEBUG */
       mutate(pure[individual].genotyp, gene_number);
       pure[individual].age = 0L;
-#ifdef DEBUG_MUTATION
-      (void)fprintf(logFile, "num_mutations= %d\n", num_mutations );
-      (void)fprintf(logFile, "   individual= %d\n", individual );
-      (void)fprintf(logFile, "   gene_number= %d\n", gene_number );
-#endif /* DEBUG */
    }
 }
 
@@ -566,8 +579,10 @@ void Genetic_Algorithm::crossover(Population &original_population)
       temp_index = ignlgi()%original_population.num_individuals();
       ordering[i] = ordering[temp_index];
       assert(ordering[i] < original_population.num_individuals());//debug
+      assert(ordering[i] >= 0);//debug
       ordering[temp_index] = temp_ordering;
       assert(ordering[temp_index] < original_population.num_individuals());//debug
+      assert(ordering[temp_index] >= 0);//debug
    }
                                                                     
    //  How does Goldberg implement crossover?
@@ -579,43 +594,76 @@ void Genetic_Algorithm::crossover(Population &original_population)
       if (ranf() < c_rate) {
          // Perform crossover with a probability of c_rate
          
+         // Assert the quaternions of the mother and father are okay:
+         Genotype father = original_population[ordering[i]].genotyp;
+         Genotype mother = original_population[ordering[i+1]].genotyp;
+         Quat q_father, q_mother;
+#ifdef DEBUG_QUAT_PRINT
+         pr( logFile, "DEBUG_QUAT: crossover()  q_father (individual=%d)\n", ordering[i] );
+#endif // endif DEBUG_QUAT_PRINT
+         //  Make sure the quaternion is suitable for 3D rotation
+         q_father = father.readQuat();
+#ifdef DEBUG_QUAT_PRINT
+         printQuat( logFile, q_father );
+         (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+         assertQuatOK( q_father );
+#ifdef DEBUG_QUAT_PRINT
+         pr( logFile, "DEBUG_QUAT: crossover()  q_mother (individual=%d)\n", ordering[i+1] );
+         (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+         //  Make sure the quaternion is suitable for 3D rotation
+         q_mother = mother.readQuat();
+#ifdef DEBUG_QUAT_PRINT
+         printQuat( logFile, q_mother );
+         (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+         assertQuatOK( q_mother );
+
+                // 0 1 2 3 4 5 6 7 8 9
+                // X Y Z x y z w t t t
+                //                     num_genes() = 10
          switch(c_mode) {
-            case TwoPt:
-                // First crossover point is a random integer from 0 to the number of genes minus 1
-                // Make sure we do not crossover inside a quaternion...
-                do {
-                    first_point = ignuin(0, original_population[i].genotyp.num_genes()-1);
-                } while ( is_rotation_index( first_point ) ) ;
-                do {
-                    second_point = first_point+ignuin(0, original_population[i].genotyp.num_genes()-first_point-1);
-                } while ( is_rotation_index( second_point ) );
-                // Do two-point crossover, with the crossed-over offspring replacing the parents in place:
-                crossover_2pt( original_population[ordering[i]].genotyp, 
-                               original_population[ordering[i+1]].genotyp, 
-                               first_point, 
-                               second_point );
-                original_population[ordering[i]].age = 0L;
-                original_population[ordering[i+1]].age = 0L;
-                break;
             case OnePt:
-                // First crossover point is a random integer from 0 to the number of genes minus 1
+                // To guarantee 1-point always creates 2 non-empty partitions,
+                // the crossover point must lie in range from 1 to num_genes-1.
+                // Choose one random integer in this range
                 // Make sure we do not crossover inside a quaternion...
                 do {
-                    first_point = ignlgi()%original_population[i].genotyp.num_genes();
-                } while ( is_rotation_index( first_point ) ) ;
+                    // first_point = ignlgi()%original_population[i].genotyp.num_genes();
+                    first_point = ignuin(1, original_population[i].genotyp.num_genes()-1);
+                } while ( is_within_rotation_index( first_point ) ) ;
                 //  We can accomplish one point crossover by using the 2pt crossover operator
                 crossover_2pt( original_population[ordering[i]].genotyp, 
                                original_population[ordering[i+1]].genotyp,
                                first_point, 
-                               original_population[ordering[i]].genotyp.num_genes()-1 );
+                               original_population[ordering[i]].genotyp.num_genes() );
+                original_population[ordering[i]].age = 0L;
+                original_population[ordering[i+1]].age = 0L;
+                break;
+            case TwoPt:
+                // To guarantee 2-point always creates 3 non-empty partitions,
+                // each crossover point must lie in range from 1 to num_genes-1.
+                // Choose two different random integers in this range
+                // Make sure we do not crossover inside a quaternion...
+                do {
+                    first_point = ignuin(1, original_population[i].genotyp.num_genes()-1);
+                } while ( is_within_rotation_index( first_point ) ) ;
+                do {
+                    second_point = ignuin(1, original_population[i].genotyp.num_genes()-1);
+                } while ( is_within_rotation_index( second_point ) || second_point == first_point );
+                // Do two-point crossover, with the crossed-over offspring replacing the parents in situ:
+                crossover_2pt( original_population[ordering[i]].genotyp, 
+                               original_population[ordering[i+1]].genotyp, 
+                               min( first_point, second_point ),
+                               max( first_point, second_point) );
                 original_population[ordering[i]].age = 0L;
                 original_population[ordering[i+1]].age = 0L;
                 break;
             case Uniform:
                 crossover_uniform( original_population[ordering[i]].genotyp, 
                                    original_population[ordering[i+1]].genotyp,
-                                   original_population[ordering[i]].genotyp.num_genes() - 1);
-
+                                   original_population[ordering[i]].genotyp.num_genes());
                 original_population[ordering[i]].age = 0L;
                 original_population[ordering[i+1]].age = 0L;
                 break;
@@ -631,7 +679,6 @@ void Genetic_Algorithm::crossover(Population &original_population)
                crossover_arithmetic( original_population[ i ].genotyp, 
                                      original_population[i+1].genotyp, 
                                      alpha );
-
                 original_population[ordering[i]].age = 0L;
                 original_population[ordering[i+1]].age = 0L;
                break;
@@ -645,15 +692,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
 
 void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsigned int pt1, unsigned int pt2)
 {
-    /*  Assumes that 0<=pt1<pt2<=number_of_pts  
-     *  There are four cases to consider:-
-     *  (1) the copied area is contained entirely within the gene
-     *  (2) the gene is contained entirely within the copied area
-     *  (3) the copied area is partially contained within the gene
-     *  (4) there's no intersection between the copied area and the gene
-     */
-   register unsigned int i;
-   Element temp;
+    // Assumes that 0<=pt1<=pt2<=number_of_pts
 
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_2pt(Genotype");
@@ -662,12 +701,12 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
 #endif /* DEBUG */
 
    // loop over genes to be crossed over
-   for (i=pt1; i<=pt2; i++) {
+   for (unsigned int i=pt1; i<pt2; i++) {
 #ifdef DEBUG
       //(void)fprintf(logFile,"gs.cc/1::At pt %d   father: %.3lf   mother: %.3lf\n",
       //i, *((double *)father.gread(i)), *((double *)mother.gread(i)) );
 #endif /* DEBUG */
-      temp = father.gread(i);
+      Element temp = father.gread(i);
       father.write(mother.gread(i), i);
       mother.write(temp, i);
 #ifdef DEBUG
@@ -678,12 +717,10 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
 
 #ifdef DEBUG_QUAT
    Quat q_father, q_mother;
-
 #ifdef DEBUG_QUAT_PRINT
    pr( logFile, "DEBUG_QUAT: crossover_2pt()  q_father\n" );
    pr( logFile, "DEBUG_QUAT: crossover_2pt()  pt1=%d, pt2=%d\n", pt1, pt2 );
 #endif // endif DEBUG_QUAT_PRINT
-
    //  Make sure the quaternion is suitable for 3D rotation
    q_father = father.readQuat();
 #ifdef DEBUG_QUAT_PRINT
@@ -703,40 +740,83 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
 #endif // endif DEBUG_QUAT_PRINT
    assertQuatOK( q_mother );
 #endif // endif DEBUG_QUAT
+
 }
 
 
 void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, unsigned int num_genes)
 {
-    register unsigned int i, j, k;
-    Element temp, temp_rot_genes[4];
-
 #ifdef DEBUG
     (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_uniform(Genotype");
     (void)fprintf(logFile, "&father, Genotype &mother, unsigned int num_genes)\n");
 #endif /* DEBUG */
 
-    for (i=0; i<num_genes; i++) {
+    for (unsigned int i=0; i<num_genes; i++) {
         // Choose either father's or mother's gene/rotation gene set, with a 50/50 probability
-        if (ranf() > 0.5) {
-            if ( ! is_rotation_index( i ) ) {
-                // Exchange parent's genes
-                temp = father.gread(i);
-                father.write(mother.gread(i), i);
-                mother.write(temp, i);
-            } else {
-                // Exchange father's or mother's set of rotation genes
-                k=0;
-                for (j=i; j<i+4; j++) {
-                    temp_rot_genes[k] = father.gread(j);
-                    father.write(mother.gread(j), j);
-                    mother.write(temp_rot_genes[k], j);
-                    k++;
-                }
-                // Increment gene counter, i, by 3, to skip the 3 remaining rotation genes
-                i=i+3;
+        if (ranf() > 0.5 ) continue; // 50% probability of crossing a gene or gene-set; next i
+        if ( ! is_rotation_index( i ) ) {
+            // Exchange parent's genes
+            Element temp = father.gread(i);
+            father.write(mother.gread(i), i);
+            mother.write(temp, i);
+        } else if ( is_first_rotation_index(i) ) {
+            // don't crossover within a quaternion, only at the start; next i
+#ifdef DEBUG_QUAT
+            Quat q_father, q_mother;
+#ifdef DEBUG_QUAT_PRINT
+            pr( logFile, "DEBUG_QUAT: pre-crossover_uniform()  q_father\n" );
+#endif // endif DEBUG_QUAT_PRINT
+            //  Make sure the quaternion is suitable for 3D rotation
+            q_father = father.readQuat();
+#ifdef DEBUG_QUAT_PRINT
+            printQuat( logFile, q_father );
+            (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+            assertQuatOK( q_father );
+#ifdef DEBUG_QUAT_PRINT
+            pr( logFile, "DEBUG_QUAT: pre-crossover_uniform()  q_mother\n" );
+            (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+            //  Make sure the quaternion is suitable for 3D rotation
+            q_mother = mother.readQuat();
+#ifdef DEBUG_QUAT_PRINT
+            printQuat( logFile, q_mother );
+            (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+            assertQuatOK( q_mother );
+#endif // endif DEBUG_QUAT
+            // Exchange father's or mother's set of rotation genes
+            for (unsigned int j=i; j<i+4; j++) {
+                Element temp = father.gread(j);
+                father.write(mother.gread(j), j);
+                mother.write(temp, j);
             }
-        }
+            // Increment gene counter, i, by 3, to skip the 3 remaining rotation genes
+            i=i+3;
+#ifdef DEBUG_QUAT
+#ifdef DEBUG_QUAT_PRINT
+            pr( logFile, "DEBUG_QUAT: post-crossover_uniform()  q_father\n" );
+#endif // endif DEBUG_QUAT_PRINT
+            //  Make sure the quaternion is suitable for 3D rotation
+            q_father = father.readQuat();
+#ifdef DEBUG_QUAT_PRINT
+            printQuat( logFile, q_father );
+            (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+            assertQuatOK( q_father );
+#ifdef DEBUG_QUAT_PRINT
+            pr( logFile, "DEBUG_QUAT: post-crossover_uniform()  q_mother\n" );
+            (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+            //  Make sure the quaternion is suitable for 3D rotation
+            q_mother = mother.readQuat();
+#ifdef DEBUG_QUAT_PRINT
+            printQuat( logFile, q_mother );
+            (void) fflush(logFile);
+#endif // endif DEBUG_QUAT_PRINT
+            assertQuatOK( q_mother );
+#endif // endif DEBUG_QUAT
+        } // is_rotation_index( i )
     } // next i
 }
 
@@ -773,8 +853,8 @@ void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, Real alph
            (void)fprintf(logFile, "/temp_A = %.3f  &  temp_B = %.3f\n", temp_A.real, temp_B.real);
            (void)fflush(logFile);
 #endif
-           A.write( (alpha * temp_A.real  +  one_minus_alpha * temp_B.real), i);
-           B.write( (one_minus_alpha * temp_A.real  +  alpha * temp_B.real), i);
+           A.write( (one_minus_alpha * temp_A.real  +  alpha * temp_B.real), i);
+           B.write( (alpha * temp_A.real  +  one_minus_alpha * temp_B.real), i);
 #ifdef DEBUG
            (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
            (void)fprintf(logFile, "/A = %.3f  &  B = %.3f\n", A.gread(i).real, B.gread(i).real);
