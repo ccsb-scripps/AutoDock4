@@ -1,6 +1,6 @@
 /*
 
- $Id: autocomm.h,v 1.14 2007/04/27 06:01:47 garrett Exp $
+ $Id: autocomm.h,v 1.15 2008/04/05 06:21:19 garrett Exp $
 
  AutoDock 
 
@@ -189,6 +189,25 @@ typedef struct AtomDesc {
 
 
 #endif
+
+/*
+ * assert that quaternions are OK
+ */
+#include <assert.h> // for assert in assertQuatOK
+#include <math.h> // for sqrt in assertQuatOK
+
+#define ONE_MINUS_EPSILON 0.999
+#define ONE_PLUS_EPSILON 1.001
+
+/*
+ * void assertQuatOK( const Quat q )
+ * {
+ *     register double mag4 = hypotenuse4( q.x, q.y, q.z, q.w );
+ *     assert((mag4 > ONE_MINUS_EPSILON) && (mag4 < ONE_PLUS_EPSILON));
+ * }
+ */
+#define assertQuatOK( q ) {fflush(logFile);register double aQOK_mag4 = hypotenuse4( (q).x, (q).y, (q).z, (q).w ); assert((aQOK_mag4 > ONE_MINUS_EPSILON) && (aQOK_mag4 < ONE_PLUS_EPSILON)); }
+
 
 #endif /*_AUTOCOMM*/
 
