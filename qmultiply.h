@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.h,v 1.8 2008/04/02 06:03:24 garrett Exp $
+ $Id: qmultiply.h,v 1.9 2008/04/05 06:25:05 garrett Exp $
 
  AutoDock 
 
@@ -56,7 +56,7 @@ Quat uniformQuatByAmount( Real amount );
 void unitQuat2rotation( Quat *q );
 void print_q_reorient_message( FILE *logFile, Quat q_reorient );
 void create_random_orientation( Quat *ptr_quat );
-void assertQuatOK( const Quat q );
+//void assertQuatOK( const Quat q );
 const Quat identityQuat();
 Real a_range_reduction( Real a );
 Real alerp( Real a, Real b, Real fract );
