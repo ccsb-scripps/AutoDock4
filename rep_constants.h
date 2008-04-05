@@ -1,6 +1,6 @@
 /*
 
- $Id: rep_constants.h,v 1.3 2008/03/28 21:18:11 garrett Exp $
+ $Id: rep_constants.h,v 1.4 2008/04/05 06:25:55 garrett Exp $
 
  AutoDock 
 
@@ -30,6 +30,7 @@
 
 // Translation
 #define X_TRANSLATION_INDEX 0
+#define Y_TRANSLATION_INDEX 1
 #define Z_TRANSLATION_INDEX 2
 
 // Quaternion
@@ -49,6 +50,8 @@
 #define is_axis_index(i) (((i) >= X_ROTATION_INDEX) && ((i) <= Z_ROTATION_INDEX))
 #define is_angle_index(i) ((i) == ROTATION_ANGLE_INDEX)
 #define is_rotation_index(i) (((i) >= QX_ROTATION_INDEX) && ((i) <= QW_ROTATION_INDEX))
+#define is_first_rotation_index(i) (((i) == QX_ROTATION_INDEX))
+#define is_within_rotation_index(i) (((i) > QX_ROTATION_INDEX) && ((i) <= QW_ROTATION_INDEX))
 #define is_conformation_index(i) ((i) > ROTATION_ANGLE_INDEX)
 
 #endif
