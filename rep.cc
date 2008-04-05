@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.15 2007/04/27 06:01:51 garrett Exp $
+ $Id: rep.cc,v 1.16 2008/04/05 06:27:37 garrett Exp $
 
  AutoDock 
 
@@ -610,6 +610,8 @@ ConstrainedRealVector::ConstrainedRealVector(int num_els, double init_low, doubl
 
    mytype = T_CRealV;
    normalized = 0;
+   low = init_low;
+   high = init_high;
    vector = new double[num_els];
    for (; --num_els>=0;) {
       vector[num_els] = double(genunf(init_low, init_high));
