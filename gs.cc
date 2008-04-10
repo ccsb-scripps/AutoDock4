@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.25 2008/04/05 06:34:10 garrett Exp $
+ $Id: gs.cc,v 1.26 2008/04/10 22:10:32 garrett Exp $
 
  AutoDock 
 
@@ -37,6 +37,7 @@
 *********************************************************************/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>      /*time_t time(time_t *tloc); */
 #include <time.h>           /*time_t time(time_t *tloc); */
 #include <sys/times.h>
