@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.71 2007/06/18 23:00:41 garrett Exp $
+ $Id: main.cc,v 1.72 2008/04/22 22:18:29 garrett Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.71 2007/06/18 23:00:41 garrett Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.72 2008/04/22 22:18:29 garrett Exp $"};
 
 
 int sel_prop_count = 0;
@@ -79,7 +79,7 @@ int main (int argc, char * const argv[], char * const envp[])
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule **
 ** Copyright: (C) 1994-2005 TSRI, Arthur J. Olson's Labortatory.              **
 **____________________________________________________________________________**
-**   Authors: Garrett Matthew Morris, Current C/C++ version 4.0               **
+**   Authors: Garrett Matthew Morris, Current C/C++ version 4.1 beta          **
 **                                       e-mail: garrett@scripps.edu          **
 **                                                                            **
 **            David Goodsell, Orignal FORTRAN version 1.0                     **
@@ -434,7 +434,7 @@ static Real F_W;
 static Real F_hW;
 static FourByteLong clktck = 0;
 
-static Real version_num = 4.00;
+static Real version_num = 4.10;
 
 struct tms tms_jobStart;
 struct tms tms_gaStart;
@@ -598,7 +598,6 @@ for (j = 0; j < MAX_NONBONDS; j++) {
 }
 
 for (j = 0; j < MAX_RUNS; j++) {
-    // isort[j] = j;
     econf[j] = 0.0;
 }
 
@@ -689,7 +688,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.71 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.72 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1240,10 +1239,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             for (i = 0; i  < MAX_TORS;  i++ ) {
                 sHist[k].tor[i] = 0.0;
             }
-        }
-        for (j = 0; j < MAX_RUNS; j++) {
-            // isort[j] = j;
-            econf[j] = 0.0;
+            econf[k] = 0.0;
         }
         for (j = 0;  j < MAX_ATOMS;  j++ ) {
             type[j] = 0;
@@ -1253,19 +1249,29 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             for (j = 0;  j < MAX_ATOMS;  j++ ) {
                 tlist[i][j] = 0;
             }
-        }
-        for (i = 0; i  < MAX_TORS;  i++ ) {
             B_isTorConstrained[i] = 0;
             US_torProfile[i][0] = 0;
             N_con[i] = 0;
+        }
+        for (j = 0; j < MAX_NONBONDS; j++) {
+            nonbondlist[j].a1 = nonbondlist[j].a2 = 0;
+        }
+        for (j=0; j<3; j++) {
+            Nnb_array[j] = 0;
+            nb_group_energy[j] = 0.0;
         }
         initialiseState( &sInit );
         initialiseState( &(ligand.S) );
         initialiseQuat( &q_reorient );
         B_constrain_dist = B_haveCharges = FALSE;
         ntor1 = ntor = atomC1 = atomC2 = 0;
+        ntor_ligand = 0;
+        ntorsdof = 0;
         sqlower = squpper = 0.0;
         strcpy( FN_pop_file, "");  // means don't print pop_file
+        Nnb = 0;
+        ligand_is_inhibitor = 1;
+        initialise_energy_breakdown(&eb, 0, 0);
         //
         // end of initialization
         //
