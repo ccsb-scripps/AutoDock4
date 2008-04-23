@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.12 2007/10/22 01:16:43 garrett Exp $
+# $Id: test_autodock4.py,v 1.13 2008/04/23 17:03:05 rhuey Exp $
 #
 
 """
@@ -43,6 +43,8 @@ computed_dlg_no_parameter_library = False
 computed_dlg_no_elecmap = False
 computed_dlg_no_desolvmap = False
 computed_dlg_no_elec_desolv_maps = False
+computed_dlg_two_ligands = False
+computed_dlg_two_mapsets = False
 
 expected_intermol_energy = -6.17
 expected_internal_energy = -1.80
@@ -212,6 +214,42 @@ class AutoDock4_1pgp_no_elec_desolv_maps_test( unittest.TestCase ):
 
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_two_ligands_test( unittest.TestCase ):
+    """Test that autodock4 can run dpf specifying two ligands."""
+    def setUp( self ):
+        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
+        global computed_dlg_two_ligands 
+        self.dlg_filename = "test_1pgp_two_ligands.dlg"
+        if computed_dlg_two_ligands is False:
+            computed_dlg_two_ligands = run_AutoDock( "1pgp_two_ligands.dpf", self.dlg_filename )
+
+
+    def test_check_result_not_successful( self ):
+        """Using parameter file with two ligands specified:
+        check that run reaches Successful Completion..."""
+        success = find_success_in_DLG( self.dlg_filename )
+        self.assertEqual( success, True )
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_two_mapsets_test( unittest.TestCase ):
+    """Test that autodock4 can run dpf specifying two sets of maps and one ligand."""
+    def setUp( self ):
+        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
+        global computed_dlg_two_mapsets 
+        self.dlg_filename = "test_1pgp_two_mapsets.dlg"
+        if computed_dlg_two_mapsets is False:
+            computed_dlg_two_mapsets = run_AutoDock( "1pgp_two_mapsets.dpf", self.dlg_filename )
+
+
+    def test_check_result_not_successful( self ):
+        """Using parameter file with two mapsets specified:
+        check that run reaches Successful Completion..."""
+        success = find_success_in_DLG( self.dlg_filename )
+        self.assertEqual( success, True )
+
+#______________________________________________________________________________
+
 if __name__ == '__main__':
     #  This syntax lets us run all the tests,
     #  or conveniently comment out tests we're not interested in.
@@ -222,6 +260,8 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_no_elecmap_test',
         'AutoDock4_1pgp_no_desolvmap_test',
         'AutoDock4_1pgp_no_elec_desolv_maps_test',
+        'AutoDock4_1pgp_two_ligands_test',
+        'AutoDock4_1pgp_two_mapsets_test',
     ]
     unittest.main( argv=( [__name__ ,] + test_cases ) )
     #  The call "unittest.main()" automatically runs all the TestCase classes in
