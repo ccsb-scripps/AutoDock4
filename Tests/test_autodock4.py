@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.14 2008/04/30 04:53:12 garrett Exp $
+# $Id: test_autodock4.py,v 1.15 2008/04/30 04:57:33 garrett Exp $
 #
 
 """
@@ -36,19 +36,6 @@ for o,a in opts:
         autodock_executable = a
     if o in ("-o","--test-output-directory"):
         test_output_directory = a
-
-        
-computed_dlg = False
-computed_dlg_no_parameter_library = False
-computed_dlg_no_elecmap = False
-computed_dlg_no_desolvmap = False
-computed_dlg_no_elec_desolv_maps = False
-computed_dlg_two_ligands = False
-computed_dlg_two_mapsets = False
-computed_dlg_1pt = False
-computed_dlg_2pt = False
-computed_dlg_uni = False
-computed_dlg_ari = False
 
 expected_intermol_energy = -6.17
 expected_internal_energy = -1.80
