@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.12 2008/04/05 06:24:01 garrett Exp $
+ $Id: qmultiply.cc,v 1.13 2008/04/30 04:41:17 garrett Exp $
 
  AutoDock 
 
@@ -35,9 +35,7 @@
 #include <assert.h>
 #include "qmultiply.h"
 
-#ifdef DEBUG_MUTATION
 extern  FILE    *logFile;
-#endif
 
 
 void qmultiply( Quat *q,
@@ -183,7 +181,7 @@ Quat convertQuatToRot( Quat q )
 {
     // TODO handle big W!  Singularities...
     Quat retval;
-#ifdef DEBUG_MUTATION
+#ifdef SUPER_DEBUG_MUTATION // mp
     fprintf( logFile, "convertQuatToRot:  q.w = %.3f\n", q.w );
 #endif
     assert( fabs( q.w ) <= 1. );
@@ -384,12 +382,15 @@ Quat slerp0( const Quat q1, const Quat q2, const double u )
     return slerp;
 }
 
-Quat slerp( const Quat qa, const Quat qb, const double t )
+Quat slerp1( const Quat qa, const Quat qb, const double t )
     // See Martin Baker's web site
     // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
 {
-	// quaternion to return
-    Quat qm;
+    Quat qm; // quaternion to return
+#ifdef ASSERTQUATOK
+    assertQuatOK(qa);
+    assertQuatOK(qb);
+#endif
 
     assert( t >= 0.  &&  t <= 1. );
 
@@ -398,6 +399,9 @@ Quat slerp( const Quat qa, const Quat qb, const double t )
 	// if qa=qb or qa=-qb then theta = 0 and we can return qa
 	if (fabs(cosHalfTheta) >= 1.0){
 		qm.w = qa.w;qm.x = qa.x;qm.y = qa.y;qm.z = qa.z;
+#ifdef ASSERTQUATOK
+        assertQuatOK(qm);
+#endif
 		return qm;
 	}
 	// Calculate temporary values.
@@ -411,21 +415,104 @@ Quat slerp( const Quat qa, const Quat qb, const double t )
 		qm.y = (qa.y * 0.5 + qb.y * 0.5);
 		qm.z = (qa.z * 0.5 + qb.z * 0.5);
 #ifdef DEBUG_MUTATION
-    fprintf( logFile, "slerp:  WARNING!  theta = 180 degrees   " );
-    printQuat_q( logFile, qm );
-    fflush(logFile);
+        printQuat_q( logFile, qm );
+        fprintf( logFile, "slerp:  WARNING!  theta = 180 degrees   " );
+        printQuat_q( logFile, qm );
+        fflush(logFile);
+#endif
+#ifdef ASSERTQUATOK
+        assertQuatOK(qm);
 #endif
 		return qm;
 	}
 	double ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
 	double ratioB = sin(t * halfTheta) / sinHalfTheta; 
 	//calculate Quaternion.
-	qm.w = (qa.w * ratioA + qb.w * ratioB);
-	qm.x = (qa.x * ratioA + qb.x * ratioB);
-	qm.y = (qa.y * ratioA + qb.y * ratioB);
-	qm.z = (qa.z * ratioA + qb.z * ratioB);
+	qm.w = qa.w * ratioA + qb.w * ratioB;
+	qm.x = qa.x * ratioA + qb.x * ratioB;
+	qm.y = qa.y * ratioA + qb.y * ratioB;
+	qm.z = qa.z * ratioA + qb.z * ratioB;
+#ifdef ASSERTQUATOK
+    assertQuatOK(qm);
+#endif
 	return qm;
+}
 
+Quat slerp( const Quat qa, const Quat qb, const double t )
+    // Adapted from code by John W. Ratcliff mailto:jratcliff@infiniplex.net
+    // See http://codesuppository.blogspot.com/2006/03/matrix-vector-and-quaternion-library.html
+/*  
+** 
+** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
+**
+** The MIT license:
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy 
+** of this software and associated documentation files (the "Software"), to deal 
+** in the Software without restriction, including without limitation the rights 
+** to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+** copies of the Software, and to permit persons to whom the Software is furnished 
+** to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all 
+** copies or substantial portions of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+** AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+** WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+** CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+**
+*/
+{
+    Quat qm; // quaternion to return
+    Quat qb_local;
+    double halfTheta, sinHalfTheta;
+    double ratioA, ratioB;
+#ifdef ASSERTQUATOK
+    assertQuatOK(qa);
+    assertQuatOK(qb);
+#endif
+
+    assert( t >= 0.  &&  t <= 1. );
+
+	// Calculate angle between them.
+	double cosHalfTheta = qa.w * qb.w + qa.x * qb.x + qa.y * qb.y + qa.z * qb.z;
+    // Ensure we choose the shorter angular displacement between qa and qb:
+	if (cosHalfTheta < 0.) {
+        cosHalfTheta = -cosHalfTheta;
+        qb_local.w = -qb.w;
+        qb_local.x = -qb.x;
+        qb_local.y = -qb.y;
+        qb_local.z = -qb.z;
+	} else {
+        qb_local = qb;
+    }
+#ifdef ASSERTQUATOK
+    assertQuatOK(qb_local);
+#endif
+	// Calculate coefficients
+    if ((1. - cosHalfTheta) > 1e-6) {
+        // standard case (slerp)
+        halfTheta = acos(cosHalfTheta);
+        sinHalfTheta = sqrt(1.0 - cosHalfTheta*cosHalfTheta);
+        ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
+        ratioB = sin(t * halfTheta) / sinHalfTheta; 
+    } else {
+        // qa and qb (qb_local) are very close, so we can do a linear interpolation
+        ratioA = 1 - t ;
+        ratioB = t; 
+    }
+	// Calculate final values
+	qm.w = qa.w * ratioA + qb_local.w * ratioB;
+	qm.x = qa.x * ratioA + qb_local.x * ratioB;
+	qm.y = qa.y * ratioA + qb_local.y * ratioB;
+	qm.z = qa.z * ratioA + qb_local.z * ratioB;
+#ifdef ASSERTQUATOK
+    assertQuatOK(qm);
+#endif
+	return qm;
 }
 
 Quat axisRadianToQuat( const Real ax, const Real ay, const Real az, const Real angle )
