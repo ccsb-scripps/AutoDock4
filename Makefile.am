@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.11 2007/09/02 05:19:13 garrett Exp $
+# $Id: Makefile.am,v 1.12 2008/04/30 04:46:29 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -248,14 +248,14 @@ AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
 
 AM_CPPFLAGS = -DNOSQRT \
-              -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
+              -DUSE_8A_NBCUTOFF \
               -DWRITEPDBQSTATE \
               -I$(srcdir)/../acro/include # Standard accuracy, but faster; no crossover in quaternion
 
 #autodock4_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #autodock4_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
 
-#autodock4_CPPFLAGS = -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
+#autodock4_CPPFLAGS = -DUSE_8A_NBCUTOFF \
 #                     -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
 
 
@@ -286,7 +286,7 @@ endif
 # SGI     = Silicon Graphics Inc., sgi4D
 # Sun     = Sun Microsystems, sun4
 
-# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX: Standard accuracy, but faster; no crossover in quaternion
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX: Standard accuracy, but faster; no crossover in quaternion
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOSX: Standard accuracy, but faster
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DQUATERNION_MUTATION # As above, but treat quaternion genes properly when doing mutations--note, this is slow!
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOSX: Standard accuracy, but faster; also use Double precision throughout
@@ -368,6 +368,7 @@ endif
 # DBUG = -g3 -DDEBUG_MUTATION # dbx + optimization; Use assert code, & print out information anywhere involving mutation
 # DBUG = -g3 -DDEBUG_MUTATION -DDEBUG # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements
 # DBUG = -g3 -DDEBUG_MUTATION -DDEBUG -DDEBUG3 # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements incl. 3
+# DBUG = -DASSERTQUATOK # Uses the macro "assertQuatOK()" to ensure the quaternion magnitude is near unity
 
 # PROF = # No profiling
 # PROF = -p # CC Profiling
