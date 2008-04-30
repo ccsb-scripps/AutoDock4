@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.13 2008/04/23 17:03:05 rhuey Exp $
+# $Id: test_autodock4.py,v 1.14 2008/04/30 04:53:12 garrett Exp $
 #
 
 """
@@ -45,6 +45,10 @@ computed_dlg_no_desolvmap = False
 computed_dlg_no_elec_desolv_maps = False
 computed_dlg_two_ligands = False
 computed_dlg_two_mapsets = False
+computed_dlg_1pt = False
+computed_dlg_2pt = False
+computed_dlg_uni = False
+computed_dlg_ari = False
 
 expected_intermol_energy = -6.17
 expected_internal_energy = -1.80
@@ -83,8 +87,10 @@ def run_AutoDock( dpf_filename, dlg_filename ):
     print '\nRunning ' + autodock_executable + ' using DPF "'+dpf+'", saving results in "'+dlg+'":'
     try:
         ( i, o, e ) = os.popen3( command ) # trap all the outputs
+        # TODO os.wait seems to return (pid, exit_status)
         os.wait() # for the child process to finish
-        return True
+        # return True # this should really be os.wait()'s exit_status
+        return find_success_in_DLG( dlg )
     except:
         print "\nUnable to run " + autodock_executable + "."
         return False
@@ -108,146 +114,91 @@ def find_success_in_DLG( dlg_filename ):
     """Open the AutoDock DLG, and look for the string "Successful Completion"
     in the last 10 lines of the file."""
     dlg = test_output_directory + os.sep + dlg_filename
-    fptr = open( dlg )
-    lines = fptr.readlines()
-    fptr.close()
-    success = False
-    for l in lines[-10:]:
-        if l.find( "Successful Completion" ) > -1:
-            success = True
-    return success
+    try:
+        fptr = open( dlg )
+        lines = fptr.readlines()
+        fptr.close()
+        success = False
+        for l in lines[-10:]:
+            if l.find( "Successful Completion" ) > -1:
+                success = True
+        return success
+    except:
+        return False
 
 #______________________________________________________________________________
 
-class AutoDock4_1pgp_test( unittest.TestCase ):
-    """Test that autodock4 executes using an extremely short run."""
+class AutoDock_base_test( unittest.TestCase ):
+    """Base Class for AutoDock testing."""
+    dpf_stem = "BaseClass"
+    computed = False
     def setUp( self ):
         """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
-        global computed_dlg
-        self.dlg_filename = "test_1pgp.dlg"
-        if computed_dlg is False:
-            computed_dlg = run_AutoDock( "1pgp.dpf", self.dlg_filename )
+        self.dlg_filename = "test_" + self.dpf_stem + ".dlg"
+        self.computed = run_AutoDock( self.dpf_stem + ".dpf", self.dlg_filename )
 
-    def test_check_result_exists( self ):
+    def test_dlg_exists( self ):
         """Check that run finished and a new DLG has been computed."""
-        self.assertEqual( computed_dlg, True )
+        self.assertEqual( self.computed, self.expected_outcome )
 
-    def test_check_result_energy( self ):
-        """Check the final energy is expected value."""
+#______________________________________________________________________________
+
+class AutoDock_test( AutoDock_base_test ):
+    """Class for AutoDock testing."""
+
+    def test_dlg_exists_and_test_energy( self ):
+        """Check that run finished and a new DLG has been computed.
+        Also check the final energy is the expected value."""
+        # Check that run finished and a new DLG has been computed.
+        self.assertEqual( self.computed, self.expected_outcome )
+        # Check the final energy is expected value.
         global expected_intermol_energy, expected_internal_energy
         (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename )
         self.assertEqual( round(intermol_energy,6), round(expected_intermol_energy,6))
         self.assertEqual( round(internal_energy,6), round(expected_internal_energy,6))
-
 #______________________________________________________________________________
 
-class AutoDock4_1pgp_no_parameter_file_test( unittest.TestCase ):
+class AutoDock4_1pgp_test( AutoDock_test ):
+    """Test that autodock4 executes using an extremely short run."""
+    dpf_stem = "1pgp"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_no_parameter_file_test( AutoDock_test ):
     """Test that autodock4 works using default parameter library."""
-    def setUp( self ):
-        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
-        global computed_dlg_no_parameter_library
-        self.dlg_filename = "test_1pgp_no_parameter_file.dlg"
-        if computed_dlg_no_parameter_library is False:
-            computed_dlg_no_parameter_library = run_AutoDock( "1pgp_no_parameter_file.dpf", self.dlg_filename )
-
-    def test_check_result_exists_default_parameter_file( self ):
-        """Using default parameter file: check that a run finished... """
-        self.assertEqual( computed_dlg_no_parameter_library, True )
-
-    def test_check_result_energy_default_parameter_file( self ):
-        """ check the final energy is expected value """
-        global expected_intermol_energy, expected_internal_energy
-        (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename )
-        self.assertEqual( round(intermol_energy,6), round(expected_intermol_energy,6))
-        self.assertEqual( round(internal_energy,6), round(expected_internal_energy,6))
-
+    dpf_stem = "1pgp_no_parameter_file"
+    expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
-class AutoDock4_1pgp_no_elecmap_test( unittest.TestCase ):
+class AutoDock4_1pgp_no_elecmap_test( AutoDock_base_test ):
     """Test that autodock4 stops early if no "elecmap" keyword is specified."""
-    def setUp( self ):
-        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
-        global computed_dlg_no_elecmap
-        self.dlg_filename = "test_1pgp_no_elecmap.dlg"
-        if computed_dlg_no_elecmap is False:
-            computed_dlg_no_elecmap = run_AutoDock( "1pgp_no_elecmap.dpf", self.dlg_filename )
-
-    def test_check_result_not_successful( self ):
-        """Using parameter file with no 'elecmap': check that run does not reach Successful Completion... """
-        success = find_success_in_DLG( self.dlg_filename )
-        self.assertEqual( success, False )
-        
+    dpf_stem = "1pgp_no_elecmap"
+    expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
-class AutoDock4_1pgp_no_desolvmap_test( unittest.TestCase ):
+class AutoDock4_1pgp_no_desolvmap_test( AutoDock_base_test ):
     """Test that autodock4 stops early if no "desolvmap" keyword is specified."""
-    def setUp( self ):
-        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
-        global computed_dlg_no_desolvmap
-        self.dlg_filename = "test_1pgp_no_desolvmap.dlg"
-        if computed_dlg_no_desolvmap is False:
-            computed_dlg_no_desolvmap = run_AutoDock( "1pgp_no_desolvmap.dpf", self.dlg_filename )
-
-    def test_check_result_not_successful( self ):
-        """Using parameter file with no "desolvmap": 
-        check that run does not reach Successful Completion... """
-        success = find_success_in_DLG( self.dlg_filename )
-        self.assertEqual( success, False )
-
+    dpf_stem = "1pgp_no_desolvmap"
+    expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
-class AutoDock4_1pgp_no_elec_desolv_maps_test( unittest.TestCase ):
+class AutoDock4_1pgp_no_elec_desolv_maps_test( AutoDock_base_test ):
     """Test that autodock4 stops early if no elecmap and no desolvmap 
     keywords are specified."""
-    def setUp( self ):
-        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
-        global computed_dlg_no_elec_desolv_maps
-        self.dlg_filename = "test_1pgp_no_elec_desolv_maps.dlg"
-        if computed_dlg_no_elec_desolv_maps is False:
-            computed_dlg_no_elec_desolv_maps = run_AutoDock( "1pgp_no_elec_desolv_maps.dpf", self.dlg_filename )
-
-    def test_check_result_not_successful( self ):
-        """Using parameter file with no 'elecmap' and no "desolvmap": 
-        check that run does not reach Successful Completion..."""
-        success = find_success_in_DLG( self.dlg_filename )
-        self.assertEqual( success, False )
-
+    dpf_stem = "1pgp_no_elec_desolv_maps"
+    expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
-class AutoDock4_1pgp_two_ligands_test( unittest.TestCase ):
+class AutoDock4_1pgp_two_ligands_test( AutoDock_base_test ):
     """Test that autodock4 can run dpf specifying two ligands."""
-    def setUp( self ):
-        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
-        global computed_dlg_two_ligands 
-        self.dlg_filename = "test_1pgp_two_ligands.dlg"
-        if computed_dlg_two_ligands is False:
-            computed_dlg_two_ligands = run_AutoDock( "1pgp_two_ligands.dpf", self.dlg_filename )
-
-
-    def test_check_result_not_successful( self ):
-        """Using parameter file with two ligands specified:
-        check that run reaches Successful Completion..."""
-        success = find_success_in_DLG( self.dlg_filename )
-        self.assertEqual( success, True )
-
+    dpf_stem = "1pgp_two_ligands"
+    expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
-class AutoDock4_1pgp_two_mapsets_test( unittest.TestCase ):
+class AutoDock4_1pgp_two_mapsets_test( AutoDock_base_test ):
     """Test that autodock4 can run dpf specifying two sets of maps and one ligand."""
-    def setUp( self ):
-        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
-        global computed_dlg_two_mapsets 
-        self.dlg_filename = "test_1pgp_two_mapsets.dlg"
-        if computed_dlg_two_mapsets is False:
-            computed_dlg_two_mapsets = run_AutoDock( "1pgp_two_mapsets.dpf", self.dlg_filename )
-
-
-    def test_check_result_not_successful( self ):
-        """Using parameter file with two mapsets specified:
-        check that run reaches Successful Completion..."""
-        success = find_success_in_DLG( self.dlg_filename )
-        self.assertEqual( success, True )
-
+    dpf_stem = "1pgp_two_mapsets"
+    expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
 if __name__ == '__main__':
