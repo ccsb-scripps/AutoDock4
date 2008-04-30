@@ -1,4 +1,4 @@
-# $Id: Makefile.pre-autoconf,v 1.4 2008/04/22 22:22:25 garrett Exp $
+# $Id: Makefile.pre-autoconf,v 1.5 2008/04/30 04:47:05 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -440,6 +440,7 @@ DBUG = # Use assert code
 # DBUG = -g3 -DDEBUG_MUTATION # dbx + optimization; Use assert code, & print out information anywhere involving mutation
 # DBUG = -g3 -DDEBUG_MUTATION -DDEBUG # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements
 # DBUG = -g3 -DDEBUG_MUTATION -DDEBUG -DDEBUG3 # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements incl. 3
+# DBUG = -DASSERTQUATOK # Uses the macro "assertQuatOK()" to ensure the magnitude is near unity
 
 PROF = # No profiling
 # PROF = -p # CC Profiling
