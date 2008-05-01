@@ -25,7 +25,7 @@ dstep 0.0                            # torsion step/deg
 unbound 10.0                         # free energy of the unbound state
 
 rmstol 2.0                           # cluster_tolerance/A
-epdb 1pgp_lig.pdbqt                  # compute energy of PDBQT specified by 'move' 
+epdb                                 # compute energy of PDBQT specified by 'move' 
 
 extnrg 1000.0                        # external grid energy
 e0max 0.0 10000                      # max initial ernergy; max number of retries
