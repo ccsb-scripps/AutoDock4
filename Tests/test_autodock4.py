@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.15 2008/04/30 04:57:33 garrett Exp $
+# $Id: test_autodock4.py,v 1.16 2008/05/01 01:55:30 garrett Exp $
 #
 
 """
@@ -37,8 +37,6 @@ for o,a in opts:
     if o in ("-o","--test-output-directory"):
         test_output_directory = a
 
-expected_intermol_energy = -6.17
-expected_internal_energy = -1.80
 
 #______________________________________________________________________________
 
@@ -126,6 +124,11 @@ class AutoDock_base_test( unittest.TestCase ):
 
     def test_dlg_exists( self ):
         """Check that run finished and a new DLG has been computed."""
+        # Check that run finished and a new DLG has been computed.
+        if (self.expected_outcome == True ):
+            print "Testing that DLG exists and AutoDock successfully completed."
+        else:
+            print "Testing that DLG exists and AutoDock did not complete."
         self.assertEqual( self.computed, self.expected_outcome )
 
 #______________________________________________________________________________
@@ -137,11 +140,18 @@ class AutoDock_test( AutoDock_base_test ):
         """Check that run finished and a new DLG has been computed.
         Also check the final energy is the expected value."""
         # Check that run finished and a new DLG has been computed.
+        if (self.expected_outcome == True ):
+            print "Testing that DLG exists and AutoDock successfully completed."
+        else:
+            print "Testing that DLG exists and AutoDock did not complete."
         self.assertEqual( self.computed, self.expected_outcome )
         # Check the final energy is expected value.
-        global expected_intermol_energy, expected_internal_energy
+        expected_intermol_energy = -6.17
+        expected_internal_energy = -1.80
         (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename )
+        print "Testing that intermolecular energy = %.2f kcal/mol." % (expected_intermol_energy,)
         self.assertEqual( round(intermol_energy,6), round(expected_intermol_energy,6))
+        print "Testing that internal energy = %.2f kcal/mol." % (expected_internal_energy,)
         self.assertEqual( round(internal_energy,6), round(expected_internal_energy,6))
 #______________________________________________________________________________
 
@@ -154,6 +164,11 @@ class AutoDock4_1pgp_test( AutoDock_test ):
 class AutoDock4_1pgp_no_parameter_file_test( AutoDock_test ):
     """Test that autodock4 works using default parameter library."""
     dpf_stem = "1pgp_no_parameter_file"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+class AutoDock4_1pgp_unbound_ignored_test( AutoDock_test ):
+    """Test that autodock 4.1 works when unbound is supplied in the DPF."""
+    dpf_stem = "1pgp_unbound_ignored"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -194,6 +209,7 @@ if __name__ == '__main__':
     #  NOTE:  Remember to add new TestCase class names to the list "test_cases"
     test_cases = [
         'AutoDock4_1pgp_test',
+        'AutoDock4_1pgp_unbound_ignored_test',
         'AutoDock4_1pgp_no_parameter_file_test',
         'AutoDock4_1pgp_no_elecmap_test',
         'AutoDock4_1pgp_no_desolvmap_test',
