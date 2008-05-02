@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.15 2007/07/05 17:21:39 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.16 2008/05/02 07:48:01 garrett Exp $
 
  AutoDock 
 
@@ -132,7 +132,7 @@ writePDBQT(int irun, FourByteLong seed[2],
 	for (i = 0; i < 15; i++) { AtmNamResNamNum[i] = '\0'; }
 	for (i = 0; i < 10; i++) { AtmNamResNam[i] = '\0'; }
 
-    initialise_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE );
+    initialise_binding_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE );
 
     // Write out the state variables
 	if ((outlev > -1) && (outlev < 3)) {
@@ -154,7 +154,7 @@ writePDBQT(int irun, FourByteLong seed[2],
     }
 
     // Calculate the energy breakdown
-    eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+    eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
          crd, charge, abs_charge, type, map, info, B_outside, 
          ignore_inter, elec, emap, &elec_total, &emap_total,
          nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
