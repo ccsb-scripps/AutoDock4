@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.72 2008/04/22 22:18:29 garrett Exp $
+ $Id: main.cc,v 1.73 2008/05/02 07:52:34 garrett Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.72 2008/04/22 22:18:29 garrett Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.73 2008/05/02 07:52:34 garrett Exp $"};
 
 
 int sel_prop_count = 0;
@@ -688,7 +688,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.72 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.73 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1902,6 +1902,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 }
             }
             nval = retval;
+        }
+        if (nval != ntor) {
+            pr( logFile, "%s: WARNING!  The number of torsions specified (%d) does not match the number found in the PDBQT file (i.e. %d)\n", programname, nval, ntor);
         }
         for ( i=0; i<nval; i++ ) {
             if (outlev >= 0) {
@@ -3963,7 +3966,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
 
         // calculate the energy breakdown for the input coordinates, "crdpdb"
-        eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+        eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
                                 crdpdb, charge, abs_charge, type, map, info, outside, 
                                 ignore_inter, elec, emap, &elec_total, &emap_total,
                                 nonbondlist, ad_energy_tables, Nnb, B_calcIntElec,
