@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.27 2007/04/27 06:01:47 garrett Exp $
+ $Id: analysis.cc,v 1.28 2008/05/02 07:54:31 garrett Exp $
 
  AutoDock 
 
@@ -266,7 +266,7 @@ void analysis( int   Nnb,
 
             EnergyBreakdown eb;
 
-            eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+            eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
                  crd, charge, abs_charge, type, map, info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID,
                  ignore_inter, elec, emap, &elec_total, &emap_total,
                  nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
@@ -284,7 +284,7 @@ void analysis( int   Nnb,
             pr( logFile, "USER    NEWDPF axisangle0\t%f %f %f %f\n", hist[c].Q.nx, hist[c].Q.ny, hist[c].Q.nz, RadiansToDegrees(hist[c].Q.ang) );
             pr( logFile, "USER    NEWDPF quaternion0\t%f %f %f %f\n", hist[c].Q.x, hist[c].Q.y, hist[c].Q.z, hist[c].Q.w );
             if (ntor > 0) {
-                pr( logFile, "USER    NEWDPF ndihe\t%d\n", hist[c].ntor );
+                // Deprecated in AutoDock 4 // pr( logFile, "USER    NEWDPF ndihe\t%d\n", hist[c].ntor );
                 pr( logFile, "USER    NEWDPF dihe0\t" );
                 flushLog;
                 for ( t = 0;  t < hist[c].ntor;  t++ ) {
