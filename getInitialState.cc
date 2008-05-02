@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.19 2007/04/27 06:01:48 garrett Exp $
+ $Id: getInitialState.cc,v 1.20 2008/05/02 07:53:15 garrett Exp $
 
  AutoDock 
 
@@ -224,7 +224,7 @@ void getInitialState(
 
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
-    eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+    eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
          crd, charge, abs_charge, type, map, info, SOME_ATOMS_OUTSIDE_GRID, 
          ignore_inter, elec, emap, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
          nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
