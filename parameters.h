@@ -1,6 +1,6 @@
 /*
 
- $Id: parameters.h,v 1.3 2007/04/27 06:01:50 garrett Exp $
+ $Id: parameters.h,v 1.4 2008/05/30 04:19:46 garrett Exp $
 
  AutoDock 
 
@@ -57,6 +57,8 @@ typedef struct parameter_entry
   int map_index;		/* used to set up map atom_types */
   int bond_index;		/* used to set up bonds; corresponds to the enum in mdist.h */
 } ParameterEntry;
+
+#define is_hydrogen_type(t) ((strcmp(t,"H")==0) || (strcmp(t,"HD")==0) || (strcmp(t,"HS")==0))
 
 #endif
 /* EOF */
