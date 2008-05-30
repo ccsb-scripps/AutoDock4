@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.16 2007/05/18 09:47:50 garrett Exp $
+ $Id: readPDBQT.cc,v 1.17 2008/05/30 04:31:10 garrett Exp $
 
  AutoDock 
 
@@ -70,7 +70,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     Boole B_have_flexible_residues,
 
                     char atomstuff[MAX_ATOMS][MAX_CHARS],
-                    int Htype,
+                    int *P_n_heavy_atoms_in_ligand,
 
                     Boole * P_B_constrain,
                     int *P_atomC1,
@@ -259,8 +259,8 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
                 // Read the coordinates and store them in crdpdb[],
                 // read the partial atomic charge and store it in charge[],
-                // and read the parameters of this atom and store them in this_parameter_entry
-                // set the "autogrid_type" in this_parameter_entry
+                // and read the parameters of this atom and store them in this_parameter_entry,
+                // setting the "autogrid_type" in this_parameter_entry.
                 readPDBQTLine(input_line, &serial, crdpdb[natom], &charge[natom], &this_parameter_entry);
 
                 /*
@@ -297,9 +297,11 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 // the correct energies in the current grid cell, thus:	map[][][][map_index[natom]]
                 map_index[natom] = -1;
 
+                // Find the AutoDock 4 atom type for the current atom.
                 // "apm_find" is the new AutoDock 4 atom typing mechanism
                 found_parm = apm_find(this_parameter_entry.autogrid_type);
                 if (found_parm != NULL) {
+                    // We found the atom type and its parameters
                     map_index[natom] = found_parm->map_index;
                     bond_index[natom] = found_parm->bond_index;
                     if (outlev > 0) {
@@ -323,6 +325,18 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
                 // Increment the number of atoms found in PDBQT file
                 ++natom;
+
+                // Increment the number of non-hydrogen atoms in the ligand
+                if (!found_begin_res) {
+                    //(void) fprintf(logFile, "DEBUG!!! Found parameters for atom %d, atom type \"%s\", grid map index = %d\n",
+                               //natom, found_parm->autogrid_type, found_parm->map_index);
+                    //(void) fprintf(logFile, "DEBUG!!!  (strcmp(t,\"H\")==%d) || (strcmp(t,\"HD\")==%d) || (strcmp(t,\"HS\")==%d))\n\n",
+                                //strcmp(found_parm->autogrid_type,"H"), strcmp(found_parm->autogrid_type,"HD"), strcmp(found_parm->autogrid_type,"HS") );
+                    if ( ! is_hydrogen_type( found_parm->autogrid_type ) ) {
+                        //(void) fprintf(logFile, "DEBUG!!! is not a hydrogen atom.  Incrementing number of heavy atoms in ligand.\n");
+                        ++(*P_n_heavy_atoms_in_ligand);
+                    }
+                }
                 break;
 
             case PDBQ_ROOT:
@@ -356,7 +370,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     // Then a flexible receptor sidechain was found in the PDBQ file.
                     // Flag that we've found a BEGIN_RES record.
                     found_begin_res = 1;
-                    pr(logFile, "\nNumber of atoms in movable ligand = %d\n\n", true_ligand_atoms);
                 }
                 // Increment the number of residues
                 nres++;
@@ -379,6 +392,10 @@ Molecule readPDBQT(char input_line[LINE_LEN],
         }
 
 	} // i, next record in PDBQT file 
+
+    pr(logFile, "\nNumber of atoms in movable ligand = %d\n\n", true_ligand_atoms);
+
+    pr(logFile, "Number of non-hydrogen atoms in movable ligand = %d\n\n", *P_n_heavy_atoms_in_ligand);
 
 	pr(logFile, "\nNumber of atoms found in flexible receptor sidechains (\"residues\") =\t%d atoms\n\n", natom - true_ligand_atoms);
 

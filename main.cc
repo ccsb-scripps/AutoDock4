@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.73 2008/05/02 07:52:34 garrett Exp $
+ $Id: main.cc,v 1.74 2008/05/30 04:31:10 garrett Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.73 2008/05/02 07:52:34 garrett Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.74 2008/05/30 04:31:10 garrett Exp $"};
 
 
 int sel_prop_count = 0;
@@ -357,7 +357,7 @@ int atomC2;
 int dpf_keyword = -1;
 //int gridpts1[SPACE];  // now part of the GridMapSetInfo structure
 //int gridpts[SPACE];  // now part of the GridMapSetInfo structure
-int Htype = 0;
+int n_heavy_atoms_in_ligand = 0;
 int ncycles = -1;
 int iCon=0;
 int indcom = 0;
@@ -688,7 +688,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.73 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.74 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1287,7 +1287,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             &natom,
                             crdpdb, crdreo, charge, &B_haveCharges,
                             type, bond_index,
-                            pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, Htype,
+                            pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, &n_heavy_atoms_in_ligand,
                             &B_constrain_dist, &atomC1, &atomC2,
                             &sqlower, &squpper,
                             &ntor1, &ntor, &ntor_ligand,
@@ -1305,6 +1305,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             qsp_abs_charge[i] = qsolpar * abs_charge[i];
         }
         pr(logFile, "Number of atoms in ligand:  %d\n\n", true_ligand_atoms);
+        pr(logFile, "Number of non-hydrogen atoms in ligand:  %d\n\n", n_heavy_atoms_in_ligand);
 
         pr(logFile, "Number of vibrational degrees of freedom of ligand:  %d\n\n\n", (3 * true_ligand_atoms) - 6 );
         pr( logFile, "Number of torsional degrees of freedom = %d\n", ntorsdof);
@@ -3896,7 +3897,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             &natom,
                             crdpdb, crdreo, charge, &B_haveCharges,
                             type, bond_index,
-                            pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, Htype,
+                            pdbaname, FN_ligand, FN_flexres, B_have_flexible_residues, atomstuff, &n_heavy_atoms_in_ligand,
                             &B_constrain_dist, &atomC1, &atomC2,
                             &sqlower, &squpper,
                             &ntor1, &ntor, &ntor_ligand,

@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.h,v 1.10 2007/04/27 06:01:50 garrett Exp $
+ $Id: readPDBQT.h,v 1.11 2008/05/30 04:31:10 garrett Exp $
 
  AutoDock 
 
@@ -65,7 +65,7 @@ Molecule readPDBQT( char  line[LINE_LEN],
               Boole B_have_flexible_residues,
 
               char  atomstuff[MAX_ATOMS][MAX_CHARS],
-              int   Htype,
+              int   *P_n_heavy_atoms_in_ligand,
 
               Boole *P_B_constrain,
               int   *P_atomC1,
