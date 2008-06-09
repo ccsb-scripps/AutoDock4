@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.74 2008/05/30 04:31:10 garrett Exp $
+ $Id: main.cc,v 1.75 2008/06/09 23:12:05 garrett Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.74 2008/05/30 04:31:10 garrett Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.75 2008/06/09 23:12:05 garrett Exp $"};
 
 
 int sel_prop_count = 0;
@@ -465,6 +465,8 @@ int low = 0;
 int high = 100;
 int elitism = 1;
 
+// For Branch Crossover Mode
+int end_of_branch[MAX_TORS];
 
 Selection_Mode s_mode = Proportional;
 Xover_Mode c_mode = TwoPt;  //  can be: OnePt, TwoPt, Uniform or Arithmetic
@@ -688,7 +690,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.74 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.75 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1296,7 +1298,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             jobStart, tms_jobStart, hostnm, &ntorsdof, outlev,
                             ignore_inter,
                             B_include_1_4_interactions,
-                            atoms, PDBQT_record );
+                            atoms, PDBQT_record, end_of_branch );
 
         // pre-calculate some values we will need later in computing the desolvation energy
         //
@@ -3014,7 +3016,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                           outlev,
                                           outputEveryNgens, &ligand,
                                           B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
-                                          info, FN_pop_file );
+                                          info, FN_pop_file, end_of_branch );
                 // State of best individual at end of GA-LS run is returned.
                 // Finished Lamarckian GA run
 
@@ -3225,7 +3227,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               gaStart = times(&tms_gaStart);
 
               sHist[nconf] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size, 
-                                      &ligand, outputEveryNgens, info);
+                                      &ligand, outputEveryNgens, info, end_of_branch);
 
               pr(logFile, "\nFinal docked state:\n");
               printState(logFile, sHist[nconf], 2);
@@ -3621,7 +3623,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                       outputEveryNgens, &ligand,
                                       // B_RandomDihe0, // use this line with call_glss_tors()
                                       B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
-                                      info, FN_pop_file );
+                                      info, FN_pop_file, end_of_branch );
             // State of best individual at end of GA-LS run, sUnbound_ext, is returned.
             // Finished Lamarckian GA run
             gaEnd = times( &tms_gaEnd );
@@ -3764,7 +3766,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                          outlev,
                                          outputEveryNgens, &ligand,
                                          B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
-                                         info, FN_pop_file );
+                                         info, FN_pop_file, end_of_branch );
                 // State of best individual at end of GA-LS run, sUnbound_ad, is returned.
                 // Finished Lamarckian GA run
                 gaEnd = times( &tms_gaEnd );
@@ -3906,7 +3908,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             jobStart, tms_jobStart, hostnm, &ntorsdof, outlev,
                             ignore_inter,
                             B_include_1_4_interactions,
-                            atoms, PDBQT_record );
+                            atoms, PDBQT_record, end_of_branch );
 
         //
         // pre-calculate some values we will need later in computing the desolvation energy
@@ -4051,8 +4053,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         } else if (strcmp(c_mode_str, "arithmetic") == 0) {
             c_mode = Arithmetic;
             pr(logFile, "Arithmetic crossover will be used in GA and LGA searches.\n");
+        } else if (strcmp(c_mode_str, "branch") == 0) {
+            c_mode = Branch;
+            pr(logFile, "Branch crossover will be used in GA and LGA searches.\n");
         } else {
-            c_mode = Uniform; // default
+            c_mode = TwoPt; // default
         }
         (void) fflush(logFile);
         break;
