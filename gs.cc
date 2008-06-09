@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.26 2008/04/10 22:10:32 garrett Exp $
+ $Id: gs.cc,v 1.27 2008/06/09 22:39:34 garrett Exp $
 
  AutoDock 
 
@@ -621,6 +621,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
 #endif // endif DEBUG_QUAT_PRINT
          assertQuatOK( q_mother );
 
+                // Pos.  Orient. Conf.
                 // 0 1 2 3 4 5 6 7 8 9
                 // X Y Z x y z w t t t
                 //                     num_genes() = 10
@@ -661,6 +662,27 @@ void Genetic_Algorithm::crossover(Population &original_population)
                 original_population[ordering[i]].age = 0L;
                 original_population[ordering[i+1]].age = 0L;
                 break;
+            case Branch:
+                // New crossover mode, designed to exchange just one corresponding sub-trees (or "branch")
+                // between two individuals.
+                // If there are only position and orientation genes, there will be only
+                // 7 genes; this mode would not change anything in such rigid-body dockings.
+                if (original_population[i].genotyp.num_genes() <= 7) {
+                    // Rigid body docking, so no torsion genes to crossover.
+                    break;
+                 } else {
+                    // Pick a random torsion gene
+                    first_point = ignuin(7, original_population[i].genotyp.num_genes()-1);
+                    second_point = original_population.get_eob( first_point - 7 );
+                    // Do two-point crossover, with the crossed-over offspring replacing the parents in situ:
+                    crossover_2pt( original_population[ordering[i]].genotyp, 
+                                   original_population[ordering[i+1]].genotyp, 
+                                   min( first_point, second_point ),
+                                   max( first_point, second_point) );
+                    original_population[ordering[i]].age = 0L;
+                    original_population[ordering[i+1]].age = 0L;
+                    break;
+                 }
             case Uniform:
                 crossover_uniform( original_population[ordering[i]].genotyp, 
                                    original_population[ordering[i+1]].genotyp,

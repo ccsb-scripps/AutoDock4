@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.11 2007/04/27 06:01:49 garrett Exp $
+ $Id: gs.h,v 1.12 2008/06/09 22:39:34 garrett Exp $
 
  AutoDock 
 
@@ -38,7 +38,7 @@
 
 enum M_mode { ERR = -1, BitFlip, CauchyDev, IUniformSub };
 enum Selection_Mode { Proportional=0, Tournament=1, Boltzmann=2 };
-enum Xover_Mode { TwoPt=0, OnePt=1, Uniform=2, Arithmetic=3 };
+enum Xover_Mode { TwoPt=0, OnePt=1, Uniform=2, Arithmetic=3, Branch=4 };
 enum Worst_Mode { AverageOfN, OfN, Ever };
 
 class Global_Search
