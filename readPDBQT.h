@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.h,v 1.11 2008/05/30 04:31:10 garrett Exp $
+ $Id: readPDBQT.h,v 1.12 2008/06/09 22:58:50 garrett Exp $
 
  AutoDock 
 
@@ -40,6 +40,7 @@
 #include "success.h"
 #include "openfile.h"
 #include "constants.h"
+#include "stack.h"
 
 void  readPDBQTLine( char line[LINE_LEN],
                      int  *ptr_serial,
@@ -94,6 +95,8 @@ Molecule readPDBQT( char  line[LINE_LEN],
               int   B_include_1_4_interactions,
               
               Atom  atoms[MAX_ATOMS],
-              char  PDBQT_record[MAX_RECORDS][LINE_LEN]
+              char  PDBQT_record[MAX_RECORDS][LINE_LEN],
+
+              int end_of_branch[MAX_TORS]
               );
 #endif

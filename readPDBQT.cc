@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.17 2008/05/30 04:31:10 garrett Exp $
+ $Id: readPDBQT.cc,v 1.18 2008/06/09 22:58:50 garrett Exp $
 
  AutoDock 
 
@@ -43,6 +43,7 @@
 #include "PDBQT_tokens.h"
 #include "structs.h"
 #include "atom_parameter_manager.h"
+#include "stack.h"
 
 /*----------------------------------------------------------------------------*/
 
@@ -96,7 +97,9 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     int B_include_1_4_interactions,
 
                     Atom atoms[MAX_ATOMS],
-                    char PDBQT_record[MAX_RECORDS][LINE_LEN]
+                    char PDBQT_record[MAX_RECORDS][LINE_LEN],
+
+                    int end_of_branch[MAX_TORS]
                     )
 
 {
@@ -124,6 +127,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     int             keyword_id = -1;
 	int             nres = 0;
 	int             nrigid_piece = 0;
+	int             piece = -1; // "sentinel" value
 
 	Boole           B_has_conect_records = FALSE;
 	Boole           B_is_in_branch = FALSE;
@@ -135,6 +139,13 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 	static Real QTOL = 0.005;
 
+    // Definitions to help determine the end_of_branch array for "Branch Crossover Mode".
+    // The "end_of_branch" array is like a dictionary, where the index corresponds to the key
+    // and is the number of the torsion to be crossed over, while the value is the number
+    // of the first torsion after the last torsion in the sub-tree (or "branch") being exchanged.
+    stack s;  // Stack used to determine the values for the end_of_branch[] array
+    int top = 0;  // Value at the top of the stack.
+
 	Molecule        mol;
 
 	ParameterEntry  this_parameter_entry;
@@ -143,10 +154,28 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 		atomnumber[i] = 0;
 	}
 
-	for (j = 0; j < MAX_ATOMS; j++) {
-		ntype[j] = 0;
-		rigid_piece[j] = 0;
+	for (i = 0; i < MAX_ATOMS; i++) {
+		ntype[i] = 0;
+		rigid_piece[i] = 0;
 	}
+
+	for (i = 0; i < MAX_TORS; i++) {
+        end_of_branch[i] = 0;
+    }
+
+    // Create the stack
+    s = stack_create( MAX_TORS+1 );
+    if (debug > 0) {
+        pr(logFile, "DEBUG: 169:  stack_create(%d)\n", MAX_TORS+1 );
+        pr(logFile, "DEBUG:       stack_size(s) = %d\n", stack_size(s) );
+    }
+
+    // Initialize the stack
+    stack_push(s, piece);
+    if (debug > 0) {
+        pr(logFile, "DEBUG: 176:  stack_push(s, %d)\n", piece );
+        pr(logFile, "DEBUG:       stack_size(s) = %d\n", stack_size(s) );
+    }
 
     //  Attempt to open the ligand PDBQT file...
 	sscanf(input_line, "%*s %s", FN_ligand);
@@ -256,6 +285,9 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 // Set up rigid_piece array by reading in the records of the PDBQT file;
                 // each "rigid_piece" is a self-contained rigid entity.
                 rigid_piece[natom] = nrigid_piece;
+                if (debug > 0) {
+                    pr(logFile, "DEBUG: 289:  rigid_piece[%d] = %d (nrigid_piece)\n", natom, rigid_piece[natom] );
+                }
 
                 // Read the coordinates and store them in crdpdb[],
                 // read the partial atomic charge and store it in charge[],
@@ -340,14 +372,45 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 break;
 
             case PDBQ_ROOT:
-            case PDBQ_BRANCH:
                 B_is_in_branch = TRUE;
                 ++nrigid_piece;
                 break;
 
+            case PDBQ_BRANCH:
+                B_is_in_branch = TRUE;
+                stack_push(s, piece);
+                if (debug > 0) {
+                    pr(logFile, "DEBUG: 383:  stack_push(s, %d)\n", piece );
+                    pr(logFile, "DEBUG: 384:  stack_size(s) = %d\n", stack_size(s) );
+                }
+                piece = nrigid_piece;
+                if (debug > 0) {
+                    pr(logFile, "DEBUG: 388:  piece = %d\n", piece );
+                }
+                ++nrigid_piece;
+                if (debug > 0) {
+                    pr(logFile, "DEBUG: 392:  nrigid_piece = %d\n", nrigid_piece );
+                }
+                break;
+
             case PDBQ_ENDROOT:
+                B_is_in_branch = FALSE;
+                break;
+
             case PDBQ_ENDBRANCH:
                 B_is_in_branch = FALSE;
+                end_of_branch[ piece ] = max( end_of_branch[ piece ], piece ) + 1;
+                if (debug > 0) {
+                    pr(logFile, "DEBUG: 404:   end_of_branch[ %d ] = %d\n", piece, end_of_branch[ piece ] );
+                }
+                top = s->top;
+                if (debug > 0) {
+                    pr(logFile, "DEBUG: 408:   top = %d, end_of_branch[ top ] = %d\n", top, end_of_branch[ top ] );
+                }
+                end_of_branch[ top ] = max( end_of_branch[ top ], end_of_branch[ piece ] ) + 1;
+                if (debug > 0) {
+                    pr(logFile, "DEBUG: 412:   end_of_branch[ %d ] = %d\n", piece, end_of_branch[ piece ] );
+                }
                 break;
 
             case PDBQ_NULL:
@@ -459,7 +522,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
             bonded[i][5] = 0;
 		} // i
 
-			if (debug > 0) {
+        if (debug > 0) {
 			printbonds(natom, bonded, "\nDEBUG:  1. BEFORE getbonds, bonded[][] array is:\n\n", 1);
 		}
         // find all the bonds in the ligand
