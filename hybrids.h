@@ -1,6 +1,6 @@
 /*
 
- $Id: hybrids.h,v 1.10 2007/04/27 06:01:49 garrett Exp $
+ $Id: hybrids.h,v 1.11 2008/06/09 22:41:39 garrett Exp $
 
  AutoDock 
 
@@ -49,7 +49,8 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 		State now, unsigned int num_evals, unsigned int pop_size, 
 		int outlev, unsigned int extOutputEveryNgens, Molecule *mol,
 		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
-        GridMapSetInfo *info, char FN_pop_file[MAX_CHARS] );
+        GridMapSetInfo *info, char FN_pop_file[MAX_CHARS],
+        int end_of_branch[MAX_TORS] );
 
 
 Representation **generate_R(int num_torsions, GridMapSetInfo *info );
@@ -98,7 +99,8 @@ State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Mole
 State call_gs(Global_Search *global_method, State now, unsigned int num_evals, unsigned int pop_size,
               Molecule *mol,
               int extOutputEveryNgens,
-              GridMapSetInfo *info );
+              GridMapSetInfo *info,
+              int end_of_branch[MAX_TORS] );
 
 #endif
 
