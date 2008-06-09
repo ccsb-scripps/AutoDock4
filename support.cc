@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.21 2007/04/27 06:01:51 garrett Exp $
+ $Id: support.cc,v 1.22 2008/06/09 22:27:51 garrett Exp $
 
  AutoDock 
 
@@ -269,6 +269,24 @@ void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor
    (void)fprintf( output, "\n");
 }
 
+void Population::set_eob(int init_end_of_branch[MAX_TORS])
+// Set the end_of_branch[MAX_TORS] array
+{
+   for (register int i=0; i<MAX_TORS; i++) {
+       end_of_branch[i] = init_end_of_branch[i];
+   }
+}
+
+int Population::get_eob(int init_tor)
+// Get the end_of_branch[] value for the supplied torsion number, init_tor
+{
+    if ((init_tor >= 0) && (init_tor < MAX_TORS)) {
+        return end_of_branch[init_tor];
+    } else {
+        (void)fprintf(logFile, "support.cc/Population::get_eob(int init_tor=%d) -- ERROR!  Attempt to access out-of-bounds torsion!\n\n", init_tor);
+        exit(-1);
+    }
+}
 
 Genotype::Genotype(unsigned int init_number_of_vectors, Representation **
 init_rep_vector)

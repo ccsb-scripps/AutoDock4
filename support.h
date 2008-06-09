@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.10 2007/04/27 06:01:51 garrett Exp $
+ $Id: support.h,v 1.11 2008/06/09 22:27:51 garrett Exp $
 
  AutoDock 
 
@@ -38,6 +38,9 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.11  2008/06/09 22:27:51  garrett
+** Added "end_of_branch[MAX_TORS]" to the Population class, the logic being that every Individual in the Population is the same, so rather than add the overhead to all the Individuals, we added it to the Population.  Also introducted two new methods, set_eob() and get_eob(), to set the end_of_branch[] array, and get values given a key torsion number.  These changes are to support the new "Branch Crossover mode".
+**
 ** Revision 1.10  2007/04/27 06:01:51  garrett
 ** Added the files necessary for GNU Autotools and the "dot-slash-configure dance"...
 **
@@ -244,6 +247,7 @@ class Population
       void swap(Individual &, Individual &); /* for maintaining the heap order*/
       void SiftUp(void); /* for maintaining the heap order*/
       void SiftDown(void); /* for maintaining the heap order*/
+      int end_of_branch[MAX_TORS]; // For Branch Crossover Mode
 
    public:
       Population(void);
@@ -259,6 +263,8 @@ class Population
       void print(FILE *, int); /* like above */
       void printPopulationAsStates(FILE *, int, int); /*prints energies,states of top energies */
       void printPopulationAsCoordsEnergies(FILE *, int, int); /*prints energies,states of top energies */
+      void set_eob(int init_end_of_branch[MAX_TORS]); // For Branch Crossover Mode
+      int get_eob(int init_tor); // For Branch Crossover Mode
 };
 
 /**************************************************************************
@@ -369,18 +375,27 @@ inline double Individual::value(EvalMode mode)
 inline Population::Population(void)
 :lhb(-1), size(0), heap((Individual *)NULL)
 {
+    for (int i=0; i<MAX_TORS; i++) {
+        end_of_branch[i] = -1;
+    }
 }
 
 inline Population::Population(int num_inds)
 : lhb(num_inds-1), size(num_inds)
 {
    heap = new Individual[num_inds];
+    for (int i=0; i<MAX_TORS; i++) {
+        end_of_branch[i] = -1;
+    }
 }
 
 inline Population::Population(int newpopsize, Individual *newpop)
 : size(newpopsize), heap(newpop)
 {
    //  Do initialization stuff
+    for (int i=0; i<MAX_TORS; i++) {
+        end_of_branch[i] = -1;
+    }
 }
 
 inline Population::~Population(void)
