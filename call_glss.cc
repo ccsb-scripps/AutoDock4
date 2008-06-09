@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.30 2007/09/02 03:09:42 garrett Exp $
+ $Id: call_glss.cc,v 1.31 2008/06/09 22:32:16 garrett Exp $
 
  AutoDock 
 
@@ -253,7 +253,8 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
                 int outlev, 
                 unsigned int extOutputEveryNgens, Molecule *mol, 
                 Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
-                GridMapSetInfo *info, char FN_pop_file[MAX_CHARS] )
+                GridMapSetInfo *info, char FN_pop_file[MAX_CHARS],
+                int end_of_branch[MAX_TORS])
 {
     register unsigned int i;
     register int j;
@@ -270,6 +271,8 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
     (void)fprintf( logFile, "\nCreating an initial population of %u individuals.\n", pop_size);
     Population thisPop(pop_size);
+    //  Pass in the end_of_branch tree for Branch Crossover Mode.
+    thisPop.set_eob( end_of_branch );
 
     if (sInit.ntor > 0) {
         (void)fprintf( logFile, "\nAssigning a random translation, a random orientation and %d random torsions to each of the %u individuals.\n\n", sInit.ntor, pop_size);
