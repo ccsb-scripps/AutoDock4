@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.20 2007/04/27 06:01:51 garrett Exp $
+ $Id: simanneal.cc,v 1.21 2008/06/19 22:42:43 garrett Exp $
 
  AutoDock 
 
@@ -43,6 +43,7 @@
 
 extern FILE *logFile;
 extern char *programname;
+extern Unbound_Model ad4_unbound_model;
 
 
 void simanneal ( int   *Addr_nconf,
@@ -148,6 +149,7 @@ void simanneal ( int   *Addr_nconf,
 {
     char message[LINE_LEN];
 
+    Real local_unbound_internal_FE = unbound_internal_FE;
 
     FILE *FP_trj;
         FP_trj = NULL;
@@ -640,7 +642,15 @@ void simanneal ( int   *Addr_nconf,
                 info, 1 /* = DOCKED */, PDBQT_record, 
                 B_use_non_bond_cutoff, B_have_flexible_residues);
 
-        econf[(*Addr_nconf)] = eLast;
+        // See also "calculateEnergies.cc", switch(ad4_unbound_model)
+        if (ad4_unbound_model == Unbound_Same_As_Bound) {
+            // Update the unbound internal energy, setting it to the current internal energy
+            local_unbound_internal_FE = eintra;
+        } else {
+            local_unbound_internal_FE = unbound_internal_FE;
+        }
+        // originally: econf[(*Addr_nconf)] = eLast;
+        econf[(*Addr_nconf)] = eintra + einter + torsFreeEnergy - local_unbound_internal_FE;
         ++(*Addr_nconf);
 
     } /* Loop over runs ======================================================*/

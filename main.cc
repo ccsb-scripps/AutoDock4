@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.75 2008/06/09 23:12:05 garrett Exp $
+ $Id: main.cc,v 1.76 2008/06/19 22:42:43 garrett Exp $
 
  AutoDock 
 
@@ -66,7 +66,8 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.75 2008/06/09 23:12:05 garrett Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.76 2008/06/19 22:42:43 garrett Exp $"};
+extern Unbound_Model ad4_unbound_model;
 
 
 int sel_prop_count = 0;
@@ -690,7 +691,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.75 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.76 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1534,6 +1535,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                               B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                               info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
 
+                  // See also "calculateEnergies.cc", switch(ad4_unbound_model)
+                  if (ad4_unbound_model == Unbound_Same_As_Bound) {
+                      // Update the unbound internal energy, setting it to the current internal energy
+                      unbound_internal_FE = eintra;
+                  }
                   econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
                   evaluate.reset();
                   
@@ -3047,6 +3053,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                             info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
 
+                // See also "calculateEnergies.cc", switch(ad4_unbound_model)
+                if (ad4_unbound_model == Unbound_Same_As_Bound) {
+                    // Update the unbound internal energy, setting it to the current internal energy
+                    unbound_internal_FE = eintra;
+                }
                 econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 
                 ++nconf;
@@ -3150,6 +3161,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                            B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                            info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
 
+               // See also "calculateEnergies.cc", switch(ad4_unbound_model)
+               if (ad4_unbound_model == Unbound_Same_As_Bound) {
+                   // Update the unbound internal energy, setting it to the current internal energy
+                   unbound_internal_FE = eintra;
+               }
                econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 
                ++nconf;
@@ -3260,6 +3276,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                           B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                           info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
 
+              // See also "calculateEnergies.cc", switch(ad4_unbound_model)
+              if (ad4_unbound_model == Unbound_Same_As_Bound) {
+                  // Update the unbound internal energy, setting it to the current internal energy
+                  unbound_internal_FE = eintra;
+              }
               econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 
               ++nconf;
