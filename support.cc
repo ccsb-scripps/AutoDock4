@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.22 2008/06/09 22:27:51 garrett Exp $
+ $Id: support.cc,v 1.23 2008/06/19 22:37:19 garrett Exp $
 
  AutoDock 
 
@@ -29,6 +29,7 @@
 #include <config.h>
 #endif
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include "eval.h"
