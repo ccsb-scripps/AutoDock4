@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Id: paramdat2h.csh,v 1.7 2007/09/02 05:25:04 garrett Exp $
+# $Id: paramdat2h.csh,v 1.8 2008/06/27 04:10:11 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -24,6 +24,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 echo 'char *param_string[MAX_LINES] = {'
-egrep -v '^#|^$' AD4.1_bound.dat | sed 's/\(.*\)$/"\1\\n", /'
+egrep -v '^#|^$' $* | sed 's/\(.*\)$/"\1\\n", /'
 echo ' };'
 echo '// EOF'
