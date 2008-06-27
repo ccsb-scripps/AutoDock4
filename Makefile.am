@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.13 2008/06/09 22:28:53 garrett Exp $
+# $Id: Makefile.am,v 1.14 2008/06/27 04:13:54 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -42,6 +42,10 @@ bin_PROGRAMS = autodock4
 
 autodock4_SOURCES = \
     main.cc
+
+BUILT_SOURCES = default_parameters.h
+
+CLEANFILES = default_parameters.h
 
 noinst_LIBRARIES = libad.a
 
@@ -469,8 +473,7 @@ read_parameter_library.o : default_parameters.h
 
 default_parameters.h : AD4.1_bound.dat paramdat2h.csh
 	rm -f $@
-	csh ./paramdat2h.csh > tmp-paramdat
-	mv -f tmp-paramdat $@
+	csh $(srcdir)/paramdat2h.csh $(srcdir)/AD4.1_bound.dat > $@
 
 #coliny.o : coliny.h
 #	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ACRO_INCLUDES) -c coliny.cc -o coliny.o
