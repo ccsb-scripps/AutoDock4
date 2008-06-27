@@ -1,4 +1,4 @@
-# $Id: Makefile.pre-autoconf,v 1.6 2008/06/09 22:29:15 garrett Exp $
+# $Id: Makefile.pre-autoconf,v 1.7 2008/06/27 04:11:46 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -822,8 +822,7 @@ readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_t
 
 default_parameters.h : AD4.1_bound.dat paramdat2h.csh
 	rm -f $@
-	./paramdat2h.csh > tmp-paramdat
-	mv -f tmp-paramdat $@
+	./paramdat2h.csh AD4.1_bound.dat > $@
 
 read_parameter_library.o : read_parameter_library.cc autocomm.h default_parameters.h
 	$(CC) $(CFLAGS) -c read_parameter_library.cc
