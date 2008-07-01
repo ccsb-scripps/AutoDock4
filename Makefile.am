@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.14 2008/06/27 04:13:54 garrett Exp $
+# $Id: Makefile.am,v 1.15 2008/07/01 01:26:51 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -422,13 +422,13 @@ autodock4.html :
 	@echo " "
 	enscript -E --color -Whtml --toc -p$@ *.h *.cc
 
-check : autodock4 $(srcdir)/Tests/test_autodock4.py
+test : autodock4 $(srcdir)/Tests/test_autodock4.py
 #if HAVE_PYTHON
 	@echo " "
 	@echo "Running the Python test_autodock4.py unit-tests on autodock4"
 	@echo " "
 	outputdir=`pwd` ;\
-	cd $(srcdir)/Tests ; chmod u+w . ; python ./test_autodock4.py -d . -e $$outputdir/autodock4 -o $$outputdir
+	cd $(srcdir)/Tests ; chmod u+w . ; python ./test_autodock4.py -d . -e $$outputdir/autodock4 -o $$outputdir/Tests
 #else
 #	@echo " "
 #	@echo "Python version 2.1 or higher needed for 'make check', but not found."
