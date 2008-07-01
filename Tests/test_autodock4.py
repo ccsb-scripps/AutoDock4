@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.16 2008/05/01 01:55:30 garrett Exp $
+# $Id: test_autodock4.py,v 1.17 2008/07/01 01:29:14 garrett Exp $
 #
 
 """
@@ -75,7 +75,7 @@ def run_AutoDock( dpf_filename, dlg_filename ):
         # TODO os.wait seems to return (pid, exit_status)
         os.wait() # for the child process to finish
         # return True # this should really be os.wait()'s exit_status
-        return find_success_in_DLG( dlg )
+        return find_success_in_DLG( dlg_filename )
     except:
         print "\nUnable to run " + autodock_executable + "."
         return False
