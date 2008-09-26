@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.15 2007/04/27 06:01:49 garrett Exp $
+ $Id: investigate.cc,v 1.16 2008/09/26 23:50:45 rhuey Exp $
 
  AutoDock 
 
@@ -210,8 +210,13 @@ void investigate( int   Nnb,
                 rms = getrms( crd, ref_crds, B_symmetry_flag, natom, type);
             } while (rms > MaxRms);
             /* Calculate Energy of System, */
-            e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
-                    + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
+            e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, info, 
+                ALL_ATOMS_INSIDE_GRID, ignore_inter, 
+                NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
+                 + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
+                     B_calcIntElec, B_include_1_4_interactions,
+                     scale_1_4, qsp_abs_charge, parameterArray,
+                     B_use_non_bond_cutoff, B_have_flexible_residues);
             if (B_isGaussTorCon) {
                 for (Itor = 0; Itor < ntor; Itor++) {
                     if (B_isTorConstrained[Itor] == 1) {

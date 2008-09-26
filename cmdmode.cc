@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.20 2007/04/27 06:01:48 garrett Exp $
+ $Id: cmdmode.cc,v 1.21 2008/09/26 23:50:45 rhuey Exp $
 
  AutoDock 
 
@@ -126,10 +126,7 @@ int cmdmode(int   natom,
 
     struct tms tms_jobEnd;
 
-    Real eintra = 0.,
-          einter = 0.,
-          etotal = 0.,
-          etot   = 0.,
+    Real  etotal = 0.,
           crd[MAX_ATOMS][SPACE],
           elec[MAX_ATOMS],
           emap[MAX_ATOMS],
@@ -234,7 +231,7 @@ int cmdmode(int   natom,
                 pr(logFile, "COMMAND: epdb %s\n\n", filename);
  
                 nat = 0;
-                eintra = einter = etotal = 0.;
+                etotal = 0.;
                 outside = FALSE;
  
                 if (openFile(filename, "r", &pdbFile, jobStart, tms_jobStart, FALSE)) {
@@ -266,9 +263,7 @@ int cmdmode(int   natom,
                     fclose(pdbFile);
                     natom = nat;
                     if (ntor > 0) {
-                        eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
-                    } else {
-                        eintra = 0.0 - unbound_internal_FE;
+                        eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
                     }
                     pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
                     pr(logFile,     "\t\t==============================\n\n\n");
@@ -281,9 +276,8 @@ int cmdmode(int   natom,
                     elec_total = 0.;
                     charge_total = 0.;
                     for (i = 0;  i < natom;  i++) {
-                        etot = emap[i] + elec[i];
                         pr(logFile, "%4d  %10.2f  %10.2f  %10.2f  %7.3f  %8.4f  %8.4f  %8.4f\n",
-                                (type[i]+1), etot, emap[i], elec[i], charge[i], crd[i][X], crd[i][Y], crd[i][Z]);
+                                (type[i]+1), emap[i] + elec[i], emap[i], elec[i], charge[i], crd[i][X], crd[i][Y], crd[i][Z]);
                         emap_total += emap[i];
                         elec_total += elec[i];
                         charge_total += charge[i];
@@ -329,10 +323,11 @@ int cmdmode(int   natom,
                 }
                 cnv_state_to_coords(S,  vt, tlist, ntor,  crdpdb, crd, natom);
                 if (ntor > 0) {
-                    eintra = eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
-                } else {
-                    eintra = 0.0 - unbound_internal_FE;
-                }
+                    eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
+                      B_calcIntElec, B_include_1_4_interactions,
+                      scale_1_4, abs_charge, parameterArray,
+                      B_use_non_bond_cutoff, B_have_flexible_residues);
+                } 
                 outside = FALSE;
                 for (i = 0;  i < natom;  i++) {
                     outside = is_out_grid_info(crd[i][X], crd[i][Y], crd[i][Z]);
@@ -372,12 +367,6 @@ int cmdmode(int   natom,
             case COM_OUTE:
                 pr(logFile, "COMMAND: oute\n\n");
                 printEnergies( &eb, "oute: USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues);
-/*                 prStr(message, "USER    Total Internal Energy of Small Molecule = %.2f\n", eintra); */
-/*                 pr_2x(command_out_fp, logFile, message); */
-/*                 prStr(message, "USER    Total Docked Energy of Complex = %.2f\n", etotal); */
-/*                 pr_2x(command_out_fp, logFile, message); */
-/*                 prStr(message, "USER    Predicted Free Energy of Binding = %.2f\n", einter + torsFreeEnergy); */
-/*                 pr_2x(command_out_fp, logFile, message); */
                 for (i = 0;  i < natom;  i++) {
                     pr(command_out_fp, "%.14s  %10.2f%10.2f\n", rec14[i], emap[i], elec[i]);
                     pr(logFile,        "%.14s  %10.2f%10.2f\n", rec14[i], emap[i], elec[i]);

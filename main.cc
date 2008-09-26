@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.76 2008/06/19 22:42:43 garrett Exp $
+ $Id: main.cc,v 1.77 2008/09/26 23:50:45 rhuey Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.76 2008/06/19 22:42:43 garrett Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.77 2008/09/26 23:50:45 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -691,7 +691,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.76 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.77 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2792,7 +2792,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         B_symmetry_flag, FN_rms_ref_crds );
             }
             for (j = 0; j < MAX_RUNS; j++) {
-                econf[j] = torsFreeEnergy - unbound_internal_FE;
+                econf[j] = torsFreeEnergy;
             }
             /* ___________________________________________________________________
             **
@@ -3532,10 +3532,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case DPF_UNBOUND:
         /*
-         * unbound 0.0
+         * unbound FLOAT
          */
         (void) sscanf( line, "%*s " FDFMT, &unbound_internal_FE );
-        pr(logFile, "The internal energy of the unbound state was set to %+.3lf kcal/mol\n\n", unbound_internal_FE);
+        pr(logFile, "The internal energy of the unbound state was set to %+.3lf kcal/mol\n", unbound_internal_FE);
+        ad4_unbound_model = User;
+        pr(logFile, "The unbound ligand energy model was set to User\n\n");
         (void) fflush(logFile);
         break;
 

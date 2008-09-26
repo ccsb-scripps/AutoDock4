@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.21 2008/06/19 22:42:43 garrett Exp $
+ $Id: simanneal.cc,v 1.22 2008/09/26 23:50:46 rhuey Exp $
 
  AutoDock 
 
@@ -402,7 +402,11 @@ void simanneal ( int   *Addr_nconf,
                         e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                                         info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW,
                                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
-                                            + (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE);
+                           + (eintra = eintcal(nonbondlist, ptr_ad_energy_tables, crd, Nnb,
+                                   B_calcIntElec, B_include_1_4_interactions,
+                                   scale_1_4, qsp_abs_charge, parameterArray,
+                                   B_use_non_bond_cutoff, B_have_flexible_residues)
+                               );
 
                         if (B_isGaussTorCon) {
                             /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { ***/
@@ -621,9 +625,12 @@ void simanneal ( int   *Addr_nconf,
         cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
 
         if (ntor > 0) {
-            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
+            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
+               B_calcIntElec, B_include_1_4_interactions,
+               scale_1_4, qsp_abs_charge, parameterArray,
+               B_use_non_bond_cutoff, B_have_flexible_residues);
         } else {
-            eintra = 0.0 - unbound_internal_FE;
+            eintra = 0.0 ;
         }
         einter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                     info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,

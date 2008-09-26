@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.4 2008/05/02 07:46:12 garrett Exp $
+ $Id: calculateEnergies.cc,v 1.5 2008/09/26 23:50:45 rhuey Exp $
 
  AutoDock 
 
@@ -262,6 +262,7 @@ void update_binding_energy_breakdown( EnergyBreakdown * eb )
             // Update the unbound internal energy, setting it to the current internal energy
             eb->e_unbound_internal_FE = eb->e_intra_lig;  // current internal energy of the ligand unbound state
             break;
+        case User:
         case Extended:
         case Compact:
             // The unbound internal energy has already been set in 
@@ -299,6 +300,7 @@ void initialise_binding_energy_breakdown( EnergyBreakdown * eb,
             // Update the unbound internal energy, setting it to the current internal energy
             eb->e_unbound_internal_FE = eb->e_intra_lig;  // current internal energy of the ligand unbound state
             break;
+        case User:
         case Extended:
         case Compact:
             // Set the unbound internal energy to the value passed in unbound_internal_FE

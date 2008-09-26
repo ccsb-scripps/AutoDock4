@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.20 2007/10/22 01:12:49 garrett Exp $
+ $Id: constants.h,v 1.21 2008/09/26 23:50:45 rhuey Exp $
 
  AutoDock 
 
@@ -531,7 +531,7 @@ const Real TK = 298.15;      // Room temperature, in K
 /*
  * Set the options for unbound model
  */
-enum Unbound_Model { Unbound_Same_As_Bound=0, Extended=1, Compact=2 };
+enum Unbound_Model { Unbound_Same_As_Bound=0, Extended=1, Compact=2, User=3 };
 #endif
 
 /*----------------------------------------------------------------------------* 

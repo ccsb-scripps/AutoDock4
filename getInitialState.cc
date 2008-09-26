@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.20 2008/05/02 07:53:15 garrett Exp $
+ $Id: getInitialState.cc,v 1.21 2008/09/26 23:50:45 rhuey Exp $
 
  AutoDock 
 
@@ -183,7 +183,10 @@ void getInitialState(
             e0inter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                         info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-            e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
+            e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
+                          B_calcIntElec, B_include_1_4_interactions,
+                          scale_1_4, qsp_abs_charge, parameterArray,
+                          B_use_non_bond_cutoff, B_have_flexible_residues);
             e0total = e0inter + e0intra;
 
             if (e0total < e0min) {

@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.7 2008/03/25 01:20:11 garrett Exp $
+ $Id: read_parameter_library.cc,v 1.8 2008/09/26 23:50:45 rhuey Exp $
 
  AutoDock 
 
@@ -139,7 +139,8 @@ void read_parameter_library(
                 if (equal( unbound_model_type, "compact", 6 )) {
                     ad4_unbound_model = Compact;
                 } else {
-                    pr( logFile, "%s:  WARNING:  Unrecognized unboound model type \"%s\" found in parameter library \"%s\".\n\n",
+                    // note that "User" is not acceptable in library file
+                    pr( logFile, "%s:  WARNING:  Unrecognized unbound model type \"%s\" found in parameter library \"%s\".\n\n",
                             programname, unbound_model_type, FN_parameter_library);
                 }
 

@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.18 2008/09/26 19:07:15 rhuey Exp $
+# $Id: test_autodock4.py,v 1.19 2008/09/26 23:50:46 rhuey Exp $
 #
 
 """
@@ -82,22 +82,28 @@ def run_AutoDock( dpf_filename, dlg_filename ):
 
 #______________________________________________________________________________
 
-def parse_energy_from_DLG( dlg_filename ):
+def parse_energy_from_DLG( dlg_filename, energy_list):
     """Parse the AutoDock DLG, and return the intermolecular and internal
     energies as a tuple."""
     parser = DlgParser()
     dlg = test_output_directory + os.sep + dlg_filename
     parser.parse( dlg )
     docked = parser.clist[0]  #dictionary of results
-    intermol_energy = docked['intermol_energy']  #-6.17
-    internal_energy = docked['total_internal']  # -1.58
+    result = []
+    for energy_type in energy_list:
+        newVal = docked.get(energy_type, 'ERROR')
+        print energy_type, ' is now ', newVal
+        result.append(docked.get(energy_type, 'ERROR'))
+    #intermol_energy = docked['intermol_energy']  #-6.17
+    #internal_energy = docked['total_internal']  # -1.58
     #print "docked[binding_energy]=", docked['binding_energy']
     #print "docked[electrostatic_energy]=", docked['electrostatic_energy']
     #print "docked[intermol_energy]=", docked['intermol_energy']
     #print "docked[total_internal]=", docked['total_internal']
     #unbound_energy = docked['unbound_energy']
     #print "unbound_energy=", unbound_energy
-    return ( intermol_energy, internal_energy )
+    #return ( intermol_energy, internal_energy )
+    return result
 
 #______________________________________________________________________________
 
@@ -205,7 +211,7 @@ class AutoDock_test( AutoDock_base_test ):
         # Check the final energy is expected value.
         expected_intermol_energy = -6.17
         expected_internal_energy = -1.80
-        (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename )
+        (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename, ['intermol_energy','total_internal'] )
         print "Testing that intermolecular energy = %.2f kcal/mol." % (expected_intermol_energy,)
         self.assertEqual( round(intermol_energy,6), round(expected_intermol_energy,6))
         print "Testing that internal energy = %.2f kcal/mol." % (expected_internal_energy,)
@@ -223,9 +229,43 @@ class AutoDock4_1pgp_no_parameter_file_test( AutoDock_test ):
     dpf_stem = "1pgp_no_parameter_file"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
-class AutoDock4_1pgp_unbound_ignored_test( AutoDock_test ):
-    """Test that autodock 4.1 works when unbound is supplied in the DPF."""
-    dpf_stem = "1pgp_unbound_ignored"
+
+class AutoDock4_unbound_test( AutoDock_base_test ):
+    """Class for AutoDock testing unbound energy."""
+    expected_unbound_energy = None
+
+    def test_dlg_exists_and_test_energy( self):
+        """Check that run finished and a new DLG has been computed.
+        Also check the final energy is the expected value."""
+        # Check that run finished and a new DLG has been computed.
+        if (self.expected_outcome == True ):
+            print "Testing that DLG exists and AutoDock successfully completed."
+        else:
+            print "Testing that DLG exists and AutoDock did not complete."
+        self.assertEqual( self.computed, self.expected_outcome )
+        # Check the final energy is expected value.
+        #expected_unbound_energy = -1.80
+        (unbound_energy) = parse_energy_from_DLG( self.dlg_filename, ['unbound_energy'])[0]
+        print "Testing that unbound energy = %.2f kcal/mol." % (self.expected_unbound_energy,)
+        print "unbound_energy=", unbound_energy
+        self.assertEqual( round(unbound_energy,6), round(self.expected_unbound_energy,6))
+#______________________________________________________________________________
+class AutoDock4_1pgp_unbound_default_test( AutoDock4_unbound_test ):
+    """Test that autodock 4.1 works when unbound is NOT set in the DPF."""
+    dpf_stem = "1pgp_unbound_default"
+    expected_unbound_energy = -1.80
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+class AutoDock4_1pgp_unbound_set0_test( AutoDock4_unbound_test ):
+    """Test that autodock 4.1 works when unbound is set to 0 in the DPF."""
+    dpf_stem = "1pgp_unbound_set0"
+    expected_unbound_energy = 0.
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+class AutoDock4_1pgp_unbound_set10_test( AutoDock4_unbound_test ):
+    """Test that autodock 4.1 works when unbound is set to 10 in the DPF."""
+    dpf_stem = "1pgp_unbound_set10"
+    expected_unbound_energy = 10.
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -234,7 +274,7 @@ if __name__ == '__main__':
     #  or conveniently comment out tests we're not interested in.
     #  NOTE:  Remember to add new TestCase class names to the list "test_cases"
     test_cases = [
-        ## simple tests:
+        # simple tests:
         'AutoDock4_1pgp_no_elecmap_test',
         'AutoDock4_1pgp_no_desolvmap_test',
         'AutoDock4_1pgp_no_elec_desolv_maps_test',
@@ -242,8 +282,11 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_two_mapsets_test',
         # tests which check for specific value
         'AutoDock4_1pgp_test',
-        'AutoDock4_1pgp_unbound_ignored_test',
         'AutoDock4_1pgp_no_parameter_file_test',
+        # tests for unbound values 
+        'AutoDock4_1pgp_unbound_default_test',
+        'AutoDock4_1pgp_unbound_set0_test',
+        'AutoDock4_1pgp_unbound_set10_test',
     ]
     unittest.main( argv=( [__name__ ,] + test_cases ) )
     #  The call "unittest.main()" automatically runs all the TestCase classes in
