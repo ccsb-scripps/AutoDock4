@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.17 2008/07/01 01:29:14 garrett Exp $
+# $Id: test_autodock4.py,v 1.18 2008/09/26 19:07:15 rhuey Exp $
 #
 
 """
@@ -91,6 +91,12 @@ def parse_energy_from_DLG( dlg_filename ):
     docked = parser.clist[0]  #dictionary of results
     intermol_energy = docked['intermol_energy']  #-6.17
     internal_energy = docked['total_internal']  # -1.58
+    #print "docked[binding_energy]=", docked['binding_energy']
+    #print "docked[electrostatic_energy]=", docked['electrostatic_energy']
+    #print "docked[intermol_energy]=", docked['intermol_energy']
+    #print "docked[total_internal]=", docked['total_internal']
+    #unbound_energy = docked['unbound_energy']
+    #print "unbound_energy=", unbound_energy
     return ( intermol_energy, internal_energy )
 
 #______________________________________________________________________________
@@ -122,6 +128,27 @@ class AutoDock_base_test( unittest.TestCase ):
         self.dlg_filename = "test_" + self.dpf_stem + ".dlg"
         self.computed = run_AutoDock( self.dpf_stem + ".dpf", self.dlg_filename )
 
+    #def test_dlg_exists( self ):
+    #    """Check that run finished and a new DLG has been computed."""
+    #    # Check that run finished and a new DLG has been computed.
+    #    if (self.expected_outcome == True ):
+    #        print "Testing that DLG exists and AutoDock successfully completed."
+    #    else:
+    #        print "Testing that DLG exists and AutoDock did not complete."
+    #    self.assertEqual( self.computed, self.expected_outcome )
+
+
+#______________________________________________________________________________
+
+class AutoDock_simple_test( unittest.TestCase ):
+    """Base Class for AutoDock testing."""
+    dpf_stem = "BaseClass"
+    computed = False
+    def setUp( self ):
+        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
+        self.dlg_filename = "test_" + self.dpf_stem + ".dlg"
+        self.computed = run_AutoDock( self.dpf_stem + ".dpf", self.dlg_filename )
+
     def test_dlg_exists( self ):
         """Check that run finished and a new DLG has been computed."""
         # Check that run finished and a new DLG has been computed.
@@ -130,7 +157,37 @@ class AutoDock_base_test( unittest.TestCase ):
         else:
             print "Testing that DLG exists and AutoDock did not complete."
         self.assertEqual( self.computed, self.expected_outcome )
+#______________________________________________________________________________
 
+class AutoDock4_1pgp_no_elecmap_test( AutoDock_simple_test ):
+    """Test that autodock4 stops early if no "elecmap" keyword is specified."""
+    dpf_stem = "1pgp_no_elecmap"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_no_desolvmap_test( AutoDock_simple_test ):
+    """Test that autodock4 stops early if no "desolvmap" keyword is specified."""
+    dpf_stem = "1pgp_no_desolvmap"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_no_elec_desolv_maps_test( AutoDock_simple_test ):
+    """Test that autodock4 stops early if no elecmap and no desolvmap 
+    keywords are specified."""
+    dpf_stem = "1pgp_no_elec_desolv_maps"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_two_ligands_test( AutoDock_simple_test ):
+    """Test that autodock4 can run dpf specifying two ligands."""
+    dpf_stem = "1pgp_two_ligands"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_two_mapsets_test( AutoDock_simple_test ):
+    """Test that autodock4 can run dpf specifying two sets of maps and one ligand."""
+    dpf_stem = "1pgp_two_mapsets"
+    expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock_test( AutoDock_base_test ):
@@ -172,50 +229,21 @@ class AutoDock4_1pgp_unbound_ignored_test( AutoDock_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
-class AutoDock4_1pgp_no_elecmap_test( AutoDock_base_test ):
-    """Test that autodock4 stops early if no "elecmap" keyword is specified."""
-    dpf_stem = "1pgp_no_elecmap"
-    expected_outcome = False # True means Successful Completion!
-#______________________________________________________________________________
-
-class AutoDock4_1pgp_no_desolvmap_test( AutoDock_base_test ):
-    """Test that autodock4 stops early if no "desolvmap" keyword is specified."""
-    dpf_stem = "1pgp_no_desolvmap"
-    expected_outcome = False # True means Successful Completion!
-#______________________________________________________________________________
-
-class AutoDock4_1pgp_no_elec_desolv_maps_test( AutoDock_base_test ):
-    """Test that autodock4 stops early if no elecmap and no desolvmap 
-    keywords are specified."""
-    dpf_stem = "1pgp_no_elec_desolv_maps"
-    expected_outcome = False # True means Successful Completion!
-#______________________________________________________________________________
-
-class AutoDock4_1pgp_two_ligands_test( AutoDock_base_test ):
-    """Test that autodock4 can run dpf specifying two ligands."""
-    dpf_stem = "1pgp_two_ligands"
-    expected_outcome = True # True means Successful Completion!
-#______________________________________________________________________________
-
-class AutoDock4_1pgp_two_mapsets_test( AutoDock_base_test ):
-    """Test that autodock4 can run dpf specifying two sets of maps and one ligand."""
-    dpf_stem = "1pgp_two_mapsets"
-    expected_outcome = True # True means Successful Completion!
-#______________________________________________________________________________
-
 if __name__ == '__main__':
     #  This syntax lets us run all the tests,
     #  or conveniently comment out tests we're not interested in.
     #  NOTE:  Remember to add new TestCase class names to the list "test_cases"
     test_cases = [
-        'AutoDock4_1pgp_test',
-        'AutoDock4_1pgp_unbound_ignored_test',
-        'AutoDock4_1pgp_no_parameter_file_test',
+        ## simple tests:
         'AutoDock4_1pgp_no_elecmap_test',
         'AutoDock4_1pgp_no_desolvmap_test',
         'AutoDock4_1pgp_no_elec_desolv_maps_test',
         'AutoDock4_1pgp_two_ligands_test',
         'AutoDock4_1pgp_two_mapsets_test',
+        # tests which check for specific value
+        'AutoDock4_1pgp_test',
+        'AutoDock4_1pgp_unbound_ignored_test',
+        'AutoDock4_1pgp_no_parameter_file_test',
     ]
     unittest.main( argv=( [__name__ ,] + test_cases ) )
     #  The call "unittest.main()" automatically runs all the TestCase classes in
