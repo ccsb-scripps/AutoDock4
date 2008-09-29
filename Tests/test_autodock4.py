@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.19 2008/09/26 23:50:46 rhuey Exp $
+# $Id: test_autodock4.py,v 1.20 2008/09/29 21:00:44 rhuey Exp $
 #
 
 """
@@ -165,6 +165,13 @@ class AutoDock_simple_test( unittest.TestCase ):
         self.assertEqual( self.computed, self.expected_outcome )
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_ligand_types_map_mismatch( AutoDock_simple_test ):
+    """Test that autodock4 stops early if number of maps do not equal number
+    of ligand types"""
+    dpf_stem = "1pgp_ligand_types_map_mismatch"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_no_elecmap_test( AutoDock_simple_test ):
     """Test that autodock4 stops early if no "elecmap" keyword is specified."""
     dpf_stem = "1pgp_no_elecmap"
@@ -275,6 +282,7 @@ if __name__ == '__main__':
     #  NOTE:  Remember to add new TestCase class names to the list "test_cases"
     test_cases = [
         # simple tests:
+        'AutoDock4_1pgp_ligand_types_map_mismatch',
         'AutoDock4_1pgp_no_elecmap_test',
         'AutoDock4_1pgp_no_desolvmap_test',
         'AutoDock4_1pgp_no_elec_desolv_maps_test',
