@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.77 2008/09/26 23:50:45 rhuey Exp $
+ $Id: main.cc,v 1.78 2008/09/29 21:02:12 rhuey Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.77 2008/09/26 23:50:45 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.78 2008/09/29 21:02:12 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -691,7 +691,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.77 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.78 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1127,6 +1127,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         // TO DO: add outlev
         readfield( info, line, jobStart, tms_jobStart );
+        num_maps = 0;
 
         /*
         // Dynamically allocate memory for the maps
@@ -1237,6 +1238,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         //
         // Initialisations that must be done before reading in a new ligand...
         //
+        if (num_maps != num_atom_types+2) {
+            pr_2x( logFile, stderr, error_message );
+            prStr(error_message, "\n\nMISSING MAP ERROR:\nnumber of maps %d does not match number expected for %d ligand types. \nUnable to continue.\n", num_maps, num_atom_types);
+            stop(error_message);
+            exit(-1);
+        }
+
         nconf = 0;
         for (k = 0; k < MAX_RUNS; k++) {
             for (i = 0; i  < MAX_TORS;  i++ ) {
