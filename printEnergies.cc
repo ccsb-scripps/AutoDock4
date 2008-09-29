@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.14 2007/04/27 06:01:50 garrett Exp $
+ $Id: printEnergies.cc,v 1.15 2008/09/29 21:05:59 rhuey Exp $
 
  AutoDock 
 
@@ -146,7 +146,9 @@ void printEnergies( EnergyBreakdown *eb,
     pr( logFile, "%s(2) Final Total Internal Energy     = ", prefixString); print1000(logFile, eb->e_intra); pr( logFile, " kcal/mol\n");
     if (B_have_flexible_residues) {
         pr( logFile, "%s    Internal Energy Ligand          = ", prefixString); print1000(logFile, eb->e_intra_lig ); pr( logFile, " kcal/mol\n");
-        pr( logFile, "%s    Internal Energy Receptor        = ", prefixString); print1000(logFile, eb->e_intra_rec ); pr( logFile, " kcal/mol\n");
+        //pr( logFile, "%s    Internal Energy Receptor        = ", prefixString); print1000(logFile, eb->e_intra_rec ); pr( logFile, " kcal/mol\n");
+        pr( logFile, "%s    Internal Moving-Fixed Receptor  = ", prefixString); print1000(logFile, eb->e_intra_moving_fixed_rec ); pr( logFile, " kcal/mol\n");
+        pr( logFile, "%s    Internal Moving-Moving Receptor = ", prefixString); print1000(logFile, eb->e_intra_moving_moving_rec ); pr( logFile, " kcal/mol\n");
     }
 
     pr( logFile, "%s(3) Torsional Free Energy           = ", prefixString); print1000(logFile, eb->e_torsFreeEnergy); pr( logFile, " kcal/mol\n");
