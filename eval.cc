@@ -1,8 +1,8 @@
 /*
 
- $Id: eval.cc,v 1.24 2008/10/16 00:11:15 rhuey Exp $
+ $Id: eval.cc,v 1.25 2008/10/16 16:48:56 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Scott Halliday, Rik Belew, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
