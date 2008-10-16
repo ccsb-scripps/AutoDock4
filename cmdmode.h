@@ -1,8 +1,8 @@
 /*
 
- $Id: cmdmode.h,v 1.14 2008/10/16 00:11:14 rhuey Exp $
+ $Id: cmdmode.h,v 1.15 2008/10/16 16:47:13 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.

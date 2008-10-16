@@ -1,8 +1,8 @@
 /*
 
- $Id: call_glss.cc,v 1.32 2008/10/16 00:11:14 rhuey Exp $
+ $Id: call_glss.cc,v 1.33 2008/10/16 16:47:13 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
