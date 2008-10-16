@@ -1,8 +1,8 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.6 2008/10/16 00:11:14 rhuey Exp $
+ $Id: calculateEnergies.cc,v 1.7 2008/10/16 16:46:21 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
