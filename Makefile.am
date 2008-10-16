@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.16 2008/10/16 00:11:14 rhuey Exp $
+# $Id: Makefile.am,v 1.17 2008/10/16 16:43:00 rhuey Exp $
 # 
-# AutoDock 
+# AutoDock  
 # 
 # Copyright (C) 1989-2007,  Garrett M. Morris,   TSRI
 # All Rights Reserved.
