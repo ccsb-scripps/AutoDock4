@@ -1,8 +1,8 @@
 /*
 
- $Id: eintcal.cc,v 1.18 2008/10/16 00:11:14 rhuey Exp $
+ $Id: eintcal.cc,v 1.19 2008/10/16 16:48:25 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
