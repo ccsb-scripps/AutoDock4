@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.20 2008/09/29 21:00:44 rhuey Exp $
+# $Id: test_autodock4.py,v 1.21 2008/10/16 17:24:39 rhuey Exp $
 #
 
 """
@@ -191,6 +191,13 @@ class AutoDock4_1pgp_no_elec_desolv_maps_test( AutoDock_simple_test ):
     expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_too_many_ligand_types_test( AutoDock_simple_test ):
+    """Test that autodock4 stops early if too many ligand types 
+    are specified. (current limit is 14)"""
+    dpf_stem = "1pgp_too_many_ligand_types"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_two_ligands_test( AutoDock_simple_test ):
     """Test that autodock4 can run dpf specifying two ligands."""
     dpf_stem = "1pgp_two_ligands"
@@ -286,6 +293,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_no_elecmap_test',
         'AutoDock4_1pgp_no_desolvmap_test',
         'AutoDock4_1pgp_no_elec_desolv_maps_test',
+        'AutoDock4_1pgp_too_many_ligand_types_test',
         'AutoDock4_1pgp_two_ligands_test',
         'AutoDock4_1pgp_two_mapsets_test',
         # tests which check for specific value
