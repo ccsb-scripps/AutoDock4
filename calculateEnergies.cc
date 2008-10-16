@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.5 2008/09/26 23:50:45 rhuey Exp $
+ $Id: calculateEnergies.cc,v 1.6 2008/10/16 00:11:14 rhuey Exp $
 
  AutoDock 
 
@@ -51,7 +51,7 @@ extern Unbound_Model ad4_unbound_model;
 //      tcoord, charge, abs_charge, type, map, ptr_info, B_outside, 
 //      ignore_inter, elec, emap, p_elec_total, p_emap_total,
 //      nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, 
-//      B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
+//      B_include_1_4_interactions, scale_1_4, qsp_abs_charge,  B_use_non_bond_cutoff );
 
 EnergyBreakdown calculateEnergies(
     int                  natom,                     // input  number of atoms
@@ -65,7 +65,7 @@ EnergyBreakdown calculateEnergies(
     CONST_FLOAT          charge[MAX_ATOMS],         // input  partial atomic charges
     CONST_FLOAT          abs_charge[MAX_ATOMS],     // input  absolute magnitude of partial charges
     CONST_INT            type[MAX_ATOMS],           // input  atom type of each atom
-    CONST_FLOAT          map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    // input  intermolecular interaction energies
+    #include "map_declare.h"
     GridMapSetInfo       *info,                     // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
     int                  B_outside,                 // input  boolean whether some atoms are outside grid box
     int                  ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
@@ -82,7 +82,6 @@ EnergyBreakdown calculateEnergies(
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
-    const ParameterEntry parameterArray[MAX_MAPS],  // input  nonbond and desolvation parameters
     const Boole          B_use_non_bond_cutoff     // input  boolean whether to use a nonbond distance cutoff
 
 )
@@ -112,7 +111,7 @@ EnergyBreakdown calculateEnergies(
     if (ntor > 0) {
         // computing all the nonbond interaction energies fills nb_group_energy[3] array
         // with intramolecular energy of ligand, intermolecular energy, and intramolecular energy of receptor
-        (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues ) ;
+        (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge,  B_use_non_bond_cutoff, B_have_flexible_residues ) ;
         
         eb.e_intra_moving_moving_lig = nb_group_energy[INTRA_LIGAND];
         eb.e_inter_moving_moving = nb_group_energy[INTER];
@@ -180,7 +179,7 @@ EnergyBreakdown calculateBindingEnergies(
     CONST_FLOAT          charge[MAX_ATOMS],         // input  partial atomic charges
     CONST_FLOAT          abs_charge[MAX_ATOMS],     // input  absolute magnitude of partial charges
     CONST_INT            type[MAX_ATOMS],           // input  atom type of each atom
-    CONST_FLOAT          map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    // input  intermolecular interaction energies
+    #include "map_declare.h"
     GridMapSetInfo       *info,                     // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
     int                  B_outside,                 // input  boolean whether some atoms are outside grid box
     int                  ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
@@ -197,7 +196,6 @@ EnergyBreakdown calculateBindingEnergies(
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
-    const ParameterEntry parameterArray[MAX_MAPS],  // input  nonbond and desolvation parameters
     const Boole          B_use_non_bond_cutoff     // input  boolean whether to use a nonbond distance cutoff
 
 )
@@ -227,7 +225,7 @@ EnergyBreakdown calculateBindingEnergies(
     if (ntor > 0) {
         // computing all the nonbond interaction energies fills nb_group_energy[3] array
         // with intramolecular energy of ligand, intermolecular energy, and intramolecular energy of receptor
-        (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues ) ;
+        (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues ) ;
         
         eb.e_intra_moving_moving_lig = nb_group_energy[INTRA_LIGAND];
         eb.e_inter_moving_moving = nb_group_energy[INTER];

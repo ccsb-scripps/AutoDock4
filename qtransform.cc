@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.cc,v 1.8 2007/04/27 06:01:50 garrett Exp $
+ $Id: qtransform.cc,v 1.9 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -133,7 +133,7 @@ void reorient( FILE *logFile,
                Real crdpdb[MAX_ATOMS][SPACE],  // original PDB coordinates from input
                Real charge[MAX_ATOMS],
                int type[MAX_ATOMS],
-               ParameterEntry  parameterArray[MAX_MAPS],
+               ParameterEntry  parameterArray[MAX_ATOM_TYPES],
                Quat q_reorient,
                Coord origin,
                const int ntor,

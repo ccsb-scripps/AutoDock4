@@ -1,6 +1,6 @@
 /*
 
- $Id: readGridMap.cc,v 1.4 2007/04/27 06:01:50 garrett Exp $
+ $Id: readGridMap.cc,v 1.5 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -57,7 +57,7 @@ void readmap( Boole *P_B_HaveMap,
              Clock jobStart,
              char line[LINE_LEN],
              char ExtMacromolFileName[MAX_CHARS],
-             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                #include "map_declare.h"
              Real MapCenter[SPACE],
              Real MapMax[MAX_MAPS],
              Real MapMin[MAX_MAPS],
@@ -233,7 +233,9 @@ void readmap( Boole *P_B_HaveMap,
                     }
                 } else {
                     if (fgets( mapline, LINE_LEN, mapFilePtr) != NULL) { /*new*/
-                        if (sscanf( mapline,  FDFMT,  &map[k][j][i][*P_imap] ) != 1) continue;
+                        double v;
+                        if (sscanf( mapline,  "%lf",  &v ) != 1) continue;
+                        map[k][j][i][*P_imap]  = v;
                         nv++;
                     }
                 }

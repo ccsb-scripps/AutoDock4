@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.18 2007/04/27 06:01:48 garrett Exp $
+ $Id: eval.h,v 1.19 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -74,7 +74,7 @@ class Eval
       int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
       Boole         B_include_1_4_interactions; // gmm 2005-01-8, for scaling 1-4 nonbonds
       Real scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
-      ParameterEntry *parameterArray;
+      //ParameterEntry *parameterArray;
       Real  unbound_internal_FE;
       Boole B_compute_intermol_energy; // use for computing unbound state
       Boole B_use_non_bond_cutoff;  // set this to FALSE if we are computing unbound extended conformations
@@ -106,7 +106,7 @@ class Eval
                   int            init_ignore_inter[MAX_ATOMS],
                   Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
                   Real  init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
-                  ParameterEntry init_parameterArray[MAX_MAPS],
+                  //ParameterEntry init_parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
                   Real  init_unbound_internal_FE,
                   GridMapSetInfo *init_info,
                   Boole  init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
@@ -164,7 +164,7 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
                         Boole init_B_include_1_4_interactions,
                         Real init_scale_1_4,
 
-                        ParameterEntry init_parameterArray[MAX_MAPS],
+                        //ParameterEntry init_parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
 
                         Real init_unbound_internal_FE,
                         GridMapSetInfo *init_info,
@@ -212,7 +212,7 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
     B_include_1_4_interactions = init_B_include_1_4_interactions;
     scale_1_4 = init_scale_1_4;
 
-    parameterArray = init_parameterArray;
+    //parameterArray = init_parameterArray;
 
     unbound_internal_FE = init_unbound_internal_FE;
 

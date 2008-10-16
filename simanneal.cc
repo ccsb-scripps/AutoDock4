@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.22 2008/09/26 23:50:46 rhuey Exp $
+ $Id: simanneal.cc,v 1.23 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -67,7 +67,7 @@ void simanneal ( int   *Addr_nconf,
                 int   NcycMax,
                 int   irunmax,
                 Clock jobStart,
-                Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                #include "map_declare.h"
                 int   naccmax,
                 int   natom,
                 NonbondParam *nonbondlist,
@@ -136,7 +136,7 @@ void simanneal ( int   *Addr_nconf,
         const Boole         B_include_1_4_interactions,
         const Real scale_1_4,
         
-        const ParameterEntry parameterArray[MAX_MAPS],
+        const ParameterEntry parameterArray[MAX_ATOM_TYPES],
 
         const Real unbound_internal_FE,
 
@@ -278,7 +278,6 @@ void simanneal ( int   *Addr_nconf,
                      torsFreeEnergy, ligand_is_inhibitor,
                      ignore_inter,
                      B_include_1_4_interactions, scale_1_4, 
-                     parameterArray, 
                      unbound_internal_FE, info, 
                      B_use_non_bond_cutoff, B_have_flexible_residues);
 
@@ -404,7 +403,7 @@ void simanneal ( int   *Addr_nconf,
                                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
                            + (eintra = eintcal(nonbondlist, ptr_ad_energy_tables, crd, Nnb,
                                    B_calcIntElec, B_include_1_4_interactions,
-                                   scale_1_4, qsp_abs_charge, parameterArray,
+                                   scale_1_4, qsp_abs_charge, 
                                    B_use_non_bond_cutoff, B_have_flexible_residues)
                                );
 
@@ -515,7 +514,7 @@ void simanneal ( int   *Addr_nconf,
                          torsFreeEnergy, ligand_is_inhibitor,
                          ignore_inter,
                          B_include_1_4_interactions, scale_1_4, 
-                         parameterArray, unbound_internal_FE,
+                         unbound_internal_FE,
                          info, B_use_non_bond_cutoff,
                          B_have_flexible_residues);
 
@@ -627,7 +626,7 @@ void simanneal ( int   *Addr_nconf,
         if (ntor > 0) {
             eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
                B_calcIntElec, B_include_1_4_interactions,
-               scale_1_4, qsp_abs_charge, parameterArray,
+               scale_1_4, qsp_abs_charge, 
                B_use_non_bond_cutoff, B_have_flexible_residues);
         } else {
             eintra = 0.0 ;

@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.17 2007/04/27 06:01:48 garrett Exp $
+ $Id: eintcal.cc,v 1.18 2008/10/16 00:11:14 rhuey Exp $
 
  AutoDock 
 
@@ -51,7 +51,6 @@ Real eintcal( NonbondParam * const nonbondlist,
               const Boole         B_include_1_4_interactions,
               const Real scale_1_4,
               const Real qsp_abs_charge[MAX_ATOMS],
-              const ParameterEntry parameterArray[MAX_MAPS],
               const Boole B_use_non_bond_cutoff,
               const Boole B_have_flexible_residues  // if the receptor has flexibile residues, this will be set to TRUE
              )
@@ -71,7 +70,6 @@ Real eintcalPrint( NonbondParam * const nonbondlist,
                    const Boole         B_include_1_4_interactions,
                    const Real scale_1_4,
                    const Real qsp_abs_charge[MAX_ATOMS],
-                   const ParameterEntry parameterArray[MAX_MAPS],
                    const Boole B_use_non_bond_cutoff,
                    const Boole B_have_flexible_residues  // if the receptor has flexibile residues, this will be set to TRUE
                   )
@@ -220,12 +218,6 @@ Real eintcalPrint( NonbondParam * const nonbondlist,
             //| desolvation energy = sol_fn[dist] * ( rec.vol * (lig.solpar + qsolpar * |lig.charge|)
             //|                                     + lig.vol * (rec.solpar + qsolpar * |rec.charge|) );
             //|
-            //| lig.solpar = parameterArray[t1].solpar;
-            //| lig.vol    = parameterArray[t1].vol;
-            //| lig.charge = qsp_abs_charge[a1]/qsolpar;
-            //| rec.solpar = parameterArray[t2].solpar;
-            //| rec.vol    = parameterArray[t2].vol;
-            //| rec.charge = qsp_abs_charge[a2]/qsolpar;
 #ifndef NOSQRT 
             // Use square-root, slower...
 

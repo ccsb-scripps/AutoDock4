@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.h,v 1.12 2007/04/27 06:01:48 garrett Exp $
+ $Id: getInitialState.h,v 1.13 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -62,7 +62,7 @@ void getInitialState(
             EnergyTables *ptr_ad_energy_tables,
 
             Boole B_calcIntElec,
-            Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                #include "map_declare.h"
             int   natom,
             int   Nnb,
             NonbondParam *nonbondlist,
@@ -83,7 +83,6 @@ void getInitialState(
             const Boole         B_include_1_4_interactions,
             const Real scale_1_4,
 
-            const ParameterEntry parameterArray[MAX_MAPS],
 
             const Real unbound_internal_FE,
 

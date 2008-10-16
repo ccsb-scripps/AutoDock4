@@ -1,6 +1,6 @@
 /*
 
- $Id: typedefs.h,v 1.5 2007/04/27 06:01:52 garrett Exp $
+ $Id: typedefs.h,v 1.6 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -63,6 +63,9 @@
 #endif
 #define FDFMT2 FDFMT " " FDFMT
 #define FDFMT3 FDFMT " " FDFMT " " FDFMT
+
+typedef float MapType; //the grid map type can be changed independent of other 'Real's
+#   define MAPFMT "%f"
 
 
 #ifdef USE_VELOCITY_ENGINE

@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.h,v 1.4 2008/05/02 07:46:12 garrett Exp $
+ $Id: calculateEnergies.h,v 1.5 2008/10/16 00:11:14 rhuey Exp $
 
  AutoDock 
 
@@ -44,7 +44,7 @@ EnergyBreakdown calculateEnergies(
     CONST_FLOAT          charge[MAX_ATOMS],         // input  partial atomic charges
     CONST_FLOAT          abs_charge[MAX_ATOMS],     // input  absolute magnitude of partial charges
     CONST_INT            type[MAX_ATOMS],           // input  atom type of each atom
-    CONST_FLOAT          map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    // input  intermolecular interaction energies
+    #include "map_declare.h"
     GridMapSetInfo       *info,                     // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
     int                  B_outside,                 // input  boolean whether some atoms are outside grid box
     int                  ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
@@ -61,7 +61,6 @@ EnergyBreakdown calculateEnergies(
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
-    const ParameterEntry parameterArray[MAX_MAPS],  // input  nonbond and desolvation parameters
     const Boole          B_use_non_bond_cutoff      // input  boolean whether to use a nonbond distance cutoff
 
 );
@@ -84,7 +83,7 @@ EnergyBreakdown calculateBindingEnergies(
     CONST_FLOAT          charge[MAX_ATOMS],         // input  partial atomic charges
     CONST_FLOAT          abs_charge[MAX_ATOMS],     // input  absolute magnitude of partial charges
     CONST_INT            type[MAX_ATOMS],           // input  atom type of each atom
-    CONST_FLOAT          map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    // input  intermolecular interaction energies
+    #include "map_declare.h"
     GridMapSetInfo       *info,                     // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
     int                  B_outside,                 // input  boolean whether some atoms are outside grid box
     int                  ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
@@ -101,7 +100,6 @@ EnergyBreakdown calculateBindingEnergies(
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
-    const ParameterEntry parameterArray[MAX_MAPS],  // input  nonbond and desolvation parameters
     const Boole          B_use_non_bond_cutoff      // input  boolean whether to use a nonbond distance cutoff
 
 );

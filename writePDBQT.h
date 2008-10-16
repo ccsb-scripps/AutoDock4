@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.h,v 1.6 2007/04/27 06:01:52 garrett Exp $
+ $Id: writePDBQT.h,v 1.7 2008/10/16 00:11:16 rhuey Exp $
 
  AutoDock 
 
@@ -61,12 +61,12 @@ void writePDBQT(int irun,FourByteLong seed[2],
                     int   type[MAX_ATOMS],
                     int   Nnb,
                     Boole B_calcIntElec,
-                    Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                #include "map_declare.h"
                     int outlev,
                     int   ignore_inter[MAX_ATOMS],
                     const Boole         B_include_1_4_interactions,
                     const Real scale_1_4,
-                    const ParameterEntry parameterArray[MAX_MAPS],
+                    const ParameterEntry parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
                     const Real unbound_internal_FE,
                     GridMapSetInfo *info,
                     int state_type,  // 0 means unbound, 1 means docked
@@ -80,7 +80,7 @@ void print_PDBQT( FILE *logFile,
                   const char atomstuff[MAX_ATOMS][MAX_CHARS],
                   const Real crdpdb[MAX_ATOMS][SPACE],
                   const Real charge[MAX_ATOMS],
-                  const ParameterEntry parameterArray[MAX_MAPS],
+                  const ParameterEntry parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
                   const int type[MAX_ATOMS],
                   const char prefix[MAX_CHARS] );
 

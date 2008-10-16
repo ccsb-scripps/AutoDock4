@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.h,v 1.13 2007/04/27 06:01:48 garrett Exp $
+ $Id: cmdmode.h,v 1.14 2008/10/16 00:11:14 rhuey Exp $
 
  AutoDock 
 
@@ -50,7 +50,7 @@
 int   cmdmode( int natom,
              Clock jobStart,
              struct tms tms_jobStart,
-             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                #include "map_declare.h"
 
              EnergyTables *ptr_ad_energy_tables,
 
@@ -68,14 +68,12 @@ int   cmdmode( int natom,
              Real abs_charge[MAX_ATOMS],
              Real qsp_abs_charge[MAX_ATOMS],
              Boole B_calcIntElec,
-             char  atm_typ_str[ATOM_MAPS],
              Real torsFreeEnergy,
              int ligand_is_inhibitor,
              int ignore_inter[MAX_ATOMS],
              const Boole         B_include_1_4_interactions,
              const Real scale_1_4,
 
-             const ParameterEntry parameterArray[MAX_MAPS],
              const Real unbound_internal_FE,
 
              GridMapSetInfo *info,

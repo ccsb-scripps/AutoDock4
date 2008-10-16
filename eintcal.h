@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.h,v 1.13 2007/04/27 06:01:48 garrett Exp $
+ $Id: eintcal.h,v 1.14 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -40,7 +40,6 @@ Real  eintcal( NonbondParam * const nonbondlist,
                const Boole B_include_1_4_interactions,
                const Real scale_1_4,
                const Real qsp_abs_charge[MAX_ATOMS],
-               const ParameterEntry parameterArray[MAX_MAPS],
                const Boole B_use_non_bond_cutoff,
                const Boole B_have_flexible_residues  );
 

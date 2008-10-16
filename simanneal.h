@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.h,v 1.12 2007/04/27 06:01:51 garrett Exp $
+ $Id: simanneal.h,v 1.13 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -60,7 +60,7 @@ void simanneal( int   *P_nconf,
                 int   icyclemax, 
                 int   irunmax, 
                 Clock jobStart, 
-                Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+                #include "map_declare.h"
                 int   naccmax, 
                 int   natom, 
                 NonbondParam *nonbondlist, 
@@ -124,7 +124,7 @@ void simanneal( int   *P_nconf,
                 int   ignore_inter[MAX_ATOMS],
                 const Boole         B_include_1_4_interactions,
                 const Real scale_1_4,
-                const ParameterEntry parameterArray[MAX_MAPS],
+                const ParameterEntry parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
                 const Real unbound_internal_FE,
 
                 GridMapSetInfo *info,

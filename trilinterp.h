@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.h,v 1.9 2007/04/27 06:01:51 garrett Exp $
+ $Id: trilinterp.h,v 1.10 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -50,7 +50,7 @@ Real  trilinterp( CONST_INT first_atom,
  CONST_FLOAT charge[MAX_ATOMS], // partial atomic charges
  CONST_FLOAT abs_charge[MAX_ATOMS], 
  CONST_INT   type[MAX_ATOMS], // atom type of each atom
- CONST_FLOAT map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    //  intermolecular interaction energies
+ #include "map_declare.h"
  GridMapSetInfo *info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
  int some_atoms_outside_grid, // boolean
  int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom

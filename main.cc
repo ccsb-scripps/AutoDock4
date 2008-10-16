@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.79 2008/10/06 16:24:49 rhuey Exp $
+ $Id: main.cc,v 1.80 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.79 2008/10/06 16:24:49 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.80 2008/10/16 00:11:15 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -97,7 +97,7 @@ int main (int argc, char * const argv[], char * const envp[])
 **            files.                                                          **
 **   Returns: Autodock Log File, includes docked conformation clusters (PDBQT)**
 **   Globals: X, Y, Z, SPACE, MAX_GRID_PTS, NEINT, MAX_ATOMS,                 **
-**            MAX_MAPS, ATOM_MAPS, A_DIVISOR, LINE_LEN,TRUE,FALSE             **
+**            MAX_MAPS, A_DIVISOR, LINE_LEN,TRUE,FALSE                        **
 **            programname, command_mode,                                      **
 **            command_in_fp, command_out_fp, parFile, logFile.                **
 **____________________________________________________________________________**
@@ -122,18 +122,13 @@ int main (int argc, char * const argv[], char * const envp[])
 *******************************************************************************/
 
 {
-//   ATOM_MAPS
-//
-char            atm_typ_str[ATOM_MAPS]; //  "atm_typ_str" (in AD3) used to serve a similar role to "atom_type_name" (in AD4).
 
 //   MAX_MAPS
 //
-char            *ligand_atom_type_ptrs[MAX_MAPS]; /* array of ptrs used to parse input line of atom type names */
-ParameterEntry  parameterArray[MAX_MAPS];
 
 //   MAX_GRID_PTS & MAX_MAPS
 //
-static Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
+static MapType map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
 // double *map;  // Use this with malloc...
 
 GridMapSetInfo *info;  // this information is from the AVS field file
@@ -219,6 +214,10 @@ char timeSeedIsSet[2];
 char selminpar = 'm';
 char S_contype[8];
 
+//   MAX_ATOM_TYPES
+//
+char            *ligand_atom_type_ptrs[MAX_ATOM_TYPES]; /* array of ptrs used to parse input line of atom type names */
+ParameterEntry parameterArray[MAX_ATOM_TYPES]; // input  nonbond and desolvation parameters
 static ParameterEntry * foundParameter;
 
 Real cA;
@@ -691,7 +690,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.79 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.80 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -954,8 +953,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         //  to the beginning of each "atom type word" (not atom type characters);
         //  In AutoDock 4, an atom type can be either 1 or 2 characters long.
         //
-        //  Note: "atm_typ_str" (in AD3) served a similar role to "atom_type_name" (now used in AD4).
         num_atom_types = parsetypes(line, ligand_atom_type_ptrs, MAX_ATOM_TYPES);
+        if (num_atom_types<0){
+            prStr( error_message, "%s:  ERROR! Too many atom types have been found: maximum is %d; we cannot continue !\n\n", programname, MAX_ATOM_TYPES );
+            pr_2x( logFile, stderr, error_message );
+            exit(-1);
+        }
+
+
 
         B_found_ligand_types = TRUE;
 
@@ -1238,7 +1243,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         //
         // Initialisations that must be done before reading in a new ligand...
         //
-        if (num_maps != num_atom_types + 2) { // 2 are dsolv map and elec map
+        if (num_maps != num_atom_types + NUM_NON_VDW_MAPS) { //  dsolv map and elec map
             pr_2x( logFile, stderr, error_message );
             prStr(error_message, "\n\nMISSING MAP ERROR:\nnumber of maps %d does not match number expected for %d ligand types. \nUnable to continue.\n", num_maps, num_atom_types);
             stop(error_message);
@@ -1445,7 +1450,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             US_TorE, US_torProfile,
                             vt, tlist,
                             crdpdb, crdreo, sInit, ligand, ignore_inter, B_include_1_4_interactions, scale_1_4,
-                            parameterArray, unbound_internal_FE, info,
+                            unbound_internal_FE, info,
                             B_use_non_bond_cutoff, B_have_flexible_residues);
 
             evaluate.compute_intermol_energy(TRUE);
@@ -2986,7 +2991,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, 
-                            parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                            unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                            //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
             evaluate.compute_intermol_energy(TRUE);
 
@@ -3120,7 +3126,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                            ignore_inter,
                            B_include_1_4_interactions, scale_1_4, 
-                           parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                           unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                           //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
             evaluate.compute_intermol_energy(TRUE);
 
@@ -3230,7 +3237,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                           B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                           ignore_inter,
                           B_include_1_4_interactions, scale_1_4, 
-                          parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                          unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                          //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
             evaluate.compute_intermol_energy(TRUE);
 
@@ -3463,7 +3471,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                       torsFreeEnergy, B_write_all_clusmem, ligand_is_inhibitor,
                       outlev,
                       ignore_inter, B_include_1_4_interactions, scale_1_4, 
-                      parameterArray, unbound_internal_FE,
+                      unbound_internal_FE,
                       info, B_use_non_bond_cutoff, B_have_flexible_residues,
                       B_rms_atoms_ligand_only);
 
@@ -3519,7 +3527,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             OutputEveryNTests, NumLocalTests, trnStep0, torStep0,
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, 
-                            parameterArray, unbound_internal_FE,
+                            unbound_internal_FE,
                             info, B_use_non_bond_cutoff, B_have_flexible_residues );
 
         (void) fflush(logFile);
@@ -3628,7 +3636,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, 
-                            parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                            unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                            //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
             //
             // Turn off computing the intermolecular energy, we will only consider the intramolecular energy
             // to determine the unbound state of the flexible molecule:
@@ -3686,7 +3695,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             //// B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             //// ignore_inter,
                             //// B_include_1_4_interactions, scale_1_4, 
-                            //// parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                            //// unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
             //
             // --- Start Local Search ---
             //// pr( logFile, "\nPerforming local search using standard AutoDock scoring function\n" );
@@ -3734,7 +3743,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, 
-                            parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                            unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                            //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
             // end of Step 3 // }
 
             // Step 4 // {
@@ -3746,7 +3756,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             cnv_state_to_coords( sUnbound_ext, vt, tlist, sUnbound_ext.ntor, crdpdb, crd, natom );
             //
             // Calculate the unbound internal energy using the standard AutoDock energy function
-            (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
+            (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues);
             //
             // eintcal() and eintcalPrint() set the values of the hideously-global nb_group_energy[]
             unbound_ext_internal_FE = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR];
@@ -3821,7 +3831,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 cnv_state_to_coords( sUnbound_ad, vt, tlist, sUnbound_ad.ntor, crdpdb, crd, natom );
                 //
                 // Calculate the unbound internal energy using the standard AutoDock energy function
-                (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
+                (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues);
                 //
                 // eintcal() and eintcalPrint() set the values of the hideously-global nb_group_energy[]
                 unbound_ad_internal_FE = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR];
@@ -3996,7 +4006,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         // Calculate the internal energy
         if (ntor > 0) {
-            (void) eintcalPrint(nonbondlist, ad_energy_tables, crdpdb, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
+            (void) eintcalPrint(nonbondlist, ad_energy_tables, crdpdb, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues);
         }
 
         // calculate the energy breakdown for the input coordinates, "crdpdb"
@@ -4004,7 +4014,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                 crdpdb, charge, abs_charge, type, map, info, outside, 
                                 ignore_inter, elec, emap, &elec_total, &emap_total,
                                 nonbondlist, ad_energy_tables, Nnb, B_calcIntElec,
-                                B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff);
+                                B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff);
 
         pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
         pr(logFile,     "\t\t==============================\n\n");
@@ -4197,11 +4207,11 @@ if (command_mode) {
                       map, ad_energy_tables, WallEnergy, vt, tlist, ntor,
                       Nnb, nonbondlist, atomstuff, crdpdb,
                       hostnm, type, charge, abs_charge, qsp_abs_charge, B_calcIntElec,
-                      atm_typ_str, torsFreeEnergy,
+                      torsFreeEnergy,
                       ligand_is_inhibitor, 
                       ignore_inter,
                       B_include_1_4_interactions, scale_1_4, 
-                      parameterArray, unbound_internal_FE,
+                      unbound_internal_FE,
                       info, B_have_flexible_residues, B_use_non_bond_cutoff );
     exit( status );  /* "command_mode" exits here... */
 }

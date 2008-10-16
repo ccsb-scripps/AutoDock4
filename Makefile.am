@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.15 2008/07/01 01:26:51 garrett Exp $
+# $Id: Makefile.am,v 1.16 2008/10/16 00:11:14 rhuey Exp $
 # 
 # AutoDock 
 # 
@@ -125,7 +125,6 @@ libad_a_SOURCES = \
     stop.cc \
     strindex.cc \
     success.cc \
-    summarizegrids.cc \
     support.cc \
     swap.cc \
     timesys.cc \
@@ -233,7 +232,6 @@ libad_a_SOURCES = \
 		strindex.h \
 		structs.h \
 		success.h \
-		summarizegrids.h \
 		support.h \
 		swap.h \
 		timesys.h \

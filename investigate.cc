@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.16 2008/09/26 23:50:45 rhuey Exp $
+ $Id: investigate.cc,v 1.17 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -59,7 +59,7 @@ void investigate( int   Nnb,
                     EnergyTables *ptr_ad_energy_tables,
 
                     int   maxTests,
-                    Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                #include "map_declare.h"
                     int   natom,
                     NonbondParam *nonbondlist,
                     int   ntor,
@@ -86,7 +86,6 @@ void investigate( int   Nnb,
                     const Boole         B_include_1_4_interactions,
                     const Real scale_1_4,
 
-                    const ParameterEntry parameterArray[MAX_MAPS],
 
                     const Real unbound_internal_FE,
                     GridMapSetInfo *info,
@@ -215,7 +214,7 @@ void investigate( int   Nnb,
                 NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
                  + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
                      B_calcIntElec, B_include_1_4_interactions,
-                     scale_1_4, qsp_abs_charge, parameterArray,
+                     scale_1_4, qsp_abs_charge, 
                      B_use_non_bond_cutoff, B_have_flexible_residues);
             if (B_isGaussTorCon) {
                 for (Itor = 0; Itor < ntor; Itor++) {

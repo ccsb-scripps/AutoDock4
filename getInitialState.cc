@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.21 2008/09/26 23:50:45 rhuey Exp $
+ $Id: getInitialState.cc,v 1.22 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -70,7 +70,7 @@ void getInitialState(
             EnergyTables *ptr_ad_energy_tables,
 
             Boole B_calcIntElec,
-            Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                #include "map_declare.h"
             int   natom,
             int   Nnb,
             NonbondParam *nonbondlist,
@@ -91,7 +91,6 @@ void getInitialState(
             const Boole         B_include_1_4_interactions,
             const Real scale_1_4,
 
-            const ParameterEntry parameterArray[MAX_MAPS],
 
             const Real unbound_internal_FE,
 
@@ -185,7 +184,7 @@ void getInitialState(
                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
             e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
                           B_calcIntElec, B_include_1_4_interactions,
-                          scale_1_4, qsp_abs_charge, parameterArray,
+                          scale_1_4, qsp_abs_charge,
                           B_use_non_bond_cutoff, B_have_flexible_residues);
             e0total = e0inter + e0intra;
 
@@ -231,7 +230,7 @@ void getInitialState(
          crd, charge, abs_charge, type, map, info, SOME_ATOMS_OUTSIDE_GRID, 
          ignore_inter, elec, emap, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
          nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
+         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff );
 
     copyState( sMinm, *sInit );
     copyState( sLast, *sInit );

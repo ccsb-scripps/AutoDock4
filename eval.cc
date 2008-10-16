@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.23 2008/09/26 23:50:45 rhuey Exp $
+ $Id: eval.cc,v 1.24 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -211,7 +211,7 @@ double Eval::eval(int term)
 #endif /* DEBUG */
     energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
                  B_calcIntElec, B_include_1_4_interactions, 
-                 scale_1_4, qsp_abs_charge, parameterArray,
+                 scale_1_4, qsp_abs_charge,
                  B_use_non_bond_cutoff, B_have_flexible_residues);
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after eintcal, energy= %.5lf\n", term, energy);

@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.28 2008/05/02 07:54:31 garrett Exp $
+ $Id: analysis.cc,v 1.29 2008/10/16 00:11:14 rhuey Exp $
 
  AutoDock 
 
@@ -89,8 +89,6 @@ void analysis( int   Nnb,
 			   int   ignore_inter[MAX_ATOMS],
                const Boole   B_include_1_4_interactions,
                const Real scale_1_4,
-
-               const ParameterEntry parameterArray[MAX_MAPS],
                const Real unbound_internal_FE,
 
                GridMapSetInfo *info,
@@ -270,7 +268,7 @@ void analysis( int   Nnb,
                  crd, charge, abs_charge, type, map, info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID,
                  ignore_inter, elec, emap, &elec_total, &emap_total,
                  nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-                 B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
+                 B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff );
      
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
 
@@ -327,7 +325,7 @@ void analysis( int   Nnb,
             // End of outputting coordinates of this "MODEL"...
 #ifdef EINTCALPRINT
             // Print detailed breakdown of internal energies of all non-bonds
-            (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
+            (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues);
 #endif
             flushLog;
         } /*k*/

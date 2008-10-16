@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.h,v 1.12 2007/04/27 06:01:49 garrett Exp $
+ $Id: investigate.h,v 1.13 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -56,7 +56,7 @@ void investigate(
                 EnergyTables *ptr_ad_energy_tables,
 
                 int   maxTests,
-                Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                #include "map_declare.h"
                 int   natom,
                 NonbondParam *nonbondlist,
                 int   ntor,
@@ -83,7 +83,6 @@ void investigate(
                 const Boole         B_include_1_4_interactions,
                 const Real scale_1_4,
                 
-                const ParameterEntry parameterArray[MAX_MAPS],
 
                 const Real unbound_internal_FE,
                 GridMapSetInfo *info,

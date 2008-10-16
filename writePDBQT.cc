@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.16 2008/05/02 07:48:01 garrett Exp $
+ $Id: writePDBQT.cc,v 1.17 2008/10/16 00:11:16 rhuey Exp $
 
  AutoDock 
 
@@ -73,12 +73,12 @@ writePDBQT(int irun, FourByteLong seed[2],
 		 int type[MAX_ATOMS],  // aka 'map_index' in 'ParameterEntry' structures
 		 int Nnb,
 		 Boole B_calcIntElec,
-         Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+         #include "map_declare.h"
 		 int outlev,
 		 int ignore_inter[MAX_ATOMS],
 		 const Boole B_include_1_4_interactions,
 		 const Real scale_1_4,
-		 const ParameterEntry parameterArray[MAX_MAPS],
+         const ParameterEntry parameterArray[MAX_ATOM_TYPES],
 		 const Real unbound_internal_FE,
 
          GridMapSetInfo *info,
@@ -158,7 +158,7 @@ writePDBQT(int irun, FourByteLong seed[2],
          crd, charge, abs_charge, type, map, info, B_outside, 
          ignore_inter, elec, emap, &elec_total, &emap_total,
          nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
+         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff );
 
     // Set the total intramolecular energy (sum of intramolecular energies of ligand and of protein)
     if (ntor > 0) {
@@ -318,7 +318,7 @@ void print_PDBQT( FILE *logFile,
                   const char atomstuff[MAX_ATOMS][MAX_CHARS],
                   const Real crdpdb[MAX_ATOMS][SPACE],
                   const Real charge[MAX_ATOMS],
-                  const ParameterEntry parameterArray[MAX_MAPS],
+                  const ParameterEntry parameterArray[MAX_ATOM_TYPES],
                   const int type[MAX_ATOMS],
                   const char prefix[MAX_CHARS] )
 { // Print out the coordinates

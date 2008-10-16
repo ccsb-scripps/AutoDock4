@@ -1,6 +1,6 @@
 /*
 
- $Id: parsetypes.cc,v 1.2 2007/04/27 06:01:50 garrett Exp $
+ $Id: parsetypes.cc,v 1.3 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -42,7 +42,7 @@ int parsetypes(char * line, char *words[], int maxwords)
 /*      Date: 02/01/95 (1-feb-1995)                                           */
 /*----------------------------------------------------------------------------*/
 /*    Inputs: line, array of pointers, cut-off number of words                */
-/*   Returns: integer, number of types found.                                 */
+/*   Returns: integer, number of types found or -1 if too many.               */
 /*   Globals: none.                                                           */
 /*----------------------------------------------------------------------------*/
 /* Modification Record                                                        */
@@ -54,46 +54,40 @@ int parsetypes(char * line, char *words[], int maxwords)
     int num_types = 0;
     /*flag for first word which is always a keyword*/
     int found_keyword = 0;
-    int index = 0;
 
     while(1) {
         /*skip spaces*/
         while(isspace(*char_ptr)){
             char_ptr++;
-            index++;
-        };
+        }
         /*done parsing when get eol 'null' character*/
         /* could get null after a space*/
         if (*char_ptr == '\0'){
             /*return number of 'types' found*/
             return num_types;
-        };
+        }
         /* the first word is the keyword not a type*/
         if(found_keyword==0){
             found_keyword++;
         } else {
             /*words is a list of indicies of beginning of 1 or 2 char types*/
+            /*if there are too many types, return*/
+            if(num_types >= maxwords) return -1;
+
             words[num_types++] = char_ptr;
-        };
+        }
         /*once in a type, skip possible 2nd characters up to a space or null
          * character*/
         while(!isspace(*char_ptr) && *char_ptr!='\0'){
             char_ptr++;
-            index++;
-        };
+        }
         /*done parsing when get eol 'null' character*/
         /* could get null after a character*/
         if(*char_ptr=='\0'){
             return num_types;
-        };
+        }
         /*make each 'type' a null terminated string*/
         *char_ptr++ = '\0';
-        index++;
-        /*if there are too many types, return*/
-        if(num_types >=maxwords){
-            return num_types;
-        };
     }
-
 }
 /* EOF */

@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.31 2008/06/09 22:32:16 garrett Exp $
+ $Id: call_glss.cc,v 1.32 2008/10/16 00:11:14 rhuey Exp $
 
  AutoDock 
 
@@ -364,9 +364,13 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     if (outlev > 2) { 
         (void)fprintf( logFile, "The initial population consists of the following %d individuals:\n\n", pop_size);
         (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"initialisation of population\">\n", num_generations);
+        if(NULL!=getenv("ADDB")) 
+        thisPop.printPopulationAsCoordsEnergies( logFile, pop_size, sInit.ntor );
+        else
         thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
         (void)fprintf( logFile, "</generation>\n\n\n");
     }
+    if(NULL!=getenv("ADDB")) exit(0);
 
     if (outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
 

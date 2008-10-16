@@ -1,6 +1,6 @@
 /*
 
- $Id: autocomm.h,v 1.15 2008/04/05 06:21:19 garrett Exp $
+ $Id: autocomm.h,v 1.16 2008/10/16 00:11:14 rhuey Exp $
 
  AutoDock 
 
@@ -93,23 +93,16 @@
 
 #define	EINTCLAMP    100000. /* Clamp pairwise internal energies (kcal/mol )  */
 
-#define MAX_ATOM_TYPES 20    /* Maximum number of atom types                  */
 #define MAX_MAPS_PAD 0       // Use this to pad MAX_MAPS to a power of 2, for presumably-faster memory access
 #define NUM_NON_VDW_MAPS 2   // Number of electrostatic and desolvation maps
+#define MAX_ATOM_TYPES (16 - NUM_NON_VDW_MAPS)    /* Maximum number of atom types set to keep MAX_MAPS a power of 2 */
 #define MAX_MAPS (MAX_ATOM_TYPES + NUM_NON_VDW_MAPS + MAX_MAPS_PAD) /* Maximum number of energy maps        */
+                            /* 0,1,2,... are for atomic interactions          */
+                            /* last two are for electrostatics and desolvation */
 
 #define VECLENMAX    16     /* For AVS fld files...                           */
 
 // Legacy definitions:
-#define NATOMTYPES	    7   /* Number of atom types for atomic interactions   */
-#define MAX_TYPES       8   /* Maximum number of atom types used.             */
-#define ATOM_MAPS       6   /* Number of atomic affinity grids                */
-                            /* 0,1,2,... are for atomic interactions          */
-                            /* last is for electrostatics                     */
-
-#define ATOMTYPE	"CNOSHXM"
-/*                   0123456 */
-
 #define COVALENTTYPE 'Z'
 #define COVALENTTYPE2 'Y'
 

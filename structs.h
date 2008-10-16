@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.18 2007/05/03 23:25:44 garrett Exp $
+ $Id: structs.h,v 1.19 2008/10/16 00:11:15 rhuey Exp $
 
  AutoDock 
 
@@ -262,7 +262,7 @@ typedef struct linear_FE_model
 
 typedef struct energy_tables
 {
-    Real e_vdW_Hb[NEINT][ATOM_MAPS][ATOM_MAPS];  // vdW & Hb energies
+    Real e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES];  // vdW & Hb energies
     Real sol_fn[NEINT];                            // distance-dependent desolvation function
     Real epsilon_fn[NDIEL];                        // distance-dependent dielectric function
     Real r_epsilon_fn[NDIEL];                      // r * distance-dependent dielectric function

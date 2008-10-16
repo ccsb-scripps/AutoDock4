@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.21 2008/09/26 23:50:45 rhuey Exp $
+ $Id: cmdmode.cc,v 1.22 2008/10/16 00:11:14 rhuey Exp $
 
  AutoDock 
 
@@ -60,7 +60,7 @@ extern int parse_tors_mode;
 int cmdmode(int   natom,
              Clock jobStart,
              struct tms tms_jobStart,
-             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                #include "map_declare.h"
 
                     EnergyTables *ptr_ad_energy_tables,
 
@@ -78,13 +78,11 @@ int cmdmode(int   natom,
              Real abs_charge[MAX_ATOMS],
              Real qsp_abs_charge[MAX_ATOMS],
              Boole B_calcIntElec,
-             char  atm_typ_str[ATOM_MAPS],
              Real torsFreeEnergy,
              int ligand_is_inhibitor,
              int ignore_inter[MAX_ATOMS],
              const Boole         B_include_1_4_interactions,
              const Real scale_1_4,
-             const ParameterEntry parameterArray[MAX_MAPS],
              const Real unbound_internal_FE,
 
              GridMapSetInfo *info,
@@ -263,7 +261,7 @@ int cmdmode(int   natom,
                     fclose(pdbFile);
                     natom = nat;
                     if (ntor > 0) {
-                        eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
+                        eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues);
                     }
                     pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
                     pr(logFile,     "\t\t==============================\n\n\n");
@@ -325,7 +323,7 @@ int cmdmode(int   natom,
                 if (ntor > 0) {
                     eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
                       B_calcIntElec, B_include_1_4_interactions,
-                      scale_1_4, abs_charge, parameterArray,
+                      scale_1_4, abs_charge, 
                       B_use_non_bond_cutoff, B_have_flexible_residues);
                 } 
                 outside = FALSE;

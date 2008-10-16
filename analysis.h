@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.h,v 1.15 2007/04/27 06:01:47 garrett Exp $
+ $Id: analysis.h,v 1.16 2008/10/16 00:11:14 rhuey Exp $
 
  AutoDock 
 
@@ -52,8 +52,7 @@ void  analysis( int   Nnb,
                 Real crdpdb[MAX_ATOMS][SPACE], 
                 
                 const EnergyTables *ptr_ad_energy_tables,
-
-                Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+                #include "map_declare.h"
                 Real econf[MAX_RUNS], 
                 int   irunmax, 
                 int   natom, 
@@ -76,7 +75,6 @@ void  analysis( int   Nnb,
                 const Boole   B_include_1_4_interactions,
                 const Real scale_1_4,
 
-                const ParameterEntry parameterArray[MAX_MAPS],
                 const Real unbound_internal_FE,
                 
                 GridMapSetInfo *info,
