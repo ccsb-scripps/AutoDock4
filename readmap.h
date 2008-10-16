@@ -1,8 +1,8 @@
 /*
 
- $Id: readmap.h,v 1.8 2008/10/16 00:11:15 rhuey Exp $
+ $Id: readmap.h,v 1.9 2008/10/16 16:53:04 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
