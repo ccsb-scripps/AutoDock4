@@ -1,8 +1,8 @@
 /*
 
- $Id: typedefs.h,v 1.6 2008/10/16 00:11:15 rhuey Exp $
+ $Id: typedefs.h,v 1.7 2008/10/16 16:54:20 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.

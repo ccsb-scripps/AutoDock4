@@ -1,8 +1,8 @@
 /*
 
- $Id: writePDBQT.cc,v 1.17 2008/10/16 00:11:16 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.18 2008/10/16 16:54:20 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
