@@ -1,8 +1,8 @@
 /*
 
- $Id: getInitialState.h,v 1.13 2008/10/16 00:11:15 rhuey Exp $
+ $Id: getInitialState.h,v 1.14 2008/10/16 16:50:16 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
