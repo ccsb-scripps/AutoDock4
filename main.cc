@@ -1,8 +1,8 @@
 /*
 
- $Id: main.cc,v 1.80 2008/10/16 00:11:15 rhuey Exp $
+ $Id: main.cc,v 1.81 2008/10/16 16:51:48 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, Scott Halliday, Max Chang, Bill Hart, Richard Belew
  All Rights Reserved.
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.80 2008/10/16 00:11:15 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.81 2008/10/16 16:51:48 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -690,7 +690,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.80 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.81 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 

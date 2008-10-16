@@ -1,8 +1,8 @@
 /*
 
- $Id: parsetypes.cc,v 1.3 2008/10/16 00:11:15 rhuey Exp $
+ $Id: parsetypes.cc,v 1.4 2008/10/16 16:51:48 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
