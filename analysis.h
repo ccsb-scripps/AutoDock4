@@ -1,8 +1,8 @@
 /*
 
- $Id: analysis.h,v 1.16 2008/10/16 00:11:14 rhuey Exp $
+ $Id: analysis.h,v 1.17 2008/10/16 16:45:04 rhuey Exp $
 
- AutoDock 
+ AutoDock  
 
  Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
