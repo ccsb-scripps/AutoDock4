@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.18 2007/04/27 06:01:50 garrett Exp $
+ $Id: parse_dpf_line.cc,v 1.19 2008/10/18 00:09:27 rhuey Exp $
 
  AutoDock 
 
@@ -80,7 +80,7 @@ int parse_dpf_line( char line[LINE_LEN] )
                       {"move", DPF_MOVE}, // 4
                       {"about", DPF_ABOUT}, // 5
                       {"tran0", DPF_TRAN0}, // 6
-                      {"quat0", DPF_AXISANGLE0}, // 7
+                      {"quat0", DPF_QUAT0}, // 7
                       {"ndihe", DPF_NDIHE}, // 8
                       {"dihe0", DPF_DIHE0}, // 9
                       {"torsdof", DPF_TORSDOF}, // 10
