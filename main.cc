@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.81 2008/10/16 16:51:48 rhuey Exp $
+ $Id: main.cc,v 1.82 2008/10/18 00:09:55 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.81 2008/10/16 16:51:48 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.82 2008/10/18 00:09:55 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -690,7 +690,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.81 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.82 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1810,6 +1810,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
+    case DPF_QUAT0:
     case DPF_AXISANGLE0:
     case DPF_QUATERNION0:
         /*
@@ -1854,8 +1855,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             if (dpf_keyword == DPF_QUATERNION0) {
                 pr( logFile, "Initial quaternion,  (x,y,z,w) =\t( %.3f, %.3f, %.3f, %.3f ),\n", sInit.Q.x, sInit.Q.y, sInit.Q.z, sInit.Q.w);
             } else {
+                if (dpf_keyword == DPF_QUAT0 && B_RandomQuat0)  {
+                    pr( logFile, "WARNING quat0 command is obsolete. Now use quaternion0 instead\n");
+                }
+                if (dpf_keyword == DPF_QUAT0 && !B_RandomQuat0)  {
+                    pr( logFile, "WARNING quat0 command is obsolete. Now use axisangle0 instead\n");
+                }
+                if (!B_RandomQuat0)
                 pr( logFile, "Initial axis-angle,  (nx,ny,nz,ang) =\t( %.3f, %.3f, %.3f, %.1f deg ),\n", a, b, c, d );
-                pr( logFile, "Normalized axis,     (nx,ny,nz)     =\t( %.3f %.3f %.3f )\n", sInit.Q.nx, sInit.Q.ny, sInit.Q.nz );
+                pr( logFile, "Initial quaternion,  (x,y,z,w) =\t( %.3f, %.3f, %.3f, %.3f ),\n", sInit.Q.x, sInit.Q.y, sInit.Q.z, sInit.Q.w);
             }
 #ifdef DEBUG
             pr( logFile, "Initial Quaternion sInit.Q:\n\n");
