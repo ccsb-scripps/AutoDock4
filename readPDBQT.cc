@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.18 2008/06/09 22:58:50 garrett Exp $
+ $Id: readPDBQT.cc,v 1.19 2008/10/28 21:41:54 rhuey Exp $
 
  AutoDock 
 
@@ -114,6 +114,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	Real   total_charge_ligand = 0.;
 	Real   uq = 0.;
 
+    static int      branch_last_piece[MAX_TORS+2];//0 unused, 1 means ROOT
 	static int      atomnumber[MAX_RECORDS];
 	int             iq = 0;
 	int             natom = 0;
@@ -144,7 +145,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     // and is the number of the torsion to be crossed over, while the value is the number
     // of the first torsion after the last torsion in the sub-tree (or "branch") being exchanged.
     stack s;  // Stack used to determine the values for the end_of_branch[] array
-    int top = 0;  // Value at the top of the stack.
+    int parent;  
 
 	Molecule        mol;
 
@@ -166,15 +167,13 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     // Create the stack
     s = stack_create( MAX_TORS+1 );
     if (debug > 0) {
-        pr(logFile, "DEBUG: 169:  stack_create(%d)\n", MAX_TORS+1 );
-        pr(logFile, "DEBUG:       stack_size(s) = %d\n", stack_size(s) );
+        pr(logFile, "DEBUG: 170:  stack_create(%d)\n", MAX_TORS+1 );
     }
 
     // Initialize the stack
     stack_push(s, piece);
     if (debug > 0) {
         pr(logFile, "DEBUG: 176:  stack_push(s, %d)\n", piece );
-        pr(logFile, "DEBUG:       stack_size(s) = %d\n", stack_size(s) );
     }
 
     //  Attempt to open the ligand PDBQT file...
@@ -252,6 +251,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	pr(logFile, "\nDetermining Atom Types and Parameters for the Moving Atoms\n");
 	pr(logFile,   "__________________________________________________________\n\n");
 	natom = 0;
+    //debug = 1;
 
     // Loop over all the lines in either the ligand or the "reconstructed" combined-ligand-flexible-residues file
 	for (i = 0; i < nrecord; i++) {
@@ -284,9 +284,10 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
                 // Set up rigid_piece array by reading in the records of the PDBQT file;
                 // each "rigid_piece" is a self-contained rigid entity.
-                rigid_piece[natom] = nrigid_piece;
+                rigid_piece[natom] = piece;
                 if (debug > 0) {
                     pr(logFile, "DEBUG: 289:  rigid_piece[%d] = %d (nrigid_piece)\n", natom, rigid_piece[natom] );
+                    pr(logFile, "DEBUG: 290:  for natom %d piece=%d\n", natom, piece );
                 }
 
                 // Read the coordinates and store them in crdpdb[],
@@ -373,23 +374,24 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
             case PDBQ_ROOT:
                 B_is_in_branch = TRUE;
+                piece = 1;
+                stack_push(s, piece);
                 ++nrigid_piece;
                 break;
 
             case PDBQ_BRANCH:
                 B_is_in_branch = TRUE;
-                stack_push(s, piece);
+                stack_push(s, piece);//at this pt push the parent piece number
                 if (debug > 0) {
-                    pr(logFile, "DEBUG: 383:  stack_push(s, %d)\n", piece );
-                    pr(logFile, "DEBUG: 384:  stack_size(s) = %d\n", stack_size(s) );
+                    pr(logFile, "DEBUG: 386:  stack_push(s, %d)\n", piece );
                 }
+                ++nrigid_piece; //allocate a new rigid body for this branch
                 piece = nrigid_piece;
                 if (debug > 0) {
-                    pr(logFile, "DEBUG: 388:  piece = %d\n", piece );
+                    pr(logFile, "DEBUG: 391:  piece = %d\n", piece );
                 }
-                ++nrigid_piece;
                 if (debug > 0) {
-                    pr(logFile, "DEBUG: 392:  nrigid_piece = %d\n", nrigid_piece );
+                    pr(logFile, "DEBUG: 394:  nrigid_piece = %d\n", nrigid_piece );
                 }
                 break;
 
@@ -399,18 +401,31 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
             case PDBQ_ENDBRANCH:
                 B_is_in_branch = FALSE;
-                end_of_branch[ piece ] = max( end_of_branch[ piece ], piece ) + 1;
+                //end_of_branch[ piece ] = max( end_of_branch[ piece ], piece);
+                branch_last_piece[ piece ] = max( branch_last_piece[ piece ], piece);
                 if (debug > 0) {
-                    pr(logFile, "DEBUG: 404:   end_of_branch[ %d ] = %d\n", piece, end_of_branch[ piece ] );
+                    pr(logFile, "DEBUG: 407:   end_of_branch[ %d ] = %d\n", piece, end_of_branch[ piece ] );
                 }
-                top = s->top;
+                parent = stack_pop(s);
+                if (parent < 0) {
+			        pr(logFile,   "PDBQT ERROR: Encountered end of branch without corresponding branch");
+		            prStr(error_message, "PDBQT ERROR: Encountered end of branch without corresponding branch");
+		            stop(error_message);
+		            exit(-1);
+                }
+                if (parent>1){ 
+                    //if parent is 1, it is the 'ligand' root. In that case,we don't have an eob for it.
+                    //end_of_branch[ parent ] = max( end_of_branch[ parent ], end_of_branch[ piece ] );
+                    branch_last_piece[parent ] = max( branch_last_piece[parent ], branch_last_piece[piece ] );
+                }
+                
                 if (debug > 0) {
-                    pr(logFile, "DEBUG: 408:   top = %d, end_of_branch[ top ] = %d\n", top, end_of_branch[ top ] );
+                    pr(logFile, "DEBUG: 425:   parent = %d, end_of_branch[ parent ] = %d\n", parent, end_of_branch[ parent ] );
                 }
-                end_of_branch[ top ] = max( end_of_branch[ top ], end_of_branch[ piece ] ) + 1;
                 if (debug > 0) {
-                    pr(logFile, "DEBUG: 412:   end_of_branch[ %d ] = %d\n", piece, end_of_branch[ piece ] );
+                    pr(logFile, "DEBUG: 428:   end_of_branch[ %d ] = %d\n", parent, end_of_branch[ parent ] );
                 }
+                piece = parent;
                 break;
 
             case PDBQ_NULL:
@@ -465,6 +480,14 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	pr(logFile, "Total number of atoms found =\t%d atoms\n\n", natom);
 
 	pr(logFile, "Number of flexible residues found in the receptor =\t%d residues\n\n", nres);
+
+    pr(logFile, "\n end_of_branch:\n");
+    for (j = 0; j < nrigid_piece-1; j++)  {
+        end_of_branch[j] = branch_last_piece[j+2]-1; 
+        if (debug > 0) {
+            pr(logFile, " %2d end_of_branch=%2d branch_last=%2d\n ",j,end_of_branch[j], branch_last_piece[j]);
+        };
+    }
 
 	if (natom > MAX_ATOMS) {
 		prStr(error_message, "ERROR: Too many atoms found (i.e. %d); maximum allowed is %d.\nChange the \"#define MAX_ATOMS\" line in \"constants.h\"\n.", natom, MAX_ATOMS);
