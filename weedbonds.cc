@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.13 2007/04/27 06:01:52 garrett Exp $
+ $Id: weedbonds.cc,v 1.14 2008/10/28 21:10:59 rhuey Exp $
 
  AutoDock 
 
@@ -120,9 +120,9 @@ void weedbonds( int natom,
 
     } // i
 
-    /*
+    /* 
     \  Weed out bonds from atoms directly connected to rigid pieces,
-     \______________________________________________________________
+     \_ we think these are 1-3 interactions mp+rh, 10-2008______________________
     */
     for (i=0; i<ntor; i++) {
 
