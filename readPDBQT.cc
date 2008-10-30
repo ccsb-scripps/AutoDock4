@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.19 2008/10/28 21:41:54 rhuey Exp $
+ $Id: readPDBQT.cc,v 1.20 2008/10/30 23:34:45 rhuey Exp $
 
  AutoDock 
 
@@ -114,7 +114,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	Real   total_charge_ligand = 0.;
 	Real   uq = 0.;
 
-    static int      branch_last_piece[MAX_TORS+2];//0 unused, 1 means ROOT
+    int             branch_last_piece[MAX_TORS+2];//0 unused, 1 means ROOT
 	static int      atomnumber[MAX_RECORDS];
 	int             iq = 0;
 	int             natom = 0;
@@ -128,7 +128,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     int             keyword_id = -1;
 	int             nres = 0;
 	int             nrigid_piece = 0;
-	int             piece = -1; // "sentinel" value
+	int             piece; 
 
 	Boole           B_has_conect_records = FALSE;
 	Boole           B_is_in_branch = FALSE;
@@ -160,17 +160,18 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 		rigid_piece[i] = 0;
 	}
 
-	for (i = 0; i < MAX_TORS; i++) {
-        end_of_branch[i] = 0;
+	for (i = 0; i < MAX_TORS+2; i++) {
+        branch_last_piece[i] = 0;//0 unused, 1 means ROOT
     }
 
     // Create the stack
-    s = stack_create( MAX_TORS+1 );
+    s = stack_create( MAX_TORS+2 );
     if (debug > 0) {
-        pr(logFile, "DEBUG: 170:  stack_create(%d)\n", MAX_TORS+1 );
+        pr(logFile, "DEBUG: 170:  stack_create(%d)\n", MAX_TORS+2 );
     }
 
     // Initialize the stack
+    piece = -1; // "sentinel" value
     stack_push(s, piece);
     if (debug > 0) {
         pr(logFile, "DEBUG: 176:  stack_push(s, %d)\n", piece );
@@ -381,6 +382,11 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
             case PDBQ_BRANCH:
                 B_is_in_branch = TRUE;
+                if (nrigid_piece>MAX_TORS){
+		            prStr(error_message, "PDBQT ERROR: too many torsions, maximum number of torsions is %d", MAX_TORS);
+		            stop(error_message);
+		            exit(-1);
+                }
                 stack_push(s, piece);//at this pt push the parent piece number
                 if (debug > 0) {
                     pr(logFile, "DEBUG: 386:  stack_push(s, %d)\n", piece );
@@ -389,14 +395,13 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 piece = nrigid_piece;
                 if (debug > 0) {
                     pr(logFile, "DEBUG: 391:  piece = %d\n", piece );
-                }
-                if (debug > 0) {
                     pr(logFile, "DEBUG: 394:  nrigid_piece = %d\n", nrigid_piece );
                 }
                 break;
 
             case PDBQ_ENDROOT:
                 B_is_in_branch = FALSE;
+                (void) stack_pop(s);
                 break;
 
             case PDBQ_ENDBRANCH:
@@ -417,8 +422,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     //if parent is 1, it is the 'ligand' root. In that case,we don't have an eob for it.
                     //end_of_branch[ parent ] = max( end_of_branch[ parent ], end_of_branch[ piece ] );
                     branch_last_piece[parent ] = max( branch_last_piece[parent ], branch_last_piece[piece ] );
-                }
-                
+                } 
                 if (debug > 0) {
                     pr(logFile, "DEBUG: 425:   parent = %d, end_of_branch[ parent ] = %d\n", parent, end_of_branch[ parent ] );
                 }
@@ -482,6 +486,22 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	pr(logFile, "Number of flexible residues found in the receptor =\t%d residues\n\n", nres);
 
     pr(logFile, "\n end_of_branch:\n");
+
+    //check for mismatched BRANCH/ENDBRANCH records
+    // specifically:
+    // stack_pop should return the sentinel ie -1
+    if (B_is_in_branch || -1 != stack_pop(s)){
+	    prStr(error_message, "ERROR: BRANCH statement without a corresponding ENDBRANCH\n\n");
+        stop(error_message);
+		exit(-1);
+    }
+    // create end_of_branch array
+    // 0th element refers to first torsion
+    // Each entry holds the index of the first torsion NOT in this branch
+    // Since our piece numbers start at 1 for the ROOT, the atoms moved by
+    // the first torsion are piece number 2. Thus we have to look 2 higher
+    // in the branch_last_piece array. (Note the "-1" is here because 
+    // end_of_branch is zero-based).
     for (j = 0; j < nrigid_piece-1; j++)  {
         end_of_branch[j] = branch_last_piece[j+2]-1; 
         if (debug > 0) {
