@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.13 2007/04/27 06:01:50 garrett Exp $
+ $Id: mkTorTree.cc,v 1.14 2008/10/30 23:33:39 rhuey Exp $
 
  AutoDock 
 
@@ -198,6 +198,11 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
 
     /*____________________________________________________________*/
             case PDBQ_BRANCH:
+                if (ntor >= MAX_TORS) {
+                    prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
+                    stop( error_message );
+                    exit( -1 );
+                }
                 if (found_first_res) {
                     sscanf(Rec_line[ i ],"%*s %d %*d", &nrestor );
                     tlist[ ntor ][ ATM1 ]= nrestor + true_ligand_atoms;
@@ -367,7 +372,7 @@ void mkTorTree( int   atomnumber[ MAX_RECORDS ],
     \   Sort Torsion list on number of atoms moved,
      \______________________________________________________________
     */
-
+    // Checked for above, as well as in readPDBQT, but this is extra insurance
     if (ntor > MAX_TORS) {
         prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
         stop( error_message );
