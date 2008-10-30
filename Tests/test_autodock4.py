@@ -1,5 +1,5 @@
 #
-# $Id: test_autodock4.py,v 1.21 2008/10/16 17:24:39 rhuey Exp $
+# $Id: test_autodock4.py,v 1.22 2008/10/30 23:32:51 rhuey Exp $
 #
 
 """
@@ -191,6 +191,21 @@ class AutoDock4_1pgp_no_elec_desolv_maps_test( AutoDock_simple_test ):
     expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_too_many_torsions( AutoDock_simple_test ):
+    """Test that autodock4 stops early if too many torsions 
+    are specified. (current limit is 32)"""
+    dpf_stem = "1pgp_too_many_torsions"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_just_right_number_torsions( AutoDock_simple_test ):
+    """Test that autodock4 completes with current limit of number of  torsions 
+    are specified. (current limit is 32)"""
+    dpf_stem = "1pgp_just_right_number_torsions"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+
 class AutoDock4_1pgp_too_many_ligand_types_test( AutoDock_simple_test ):
     """Test that autodock4 stops early if too many ligand types 
     are specified. (current limit is 14)"""
@@ -294,6 +309,8 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_no_desolvmap_test',
         'AutoDock4_1pgp_no_elec_desolv_maps_test',
         'AutoDock4_1pgp_too_many_ligand_types_test',
+        'AutoDock4_1pgp_too_many_torsions',
+        'AutoDock4_1pgp_just_right_number_torsions',
         'AutoDock4_1pgp_two_ligands_test',
         'AutoDock4_1pgp_two_mapsets_test',
         # tests which check for specific value
