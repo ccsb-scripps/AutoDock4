@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.20 2008/10/30 23:34:45 rhuey Exp $
+ $Id: readPDBQT.cc,v 1.21 2008/10/31 21:23:34 rhuey Exp $
 
  AutoDock 
 
@@ -485,7 +485,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 	pr(logFile, "Number of flexible residues found in the receptor =\t%d residues\n\n", nres);
 
-    pr(logFile, "\n end_of_branch:\n");
 
     //check for mismatched BRANCH/ENDBRANCH records
     // specifically:
@@ -505,6 +504,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     for (j = 0; j < nrigid_piece-1; j++)  {
         end_of_branch[j] = branch_last_piece[j+2]-1; 
         if (debug > 0) {
+            pr(logFile, "\n end_of_branch:\n");
             pr(logFile, " %2d end_of_branch=%2d branch_last=%2d\n ",j,end_of_branch[j], branch_last_piece[j]);
         };
     }
