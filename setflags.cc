@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.6 2007/04/27 06:01:51 garrett Exp $
+ $Id: setflags.cc,v 1.7 2008/11/07 23:16:30 rhuey Exp $
 
  AutoDock 
 
@@ -140,6 +140,7 @@ int setflags( int I_argc, char * const PPC_argv[])
                 fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
                 return(-1);
             }
+            setlinebuf(logFile); // to ensure output even if crash
             PPC_argv++;
             I_argc--;
             I_argindex++;
