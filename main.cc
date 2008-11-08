@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.82 2008/10/18 00:09:55 rhuey Exp $
+ $Id: main.cc,v 1.83 2008/11/08 00:35:48 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.82 2008/10/18 00:09:55 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.83 2008/11/08 00:35:48 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -170,26 +170,27 @@ char error_message[LINE_LEN];
 char message[LINE_LEN];
 char line[LINE_LEN];
 char torfmt[LINE_LEN];
+char param[2][LINE_LEN];
+char rms_atoms_cmd[LINE_LEN];
+char c_mode_str[LINE_LEN];
+char confsampler_type[LINE_LEN];
+
+// filename max length is taken from system include file
+char FN_parameter_library[PATH_MAX];
+char FN_ligand[PATH_MAX];
+char FN_flexres[PATH_MAX];
+char FN_rms_ref_crds[PATH_MAX];
+char FN_clus[PATH_MAX];
+char FN_watch[PATH_MAX];
+char dummy_FN_ligand[PATH_MAX];
+char FN_pop_file[PATH_MAX];
+char FN_trj[PATH_MAX];
+//char FN_gdfld[PATH_MAX]  // now part of the GridMapSetInfo structure;
+//char FN_gpf[PATH_MAX];  // now part of the GridMapSetInfo structure
+//char FN_receptor[PATH_MAX];// now part of the GridMapSetInfo structure
 
 //   MAX_CHARS
-//
-char FN_clus[MAX_CHARS];
-char FN_watch[MAX_CHARS];
-//char FN_gdfld[MAX_CHARS]  // now part of the GridMapSetInfo structure;
-//char FN_gpf[MAX_CHARS];  // now part of the GridMapSetInfo structure
-char FN_ligand[MAX_CHARS];
-char dummy_FN_ligand[MAX_CHARS];
-char FN_trj[MAX_CHARS];
-//char FN_receptor[MAX_CHARS];// now part of the GridMapSetInfo structure
-char FN_rms_ref_crds[MAX_CHARS];
-char FN_parameter_library[MAX_CHARS];
 char hostnm[MAX_CHARS];
-char param[2][MAX_CHARS];
-char c_mode_str[MAX_CHARS];
-char FN_pop_file[MAX_CHARS];
-char FN_flexres[MAX_CHARS];
-char rms_atoms_cmd[MAX_CHARS];
-char confsampler_type[MAX_CHARS];
 
 //   MAX_RECORDS
 //
@@ -550,7 +551,7 @@ if ( setflags(argc,argv) == -1) {
 ** Initialize torsion arrays and constants.
 */
 
-(void) strcpy( torfmt, "%*s\0" ); /* len(torfmt) is 4 chars */
+(void) strcpy( torfmt, "%*s" ); /* len(torfmt) is 3 chars */
 
 for (j = 0;  j < MAX_ATOMS;  j++ ) {
     type[j] = 0;
@@ -591,9 +592,9 @@ for (i = 0; i < MAX_TORS;  i++ ) {
         stop( error_message );
         exit( -1 );
     } else {
-        (void) strcat( torfmt, " %lf\0" );  /* add on 4 chars  for each new torsion... */
+        (void) strcat( torfmt, " %lf" );  /* add on 4 chars  for each new torsion... */
     }
-} /* len(torfmt) is 4+4*MAX_TORS chars */
+} /* len(torfmt) is 3+4*MAX_TORS chars */
 
 for (j = 0; j < MAX_NONBONDS; j++) {
     nonbondlist[j].a1 = nonbondlist[j].a2 = 0;
@@ -690,7 +691,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.82 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.83 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -702,9 +703,9 @@ banner( version_num );
 pr( logFile, "This file was created at:\t\t\t" );
 printdate( logFile, 1 );
 
-(void) strcpy(hostnm, "unknown host\0");
+(void) strcpy(hostnm, "unknown host");
 
-if (gethostname( hostnm, MAX_CHARS ) == 0) {
+if (gethostname( hostnm, sizeof hostnm ) == 0) {
     pr( logFile, "                   using:\t\t\t\"%s\"\n", hostnm );
 }
 
@@ -1409,8 +1410,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         Clock  colinyEnd;
 
         int coliny_seed;
-        char algname[64];
-        char nruns_str[64];
+        char algname[LINE_LEN];
+        char nruns_str[LINE_LEN];
         (void) sscanf(line, "%*s %s %d", algname, &nruns);
         (void) sscanf(line, "%*s %s %s", algname, nruns_str);
 
