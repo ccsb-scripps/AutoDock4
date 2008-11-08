@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.h,v 1.3 2007/04/27 06:01:50 garrett Exp $
+ $Id: openfile.h,v 1.4 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -35,12 +35,12 @@
 #include <time.h>           /*time_t time(time_t *tloc); */
 #include <sys/times.h>
 
-int  openfile( char  filename[MAX_CHARS],
+int  openfile( char  *filename,
                char  mode[],
                FILE  **fp );
 
 
-int openFile( char       filename[MAX_CHARS],
+int openFile( char       *filename,
               char       mode[],
               FILE       **fp,
               Clock      start,

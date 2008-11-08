@@ -1,6 +1,6 @@
 /*
 
- $Id: molstruct.h,v 1.7 2007/04/27 06:01:50 garrett Exp $
+ $Id: molstruct.h,v 1.8 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -38,7 +38,7 @@ typedef struct molecule {
 	char  atomstuff[ MAX_ATOMS ][ MAX_CHARS ];
 
 	Boole B_haveCharges;
-	char  pdbqFileName[ MAX_CHARS ];
+	char  pdbqFileName[ PATH_MAX ];
 	int   Htype;
 	Boole B_constrain;
 	int   atomC1;

@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.34 2008/10/18 00:10:52 rhuey Exp $
+ $Id: call_glss.cc,v 1.35 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock  
 
@@ -253,7 +253,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
                 int outlev, 
                 unsigned int extOutputEveryNgens, Molecule *mol, 
                 Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
-                GridMapSetInfo *info, char FN_pop_file[MAX_CHARS],
+                GridMapSetInfo *info, char *FN_pop_file,
                 int end_of_branch[MAX_TORS])
 {
     register unsigned int i;
@@ -348,14 +348,14 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 #endif
              allEnergiesEqual = allEnergiesEqual && (thisPop[i].value(localEvalMode) == firstEnergy);
         }
-        if (allEnergiesEqual) {
+        if ( pop_size>1 && allEnergiesEqual) {
             (void)fprintf(logFile,"NOTE: All energies are equal in population; re-initializing. (Try Number %d)\n", numTries);
         }
         if (numTries > max_numTries) {
             (void)fprintf(logFile,"WARNING: the number of tries has exceeded the maximum number of tries permitted.\nWARNING: AutoDock will attempt continue with the currently-generated random population.\n");
             break;
         }
-    } while (allEnergiesEqual);
+    } while (pop_size>1 && allEnergiesEqual);
 
 #ifdef DEBUG
     (void)fprintf(logFile,"\ncall_glss.cc/State call_glss():  }\n");

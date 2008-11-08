@@ -1,6 +1,6 @@
 /*
 
- $Id: readGridMap.cc,v 1.6 2008/10/16 16:51:48 rhuey Exp $
+ $Id: readGridMap.cc,v 1.7 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock  
 
@@ -51,12 +51,12 @@ void readmap( Boole *P_B_HaveMap,
              int *num_atom_types, 
              Real *P_ExtSpacing, 
              char ligand_atom_types[MAX_MAPS][3],
-             char ExtFldFileName[MAX_CHARS],
+             char *ExtFldFileName,
              int ExtGridPts1[SPACE],
              int ExtGridPts[SPACE],
              Clock jobStart,
              char line[LINE_LEN],
-             char ExtMacromolFileName[MAX_CHARS],
+             char *ExtMacromolFileName,
                 #include "map_declare.h"
              Real MapCenter[SPACE],
              Real MapMax[MAX_MAPS],
@@ -69,12 +69,12 @@ void readmap( Boole *P_B_HaveMap,
 {
     FILE *mapFilePtr;
 
-    char FileName[MAX_CHARS];
-    char FldFileName[MAX_CHARS];
-    char GpfName[MAX_CHARS];
-    char ExtGpfName[MAX_CHARS];
+    char FileName[PATH_MAX];
+    char FldFileName[PATH_MAX];
+    char GpfName[PATH_MAX];
+    char ExtGpfName[PATH_MAX];
     char message[LINE_LEN];
-    char mmFileName[MAX_CHARS];
+    char mmFileName[PATH_MAX];
     char xyz_str[4];
     char C_mapValue;
     char mapline[LINE_LEN];

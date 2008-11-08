@@ -1,6 +1,6 @@
 /*
 
- $Id: autocomm.h,v 1.17 2008/10/16 16:45:43 rhuey Exp $
+ $Id: autocomm.h,v 1.18 2008/11/08 00:37:21 rhuey Exp $
 
  AutoDock  
 
@@ -32,6 +32,8 @@
 
 #include <sys/types.h>
 #include <time.h>
+/* include stdio to pick up definition of FILENAME_MAX and possibly PATH_MAX */
+#include <stdio.h>
 
 /*******************************************************************************
 **      Name: autocomm.h                                                      **
@@ -74,6 +76,9 @@
 #define BIG          1.0E12 /* Very large constant                            */
 #define MAX_CHARS    128    /* Number of characters in atom data & filenames  */
 #define MAX_LINES    256    /* Number of lines in parameter file              */
+#ifndef PATH_MAX
+#define PATH_MAX     FILENAME_MAX
+#endif
 
 #ifdef USE_XCODE
 #define LINE_LEN     140    /* Line length in characters                      */

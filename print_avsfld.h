@@ -1,6 +1,6 @@
 /*
 
- $Id: print_avsfld.h,v 1.2 2007/04/27 06:01:50 garrett Exp $
+ $Id: print_avsfld.h,v 1.3 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -36,6 +36,6 @@ void  print_avsfld(FILE  *logFile,
                    int   nframe,
                    int   offset[VECLENMAX],
                    int   stride,
-                   char  label[MAX_CHARS],
-                   char  filename[MAX_CHARS] );
+                   char  *label,
+                   char  *filename );
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: bestpdb.cc,v 1.4 2007/04/27 06:01:47 garrett Exp $
+ $Id: bestpdb.cc,v 1.5 2008/11/08 00:37:21 rhuey Exp $
 
  AutoDock 
 
@@ -72,7 +72,7 @@ void bestpdb( int ncluster,
 		  
 
     char          rec13[14],
-		  filnm[MAX_CHARS],
+		  filnm[PATH_MAX],
 		  label[MAX_CHARS],
 		  rec8[9];
 

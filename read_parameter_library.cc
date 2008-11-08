@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.8 2008/09/26 23:50:45 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.9 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock 
 
@@ -45,14 +45,14 @@ extern Unbound_Model ad4_unbound_model;
 
 
 void read_parameter_library(
-        char FN_parameter_library[MAX_CHARS],
+        char *FN_parameter_library,
         int outlev
         )
 {
     static ParameterEntry thisParameter;
     FILE *parameter_library_file;
-    char parameter_library_line[MAX_CHARS];
-    char unbound_model_type[MAX_CHARS];
+    char parameter_library_line[LINE_LEN];
+    char unbound_model_type[LINE_LEN];
     int nfields;
     int param_keyword = -1;
     int int_hbond_type = 0;
@@ -208,7 +208,7 @@ void read_parameter_library(
 void setup_parameter_library( int outlev )
 {
     static ParameterEntry thisParameter;
-    char parameter_library_line[MAX_CHARS];
+    char parameter_library_line[LINE_LEN];
     int nfields;
     int param_keyword = -1;
     int int_hbond_type = 0;

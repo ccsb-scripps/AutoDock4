@@ -1,6 +1,6 @@
 /*
 
- $Id: getpdbcrds.h,v 1.4 2007/04/27 06:01:48 garrett Exp $
+ $Id: getpdbcrds.h,v 1.5 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -31,6 +31,6 @@
 #include "constants.h"
 #include "openfile.h"
 
-int   getpdbcrds( char  rms_ref_crds_FN[MAX_CHARS],
+int   getpdbcrds( char  *rms_ref_crds_FN,
 		Real ref_crds[MAX_ATOMS][SPACE] );
 #endif

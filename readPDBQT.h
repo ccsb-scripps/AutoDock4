@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.h,v 1.12 2008/06/09 22:58:50 garrett Exp $
+ $Id: readPDBQT.h,v 1.13 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock 
 
@@ -61,8 +61,8 @@ Molecule readPDBQT( char  line[LINE_LEN],
               int   bondtype[MAX_ATOMS],
               char  pdbaname[MAX_ATOMS][5],
 
-              char  pdbqFileName[MAX_CHARS],
-              char FN_flexres[MAX_CHARS],
+              char  *pdbqFileName,
+              char  *FN_flexres,
               Boole B_have_flexible_residues,
 
               char  atomstuff[MAX_ATOMS][MAX_CHARS],

@@ -1,6 +1,6 @@
 /*
 
- $Id: cmdmode.cc,v 1.23 2008/10/16 16:47:13 rhuey Exp $
+ $Id: cmdmode.cc,v 1.24 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock  
 
@@ -72,7 +72,7 @@ int cmdmode(int   natom,
              NonbondParam *nonbondlist,
              char  atomstuff[MAX_ATOMS][MAX_CHARS],
              Real crdpdb[MAX_ATOMS][SPACE],
-             char  hostnm[MAX_CHARS],
+             char  *hostnm,
              int   type[MAX_ATOMS],
              Real charge[MAX_ATOMS],
              Real abs_charge[MAX_ATOMS],
@@ -94,13 +94,13 @@ int cmdmode(int   natom,
     char message[LINE_LEN],
          command[LINE_LEN],
          trjline[LINE_LEN],
-         filename[MAX_CHARS],
+         filename[PATH_MAX],
          line[LINE_LEN],
          rec5[5],
          pdbaname[MAX_ATOMS][5],
          rec8[MAX_ATOMS][9], /* rec[X] gives (X+1) elements...   */
          rec14[MAX_ATOMS][15],
-         trjFileName[MAX_CHARS],
+         trjFileName[PATH_MAX],
          lastmove = '?';
 
     int  com_id = 0,

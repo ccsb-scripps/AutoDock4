@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.cc,v 1.4 2007/04/27 06:01:50 garrett Exp $
+ $Id: openfile.cc,v 1.5 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -27,7 +27,7 @@
 
 /*
 
- $Id: openfile.cc,v 1.4 2007/04/27 06:01:50 garrett Exp $
+ $Id: openfile.cc,v 1.5 2008/11/08 00:37:22 rhuey Exp $
 
 */
 
@@ -72,7 +72,7 @@ FILE *ad_fopen(const char *path, const char *mode)
 }
 
 /*----------------------------------------------------------------------------*/
-int openfile( char filename[MAX_CHARS],
+int openfile( char *filename,
 	      char mode[],
 	      FILE **fp )
 
@@ -86,7 +86,7 @@ int openfile( char filename[MAX_CHARS],
 }
 
 /*----------------------------------------------------------------------------*/
-int openFile( char       filename[MAX_CHARS],
+int openFile( char       *filename,
 	      char       mode[],
 	      FILE       **fp,
 	      Clock      start,

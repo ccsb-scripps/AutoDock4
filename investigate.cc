@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.18 2008/10/16 16:50:16 rhuey Exp $
+ $Id: investigate.cc,v 1.19 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock  
 
@@ -75,7 +75,7 @@ void investigate( int   Nnb,
                     Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                     int   N_con[MAX_TORS],
                     Boole B_symmetry_flag,
-                    char  FN_rms_ref_crds[MAX_CHARS],
+                    char  *FN_rms_ref_crds,
                     int   OutputEveryNTests,
                     int   NumLocalTests,
                     Real trnStep,

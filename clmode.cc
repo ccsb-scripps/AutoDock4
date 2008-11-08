@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.7 2007/04/27 06:01:48 garrett Exp $
+ $Id: clmode.cc,v 1.8 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -44,15 +44,15 @@ extern char *programname;
 
 void  clmode( int   num_atm_maps,
               Real clus_rms_tol,
-              char  hostnm[MAX_CHARS],
+              char  *hostnm,
               Clock jobStart,
               struct tms tms_jobStart,
               Boole write_all_clusmem,
-              char  clusFN[MAX_CHARS],
+              char  *clusFN,
               Real crdpdb[MAX_ATOMS][SPACE],
               Real sml_center[SPACE],
               Boole symmetry_flag,
-              char  rms_ref_crds[MAX_CHARS] )
+              char  *rms_ref_crds )
 
 {
     FILE *clusFile;

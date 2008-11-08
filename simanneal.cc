@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.24 2008/10/16 16:53:04 rhuey Exp $
+ $Id: simanneal.cc,v 1.25 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock  
 
@@ -56,7 +56,7 @@ void simanneal ( int   *Addr_nconf,
                 Boole B_calcIntElec,
                 Real crd[MAX_ATOMS][SPACE],
                 Real crdpdb[MAX_ATOMS][SPACE],
-                char  FN_dpf[MAX_CHARS],
+                char  *FN_dpf,
         
                 EnergyTables *ptr_ad_energy_tables,
 
@@ -83,7 +83,7 @@ void simanneal ( int   *Addr_nconf,
                 Boole B_qtwReduc,
                 Real qtwStep0,
                 Boole B_selectmin,
-                char  FN_ligand[MAX_CHARS],
+                char  *FN_ligand,
                 Real lig_center[SPACE],
                 Real RT0,
                 Boole B_RTChange,
@@ -93,7 +93,7 @@ void simanneal ( int   *Addr_nconf,
                 Real torFac,
                 Boole B_torReduc,
                 Real torStep0,
-                char  FN_trj[MAX_CHARS],
+                char  *FN_trj,
                 int   trj_cyc_max,
                 int   trj_cyc_min,
                 int   trj_freq,
@@ -112,7 +112,7 @@ void simanneal ( int   *Addr_nconf,
                 Real RTreduc,
                 /*Real maxrad,*/
                 Boole B_watch,
-                char  FN_watch[MAX_CHARS],
+                char  *FN_watch,
                 Boole B_isGaussTorCon,
                 unsigned short US_torProfile[MAX_TORS][NTORDIVS],
                 Boole B_isTorConstrained[MAX_TORS],

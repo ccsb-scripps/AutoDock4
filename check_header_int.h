@@ -1,6 +1,6 @@
 /*
 
- $Id: check_header_int.h,v 1.2 2007/04/27 06:01:48 garrett Exp $
+ $Id: check_header_int.h,v 1.3 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -35,5 +35,5 @@
 void  check_header_int( int   i1, 
                         int   i2, 
                         char  axis, 
-                        char  filename[MAX_CHARS] );
+                        char  * filename );
 #endif

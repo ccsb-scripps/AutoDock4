@@ -1,6 +1,6 @@
 /*
 
- $Id: success.cc,v 1.3 2007/04/27 06:01:51 garrett Exp $
+ $Id: success.cc,v 1.4 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock 
 
@@ -40,7 +40,7 @@
 extern char *programname;
 extern FILE *logFile;
 
-void success( char hostnm[MAX_CHARS],
+void success( char *hostnm,
 		Clock jobStart,
 		struct tms tms_jobStart )
 

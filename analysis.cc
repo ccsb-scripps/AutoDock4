@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.30 2008/10/16 16:45:04 rhuey Exp $
+ $Id: analysis.cc,v 1.31 2008/11/08 00:37:21 rhuey Exp $
 
  AutoDock  
 
@@ -75,13 +75,13 @@ void analysis( int   Nnb,
                int   nconf, 
                int   ntor, 
                State hist[MAX_RUNS], 
-               char  smFileName[MAX_CHARS], 
+               char  *smFileName, 
                Real  sml_center[SPACE],
                Boole B_symmetry_flag, 
                int   tlist[MAX_TORS][MAX_ATOMS], 
                int   type[MAX_ATOMS], 
                Real  vt[MAX_TORS][SPACE],
-               char  FN_rms_ref_crds[MAX_CHARS],
+               char  *FN_rms_ref_crds,
                Real  torsFreeEnergy,
                Boole B_write_all_clusmem,
                int   ligand_is_inhibitor,
@@ -100,7 +100,7 @@ void analysis( int   Nnb,
 
 {
     /* register int   imol = 0; */
-    static char  filename[MAX_CHARS];
+    char  filename[PATH_MAX];
     static char  label[MAX_CHARS];
     static char  rec14[14];
     static char  rec9[9];

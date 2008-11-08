@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.h,v 1.3 2007/04/27 06:01:51 garrett Exp $
+ $Id: read_parameter_library.h,v 1.4 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock 
 
@@ -31,7 +31,7 @@
 #include "autocomm.h"
 
 void read_parameter_library(
-        char FN_parameter_library[MAX_CHARS],
+        char *FN_parameter_library,
         int outlev
         );
 

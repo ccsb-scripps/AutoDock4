@@ -1,6 +1,6 @@
 /*
 
- $Id: output_state.h,v 1.4 2007/04/27 06:01:50 garrett Exp $
+ $Id: output_state.h,v 1.5 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -37,7 +37,7 @@ void  output_state( FILE  *fp,
                     Real eint,
                     char  lastmove,
                     Boole B_watch,
-                    char  FN_watch[MAX_CHARS],
+                    char  *FN_watch,
                     char  atomstuff[MAX_ATOMS][MAX_CHARS],
                     int   natom,
                     Real crd[MAX_ATOMS][SPACE]);

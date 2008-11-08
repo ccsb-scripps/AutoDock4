@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.27 2008/06/09 22:39:34 garrett Exp $
+ $Id: gs.cc,v 1.28 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -69,6 +69,9 @@ extern class Eval evaluate;
 extern int sel_prop_count;//debug
 extern int global_ntor;//debug
 extern int debug;//debug
+//#define DEBUG
+//#define DEBUG2
+//#define DEBUG3
 
 
 double worst_in_window(double *window, int size)
@@ -952,7 +955,6 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    register unsigned int i=0, start_index = 0;
    int temp_ordering, temp_index;
 #ifdef DEBUG2
-   Real debug_ranf;
    int allzero = 1;//debug
    Molecule *individualMol;//debug
 #endif
@@ -1022,7 +1024,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
              assert(!ISNAN(alloc[i]));
           }// for i
       }// endif (ISNAN(invdiffwa))
-   } else {
+   } else if (original_population.num_individuals() > 1) {
       // diffwa = 0.0,  so worst = avg
       // This implies the population may have converged.
       converged = 1;
@@ -1150,17 +1152,16 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    // ??? start_index = 0; // gmm, 1998-07-13 ???
 
    while (start_index < original_population.num_individuals()) {
+       Real r; // local 
 #ifdef DEBUG2
       (void)fprintf(stderr, "gs.cc:596/inside \"while(start_index(=%d) < original_population.num_individuals()(=%d)) \" loop:  count= %d\n", start_index, original_population.num_individuals(), ++count); //debug
 #endif
       assert(ordering[i] < original_population.num_individuals());//debug
+      r = ranf();
 #ifdef DEBUG2
-      debug_ranf = ranf();
-      (void)fprintf(stderr, "gs.cc:599/inside debug_ranf= %.3f, alloc[ordering[i]]= %.3e, ordering[i]= %d,  i= %d\n", debug_ranf, alloc[ordering[i]], ordering[i], i); // debug
-      if (debug_ranf < alloc[ordering[i]]) {
-#else
-      if (ranf() < alloc[ordering[i]]) {                        // non-debug
-#endif //  not DEBUG2
+      (void)fprintf(stderr, "gs.cc:599/inside debug_ranf= %.3f, alloc[ordering[i]]= %.3e, ordering[i]= %d,  i= %d\n", r, alloc[ordering[i]], ordering[i], i); // debug
+#endif //  DEBUG2
+      if (r < alloc[ordering[i]]) {
 #ifdef DEBUG2
          (void)fprintf(stderr, "gs.cc:603/inside (debug_ranf < alloc[ordering[i]]) is true!\n"); //debug
          (void)fprintf(stderr, "gs.cc:604/inside about to increment start_index in:  \"new_pop[start_index++] = original_population[ordering[i]];\"; right now, start_index= %d\n", start_index); //debug

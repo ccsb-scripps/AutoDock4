@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.9 2007/04/27 06:01:51 garrett Exp $
+ $Id: readmap.cc,v 1.10 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock 
 
@@ -63,12 +63,12 @@ Statistics readmap( char           line[LINE_LEN],
 {
     FILE *map_file;
 
-    char FileName[MAX_CHARS];
-    char FldFileName[MAX_CHARS];
-    char GpfName[MAX_CHARS];
-    char ExtGpfName[MAX_CHARS];
+    char FileName[PATH_MAX];
+    char FldFileName[PATH_MAX];
+    char GpfName[PATH_MAX];
+    char ExtGpfName[PATH_MAX];
     char message[LINE_LEN];
-    char mmFileName[MAX_CHARS];
+    char mmFileName[PATH_MAX];
     char xyz_str[4];
     char C_mapValue;
     char map_line[LINE_LEN];

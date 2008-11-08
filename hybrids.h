@@ -1,6 +1,6 @@
 /*
 
- $Id: hybrids.h,v 1.11 2008/06/09 22:41:39 garrett Exp $
+ $Id: hybrids.h,v 1.12 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -49,7 +49,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 		State now, unsigned int num_evals, unsigned int pop_size, 
 		int outlev, unsigned int extOutputEveryNgens, Molecule *mol,
 		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
-        GridMapSetInfo *info, char FN_pop_file[MAX_CHARS],
+        GridMapSetInfo *info, char *FN_pop_file,
         int end_of_branch[MAX_TORS] );
 
 

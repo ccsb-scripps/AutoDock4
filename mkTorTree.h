@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.h,v 1.7 2007/04/27 06:01:50 garrett Exp $
+ $Id: mkTorTree.h,v 1.8 2008/11/08 00:37:22 rhuey Exp $
 
  AutoDock 
 
@@ -38,7 +38,7 @@ void  mkTorTree(int   atomnumber[MAX_RECORDS],
                 int   tlist[MAX_TORS][MAX_ATOMS],
                 int   *P_ntor,
                 int   *P_ntor_ligand,
-                char  smFileName[MAX_CHARS],
+                char  *smFileName,
                 char  pdbaname[MAX_ATOMS][5],
                 Boole *P_B_constrain,
                 int   *P_atomC1,

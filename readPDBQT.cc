@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.21 2008/10/31 21:23:34 rhuey Exp $
+ $Id: readPDBQT.cc,v 1.22 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock 
 
@@ -66,8 +66,8 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     int bond_index[MAX_ATOMS],
                     char pdbaname[MAX_ATOMS][5],
 
-                    char FN_ligand[MAX_CHARS],
-                    char FN_flexres[MAX_CHARS],
+                    char *FN_ligand,
+                    char *FN_flexres,
                     Boole B_have_flexible_residues,
 
                     char atomstuff[MAX_ATOMS][MAX_CHARS],
@@ -90,7 +90,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
                     Clock jobStart,
                     struct tms tms_jobStart,
-                    char hostnm[MAX_CHARS],
+                    char *hostnm,
                     int *P_ntorsdof,
                     int outlev,
                     int ignore_inter[MAX_ATOMS],

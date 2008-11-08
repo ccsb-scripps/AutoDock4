@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.h,v 1.8 2008/10/16 16:54:20 rhuey Exp $
+ $Id: writePDBQT.h,v 1.9 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock  
 
@@ -36,8 +36,8 @@
 #include "stateLibrary.h"
 
 void writePDBQT(int irun,FourByteLong seed[2],
-                    char  smFileName[MAX_CHARS],
-                    char  dpfFN[MAX_CHARS],
+                    char  *smFileName,
+                    char  *dpfFN,
                     Real sml_center[SPACE],
                     State state,
                     int   ntor,

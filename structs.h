@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.20 2008/10/16 16:53:04 rhuey Exp $
+ $Id: structs.h,v 1.21 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock  
 
@@ -231,7 +231,7 @@ typedef struct group
   PairID nbs[MAX_NONBONDS];	/* Non-bond data */
   Boole B_constrain;		/* TRUE if any distance constraints */
   DisCon distcon;		/* Distance constraint data */
-  char pdbqfilnam[MAX_CHARS];	/* PDBQ filename holding these data */
+  char pdbqfilnam[PATH_MAX];	/* PDBQ filename holding these data */
 } Group;
 
 #include "grid.h"

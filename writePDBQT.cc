@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.18 2008/10/16 16:54:20 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.19 2008/11/08 00:37:23 rhuey Exp $
 
  AutoDock  
 
@@ -48,8 +48,8 @@ extern Real nb_group_energy[3];
 void
 writePDBQT(int irun, FourByteLong seed[2],
 
-		 char smFileName[MAX_CHARS],
-		 char dpfFN[MAX_CHARS],
+		 char *smFileName,
+		 char *dpfFN,
 		 Real sml_center[SPACE],
 		 State state,
 		 int ntor,
@@ -129,8 +129,8 @@ writePDBQT(int irun, FourByteLong seed[2],
         strcpy(state_type_prefix_string, "DOCKED: ");
         strcpy(state_type_prefix_USER_string, "DOCKED: USER    ");
     }
-	for (i = 0; i < 15; i++) { AtmNamResNamNum[i] = '\0'; }
-	for (i = 0; i < 10; i++) { AtmNamResNam[i] = '\0'; }
+	for (unsigned int i = 0; i < sizeof AtmNamResNamNum; i++) { AtmNamResNamNum[i] = '\0'; }
+	for (unsigned int i = 0; i < sizeof AtmNamResNam; i++) { AtmNamResNam[i] = '\0'; }
 
     initialise_binding_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE );
 
