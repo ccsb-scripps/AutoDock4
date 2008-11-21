@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.24 2008/11/08 00:37:23 rhuey Exp $
+ $Id: support.cc,v 1.25 2008/11/21 22:29:06 rhuey Exp $
 
  AutoDock 
 
@@ -37,7 +37,7 @@
 #include "stateLibrary.h"
 #include "structs.h"
 
-#define DEBUG 
+//#define DEBUG 
 extern FILE *logFile;
 
 extern class Eval evaluate;
@@ -155,8 +155,16 @@ void Population::msort(int m)
       SiftUp();
    }
 
+   assert(lhb==0);
+ 
    //  Now place the m best members at the beginning of the array
-   if(size>1) for (i=0; i<m; i++) {
+   if (m==size) return; //we're done
+   if (m>size) {
+        (void)fprintf(logFile, "support.cc/Population::msort(int m=%d) -- ERROR!  m > size!\n\n", m);
+        exit(-1);
+   }
+
+   for (i=0; i<m && i<size-1; i++) {
 #ifdef DEBUG
    (void)fprintf(stderr, "support.cc/placing %d of %d best of %d, lhb=%d )\n",i,m,size,lhb);
 #endif /* DEBUG */
