@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.83 2008/11/08 00:35:48 rhuey Exp $
+ $Id: main.cc,v 1.84 2008/11/21 22:12:26 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.83 2008/11/08 00:35:48 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.84 2008/11/21 22:12:26 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -691,7 +691,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.83 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.84 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2094,13 +2094,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case DPF_INTNBP_REQM_EPS:
+    case DPF_INTNBP_COEFFS:
         /*
         **  intnbp_r_eps
         **  Read internal energy parameters:
         **  Lennard-Jones and Hydrogen Bond Potentials,
-        **  Using epsilon and r-equilibrium values...
+        **  DPF_INTNBP_REQM_EPS: Using epsilon and r-equilibrium values...
+        **  DPF_INTNBP_COEFFS: Using coefficients...
         */
-        (void) sscanf( line, "%*s " FDFMT2 " %d %d", &Rij, &epsij, &xA, &xB );
+        (void) sscanf( line, "%*s " FDFMT2 " %d %d %s %s", &Rij, &epsij, &xA, &xB, param[0], param[1] );
+        if ( dpf_keyword == DPF_INTNBP_REQM_EPS ) {
         /* check that the Rij is reasonable */
         if ((Rij < RIJ_MIN) || (Rij > RIJ_MAX)) {
             (void) fprintf( logFile,
@@ -2117,21 +2120,32 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
              * exit(-1); */
         }
+        }
+
         /* Defend against division by zero... */
         if (xA != xB) {
+            if ( dpf_keyword == DPF_INTNBP_REQM_EPS ) {
             // Calculate the coefficients from Rij and epsij
             cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
             cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
-            pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-            intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
-            pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-            intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
-            // Increment the atom type numbers, a1 and a2, for the internal non-bond table
-            a2++;
-            if (a2 >= info->num_atom_types) {
-                a1++;
-                a2 = a1;
+            } else {
+            cA = Rij;
+            cB = epsij;
             }
+
+            int a[2]; /* atom types of this interaction pair */
+            for (int i=0;i<2;i++) {
+                foundParameter = apm_find(param[i]);
+                if ( NULL == foundParameter ) {
+                    prStr( error_message,"%s: ERROR:  Unknown ligand atom type \"%s\"; add parameters for it to the parameter library first!\n", programname, param[i]);
+                    exit(-1);
+                }
+                else a[i] = foundParameter->map_index;
+            }
+            pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
+            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
+           // pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
+            //intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
         } else {
             pr(logFile,"WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
             exit(-1);
@@ -2141,36 +2155,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
-    case DPF_INTNBP_COEFFS:
-        /*
-        **  intnbp_coeffs
-        **  Read internal energy parameters:
-        **  Lennard-Jones and Hydrogen Bond Potentials,
-        **  Using coefficients...
-        */
-        (void) sscanf( line, "%*s " FDFMT2 " %d %d", &cA, &cB, &xA, &xB );
-
-        /* Defend against division by zero... */
-        if (xA != xB) {
-            pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-            intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
-            pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-            intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
-            // Increment the atom type numbers, a1 and a2, for the internal non-bond table
-            a2++;
-            if (a2 >= info->num_atom_types) {
-                a1++;
-                a2 = a1;
-            }
-        } else {
-            pr(logFile,"WARNING: Exponents must be different. Aborting...\n");
-            exit(-1);
-        }
-
-        (void) fflush(logFile);
-        break;
-
-//______________________________________________________________________________
 
     case DPF_UNBOUND_INTNBP_COEFFS:
         /*
