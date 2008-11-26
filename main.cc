@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.84 2008/11/21 22:12:26 rhuey Exp $
+ $Id: main.cc,v 1.85 2008/11/26 17:06:10 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.84 2008/11/21 22:12:26 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.85 2008/11/26 17:06:10 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -691,7 +691,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.84 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.85 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2105,22 +2105,31 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) sscanf( line, "%*s " FDFMT2 " %d %d %s %s", &Rij, &epsij, &xA, &xB, param[0], param[1] );
         if ( dpf_keyword == DPF_INTNBP_REQM_EPS ) {
         /* check that the Rij is reasonable */
-        if ((Rij < RIJ_MIN) || (Rij > RIJ_MAX)) {
-            (void) fprintf( logFile,
-            "WARNING: pairwise distance, Rij, %.2f, is not a very reasonable value for the equilibrium separation of two atoms! (%.2f Angstroms <= Rij <= %.2f Angstroms)\n\n", Rij, RIJ_MIN, RIJ_MAX);
-            (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
-            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
-             * exit(-1); */
-        }
-        /* check that the epsij is reasonable */
-        if ((epsij < EPSIJ_MIN) || (epsij > EPSIJ_MAX)) {
-            (void) fprintf( logFile,
-            "WARNING: well-depth, epsilon_ij, %.2f, is not a very reasonable value for the equilibrium potential energy of two atoms! (%.2f kcal/mol <= epsilon_ij <= %.2f kcal/mol)\n\n", epsij, EPSIJ_MIN, EPSIJ_MAX);
-            (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
-            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
-             * exit(-1); */
-        }
-        }
+	/* SF ...but only if there are no G-atoms. */        /* SF RING CLOSURE */
+
+	if ((Rij <= 2.0 ) && (epsij >= EPSIJ_MAX )) {    /* RING CLOSURE */
+ 	     (void) fprintf( logFile, "Ring closure distance potential found for atom type %s :\n    Equilibrium distance   = %.2f Angstroms \n    Equilibrium potential  = %.6f Kcal/mol\n    Pseudo-LJ coefficients = %d-%d \n\n", param[1] , Rij, epsij, xA, xB); /* SF RING CLOSURE */
+			}   /* SF RING CLOSURE */
+	else { /* SF RING CLOSURE */
+
+	        if ((Rij < RIJ_MIN) || (Rij > RIJ_MAX)) {
+        	    (void) fprintf( logFile,
+	            "WARNING: pairwise distance, Rij, %.2f, is not a very reasonable value for the equilibrium separation of two atoms! (%.2f Angstroms <= Rij <= %.2f Angstroms)\n\n", Rij, RIJ_MIN, RIJ_MAX);
+	            (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
+	            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
+	             * exit(-1); */
+	     	     }
+	        /* check that the epsij is reasonable */
+	        if ((epsij < EPSIJ_MIN) || (epsij > EPSIJ_MAX)) {
+	            (void) fprintf( logFile,
+	            "WARNING: well-depth, epsilon_ij, %.2f, is not a very reasonable value for the equilibrium potential energy of two atoms! (%.2f kcal/mol <= epsilon_ij <= %.2f kcal/mol)\n\n", epsij, EPSIJ_MIN, EPSIJ_MAX);
+	            (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"? \n\n");
+	            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
+	             * exit(-1); */
+	        }
+	        } /* RING CLOSURE */
+
+	     }
 
         /* Defend against division by zero... */
         if (xA != xB) {
