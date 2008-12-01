@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.19 2008/11/08 00:37:23 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.20 2008/12/01 17:41:37 rhuey Exp $
 
  AutoDock  
 
@@ -277,7 +277,7 @@ writePDBQT(int irun, FourByteLong seed[2],
                 }
                 if (keepresnum > 0) {
                     // Retain the original Residue Numbering
-                    strncpy(AtmNamResNamNum, &atomstuff[i][12], (size_t) 14);
+                    strncpy(AtmNamResNamNum, &atomstuff[i][13], (size_t) 14);   /*  SF &atomstuff[i][12] was increased to 12 to fix the extra space     */
                     AtmNamResNamNum[14] = '\0';
                     (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESSTR, state_type_prefix_string, 
                                    i + 1, AtmNamResNamNum, crd[i][X], crd[i][Y], crd[i][Z], 
