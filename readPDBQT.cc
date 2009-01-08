@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.22 2008/11/08 00:37:23 rhuey Exp $
+ $Id: readPDBQT.cc,v 1.23 2009/01/08 00:55:58 rhuey Exp $
 
  AutoDock 
 
@@ -375,9 +375,12 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
             case PDBQ_ROOT:
                 B_is_in_branch = TRUE;
-                piece = 1;
+                ++nrigid_piece; //allocate a new rigid body for root atoms whether ligand or receptor
+                piece = nrigid_piece; //CAUTION: ligand root must have value 1
                 stack_push(s, piece);
-                ++nrigid_piece;
+                if (debug > 0) {
+                    pr(logFile, "DEBUG: 382: ROOT piece=%d\n", piece);
+                }
                 break;
 
             case PDBQ_BRANCH:
@@ -409,7 +412,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 //end_of_branch[ piece ] = max( end_of_branch[ piece ], piece);
                 branch_last_piece[ piece ] = max( branch_last_piece[ piece ], piece);
                 if (debug > 0) {
-                    pr(logFile, "DEBUG: 407:   end_of_branch[ %d ] = %d\n", piece, end_of_branch[ piece ] );
+                    pr(logFile, "DEBUG: 407:   END BRANCH: branch_last_piece[ piece %d ] = %d\n", piece, branch_last_piece[ piece ] );
                 }
                 parent = stack_pop(s);
                 if (parent < 0) {
@@ -424,10 +427,10 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     branch_last_piece[parent ] = max( branch_last_piece[parent ], branch_last_piece[piece ] );
                 } 
                 if (debug > 0) {
-                    pr(logFile, "DEBUG: 425:   parent = %d, end_of_branch[ parent ] = %d\n", parent, end_of_branch[ parent ] );
+                    pr(logFile, "DEBUG: 425:   parent = %d, branch_last_piece[ parent ] = %d\n", parent, branch_last_piece[ parent ] );
                 }
                 if (debug > 0) {
-                    pr(logFile, "DEBUG: 428:   end_of_branch[ %d ] = %d\n", parent, end_of_branch[ parent ] );
+                    pr(logFile, "DEBUG: 428:   branch_last_piece[ %d ] = %d\n", parent, branch_last_piece[ parent ] );
                 }
                 piece = parent;
                 break;
@@ -452,6 +455,9 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     // Then a flexible receptor sidechain was found in the PDBQ file.
                     // Flag that we've found a BEGIN_RES record.
                     found_begin_res = 1;
+                }
+                if (debug > 0) {
+                    pr(logFile, "DEBUG: 457: BEGIN_RES\n");
                 }
                 // Increment the number of residues
                 nres++;
@@ -504,9 +510,14 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     for (j = 0; j < nrigid_piece-1; j++)  {
         end_of_branch[j] = branch_last_piece[j+2]-1; 
         if (debug > 0) {
-            pr(logFile, "\n end_of_branch:\n");
-            pr(logFile, " %2d end_of_branch=%2d branch_last=%2d\n ",j,end_of_branch[j], branch_last_piece[j]);
+            pr(logFile, "\n end_of_branch[%2d] := %2d (branch_last_piece[%2d]-1)",
+                                          j,end_of_branch[j],j+2);
         };
+        if (end_of_branch[j] <0) {
+		    prStr(error_message, "ERROR: end_of_branch[%d] < 0 (%d)\n", j, end_of_branch[j]);
+		    stop(error_message);
+		    exit(-1);
+        }
     }
 
 	if (natom > MAX_ATOMS) {
