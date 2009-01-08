@@ -1,6 +1,6 @@
 /*
 
- $Id: mdist.h,v 1.8 2007/10/02 22:56:32 garrett Exp $
+ $Id: mdist.h,v 1.9 2009/01/08 01:08:16 rhuey Exp $
 
  AutoDock 
 
@@ -32,8 +32,7 @@
 
 void mdist();
 
-enum {C,N,O,H,XX,P,S};  // see "bond_index" in the "AD4.1_bound.dat" or "AD4_parameters.dat" file.
-//    0 1 2 3 4  5 6
+enum {C=0,N=1,O=2,H=3,XX=4,P=5,S=6};  // see "bond_index" in the "AD4.1_bound.dat" or "AD4_parameters.dat" file.
 #define NUM_ENUM_ATOMTYPES 7 // this should be the length of the enumerated atom types above
 	
 double mindist[NUM_ENUM_ATOMTYPES][NUM_ENUM_ATOMTYPES];
