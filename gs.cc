@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.28 2008/11/08 00:37:22 rhuey Exp $
+ $Id: gs.cc,v 1.29 2009/01/15 22:32:15 rhuey Exp $
 
  AutoDock 
 
@@ -959,6 +959,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    Molecule *individualMol;//debug
 #endif
 
+#undef CHECK_ISNAN
 #ifdef CHECK_ISNAN
    int allEnergiesEqual = 1;
    double diffwa = 0.0, invdiffwa = 0.0, firstEnergy = 0.0;
@@ -1087,7 +1088,8 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    for (i=0;  i < original_population.num_individuals();  i++)
    {
       //  In our case of function minimization, the max individual is the worst
-      alloc[i] = (worst - original_population[i].value(e_mode))/(worst - avg);
+      if(avg==worst) alloc[i] = 1./(original_population.num_individuals()+1); // HACK TODO  investigate 2008-11
+       else alloc[i] = (worst - original_population[i].value(e_mode))/(worst - avg);
    }
 
 #endif /* not CHECK_ISNAN */
@@ -1133,6 +1135,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
       for (; (alloc[i] >= 1.0) && (start_index < original_population.num_individuals());  alloc[i]-= 1.0) {
          new_pop[start_index] = original_population[i];
          //new_pop[start_index].incrementAge();
+         // DOTO 2008-11 why is this changing alloc[]
          ++start_index;
       }
    }
@@ -1422,7 +1425,7 @@ int Genetic_Algorithm::search(Population &solutions)
            // (void)fprintf(logFile, "___\noutputEveryNgens = %d, OUTLEV0_GENS=%d\n___\n", outputEveryNgens, OUTLEV0_GENS);
            if (outputEveryNgens > 1) {
     #ifndef DEBUG3
-               (void)fprintf(logFile,"Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
+               (void)fprintf(logFile,"@@ Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), 
                evaluate.evals() );
     #else
@@ -1434,7 +1437,7 @@ int Genetic_Algorithm::search(Population &solutions)
     #endif /* DEBUG3 */
            } else {
     #ifndef DEBUG3
-               (void)fprintf(logFile,"Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
+               (void)fprintf(logFile,"@@ Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), evaluate.evals() );
     #else
                (void)fprintf(logFile,"Generation: %3u   Oldest: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Num.evals.: %ld   Timing: ", 
