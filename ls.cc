@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.10 2007/04/27 06:01:49 garrett Exp $
+ $Id: ls.cc,v 1.11 2009/02/24 00:19:40 rhuey Exp $
 
  AutoDock 
 
@@ -14,7 +14,7 @@
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
@@ -28,7 +28,6 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
 /********************************************************************
       These are the methods of the local searchers
 
@@ -48,7 +47,7 @@ Phenotype genPh(const Phenotype &original, Real sign, Real *array1, Real *array2
    register unsigned int i, index = 0;
    Phenotype retval(original);
 
-#ifdef DEBUG
+#ifdef DEBUG2
    (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, Real *array1, Real *array2)\n");
 #endif /* DEBUG */
 
@@ -87,6 +86,7 @@ void Solis_Wets::SW(Phenotype &vector)
    
 #ifdef DEBUG
    (void)fprintf(logFile, "ls.cc/void Solis_Wets::SW(Phenotype &vector)\n");
+
 #endif /* DEBUG */
 
    //  Reset bias
@@ -95,6 +95,12 @@ void Solis_Wets::SW(Phenotype &vector)
    }
 
    for (i=0; i < max_its; i++) {
+#ifdef DEBUG
+   Real prevxyz[3];
+   Real prevq[4];
+   for ( int d=0;d<3;d++)prevxyz[d] =vector.gread(d).real;
+   for ( int d=0;d<4;d++)prevq[d] =vector.gread(d+3).real;
+#endif /* DEBUG */
       // Generate deviates
       for (j=0; j < size; j++) {
          deviates[j] = gen_deviates(temp_rho);
@@ -131,6 +137,23 @@ void Solis_Wets::SW(Phenotype &vector)
             }
          }
       }
+#ifdef DEBUG
+   Real dt; // translation step scalar
+   dt=0;
+   for ( int d=0;d<3;d++) dt += (prevxyz[d]- newPh.gread(d).real)*(prevxyz[d]- newPh.gread(d).real);
+   dt = sqrt(dt);
+   (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+8.4f p=%4.2f b=(%5.2f %5.2f %5.2f) dev=(%5.2f %5.2f %5.2f)", 
+                                  i, num_successes, num_failures, vector.evaluate(Normal_Eval), temp_rho, bias[0], bias[1], bias[2], 
+                                  deviates[0], deviates[1], deviates[2]);
+   (void)fprintf(logFile, " xyz=(");
+    fprintf(logFile, "%5.2f %5.2f %5.2f", newPh.gread(0).real, newPh.gread(1).real,newPh.gread(2).real);
+   (void)fprintf(logFile, ")");
+    fprintf(logFile, "dT=%5.2f ", dt);
+   (void)fprintf(logFile, " quat=(");
+    fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f", newPh.gread(3).real, newPh.gread(4).real,newPh.gread(5).real,newPh.gread(6).real);
+   //?? newPh.printIndividualsState(logFile, 7, 3);
+   (void)fprintf(logFile, ")");
+#endif /* DEBUG */
 
       // Check to see if we need to expand or contract
       if (num_successes >= max_successes) {
@@ -184,7 +207,7 @@ void Pseudo_Solis_Wets::SW(Phenotype &vector)
          num_failures = 0;
          vector = newPh;
          for (j=0; j < size; j++) {
-            // bias[j] = 0.20*bias[j] + 0.40*deviates[j];
+            // bias[j] = 0.20*bias[j] + 0.40*deviates[j]; 
             bias[j] = 0.60*bias[j] + 0.40*deviates[j]; // strict Solis+Wets
          }
       } else  {
@@ -208,6 +231,10 @@ void Pseudo_Solis_Wets::SW(Phenotype &vector)
          }
       }
 
+#ifdef DEBUG
+   (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+6.2f p0=%f b0=%f ", 
+                                  i, num_successes, num_failures, vector.evaluate(Normal_Eval), rho[0], bias[0]);
+#endif /* DEBUG */
       // Check to see if we need to expand or contract
       if (num_successes >= max_successes) {
          for(j=0; j < size; j++) {
@@ -238,7 +265,7 @@ void Pseudo_Solis_Wets::SW(Phenotype &vector)
 int Solis_Wets_Base::search(Individual &solution)
 {
 
-#ifdef DEBUG
+#ifdef DEBUG2
    (void)fprintf(logFile, "ls.cc/int Solis_Wets_Base::search(Individual &solution)\n");
 #endif /* DEBUG */
 
