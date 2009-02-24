@@ -1,6 +1,6 @@
 /*
 
- $Id: get_atom_type.cc,v 1.6 2008/11/08 00:37:22 rhuey Exp $
+ $Id: get_atom_type.cc,v 1.7 2009/02/24 01:32:34 rhuey Exp $
 
  AutoDock 
 
@@ -50,7 +50,7 @@ int get_atom_type( char aname[4] )
     ParameterEntry thisparm;
     int map_index = -1;
     int bond_index = -1;
-    char *message;
+    char message[512];
 
     // "map_index" is used as an index into the "map" array,
     // to look up the correct energies in the current grid cell,
