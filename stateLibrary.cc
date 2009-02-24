@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.14 2007/04/27 06:01:51 garrett Exp $
+ $Id: stateLibrary.cc,v 1.15 2009/02/24 00:19:59 rhuey Exp $
 
  AutoDock 
 
@@ -162,14 +162,14 @@ void writeState( FILE *fp, State S )
     //    (void)fprintf( fp, "State= " );
 
     // Write translation.
-    (void)fprintf( fp, "%.3f %.3f %.3f  ", S.T.x, S.T.y, S.T.z );
+    (void)fprintf( fp, "%7.3f %7.3f %7.3f  ", S.T.x, S.T.y, S.T.z );
 
     // Convert quaternion to axis-angle.
     S.Q = convertQuatToRot( S.Q );
 
     // Write axis-angle.
     S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-    (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
+    (void)fprintf( fp, "%6.3f %6.3f %6.3f %6.3f  ", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
     
     // Write torsion angles.
     if (S.ntor > 0) {
@@ -183,7 +183,7 @@ void writeState( FILE *fp, State S )
             // Commented out next line to make format more consistent, now all
             // numbers are space-delimited.
             //pr( fp, " %.2f%c", torDegTmp, (i==(S.ntor-1) ? '.' : ','));
-            pr( fp, " %.2f", torDegTmp );
+            pr( fp, " %7.2f", torDegTmp );
         }
     }
     // Leave fp on this line for energies which follow....
