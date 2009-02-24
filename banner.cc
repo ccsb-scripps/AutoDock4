@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.10 2008/04/04 19:47:22 garrett Exp $
+ $Id: banner.cc,v 1.11 2009/02/24 01:34:23 rhuey Exp $
 
  AutoDock 
 
@@ -34,7 +34,7 @@
 
 extern FILE *logFile;
 
-void banner( Real version_num )
+void banner( char * version_num )
 {
 
 /*----------------------------------------------------------------------------*/
@@ -65,7 +65,7 @@ void banner( Real version_num )
     (void) fprintf(logFile, "\n");
     (void) fprintf(logFile, "                  ______________________________________ \n");
     (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 |            AutoDock %3.2f             |\n", version_num );
+    (void) fprintf(logFile, "                 |            AutoDock %-4s             |\n", version_num );
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |            (c) 1989-2008             |\n");
     (void) fprintf(logFile, "                 |    The Scripps Research Institute    |\n");

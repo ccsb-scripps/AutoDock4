@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.85 2008/11/26 17:06:10 rhuey Exp $
+ $Id: main.cc,v 1.86 2009/02/24 01:34:23 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.85 2008/11/26 17:06:10 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.86 2009/02/24 01:34:23 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -435,7 +435,11 @@ static Real F_W;
 static Real F_hW;
 static FourByteLong clktck = 0;
 
-static Real version_num = 4.10;
+#ifndef VERSION_NUM
+static char * version_num = "4.1";
+#else
+static char * version_num = VERSION_NUM;
+#endif
 
 struct tms tms_jobStart;
 struct tms tms_gaStart;
@@ -691,7 +695,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.85 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.86 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -721,7 +725,7 @@ pr( logFile, "\nNOTE: \"rus\" stands for:\n\n      r = Real, wall-clock or elaps
 //
 // Read in default parameters
 //
-setup_parameter_library(outlev);
+setup_parameter_library(outlev, version_num);
 
 // 
 // Compute the look-up table for the distance-dependent dielectric function

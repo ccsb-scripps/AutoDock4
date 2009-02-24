@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.h,v 1.4 2008/11/08 00:37:23 rhuey Exp $
+ $Id: read_parameter_library.h,v 1.5 2009/02/24 01:34:24 rhuey Exp $
 
  AutoDock 
 
@@ -36,7 +36,8 @@ void read_parameter_library(
         );
 
 void setup_parameter_library(
-        int outlev
+        int outlev,
+        char * version_num
         );
 
 void setup_distdepdiel( int outlev, 

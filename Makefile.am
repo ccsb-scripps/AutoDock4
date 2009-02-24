@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.17 2008/10/16 16:43:00 rhuey Exp $
+# $Id: Makefile.am,v 1.18 2009/02/24 01:34:23 rhuey Exp $
 # 
 # AutoDock  
 # 
@@ -36,18 +36,220 @@ EXTRA_DIST = AD4_PARM99.dat AD4_parameters.dat AD4.1_bound.dat AD4.1_extended.da
 dist-hook:
 	rm -rf `find $(distdir)/Tests -name CVS -o -name '*.dlg'` 
 
-bin_PROGRAMS = autodock4
+bin_PROGRAMS = autodock4 autodock4_0
 
 # Define the AutoDock 4 source code files:
 
 autodock4_SOURCES = \
     main.cc
+autodock4_0_SOURCES = \
+    main.cc
 
-BUILT_SOURCES = default_parameters.h
+BUILT_SOURCES = main.cc default_parameters.h
 
 CLEANFILES = default_parameters.h
 
-noinst_LIBRARIES = libad.a
+noinst_LIBRARIES = libad.a libad_4_0.a
+
+libad_4_0_a_SOURCES = \
+    analysis.cc \
+	atom_parameter_manager.cc \
+    banner.cc \
+    bestpdb.cc \
+	calculateEnergies.cc \
+    call_glss.cc \
+    call_gs.cc \
+    call_ls.cc \
+    changeState.cc \
+    check_header_float.cc \
+    check_header_int.cc \
+    check_header_line.cc \
+    cluster_analysis.cc \
+    clmode.cc \
+    cmdmode.cc \
+    cnv_state_to_coords.cc \
+    com.cc \
+    conformation_sampler.cc \
+	distdepdiel.cc \
+    stateLibrary.cc \
+    readfield.cc \
+    readmap.cc \
+    readPDBQT.cc \
+	read_parameter_library.cc \
+    eval.cc \
+    gencau.cc \
+    getrms.cc \
+    get_atom_type.cc \
+    getInitialState.cc \
+    getpdbcrds.cc \
+    gs.cc \
+    initautodock.cc \
+    input_state.cc \
+    investigate.cc \
+    linpack.cc \
+    ls.cc \
+    mapping.cc \
+    minmeanmax.cc \
+    mkNewState.cc \
+    mkTorTree.cc \
+    mkRandomState.cc \
+    nonbonds.cc \
+    openfile.cc \
+    output_state.cc \
+    parse_com_line.cc \
+    parse_dpf_line.cc \
+    parse_param_line.cc \
+    parse_PDBQT_line.cc \
+    parse_trj_line.cc \
+	parsetypes.cc \
+    print_2x.cc \
+    print_atomic_energies.cc \
+    print_avsfld.cc \
+    writePDBQT.cc \
+    print_rem.cc \
+    printdate.cc \
+    printEnergies.cc \
+    printhms.cc \
+    prClusterHist.cc \
+    prInitialState.cc \
+    prTorConList.cc \
+    qmultiply.cc \
+    qtransform.cc \
+    quicksort.cc \
+    ranlib.cc \
+    rep.cc \
+    scauchy.cc \
+    set_cmd_io_std.cc \
+    setflags.cc \
+    simanneal.cc \
+    sort_enrg.cc \
+    stack.cc \
+    stop.cc \
+    strindex.cc \
+    success.cc \
+    support.cc \
+    swap.cc \
+    timesys.cc \
+    timesyshms.cc \
+    torNorVec.cc \
+    torsion.cc \
+    trilinterp.cc \
+    usage.cc \
+    weedbonds.cc \
+    warn_bad_file.cc \
+    coliny.cc \
+    eintcal.cc \
+    eintcalPrint.cc \
+    intnbtable.cc \
+    nbe.cc \
+		PDBQT_tokens.h \
+		analysis.h \
+		atom_parameter_manager.h \
+		autocomm.h \
+		autoglobal.h \
+		banner.h \
+		bestpdb.h \
+		calculateEnergies.h \
+		call_glss.h \
+		call_gs.h \
+		call_ls.h \
+		changeState.h \
+		check_header_float.h \
+		check_header_int.h \
+		check_header_line.h \
+		clmode.h \
+		cluster_analysis.h \
+		cmdmode.h \
+		cmdtokens.h \
+		cnv_state_to_coords.h \
+		coliny.h \
+		conformation_sampler.h \
+		constants.h \
+		default_parameters.h \
+		distdepdiel.h \
+		dpftoken.h \
+		eintcal.h \
+		eintcalPrint.h \
+		energy.h \
+		eval.h \
+		gencau.h \
+		getInitialState.h \
+		get_atom_type.h \
+		getpdbcrds.h \
+		getrms.h \
+		globals.h \
+		grid.h \
+		gs.h \
+		hybrids.h \
+		initautodock.h \
+		input_state.h \
+		intnbtable.h \
+		investigate.h \
+		ls.h \
+		main.h \
+		mdist.h \
+		mkNewState.h \
+		mkRandomState.h \
+		mkTorTree.h \
+		molstruct.h \
+		nbe.h \
+		nonbonds.h \
+		openfile.h \
+		output_state.h \
+		parameters.h \
+		parse_PDBQT_line.h \
+		parse_com_line.h \
+		parse_dpf_line.h \
+		parse_param_line.h \
+		parse_trj_line.h \
+		parsetypes.h \
+		partokens.h \
+		prClusterHist.h \
+		prInitialState.h \
+		prTorConList.h \
+		printEnergies.h \
+		print_2x.h \
+		print_atomic_energies.h \
+		print_avsfld.h \
+		print_rem.h \
+		printdate.h \
+		printhms.h \
+		qmultiply.h \
+		qtransform.h \
+		quicksort.h \
+		ranlib.h \
+		readPDBQT.h \
+		read_parameter_library.h \
+		readfield.h \
+		readmap.h \
+		rep.h \
+		rep_constants.h \
+		set_cmd_io_std.h \
+		setflags.h \
+		simanneal.h \
+		sort_enrg.h \
+		stateLibrary.h \
+		stack.h \
+		stop.h \
+		strindex.h \
+		structs.h \
+		success.h \
+		support.h \
+		swap.h \
+		timesys.h \
+		timesyshms.h \
+		torNorVec.h \
+		torsion.h \
+		trilinterp.h \
+		trjtokens.h \
+		typedefs.h \
+		usage.h \
+		version.h \
+		warn_bad_file.h \
+		weedbonds.h \
+		writePDBQT.h
+
+
 
 libad_a_SOURCES = \
     analysis.cc \
@@ -247,7 +449,6 @@ libad_a_SOURCES = \
 		weedbonds.h \
 		writePDBQT.h
 
-
 AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
 
@@ -255,6 +456,9 @@ AM_CPPFLAGS = -DNOSQRT \
               -DUSE_8A_NBCUTOFF \
               -DWRITEPDBQSTATE \
               -I$(srcdir)/../acro/include # Standard accuracy, but faster; no crossover in quaternion
+autodock4_0_CPPFLAGS=-DVERSION_NUM=\"4.0\" $(AM_CPPFLAGS)
+autodock4_1_CPPFLAGS=-DVERSION_NUM=\"4.1\" $(AM_CPPFLAGS)
+
 
 #autodock4_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #autodock4_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
@@ -264,9 +468,11 @@ AM_CPPFLAGS = -DNOSQRT \
 
 
 autodock4_LDADD = libad.a $(COLINY_LDFLAGS) -lm
+autodock4_0_LDADD = libad_4_0.a $(COLINY_LDFLAGS) -lm
 
 if WANT_BIGSTACK
     autodock4_LDFLAGS = -fno-stack-limit # Cygwin, 32MB stacksize
+    autodock4_0_LDFLAGS = -fno-stack-limit # Cygwin, 32MB stacksize
 endif
 
 #
@@ -469,9 +675,9 @@ gs.o : gs.cc gs.h ranlib.h eval.h rep.h support.h writePDBQT.h
 # 2007-04-30 MP & GMM: this line is necessary to be able to compile read_parameter_library.o
 read_parameter_library.o : default_parameters.h
 
-default_parameters.h : AD4.1_bound.dat paramdat2h.csh
+default_parameters.h : AD4_parameters.dat AD4.1_bound.dat paramdat2h.csh
 	rm -f $@
-	csh $(srcdir)/paramdat2h.csh $(srcdir)/AD4.1_bound.dat > $@
+	csh $(srcdir)/paramdat2h.csh $(srcdir)/AD4_parameters.dat $(srcdir)/AD4.1_bound.dat > $@
 
 #coliny.o : coliny.h
 #	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ACRO_INCLUDES) -c coliny.cc -o coliny.o

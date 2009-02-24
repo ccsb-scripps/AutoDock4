@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.h,v 1.4 2007/04/27 06:01:47 garrett Exp $
+ $Id: banner.h,v 1.5 2009/02/24 01:34:23 rhuey Exp $
 
  AutoDock 
 
@@ -28,7 +28,7 @@
 #ifndef BANNER
 #define BANNER
 #include "typedefs.h"
-void  banner( Real version_num );
+void  banner( char * version_num );
 void show_copyright( FILE *fp );
 void show_warranty( FILE *fp );
 #endif

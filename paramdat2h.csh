@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Id: paramdat2h.csh,v 1.8 2008/06/27 04:10:11 garrett Exp $
+# $Id: paramdat2h.csh,v 1.9 2009/02/24 01:34:23 rhuey Exp $
 # 
 # AutoDock 
 # 
@@ -23,7 +23,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-echo 'char *param_string[MAX_LINES] = {'
-egrep -v '^#|^$' $* | sed 's/\(.*\)$/"\1\\n", /'
+echo 'char *param_string_4_0[MAX_LINES] = {'
+egrep -v '^#|^$' $1 | sed 's/\(.*\)$/"\1\\n", /'
+echo ' };'
+echo 'char *param_string_4_1[MAX_LINES] = {'
+egrep -v '^#|^$' $2 | sed 's/\(.*\)$/"\1\\n", /'
 echo ' };'
 echo '// EOF'

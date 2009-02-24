@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.9 2008/11/08 00:37:23 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.10 2009/02/24 01:34:24 rhuey Exp $
 
  AutoDock 
 
@@ -205,7 +205,7 @@ void read_parameter_library(
     } // while there is another line of parameters to read in
 }
 
-void setup_parameter_library( int outlev )
+void setup_parameter_library( int outlev, char * version_num )
 {
     static ParameterEntry thisParameter;
     char parameter_library_line[LINE_LEN];
@@ -214,12 +214,24 @@ void setup_parameter_library( int outlev )
     int int_hbond_type = 0;
     register int counter = 0;
 
-    pr(logFile, "Setting up parameter library with factory default values.\n\n\n");
+    pr(logFile, "Setting up parameter library with AutoDock %s default values.\n\n\n", 
+                 version_num);
 
     // Default parameters
     //
     // These are set up in "default_parameters.h"
-    // and stored in the param_string[MAX_LINES] array
+    // and stored in the param_string_VERSION_NUM[MAX_LINES] array
+    // so far we have param_string_4_0 and param_string_4_1
+
+    char ** param_string;
+    if (0==strcmp(version_num, "4.0")) param_string=param_string_4_0;
+    else
+    if (0==strcmp(version_num, "4.1")) param_string=param_string_4_1;
+    else {
+        pr(logFile, "DEBUG: cannot determine default parameter version number %s \n",version_num);
+        exit(-1);
+    }
+
 
     while ( param_string[counter] != NULL) {
         param_keyword = parse_param_line( param_string[counter] );
