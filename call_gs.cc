@@ -1,6 +1,6 @@
 /*
 
- $Id: call_gs.cc,v 1.7 2008/06/09 22:32:16 garrett Exp $
+ $Id: call_gs.cc,v 1.8 2009/02/24 00:19:13 rhuey Exp $
 
  AutoDock 
 
@@ -71,6 +71,6 @@ State call_gs(Global_Search *global_method, State now, unsigned int num_evals, u
       global_method->search(thisPop);
    } while ((evaluate.evals() < num_evals) && (!global_method->terminate()));
 
-   thisPop.msort(3);
+   if (pop_size>1) thisPop.msort(1);
    return( thisPop[0].state(now.ntor) );
 }

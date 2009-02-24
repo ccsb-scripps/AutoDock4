@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.35 2008/11/08 00:37:22 rhuey Exp $
+ $Id: call_glss.cc,v 1.36 2009/02/24 00:19:13 rhuey Exp $
 
  AutoDock  
 
@@ -394,7 +394,16 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
 
         for (i=0; i<pop_size; i++) {
+            if (outlev > 1) {
+                (void)fprintf( logFile, "LS: %d",num_generations); 
+                (void)fprintf( logFile, " %d",i+1); 
+                (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
+            }
             local_method->search(thisPop[i]);
+            if (outlev > 1) {
+                (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
+                (void)fprintf( logFile, " \n"); 
+            }
         }
 
         if (outlev > 2) {
@@ -417,7 +426,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         (void)fflush(logFile);
     } while ((evaluate.evals() < num_evals) && (!global_method->terminate()));
 
-    thisPop.msort(3);
+    thisPop.msort(1);
     (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
     return( thisPop[0].state(sInit.ntor) );
 }
