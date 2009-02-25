@@ -39,4 +39,21 @@ Copying AutoDock
 Please refer to the file "COPYING" in this directory for
 more information on copying AutoDock.
 
+From CVS
+=======================
+If you've just done a 'cvs co' then here are the commands
+necessary to make the autodock:
+
+ % aclocal
+ % autoconf
+ % automake -a
+ % ./configure
+ % make 
+ % make install
+ 
+ This will create and install autodock4 and autodock4_0 binaries, where 
+ autodock4 is autodock version 4.1 and autodock4_0 is autodock version 4.0.
+ 
+ 
+
 
