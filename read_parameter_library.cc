@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.10 2009/02/24 01:34:24 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.11 2009/03/03 15:48:43 rhuey Exp $
 
  AutoDock 
 
@@ -43,6 +43,9 @@ extern int debug;
 extern Linear_FE_Model AD4;
 extern Unbound_Model ad4_unbound_model;
 
+
+Boole string_begins_with(char *a, char *b);
+Boole string_ends_with(char *a, char *b);
 
 void read_parameter_library(
         char *FN_parameter_library,
@@ -224,9 +227,9 @@ void setup_parameter_library( int outlev, char * version_num )
     // so far we have param_string_4_0 and param_string_4_1
 
     char ** param_string;
-    if (0==strcmp(version_num, "4.0")) param_string=param_string_4_0;
+    if (string_begins_with(version_num, "4.0")) param_string=param_string_4_0;
     else
-    if (0==strcmp(version_num, "4.1")) param_string=param_string_4_1;
+    if (string_begins_with(version_num, "4.1")) param_string=param_string_4_1;
     else {
         pr(logFile, "DEBUG: cannot determine default parameter version number %s \n",version_num);
         exit(-1);
@@ -351,4 +354,17 @@ void setup_parameter_library( int outlev, char * version_num )
     } // while there is another line of parameters to read in
 }
 
+Boole string_begins_with(char *a, char *b) {
+    // does string a begin with b  (eg   a begins with "version 4" )
+    int alen=strlen(a);
+    int blen=strlen(b);
+    return alen>=blen && 0==strncmp(b, a, blen) ;
+    }
+Boole string_ends_with(char *a, char *b) {
+    // does string a end with b  (eg   a ends with .pdb)
+    int alen=strlen(a);
+    int blen=strlen(b);
+    return alen>=blen && 0==strcmp(b, a+alen-blen) ;
+
+    }
 /* EOF */
