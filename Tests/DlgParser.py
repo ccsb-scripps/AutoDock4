@@ -7,9 +7,9 @@
 #############################################################################
 
 
-# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.7 2007/05/01 21:37:04 rhuey Exp $
+# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.8 2009/03/03 15:50:49 rhuey Exp $
 #
-# $Id: DlgParser.py,v 1.7 2007/05/01 21:37:04 rhuey Exp $
+# $Id: DlgParser.py,v 1.8 2009/03/03 15:50:49 rhuey Exp $
 #
 #
 #
@@ -101,7 +101,7 @@ class DlgParser:
                     by 'write_all'
         """
         self.filename = filename
-        self.version = 3.05
+        self.version = "3.0"
         #reset
         for item in ['clist','clusterlines','dpfLines','histogramlines',\
                      'ligLines','modelList']:
@@ -117,7 +117,7 @@ class DlgParser:
         allLines = dlgptr.readlines()
         self.allLines = allLines
         self.match(allLines)
-        if self.version==4.0:
+        if self.version[:3]=="4.0":
             ad4_keywds = ['vdw_energy', 'estat_energy', 
                           'unbound_energy']
             self.keywords.extend(ad4_keywds)
@@ -194,7 +194,7 @@ class DlgParser:
             if lines==[]:
                 input_key = 'INPUT-LIGAND-PDBQT: '
                 if k==input_key:
-                    if verbose and self.version!=4.0:
+                    if verbose and self.version[:3]!="4.0":
                         print "!!no lines found for key=", k, "!!"
                 else:
                     if verbose:
@@ -208,10 +208,10 @@ class DlgParser:
             for l in lines:
                 if find(l, 'AutoDock')>-1:
                     ll = split(l)
-                    self.version = float(ll[2])
+                    self.version = ll[2]
                     break
         else:
-            self.version = 3.0
+            self.version = "3.0"
 
 
     def setOutlev(self,lines):
@@ -318,7 +318,7 @@ class DlgParser:
             #[Rank,SubRank,Run,DockedEnergy,ClusterRMSD,RefREMSD]
             newList = map(lambda x:int(x),ll[:3])
             #3/29/05
-            if self.wroteAll and self.version!=4.0:
+            if self.wroteAll and self.version[:3]!="4.0":
                 #print "setting run number to ", ctr
                 newList[2] = ctr
                 ctr = ctr + 1
@@ -365,7 +365,7 @@ class DlgParser:
 
     def processLigLines(self, lines):
         #do not use this for version 4.0
-        if self.version==4.0:
+        if self.version[:3]=="4.0":
             return
         ligLINES = []
         foundRun = 0
@@ -388,7 +388,7 @@ class DlgParser:
 
     def processFlexResLinesV4(self, lines):
         #print "in processFlexResLinesV4: len(self.ligLines=)", len(self.ligLines)
-        if self.version!=4.0:
+        if self.version[:3]!="4.0":
             print "not version 4.0! RETURNING!!"
             return
         ligLINES = []
@@ -426,7 +426,7 @@ class DlgParser:
             #exclude leading '' and trailing '' from split
             lines = lines[1:-1]
             #print "replaced lines with ", len(lines), ' lines'
-        if self.version!=4.0:
+        if self.version[:3]!=4.0:
             #print "not version 4.0"
             return
         ligLINES = []
@@ -486,7 +486,7 @@ class DlgParser:
         self.run_models = {}
         has_docked = False
         for l in lines:
-            #if self.version!=4.0:
+            #if self.version[:3]!=4.0:
             #    nlines.append(l[ind:-1])
             #else:
             #    if find(l, 'ATOM')>-1:
@@ -494,7 +494,7 @@ class DlgParser:
             #        nlines.append(newLine)
             #    else:
             #        nlines.append(l[ind:-1])
-            if self.version==4.0:
+            if self.version[:3]==4.0:
                 if l.find("DOCKED: USER    Run = ")>-1:
                     ll = l.split()
                     ctr = int(ll[4])
@@ -519,7 +519,7 @@ class DlgParser:
             else:
                 nlines.append(l[ind:-1])
         #print "len(nlines)=", len(nlines)
-        if self.version!=4.0:
+        if self.version[:3]!=4.0:
             curMod = [nlines[0]]
             for l in nlines[1:]:
                 if find(l, 'MODEL')>-1:
@@ -619,7 +619,7 @@ class DlgParser:
 
     def makeModels(self, modelList):
         #print "in makeModels with ", len(modelList), ' models to build'
-        #print "self.version=", self.version
+        #print "self.version[:3]=", self.version[:3]
         if hasattr(self, 'clist') and len(self.clist):
             #print "parser already has clist, returning!"
             return
@@ -641,7 +641,7 @@ class DlgParser:
         if self.outlev==-1:
             corr = -1
         binding_energy2 = None
-        version = self.version
+        version = self.version[:3]
         for l in lines:
             ll = split(l)
             #if find(l, 'MODEL')>-1:
