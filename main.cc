@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.86 2009/02/24 01:34:23 rhuey Exp $
+ $Id: main.cc,v 1.87 2009/03/03 15:47:09 rhuey Exp $
 
  AutoDock  
 
@@ -66,11 +66,15 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.86 2009/02/24 01:34:23 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.87 2009/03/03 15:47:09 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
 int sel_prop_count = 0;
+static Boole B_found_about_keyword = FALSE; //set false by 'move' true by 'about'
+static Boole B_found_elecmap = FALSE;
+static Boole B_found_desolvmap = FALSE;
+static void exit_if_missing_elecmap_desolvmap_about(char * keyword); // see bottom of main.cc
 
 
 int main (int argc, char * const argv[], char * const envp[])
@@ -343,8 +347,6 @@ Boole B_charMap = FALSE;
 Boole B_include_1_4_interactions = FALSE;  // This was the default behaviour in previous AutoDock versions (1 to 3).
 Boole B_found_move_keyword = FALSE;
 Boole B_found_ligand_types = FALSE;
-Boole B_found_elecmap = FALSE;
-Boole B_found_desolvmap = FALSE;
 Boole B_use_non_bond_cutoff = TRUE;
 Boole B_have_flexible_residues = FALSE;  // if the receptor has flexible residues, this will be set to TRUE
 Boole B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
@@ -695,7 +697,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.86 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.87 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1299,6 +1301,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         // this is the DPF_MOVE section...
         B_found_move_keyword = TRUE;
+        B_found_about_keyword = FALSE; //set false by 'move' true by 'about'
 
         print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
  
@@ -1434,20 +1437,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             exit(-1);
         }
 
+
         if (!command_mode) {
             if (nruns>MAX_RUNS) {
                 prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop(error_message);
                 exit(-1);
-            } else if (!B_found_elecmap) {
-                prStr(error_message, "%s:  ERROR:  no \"elecmap\" command has been specified!\n", programname);
-                stop(error_message);
-                exit(-1);
-            } else if (!B_found_desolvmap) {
-                prStr(error_message, "%s:  ERROR:  no \"desolvmap\" command has been specified!\n", programname);
-                stop(error_message);
-                exit(-1);
-            }
+            } 
+            exit_if_missing_elecmap_desolvmap_about("coliny");
 
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, 
                             map, elec, emap, nonbondlist, ad_energy_tables,
@@ -1593,6 +1590,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) sscanf( line, "%*s " FDFMT3, &lig_center[X], &lig_center[Y], &lig_center[Z]);
         pr( logFile, "Small molecule center of rotation =\t" );
         pr( logFile, "(%+.3f, %+.3f, %+.3f)\n\n", lig_center[X], lig_center[Y], lig_center[Z]);
+        B_found_about_keyword = TRUE; //set false by 'move' true by 'about'
         /*
         **  Center the ligand,
         */
@@ -2531,6 +2529,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         (void) sscanf( line, "%*s %s", FN_clus );
         B_cluster_mode = TRUE;
+        if (!B_found_about_keyword){
+                prStr(error_message, "%s:  ERROR:  no \"about\" command has been specified!\n", programname);
+                stop(error_message);
+                exit(-1);
+        } 
         if (outlev >= 0) {
             pr( logFile, "Cluster mode is now set.\n\n" );
         }
@@ -2801,6 +2804,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "\nTotal number of residues read in by the DPF \"flex\" command = %d\n\n", nres );
             }
             pr(logFile, "\n");
+            
+            if (!B_found_about_keyword){
+                    prStr(error_message, "%s:  ERROR:  no \"about\" command has been specified!\n", programname);
+                    stop(error_message);
+                    exit(-1);
+            } 
+
             if (B_havenbp) {
                 nbe( info, ad_energy_tables, num_atom_types );
             }
@@ -2974,16 +2984,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n", programname);
                 stop(error_message);
                 exit(-1);
-            } else if (!B_found_elecmap) {
-                prStr(error_message, "%s:  ERROR:  no \"elecmap\" command has been specified!\n", programname);
-                stop(error_message);
-                exit(-1);
-            } else if (!B_found_desolvmap) {
-                prStr(error_message, "%s:  ERROR:  no \"desolvmap\" command has been specified!\n", programname);
-                stop(error_message);
-                exit(-1);
-            }
-
+            } 
+            exit_if_missing_elecmap_desolvmap_about("gals");
             pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
 
 #ifdef DEBUG
@@ -3112,15 +3114,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                prStr(error_message, "%s:  ERROR:  You must use \"set_sw1\", \"set_psw1\" or \"set_pattern\" to create a Local Optimization object.\n", programname);
                stop(error_message);
                exit(-1);
-           } else if (!B_found_elecmap) {
-               prStr(error_message, "%s:  ERROR:  no \"elecmap\" command has been specified!\n", programname);
-               stop(error_message);
-               exit(-1);
-           } else if (!B_found_desolvmap) {
-               prStr(error_message, "%s:  ERROR:  no \"desolvmap\" command has been specified!\n", programname);
-               stop(error_message);
-               exit(-1);
-           }
+            } 
+           exit_if_missing_elecmap_desolvmap_about("ls");
 
 
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
@@ -3220,16 +3215,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate a Global Optimization object.\n", programname);
               stop(error_message);
               exit(-1);
-          } else if (!B_found_elecmap) {
-               prStr(error_message, "%s:  ERROR:  no \"elecmap\" command has been specified!\n", programname);
-               stop(error_message);
-               exit(-1);
-           }
-           else if (!B_found_desolvmap) {
-               prStr(error_message, "%s:  ERROR:  no \"desolvmap\" command has been specified!\n", programname);
-               stop(error_message);
-               exit(-1);
-           }
+           } 
+        
+          exit_if_missing_elecmap_desolvmap_about("gs");
 
 
           pr(logFile, "Number of Genetic Algorithm (GA) only dockings = %d run%c\n", nruns, (nruns>1)?'s':' ');
@@ -3605,15 +3593,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n", programname);
                 stop(error_message);
                 exit(-1);
-            } else if (!B_found_elecmap) {
-                prStr(error_message, "%s:  ERROR:  no \"elecmap\" command has been specified!\n", programname);
-                stop(error_message);
-                exit(-1);
-            } else if (!B_found_desolvmap) {
-                prStr(error_message, "%s:  ERROR:  no \"desolvmap\" command has been specified!\n", programname);
-                stop(error_message);
-                exit(-1);
             }
+            exit_if_missing_elecmap_desolvmap_about("compute_unbound_extended");
+
             //
             // Do not use a non-bond cutoff, this helps to produce the "most" extended conformation
             // especially with long inhibitors
@@ -3965,6 +3947,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             qsp_abs_charge[i] = qsolpar * abs_charge[i];
         }
         */
+        exit_if_missing_elecmap_desolvmap_about("epdb");
 
         // to restore the original coordinates, we must temporarily undo the centering transformation
         for ( i=0; i<true_ligand_atoms; i++ ) {
@@ -4136,6 +4119,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) sscanf( line, "%*s %s %d", confsampler_type, &confsampler_samples);
         pr( logFile, "Scanning local regions around each docked conformation.\n");
 
+        exit_if_missing_elecmap_desolvmap_about("confsampler");
+
         if (strcmp(confsampler_type, "systematic") == 0) {
             systematic_conformation_sampler(sHist, nconf, vt, crdpdb, tlist, lig_center, natom, type, info);
         }
@@ -4257,6 +4242,29 @@ delete []nonbondlist;
 return 0;
 
 } /* END OF PROGRAM */
+
+/* AutoDock main private utility functions
+*/
+static void exit_if_missing_elecmap_desolvmap_about(char * keyword)
+{
+
+    char error_message[LINE_LEN];
+
+    if (!B_found_elecmap) {
+         prStr(error_message, "%s:  %s command: no \"elecmap\" command has been specified!\n", programname, keyword);
+         stop(error_message);
+         exit(-1);
+    } else if (!B_found_desolvmap) {
+         prStr(error_message, "%s:  %s command: no \"desolvmap\" command has been specified!\n", programname, keyword);
+         stop(error_message);
+         exit(-1);
+    } else if (!B_found_about_keyword){
+         prStr(error_message, "%s:  %s command: no \"about\" command has been specified!\n", programname, keyword);
+         stop(error_message);
+         exit(-1);
+    }
+}
+
 
 #ifdef BOINC
 /*  Dummy graphics API entry points.
