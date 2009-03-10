@@ -1,6 +1,6 @@
 /*
 
- $Id: main.h,v 1.8 2007/04/27 06:01:49 garrett Exp $
+ $Id: main.h,v 1.9 2009/03/10 21:54:50 rhuey Exp $
 
  AutoDock 
 
@@ -34,7 +34,6 @@
 #include "autoglobal.h"
 #include "banner.h"
 #include "clmode.h"
-#include "cmdmode.h"
 #include "cnv_state_to_coords.h"
 #include "constants.h"
 #include "eintcalPrint.h"
