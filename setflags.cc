@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.8 2009/03/10 21:51:10 rhuey Exp $
+ $Id: setflags.cc,v 1.9 2009/03/10 22:10:01 rhuey Exp $
 
  AutoDock 
 
@@ -50,7 +50,7 @@ extern int  parse_tors_mode;
 extern int  keepresnum;
 
 
-int setflags( int I_argc, char * const PPC_argv[])
+int setflags( int I_argc, char * const PPC_argv[], char * version_num)
 
 /*
 ** naming convention: 
@@ -157,8 +157,8 @@ int setflags( int I_argc, char * const PPC_argv[])
 	    else{
 	      fprintf(stateFile,"<?xml version=\"1.0\" ?>\n");
 	      fprintf(stateFile,"<autodock>\n");
-	      fprintf(stateFile,"\t<version>%s.%s</version>\n", AUTODOCK_MAJ_VERSION,AUTODOCK_MIN_VERSION);
-	      fprintf(stateFile,"\t<autogrid_version>%s.%s</autogrid_version>\n", AUTOGRID_MAJ_VERSION,AUTOGRID_MIN_VERSION);
+	      fprintf(stateFile,"\t<version>%s</version>\n", version_num);
+	      fprintf(stateFile,"\t<autogrid_version>%s</autogrid_version>\n", version_num);
 	      fprintf(stateFile,"\t<output_xml_version>%5.2f</output_xml_version>\n", OUTPUT_XML_VERSION);
 	      write_stateFile = TRUE;
 	    }
