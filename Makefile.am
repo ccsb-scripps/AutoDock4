@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.19 2009/03/03 15:44:50 rhuey Exp $
+# $Id: Makefile.am,v 1.20 2009/03/10 21:51:10 rhuey Exp $
 # 
 # AutoDock  
 # 
@@ -66,7 +66,6 @@ libad_4_0_a_SOURCES = \
     check_header_line.cc \
     cluster_analysis.cc \
     clmode.cc \
-    cmdmode.cc \
     cnv_state_to_coords.cc \
     com.cc \
     conformation_sampler.cc \
@@ -96,7 +95,6 @@ libad_4_0_a_SOURCES = \
     nonbonds.cc \
     openfile.cc \
     output_state.cc \
-    parse_com_line.cc \
     parse_dpf_line.cc \
     parse_param_line.cc \
     parse_PDBQT_line.cc \
@@ -119,7 +117,6 @@ libad_4_0_a_SOURCES = \
     ranlib.cc \
     rep.cc \
     scauchy.cc \
-    set_cmd_io_std.cc \
     setflags.cc \
     simanneal.cc \
     sort_enrg.cc \
@@ -159,8 +156,6 @@ libad_4_0_a_SOURCES = \
 		check_header_line.h \
 		clmode.h \
 		cluster_analysis.h \
-		cmdmode.h \
-		cmdtokens.h \
 		cnv_state_to_coords.h \
 		coliny.h \
 		conformation_sampler.h \
@@ -198,7 +193,6 @@ libad_4_0_a_SOURCES = \
 		output_state.h \
 		parameters.h \
 		parse_PDBQT_line.h \
-		parse_com_line.h \
 		parse_dpf_line.h \
 		parse_param_line.h \
 		parse_trj_line.h \
@@ -224,7 +218,6 @@ libad_4_0_a_SOURCES = \
 		readmap.h \
 		rep.h \
 		rep_constants.h \
-		set_cmd_io_std.h \
 		setflags.h \
 		simanneal.h \
 		sort_enrg.h \
@@ -266,7 +259,6 @@ libad_a_SOURCES = \
     check_header_line.cc \
     cluster_analysis.cc \
     clmode.cc \
-    cmdmode.cc \
     cnv_state_to_coords.cc \
     com.cc \
     conformation_sampler.cc \
@@ -296,7 +288,6 @@ libad_a_SOURCES = \
     nonbonds.cc \
     openfile.cc \
     output_state.cc \
-    parse_com_line.cc \
     parse_dpf_line.cc \
     parse_param_line.cc \
     parse_PDBQT_line.cc \
@@ -319,7 +310,6 @@ libad_a_SOURCES = \
     ranlib.cc \
     rep.cc \
     scauchy.cc \
-    set_cmd_io_std.cc \
     setflags.cc \
     simanneal.cc \
     sort_enrg.cc \
@@ -359,8 +349,6 @@ libad_a_SOURCES = \
 		check_header_line.h \
 		clmode.h \
 		cluster_analysis.h \
-		cmdmode.h \
-		cmdtokens.h \
 		cnv_state_to_coords.h \
 		coliny.h \
 		conformation_sampler.h \
@@ -398,7 +386,6 @@ libad_a_SOURCES = \
 		output_state.h \
 		parameters.h \
 		parse_PDBQT_line.h \
-		parse_com_line.h \
 		parse_dpf_line.h \
 		parse_param_line.h \
 		parse_trj_line.h \
@@ -424,7 +411,6 @@ libad_a_SOURCES = \
 		readmap.h \
 		rep.h \
 		rep_constants.h \
-		set_cmd_io_std.h \
 		setflags.h \
 		simanneal.h \
 		sort_enrg.h \

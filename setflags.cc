@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.7 2008/11/07 23:16:30 rhuey Exp $
+ $Id: setflags.cc,v 1.8 2009/03/10 21:51:10 rhuey Exp $
 
  AutoDock 
 
@@ -46,7 +46,6 @@ extern char dock_param_fn[];
 extern char AutoDockHelp[];
 extern int  debug;
 extern int  ignore_errors;
-extern int  command_mode;
 extern int  parse_tors_mode;
 extern int  keepresnum;
 
@@ -129,7 +128,8 @@ int setflags( int I_argc, char * const PPC_argv[])
             keepresnum--;
             break;
         case 'c':
-            command_mode = TRUE;
+            //command_mode removed with 4.1 release spring 2009, mp + rh
+            fprintf(stderr, "\n%s: command mode is not supported in this version of autodock\n",programname );
             break;
         case 'l':
             if ( (logFile = ad_fopen(PPC_argv[2], "w")) == NULL ) {

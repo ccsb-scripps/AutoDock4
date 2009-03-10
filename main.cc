@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.87 2009/03/03 15:47:09 rhuey Exp $
+ $Id: main.cc,v 1.88 2009/03/10 21:51:10 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.87 2009/03/03 15:47:09 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.88 2009/03/10 21:51:10 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -102,8 +102,7 @@ int main (int argc, char * const argv[], char * const envp[])
 **   Returns: Autodock Log File, includes docked conformation clusters (PDBQT)**
 **   Globals: X, Y, Z, SPACE, MAX_GRID_PTS, NEINT, MAX_ATOMS,                 **
 **            MAX_MAPS, A_DIVISOR, LINE_LEN,TRUE,FALSE                        **
-**            programname, command_mode,                                      **
-**            command_in_fp, command_out_fp, parFile, logFile.                **
+**            programname, parFile, logFile.                                  **
 **____________________________________________________________________________**
 ** Modification Record                                                        **
 ** Date     Inits   Comments                                                  **
@@ -387,7 +386,6 @@ int num_atom_types = 0;
 int nval = 0;
 int outlev = -1;
 int retval = 0;
-int status = 0;
 int trj_end_cyc = 0;
 int trj_begin_cyc = 0;
 int trj_freq = 0;
@@ -697,7 +695,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.87 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.88 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1438,7 +1436,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
 
 
-        if (!command_mode) {
             if (nruns>MAX_RUNS) {
                 prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop(error_message);
@@ -1572,9 +1569,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               exit(1);
             }
 
-        } else {
-            (void)fprintf(logFile, "NOTE: Command mode has been set, so optimization cannot be performed.\n\n");
-        }
     }
     break;
 #endif
@@ -2773,7 +2767,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** Calculate reduction factor based on initial and final step values,
         ** and number of cycles...
         */
-        if (!command_mode) {
             ncycm1 = ncycles - 1;
             if (ncycm1 < 0) {
                 ncycm1 = 1;
@@ -2857,10 +2850,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         PDBQT_record);
 
             (void) fflush(logFile);
-        } else {
-            (void)fprintf(logFile, "NOTE: Command mode has been set, so simulated annealing cannot be performed.\n\n");
-            (void) fflush(logFile);
-        }
         break;
 
 //______________________________________________________________________________
@@ -2974,7 +2963,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         ** Genetic Algorithm-Local search,  a.k.a. Lamarckian Genetic Algorithm
         */
-        if (!command_mode) {
             (void) sscanf( line, "%*s %d", &nruns );
             if ( nruns > MAX_RUNS ) {
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
@@ -3091,9 +3079,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                (void) fflush(stateFile);
             }
             (void) fflush(logFile);
-        } else {
-            (void)fprintf(logFile, "NOTE: Command mode has been set.  Sorry, genetic algorithm-local search cannot be performed.\n\n");
-        }
         break;
 
 //______________________________________________________________________________
@@ -3102,7 +3087,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
        // do_local_only
        (void) sscanf(line, "%*s %d", &nruns);
 
-        if (!command_mode) {
             if ( nruns > MAX_RUNS ) {
 
                prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
@@ -3194,9 +3178,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
              (void) fflush(stateFile);
            }
            (void) fflush(logFile);
-       } else {
-            (void)fprintf(logFile, "NOTE: Command mode has been set, so local search cannot be performed.\n\n");
-       }
        break;
 
 //______________________________________________________________________________
@@ -3204,7 +3185,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_GS:
       (void) sscanf(line, "%*s %d", &nruns);
 
-      if (!command_mode) {
           if (nruns>MAX_RUNS) {
 
               prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
@@ -3303,9 +3283,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             (void) fflush(stateFile);
           }
           (void) fflush(logFile);
-      } else {
-            (void)fprintf(logFile, "NOTE: Command mode has been set, so global search cannot be performed.\n\n");
-      }
       break;
 
 //______________________________________________________________________________
@@ -3457,7 +3434,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** Perform Cluster analysis on results of docking,
         ** _____________________________________________________________________
         */
-        if (!command_mode) {
             analysis( Nnb, atomstuff, charge, abs_charge, qsp_abs_charge, B_calcIntElec, clus_rms_tol,
                       crdpdb, ad_energy_tables, map, econf, nruns,
                       natom, nonbondlist, nconf, ntor, sHist, FN_ligand,
@@ -3470,9 +3446,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                       B_rms_atoms_ligand_only);
 
             (void) fflush(logFile);
-        } else {
-            (void)fprintf(logFile, "NOTE: Command mode has been set, so cluster analysis cannot be performed.\n\n");
-        }
         break;
 
 //______________________________________________________________________________
@@ -4187,25 +4160,6 @@ pr( logFile, ">>> Closing the docking parameter file (DPF)...\n\n" );
 //pr( logFile, UnderLine );
 (void) fclose( parFile );
 
-
-/* _________________________________________________________________________
-**
-** If in command-mode, set the command file-pointers to standard i/o,
-** _________________________________________________________________________
-*/
-if (command_mode) {
-    status = cmdmode( natom,jobStart,tms_jobStart,
-                      map, ad_energy_tables, WallEnergy, vt, tlist, ntor,
-                      Nnb, nonbondlist, atomstuff, crdpdb,
-                      hostnm, type, charge, abs_charge, qsp_abs_charge, B_calcIntElec,
-                      torsFreeEnergy,
-                      ligand_is_inhibitor, 
-                      ignore_inter,
-                      B_include_1_4_interactions, scale_1_4, 
-                      unbound_internal_FE,
-                      info, B_have_flexible_residues, B_use_non_bond_cutoff );
-    exit( status );  /* "command_mode" exits here... */
-}
 
 //______________________________________________________________________________
 /*
