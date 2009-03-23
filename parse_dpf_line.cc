@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.19 2008/10/18 00:09:27 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.20 2009/03/23 22:50:14 rhuey Exp $
 
  AutoDock 
 
@@ -35,9 +35,6 @@
 #include "parse_dpf_line.h"
 
 
-#define NUM_LEXEMES_AUTODOCK 113 // this is the length of the tokentable of AutoDock-related lexemes 
-#define NUM_LEXEMES_COLINY     1 // this is the length of the tokentable of Coliny-related lexemes 
-
 
 int parse_dpf_line( char line[LINE_LEN] )
 
@@ -62,14 +59,6 @@ int parse_dpf_line( char line[LINE_LEN] )
 {
     int j, i, token = DPF_;               /* return -1 if nothing is recognized. */
     char c[LINE_LEN];
-
-    // tokentablesize should be set to the length of the tokentable,
-    //
-#if defined(USING_COLINY)
-    const int tokentablesize = NUM_LEXEMES_AUTODOCK + NUM_LEXEMES_COLINY;
-#else
-    const int tokentablesize = NUM_LEXEMES_AUTODOCK;
-#endif
 
     const struct {
        char *lexeme;
@@ -187,16 +176,20 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"quaternion0", DPF_QUATERNION0} // 111
               , {"copyright", DPF_COPYRIGHT} // 112
               , {"warranty", DPF_WARRANTY} // 113
+              , {"autodock_parameter_version", DPF_PARAMETER_VERSION} // 114
+              , {"unbound_model", DPF_UNBOUND_MODEL} // 115
 			   // Remember to define NUM_LEXEMES_AUTODOCK earlier
 
 #if defined(USING_COLINY)
               , {"coliny", DPF_COLINY}  // 1 
                // Remember to define NUM_LEXEMES_COLINY earlier
 #endif
+              , {"//END", DPF_NULL}
               };
 
+    // build lower-case version of the token into 'c'
     c[0] = '\0';
-    for (j=0; ((line[j]!='\0')&&(line[j]!=' ')&&(line[j]!='\t')&&(line[j]!='\n')); j++) {
+    for (j=0; line[j]!='\0' && !isspace(line[j]); j++) {
         /*  Ignore case */
         c[j] = (char)tolower((int)line[j]);
         /*(void)fprintf(stderr,"%c",c[j]);*/
@@ -209,14 +202,12 @@ int parse_dpf_line( char line[LINE_LEN] )
         token = DPF_NULL;
     } else if (c[0]=='#') {
         token = DPF_COMMENT;
-    }
-
+    } else for (i=0;  (tokentable[i].tokenvalue!=DPF_NULL) ;  i++) {
     /*  Recognize token strings  */
-
-    for (i=0;  (i < tokentablesize) && (token == DPF_);  i++) {
         /*(void)fprintf(stderr,"i = %d, tokentable[i].lexeme = %s, tokentable[i].value = %d, c = %s\n",i,tokentable[i].lexeme,tokentable[i].tokenvalue,c);*/
         if (strncasecmp(tokentable[i].lexeme, c, j) == 0) {
             token = tokentable[i].tokenvalue;
+            break;
         }
     }
     return(token);

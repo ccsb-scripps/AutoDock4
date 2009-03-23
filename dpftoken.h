@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.17 2008/10/18 00:09:27 rhuey Exp $
+ $Id: dpftoken.h,v 1.18 2009/03/23 22:50:14 rhuey Exp $
 
  AutoDock 
 
@@ -152,6 +152,8 @@
 #define DPF_COPYRIGHT 101
 #define DPF_WARRANTY 102
 #define	DPF_QUAT0	 103
+#define DPF_PARAMETER_VERSION 104
+#define DPF_UNBOUND_MODEL 105
 
 #endif
 /* EOF */

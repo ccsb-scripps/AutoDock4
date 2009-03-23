@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.89 2009/03/10 22:10:01 rhuey Exp $
+ $Id: main.cc,v 1.90 2009/03/23 22:50:14 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.89 2009/03/10 22:10:01 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.90 2009/03/23 22:50:14 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -177,6 +177,7 @@ char param[2][LINE_LEN];
 char rms_atoms_cmd[LINE_LEN];
 char c_mode_str[LINE_LEN];
 char confsampler_type[LINE_LEN];
+char autodock_parameter_version[LINE_LEN]; //eg 4.1.1
 
 // filename max length is taken from system include file
 char FN_parameter_library[PATH_MAX];
@@ -346,6 +347,7 @@ Boole B_charMap = FALSE;
 Boole B_include_1_4_interactions = FALSE;  // This was the default behaviour in previous AutoDock versions (1 to 3).
 Boole B_found_move_keyword = FALSE;
 Boole B_found_ligand_types = FALSE;
+Boole B_found_autodock_parameter_version = FALSE;
 Boole B_use_non_bond_cutoff = TRUE;
 Boole B_have_flexible_residues = FALSE;  // if the receptor has flexible residues, this will be set to TRUE
 Boole B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
@@ -642,7 +644,8 @@ F_lnH = ((Real)log(0.5));
 //______________________________________________________________________________
 /*
 ** Determine output level before we ouput anything.  
-** We must parse the entire DPF -- silently -- for any outlev settings.
+** We must parse the entire DPF -- silently -- for any outlev settings
+** or flexible residues file specification
 */
 
 while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
@@ -695,13 +698,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.89 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.90 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
 //______________________________________________________________________________
 /*
-** Print the time and date when the file was created...
+** Print the time and date when the log file was created...
 */
 
 pr( logFile, "This file was created at:\t\t\t" );
@@ -759,11 +762,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     switch( dpf_keyword ) {
         case -1:
-            pr( logFile, "DPF> %s", line );
-            prStr( error_message,"%s: WARNING: Unrecognized keyword in docking parameter file.\n", programname );
-            pr_2x( logFile, stderr, error_message );
-            continue;
-            /* break; */
+            sprintf( error_message,
+               "DPF> %s\n%s: ERROR: Unrecognized keyword in docking parameter file.\n", 
+               line, programname );
+            stop( error_message );
+
+            break;
 
         case DPF_NULL:
         case DPF_COMMENT:
@@ -790,6 +794,23 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         break;
 
 //______________________________________________________________________________
+
+    case DPF_PARAMETER_VERSION:
+        /*
+        ** autodock_parameter_version string
+        **  
+        ** 
+        **
+        ** initial implementation ignores value of string 
+        */
+
+        B_found_autodock_parameter_version = 1==sscanf( line, "%*s %s", autodock_parameter_version );
+        pr( logFile, "\n\tAutodock parameter version %s.\n", autodock_parameter_version );
+        (void) fflush(logFile);
+
+        break;
+
+/*____________________________________________________________________________*/
 
     case DPF_OUTLEV:
         /*
@@ -3513,11 +3534,44 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 /*____________________________________________________________________________*/
 
+    case DPF_UNBOUND_MODEL:
+        /*
+        **  unbound_model { extended | compact | bound | <float> }
+        **    extended is alias for "compute_unbound_extended" token
+        **    <float> is alias for "unbound <float>" command
+        */
+        char unbound_model_type[LINE_LEN];
+        (void) sscanf( line, "%*s %s", unbound_model_type );
+
+        if (equal( unbound_model_type, "bound", 5 )) {
+            ad4_unbound_model = Unbound_Same_As_Bound;  // default for Autodock 4.1
+        } else if (equal( unbound_model_type, "extend", 6 )) {
+            goto process_DPF_COMPUTE_UNBOUND_EXTENDED; // case DPF_COMPUTE_UNBOUND_EXTENDED below
+        } else if (equal( unbound_model_type, "compact", 6 )) {
+            ad4_unbound_model = Compact;
+        } else if (1 == sscanf( line, "%*s " FDFMT, &unbound_internal_FE )){
+            goto process_DPF_UNBOUND; // case DPF_UNBOUND below 
+        } else {
+            // note that "User" is not acceptable in dpf file
+            pr( logFile, "%s:  ERROR:  Unrecognized unbound model type \"%s\" .\n",
+                    programname, unbound_model_type );
+            stop("");
+        }
+        (void) fflush(logFile);
+        break;
+
+/*____________________________________________________________________________*/
+
     case DPF_UNBOUND:
         /*
          * unbound FLOAT
          */
-        (void) sscanf( line, "%*s " FDFMT, &unbound_internal_FE );
+    process_DPF_UNBOUND:
+        if (1!= sscanf( line, "%*s " FDFMT, &unbound_internal_FE )){
+            pr( logFile, "%s:  ERROR:  Non-numeric unbound model energy \"%s\" .\n",
+                    programname, line);
+            stop("");
+        }
         pr(logFile, "The internal energy of the unbound state was set to %+.3lf kcal/mol\n", unbound_internal_FE);
         ad4_unbound_model = User;
         pr(logFile, "The unbound ligand energy model was set to User\n\n");
@@ -3525,12 +3579,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         break;
 
 /*____________________________________________________________________________*/
-
     case DPF_COMPUTE_UNBOUND_EXTENDED:
         /*
          *  compute_unbound_extended
          */
+    process_DPF_COMPUTE_UNBOUND_EXTENDED:
         if (ntor > 0) {
+            ad4_unbound_model = Extended; 
 
             pr(logFile, "Computing the energy of the unbound state of the ligand,\ngiven the torsion tree defined in the ligand file.\n\n");
             (void) fflush( logFile );
@@ -3858,6 +3913,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr(logFile, "NOTE:  AutoDock cannot compute the energy of the unbound state, since the ligand is rigid.\n\n");
             pr(logFile, "NOTE:  Use the \"unbound\" command to set the energy of the unbound state, if known from a previous calculation where the ligand was treated as flexible.\n\n");
             unbound_internal_FE = 0.0L;
+            ad4_unbound_model = User; 
             pr(logFile, "\n\nThe internal energy of the unbound state was set to %+.3lf kcal/mol\n\n", unbound_internal_FE);
         }
 
