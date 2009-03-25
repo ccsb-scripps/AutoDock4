@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.91 2009/03/25 23:53:04 rhuey Exp $
+ $Id: main.cc,v 1.92 2009/03/25 23:55:06 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.91 2009/03/25 23:53:04 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.92 2009/03/25 23:55:06 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -698,7 +698,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.91 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.92 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2984,7 +2984,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         ** Genetic Algorithm-Local search,  a.k.a. Lamarckian Genetic Algorithm
         */
-            (void) sscanf( line, "%*s %d",&nruns ; )
+            (void) sscanf( line, "%*s %d",&nruns );
             if ( nruns > MAX_RUNS ) {
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
