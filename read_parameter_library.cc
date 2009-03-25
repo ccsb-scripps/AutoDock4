@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.11 2009/03/03 15:48:43 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.12 2009/03/25 23:53:04 rhuey Exp $
 
  AutoDock 
 
@@ -55,7 +55,6 @@ void read_parameter_library(
     static ParameterEntry thisParameter;
     FILE *parameter_library_file;
     char parameter_library_line[LINE_LEN];
-    char unbound_model_type[LINE_LEN];
     int nfields;
     int param_keyword = -1;
     int int_hbond_type = 0;
@@ -128,26 +127,8 @@ void read_parameter_library(
                 break;
 
             case PAR_UNBOUND:
-                nfields = sscanf(parameter_library_line, "%*s %s", unbound_model_type);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a string describing the unbound model ('unbound_same_as_bound', 'extended' or 'compact').\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-
-                if (equal( unbound_model_type, "unboun", 6 )) {
-                    ad4_unbound_model = Unbound_Same_As_Bound;
-                } else if (equal( unbound_model_type, "extend", 6 )) {
-                    ad4_unbound_model = Extended;
-                } else 
-                if (equal( unbound_model_type, "compact", 6 )) {
-                    ad4_unbound_model = Compact;
-                } else {
-                    // note that "User" is not acceptable in library file
-                    pr( logFile, "%s:  WARNING:  Unrecognized unbound model type \"%s\" found in parameter library \"%s\".\n\n",
-                            programname, unbound_model_type, FN_parameter_library);
-                }
-
-                pr( logFile, "Unbound model = %s\n\n", unbound_model_type);
+                pr( logFile, "%s: WARNING: the unbound model cannot be specified in the parameter library file.\n\n", programname);
+                pr( logFile, "Use the DPF parameter 'unbound_model' instead.\n");
                 break;
 
             case PAR_ATOM_PAR:
@@ -208,7 +189,7 @@ void read_parameter_library(
     } // while there is another line of parameters to read in
 }
 
-void setup_parameter_library( int outlev, char * version_num )
+void setup_parameter_library( int outlev, char * model_text, Unbound_Model unbound_model )
 {
     static ParameterEntry thisParameter;
     char parameter_library_line[LINE_LEN];
@@ -217,8 +198,8 @@ void setup_parameter_library( int outlev, char * version_num )
     int int_hbond_type = 0;
     register int counter = 0;
 
-    pr(logFile, "Setting up parameter library with AutoDock %s default values.\n\n\n", 
-                 version_num);
+    pr(logFile, "Setting up parameter library with AutoDock %s values.\n\n\n", 
+                 model_text);
 
     // Default parameters
     //
@@ -227,11 +208,12 @@ void setup_parameter_library( int outlev, char * version_num )
     // so far we have param_string_4_0 and param_string_4_1
 
     char ** param_string;
-    if (string_begins_with(version_num, "4.0")) param_string=param_string_4_0;
+    //if (string_begins_with(version_num, "4.0")) param_string=param_string_4_0;
+    if (unbound_model==Extended) param_string=param_string_4_0;
     else
-    if (string_begins_with(version_num, "4.1")) param_string=param_string_4_1;
+    if (unbound_model==Unbound_Same_As_Bound) param_string=param_string_4_1;
     else {
-        pr(logFile, "DEBUG: cannot determine default parameter version number %s \n",version_num);
+        pr(logFile, "DEBUG: cannot determine %s parameter values \n",model_text);
         exit(-1);
     }
 

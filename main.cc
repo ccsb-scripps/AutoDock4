@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.90 2009/03/23 22:50:14 rhuey Exp $
+ $Id: main.cc,v 1.91 2009/03/25 23:53:04 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.90 2009/03/23 22:50:14 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.91 2009/03/25 23:53:04 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -698,7 +698,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.90 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.91 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -728,7 +728,7 @@ pr( logFile, "\nNOTE: \"rus\" stands for:\n\n      r = Real, wall-clock or elaps
 //
 // Read in default parameters
 //
-setup_parameter_library(outlev, version_num);
+setup_parameter_library(outlev, "default Unbound_Same_As_Bound", Unbound_Same_As_Bound);
 
 // 
 // Compute the look-up table for the distance-dependent dielectric function
@@ -2984,7 +2984,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         ** Genetic Algorithm-Local search,  a.k.a. Lamarckian Genetic Algorithm
         */
-            (void) sscanf( line, "%*s %d", &nruns );
+            (void) sscanf( line, "%*s %d",&nruns ; )
             if ( nruns > MAX_RUNS ) {
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
@@ -3586,6 +3586,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     process_DPF_COMPUTE_UNBOUND_EXTENDED:
         if (ntor > 0) {
             ad4_unbound_model = Extended; 
+            setup_parameter_library(outlev, "unbound_extended", ad4_unbound_model);
 
             pr(logFile, "Computing the energy of the unbound state of the ligand,\ngiven the torsion tree defined in the ligand file.\n\n");
             (void) fflush( logFile );
