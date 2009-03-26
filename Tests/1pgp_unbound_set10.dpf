@@ -1,6 +1,4 @@
 outlev 0
-parameter_file AD4.1_bound.dat       # New parameter library
-#include_1_4_interactions 1.0        # test
 intelec                              # calculate internal electrostatic energy
 
 seed 28641 1106107140                # seeds for random generator
@@ -22,7 +20,6 @@ dihe0 0 0 0 0 0 0 0 0 0 0 0          # initial dihedrals (relative) or random
 tstep 0.0                            # translation step/A
 qstep 0.0                            # quaternion step/deg
 dstep 0.0                            # torsion step/deg
-unbound 10.0                         # free energy of the unbound state
 
 rmstol 2.0                           # cluster_tolerance/A
 epdb                                 # compute energy of PDBQT specified by 'move' 
@@ -49,6 +46,7 @@ sw_lb_rho 0.01                       # lower bound on rho
 ls_search_freq 0.06                  # probability of performing local search on individual
 set_psw1                             # set the above pseudo-Solis & Wets parameters
 
+unbound 10.0                         # free energy of the unbound state
 ga_run 1                             # do this many hybrid GA-LS runs
 
 analysis
