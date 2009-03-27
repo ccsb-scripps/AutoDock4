@@ -1,6 +1,6 @@
 /*
 
- $Id: mdist.h,v 1.9 2009/01/08 01:08:16 rhuey Exp $
+ $Id: mdist.h,v 1.10 2009/03/27 20:50:39 rhuey Exp $
 
  AutoDock 
 
@@ -27,8 +27,11 @@
 
 #include "autocomm.h"
 
-#define set_minmax( a1, a2, min, max)  mindist[(a1)][(a2)] = (min); mindist[(a2)][(a1)] = (min); maxdist[(a1)][(a2)] = (max); maxdist[(a2)][(a1)] = (max)
+// expand the allowed bond length ranges by the BOND_LENGTH_TOLERANCE
 #define BOND_LENGTH_TOLERANCE 0.1
+#define set_minmax( a1, a2, min, max)  \
+    mindist[(a1)][(a2)] = mindist[(a2)][(a1)] = (min)-BOND_LENGTH_TOLERANCE;\
+    maxdist[(a1)][(a2)] = maxdist[(a2)][(a1)] = (max)+BOND_LENGTH_TOLERANCE
 
 void mdist();
 
@@ -42,19 +45,11 @@ void mdist() {
 
 	register int i,j;
 
-    // Zero all the mindist and maxdist elements.
-	for (i=0; i<   NUM_ENUM_ATOMTYPES; i++) {
-		for (j=0; j<   NUM_ENUM_ATOMTYPES; j++) {
-			mindist[i][j] = 0.0L;
-			maxdist[i][j] = 0.0L;
-		}
-	}
-
     // Set all the mindist and maxdist elements to the defaults for AutoDock versions 1 - 3...
 	for (i=0; i<   NUM_ENUM_ATOMTYPES; i++) {
 		for (j=0; j<   NUM_ENUM_ATOMTYPES; j++) {
-			mindist[i][j] = 0.9;
-			maxdist[i][j] = 2.1;
+			mindist[i][j] = 0.9 - BOND_LENGTH_TOLERANCE;
+			maxdist[i][j] = 2.1 + BOND_LENGTH_TOLERANCE;
 		}
 	}
 
@@ -110,7 +105,7 @@ void mdist() {
     set_minmax(O, XX, 0.955, 2.1); // AutoDock 3 defaults
     set_minmax(O, P, 1.36, 1.67); // mindist[O][P] = 1.36, p. 3516 ; maxdist[O][P] = 1.67, p. 3517
     set_minmax(O, S, 1.41, 1.47); // p. 3517, p. 3515
-    set_minmax(H, H, 99., 100.); // AutoDock 4 defaults -- large values to prevent such bonds from forming.
+    set_minmax(H, H, 100.,-100.); // impossible values to prevent such bonds from forming.
     set_minmax(H, XX, 0.9, 1.5); // AutoDock 4 defaults
     set_minmax(H, P, 1.40, 1.44); // mindist[H][P] = 1.40, p. 3515 ; maxdist[H][P] = 1.44, p. 3515
     set_minmax(H, S, 1.325, 1.3455); // mindist[H][S] = 1.325, p. 3518 ; maxdist[H][S] = 1.3455, p. 3516
@@ -121,14 +116,4 @@ void mdist() {
     set_minmax(P, S, 1.83, 1.88); // mindist[P][S] = 1.83, p. 3516 ; maxdist[P][S] = 1.88, p. 3515
     set_minmax(S, S, 2.03, 2.05); // mindist[S][S] = 2.03, p. 3515 ; maxdist[S][S] = 2.05, p. 3515
     /* end values from Handbook of Chemistry and Physics */
-
-    // expand the allowed bond length ranges by the BOND_LENGTH_TOLERANCE
-	for (i=0;  i < NUM_ENUM_ATOMTYPES;  i++) {
-		for (j=i;  j < NUM_ENUM_ATOMTYPES;  j++) {
-			mindist[i][j] = mindist[i][j] - BOND_LENGTH_TOLERANCE;
-			mindist[j][i] = mindist[j][i] - BOND_LENGTH_TOLERANCE;
-			maxdist[i][j] = maxdist[i][j] + BOND_LENGTH_TOLERANCE;
-			maxdist[j][i] = maxdist[j][i] + BOND_LENGTH_TOLERANCE;
-		}
-	}
 }
