@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.92 2009/03/25 23:55:06 rhuey Exp $
+ $Id: main.cc,v 1.93 2009/03/28 00:01:38 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.92 2009/03/25 23:55:06 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.93 2009/03/28 00:01:38 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -698,7 +698,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.92 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.93 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2837,6 +2837,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             for (j = 0; j < MAX_RUNS; j++) {
                 econf[j] = torsFreeEnergy;
             }
+            pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
             /* ___________________________________________________________________
             **
             ** Begin the automated docking simulation,
@@ -2996,6 +2997,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } 
             exit_if_missing_elecmap_desolvmap_about("gals");
             pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
+            pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
 
 #ifdef DEBUG
             pr( logFile, "\nAbout to call evaluate.setup(), sInit:\n\n");
@@ -3121,9 +3123,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                exit(-1);
             } 
            exit_if_missing_elecmap_desolvmap_about("ls");
-
-
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
+           pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
                            elec, emap,
                            nonbondlist,
@@ -3220,8 +3221,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         
           exit_if_missing_elecmap_desolvmap_about("gs");
 
-
           pr(logFile, "Number of Genetic Algorithm (GA) only dockings = %d run%c\n", nruns, (nruns>1)?'s':' ');
+          pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
 
 
           evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
@@ -4028,6 +4029,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             (void) eintcalPrint(nonbondlist, ad_energy_tables, crdpdb, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues);
         }
 
+        pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
         // calculate the energy breakdown for the input coordinates, "crdpdb"
         eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
                                 crdpdb, charge, abs_charge, type, map, info, outside, 

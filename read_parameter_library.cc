@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.12 2009/03/25 23:53:04 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.13 2009/03/28 00:01:38 rhuey Exp $
 
  AutoDock 
 
@@ -46,6 +46,7 @@ extern Unbound_Model ad4_unbound_model;
 
 Boole string_begins_with(char *a, char *b);
 Boole string_ends_with(char *a, char *b);
+static char parameter_library[MAX_CHARS];
 
 void read_parameter_library(
         char *FN_parameter_library,
@@ -69,6 +70,8 @@ void read_parameter_library(
          exit(-1);
     }
 
+    // remember this filename for report_parameter_library()
+    snprintf(parameter_library, sizeof parameter_library, "from file: \"%s\"", FN_parameter_library);
     while (fgets(parameter_library_line, sizeof(parameter_library_line), parameter_library_file) != NULL) {
         param_keyword = parse_param_line( parameter_library_line );
         if (debug > 0) {
@@ -206,12 +209,18 @@ void setup_parameter_library( int outlev, char * model_text, Unbound_Model unbou
     // These are set up in "default_parameters.h"
     // and stored in the param_string_VERSION_NUM[MAX_LINES] array
     // so far we have param_string_4_0 and param_string_4_1
+    // remember this choice for report_parameter_library()
 
     char ** param_string;
     //if (string_begins_with(version_num, "4.0")) param_string=param_string_4_0;
-    if (unbound_model==Extended) param_string=param_string_4_0;
-    else
-    if (unbound_model==Unbound_Same_As_Bound) param_string=param_string_4_1;
+    if (unbound_model==Extended) {
+        param_string=param_string_4_0;
+        strncpy(parameter_library, "'extended' [AutoDock 4.0 default]", sizeof parameter_library);
+    }
+    else if (unbound_model==Unbound_Same_As_Bound) {
+        param_string=param_string_4_1;
+        strncpy(parameter_library, "'same as bound' [AutoDock 4.1 default]", sizeof parameter_library);
+    }
     else {
         pr(logFile, "DEBUG: cannot determine %s parameter values \n",model_text);
         exit(-1);
@@ -334,6 +343,10 @@ void setup_parameter_library( int outlev, char * model_text, Unbound_Model unbou
                 break;
         } // switch
     } // while there is another line of parameters to read in
+}
+
+char * report_parameter_library(){
+    return parameter_library;
 }
 
 Boole string_begins_with(char *a, char *b) {

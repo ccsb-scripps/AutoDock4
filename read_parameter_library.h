@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.h,v 1.6 2009/03/25 23:53:04 rhuey Exp $
+ $Id: read_parameter_library.h,v 1.7 2009/03/28 00:01:39 rhuey Exp $
 
  AutoDock 
 
@@ -40,6 +40,8 @@ void setup_parameter_library(
         char * model_text,
         Unbound_Model unbound_model
         );
+
+char * report_parameter_library();
 
 void setup_distdepdiel( int outlev, 
                         EnergyTables *ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables
