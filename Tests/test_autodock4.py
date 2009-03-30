@@ -1,5 +1,6 @@
+#! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.22 2008/10/30 23:32:51 rhuey Exp $
+# $Id: test_autodock4.py,v 1.23 2009/03/30 18:38:26 rhuey Exp $
 #
 
 """
@@ -172,6 +173,13 @@ class AutoDock4_1pgp_ligand_types_map_mismatch( AutoDock_simple_test ):
     expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_illegal_keyword_test( AutoDock_simple_test ):
+    """Test that autodock4 stops early if it finds an illegal keyword 
+    in dpf """
+    dpf_stem = "1pgp_illegal_keyword"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_no_elecmap_test( AutoDock_simple_test ):
     """Test that autodock4 stops early if no "elecmap" keyword is specified."""
     dpf_stem = "1pgp_no_elecmap"
@@ -223,6 +231,20 @@ class AutoDock4_1pgp_two_mapsets_test( AutoDock_simple_test ):
     """Test that autodock4 can run dpf specifying two sets of maps and one ligand."""
     dpf_stem = "1pgp_two_mapsets"
     expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_unbound_set_illegal_test( AutoDock_simple_test ):
+    """Test that autodock 4.1 works when unbound is set to 'foo' in the DPF."""
+    dpf_stem = "1pgp_unbound_set_illegal"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_unbound_model_illegal_test( AutoDock_simple_test ):
+    """Test that autodock4 stops early if it finds an illegal unbound_model 
+    in dpf """
+    dpf_stem = "1pgp_unbound_model_illegal"
+    expected_outcome = False # True means Successful Completion!
+
 #______________________________________________________________________________
 
 class AutoDock_test( AutoDock_base_test ):
@@ -279,12 +301,50 @@ class AutoDock4_unbound_test( AutoDock_base_test ):
         print "unbound_energy=", unbound_energy
         self.assertEqual( round(unbound_energy,6), round(self.expected_unbound_energy,6))
 #______________________________________________________________________________
+
 class AutoDock4_1pgp_unbound_default_test( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound is NOT set in the DPF."""
     dpf_stem = "1pgp_unbound_default"
     expected_unbound_energy = -1.80
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
+
+class AutoDock4_1pgp_unbound_model_extended( AutoDock4_unbound_test ):
+    """Test that autodock 4.1 works when unbound_model is set to extended."""
+    dpf_stem = "1pgp_unbound_model_extended"
+    expected_unbound_energy = -0.66
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_unbound_compute_unbound_extended( AutoDock4_unbound_test ):
+    """Test that autodock 4.1 works when unbound_model is set to extended."""
+    dpf_stem = "1pgp_unbound_compute_unbound_extended"
+    expected_unbound_energy = -0.66 
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_unbound_model_value( AutoDock4_unbound_test ):
+    """Test that autodock 4.1 works when unbound_model is set to a value in the DPF."""
+    dpf_stem = "1pgp_unbound_model_value"
+    expected_unbound_energy = -3.12 
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+
+class AutoDock4_1pgp_unbound_model_compact( AutoDock4_unbound_test ):
+    """Test that autodock 4.1 works when unbound_model is set to compact."""
+    dpf_stem = "1pgp_unbound_model_compact"
+    expected_unbound_energy =  0.00 #@FixMe 3/2009 do not know how to calc this
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_unbound_model_bound( AutoDock4_unbound_test ):
+    """Test that autodock 4.1 works when unbound_model is set to bound."""
+    dpf_stem = "1pgp_unbound_model_bound"
+    expected_unbound_energy = -1.80
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_unbound_set0_test( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound is set to 0 in the DPF."""
     dpf_stem = "1pgp_unbound_set0"
@@ -305,6 +365,7 @@ if __name__ == '__main__':
     test_cases = [
         # simple tests:
         'AutoDock4_1pgp_ligand_types_map_mismatch',
+        'AutoDock4_1pgp_illegal_keyword_test',
         'AutoDock4_1pgp_no_elecmap_test',
         'AutoDock4_1pgp_no_desolvmap_test',
         'AutoDock4_1pgp_no_elec_desolv_maps_test',
@@ -313,13 +374,21 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_just_right_number_torsions',
         'AutoDock4_1pgp_two_ligands_test',
         'AutoDock4_1pgp_two_mapsets_test',
-        # tests which check for specific value
+        'AutoDock4_1pgp_unbound_set_illegal_test',
+        'AutoDock4_1pgp_unbound_model_illegal_test', #1
+        ## tests which check for specific value
         'AutoDock4_1pgp_test',
         'AutoDock4_1pgp_no_parameter_file_test',
-        # tests for unbound values 
+        ## tests for unbound values 
         'AutoDock4_1pgp_unbound_default_test',
         'AutoDock4_1pgp_unbound_set0_test',
         'AutoDock4_1pgp_unbound_set10_test',
+        # tests for unbound_model choices
+        'AutoDock4_1pgp_unbound_model_compact',
+        'AutoDock4_1pgp_unbound_model_bound',
+        'AutoDock4_1pgp_unbound_model_extended',
+        'AutoDock4_1pgp_unbound_compute_unbound_extended',
+        'AutoDock4_1pgp_unbound_model_value',
     ]
     unittest.main( argv=( [__name__ ,] + test_cases ) )
     #  The call "unittest.main()" automatically runs all the TestCase classes in
