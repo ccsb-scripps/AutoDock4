@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.13 2009/03/28 00:01:38 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.14 2009/03/31 23:42:35 rhuey Exp $
 
  AutoDock 
 
@@ -285,6 +285,11 @@ void setup_parameter_library( int outlev, char * model_text, Unbound_Model unbou
                     continue; // skip any parameter_library_line without enough info
                 }
                 pr( logFile, "Free energy coefficient for the torsional term     = \t%.4lf\n\n", AD4.coeff_tors);
+                break;
+
+            case PAR_UNBOUND:
+                pr( logFile, "%s: WARNING: the unbound model cannot be specified in the parameter library file.\n\n", programname);
+                pr( logFile, "Use the DPF parameter 'unbound_model' instead.\n");
                 break;
 
             case PAR_ATOM_PAR:
