@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.93 2009/03/28 00:01:38 rhuey Exp $
+ $Id: main.cc,v 1.94 2009/04/01 00:11:03 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.93 2009/03/28 00:01:38 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.94 2009/04/01 00:11:03 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -698,7 +698,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.93 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.94 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3537,21 +3537,26 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case DPF_UNBOUND_MODEL:
         /*
-        **  unbound_model { extended | compact | bound | <float> }
+        **  unbound_model { extended [energy <FLOAT>]| compact | bound }
         **    extended is alias for "compute_unbound_extended" token
-        **    <float> is alias for "unbound <float>" command
         */
         char unbound_model_type[LINE_LEN];
         (void) sscanf( line, "%*s %s", unbound_model_type );
 
-        if (equal( unbound_model_type, "bound", 5 )) {
-            ad4_unbound_model = Unbound_Same_As_Bound;  // default for Autodock 4.1
-        } else if (equal( unbound_model_type, "extend", 6 )) {
-            goto process_DPF_COMPUTE_UNBOUND_EXTENDED; // case DPF_COMPUTE_UNBOUND_EXTENDED below
+        if (equal( unbound_model_type, "bound", 5 ) 
+        || equal( unbound_model_type, "same_as_bound", 13 ) 
+        || equal( unbound_model_type, "unbound_same_as_bound", 21 )) {
+            if (ad4_unbound_model != Unbound_Same_As_Bound)  // default for Autodock 4.1
+                setup_parameter_library(outlev, "Unbound_Same_As_Bound", Unbound_Same_As_Bound);
+            ad4_unbound_model = Unbound_Same_As_Bound;
+        } else if (equal( unbound_model_type, "extended", 8 )) {
+            if ( (1== sscanf( line, "%*s extended energy " FDFMT, &unbound_internal_FE ))){
+                ad4_unbound_model = Extended; 
+                setup_parameter_library(outlev, "unbound_extended", ad4_unbound_model);
+            } 
+            else goto process_DPF_COMPUTE_UNBOUND_EXTENDED; // case DPF_COMPUTE_UNBOUND_EXTENDED below
         } else if (equal( unbound_model_type, "compact", 6 )) {
             ad4_unbound_model = Compact;
-        } else if (1 == sscanf( line, "%*s " FDFMT, &unbound_internal_FE )){
-            goto process_DPF_UNBOUND; // case DPF_UNBOUND below 
         } else {
             // note that "User" is not acceptable in dpf file
             pr( logFile, "%s:  ERROR:  Unrecognized unbound model type \"%s\" .\n",
@@ -3566,9 +3571,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_UNBOUND:
         /*
          * unbound FLOAT
+         * unbound energy FLOAT
          */
-    process_DPF_UNBOUND:
-        if (1!= sscanf( line, "%*s " FDFMT, &unbound_internal_FE )){
+        if ((1!= sscanf( line, "%*s " FDFMT, &unbound_internal_FE ))
+        && (1!= sscanf( line, "%*s energy" FDFMT, &unbound_internal_FE ))){
             pr( logFile, "%s:  ERROR:  Non-numeric unbound model energy \"%s\" .\n",
                     programname, line);
             stop("");
@@ -3913,7 +3919,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         } else {
             pr(logFile, "NOTE:  AutoDock cannot compute the energy of the unbound state, since the ligand is rigid.\n\n");
-            pr(logFile, "NOTE:  Use the \"unbound\" command to set the energy of the unbound state, if known from a previous calculation where the ligand was treated as flexible.\n\n");
+            pr(logFile, "NOTE:  Use the \"unbound energy\" command to set the energy of the unbound state, if known from a previous calculation where the ligand was treated as flexible.\n\n");
             unbound_internal_FE = 0.0L;
             ad4_unbound_model = User; 
             pr(logFile, "\n\nThe internal energy of the unbound state was set to %+.3lf kcal/mol\n\n", unbound_internal_FE);
