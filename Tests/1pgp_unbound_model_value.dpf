@@ -46,7 +46,7 @@ sw_lb_rho 0.01                       # lower bound on rho
 ls_search_freq 0.06                  # probability of performing local search on individual
 set_psw1                             # set the above pseudo-Solis & Wets parameters
 
-unbound_model -3.12                  # free energy of the unbound state
+unbound energy -3.12                 # free energy of the unbound state
 ga_run 1                             # do this many hybrid GA-LS runs
 
 analysis
