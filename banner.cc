@@ -1,10 +1,10 @@
 /*
 
- $Id: banner.cc,v 1.13 2009/04/02 19:55:26 rhuey Exp $
+ $Id: banner.cc,v 1.14 2009/04/02 20:19:10 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ Copyright (C) 1989-2009,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
@@ -72,6 +72,7 @@ void banner( char * version_num )
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |       Garrett M. Morris, TSRI        |\n");
     (void) fprintf(logFile, "                 |            Ruth Huey, TSRI           |\n");
+    (void) fprintf(logFile, "                 |          Michael Pique, TSRI         |\n");
     (void) fprintf(logFile, "                 |        William E. Hart, Sandia       |\n");
     (void) fprintf(logFile, "                 |        William Lindstrom, TSRI       |\n");
     (void) fprintf(logFile, "                 |        Alexander Gillet, TSRI        |\n");
