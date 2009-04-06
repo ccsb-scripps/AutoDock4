@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.20 2009/03/23 22:50:14 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.21 2009/04/06 21:32:27 rhuey Exp $
 
  AutoDock 
 
@@ -178,11 +178,10 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"warranty", DPF_WARRANTY} // 113
               , {"autodock_parameter_version", DPF_PARAMETER_VERSION} // 114
               , {"unbound_model", DPF_UNBOUND_MODEL} // 115
-			   // Remember to define NUM_LEXEMES_AUTODOCK earlier
+              , {"unbound_energy", DPF_UNBOUND} // 116
 
 #if defined(USING_COLINY)
               , {"coliny", DPF_COLINY}  // 1 
-               // Remember to define NUM_LEXEMES_COLINY earlier
 #endif
               , {"//END", DPF_NULL}
               };
