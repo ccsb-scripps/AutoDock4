@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.h,v 1.4 2009/03/10 22:10:01 rhuey Exp $
+ $Id: setflags.h,v 1.5 2009/04/06 21:33:33 rhuey Exp $
 
  AutoDock 
 
@@ -30,8 +30,8 @@
 #include "constants.h"
 #include "usage.h"
 
-int setflags( int I_argc, 
-              char * const PPC_argv[],
+int setflags( int argc, 
+              char ** argv,
               char * version_num);
 
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: autoglobal.h,v 1.14 2008/11/08 00:37:21 rhuey Exp $
+ $Id: autoglobal.h,v 1.15 2009/04/06 21:33:33 rhuey Exp $
 
  AutoDock 
 
@@ -66,9 +66,7 @@
 /*----------------------------------------------------------------------------*/
 
 char    *programname;
-char    AutoDockHelp[] = "           -p parameter_filename\n           -l log_filename\n           -o (Use old PDBQ format, charge q in columns 55-61)\n           -k (Keep original residue numbers)\n           -i (Ignore header-checking)\n           -t (Parse the PDBQ file to check torsions, then stop.)\n           -c < command_file (Command mode, by file)\n           -c | control_program (Command mode, by control_program)\n\n";
-
-char    AutoGridHelp[] = "-p parameter_filename\n-l log_filename\n-o (old PDBQ format)\n-d (increment debug level)\n-u (display this message)\n";
+char    AutoGridHelp[] = "\t-p parameter_filename\n\t\t\t-l log_filename\n\t\t\t-d (increment debug level)\n\t\t\t-h (display this message)\n";
 
 char    dock_param_fn[PATH_MAX];
 char    grid_param_fn[PATH_MAX];
