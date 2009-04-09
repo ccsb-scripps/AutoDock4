@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.13 2008/04/30 04:41:17 garrett Exp $
+ $Id: qmultiply.cc,v 1.14 2009/04/09 14:57:02 rhuey Exp $
 
  AutoDock 
 
@@ -38,9 +38,9 @@
 extern  FILE    *logFile;
 
 
-void qmultiply( Quat *q,
-                register const Quat *ql,
-                register const Quat *qr )
+void qmultiply( Quat *q, //result
+                register const Quat *ql,   //left
+                register const Quat *qr )  //right
 
 /******************************************************************************/
 /*      Name: qmultiply                                                       */
@@ -55,7 +55,6 @@ void qmultiply( Quat *q,
 /*      Date: 12/03/92                                                        */
 /*----------------------------------------------------------------------------*/
 /*    Inputs: ql = rotation to be applied to quaternion in qr                 */
-/*   Returns: q  = resultant quaternion                                       */
 /*   Globals: none.                                                           */
 /*----------------------------------------------------------------------------*/
 /* Modification Record                                                        */
@@ -175,6 +174,20 @@ Quat normRot( Quat q )
     return q;
 }
 
+Real quatDifferenceToAngle( const Quat ql, const Quat qr )
+{
+    Quat qdiff, rot;
+    qconjmultiply(&qdiff, &ql, &qr);
+    rot = convertQuatToRot( qdiff );
+    return rot.ang;
+}
+
+Real quatDifferenceToAngleDeg( const Quat ql, const Quat qr )
+{
+    return (180./PI)* quatDifferenceToAngle( ql, qr );
+}
+
+
 Quat convertQuatToRot( Quat q )
     // Convert the quaternion components (x,y,z,w) of the quaternion q,
     // to the corresponding rotation-about-axis components (nx,ny,nz,ang)
@@ -184,7 +197,10 @@ Quat convertQuatToRot( Quat q )
 #ifdef SUPER_DEBUG_MUTATION // mp
     fprintf( logFile, "convertQuatToRot:  q.w = %.3f\n", q.w );
 #endif
-    assert( fabs( q.w ) <= 1. );
+    assert( fabs( q.w ) <= 1.001 );
+    if ( q.w > 1. ) q.w = 1.;
+    if ( q.w < -1. ) q.w = -1.;
+
     register double angle = 2. * acos( q.w );
     register double inv_sin_half_angle = 1.;
     if ( q.w == 1. ) {
