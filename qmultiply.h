@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.h,v 1.10 2008/04/30 04:41:17 garrett Exp $
+ $Id: qmultiply.h,v 1.11 2009/04/09 14:57:43 rhuey Exp $
 
  AutoDock 
 
@@ -38,6 +38,8 @@ Quat convertRotToQuat( Quat q );
 Quat raaToQuat( const Real raa[3], Real angle );
 Quat normQuat( Quat q );
 Quat normRot( Quat q );
+Real quatDifferenceToAngle( const Quat ql, const Quat qr );
+Real quatDifferenceToAngleDeg( const Quat ql, const Quat qr );
 Quat conjugate( const Quat q );
 Quat inverse( const Quat q );
 Quat slerp( const Quat qa, const Quat qb, const double t );
