@@ -1,10 +1,10 @@
 /*
 
- $Id: main.cc,v 1.95 2009/04/06 21:33:33 rhuey Exp $
+ $Id: main.cc,v 1.96 2009/04/21 21:15:28 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, Scott Halliday, Max Chang, Bill Hart, Richard Belew
+ Copyright (C) 1989-2009,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, Scott Halliday, Max Chang, Bill Hart, Richard K. Belew
  All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.95 2009/04/06 21:33:33 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.96 2009/04/21 21:15:28 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -82,7 +82,7 @@ int main (int argc, char ** argv)
 /*******************************************************************************
 **      Name: main  (AutoDock)                                                **
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule **
-** Copyright: (C) 1994-2005 TSRI, Arthur J. Olson's Labortatory.              **
+** Copyright: (C) 1994-2009 TSRI, Arthur J. Olson's Laboratory.              **
 **____________________________________________________________________________**
 **   Authors: Garrett Matthew Morris, Current C/C++ version 4.1 beta          **
 **                                       e-mail: garrett@scripps.edu          **
@@ -698,7 +698,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.95 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.96 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1819,11 +1819,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             ligand.S.T.x = sInit.T.x;
             ligand.S.T.y = sInit.T.y;
             ligand.S.T.z = sInit.T.z;
-            if (outlev >= 0) {
-                pr( logFile, "Initial translation =\t\t\t(%.3f, %.3f, %.3f) Angstroms\n", sInit.T.x, sInit.T.y, sInit.T.z );
-            }
-            (void) fflush(logFile);
         }
+        if (outlev >= 0) {
+            pr( logFile, "Initial translation =\t\t\t(%.3f, %.3f, %.3f) Angstroms\n", sInit.T.x, sInit.T.y, sInit.T.z );
+        }
+        (void) fflush(logFile);
         break;
 
 //______________________________________________________________________________
@@ -1873,14 +1873,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             if (dpf_keyword == DPF_QUATERNION0) {
                 pr( logFile, "Initial quaternion,  (x,y,z,w) =\t( %.3f, %.3f, %.3f, %.3f ),\n", sInit.Q.x, sInit.Q.y, sInit.Q.z, sInit.Q.w);
             } else {
-                if (dpf_keyword == DPF_QUAT0 && B_RandomQuat0)  {
-                    pr( logFile, "WARNING quat0 command is obsolete. Now use quaternion0 instead\n");
-                }
+                //if (dpf_keyword == DPF_QUAT0 && B_RandomQuat0)  {
+                    //pr( logFile, "WARNING quat0 command is obsolete. Now use quaternion0 instead\n");
+                //}
                 if (dpf_keyword == DPF_QUAT0 && !B_RandomQuat0)  {
                     pr( logFile, "WARNING quat0 command is obsolete. Now use axisangle0 instead\n");
                 }
-                if (!B_RandomQuat0)
-                pr( logFile, "Initial axis-angle,  (nx,ny,nz,ang) =\t( %.3f, %.3f, %.3f, %.1f deg ),\n", a, b, c, d );
+                if (!B_RandomQuat0) {
+                    pr( logFile, "Initial axis-angle,  (nx,ny,nz,ang) =\t( %.3f, %.3f, %.3f, %.1f deg ),\n", a, b, c, d );
+                }
                 pr( logFile, "Initial quaternion,  (x,y,z,w) =\t( %.3f, %.3f, %.3f, %.3f ),\n", sInit.Q.x, sInit.Q.y, sInit.Q.z, sInit.Q.w);
             }
 #ifdef DEBUG
