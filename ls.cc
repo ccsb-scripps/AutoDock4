@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.11 2009/02/24 00:19:40 rhuey Exp $
+ $Id: ls.cc,v 1.12 2009/04/28 21:15:34 rhuey Exp $
 
  AutoDock 
 
@@ -28,6 +28,8 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+//#define DEBUG
+//#define DEBUG2
 /********************************************************************
       These are the methods of the local searchers
 
@@ -40,24 +42,37 @@ extern class Eval evaluate;
 
 extern FILE *logFile;
 
-//  This function adds sign * (array1 + array2) to all the reals in the representation
-Phenotype genPh(const Phenotype &original, Real sign, Real *array1, Real *array2)
+//  This function adds sign * (deviates + bias) to all the reals in the representation
+Phenotype genPh(const Phenotype &original, Real sign, Real *deviates, Real *bias)
 {
    RepType genetype;
    register unsigned int i, index = 0;
    Phenotype retval(original);
 
 #ifdef DEBUG2
-   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, Real *array1, Real *array2)\n");
+   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, Real *deviates, Real *bias)\n");
 #endif /* DEBUG */
 
+#define  QSCALE 1.  
+//#define  QSCALE 0.1  
+//#define  QSCALE 0.01  
    for (i=0; i < retval.num_pts(); i++) {
+      Real scale; //hack 2009
       genetype = retval.gtype(i);
       if ((genetype == T_RealV)||(genetype == T_CRealV)) {
-         retval.write(retval.gread(i).real + sign * (array1[index] + array2[index]), i);
+         if(index>=0 && index<=2) scale = 1;//hack translation
+         else if(index>=3 && index<=6) scale = QSCALE;//hack quaternion
+         else scale = 1;//hack torsion
+
+         retval.write(retval.gread(i).real + scale * sign * (deviates[index] + bias[index]), i);
          index++;
+         scale = 1;
       }
    }
+  static int warned = 0;
+  if (!warned)
+  (void)fprintf(logFile, "ls.cc/@@WARNING hack present qscale = %f torscale = 1\n", QSCALE);
+  warned = 1;
 
    Quat q;
    q = retval.readQuat();
@@ -77,12 +92,14 @@ Phenotype genPh(const Phenotype &original, Real sign, Real *array1, Real *array2
 //  real number in the Phenotype.
 //  
 //  This has only one value of rho, for all genes.
-//
-void Solis_Wets::SW(Phenotype &vector)
+// SW mapped individual
+// SW returns TRUE if it modifies the individual
+Boole Solis_Wets::SW(Phenotype &vector)
 {
    register unsigned int i, j, num_successes = 0, num_failures = 0;
    register Real temp_rho = rho;
    Phenotype newPh;
+   Boole modified = FALSE;
    
 #ifdef DEBUG
    (void)fprintf(logFile, "ls.cc/void Solis_Wets::SW(Phenotype &vector)\n");
@@ -96,23 +113,93 @@ void Solis_Wets::SW(Phenotype &vector)
 
    for (i=0; i < max_its; i++) {
 #ifdef DEBUG
+//convenience function for debugging
+#define traceState(msg,vector) printDState(logFile,msg,vector,i,prevxyz,startxyz,prevQuat,startQuat,num_successes,num_failures,temp_rho,bias,deviates)
+void printDState(FILE *logFile,char * msg,Phenotype &newPh, int i, Real prevxyz[3],
+                 Real startxyz[3], Quat prevQuat, Quat startQuat, 
+                 unsigned int num_successes, unsigned int num_failures,
+                 Real temp_rho, Real * bias, Real * deviates);
+   Real xyz[3];
    Real prevxyz[3];
-   Real prevq[4];
-   for ( int d=0;d<3;d++)prevxyz[d] =vector.gread(d).real;
-   for ( int d=0;d<4;d++)prevq[d] =vector.gread(d+3).real;
+   Real startxyz[3];
+   static Quat thisQuat, prevQuat, startQuat;
+   //save previous values of state
+   if (i>0) {
+      prevQuat = thisQuat;
+      for ( int d=0;d<3;d++)prevxyz[d] = xyz[d];
+   }
+
+   //update current values of state
+   thisQuat = vector.readQuat();//the individual 'vector' holds where we are now
+   for ( int d=0;d<3;d++) xyz[d] = vector.gread(d).real;
+
+   // special case for first iteration
+   if (i==0) {
+      startQuat = thisQuat;
+      for ( int d=0;d<3;d++) startxyz[d] = xyz[d];
+      prevQuat = thisQuat;
+      for ( int d=0;d<3;d++) prevxyz[d] = xyz[d];
+      traceState("initial", vector);
+   } 
+   
 #endif /* DEBUG */
+#ifdef DEBUG
+#ifdef INTERNAL
+   Real dt; // translation step scalar
+   Real ct; // cumulative translation from step 0
+   static Quat thisQuat, prevQuat, startQuat;
+   dt=0;
+   for ( int d=0;d<3;d++) dt += (prevxyz[d]- xyz[d])*(prevxyz[d]- xyz[d]);
+   dt = sqrt(dt);
+   ct=0;
+   for ( int d=0;d<3;d++) ct += (startxyz[d] - xyz[d])*(startxyz[d]- xyz[d]);
+   ct = sqrt(ct);
+   (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+8.4f p=%4.2f b=(%5.2f %5.2f %5.2f) dev=(%5.2f %5.2f %5.2f)", 
+                                  i, num_successes, num_failures, vector.evaluate(Normal_Eval), temp_rho, bias[0], bias[1], bias[2], 
+                                  deviates[0], deviates[1], deviates[2]);
+   (void)fprintf(logFile, " xyz=(");
+    fprintf(logFile, "%5.2f %5.2f %5.2f", newPh.gread(0).real, newPh.gread(1).real,newPh.gread(2).real);
+   (void)fprintf(logFile, ")");
+    fprintf(logFile, "dT=%5.2f ", dt);
+    fprintf(logFile, "cT=%5.2f ", ct);
+    // assuming x,y,z,w ignoring structs.h order 
+    //fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f",
+    thisQuat.x = newPh.gread(3).real; 
+    thisQuat.y = newPh.gread(4).real;
+    thisQuat.z = newPh.gread(5).real;
+    thisQuat.w = newPh.gread(6).real;
+    
+   (void)fprintf(logFile, " quat=(");
+    fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f", newPh.gread(3).real, newPh.gread(4).real,newPh.gread(5).real,newPh.gread(6).real);
+   //?? newPh.printIndividualsState(logFile, 7, 3);
+   (void)fprintf(logFile, ")");
+   if (i>0){
+    fprintf(logFile, " dQ=%5.2f", quatDifferenceToAngleDeg(prevQuat,thisQuat)); 
+    fprintf(logFile, " cQ=%5.2f", quatDifferenceToAngleDeg(startQuat,thisQuat)); 
+   } else {
+    startQuat = thisQuat;
+   };
+   prevQuat = thisQuat;
+#endif /* INTERNAL */
+#endif /* DEBUG */
+
       // Generate deviates
       for (j=0; j < size; j++) {
          deviates[j] = gen_deviates(temp_rho);
       }
 
       // zeta = x + bias + deviates
-      newPh = genPh(vector, +1., deviates, bias); // zeta
+      newPh = genPh(vector, +1., deviates, bias); // zeta; +1 means 'forward' step
       // Evaluate
       if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
          num_successes++;
          num_failures = 0;
          vector = newPh;
+         modified = TRUE;
+#ifdef DEBUG
+         traceState("accept+", newPh);
+#endif /* DEBUG */
+
          for (j=0; j < size; j++) {
             // bias[j] = 0.20*bias[j] + 0.40*deviates[j];  // original & questionable
             bias[j] = 0.60*bias[j] + 0.40*deviates[j]; // strict Solis+Wets
@@ -124,6 +211,10 @@ void Solis_Wets::SW(Phenotype &vector)
             num_successes++;
             num_failures = 0;
             vector = newPh;
+            modified = TRUE;
+#ifdef DEBUG
+            traceState("accept-", newPh);
+#endif /* DEBUG */
             for (j=0; j < size; j++) {
                // bias[j] -= 0.40*deviates[j]; // incorrect
                bias[j] = 0.60*bias[j] - 0.40*deviates[j]; // correct if deviates is not changed
@@ -132,28 +223,14 @@ void Solis_Wets::SW(Phenotype &vector)
             num_failures++;
             num_successes = 0;
             // vector is unchanged  // x
+#ifdef DEBUG
+            traceState("reject ", newPh);
+#endif /* DEBUG */
             for (j=0; j < size; j++) {
                bias[j] *= 0.50;
             }
          }
       }
-#ifdef DEBUG
-   Real dt; // translation step scalar
-   dt=0;
-   for ( int d=0;d<3;d++) dt += (prevxyz[d]- newPh.gread(d).real)*(prevxyz[d]- newPh.gread(d).real);
-   dt = sqrt(dt);
-   (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+8.4f p=%4.2f b=(%5.2f %5.2f %5.2f) dev=(%5.2f %5.2f %5.2f)", 
-                                  i, num_successes, num_failures, vector.evaluate(Normal_Eval), temp_rho, bias[0], bias[1], bias[2], 
-                                  deviates[0], deviates[1], deviates[2]);
-   (void)fprintf(logFile, " xyz=(");
-    fprintf(logFile, "%5.2f %5.2f %5.2f", newPh.gread(0).real, newPh.gread(1).real,newPh.gread(2).real);
-   (void)fprintf(logFile, ")");
-    fprintf(logFile, "dT=%5.2f ", dt);
-   (void)fprintf(logFile, " quat=(");
-    fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f", newPh.gread(3).real, newPh.gread(4).real,newPh.gread(5).real,newPh.gread(6).real);
-   //?? newPh.printIndividualsState(logFile, 7, 3);
-   (void)fprintf(logFile, ")");
-#endif /* DEBUG */
 
       // Check to see if we need to expand or contract
       if (num_successes >= max_successes) {
@@ -167,6 +244,7 @@ void Solis_Wets::SW(Phenotype &vector)
       if (temp_rho < lower_bound_on_rho)
          break;  // GMM - this breaks out of the i loop...
    } // i-loop
+   return modified;
 } // void Solis_Wets::SW(Phenotype &vector)
 
 
@@ -174,12 +252,14 @@ void Solis_Wets::SW(Phenotype &vector)
 //  of the current solution, but the variances vary across dimensions.
 //
 //  This has a different value of rho for each gene.
-//
-void Pseudo_Solis_Wets::SW(Phenotype &vector)
+// PSW mapped individual
+// PSW returns TRUE if it modifies the individual
+Boole Pseudo_Solis_Wets::SW(Phenotype &vector)
 {
    register unsigned int i, j, num_successes = 0, num_failures = 0,  all_rho_stepsizes_too_small = 1;
     
    Phenotype newPh;
+   Boole modified = FALSE;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "ls.cc/void Pseudo_Solis_Wets::SW(Phenotype &vector)\n");
@@ -189,12 +269,19 @@ void Pseudo_Solis_Wets::SW(Phenotype &vector)
    for (i=0; i < size; i++) {
       temp_rho[i] = rho[i];
    }
-   //  Reset bias
+   //  Reset bias or 'momentum'
    for (i=0; i < size; i++) {
       bias[i] = 0.0;
    }
 
    for (i=0; i < max_its; i++) {
+#ifdef DEBUG
+   Real xyz[3];
+   for ( int d=0;d<3;d++) xyz[d] = vector.gread(d).real;
+   (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+6.2f p0=%f b0=%f xyz=(%.2f %.2f %.2f)", 
+                                  i, num_successes, num_failures, vector.evaluate(Normal_Eval), rho[0], bias[0],
+                                  xyz[0],xyz[1],xyz[2]);
+#endif /* DEBUG */
       // Generate deviates
       for (j=0; j < size; j++) {
          deviates[j] = gen_deviates(temp_rho[j]);
@@ -206,6 +293,7 @@ void Pseudo_Solis_Wets::SW(Phenotype &vector)
          num_successes++;
          num_failures = 0;
          vector = newPh;
+         modified = TRUE;
          for (j=0; j < size; j++) {
             // bias[j] = 0.20*bias[j] + 0.40*deviates[j]; 
             bias[j] = 0.60*bias[j] + 0.40*deviates[j]; // strict Solis+Wets
@@ -217,6 +305,7 @@ void Pseudo_Solis_Wets::SW(Phenotype &vector)
             num_successes++;
             num_failures = 0;
             vector = newPh;
+            modified = TRUE;
             for (j=0; j < size; j++) {
                // bias[j] -= 0.40*deviates[j];
                bias[j] = 0.60*bias[j] - 0.40*deviates[j]; // correct if deviates is not changed
@@ -231,10 +320,7 @@ void Pseudo_Solis_Wets::SW(Phenotype &vector)
          }
       }
 
-#ifdef DEBUG
-   (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+6.2f p0=%f b0=%f ", 
-                                  i, num_successes, num_failures, vector.evaluate(Normal_Eval), rho[0], bias[0]);
-#endif /* DEBUG */
+// DEBUG TRACE used to be here, mp+rh 4/09
       // Check to see if we need to expand or contract
       if (num_successes >= max_successes) {
          for(j=0; j < size; j++) {
@@ -259,7 +345,8 @@ void Pseudo_Solis_Wets::SW(Phenotype &vector)
          break; //  GMM - THIS breaks out of i loop, which IS what we want...
       }
    } //  i-loop
-} // void Pseudo_Solis_Wets::SW(Phenotype &vector)
+   return modified;
+} // Boole Pseudo_Solis_Wets::SW(Phenotype &vector)
 
 
 int Solis_Wets_Base::search(Individual &solution)
@@ -270,8 +357,8 @@ int Solis_Wets_Base::search(Individual &solution)
 #endif /* DEBUG */
 
    if (ranf() < search_frequency) {
-      SW(solution.phenotyp);
-      solution.inverse_mapping();
+      // Do inverse mapping if SW changed phenotyp 
+      if (SW(solution.phenotyp)) solution.inverse_mapping();
    }
 
    return(0);
@@ -437,4 +524,44 @@ Phenotype Pattern_Search::pattern_move(const Phenotype& base) {
     newPoint.write(newPoint.gread(i).real + pattern[i] , i);
   }
   return newPoint;
+}
+//void printDState(logFile,msg,vector,i,prevxyz,startxyz, prevQuat,startQuat,num_successes,num_failures,temp_rho,bias,deviates); 
+void printDState(FILE *logFile,char * msg,Phenotype &newPh, int i, Real prevxyz[3],
+                 Real startxyz[3], Quat prevQuat, Quat startQuat, 
+                 unsigned int num_successes, unsigned int num_failures,
+                 Real temp_rho, Real * bias, Real * deviates) 
+{
+#ifdef DEBUG
+   Real dt; // translation step scalar
+   Real ct; // cumulative translation from step 0
+   static Quat thisQuat;
+   Real xyz[3];
+   for ( int d=0;d<3;d++) xyz[d] = newPh.gread(d).real;
+   dt=0;
+   for ( int d=0;d<3;d++) dt += (prevxyz[d]- xyz[d])*(prevxyz[d]- xyz[d]);
+   dt = sqrt(dt);
+   ct=0;
+   for ( int d=0;d<3;d++) ct += (startxyz[d] - xyz[d])*(startxyz[d]- xyz[d]);
+   ct = sqrt(ct);
+   (void)fprintf(logFile, "\nLS::    %3d %s #S=%d #F=%d %+12.4f p=%4.2f b=(%5.2f %5.2f %5.2f) dev=(%5.2f %5.2f %5.2f)", 
+                                  i, msg, num_successes, num_failures, newPh.evaluate(Normal_Eval), temp_rho, bias[0], bias[1], bias[2], 
+                                  deviates[0], deviates[1], deviates[2]);
+   (void)fprintf(logFile, " xyz=(");
+    fprintf(logFile, "%5.2f %5.2f %5.2f", xyz[0], xyz[1], xyz[2]);
+   (void)fprintf(logFile, ") ");
+    fprintf(logFile, "dT=%5.2f ", dt);
+    fprintf(logFile, "cT=%5.2f ", ct);
+    // assuming x,y,z,w ignoring structs.h order 
+    //fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f",
+    thisQuat = newPh.readQuat();
+    
+   (void)fprintf(logFile, " quat=(");
+   fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f", newPh.gread(3).real, newPh.gread(4).real,newPh.gread(5).real,newPh.gread(6).real);
+   (void)fprintf(logFile, ")");
+   //if (i>0){
+    fprintf(logFile, " dQ=%6.1f", quatDifferenceToAngleDeg(prevQuat,thisQuat)); 
+    fprintf(logFile, " cQ=%6.1f", quatDifferenceToAngleDeg(startQuat,thisQuat)); 
+   //}
+#endif /* DEBUG */
+
 }
