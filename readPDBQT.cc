@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.23 2009/01/08 00:55:58 rhuey Exp $
+ $Id: readPDBQT.cc,v 1.24 2009/04/28 17:56:34 rhuey Exp $
 
  AutoDock 
 
@@ -138,7 +138,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	register int    i = 0;
 	register int    j = 0;
 
-	static Real QTOL = 0.005;
+	static Real QTOL = 0.050;//rh increased from 0.005 4/2009
 
     // Definitions to help determine the end_of_branch array for "Branch Crossover Mode".
     // The "end_of_branch" array is like a dictionary, where the index corresponds to the key
@@ -544,7 +544,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	lq = iq - QTOL;
 	uq = iq + QTOL;
 	if (!((aq >= lq) && (aq <= uq))) {
-		prStr(message, "\n%s: *** WARNING!  Non-integral total charge (%.3f e) on ligand! ***\n\n", programname, total_charge_ligand);
+		prStr(message, "\n%s: *** Caution!  Non-integral total charge (%.3f e) on ligand may indicate a problem... ***\n\n", programname, total_charge_ligand);
 		pr_2x(stderr, logFile, message);
 	}
 
