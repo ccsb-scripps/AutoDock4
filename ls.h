@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.h,v 1.5 2007/04/27 06:01:49 garrett Exp $
+ $Id: ls.h,v 1.6 2009/04/28 21:16:11 rhuey Exp $
 
  AutoDock 
 
@@ -93,7 +93,7 @@ class Solis_Wets_Base : public Local_Search
       Solis_Wets_Base(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real);
       virtual ~Solis_Wets_Base(void);
       virtual double gen_deviates(Real) = 0;
-      virtual void SW(Phenotype &) = 0;
+      virtual Boole SW(Phenotype &) = 0;
       virtual void reset(void);
       virtual int terminate(void);
       int search(Individual &);
@@ -109,7 +109,7 @@ class Solis_Wets : public Solis_Wets_Base
       Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real, Real, Real);
       virtual ~Solis_Wets(void);
       virtual double gen_deviates(Real) = 0;
-      void SW(Phenotype &);
+      Boole SW(Phenotype &);
 };
 
 class Pseudo_Solis_Wets : public Solis_Wets_Base
@@ -124,7 +124,7 @@ class Pseudo_Solis_Wets : public Solis_Wets_Base
       Pseudo_Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real, Real *, Real *);
       virtual ~Pseudo_Solis_Wets(void);
       virtual double gen_deviates(Real) = 0;
-      void SW(Phenotype &);
+      Boole SW(Phenotype &);
 };
 
 class Solis_Wets1 : public Solis_Wets
