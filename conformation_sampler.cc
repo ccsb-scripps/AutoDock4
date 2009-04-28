@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.8 2007/04/27 06:01:48 garrett Exp $
+ $Id: conformation_sampler.cc,v 1.9 2009/04/28 21:15:03 rhuey Exp $
 
  AutoDock 
 
@@ -466,7 +466,8 @@ Individual set_ind(GridMapSetInfo *info, State state)
    Individual temp(temp_Gtype, temp_Ptype);   
 
    // use mapping to generate a Phenotype
-   temp.phenotyp = temp.mapping();
+   //temp.phenotyp = temp.mapping();
+   temp.mapping();
 
    return(temp);
 }

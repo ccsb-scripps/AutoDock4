@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.36 2009/02/24 00:19:13 rhuey Exp $
+ $Id: call_glss.cc,v 1.37 2009/04/28 21:15:03 rhuey Exp $
 
  AutoDock  
 
@@ -179,22 +179,22 @@ Phenotype generate_Ptype(int num_torsions, GridMapSetInfo *info)
 
 Individual random_ind(int num_torsions,  GridMapSetInfo *info) 
 {
-   Genotype temp_Gtype;
-   Phenotype temp_Ptype;
 
 #ifdef DEBUG
     (void)fprintf(logFile,"\ncall_glss.cc/Individual random_ind()  About to generate_Gtype()...\n");
 #endif
-   temp_Gtype = generate_Gtype(num_torsions, info);
+   Genotype temp_Gtype = generate_Gtype(num_torsions, info);
 #ifdef DEBUG
-    (void)fprintf(logFile,"call_glss.cc/Individual random_ind()  About to generate_Ptype()...\n");
+   (void)fprintf(logFile,"call_glss.cc/Individual random_ind()  About to generate_Ptype()...\n");
 #endif
-   temp_Ptype = generate_Ptype(num_torsions, info); // differs on Linux gcc 2.96 and Mac OS X gcc 3.1
+   Phenotype temp_Ptype = generate_Ptype(num_torsions, info); 
 
 #ifdef DEBUG
-    (void)fprintf(logFile,"call_glss.cc/Individual random_ind()  About to Individual temp(temp_Gtype, temp_Ptype)...\n");
+   (void)fprintf(logFile,"call_glss.cc/Individual random_ind()  About to Individual temp(temp_Gtype, temp_Ptype)...\n");
 #endif
+   //shotgun wedding: does not map genotype to phenotype
    Individual temp(temp_Gtype, temp_Ptype);
+
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/Individual random_ind()  Done     Individual temp(temp_Gtype, temp_Ptype)...\n\n");
 #endif
@@ -241,7 +241,8 @@ Individual set_ind(int num_torsions,  GridMapSetInfo *info, State state)
    Individual temp(temp_Gtype, temp_Ptype);   
 
    // use mapping to generate a Phenotype
-   temp.phenotyp =  temp.mapping();
+   //temp.phenotyp =  temp.mapping();
+   temp.mapping();
 
    return(temp);
 }
@@ -296,18 +297,19 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 #endif
             thisPop[i].mol = mol;
             thisPop[i].age = 0L;
+            thisPop[i].mapping(); //@@rh+mp 4/16/2008
             // Make sure the phenotype corresponds to the genotype.
             /// gmm 2006-10-18 thisPop[i].phenotyp = thisPop[i].mapping();
         }
 
-        // If initial values were supplied, put them in thisPop[0]
+        // If initial values were supplied, put them in thisPop[0] and remap
         if (!B_RandomTran0) {
             if (outlev > 1) { (void)fprintf(logFile, "Setting the initial translation (tran0) for individual number %d to %.2lf %.2lf %.2lf\n\n", indiv+1, sInit.T.x, sInit.T.y, sInit.T.z); }
             thisPop[indiv].genotyp.write( sInit.T.x, 0 );
             thisPop[indiv].genotyp.write( sInit.T.y, 1 );
             thisPop[indiv].genotyp.write( sInit.T.z, 2 );
             // Remember to keep the phenotype up-to-date
-            thisPop[indiv].phenotyp = thisPop[indiv].mapping();
+            thisPop[indiv].mapping();
         }
         if (!B_RandomQuat0) {
             if (outlev > 1) { 
@@ -319,7 +321,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
             thisPop[indiv].genotyp.write( sInit.Q.z, 5 );
             thisPop[indiv].genotyp.write( sInit.Q.w, 6 );
             // Remember to keep the phenotype up-to-date
-            thisPop[indiv].phenotyp = thisPop[indiv].mapping();
+            thisPop[indiv].mapping();
         }
         if (sInit.ntor > 0) {
             if (!B_RandomDihe0) {
@@ -330,7 +332,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
                 };
                 if (outlev > 1) { (void)fprintf(logFile, " deg\n\n"); }
                 // Remember to keep the phenotype up-to-date
-                thisPop[indiv].phenotyp = thisPop[indiv].mapping();
+                thisPop[indiv].mapping();
             }
         }
 
@@ -357,6 +359,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         }
     } while (pop_size>1 && allEnergiesEqual);
 
+
 #ifdef DEBUG
     (void)fprintf(logFile,"\ncall_glss.cc/State call_glss():  }\n");
     if (outlev > 2) { 
@@ -370,7 +373,9 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
         (void)fprintf( logFile, "</generation>\n\n\n");
     }
 
-    if (outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
+    if (pop_size > 1 && outlev > 3 ) { minmeanmax( logFile, thisPop, num_generations, info ); }
+
+//We now have a mapped and evaluated population suitable for global search
 
     (void)fprintf( logFile, "Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of %u\nenergy evaluations.\n\n", num_evals);
 
@@ -389,7 +394,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
-        if (outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
+        if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
 
         if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
 
@@ -412,7 +417,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
-        if (outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
+        if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
 
         if (strcmp (FN_pop_file, "") != 0) { // YES, do print!
             if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {

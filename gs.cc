@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.29 2009/01/15 22:32:15 rhuey Exp $
+ $Id: gs.cc,v 1.30 2009/04/28 21:15:03 rhuey Exp $
 
  AutoDock 
 
@@ -72,6 +72,7 @@ extern int debug;//debug
 //#define DEBUG
 //#define DEBUG2
 //#define DEBUG3
+//#define DEBUG_MUTATION
 
 
 double worst_in_window(double *window, int size)
@@ -294,6 +295,10 @@ void Genetic_Algorithm::make_table(int size, Real prob)
    mutation_table[0] = pow(1-prob, size);
    mutation_table[size] = 1;
 
+#ifdef DEBUG_MUTATION
+   fprintf(logFile,"mutation_table[0] = %.3f\n",  mutation_table[0]);
+   fprintf(logFile,"mutation_table[%d] = %.3f\n",  size,mutation_table[size]);
+#endif
    i = 1;
    while (i<=(int)size*prob) {
       L = 0.0;
@@ -562,6 +567,7 @@ void Genetic_Algorithm::mutation(Population &pure)
 #endif /* DEBUG */
       mutate(pure[individual].genotyp, gene_number);
       pure[individual].age = 0L;
+      pure[individual].mapping();//map genotype to phenotype and evaluate
    }
 }
 
@@ -711,6 +717,9 @@ void Genetic_Algorithm::crossover(Population &original_population)
             default:
                 (void)fprintf(logFile,"gs.cc/ Unrecognized crossover mode!\n");
          }
+         //map genotype to phenotype and evaluate energy
+         original_population[ i ].mapping();
+         original_population[i+1].mapping();
       }
    }
 }
@@ -1307,7 +1316,6 @@ int Genetic_Algorithm::search(Population &solutions)
    genStart = times( &tms_genStart );
 
 #ifdef DEBUG3 /* DEBUG3 { */
-   (void)fprintf(logFile,"About to perform Mapping on the solutions.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", solutions[i].age);
    }
@@ -1317,9 +1325,13 @@ int Genetic_Algorithm::search(Population &solutions)
    //
    // Map from genotype to phenotype
    //
-   for (i=0; i<solutions.num_individuals(); i++) {
-      solutions[i].mapping();
-   }
+   //for (i=0; i<solutions.num_individuals(); i++) {
+   //   solutions[i].mapping();
+  // }
+   static int warned = 0;
+   if (!warned)
+   (void)fprintf(logFile,"gs.cc/@@WARNING search no longer doing Mapping on the incoming population .\n");
+   warned = 1;
    
 #ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform Selection on the solutions.\n");
