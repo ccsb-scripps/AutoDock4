@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.25 2008/11/21 22:29:06 rhuey Exp $
+ $Id: support.cc,v 1.26 2009/04/28 21:12:19 rhuey Exp $
 
  AutoDock 
 
@@ -343,8 +343,6 @@ Genotype::Genotype(Genotype &original)
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype::Genotype(Genotype &original)\n");
 #endif /* DEBUG */
-
-
    number_of_genes = original.number_of_genes;
    number_of_vectors = original.number_of_vectors;
    modified = original.modified;
@@ -372,7 +370,6 @@ Genotype::Genotype(Genotype const &original)
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/Genotype::Genotype(Genotype const &original)\n");
 #endif /* DEBUG */
-
 
    number_of_genes = original.number_of_genes;
    number_of_vectors = original.number_of_vectors;
@@ -417,9 +414,12 @@ Genotype &Genotype::operator=(const Genotype &original)
    register unsigned int i;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "\nsupport.cc/Genotype &Genotype::operator=(const Genotype &original)\n\n");
+   (void)fprintf(logFile, "\nsupport.cc/Genotype &Genotype::operator=(const Genotype &original): this==original is %d\n\n", this==&original);
 #endif /* DEBUG */
 
+   if (this==&original){ //Prevent self assignment
+      return *this;
+   }
 
    if (rep_vector!=NULL) {
       for (i=0; i<number_of_vectors; i++) {
@@ -449,9 +449,9 @@ Genotype &Genotype::operator=(const Genotype &original)
    for (i=0; i<number_of_genes; i++) {
       lookup[i] = original.lookup[i];
    }
-
    return(*this);
 }
+
 
 void Genotype::write(Element value, int gene_number)
 {
@@ -612,9 +612,12 @@ Phenotype &Phenotype::operator=(const Phenotype &original)
    register unsigned int i;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "\nsupport.cc/Phenotype &Phenotype::operator=(const Phenotype &original)\n\n");
+   (void)fprintf(logFile, "\nsupport.cc/Phenotype &Phenotype::operator=(const Phenotype &original): this==original is %d\n\n", this==&original);
 #endif /* DEBUG */
 
+   if (this==&original){ //Prevent self assignment
+      return *this;
+   }
 
    //  Do the destructors get called on each element of value_vector?
    if (value_vector!=NULL) {
@@ -832,9 +835,12 @@ Population &Population::operator=(const Population &original)
    register int i;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "\nsupport.cc/Population &Population::operator=(const Population &original)\n\n");
+   (void)fprintf(logFile, "\nsupport.cc/Population &Population::operator=(const Population &original):this=original is %d\n\n", this==&original);
 #endif /* DEBUG */
 
+   if (this==&original){ //Prevent self assignement
+      return *this;
+   }
 
    if (heap!=NULL) {
       delete [] heap;

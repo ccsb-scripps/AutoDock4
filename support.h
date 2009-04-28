@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.11 2008/06/09 22:27:51 garrett Exp $
+ $Id: support.h,v 1.12 2009/04/28 21:12:19 rhuey Exp $
 
  AutoDock 
 
@@ -38,6 +38,9 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.12  2009/04/28 21:12:19  rhuey
+** Changed so now Individual does mapping of its genotype into its phenotype and inverse_mapping of its phenotype into its genotype; in both cases returns a reference to itself; added a check for self-assignment
+**
 ** Revision 1.11  2008/06/09 22:27:51  garrett
 ** Added "end_of_branch[MAX_TORS]" to the Population class, the logic being that every Individual in the Population is the same, so rather than add the overhead to all the Individuals, we added it to the Population.  Also introducted two new methods, set_eob() and get_eob(), to set the end_of_branch[] array, and get values given a key torsion number.  These changes are to support the new "Branch Crossover mode".
 **
@@ -190,6 +193,7 @@ class Phenotype
    public:
       Phenotype(void);
       Phenotype(const Phenotype &);
+      //Phenotype(const Genotype &);//to do
       Phenotype(unsigned int, Representation **);
       ~Phenotype(void);
       Phenotype &operator=(const Phenotype &);
@@ -226,9 +230,10 @@ class Individual
       ~Individual(void); /* destructor */
       Individual &operator=(const Individual &); /* assignment function for
 						    individuals */
-      Phenotype mapping(void); /* takes the genotype and converts it into a
-				  phenotype.  */
-      Genotype inverse_mapping(void);  // Scott should do: Also copy Phenotype's value
+      Individual &mapping(void);         //updates phenotype from current genotype values 
+      Individual &inverse_mapping(void); //updates genotype from current phenotype values 
+      //Phenotype mapping(void); /* takes the genotype and converts it into a phenotype.  */
+      //Genotype inverse_mapping(void);  // Scott should do: Also copy Phenotype's value
       double value(EvalMode); /* evaluation of the individual gives its value */
       State state(int); /* state variables in AutoDock */
       void  getMol(Molecule *); /* converts phenotype to mol's state and returns this individual's mol data */
@@ -343,11 +348,13 @@ inline Individual::Individual(void)
    age = 0L;
 }
 
+
 inline Individual::Individual(Individual &original)
 : genotyp(original.genotyp), phenotyp(original.phenotyp)
 {
 }
 
+//@@caution does not do mapping
 inline Individual::Individual(Genotype &init_genotyp, Phenotype &init_phenotyp)
 : genotyp(init_genotyp), phenotyp(init_phenotyp)
 {
@@ -359,16 +366,19 @@ inline Individual::~Individual(void)
 
 inline Individual &Individual::operator=(const Individual &original)
 {
+   if (this == &original) {//Prevent self assignment
+      return *this ;
+   }
    genotyp = original.genotyp;
    phenotyp = original.phenotyp;
    mol = original.mol;
    age = original.age;
-
    return(*this);
 }
 
 inline double Individual::value(EvalMode mode)
-{
+{ // TO DO: check if mapping from genotyp to phenotyp is up-to-date
+  // note that phenotyp.evaluate only does evaluation if evalflag is false
    return(phenotyp.evaluate(mode));
 }
 
