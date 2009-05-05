@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.10 2007/04/27 06:01:49 garrett Exp $
+ $Id: mkNewState.cc,v 1.11 2009/05/05 16:08:53 rhuey Exp $
 
  AutoDock 
 
@@ -87,6 +87,8 @@ void mkNewState( State *now,
         **  Apply random change, to Last Quaternion
         */
         qmultiply( &(now->Q), &(last->Q), &(change->Q) );
+        // TODO 5/1/2009: should call slerp to scale down by qtwStep,mp+rh
+
     }
 
     for (i=0; i<ntor; i++) {
