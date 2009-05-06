@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.24 2009/04/28 21:18:40 rhuey Exp $
+# $Id: test_autodock4.py,v 1.25 2009/05/06 23:26:45 rhuey Exp $
 #
 
 """
@@ -312,7 +312,7 @@ class AutoDock4_1pgp_unbound_default_test( AutoDock4_unbound_test ):
 class AutoDock4_1pgp_unbound_model_extended( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound_model is set to extended."""
     dpf_stem = "1pgp_unbound_model_extended"
-    expected_unbound_energy = -0.48
+    expected_unbound_energy = -0.28
     #expected_unbound_energy = -0.66 #prior to 4/2009
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
@@ -320,7 +320,7 @@ class AutoDock4_1pgp_unbound_model_extended( AutoDock4_unbound_test ):
 class AutoDock4_1pgp_unbound_compute_unbound_extended( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound_model is set to extended."""
     dpf_stem = "1pgp_unbound_compute_unbound_extended"
-    expected_unbound_energy = -0.48
+    expected_unbound_energy = -0.28
     #expected_unbound_energy = -0.66 #prior to 4/2009
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
