@@ -1,10 +1,10 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.21 2009/04/06 21:32:27 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.22 2009/05/06 00:11:18 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ Copyright (C) 1989-2009,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
@@ -63,125 +63,128 @@ int parse_dpf_line( char line[LINE_LEN] )
     const struct {
        char *lexeme;
        int tokenvalue;
-    } tokentable[] = {{"ligand", DPF_MOVE},  // 1
-                      {"fld", DPF_FLD}, // 2
-                      {"map", DPF_MAP}, // 3
-                      {"move", DPF_MOVE}, // 4
-                      {"about", DPF_ABOUT}, // 5
-                      {"tran0", DPF_TRAN0}, // 6
-                      {"quat0", DPF_QUAT0}, // 7
-                      {"ndihe", DPF_NDIHE}, // 8
-                      {"dihe0", DPF_DIHE0}, // 9
-                      {"torsdof", DPF_TORSDOF}, // 10
-                      {"tstep", DPF_TSTEP}, // 11
-                      {"qstep", DPF_QSTEP}, // 12
-                      {"dstep", DPF_DSTEP}, // 13
-                      {"trnrf", DPF_TRNRF}, // 14
-                      {"quarf", DPF_QUARF}, // 15
-                      {"dihrf", DPF_DIHRF}, // 16
-                      {"flex", DPF_FLEX}, // 17
-                      {"intnbp_coeffs", DPF_INTNBP_COEFFS}, // 18
-                      {"rt0", DPF_RT0}, // 19
-                      {"rtrf", DPF_RTRF}, // 20
-                      {"runs", DPF_RUNS}, // 21
-                      {"cycles", DPF_CYCLES}, // 22
-                      {"accs", DPF_ACCS}, // 23
-                      {"rejs", DPF_REJS}, // 24
-                      {"select", DPF_SELECT}, // 25
-                      {"outlev", DPF_OUTLEV}, // 26
-                      {"rmstol", DPF_RMSTOL}, // 27
-                      {"trjfrq", DPF_TRJFRQ}, // 28
-                      {"trjbeg", DPF_TRJBEG}, // 29
-                      {"trjend", DPF_TRJEND}, // 30
-                      {"trjout", DPF_TRJOUT}, // 31
-                      {"trjsel", DPF_TRJSEL}, // 32
-                      {"extnrg", DPF_EXTNRG}, // 33
-                      {"newcrd", DPF_NEWCRD}, // 34
-                      {"cluster", DPF_CLUSTER}, // 35
-                      {"write_all", DPF_CLUSALL}, // 36
-                      {"write_all_cluster_members", DPF_CLUSALL}, // 37
-                      {"charmap", DPF_CHARMAP}, // 38
-                      {"rmsnosym", DPF_RMSNOSYM}, // 39
-                      {"rmsref", DPF_RMSREF}, // 40
-                      {"watch", DPF_WATCH}, // 41
-                      {"linear_schedule", DPF_SCHEDLIN}, // 42
-                      {"schedule_linear", DPF_SCHEDLIN}, // 43
-                      {"linsched", DPF_SCHEDLIN}, // 44
-                      {"schedlin", DPF_SCHEDLIN}, // 45
-                      {"intelec", DPF_INTELEC}, // 46
-                      {"seed", DPF_SEED}, // 47
-                      {"e0max", DPF_E0MAX}, // 48
-                      {"simanneal", DPF_SIMANNEAL}, // 49
-                      {"hardtorcon", DPF_HARDTORCON}, // 50
-                      {"intnbp_r_eps", DPF_INTNBP_REQM_EPS}, // 51
-                      {"gausstorcon", DPF_GAUSSTORCON}, // 52
-                      {"barrier", DPF_BARRIER}, // 53
-                      {"showtorpen", DPF_SHOWTORPEN}, // 54
-                      {"ga_run", DPF_GALS}, // 55
-                      {"gals_run", DPF_GALS}, // 56
-                      {"do_gals", DPF_GALS}, // 57
-                      {"set_ga", DPF_SET_GA}, // 58
-                      {"set_sw1", DPF_SET_SW1}, // 59
-                      {"set_psw1", DPF_SET_PSW1}, // 60
-                      {"analysis", DPF_ANALYSIS}, // 61
-                      {"ga_pop_size", GA_pop_size}, // 62
-                      {"ga_num_generations", GA_num_generations}, // 63
-                      {"ga_num_evals", GA_num_evals}, // 64
-                      {"ga_window_size", GA_window_size}, // 65
-                      {"ga_low", GA_low}, // 66
-                      {"ga_high", GA_high}, // 67
-                      {"ga_elitism", GA_elitism}, // 68
-                      {"ga_mutation_rate", GA_mutation_rate}, // 69
-                      {"ga_crossover_rate", GA_crossover_rate}, // 70
-                      {"ga_cauchy_alpha", GA_Cauchy_alpha}, // 71
-                      {"ga_cauchy_beta", GA_Cauchy_beta}, // 72
-                      {"sw_max_its", SW_max_its}, // 73
-                      {"sw_max_succ", SW_max_succ}, // 74
-                      {"sw_max_fail", SW_max_fail}, // 75
-                      {"sw_rho", SW_rho}, // 76
-                      {"sw_lb_rho", SW_lb_rho}, // 77
-                      {"do_local_only", DPF_LS}, // 78
-                      {"ls_run", DPF_LS}, // 79
-                      {"do_global_only", DPF_GS}, // 80
-                      {"ga_only_run", DPF_GS}, // 81
-                      {"ls_search_freq", LS_search_freq}, // 82
-                      {"bin_energies_by_rmsd", DPF_INVESTIGATE}, // 83
-                      {"investigate", DPF_INVESTIGATE}, // 84
-              {"ligand_is_not_inhibitor", DPF_LIG_NOT_INHIB}, // 85
-              {"template", DPF_TEMPL_ENERGY}, // 86
-              {"template_energy_file", DPF_TEMPL_ENERGY}, // 87
-              {"include_1_4_interactions", DPF_INCLUDE_1_4_INTERACTIONS}, // 88
-              {"parameter_library", DPF_PARAMETER_LIBRARY}, // 89
-              {"parameter_file", DPF_PARAMETER_LIBRARY} // 90
-              , {"receptor_types", DPF_RECEPTOR_TYPES}  // 91
-              , {"ligand_types", DPF_LIGAND_TYPES}      // 92
-              , {"unbound", DPF_UNBOUND}      // 93
-              , {"epdb", DPF_EPDB}      // 94
-              , {"ga_termination_criterion", DPF_TERMINATION}      // 95
-              , {"ga_termination", DPF_TERMINATION}      // 96
-              , {"ga_crossover_mode", GA_CROSSOVER_MODE}      // 97
-              , {"output_pop_file", DPF_POPFILE}      // 98
-              , {"set_pattern", DPF_SET_PATTERN}      // 99
-              , {"compute_unbound_extended", DPF_COMPUTE_UNBOUND_EXTENDED} // 100
-              , {"set_unbound_energy", DPF_UNBOUND}      // 101
-              , {"flexible_residues", DPF_FLEXRES} // 102
-              , {"flexres", DPF_FLEXRES} // 103
-              , {"elecmap", DPF_ELECMAP} // 104
-              , {"desolvmap", DPF_DESOLVMAP} // 105
-              , {"unbound_intnbp_coeffs", DPF_UNBOUND_INTNBP_COEFFS} // 106
-              , {"rmsatoms", DPF_RMSATOMS} // 107
-              , {"confsampler", DPF_CONFSAMPLER} // 108
-              , {"reorient", DPF_REORIENT} // 109
-              , {"axisangle0", DPF_AXISANGLE0} // 110
-              , {"quaternion0", DPF_QUATERNION0} // 111
-              , {"copyright", DPF_COPYRIGHT} // 112
-              , {"warranty", DPF_WARRANTY} // 113
-              , {"autodock_parameter_version", DPF_PARAMETER_VERSION} // 114
-              , {"unbound_model", DPF_UNBOUND_MODEL} // 115
-              , {"unbound_energy", DPF_UNBOUND} // 116
+    } tokentable[] = {{"ligand", DPF_MOVE},  
+                      {"fld", DPF_FLD}, 
+                      {"map", DPF_MAP}, 
+                      {"move", DPF_MOVE}, 
+                      {"about", DPF_ABOUT}, 
+                      {"tran0", DPF_TRAN0}, 
+                      {"quat0", DPF_QUAT0}, 
+                      {"ndihe", DPF_NDIHE}, 
+                      {"dihe0", DPF_DIHE0}, 
+                      {"torsdof", DPF_TORSDOF}, 
+                      {"tstep", DPF_TSTEP}, 
+                      {"qstep", DPF_QSTEP}, 
+                      {"dstep", DPF_DSTEP}, 
+                      {"trnrf", DPF_TRNRF}, 
+                      {"quarf", DPF_QUARF}, 
+                      {"dihrf", DPF_DIHRF}, 
+                      {"flex", DPF_FLEX}, 
+                      {"intnbp_coeffs", DPF_INTNBP_COEFFS}, 
+                      {"rt0", DPF_RT0}, 
+                      {"rtrf", DPF_RTRF}, 
+                      {"runs", DPF_RUNS}, 
+                      {"cycles", DPF_CYCLES}, 
+                      {"accs", DPF_ACCS}, 
+                      {"rejs", DPF_REJS}, 
+                      {"select", DPF_SELECT}, 
+                      {"outlev", DPF_OUTLEV}, 
+                      {"rmstol", DPF_RMSTOL}, 
+                      {"trjfrq", DPF_TRJFRQ}, 
+                      {"trjbeg", DPF_TRJBEG}, 
+                      {"trjend", DPF_TRJEND}, 
+                      {"trjout", DPF_TRJOUT}, 
+                      {"trjsel", DPF_TRJSEL}, 
+                      {"extnrg", DPF_EXTNRG}, 
+                      {"newcrd", DPF_NEWCRD}, 
+                      {"cluster", DPF_CLUSTER}, 
+                      {"write_all", DPF_CLUSALL}, 
+                      {"write_all_cluster_members", DPF_CLUSALL}, 
+                      {"charmap", DPF_CHARMAP}, 
+                      {"rmsnosym", DPF_RMSNOSYM}, 
+                      {"rmsref", DPF_RMSREF}, 
+                      {"watch", DPF_WATCH}, 
+                      {"linear_schedule", DPF_SCHEDLIN}, 
+                      {"schedule_linear", DPF_SCHEDLIN}, 
+                      {"linsched", DPF_SCHEDLIN}, 
+                      {"schedlin", DPF_SCHEDLIN}, 
+                      {"intelec", DPF_INTELEC}, 
+                      {"seed", DPF_SEED}, 
+                      {"e0max", DPF_E0MAX}, 
+                      {"simanneal", DPF_SIMANNEAL}, 
+                      {"hardtorcon", DPF_HARDTORCON}, 
+                      {"intnbp_r_eps", DPF_INTNBP_REQM_EPS}, 
+                      {"gausstorcon", DPF_GAUSSTORCON}, 
+                      {"barrier", DPF_BARRIER}, 
+                      {"showtorpen", DPF_SHOWTORPEN}, 
+                      {"ga_run", DPF_GALS}, 
+                      {"gals_run", DPF_GALS}, 
+                      {"do_gals", DPF_GALS}, 
+                      {"set_ga", DPF_SET_GA}, 
+                      {"set_sw1", DPF_SET_SW1}, 
+                      {"set_psw1", DPF_SET_PSW1}, 
+                      {"analysis", DPF_ANALYSIS}, 
+                      {"ga_pop_size", GA_pop_size}, 
+                      {"ga_num_generations", GA_num_generations}, 
+                      {"ga_num_evals", GA_num_evals}, 
+                      {"ga_window_size", GA_window_size}, 
+                      {"ga_low", GA_low}, 
+                      {"ga_high", GA_high}, 
+                      {"ga_elitism", GA_elitism}, 
+                      {"ga_mutation_rate", GA_mutation_rate}, 
+                      {"ga_crossover_rate", GA_crossover_rate}, 
+                      {"ga_cauchy_alpha", GA_Cauchy_alpha}, 
+                      {"ga_cauchy_beta", GA_Cauchy_beta}, 
+                      {"sw_max_its", SW_max_its}, 
+                      {"sw_max_succ", SW_max_succ}, 
+                      {"sw_max_fail", SW_max_fail}, 
+                      {"sw_rho", SW_rho}, 
+                      {"sw_lb_rho", SW_lb_rho}, 
+                      {"psw_trans_scale", PSW_TRANS_SCALE}, 
+                      {"psw_rot_scale", PSW_ROT_SCALE}, 
+                      {"psw_tors_scale", PSW_TORS_SCALE}, 
+                      {"do_local_only", DPF_LS}, 
+                      {"ls_run", DPF_LS}, 
+                      {"do_global_only", DPF_GS}, 
+                      {"ga_only_run", DPF_GS}, 
+                      {"ls_search_freq", LS_search_freq}, 
+                      {"bin_energies_by_rmsd", DPF_INVESTIGATE}, 
+                      {"investigate", DPF_INVESTIGATE}, 
+              {"ligand_is_not_inhibitor", DPF_LIG_NOT_INHIB}, 
+              {"template", DPF_TEMPL_ENERGY}, 
+              {"template_energy_file", DPF_TEMPL_ENERGY}, 
+              {"include_1_4_interactions", DPF_INCLUDE_1_4_INTERACTIONS}, 
+              {"parameter_library", DPF_PARAMETER_LIBRARY}, 
+              {"parameter_file", DPF_PARAMETER_LIBRARY} 
+              , {"receptor_types", DPF_RECEPTOR_TYPES}  
+              , {"ligand_types", DPF_LIGAND_TYPES}      
+              , {"unbound", DPF_UNBOUND}      
+              , {"epdb", DPF_EPDB}      
+              , {"ga_termination_criterion", DPF_TERMINATION}      
+              , {"ga_termination", DPF_TERMINATION}      
+              , {"ga_crossover_mode", GA_CROSSOVER_MODE}      
+              , {"output_pop_file", DPF_POPFILE}      
+              , {"set_pattern", DPF_SET_PATTERN}      
+              , {"compute_unbound_extended", DPF_COMPUTE_UNBOUND_EXTENDED} 
+              , {"set_unbound_energy", DPF_UNBOUND}      
+              , {"flexible_residues", DPF_FLEXRES} 
+              , {"flexres", DPF_FLEXRES} 
+              , {"elecmap", DPF_ELECMAP} 
+              , {"desolvmap", DPF_DESOLVMAP} 
+              , {"unbound_intnbp_coeffs", DPF_UNBOUND_INTNBP_COEFFS} 
+              , {"rmsatoms", DPF_RMSATOMS} 
+              , {"confsampler", DPF_CONFSAMPLER} 
+              , {"reorient", DPF_REORIENT} 
+              , {"axisangle0", DPF_AXISANGLE0} 
+              , {"quaternion0", DPF_QUATERNION0} 
+              , {"copyright", DPF_COPYRIGHT} 
+              , {"warranty", DPF_WARRANTY} 
+              , {"autodock_parameter_version", DPF_PARAMETER_VERSION} 
+              , {"unbound_model", DPF_UNBOUND_MODEL} 
+              , {"unbound_energy", DPF_UNBOUND} 
 
 #if defined(USING_COLINY)
-              , {"coliny", DPF_COLINY}  // 1 
+              , {"coliny", DPF_COLINY}  
 #endif
               , {"//END", DPF_NULL}
               };
