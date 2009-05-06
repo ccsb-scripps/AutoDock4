@@ -1,6 +1,6 @@
 /*
 
- $Id: autoglobal.h,v 1.15 2009/04/06 21:33:33 rhuey Exp $
+ $Id: autoglobal.h,v 1.16 2009/05/06 00:06:33 rhuey Exp $
 
  AutoDock 
 
@@ -98,7 +98,7 @@ Linear_FE_Model AD3;
 Linear_FE_Model AD4_wrt_3;
 Linear_FE_Model AD4;
 
-Unbound_Model ad4_unbound_model = Unbound_Same_As_Bound;
+Unbound_Model ad4_unbound_model = Unbound_Default;
 
 #endif /*_AUTOGLOBAL*/
 /* EOF */
