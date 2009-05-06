@@ -1,10 +1,10 @@
 /*
 
- $Id: call_glss.cc,v 1.37 2009/04/28 21:15:03 rhuey Exp $
+ $Id: call_glss.cc,v 1.38 2009/05/06 00:14:18 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ Copyright (C) 1989-2009,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, Richard Belew
  All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
@@ -194,6 +194,7 @@ Individual random_ind(int num_torsions,  GridMapSetInfo *info)
 #endif
    //shotgun wedding: does not map genotype to phenotype
    Individual temp(temp_Gtype, temp_Ptype);
+   temp.mapping();
 
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/Individual random_ind()  Done     Individual temp(temp_Gtype, temp_Ptype)...\n\n");
@@ -297,7 +298,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 #endif
             thisPop[i].mol = mol;
             thisPop[i].age = 0L;
-            thisPop[i].mapping(); //@@rh+mp 4/16/2008
+            //thisPop[i].mapping(); //@@rh+mp 4/16/2008
             // Make sure the phenotype corresponds to the genotype.
             /// gmm 2006-10-18 thisPop[i].phenotyp = thisPop[i].mapping();
         }

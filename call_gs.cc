@@ -1,6 +1,6 @@
 /*
 
- $Id: call_gs.cc,v 1.9 2009/04/28 21:15:03 rhuey Exp $
+ $Id: call_gs.cc,v 1.10 2009/05/06 00:14:18 rhuey Exp $
 
  AutoDock 
 
@@ -63,9 +63,8 @@ State call_gs(Global_Search *global_method, State now, unsigned int num_evals, u
    thisPop.set_eob(end_of_branch);
 
    for (i=0; i<pop_size; i++) {
-      thisPop[i] = random_ind(now.ntor, info); 
+      thisPop[i] = random_ind(now.ntor, info); //random_ind does mapping because global search no longer does 2009/04
       thisPop[i].mol = mol;
-      thisPop[i].mapping(); //does mapping because global search no longer does 2009/04
    }
 
    do {
