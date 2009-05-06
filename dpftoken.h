@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.18 2009/03/23 22:50:14 rhuey Exp $
+ $Id: dpftoken.h,v 1.19 2009/05/06 00:14:31 rhuey Exp $
 
  AutoDock 
 
@@ -154,6 +154,9 @@
 #define	DPF_QUAT0	 103
 #define DPF_PARAMETER_VERSION 104
 #define DPF_UNBOUND_MODEL 105
+#define PSW_TRANS_SCALE	106
+#define PSW_ROT_SCALE	107
+#define PSW_TORS_SCALE	108
 
 #endif
 /* EOF */

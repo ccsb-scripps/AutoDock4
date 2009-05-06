@@ -1,6 +1,6 @@
 /*
 
- $Id: main.cc,v 1.96 2009/04/21 21:15:28 rhuey Exp $
+ $Id: main.cc,v 1.97 2009/05/06 00:14:31 rhuey Exp $
 
  AutoDock  
 
@@ -66,7 +66,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.96 2009/04/21 21:15:28 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.97 2009/05/06 00:14:31 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -284,8 +284,8 @@ Real RTFac = 0.95;
 Real torsdoffac = 0.3113;
 Real torsFreeEnergy = 0.0;
 Real torFac = 1.0;
-Real torStep0 = 5.0;
-Real torStepFinal = 5.0;
+Real torStep0 = DegreesToRadians( 5.0 );
+Real torStepFinal = DegreesToRadians( 1.0 );
 Real trnFac = 1.0;
 Real trnStep0 = 0.2;
 Real trnStepFinal = 0.2;
@@ -296,10 +296,6 @@ Real c_rate = 0.80;
 Real alpha = 0;
 Real beta = 1;
 Real search_freq = 0.06;
-Real rho = 1.0;
-Real lb_rho = 0.01;
-Real *rho_ptr = NULL;
-Real *lb_rho_ptr = NULL;
 Real unbound_internal_FE = 0.0;
 Real unbound_ext_internal_FE = 0.0;
 Real unbound_ad_internal_FE = 0.0;
@@ -308,6 +304,14 @@ Real emap_total = 0.;
 Real elec_total = 0.;
 Real charge_total = 0.;
 Real etot = 0.;
+//  The LS Stuff
+Real rho = 1.0;
+Real lb_rho = 0.01;
+Real *rho_ptr = NULL;
+Real *lb_rho_ptr = NULL;
+Real psw_trans_scale = 1.0;//1 angstrom
+Real psw_rot_scale = 0.05;  //about 3 degrees, we think
+Real psw_tors_scale = 0.1; //about 6 degrees
 
 EnergyBreakdown eb;
 
@@ -698,7 +702,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.96 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.97 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2838,6 +2842,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             for (j = 0; j < MAX_RUNS; j++) {
                 econf[j] = torsFreeEnergy;
             }
+            if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
             pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
             /* ___________________________________________________________________
             **
@@ -2931,30 +2936,29 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       //  0,1,2   x,y,z
       //  3,4,5,6 qx,qy,qz,qw
       //  7,...   tor1
+//These scale values can be changed in the dpf, officially unsupported 4/2009
+//Real psw_trans_scale = 1.0;//1 angstrom
+//Real psw_rot_scale = 0.05;  //about 3 degrees, we think
+//Real psw_tors_scale = 0.1; //about 6 degrees
+
       for (j=0; j<3; j++) {
          // j=0,1,2
-         rho_ptr[j] = trnStep0;
-         // lb_rho_ptr[j] = trnStepFinal;
-#define LB_RHO_FRACTION 0.10 // fraction of step size for Solis & Wets local search
-         lb_rho_ptr[j] = LB_RHO_FRACTION * trnStep0;
+         rho_ptr[j] = rho * psw_trans_scale;// formerly trnStep0;
+         lb_rho_ptr[j] = lb_rho * psw_trans_scale; //once trnStepFinal;
       }
 
       //  Initialize the rho's corresponding to the quaterion
       for (; j<7; j++) {
          // j=3,4,5,6
-         // rho_ptr[j] = qtwStep0;
-         rho_ptr[j] = 1.0; // 4D normalized quaternion's components
-         // lb_rho_ptr[j] = qtwStepFinal;
-         // lb_rho_ptr[j] = LB_RHO_FRACTION * qtwStep0;
-         lb_rho_ptr[j] = LB_RHO_FRACTION * 1.0;
+         rho_ptr[j] = rho * psw_rot_scale;// formerly qtwStep0;
+         lb_rho_ptr[j] = lb_rho * psw_rot_scale; //once qtwStepFinal;
       }
 
       //  Initialize the rho's corresponding to the torsions
       for (; j<7+sInit.ntor; j++) {
          // j=7,...
-         rho_ptr[j] = torStep0;
-         // lb_rho_ptr[j] = torStepFinal;
-         lb_rho_ptr[j] = LB_RHO_FRACTION * torStep0;
+         rho_ptr[j] = rho * psw_tors_scale;// formerly torStep0;
+         lb_rho_ptr[j] = lb_rho * psw_tors_scale;//formerly torStepFinal;
       }
 
       LocalSearchMethod = new Pseudo_Solis_Wets1(7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, search_freq, rho_ptr, lb_rho_ptr);
@@ -2998,6 +3002,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } 
             exit_if_missing_elecmap_desolvmap_about("gals");
             pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
+            if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
             pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
 
 #ifdef DEBUG
@@ -3125,6 +3130,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } 
            exit_if_missing_elecmap_desolvmap_about("ls");
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
+           if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
            pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
                            elec, emap,
@@ -3223,6 +3229,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
           exit_if_missing_elecmap_desolvmap_about("gs");
 
           pr(logFile, "Number of Genetic Algorithm (GA) only dockings = %d run%c\n", nruns, (nruns>1)?'s':' ');
+          if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
           pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
 
 
@@ -3430,6 +3437,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) fflush(logFile);
       break;
 
+
 //______________________________________________________________________________
 
     case SW_lb_rho:
@@ -3439,6 +3447,31 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         break;
 
 //______________________________________________________________________________
+
+    case PSW_TRANS_SCALE:
+        (void) sscanf(line, "%*s " FDFMT, &psw_trans_scale);
+        pr(logFile, "psw_trans_scale is set to %f.\n", psw_trans_scale);
+        (void) fflush(logFile);
+        break;
+
+//______________________________________________________________________________
+
+    case PSW_ROT_SCALE:
+        (void) sscanf(line, "%*s " FDFMT, &psw_rot_scale);
+        pr(logFile, "psw_rot_scale is set to %f.\n", psw_rot_scale);
+        (void) fflush(logFile);
+        break;
+
+//______________________________________________________________________________
+
+    case PSW_TORS_SCALE:
+        (void) sscanf(line, "%*s " FDFMT, &psw_tors_scale);
+        pr(logFile, "psw_tors_scale is set to %f.\n", psw_tors_scale);
+        (void) fflush(logFile);
+        break;
+
+//______________________________________________________________________________
+
 
     case LS_search_freq:
         (void) sscanf(line, "%*s " FDFMT, &search_freq);
@@ -3551,6 +3584,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 setup_parameter_library(outlev, "Unbound_Same_As_Bound", Unbound_Same_As_Bound);
             ad4_unbound_model = Unbound_Same_As_Bound;
         } else if (equal( unbound_model_type, "extended", 8 )) {
+            if (ad4_unbound_model != Unbound_Default) { //illegal to set extended after other
+                pr( logFile, "%s:  ERROR:  Setting unbound model type twice: \"%s\" .\n",
+                    programname, unbound_model_type );
+                stop("");
+            }
             if ( (1== sscanf( line, "%*s extended energy " FDFMT, &unbound_internal_FE ))){
                 ad4_unbound_model = Extended; 
                 setup_parameter_library(outlev, "unbound_extended", ad4_unbound_model);
@@ -3574,6 +3612,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          * unbound FLOAT
          * unbound energy FLOAT
          */
+        if (ad4_unbound_model != Unbound_Default && ad4_unbound_model!= User) { //illegal to set user after other
+            pr( logFile, "%s:  ERROR:  Setting unbound model type twice!\n",
+                programname );
+            stop("");
+        }
         if ((1!= sscanf( line, "%*s " FDFMT, &unbound_internal_FE ))
         && (1!= sscanf( line, "%*s energy" FDFMT, &unbound_internal_FE ))){
             pr( logFile, "%s:  ERROR:  Non-numeric unbound model energy \"%s\" .\n",
@@ -3593,6 +3636,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          */
     process_DPF_COMPUTE_UNBOUND_EXTENDED:
         if (ntor > 0) {
+           (void) sprintf( message, "%s: WARNING: Using autodock4.0 unbound extended model in autodock4.1!\n", programname );
+            print_2x( logFile, stderr, message );
+            if (ad4_unbound_model != Unbound_Default) { //illegal to set extended after other
+                pr( logFile, "%s:  ERROR:  Setting unbound model type twice!\n",
+                    programname );
+                stop("");
+            }
             ad4_unbound_model = Extended; 
             setup_parameter_library(outlev, "unbound_extended", ad4_unbound_model);
 
@@ -3943,6 +3993,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  0 = NEW, or   PDBQT-71, and
          *  1 = OLD, or   PDBQT-55 (old PDBq format).
          */
+        Unbound_Model ad4_unbound_model_saved;
         outside = FALSE;
         atoms_outside = FALSE;
         eintra = 0.0L;
@@ -4026,6 +4077,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         // save any currently-computed unbound internal FE
         unbound_internal_FE_saved = unbound_internal_FE;
+        ad4_unbound_model_saved = ad4_unbound_model;
+        ad4_unbound_model = User;
 
         // Initialise to zero, since we may call "epdb" more than once in a single DPF
         // Set the unbound free energy -- assume it is zero, since this is a "single-point energy calculation"
@@ -4080,6 +4133,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         // restore the saved unbound internal FE
         unbound_internal_FE = unbound_internal_FE_saved;
+        ad4_unbound_model = ad4_unbound_model_saved;
 
         (void) fflush(logFile);
         break;

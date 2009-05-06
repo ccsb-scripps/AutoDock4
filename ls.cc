@@ -1,10 +1,10 @@
 /*
 
- $Id: ls.cc,v 1.12 2009/04/28 21:15:34 rhuey Exp $
+ $Id: ls.cc,v 1.13 2009/05/06 00:14:31 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Scott Halliday, Rik Belew, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ Copyright (C) 1989-2009,  Scott Halliday, Rik Belew, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
  All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
@@ -50,29 +50,21 @@ Phenotype genPh(const Phenotype &original, Real sign, Real *deviates, Real *bias
    Phenotype retval(original);
 
 #ifdef DEBUG2
-   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, Real *deviates, Real *bias)\n");
+//   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, Real *deviates, Real *bias)\n");
 #endif /* DEBUG */
 
-#define  QSCALE 1.  
-//#define  QSCALE 0.1  
-//#define  QSCALE 0.01  
    for (i=0; i < retval.num_pts(); i++) {
-      Real scale; //hack 2009
       genetype = retval.gtype(i);
       if ((genetype == T_RealV)||(genetype == T_CRealV)) {
-         if(index>=0 && index<=2) scale = 1;//hack translation
-         else if(index>=3 && index<=6) scale = QSCALE;//hack quaternion
-         else scale = 1;//hack torsion
+         // 4/2009 experiment with gene-by-gene scaling,mp+rh
+         //if(index>=0 && index<=2) scale = 1;//hack translation
+         //else if(index>=3 && index<=6) scale = QSCALE;//hack quaternion
+         //else scale = 1;//hack torsion
 
-         retval.write(retval.gread(i).real + scale * sign * (deviates[index] + bias[index]), i);
+         retval.write(retval.gread(i).real + sign * (deviates[index] + bias[index]), i);
          index++;
-         scale = 1;
       }
    }
-  static int warned = 0;
-  if (!warned)
-  (void)fprintf(logFile, "ls.cc/@@WARNING hack present qscale = %f torscale = 1\n", QSCALE);
-  warned = 1;
 
    Quat q;
    q = retval.readQuat();
@@ -279,7 +271,7 @@ Boole Pseudo_Solis_Wets::SW(Phenotype &vector)
    Real xyz[3];
    for ( int d=0;d<3;d++) xyz[d] = vector.gread(d).real;
    (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+6.2f p0=%f b0=%f xyz=(%.2f %.2f %.2f)", 
-                                  i, num_successes, num_failures, vector.evaluate(Normal_Eval), rho[0], bias[0],
+                                  i, num_successes, num_failures, vector.evaluate(Normal_Eval), temp_rho[0], bias[0],
                                   xyz[0],xyz[1],xyz[2]);
 #endif /* DEBUG */
       // Generate deviates
@@ -339,7 +331,10 @@ Boole Pseudo_Solis_Wets::SW(Phenotype &vector)
       //  GMM - This version only exits if all the step sizes are too small...
       all_rho_stepsizes_too_small = 1;
       for(j=0; j < size; j++) {   
-         all_rho_stepsizes_too_small = all_rho_stepsizes_too_small & (temp_rho[j] < lower_bound_on_rho[j]);
+         if (temp_rho[j]>= lower_bound_on_rho[j]){
+            all_rho_stepsizes_too_small = FALSE;
+            break;
+         }
       } //  j-loop
       if (all_rho_stepsizes_too_small) {
          break; //  GMM - THIS breaks out of i loop, which IS what we want...
@@ -561,6 +556,7 @@ void printDState(FILE *logFile,char * msg,Phenotype &newPh, int i, Real prevxyz[
    //if (i>0){
     fprintf(logFile, " dQ=%6.1f", quatDifferenceToAngleDeg(prevQuat,thisQuat)); 
     fprintf(logFile, " cQ=%6.1f", quatDifferenceToAngleDeg(startQuat,thisQuat)); 
+    fprintf(logFile, " \n"); 
    //}
 #endif /* DEBUG */
 
