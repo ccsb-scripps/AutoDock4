@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.14 2009/03/31 23:42:35 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.15 2009/05/06 00:11:49 rhuey Exp $
 
  AutoDock 
 
@@ -41,7 +41,6 @@ extern FILE *logFile;
 extern char *programname;
 extern int debug;
 extern Linear_FE_Model AD4;
-extern Unbound_Model ad4_unbound_model;
 
 
 Boole string_begins_with(char *a, char *b);
