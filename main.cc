@@ -1,12 +1,45 @@
-/*
+/* AutoDock
+ $Id: main.cc,v 1.98 2009/05/08 22:07:57 rhuey Exp $
 
- $Id: main.cc,v 1.97 2009/05/06 00:14:31 rhuey Exp $
-
- AutoDock  
-
- Copyright (C) 1989-2009,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, Scott Halliday, Max Chang, Bill Hart, Richard K. Belew
- All Rights Reserved.
-
+**  Function: Performs Automated Docking of Small Molecule into Macromolecule
+** Copyright: (C) 1994-2009 TSRI, Arthur J. Olson's Laboratory.
+** All Rights Reserved.
+**____________________________________________________________________________
+** Primary Authors: 
+**            Garrett Matthew Morris, C/C++ version 
+**            David Goodsell, Original FORTRAN version 1.0
+**                                       e-mail: goodsell@scripps.edu
+**
+** Other Contributors: see file AUTHORS
+**            
+**            Laboratory of Arthur J. Olson
+**            The Scripps Research Institute
+**            Department of Molecular Biology, MB5
+**            10550 North Torrey Pines Road
+**            La Jolla, CA 92037.
+**____________________________________________________________________________
+**    Inputs: Control file, Small Molecule PDBQT file, macromolecular grid map
+**            files.
+**   Returns: Autodock Log File, includes docked conformation clusters (PDBQT)
+**____________________________________________________________________________
+** Modification Record (pre-CVS)
+** Date     Inits   Comments
+** 09/06/95 RSH     Added code to handle GA/LS stuff
+**          DSG     Quaternion rotations
+**          DSG     Generates torsions from annotated pdb list
+**          DSG     Generates internal energies
+**          DSG     Performs a limited Cluster analysis of conformations
+** 05/07/92 GMM     C translation
+** 05/14/92 GMM     Time-dependent seed in random-number generation
+** 10/29/92 GMM     Application Visualization System (AVS) readable grid
+**                  display file input.
+**                  [AVS is a trademark of Stardent Computer Inc.]
+**                  Also added the 'total_charge' check.
+** 11/19/93 GMM     #ifdef NOSQRT, with non-square-rooting acceleration.
+** 09/26/94 GMM     Cluster analysis now outputs RMS deviations.
+** 09/28/94 GMM     Modularized code.
+** 10/02/94 GMM     Distance constraints added, for Ed Moret. Accelerated.
+** 09/06/95 RSH     Incorporation of GA/SW tokens
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
  This program is free software; you can redistribute it and/or
@@ -22,8 +55,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
- */
+*******************************************************************************/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -42,7 +74,7 @@
 /* the BOINC API header file */
 #ifdef BOINC
 #include "diagnostics.h"
-#include "boinc_api.h" 
+#include "boinc_api.h"
 #include "filesys.h"                 // boinc_fopen(), etc... */
 #endif
 
@@ -66,7 +98,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.97 2009/05/06 00:14:31 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.98 2009/05/08 22:07:57 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -79,50 +111,6 @@ static void exit_if_missing_elecmap_desolvmap_about(char * keyword); // see bott
 
 int main (int argc, char ** argv)
 
-/*******************************************************************************
-**      Name: main  (AutoDock)                                                **
-**  Function: Performs Automated Docking of Small Molecule into Macromolecule **
-** Copyright: (C) 1994-2009 TSRI, Arthur J. Olson's Laboratory.              **
-**____________________________________________________________________________**
-**   Authors: Garrett Matthew Morris, Current C/C++ version 4.1 beta          **
-**                                       e-mail: garrett@scripps.edu          **
-**                                                                            **
-**            David Goodsell, Orignal FORTRAN version 1.0                     **
-**                                       e-mail: goodsell@scripps.edu         **
-**                                                                            **
-**            The Scripps Research Institute                                  **
-**            Department of Molecular Biology, MB5                            **
-**            10550 North Torrey Pines Road                                   **
-**            La Jolla, CA 92037.                                             **
-**                                                                            **
-**      Date: 02/10/04                                                        **
-**____________________________________________________________________________**
-**    Inputs: Control file, Small Molecule PDBQT file, macromolecular grid map**
-**            files.                                                          **
-**   Returns: Autodock Log File, includes docked conformation clusters (PDBQT)**
-**   Globals: X, Y, Z, SPACE, MAX_GRID_PTS, NEINT, MAX_ATOMS,                 **
-**            MAX_MAPS, A_DIVISOR, LINE_LEN,TRUE,FALSE                        **
-**            programname, parFile, logFile.                                  **
-**____________________________________________________________________________**
-** Modification Record                                                        **
-** Date     Inits   Comments                                                  **
-** 09/06/95 RSH     Added code to handle GA/LS stuff                          **
-**          DSG     Quaternion rotations                                      **
-**          DSG     Generates torsions from annotated pdb list                **
-**          DSG     Generates internal energies                               **
-**          DSG     Performs a limited Cluster analysis of conformations      **
-** 05/07/92 GMM     C translation                                             **
-** 05/14/92 GMM     Time-dependent seed in random-number generation           **
-** 10/29/92 GMM     Application Visualization System (AVS) readable grid      **
-**                  display file input.                                       **
-**                  [AVS is a trademark of Stardent Computer Inc.]            **
-**                  Also added the 'total_charge' check.                      **
-** 11/19/93 GMM     #ifdef NOSQRT, with non-square-rooting acceleration.      **
-** 09/26/94 GMM     Cluster analysis now outputs RMS deviations.              **
-** 09/28/94 GMM     Modularized code.                                         **
-** 10/02/94 GMM     Distance constraints added, for Ed Moret. Accelerated.    **
-** 09/06/95 RSH     Incorporation of GA/SW tokens                             **
-*******************************************************************************/
 
 {
 
@@ -244,12 +232,12 @@ Real tmpconst;
 const double sigma = 3.6L;
 const double qsolpar = 0.01097L;
 
-// ELECSCALE converts between CGS units and SI units; 
+// ELECSCALE converts between CGS units and SI units;
 // see, e.g. p 254, "Molecular Modeling and Simulation", by Tamar Schlick, Springer.
 //
-// Units of ELECSCALE are (Kcal/mol ) * (Angstrom / esu^2) 
+// Units of ELECSCALE are (Kcal/mol ) * (Angstrom / esu^2)
 // and this allows us to use distances in  Angstroms and charges in esu...
-const Real ELECSCALE = 332.06363;   
+const Real ELECSCALE = 332.06363;
 
 // const Real ELECSCALE = 83.0159075;   this ELECSCALE (corresponding to eps(r) = 1/4r) gives -7.13 kcal/mol for 1pgp Tests/test_autodock4.py
 
@@ -441,10 +429,10 @@ static Real F_W;
 static Real F_hW;
 static FourByteLong clktck = 0;
 
-#ifndef VERSION_NUM
-static char * version_num = "4.1";
+#ifndef VERSION
+static char * version_num = "4.2.1";
 #else
-static char * version_num = VERSION_NUM;
+static char * version_num = VERSION;
 #endif
 
 struct tms tms_jobStart;
@@ -528,7 +516,7 @@ jobStart = times( &tms_jobStart );
     options.handle_process_control = false;
     options.send_status_msgs = true;// only the worker programs (i.e. model) sends status msgs
     options.direct_process_action = true;// monitor handles suspend/quit, but app/model doesn't
-    // Initialisation of Boinc 
+    // Initialisation of Boinc
     rc =  boinc_init_options(options); //return 0 for success
     if( rc ){
       fprintf(stderr,"BOINC_ERROR: boinc_init_options() failed \n");
@@ -647,7 +635,7 @@ F_lnH = ((Real)log(0.5));
 
 //______________________________________________________________________________
 /*
-** Determine output level before we ouput anything.  
+** Determine output level before we ouput anything.
 ** We must parse the entire DPF -- silently -- for any outlev settings
 ** or flexible residues file specification
 */
@@ -702,7 +690,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num );
 
-(void) fprintf(logFile, "                           $Revision: 1.97 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.98 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -734,9 +722,9 @@ pr( logFile, "\nNOTE: \"rus\" stands for:\n\n      r = Real, wall-clock or elaps
 //
 setup_parameter_library(outlev, "default Unbound_Same_As_Bound", Unbound_Same_As_Bound);
 
-// 
+//
 // Compute the look-up table for the distance-dependent dielectric function
-// 
+//
 (void) fprintf(logFile, "\n\nPreparing Energy Tables for Bound Calculation:\n\n");
 setup_distdepdiel(outlev, ad_energy_tables);
 (void) fprintf(logFile, "Preparing Energy Tables for Unbound Calculation:\n\n");
@@ -767,7 +755,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     switch( dpf_keyword ) {
         case -1:
             sprintf( error_message,
-               "DPF> %s\n%s: ERROR: Unrecognized keyword in docking parameter file.\n", 
+               "DPF> %s\n%s: ERROR: Unrecognized keyword in docking parameter file.\n",
                line, programname );
             stop( error_message );
 
@@ -802,10 +790,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_PARAMETER_VERSION:
         /*
         ** autodock_parameter_version string
-        **  
-        ** 
         **
-        ** initial implementation ignores value of string 
+        **
+        **
+        ** initial implementation ignores value of string
         */
 
         B_found_autodock_parameter_version = 1==sscanf( line, "%*s %s", autodock_parameter_version );
@@ -876,7 +864,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *        PDBQT specified by the "move" command will be interpreted.
          */
         if (B_found_move_keyword == TRUE) {
-            // If we have found the move keyword already, warn the user 
+            // If we have found the move keyword already, warn the user
             // that this command ("include_1_4_interactions 0.5") should have
             // been given before this!
             pr(logFile, "\nWARNING:  This command will be ignored.\n\nYou must put this command _before_ the \"move ligand.pdbqt\" command, since this command affects how the PDBQT file will be interpreted.\n\n");
@@ -973,12 +961,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *
          *  ligand_types C HD OA P               # ligand atom type names
          *
-         *  The order of the arguments is the index that will 
+         *  The order of the arguments is the index that will
          *  be used for look up in the grid maps, "map_index".
          */
-        
+
         //  Use the function "parsetypes" to read in the atom types;
-        //  
+        //
         //  The array "ligand_atom_type_ptrs" is returned, having been filled with pointers
         //  to the beginning of each "atom type word" (not atom type characters);
         //  In AutoDock 4, an atom type can be either 1 or 2 characters long.
@@ -1070,7 +1058,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
             // loop over atom types, j, from i to number of atom types
             for (j=i; j<num_atom_types; j++) {
-                
+
                 //  Find internal energy parameters, i.e.  epsilon and r-equilibrium values...
                 //  Lennard-Jones and Hydrogen Bond Potentials
 
@@ -1095,7 +1083,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     epsij = epsj_hb;
                     xB = 10;
                 } else if ( ((hbondi == AS) || (hbondi == A1) || (hbondi == A2)) && ((hbondj == DS) || (hbondj == D1))) {
-                    // i is an acceptor and j is a donor. 
+                    // i is an acceptor and j is a donor.
                     // i is a heteroatom, j is a hydrogen
                     // we need to calculate the arithmetic mean of Ri_hb and Rj_hb// not in this Universe...  :-(
                     //Rij = arithmetic_mean(Ri_hb, Rj_hb);// not in this Universe...  :-(
@@ -1141,7 +1129,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         a1++;
                         a2 = a1;
                     }
-                    
+
                 } else {
                     pr(logFile,"WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
                     exit(-1);
@@ -1167,15 +1155,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         // Dynamically allocate memory for the maps
         map = NewGridMapSet(info);
-            
+
         if (map == NULL) {
             prStr(error_message, "%s:  Sorry, there is not enough memory to store the grid maps.  Please use smaller maps and/or fewer atom types.\n", programname);
             stop(error_message);
             exit(1);
         }
         // Initialise the maps
-        for (i=0; i<num_map_values; i++) { 
-            map[i] = 0.0L; 
+        for (i=0; i<num_map_values; i++) {
+            map[i] = 0.0L;
         }
         */
         (void) fflush(logFile);
@@ -1194,7 +1182,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // Read in the AutoGrid atomic affinity map
             // map_index could be incremented here if we had the atom_type stored in each map...
             map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'a' );
-            pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n", 
+            pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                     map_stats.minimum, map_stats.mean, map_stats.maximum);
             num_maps++;
 
@@ -1215,7 +1203,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  elecmap file.e.map
          */
         map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'e' );
-        pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n", 
+        pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                 map_stats.minimum, map_stats.mean, map_stats.maximum);
         ElecMap = num_maps;
         B_found_elecmap = TRUE;
@@ -1230,7 +1218,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  desolvmap file.d.map
          */
         map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'd' );
-        pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n", 
+        pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                 map_stats.minimum, map_stats.mean, map_stats.maximum);
         DesolvMap = num_maps;
         B_found_desolvmap = TRUE;
@@ -1250,7 +1238,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (B_atom_types_found == TRUE) {
             // map_index could be incremented here if we had the atom_type stored in each map...
             map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'c' );
-            pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n", 
+            pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                     map_stats.minimum, map_stats.mean, map_stats.maximum);
             num_maps++;
         } else {
@@ -1327,7 +1315,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         B_found_about_keyword = FALSE; //set false by 'move' true by 'about'
 
         print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
- 
+
         natom=0;
         ligand = readPDBQT( line,
                             num_atom_types,
@@ -1360,7 +1348,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         torsFreeEnergy = (Real)ntorsdof * AD4.coeff_tors;
 
         pr( logFile, "Estimated loss of torsional free energy upon binding = %+.4f kcal/mol\n\n", torsFreeEnergy);
- 
+
         for (i=0;i<natom;i++) {
             if (ignore_inter[i] == 1) {
                 pr(logFile, "Special Boundary Conditions:\n");
@@ -1393,8 +1381,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     atm2 = nonbondlist[i].a2;
                     int t1 = nonbondlist[i].t1;
                     int t2 = nonbondlist[i].t2;
-                    nonbondlist[i].desolv = 
-                           ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[atm1]) 
+                    nonbondlist[i].desolv =
+                           ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[atm1])
                            + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[atm2]) );
                     nonbondlist[i].q1q2 = charge[atm1] * charge[atm2];
                     pr(logFile,"   %4d     %5d-%-5d    %5.2f",i+1,atm1+1,atm2+1,nonbondlist[i].q1q2);
@@ -1465,10 +1453,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop(error_message);
                 exit(-1);
-            } 
+            }
             exit_if_missing_elecmap_desolvmap_about("coliny");
 
-            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, 
+            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
                             map, elec, emap, nonbondlist, ad_energy_tables,
                             Nnb, B_calcIntElec, B_isGaussTorCon, B_isTorConstrained, B_ShowTorE,
                             US_TorE, US_torProfile,
@@ -1499,7 +1487,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             try {
 
                 std::vector<double> initvec, finalpt;
-                // set up initial point 
+                // set up initial point
                 initvec.resize(7+sInit.ntor);
                 initvec[0] = sInit.T.x;
                 initvec[1] = sInit.T.y;
@@ -1559,11 +1547,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                   writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
                               sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                              crd, emap, elec, 
+                              crd, emap, elec,
                               charge, abs_charge, qsp_abs_charge,
                               ligand_is_inhibitor,
                               torsFreeEnergy,
-                              vt, tlist, crdpdb, nonbondlist, 
+                              vt, tlist, crdpdb, nonbondlist,
                               ad_energy_tables,
                               type, Nnb, B_calcIntElec,
                               map,
@@ -1579,7 +1567,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   }
                   econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
                   evaluate.reset();
-                  
+
                   ++nconf;
 
                 } // Next run
@@ -1647,8 +1635,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *      # applies a random rotation to the input ligand
          * -OR-
          *  reorient standard
-         *      # moves the ligand such that 
-         *      # the first three atoms lie parallel to the xy-plane, and 
+         *      # moves the ligand such that
+         *      # the first three atoms lie parallel to the xy-plane, and
          *      # the first two atoms lie parallel to the x-axis
          * -OR-
          *  reorient <axis-x> <axis-y> <axis-z> <angle>
@@ -1670,8 +1658,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 B_reorient_random = FALSE; // do not create a new random orientation before docking
 
                 if (true_ligand_atoms >= 3 ) {
-                    // Move the ligand such that 
-                    // the first three atoms lie parallel to the xy-plane, and 
+                    // Move the ligand such that
+                    // the first three atoms lie parallel to the xy-plane, and
                     // the first two atoms lie parallel to the x-axis
                     Vector vec_01,     // vector between ligand atoms 0 and 1
                            vec_12,     // vector between ligand atoms 1 and 2
@@ -1697,7 +1685,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     Print_vector( logFile, "vec_normal", vec_normal );
                     Print_vector( logFile, "vec_z_axis", vec_z_axis );
                     // Compute the angle between vec_01 and vec_12
-                    double angle_012 = 0.; 
+                    double angle_012 = 0.;
                     angle_012 = Angle_between( vec_01, vec_12 );
                     pr( logFile, "Angle between vectors 01 and 12 = %.2f degrees\n", RadiansToDegrees( angle_012 ) );
                     if ( ( fabs(angle_012) < APPROX_ZERO ) || ( ( fabs(angle_012) > (PI - APPROX_ZERO) ) && ( fabs(angle_012) < (PI + APPROX_ZERO) ) ) ) {
@@ -1745,8 +1733,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         //
                         pr( logFile, "Angle between vector 01 and the x-axis = %.2f degrees\n", RadiansToDegrees( angle_01x ) );
                         //
-                        // The rotation axis to rotate the first two atoms, 0 and 1, 
-                        // to be parallel to the x-axis, will be 
+                        // The rotation axis to rotate the first two atoms, 0 and 1,
+                        // to be parallel to the x-axis, will be
                         // perpendicular to the xy-plane, i.e. the z-axis,
                         // since the molecule's first 3 atoms are now in the xy-plane.
                         q_reorient.nx = vec_z_axis[X];
@@ -1793,8 +1781,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } // endif
         } // end parsing reorient command line
 
-        // reorient( logFile, true_ligand_atoms, atomstuff, crdreo, charge, type, 
-        reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type, 
+        // reorient( logFile, true_ligand_atoms, atomstuff, crdreo, charge, type,
+        reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type,
                   parameterArray, q_reorient, origin, ntor, tlist, vt, &ligand, debug );
 
         (void) fflush(logFile);
@@ -1868,7 +1856,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // and set the boolean B_RandomQuat0 to false,
             B_RandomQuat0 = FALSE;
             (void) sscanf( line, "%*s %lf %lf %lf %lf", &a, &b, &c, &d);
-            sInit.Q = (dpf_keyword == DPF_QUATERNION0) ? 
+            sInit.Q = (dpf_keyword == DPF_QUATERNION0) ?
                       quatComponentsToQuat(a,b,c,d) :
                       axisDegreeToQuat(a,b,c,d);
         }
@@ -2553,7 +2541,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 prStr(error_message, "%s:  ERROR:  no \"about\" command has been specified!\n", programname);
                 stop(error_message);
                 exit(-1);
-        } 
+        }
         if (outlev >= 0) {
             pr( logFile, "Cluster mode is now set.\n\n" );
         }
@@ -2823,12 +2811,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "\nTotal number of residues read in by the DPF \"flex\" command = %d\n\n", nres );
             }
             pr(logFile, "\n");
-            
+
             if (!B_found_about_keyword){
                     prStr(error_message, "%s:  ERROR:  no \"about\" command has been specified!\n", programname);
                     stop(error_message);
                     exit(-1);
-            } 
+            }
 
             if (B_havenbp) {
                 nbe( info, ad_energy_tables, num_atom_types );
@@ -2850,15 +2838,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             ** ___________________________________________________________________
             */
             simanneal( &nconf, Nnb, WallEnergy, atomstuff, charge, abs_charge, qsp_abs_charge, B_calcIntElec,
-                        crd, crdpdb, dock_param_fn, 
+                        crd, crdpdb, dock_param_fn,
                         ad_energy_tables,
-                        econf, B_either, 
-                        elec, emap, 
-                        ncycles, nruns, jobStart, 
+                        econf, B_either,
+                        elec, emap,
+                        ncycles, nruns, jobStart,
                         map,
                         naccmax, natom, nonbondlist, nrejmax, ntor1, ntor, outlev,
                         sInit, sHist,   qtwFac, B_qtwReduc, qtwStep0,
-                        B_selectmin, FN_ligand, lig_center, RT0, B_tempChange, RTFac, 
+                        B_selectmin, FN_ligand, lig_center, RT0, B_tempChange, RTFac,
                         tms_jobStart, tlist, torFac, B_torReduc, torStep0,
                         FN_trj, trj_end_cyc, trj_begin_cyc, trj_freq, trnFac,
                         B_trnReduc, trnStep0, type, vt, B_write_trj,
@@ -2894,7 +2882,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       if (debug > 0) {
           pr( logFile, "\n\tOutput every %u generations.\n", outputEveryNgens );
       }
-      GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate, 
+      GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate,
                                                  window_size, num_generations, outputEveryNgens );
       ((Genetic_Algorithm *)GlobalSearchMethod)->mutation_values( low, high, alpha, beta, trnStep0, qtwStep0, torStep0  );
       ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
@@ -2999,7 +2987,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n", programname);
                 stop(error_message);
                 exit(-1);
-            } 
+            }
             exit_if_missing_elecmap_desolvmap_about("gals");
             pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
             if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
@@ -3010,12 +2998,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             printState( logFile, sInit, 2 );
 #endif
 
-            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
                             elec, emap, nonbondlist, ad_energy_tables, Nnb,
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             ignore_inter,
-                            B_include_1_4_interactions, scale_1_4, 
+                            B_include_1_4_interactions, scale_1_4,
                             unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                             //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
@@ -3042,7 +3030,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     // create a new random orientation before docking
                     create_random_orientation( &q_reorient );
                     // reorient the ligand
-                    reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type, 
+                    reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type,
                               parameterArray, q_reorient, origin, ntor, tlist, vt, &ligand, debug );
                     // update the evaluate object
                     evaluate.update_crds( crdpdb, vt );
@@ -3086,8 +3074,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             torsFreeEnergy,
                             vt, tlist, crdpdb, nonbondlist,
                             ad_energy_tables,
-                            type, Nnb, B_calcIntElec, 
-                            map, 
+                            type, Nnb, B_calcIntElec,
+                            map,
                             outlev, ignore_inter,
                             B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                             info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
@@ -3127,19 +3115,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                prStr(error_message, "%s:  ERROR:  You must use \"set_sw1\", \"set_psw1\" or \"set_pattern\" to create a Local Optimization object.\n", programname);
                stop(error_message);
                exit(-1);
-            } 
+            }
            exit_if_missing_elecmap_desolvmap_about("ls");
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
            if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
            pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
-           evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+           evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
                            elec, emap,
                            nonbondlist,
-                           ad_energy_tables, 
+                           ad_energy_tables,
                            Nnb, B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                            ignore_inter,
-                           B_include_1_4_interactions, scale_1_4, 
+                           B_include_1_4_interactions, scale_1_4,
                            unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                            //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
@@ -3177,14 +3165,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
                            sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                           crd, emap, elec, 
-                           charge, abs_charge, qsp_abs_charge, 
+                           crd, emap, elec,
+                           charge, abs_charge, qsp_abs_charge,
                            ligand_is_inhibitor,
                            torsFreeEnergy,
-                           vt, tlist, crdpdb, nonbondlist, 
+                           vt, tlist, crdpdb, nonbondlist,
                            ad_energy_tables,
                            type, Nnb, B_calcIntElec,
-                           map, 
+                           map,
                            outlev,
                            ignore_inter,
                            B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
@@ -3224,8 +3212,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate a Global Optimization object.\n", programname);
               stop(error_message);
               exit(-1);
-           } 
-        
+           }
+
           exit_if_missing_elecmap_desolvmap_about("gs");
 
           pr(logFile, "Number of Genetic Algorithm (GA) only dockings = %d run%c\n", nruns, (nruns>1)?'s':' ');
@@ -3233,14 +3221,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
           pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
 
 
-          evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+          evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
                           elec, emap,
                           nonbondlist,
-                          ad_energy_tables, 
+                          ad_energy_tables,
                           Nnb, B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
                           B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                           ignore_inter,
-                          B_include_1_4_interactions, scale_1_4, 
+                          B_include_1_4_interactions, scale_1_4,
                           unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                           //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
@@ -3262,7 +3250,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
               gaStart = times(&tms_gaStart);
 
-              sHist[nconf] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size, 
+              sHist[nconf] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size,
                                       &ligand, outputEveryNgens, info, end_of_branch);
 
               pr(logFile, "\nFinal docked state:\n");
@@ -3283,14 +3271,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
               writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
                           sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                          crd, emap, elec, 
-                          charge, abs_charge, qsp_abs_charge, 
+                          crd, emap, elec,
+                          charge, abs_charge, qsp_abs_charge,
                           ligand_is_inhibitor,
                           torsFreeEnergy,
-                          vt, tlist, crdpdb, nonbondlist, 
+                          vt, tlist, crdpdb, nonbondlist,
                           ad_energy_tables,
                           type, Nnb, B_calcIntElec,
-                          map, 
+                          map,
                           outlev,
                           ignore_inter,
                           B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
@@ -3496,7 +3484,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                       lig_center, B_symmetry_flag, tlist, type, vt, FN_rms_ref_crds,
                       torsFreeEnergy, B_write_all_clusmem, ligand_is_inhibitor,
                       outlev,
-                      ignore_inter, B_include_1_4_interactions, scale_1_4, 
+                      ignore_inter, B_include_1_4_interactions, scale_1_4,
                       unbound_internal_FE,
                       info, B_use_non_bond_cutoff, B_have_flexible_residues,
                       B_rms_atoms_ligand_only);
@@ -3542,14 +3530,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) fprintf( logFile, "NumLocalTests= %d\n\n", NumLocalTests );
         (void) investigate( Nnb, charge, abs_charge, qsp_abs_charge, B_calcIntElec,
                             crd, crdpdb, ad_energy_tables,
-                            maxTests, 
+                            maxTests,
                             map, natom, nonbondlist, ntor,
                             outlev, tlist, type, vt, B_isGaussTorCon, US_torProfile,
                             B_isTorConstrained, B_ShowTorE, US_TorE,
                             F_TorConRange, N_con, B_symmetry_flag, FN_rms_ref_crds,
                             OutputEveryNTests, NumLocalTests, trnStep0, torStep0,
                             ignore_inter,
-                            B_include_1_4_interactions, scale_1_4, 
+                            B_include_1_4_interactions, scale_1_4,
                             unbound_internal_FE,
                             info, B_use_non_bond_cutoff, B_have_flexible_residues );
 
@@ -3577,8 +3565,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         char unbound_model_type[LINE_LEN];
         (void) sscanf( line, "%*s %s", unbound_model_type );
 
-        if (equal( unbound_model_type, "bound", 5 ) 
-        || equal( unbound_model_type, "same_as_bound", 13 ) 
+        if (equal( unbound_model_type, "bound", 5 )
+        || equal( unbound_model_type, "same_as_bound", 13 )
         || equal( unbound_model_type, "unbound_same_as_bound", 21 )) {
             if (ad4_unbound_model != Unbound_Same_As_Bound)  // default for Autodock 4.1
                 setup_parameter_library(outlev, "Unbound_Same_As_Bound", Unbound_Same_As_Bound);
@@ -3590,9 +3578,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 stop("");
             }
             if ( (1== sscanf( line, "%*s extended energy " FDFMT, &unbound_internal_FE ))){
-                ad4_unbound_model = Extended; 
+                ad4_unbound_model = Extended;
                 setup_parameter_library(outlev, "unbound_extended", ad4_unbound_model);
-            } 
+            }
             else goto process_DPF_COMPUTE_UNBOUND_EXTENDED; // case DPF_COMPUTE_UNBOUND_EXTENDED below
         } else if (equal( unbound_model_type, "compact", 6 )) {
             ad4_unbound_model = Compact;
@@ -3643,7 +3631,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     programname );
                 stop("");
             }
-            ad4_unbound_model = Extended; 
+            ad4_unbound_model = Extended;
             setup_parameter_library(outlev, "unbound_extended", ad4_unbound_model);
 
             pr(logFile, "Computing the energy of the unbound state of the ligand,\ngiven the torsion tree defined in the ligand file.\n\n");
@@ -3673,7 +3661,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // TODO Do not translate or rotate the ligand in unbound searches
             //
             /*
-             *  Genetic Algorithm-Local search,  a.k.a. 
+             *  Genetic Algorithm-Local search,  a.k.a.
              *  Lamarckian Genetic Algorithm
              */
             if ((GlobalSearchMethod==NULL)||(LocalSearchMethod==NULL)) {
@@ -3710,7 +3698,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             ignore_inter,
-                            B_include_1_4_interactions, scale_1_4, 
+                            B_include_1_4_interactions, scale_1_4,
                             unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                             //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
             //
@@ -3764,19 +3752,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             //
             // Use the standard AutoDock energy tables to compute the internal energy
             // Use this value to set unbound_internal_FE
-            //// evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+            //// evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
                             //// elec, emap, nonbondlist, ad_energy_tables, Nnb,
                             //// B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             //// B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             //// ignore_inter,
-                            //// B_include_1_4_interactions, scale_1_4, 
+                            //// B_include_1_4_interactions, scale_1_4,
                             //// unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
             //
             // --- Start Local Search ---
             //// pr( logFile, "\nPerforming local search using standard AutoDock scoring function\n" );
             //// pr( logFile, "\nUsing UnboundLocalSearchMethod = new Solis_Wets1(7+sInit.ntor, 300, 4, 4, 1., 0.01, 2., 0.5, 1.);\n\n" );
             // Create a local search object
-            // * Use an initial rho value of 0.1 (default is set in DPF by "sw_rho 1.0") 
+            // * Use an initial rho value of 0.1 (default is set in DPF by "sw_rho 1.0")
             //   to ensure smaller, 'more local' steps.
             // * Use a search frequency of 1.0 (default is set in DPF by "ls_search_freq 0.06")
             //// unsigned int ls_pop_size = 150;
@@ -3812,12 +3800,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             //
             // Use the standard AutoDock energy tables to compute the internal energy
             // Use this value to set unbound_internal_FE
-            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map, 
+            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
                             elec, emap, nonbondlist, ad_energy_tables, Nnb,
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             ignore_inter,
-                            B_include_1_4_interactions, scale_1_4, 
+                            B_include_1_4_interactions, scale_1_4,
                             unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                             //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
             // end of Step 3 // }
@@ -3860,7 +3848,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 // TODO Do not translate or rotate the ligand in unbound searches
                 //
                 /*
-                 *  Genetic Algorithm-Local search,  a.k.a. 
+                 *  Genetic Algorithm-Local search,  a.k.a.
                  *  Lamarckian Genetic Algorithm
                  */
                 (void) fprintf( logFile, "\n\n\tBEGINNING COMPUTATION OF UNBOUND AUTODOCK STATE USING LGA\n");
@@ -3954,7 +3942,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         vt, tlist, crdpdb, nonbondlist,
                         ad_energy_tables,
                         type, Nnb, B_calcIntElec,
-                        map, 
+                        map,
                         outlev,
                         ignore_inter,
                         B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
@@ -3972,7 +3960,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr(logFile, "NOTE:  AutoDock cannot compute the energy of the unbound state, since the ligand is rigid.\n\n");
             pr(logFile, "NOTE:  Use the \"unbound energy\" command to set the energy of the unbound state, if known from a previous calculation where the ligand was treated as flexible.\n\n");
             unbound_internal_FE = 0.0L;
-            ad4_unbound_model = User; 
+            ad4_unbound_model = User;
             pr(logFile, "\n\nThe internal energy of the unbound state was set to %+.3lf kcal/mol\n\n", unbound_internal_FE);
         }
 
@@ -4092,7 +4080,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
         // calculate the energy breakdown for the input coordinates, "crdpdb"
         eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
-                                crdpdb, charge, abs_charge, type, map, info, outside, 
+                                crdpdb, charge, abs_charge, type, map, info, outside,
                                 ignore_inter, elec, emap, &elec_total, &emap_total,
                                 nonbondlist, ad_energy_tables, Nnb, B_calcIntElec,
                                 B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff);
@@ -4191,22 +4179,22 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
          *  output_pop_file
          *
-         *  Used to write out the population to a file at the end of 
+         *  Used to write out the population to a file at the end of
          *  every GA.
          */
         (void) sscanf( line, "%*s %s", FN_pop_file);
         (void) fflush(logFile);
         pr( logFile, "The population will be written to the file \"%s\" at the end of every generation.\n", FN_pop_file);
         break;
- 
+
  /*____________________________________________________________________________*/
- 
+
      case DPF_CONFSAMPLER:
         /*
          * confsampler
-         * 
+         *
          * Scan a region around conformations saved in sHist array.
-         * 
+         *
          */
 
         (void) sscanf( line, "%*s %s %d", confsampler_type, &confsampler_samples);
@@ -4217,7 +4205,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (strcmp(confsampler_type, "systematic") == 0) {
             systematic_conformation_sampler(sHist, nconf, vt, crdpdb, tlist, lig_center, natom, type, info);
         }
-        
+
         else {
             random_conformation_sampler(sHist, nconf, confsampler_samples, vt, crdpdb, tlist, lig_center, natom, type, info);
         }
@@ -4309,7 +4297,7 @@ delete []nonbondlist;
 #ifdef BOINCCOMPOUND
  boinc_fraction_done(1.);
 #endif
-#ifdef BOINC           
+#ifdef BOINC
     boinc_finish(0);       /* should not return */
 #endif
 
