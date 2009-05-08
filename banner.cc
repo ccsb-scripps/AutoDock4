@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.15 2009/04/16 22:40:04 rhuey Exp $
+ $Id: banner.cc,v 1.16 2009/05/08 22:07:37 rhuey Exp $
 
  AutoDock 
 
@@ -66,16 +66,18 @@ void banner( char * version_num )
     (void) fprintf(logFile, "                  ______________________________________ \n");
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |            AutoDock %-8s         |\n", version_num );
-    (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |            (c) 1989-2009             |\n");
     (void) fprintf(logFile, "                 |    The Scripps Research Institute    |\n");
     (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 |       Garrett M. Morris, TSRI        |\n");
+    (void) fprintf(logFile, "                 |        Garrett M. Morris, TSRI       |\n");
     (void) fprintf(logFile, "                 |            Ruth Huey, TSRI           |\n");
     (void) fprintf(logFile, "                 |          Michael Pique, TSRI         |\n");
     (void) fprintf(logFile, "                 |        William E. Hart, Sandia       |\n");
+    (void) fprintf(logFile, "                 |   R. Scott Halliday, Hewlett Packard |\n");
     (void) fprintf(logFile, "                 |        William Lindstrom, TSRI       |\n");
+    (void) fprintf(logFile, "                 |           Max Chang, TSRI            |\n");
     (void) fprintf(logFile, "                 |        Alexander Gillet, TSRI        |\n");
+    (void) fprintf(logFile, "                 |         Stefano Forli, TSRI          |\n");
     (void) fprintf(logFile, "                 |        Richard K. Belew, UCSD        |\n");
     (void) fprintf(logFile, "                 |       David S. Goodsell, TSRI        |\n");
     (void) fprintf(logFile, "                 |        Arthur J. Olson, TSRI         |\n");
@@ -85,12 +87,14 @@ void banner( char * version_num )
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 | Automated Docking of Flexible Ligand |\n");
     (void) fprintf(logFile, "                 |  to Flexible Macromolecular Receptor |\n");
+    (void) fprintf(logFile, "                 |                                      |\n");
+    (void) fprintf(logFile, "                 | For help, email %-18s|\n", PACKAGE_BUGREPORT);
     (void) fprintf(logFile, "                 |______________________________________|\n");
-    (void) fprintf(logFile, "\n\n\n");
-    (void) fprintf(logFile, "        AutoDock comes with ABSOLUTELY NO WARRANTY; for details\n");
-    (void) fprintf(logFile, "        type 'warranty'.  This is free software, and you are welcome\n");
-    (void) fprintf(logFile, "        to redistribute it under certain conditions; type 'copyright'\n");
-    (void) fprintf(logFile, "        for details.\n\n\n");
+    (void) fprintf(logFile, "\n\n");
+    (void) fprintf(logFile, "        AutoDock comes with ABSOLUTELY NO WARRANTY.\n");
+    (void) fprintf(logFile, "        AutoDock is free software, and you are welcome\n");
+    (void) fprintf(logFile, "        to redistribute it under certain conditions;\n");
+    (void) fprintf(logFile, "        for details type 'autodock -C'\n\n");
 
 }
 

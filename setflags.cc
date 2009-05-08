@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.10 2009/04/06 21:33:33 rhuey Exp $
+ $Id: setflags.cc,v 1.11 2009/05/08 22:07:37 rhuey Exp $
 
  AutoDock 
 
@@ -133,6 +133,12 @@ int setflags( int argc, char ** argv, char * version_num)
             break;
         case 'k':
             keepresnum--;
+            break;
+        case 'C':
+            //show copyright
+            show_copyright(stdout);
+            show_warranty(stdout);
+            exit(0);
             break;
         case 'c':
             //command_mode removed with 4.1 release spring 2009, mp + rh
