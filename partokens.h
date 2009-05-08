@@ -1,11 +1,10 @@
 /*
 
- $Id: partokens.h,v 1.3 2007/10/20 04:06:41 garrett Exp $
+ $Id: partokens.h,v 1.4 2009/05/08 23:02:15 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -28,7 +27,7 @@
 /******************************************************************************
  *      Name: partoken.h                                                      *
  *  Function: Define tokens for parsing AutoDock atomic parameter files       *
- * Copyright: (C) Garrett Matthew Morris, TSRI                                *
+ *Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  *----------------------------------------------------------------------------*
  *    Author: Garrett Matthew Morris, The Scripps Research Institute          *
  *      Date: 08/03/2005                                                      * 

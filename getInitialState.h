@@ -1,11 +1,10 @@
 /*
 
- $Id: getInitialState.h,v 1.14 2008/10/16 16:50:16 rhuey Exp $
+ $Id: getInitialState.h,v 1.15 2009/05/08 23:02:12 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

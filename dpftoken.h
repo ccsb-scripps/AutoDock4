@@ -1,11 +1,10 @@
 /*
 
- $Id: dpftoken.h,v 1.19 2009/05/06 00:14:31 rhuey Exp $
+ $Id: dpftoken.h,v 1.20 2009/05/08 23:02:12 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -29,7 +28,7 @@
 /******************************************************************************
  *      Name: dpftoken.h                                                      *
  *  Function: Define tokens for parsing DPFs (docking parameter files)        *
- * Copyright: (C) Garrett Matthew Morris, TSRI                                *
+ *Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  *----------------------------------------------------------------------------*
  *    Author: Garrett Matthew Morris, The Scripps Research Institute          *
  *      Date: 02/28/1995                                                      *

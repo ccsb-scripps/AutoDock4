@@ -1,11 +1,10 @@
 /*
 
- $Id: ls.h,v 1.6 2009/04/28 21:16:11 rhuey Exp $
+ $Id: ls.h,v 1.7 2009/05/08 23:02:13 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Scott Halliday, Rik Belew, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

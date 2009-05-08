@@ -1,11 +1,10 @@
 /*
 
- $Id: readPDBQT.cc,v 1.24 2009/04/28 17:56:34 rhuey Exp $
+ $Id: readPDBQT.cc,v 1.25 2009/05/08 23:02:16 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

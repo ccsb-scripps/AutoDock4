@@ -1,11 +1,10 @@
 /*
 
- $Id: trilinterp.cc,v 1.14 2008/10/16 16:54:20 rhuey Exp $
+ $Id: trilinterp.cc,v 1.15 2009/05/08 23:02:18 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -67,7 +66,7 @@ Real trilinterp(
 /*      Name: trilinterp                                                      */
 /*  Function: Trilinear interpolation of interaction energies from map[]      */
 /*            using the coordinates in tcoord[].                              */
-/* Copyright: (C) 1994, TSRI                                                  */
+/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
 /*----------------------------------------------------------------------------*/
 /*   Authors: Garrett M. Morris, TSRI, Accelerated C version 2.2              */
 /*            David Goodsell, UCLA, Original FORTRAN version 1.0              */

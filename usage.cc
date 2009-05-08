@@ -1,11 +1,10 @@
 /*
 
- $Id: usage.cc,v 1.4 2009/04/06 21:33:33 rhuey Exp $
+ $Id: usage.cc,v 1.5 2009/05/08 23:02:19 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2009,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -46,6 +45,7 @@ void usage( FILE * file, char * programname )
     "\t\t\t-i (Ignore header-checking)\n" \
     "\t\t\t-t (Parse the PDBQT file to check torsions, then stop.)\n" \
     "\t\t\t-d (Increment debug level)\n" \
+    "\t\t\t-C (Print copyright notice)\n" \
     "\t\t\t--version (Print autodock version)\n" \
     "\t\t\t--help (Display this message)\n\n";
 

@@ -1,11 +1,10 @@
 /*
 
- $Id: strindex.cc,v 1.4 2007/04/27 06:01:51 garrett Exp $
+ $Id: strindex.cc,v 1.5 2009/05/08 23:02:18 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -37,7 +36,7 @@ int strindex( char s[], char t[] )
 /******************************************************************************/
 /*      Name: strindex                                                        */
 /*  Function: return index of t in s, -1 if none.                             */
-/* Copyright: (C) Garrett Morris, TSRI                                        */
+/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Morris, The Scripps Research Institute                  */
 /*      Date: 11/30/92                                                        */

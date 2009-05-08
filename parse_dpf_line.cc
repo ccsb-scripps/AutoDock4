@@ -1,11 +1,10 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.22 2009/05/06 00:11:18 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.23 2009/05/08 23:02:15 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2009,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -41,7 +40,7 @@ int parse_dpf_line( char line[LINE_LEN] )
 /******************************************************************************/
 /*      Name: parse_dpf_line                                                  */
 /*  Function: Parse the docking parameter file line                           */
-/* Copyright: (C) 1994, TSRI                                                  */
+/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Morris, The Scripps Research Institute                  */
 /*      Date: 19/05/94                                                        */

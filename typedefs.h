@@ -1,11 +1,10 @@
 /*
 
- $Id: typedefs.h,v 1.7 2008/10/16 16:54:20 rhuey Exp $
+ $Id: typedefs.h,v 1.8 2009/05/08 23:02:18 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -31,7 +30,7 @@
 /******************************************************************************
  *      Name: typedefs.h                                                      *
  *  Function: Defines types used in Molecular Applications.                   *
- * Copyright: (C) Garrett Matthew Morris, TSRI                                *
+ *Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  *----------------------------------------------------------------------------*
  *    Author: Garrett Matthew Morris, The Scripps Research Institute          *
  *      Date: JAN/18/2003                                                     *

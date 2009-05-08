@@ -1,11 +1,10 @@
 /*
 
- $Id: atom_parameter_manager.cc,v 1.3 2007/05/18 09:40:30 garrett Exp $
+ $Id: atom_parameter_manager.cc,v 1.4 2009/05/08 23:02:10 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Michael Pique, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson,  
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

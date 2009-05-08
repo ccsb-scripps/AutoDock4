@@ -1,11 +1,10 @@
 /*
 
- $Id: printdate.h,v 1.2 2007/04/27 06:01:50 garrett Exp $
+ $Id: printdate.h,v 1.3 2009/05/08 23:02:16 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

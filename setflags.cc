@@ -1,11 +1,10 @@
 /*
 
- $Id: setflags.cc,v 1.12 2009/05/08 22:10:48 rhuey Exp $
+ $Id: setflags.cc,v 1.13 2009/05/08 23:02:17 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2009,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -62,7 +61,7 @@ int setflags( int argc, char ** argv, char * version_num)
 /******************************************************************************/
 /*      Name: setflags                                                        */
 /*  Function: read flags from argv; return argindex of first non arg.   */
-/* Copyright: (C) Garrett Matthew Morris, TSRI.                               */
+/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Matthew Morris, TSRI.                                   */
 /*            (Adapted from code supplied by Bruce Duncan, TSRI.)             */

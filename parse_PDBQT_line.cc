@@ -1,11 +1,10 @@
 /*
 
- $Id: parse_PDBQT_line.cc,v 1.4 2007/05/17 23:21:48 garrett Exp $
+ $Id: parse_PDBQT_line.cc,v 1.5 2009/05/08 23:02:14 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -42,7 +41,7 @@ int parse_PDBQT_line( char line[LINE_LEN] )
 /******************************************************************************/
 /*      Name: parse_PDBQT_line                                                 */
 /*  Function: Parse the PDBQ file line.                                       */
-/* Copyright: (C) 1994, TSRI                                                  */
+/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Morris, The Scripps Research Institute                  */
 /*      Date: 11/06/93                                                        */

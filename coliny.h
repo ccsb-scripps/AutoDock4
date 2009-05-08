@@ -1,11 +1,10 @@
 /*
 
- $Id: coliny.h,v 1.5 2007/06/12 05:48:45 billhart Exp $
+ $Id: coliny.h,v 1.6 2009/05/08 23:02:12 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  William Hart, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

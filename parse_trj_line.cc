@@ -1,11 +1,10 @@
 /*
 
- $Id: parse_trj_line.cc,v 1.3 2007/04/27 06:01:50 garrett Exp $
+ $Id: parse_trj_line.cc,v 1.4 2009/05/08 23:02:15 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -41,7 +40,7 @@ int parse_trj_line( char line[LINE_LEN] )
 /******************************************************************************/
 /*      Name: parse_trj_line                                                  */
 /*  Function: Parse the trajectory file line                                  */
-/* Copyright: (C) 1994, TSRI                                                  */
+/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Morris, The Scripps Research Institute                  */
 /*      Date: 26/01/93                                                        */

@@ -1,11 +1,10 @@
 /*
 
- $Id: eval.h,v 1.20 2008/10/16 16:48:55 rhuey Exp $
+ $Id: eval.h,v 1.21 2009/05/08 23:02:12 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Scott Halliday, Rik Belew, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

@@ -1,11 +1,10 @@
 /*
 
- $Id: parsetypes.cc,v 1.4 2008/10/16 16:51:48 rhuey Exp $
+ $Id: parsetypes.cc,v 1.5 2009/05/08 23:02:15 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -36,7 +35,7 @@ int parsetypes(char * line, char *words[], int maxwords)
 /******************************************************************************/
 /*      Name: parsetypes                                                      */
 /*  Function: Parse the AutoGrid types lines                                  */
-/* Copyright: (C) 1995, TSRI                                                  */
+/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Morris, The Scripps Research Institute                  */
 /*      Date: 02/01/95 (1-feb-1995)                                           */

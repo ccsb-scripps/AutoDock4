@@ -1,11 +1,10 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.9 2009/04/28 21:15:03 rhuey Exp $
+ $Id: conformation_sampler.cc,v 1.10 2009/05/08 23:02:12 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Max Chang, Rik Belew, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

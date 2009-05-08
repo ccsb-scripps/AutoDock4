@@ -1,11 +1,10 @@
 /*
 
- $Id: parameters.h,v 1.4 2008/05/30 04:19:46 garrett Exp $
+ $Id: parameters.h,v 1.5 2009/05/08 23:02:14 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

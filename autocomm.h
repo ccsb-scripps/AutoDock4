@@ -1,11 +1,10 @@
 /*
 
- $Id: autocomm.h,v 1.18 2008/11/08 00:37:21 rhuey Exp $
+ $Id: autocomm.h,v 1.19 2009/05/08 23:02:10 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -38,7 +37,7 @@
 /*******************************************************************************
 **      Name: autocomm.h                                                      **
 **  Function: Defines Constants, common to both AUTOGRID & AUTODOCK...        **
-** Copyright: (C) Garrett Matthew Morris, TSRI                                **
+**Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 **----------------------------------------------------------------------------**
 **    Author: Garrett Matthew Morris, The Scripps Research Institute          **
 **      Date: 02/28/1995                                                      **

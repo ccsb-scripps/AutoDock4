@@ -1,11 +1,10 @@
 /*
 
- $Id: support.cc,v 1.26 2009/04/28 21:12:19 rhuey Exp $
+ $Id: support.cc,v 1.27 2009/05/08 23:02:18 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

@@ -1,11 +1,10 @@
 /*
 
- $Id: rep_constants.h,v 1.4 2008/04/05 06:25:55 garrett Exp $
+ $Id: rep_constants.h,v 1.5 2009/05/08 23:02:17 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

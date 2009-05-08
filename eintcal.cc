@@ -1,11 +1,10 @@
 /*
 
- $Id: eintcal.cc,v 1.19 2008/10/16 16:48:25 rhuey Exp $
+ $Id: eintcal.cc,v 1.20 2009/05/08 23:02:12 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -81,7 +80,7 @@ Real eintcalPrint( NonbondParam * const nonbondlist,
 /*       Name: eintcal                                                         */
 /*   Function: Calculate the Internal Energy of the Small Molecule.            */
 /*             Accelerated non-square-rooting, dx,dy,dz version.               */
-/*  Copyright: (C) 1994-2004, TSRI                                             */
+/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
 /* ____________________________________________________________________________*/
 /*    Authors: Garrett M. Morris, TSRI                                         */
 /*             David Goodsell, UCLA                                            */

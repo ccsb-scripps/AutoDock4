@@ -1,10 +1,10 @@
 /*
 
- $Id: support.h,v 1.13 2009/05/08 21:46:11 rhuey Exp $
+ $Id: support.h,v 1.14 2009/05/08 23:02:18 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Scott Halliday, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, Richard Belew
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
@@ -38,6 +38,9 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.14  2009/05/08 23:02:18  rhuey
+** Updated copyright notice in 188 source files
+**
 ** Revision 1.13  2009/05/08 21:46:11  rhuey
 ** removed debugging comments and print-out
 **

@@ -1,11 +1,10 @@
 /*
 
- $Id: initautodock.cc,v 1.11 2007/04/27 06:01:49 garrett Exp $
+ $Id: initautodock.cc,v 1.12 2009/05/08 23:02:13 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

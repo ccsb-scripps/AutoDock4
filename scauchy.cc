@@ -1,11 +1,10 @@
 /*
 
- $Id: scauchy.cc,v 1.8 2007/04/27 06:01:51 garrett Exp $
+ $Id: scauchy.cc,v 1.9 2009/05/08 23:02:17 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Scott Halliday, Bill Hart, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, Richard Belew,
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

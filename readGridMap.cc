@@ -1,11 +1,10 @@
 /*
 
- $Id: readGridMap.cc,v 1.7 2008/11/08 00:37:23 rhuey Exp $
+ $Id: readGridMap.cc,v 1.8 2009/05/08 23:02:16 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

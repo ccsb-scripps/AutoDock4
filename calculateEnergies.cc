@@ -1,11 +1,10 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.8 2009/05/06 00:13:19 rhuey Exp $
+ $Id: calculateEnergies.cc,v 1.9 2009/05/08 23:02:11 rhuey Exp $
 
  AutoDock  
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

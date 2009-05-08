@@ -1,11 +1,10 @@
 /*
 
- $Id: qmultiply.cc,v 1.14 2009/04/09 14:57:02 rhuey Exp $
+ $Id: qmultiply.cc,v 1.15 2009/05/08 23:02:16 rhuey Exp $
 
  AutoDock 
 
- Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
- All Rights Reserved.
+Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -48,7 +47,7 @@ void qmultiply( Quat *q, //result
 /*            [q]  =  [ql] [qr]                                               */
 /*            [s1,v1][s2,v2] = [(s1*s2 - v1.v2), (s1*v2 + s2*v1 + v1^v2)]     */
 /*                ~~     ~~              ~~ ~~       ~~      ~~   ~~ ~~       */
-/* Copyright: (C) 1994, TSRI                                                  */
+/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
 /*----------------------------------------------------------------------------*/
 /*   Authors: Garrett M. Morris, The Scripps Research Institute.              */
 /*            David Goodsell, TSRI                                            */
