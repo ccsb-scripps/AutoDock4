@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.12 2009/04/28 21:12:19 rhuey Exp $
+ $Id: support.h,v 1.13 2009/05/08 21:46:11 rhuey Exp $
 
  AutoDock 
 
@@ -38,6 +38,9 @@
 
 /*
 ** $Log: support.h,v $
+** Revision 1.13  2009/05/08 21:46:11  rhuey
+** removed debugging comments and print-out
+**
 ** Revision 1.12  2009/04/28 21:12:19  rhuey
 ** Changed so now Individual does mapping of its genotype into its phenotype and inverse_mapping of its phenotype into its genotype; in both cases returns a reference to itself; added a check for self-assignment
 **
@@ -354,7 +357,7 @@ inline Individual::Individual(Individual &original)
 {
 }
 
-//@@caution does not do mapping
+// caution, does not do mapping
 inline Individual::Individual(Genotype &init_genotyp, Phenotype &init_phenotyp)
 : genotyp(init_genotyp), phenotyp(init_phenotyp)
 {

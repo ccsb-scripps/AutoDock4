@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.30 2009/04/28 21:15:03 rhuey Exp $
+ $Id: gs.cc,v 1.31 2009/05/08 21:46:11 rhuey Exp $
 
  AutoDock 
 
@@ -1322,16 +1322,8 @@ int Genetic_Algorithm::search(Population &solutions)
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
 
-   //
-   // Map from genotype to phenotype
-   //
-   //for (i=0; i<solutions.num_individuals(); i++) {
-   //   solutions[i].mapping();
-  // }
-   static int warned = 0;
-   if (!warned)
-   (void)fprintf(logFile,"gs.cc/@@WARNING search no longer doing Mapping on the incoming population .\n");
-   warned = 1;
+   // search no longer doing Mapping on the incoming population
+   // assumed already mapped earlier, may 2009 mp+rh
    
 #ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform Selection on the solutions.\n");

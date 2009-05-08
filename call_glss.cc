@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.38 2009/05/06 00:14:18 rhuey Exp $
+ $Id: call_glss.cc,v 1.39 2009/05/08 21:46:11 rhuey Exp $
 
  AutoDock  
 
@@ -298,9 +298,6 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 #endif
             thisPop[i].mol = mol;
             thisPop[i].age = 0L;
-            //thisPop[i].mapping(); //@@rh+mp 4/16/2008
-            // Make sure the phenotype corresponds to the genotype.
-            /// gmm 2006-10-18 thisPop[i].phenotyp = thisPop[i].mapping();
         }
 
         // If initial values were supplied, put them in thisPop[0] and remap
