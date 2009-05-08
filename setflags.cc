@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.11 2009/05/08 22:07:37 rhuey Exp $
+ $Id: setflags.cc,v 1.12 2009/05/08 22:10:48 rhuey Exp $
 
  AutoDock 
 
@@ -35,6 +35,7 @@
 #include "setflags.h"
 #include "openfile.h"
 #include "version.h"
+#include "banner.h"
 
 extern FILE *parFile;
 extern FILE *logFile;
