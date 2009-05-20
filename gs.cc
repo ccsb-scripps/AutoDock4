@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.32 2009/05/08 23:02:13 rhuey Exp $
+ $Id: gs.cc,v 1.33 2009/05/20 16:08:57 rhuey Exp $
 
  AutoDock 
 
@@ -1428,7 +1428,7 @@ int Genetic_Algorithm::search(Population &solutions)
            // (void)fprintf(logFile, "___\noutputEveryNgens = %d, OUTLEV0_GENS=%d\n___\n", outputEveryNgens, OUTLEV0_GENS);
            if (outputEveryNgens > 1) {
     #ifndef DEBUG3
-               (void)fprintf(logFile,"@@ Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
+               (void)fprintf(logFile,"Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), 
                evaluate.evals() );
     #else
@@ -1440,7 +1440,7 @@ int Genetic_Algorithm::search(Population &solutions)
     #endif /* DEBUG3 */
            } else {
     #ifndef DEBUG3
-               (void)fprintf(logFile,"@@ Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
+               (void)fprintf(logFile,"Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), evaluate.evals() );
     #else
                (void)fprintf(logFile,"Generation: %3u   Oldest: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Num.evals.: %ld   Timing: ", 
