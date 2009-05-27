@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.21 2009/05/08 21:47:10 rhuey Exp $
+# $Id: Makefile.am,v 1.22 2009/05/27 23:38:40 rhuey Exp $
 # 
 # AutoDock  
 # 
@@ -240,7 +240,12 @@ libad_a_SOURCES = \
 		weedbonds.h \
 		writePDBQT.h
 
-AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
+AM_CXXFLAGS = -O3 # Agressive optimization
+
+    # if gnu c++ compiler
+AM_CXXFLAGS += -Wall # All warnings
+
+#AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
 
 AM_CPPFLAGS = -DNOSQRT \
@@ -260,7 +265,7 @@ autodock4_CPPFLAGS=-DVERSION_NUM=\"4.1.1\" $(AM_CPPFLAGS)
 autodock4_LDADD = libad.a $(COLINY_LDFLAGS) -lm
 
 if WANT_BIGSTACK
-    autodock4_LDFLAGS = -fno-stack-limit # Cygwin, 32MB stacksize
+    autodock4_LDFLAGS = -Wl,--stack,8388608 # Cygwin, big stacksize
 endif
 
 #
@@ -420,7 +425,7 @@ test : autodock4 $(srcdir)/Tests/test_autodock4.py
 	@echo "Running the Python test_autodock4.py unit-tests on autodock4"
 	@echo " "
 	outputdir=`pwd` ;\
-	cd $(srcdir)/Tests ; chmod u+w . ; python ./test_autodock4.py -d . -e $$outputdir/autodock4 -o $$outputdir/Tests
+	cd $(srcdir)/Tests ; chmod u+w . ; python ./test_autodock4.py -d . -e $$outputdir/autodock4$(EXEEXT) -o $$outputdir/Tests
 #else
 #	@echo " "
 #	@echo "Python version 2.1 or higher needed for 'make check', but not found."
