@@ -1,0 +1,6 @@
+#! /bin/bash
+# $Id: configure_universal_Darwin9,v 1.1 2009/05/29 21:01:58 rhuey Exp $
+archlist="-arch i386 -arch x86_64 -arch ppc -arch ppc64"
+env CXXFLAGS="-O3 -isysroot /Developer/SDKs/MacOSX10.5.sdk $archlist" \
+    LDFLAGS="$archlist" \
+ ../configure --disable-dependency-tracking

@@ -1,0 +1,46 @@
+#! /bin/bash
+# $Id: mkdisttars,v 1.1 2009/05/29 21:01:58 rhuey Exp $
+archlist="i86Cygwin i86Linux2 sun4SunOS5 ia64Linux2 universalDarwin8 universalDarwin9"
+version=4
+umask 2
+
+# name for "arch" tar files is 
+# "autodocksuite-4.2.1-<arch>.tar.gz"
+#
+# content for "arch" tar files is 
+# simply "<arch>/autodock4 <arch>/autogrid4"
+for arch in $archlist; do
+   archok=y
+   case $arch in 
+    i86Cygwin) exeext=.exe ;;
+    *) exeext="";;
+    esac
+   for prog in autodock autogrid; do
+      progfile=${prog}${version}  # eg autodock4
+      archprogfile=$prog/$arch/$progfile$exeext
+      if [ ! -e $archprogfile ] ; then
+        echo $archprogfile missing
+	archok=n
+      else
+        ls -l $archprogfile
+      fi
+   done
+   if [ test$archok != testn ] ; then
+     tar cvf \
+     autodocksuite-4.2.1-$arch.tar \
+     -C autodock $arch/autodock4$exeext \
+     -C autogrid $arch/autogrid4$exeext 
+   gzip  autodocksuite-4.2.1-$arch.tar
+   fi
+done
+
+
+# name for "src" tar file is 
+# "autodocksuite-4.2.1-src-tar.gz"
+# content for "src" tar file is 
+#   "autodocksuite-4.2.1/src/auto{grid,dock}-4.2.1/"
+#   with all *.cc *.h *.cpp README COPYING, ... Tests
+#   (checked out from CVS then "autoreconf" run, so 
+#     includes 'configure' but not Makefile)
+tar cf autodocksuite-4.2.1-src.tar autodocksuite-4.2.1/src
+gzip autodocksuite-4.2.1-src.tar
