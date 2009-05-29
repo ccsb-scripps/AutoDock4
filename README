@@ -1,3 +1,5 @@
+AutoDock README $Id: README,v 1.3 2009/05/29 20:54:24 rhuey Exp $
+
 
 What is AutoDock?
 
@@ -42,7 +44,7 @@ more information on copying AutoDock.
 From CVS
 =======================
 If you've just done a 'cvs co' then here are the commands
-necessary to make the autodock:
+necessary to make autodock:
 
  % aclocal
  % autoconf
@@ -51,8 +53,8 @@ necessary to make the autodock:
  % make 
  % make install
  
- This will create and install autodock4 and autodock4_0 binaries, where 
- autodock4 is autodock version 4.1 and autodock4_0 is autodock version 4.0.
+ This will create and install autodock4 executable, where 
+ autodock4 is autodock version 4.2.1.
  
  
 
