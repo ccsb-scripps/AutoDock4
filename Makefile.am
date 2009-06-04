@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.22 2009/05/27 23:38:40 rhuey Exp $
+# $Id: Makefile.am,v 1.23 2009/06/04 23:42:52 rhuey Exp $
 # 
 # AutoDock  
 # 
@@ -252,7 +252,6 @@ AM_CPPFLAGS = -DNOSQRT \
               -DUSE_8A_NBCUTOFF \
               -DWRITEPDBQSTATE \
               -I$(srcdir)/../acro/include # Standard accuracy, but faster; no crossover in quaternion
-autodock4_CPPFLAGS=-DVERSION_NUM=\"4.1.1\" $(AM_CPPFLAGS)
 
 
 #autodock4_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
