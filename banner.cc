@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.17 2009/05/08 23:02:10 rhuey Exp $
+ $Id: banner.cc,v 1.18 2009/06/04 23:41:58 rhuey Exp $
 
  AutoDock 
 
@@ -64,7 +64,7 @@ void banner( char * version_num )
     (void) fprintf(logFile, "\n");
     (void) fprintf(logFile, "                  ______________________________________ \n");
     (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 |            AutoDock %-8s         |\n", version_num );
+    (void) fprintf(logFile, "                 |      AutoDock %-3.3s Release %-8s   |\n", version_num, version_num );
     (void) fprintf(logFile, "                 |            (c) 1989-2009             |\n");
     (void) fprintf(logFile, "                 |    The Scripps Research Institute    |\n");
     (void) fprintf(logFile, "                 |                                      |\n");
@@ -87,7 +87,7 @@ void banner( char * version_num )
     (void) fprintf(logFile, "                 | Automated Docking of Flexible Ligand |\n");
     (void) fprintf(logFile, "                 |  to Flexible Macromolecular Receptor |\n");
     (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 | For help, email %-18s|\n", PACKAGE_BUGREPORT);
+    (void) fprintf(logFile, "                 | For help, email %-19s |\n", PACKAGE_BUGREPORT);
     (void) fprintf(logFile, "                 |______________________________________|\n");
     (void) fprintf(logFile, "\n\n");
     (void) fprintf(logFile, "        AutoDock comes with ABSOLUTELY NO WARRANTY.\n");
