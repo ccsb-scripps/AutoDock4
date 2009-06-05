@@ -1,6 +1,6 @@
 /*
 
- $Id: autoglobal.h,v 1.17 2009/05/08 23:02:10 rhuey Exp $
+ $Id: autoglobal.h,v 1.18 2009/06/05 00:08:17 rhuey Exp $
 
  AutoDock 
 
@@ -51,7 +51,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /*----------------------------------------------------------------------------*/
 /*    Inputs: None.                                                           */
 /*   Returns: Nothing.                                                        */
-/*   Globals: programname, AutoGridHelp, AutoDockHelp, command_mode,          */
+/*   Globals: programname, AutoDockHelp, command_mode,          */
 /*            command_in_fp, command_out_fp, GPF, logFile.                    */
 /*----------------------------------------------------------------------------*/
 /* Modification Record                                                        */
@@ -65,7 +65,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /*----------------------------------------------------------------------------*/
 
 char    *programname;
-char    AutoGridHelp[] = "\t-p parameter_filename\n\t\t\t-l log_filename\n\t\t\t-d (increment debug level)\n\t\t\t-h (display this message)\n";
 
 char    dock_param_fn[PATH_MAX];
 char    grid_param_fn[PATH_MAX];
