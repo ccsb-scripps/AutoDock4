@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.16 2009/05/08 23:02:15 rhuey Exp $
+ $Id: printEnergies.cc,v 1.17 2009/06/10 00:09:09 rhuey Exp $
 
  AutoDock 
 
@@ -78,7 +78,7 @@ void print_molar(FILE* file, double x) {
 }
 
 void printEnergies( EnergyBreakdown *eb,
-                    char *prefixString,
+                    const char *prefixString,
                     int  ligand_is_inhibitor,
                     Real emap_total,
                     Real elec_total,
@@ -158,7 +158,7 @@ void printEnergies( EnergyBreakdown *eb,
     pr( logFile, "%s\n", prefixString);
 }
 
-void printStateEnergies( EnergyBreakdown *eb, char  *prefixString, int ligand_is_inhibitor )
+void printStateEnergies( EnergyBreakdown *eb, const char  *prefixString, int ligand_is_inhibitor )
 {
     // Real deltaG = 0.0;
     Real Ki = 1.0;

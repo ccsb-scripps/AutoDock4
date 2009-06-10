@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.h,v 1.6 2009/05/08 23:02:17 rhuey Exp $
+ $Id: setflags.h,v 1.7 2009/06/10 00:09:09 rhuey Exp $
 
  AutoDock 
 
@@ -31,6 +31,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 int setflags( int argc, 
               char ** argv,
-              char * version_num);
+              const char * version_num);
 
 #endif

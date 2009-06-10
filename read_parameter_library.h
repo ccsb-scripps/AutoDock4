@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.h,v 1.8 2009/05/08 23:02:17 rhuey Exp $
+ $Id: read_parameter_library.h,v 1.9 2009/06/10 00:09:09 rhuey Exp $
 
  AutoDock 
 
@@ -36,7 +36,7 @@ void read_parameter_library(
 
 void setup_parameter_library(
         int outlev,
-        char * model_text,
+        const char * model_text,
         Unbound_Model unbound_model
         );
 

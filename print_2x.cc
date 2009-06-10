@@ -1,6 +1,6 @@
 /*
 
- $Id: print_2x.cc,v 1.4 2009/05/08 23:02:15 rhuey Exp $
+ $Id: print_2x.cc,v 1.5 2009/06/10 00:09:09 rhuey Exp $
 
  AutoDock 
 
@@ -34,7 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 void
 print_2x( FILE *stream1,
 	  FILE *stream2,
-	  char *string )
+	  const char *string )
 
 {
 	fprintf( stream1, string );

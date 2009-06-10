@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.13 2009/05/08 23:02:17 rhuey Exp $
+ $Id: setflags.cc,v 1.14 2009/06/10 00:09:09 rhuey Exp $
 
  AutoDock 
 
@@ -50,7 +50,7 @@ extern int  parse_tors_mode;
 extern int  keepresnum;
 
 
-int setflags( int argc, char ** argv, char * version_num)
+int setflags( int argc, char ** argv, const char * version_num)
 
 /*
 ** naming convention: 

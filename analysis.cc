@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.32 2009/05/08 23:02:10 rhuey Exp $
+ $Id: analysis.cc,v 1.33 2009/06/10 00:09:09 rhuey Exp $
 
  AutoDock  
 
@@ -32,6 +32,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <limits>
 #include "constants.h"
 #include "structs.h"
 #include "getpdbcrds.h"

@@ -1,6 +1,6 @@
 /*
 
- $Id: strindex.h,v 1.3 2009/05/08 23:02:18 rhuey Exp $
+ $Id: strindex.h,v 1.4 2009/06/10 00:09:09 rhuey Exp $
 
  AutoDock 
 
@@ -26,6 +26,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #ifndef STRINDEX
 #define STRINDEX
-int  strindex( char  s[], 
-               char  t[] );
+int  strindex( const char  s[], 
+               const char  t[] );
 #endif

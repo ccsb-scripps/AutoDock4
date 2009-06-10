@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.99 2009/05/08 23:02:13 rhuey Exp $
+ $Id: main.cc,v 1.100 2009/06/10 00:09:09 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -66,7 +66,9 @@
 #include <time.h>      // time_t time(time_t *tloc);
 #include <sys/times.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
+using std::string;
+
 #include <sys/param.h>
 #include <ctype.h> // tolower
 #include <unistd.h> // sysconf
@@ -98,7 +100,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.99 2009/05/08 23:02:13 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.100 2009/06/10 00:09:09 rhuey Exp $"};
 extern Unbound_Model ad4_unbound_model;
 
 
@@ -106,7 +108,7 @@ int sel_prop_count = 0;
 static Boole B_found_about_keyword = FALSE; //set false by 'move' true by 'about'
 static Boole B_found_elecmap = FALSE;
 static Boole B_found_desolvmap = FALSE;
-static void exit_if_missing_elecmap_desolvmap_about(char * keyword); // see bottom of main.cc
+static void exit_if_missing_elecmap_desolvmap_about(string  keyword); // see bottom of main.cc
 
 
 int main (int argc, char ** argv)
@@ -430,9 +432,9 @@ static Real F_hW;
 static FourByteLong clktck = 0;
 
 #ifndef VERSION
-static char * version_num = "4.2.1";
+static string version_num = "4.2.1";
 #else
-static char * version_num = VERSION;
+static string version_num = VERSION;
 #endif
 
 struct tms tms_jobStart;
@@ -539,7 +541,7 @@ jobStart = times( &tms_jobStart );
 ** Parse the arguments in the command line...
 */
 
-if ( setflags(argc,argv,version_num) == -1) {
+if ( setflags(argc,argv,version_num.c_str()) == -1) {
     exit(-1);
 } /* END PROGRAM */
 
@@ -688,9 +690,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 ** Output banner...
 */
 
-banner( version_num );
+banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.99 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.100 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -4307,21 +4309,21 @@ return 0;
 
 /* AutoDock main private utility functions
 */
-static void exit_if_missing_elecmap_desolvmap_about(char * keyword)
+static void exit_if_missing_elecmap_desolvmap_about(string keyword)
 {
 
     char error_message[LINE_LEN];
 
     if (!B_found_elecmap) {
-         prStr(error_message, "%s:  %s command: no \"elecmap\" command has been specified!\n", programname, keyword);
+         prStr(error_message, "%s:  %s command: no \"elecmap\" command has been specified!\n", programname, keyword.c_str());
          stop(error_message);
          exit(-1);
     } else if (!B_found_desolvmap) {
-         prStr(error_message, "%s:  %s command: no \"desolvmap\" command has been specified!\n", programname, keyword);
+         prStr(error_message, "%s:  %s command: no \"desolvmap\" command has been specified!\n", programname, keyword.c_str());
          stop(error_message);
          exit(-1);
     } else if (!B_found_about_keyword){
-         prStr(error_message, "%s:  %s command: no \"about\" command has been specified!\n", programname, keyword);
+         prStr(error_message, "%s:  %s command: no \"about\" command has been specified!\n", programname, keyword.c_str());
          stop(error_message);
          exit(-1);
     }

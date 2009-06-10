@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.18 2009/06/04 23:41:58 rhuey Exp $
+ $Id: banner.cc,v 1.19 2009/06/10 00:09:09 rhuey Exp $
 
  AutoDock 
 
@@ -33,7 +33,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern FILE *logFile;
 
-void banner( char * version_num )
+void banner( const char * version_num )
 {
 
 /*----------------------------------------------------------------------------*/

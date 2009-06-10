@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.16 2009/05/08 23:02:17 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.17 2009/06/10 00:09:09 rhuey Exp $
 
  AutoDock 
 
@@ -190,7 +190,7 @@ void read_parameter_library(
     } // while there is another line of parameters to read in
 }
 
-void setup_parameter_library( int outlev, char * model_text, Unbound_Model unbound_model )
+void setup_parameter_library( int outlev, const char * model_text, Unbound_Model unbound_model )
 {
     static ParameterEntry thisParameter;
     char parameter_library_line[LINE_LEN];
