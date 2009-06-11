@@ -3,6 +3,17 @@
                   Release 4.2.1 (June 2009)
 =============================================================================
 
+The key changes since the last release (5/2007):
+    1. Improved overall reliability and detection of input file errors. 
+    2. Improved local search.
+
+Please note that the current distribution's executable programs, autogrid and 
+autodock, were compiled for single precision arithmetic.  We believe 
+compiling with double-precision would increase consistency across platforms. 
+(See -DUSE_DOUBLE option in Makefile.am)
+
+=============================================================================
+
 ----------------------------
 AD4.1_bound.dat
 AD4_parameters.dat
@@ -776,8 +787,7 @@ CHANGE:
 ----------------------------
 
 CHANGE:
-    -added correction to line 280 provided by Stefano Forli which 
-    added a needed space
+    -correction to handling of 2 letter atom names provided by Stefano Forli 
     -uses calculateBindingEnergies so that if AD4.1_Bound.dat is 
     used, the internal energy of the unbound state can be set to 
     that of the docked state.
