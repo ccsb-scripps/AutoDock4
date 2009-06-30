@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.14 2009/06/10 00:09:09 rhuey Exp $
+ $Id: setflags.cc,v 1.15 2009/06/30 00:15:06 rhuey Exp $
 
  AutoDock 
 
@@ -180,7 +180,7 @@ int setflags( int argc, char ** argv, const char * version_num)
             argindex++;
             break;    
         case 'p':
-            strcpy(dock_param_fn, argv[2]);
+            strncpy(dock_param_fn, argv[2], sizeof dock_param_fn - 1 );
             if ( (parFile = ad_fopen(argv[2], "r")) == NULL ) {
 #ifdef DEBUG
                 fprintf(stderr,"\n Parameter file name = %s\n",argv[2]);

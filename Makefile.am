@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.23 2009/06/04 23:42:52 rhuey Exp $
+# $Id: Makefile.am,v 1.24 2009/06/30 00:15:06 rhuey Exp $
 # 
 # AutoDock  
 # 
@@ -244,6 +244,7 @@ AM_CXXFLAGS = -O3 # Agressive optimization
 
     # if gnu c++ compiler
 AM_CXXFLAGS += -Wall # All warnings
+AM_CXXFLAGS += -Wno-write-strings # increase compatibility with pre 4.x compilers for string handling
 
 #AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
