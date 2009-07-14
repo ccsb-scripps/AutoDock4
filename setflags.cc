@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.16 2009/07/14 20:04:44 rhuey Exp $
+ $Id: setflags.cc,v 1.17 2009/07/14 23:40:26 rhuey Exp $
 
  AutoDock 
 
@@ -180,17 +180,12 @@ int setflags( int argc, char ** argv, const char * version_num)
             argindex++;
             break;    
         case 'p':
-            if (strlen(argv[2])< PATH_MAX - 1){
-                strncpy(dock_param_fn, argv[2], strlen(argv[2]));
-            } else {
-                strncpy(dock_param_fn, argv[2], PATH_MAX - 1 );
-            };
-            //sforli: strncpy(dock_param_fn, argv[2], sizeof(dock_param_fn - 1 ));
-            if ( (parFile = ad_fopen(argv[2], "r")) == NULL ) {
+            snprintf(dock_param_fn, PATH_MAX -1, "%s", argv[2] );
+            if ( (parFile = ad_fopen(dock_param_fn, "r")) == NULL ) {
 #ifdef DEBUG
-                fprintf(stderr, "\n Parameter file name = %s\n", argv[2]);
+                fprintf(stderr, "\n Parameter file name = %s\n", dock_param_fn);
 #endif /* DEBUG */
-                fprintf(stderr, "\n%s: can't find or open parameter file %s\n", programname, argv[2]);
+                fprintf(stderr, "\n%s: can't find or open parameter file %s\n", programname, dock_param_fn);
                 fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
                 return(-1);
             }
