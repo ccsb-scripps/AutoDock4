@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.15 2009/06/30 00:15:06 rhuey Exp $
+ $Id: setflags.cc,v 1.16 2009/07/14 20:04:44 rhuey Exp $
 
  AutoDock 
 
@@ -13,7 +13,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
@@ -67,7 +67,7 @@ int setflags( int argc, char ** argv, const char * version_num)
 /*            (Adapted from code supplied by Bruce Duncan, TSRI.)             */
 /*      Date: 02/02/94                                                        */
 /*----------------------------------------------------------------------------*/
-/*    Inputs: argc,argv                                                 */
+/*    Inputs: argc, argv                                                 */
 /*   Returns: argindex                                                      */
 /*   Globals: *parFile;				                              */
 /*            *logFile;					                      */
@@ -142,12 +142,12 @@ int setflags( int argc, char ** argv, const char * version_num)
             break;
         case 'c':
             //command_mode removed with 4.1 release spring 2009, mp + rh
-            fprintf(stderr, "\n%s: command mode is not supported in this version of autodock\n",programname );
+            fprintf(stderr, "\n%s: command mode is not supported in this version of autodock\n", programname );
             break;
         case 'l':
             if ( (logFile = ad_fopen(argv[2], "w")) == NULL ) {
 #ifdef DEBUG
-                fprintf(stderr,"\n Log file name = %s\n",argv[2]); 
+                fprintf(stderr, "\n Log file name = %s\n", argv[2]); 
 #endif /* DEBUG */
                 fprintf(stderr, "\n%s: can't create log file %s\n", programname, argv[2]);
                 fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
@@ -161,18 +161,18 @@ int setflags( int argc, char ** argv, const char * version_num)
         case 's':
             if ( (stateFile = ad_fopen(argv[2], "w")) == NULL ) {
 #ifdef DEBUG
-                fprintf(stderr,"\n State file name = %s\n",argv[2]); 
+                fprintf(stderr, "\n State file name = %s\n", argv[2]); 
 #endif /* DEBUG */
                 fprintf(stderr, "\n%s: can't create state file %s\n", programname, argv[2]);
                 fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
                 return(-1);
             }
             else{
-                fprintf(stateFile,"<?xml version=\"1.0\" ?>\n");
-                fprintf(stateFile,"<autodock>\n");
-                fprintf(stateFile,"\t<version>%s</version>\n", version_num);
-                fprintf(stateFile,"\t<autogrid_version>%s</autogrid_version>\n", version_num);
-                fprintf(stateFile,"\t<output_xml_version>%5.2f</output_xml_version>\n", OUTPUT_XML_VERSION);
+                fprintf(stateFile, "<?xml version=\"1.0\" ?>\n");
+                fprintf(stateFile, "<autodock>\n");
+                fprintf(stateFile, "\t<version>%s</version>\n", version_num);
+                fprintf(stateFile, "\t<autogrid_version>%s</autogrid_version>\n", version_num);
+                fprintf(stateFile, "\t<output_xml_version>%5.2f</output_xml_version>\n", OUTPUT_XML_VERSION);
                 write_stateFile = TRUE;
             }
             argv++;
@@ -180,10 +180,15 @@ int setflags( int argc, char ** argv, const char * version_num)
             argindex++;
             break;    
         case 'p':
-            strncpy(dock_param_fn, argv[2], sizeof dock_param_fn - 1 );
+            if (strlen(argv[2])< PATH_MAX - 1){
+                strncpy(dock_param_fn, argv[2], strlen(argv[2]));
+            } else {
+                strncpy(dock_param_fn, argv[2], PATH_MAX - 1 );
+            };
+            //sforli: strncpy(dock_param_fn, argv[2], sizeof(dock_param_fn - 1 ));
             if ( (parFile = ad_fopen(argv[2], "r")) == NULL ) {
 #ifdef DEBUG
-                fprintf(stderr,"\n Parameter file name = %s\n",argv[2]);
+                fprintf(stderr, "\n Parameter file name = %s\n", argv[2]);
 #endif /* DEBUG */
                 fprintf(stderr, "\n%s: can't find or open parameter file %s\n", programname, argv[2]);
                 fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
@@ -205,7 +210,7 @@ int setflags( int argc, char ** argv, const char * version_num)
             exit(0);
             break;
         default:
-            fprintf(stderr,"%s: unknown switch \"-%c\".  \n",programname,argv[1][1]);
+            fprintf(stderr, "%s: unknown switch \"-%c\".  \n", programname, argv[1][1]);
             usage(stderr, programname);
             return(-1);
             /* break; */
