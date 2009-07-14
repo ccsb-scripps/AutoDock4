@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.20 2009/05/08 23:02:12 rhuey Exp $
+ $Id: eintcal.cc,v 1.21 2009/07/14 23:42:33 rhuey Exp $
 
  AutoDock  
 
@@ -307,7 +307,7 @@ Real eintcalPrint( NonbondParam * const nonbondlist,
     } else {
         pr( logFile, "                                ________  ________  ________\n");
         pr( logFile, "Total                           %+8.3lf  %+8.3lf  %+8.3lf\n", total_e_internal, total_e_vdW_Hb, total_e_desolv);
-        pr( logFile, "                                ________  ________  ________n");
+        pr( logFile, "                                ________  ________  ________\n");
         pr( logFile, "                                   Total    vdW+Hb    Desolv\n");
     }
 #endif

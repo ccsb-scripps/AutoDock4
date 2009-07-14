@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.27 2009/05/08 23:02:18 rhuey Exp $
+ $Id: support.cc,v 1.28 2009/07/14 23:42:33 rhuey Exp $
 
  AutoDock 
 
@@ -187,7 +187,7 @@ void Population::msort(int m)
 //#endif /* DEBUG */
 
 
-   //(void)fprintf(logFile, "The top %d individuals in the population:/n", num);
+   //(void)fprintf(logFile, "The top %d individuals in the population:\n", num);
    //for (i=0; i<num; i++) {
       //(void)fprintf(logFile,"%lf\n", heap[i].value(Normal_Eval));
    //}
