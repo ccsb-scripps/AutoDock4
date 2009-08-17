@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.25 2009/05/08 23:02:16 rhuey Exp $
+ $Id: readPDBQT.cc,v 1.26 2009/08/17 21:11:05 rhuey Exp $
 
  AutoDock 
 
@@ -384,7 +384,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
             case PDBQ_BRANCH:
                 B_is_in_branch = TRUE;
-                if (nrigid_piece>MAX_TORS){
+                if (nrigid_piece>MAX_TORS+nres){//ROOT in each res increments nrigid_piece: don't count as a torsion
 		            prStr(error_message, "PDBQT ERROR: too many torsions, maximum number of torsions is %d", MAX_TORS);
 		            stop(error_message);
 		            exit(-1);
