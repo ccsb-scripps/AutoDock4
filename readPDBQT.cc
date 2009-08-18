@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.26 2009/08/17 21:11:05 rhuey Exp $
+ $Id: readPDBQT.cc,v 1.27 2009/08/18 23:36:25 rhuey Exp $
 
  AutoDock 
 
@@ -123,14 +123,16 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	int             ntor = 0;
 	static int      ntype[MAX_ATOMS];
 	static int      rigid_piece[MAX_ATOMS];
-	int             found_begin_res = 0; // found_begin_res == 0 means we have not yet found a BEGIN_RES record...
     int             keyword_id = -1;
 	int             nres = 0;
 	int             nrigid_piece = 0;
 	int             piece; 
 
+	Boole           B_found_begin_res = FALSE; //tracks whether any flexres found
+	Boole           B_found_first_flexres = FALSE; //tracks whether first flexres ROOT found
 	Boole           B_has_conect_records = FALSE;
 	Boole           B_is_in_branch = FALSE;
+	Boole           B_is_in_flexres = FALSE;
 
 	int             bonded[MAX_ATOMS][6];
 
@@ -314,7 +316,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     // crdreo[natom][j] = crdpdb[natom][j];
                 }
 
-                if (!found_begin_res) {
+                if (!B_found_begin_res) {
                     // Only accumulate charges on the ligand...
                     total_charge_ligand += charge[natom];
                 }
@@ -360,7 +362,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 ++natom;
 
                 // Increment the number of non-hydrogen atoms in the ligand
-                if (!found_begin_res) {
+                if (!B_found_begin_res) {
                     //(void) fprintf(logFile, "DEBUG!!! Found parameters for atom %d, atom type \"%s\", grid map index = %d\n",
                                //natom, found_parm->autogrid_type, found_parm->map_index);
                     //(void) fprintf(logFile, "DEBUG!!!  (strcmp(t,\"H\")==%d) || (strcmp(t,\"HD\")==%d) || (strcmp(t,\"HS\")==%d))\n\n",
@@ -374,8 +376,18 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
             case PDBQ_ROOT:
                 B_is_in_branch = TRUE;
-                ++nrigid_piece; //allocate a new rigid body for root atoms whether ligand or receptor
-                piece = nrigid_piece; //CAUTION: ligand root must have value 1
+                if (!B_is_in_flexres ){
+                    ++nrigid_piece; //allocate a new rigid body for ligand root atoms 
+                    piece = nrigid_piece; //CAUTION: ligand root must have value 1
+                }
+                else if  (!B_found_first_flexres) {
+                    // allocate a new rigid body for FIRST flexres root atoms 
+                    // Subsequent flexres root atoms will use this same piece
+                    // number (so we do not run out of rigid body pieces (NTORS))
+                    B_found_first_flexres = TRUE;
+                    ++nrigid_piece; 
+                    piece = nrigid_piece; //CAUTION: 
+                }
                 stack_push(s, piece);
                 if (debug > 0) {
                     pr(logFile, "DEBUG: 382: ROOT piece=%d\n", piece);
@@ -384,7 +396,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
             case PDBQ_BRANCH:
                 B_is_in_branch = TRUE;
-                if (nrigid_piece>MAX_TORS+nres){//ROOT in each res increments nrigid_piece: don't count as a torsion
+                if (nrigid_piece>MAX_TORS){
 		            prStr(error_message, "PDBQT ERROR: too many torsions, maximum number of torsions is %d", MAX_TORS);
 		            stop(error_message);
 		            exit(-1);
@@ -440,7 +452,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
             case PDBQ_ENDTORS:
             case PDBQ_TORSDOF:
             case PDBQ_CONSTRAINT:
-            case PDBQ_END_RES:
                 break;
 
             case PDBQ_CONECT:
@@ -450,16 +461,19 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 break;
 
             case PDBQ_BEGIN_RES:
-                if (!found_begin_res) {
-                    // Then a flexible receptor sidechain was found in the PDBQ file.
-                    // Flag that we've found a BEGIN_RES record.
-                    found_begin_res = 1;
-                }
+                // Then a flexible receptor sidechain was found in the PDBQ file.
+                // Flag that we've found a BEGIN_RES record.
+                B_found_begin_res = TRUE;
                 if (debug > 0) {
                     pr(logFile, "DEBUG: 457: BEGIN_RES\n");
                 }
                 // Increment the number of residues
                 nres++;
+	            B_is_in_flexres = TRUE;
+                break;
+
+            case PDBQ_END_RES:
+	            B_is_in_flexres = FALSE;
                 break;
 
             case PDBQ_UNRECOGNIZED:
@@ -470,7 +484,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
         } // end switch( keyword_id )
 
-		if (!found_begin_res) {
+		if (!B_found_begin_res) {
 			// No BEGIN_RES tag has been found yet.
             // Keep updating "true_ligand_atoms" until we find a "BEGIN_RES".
             // "true_ligand_atoms" is the number of atoms in the moving ligand, 
