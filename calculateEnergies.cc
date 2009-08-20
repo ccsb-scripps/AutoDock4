@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.9 2009/05/08 23:02:11 rhuey Exp $
+ $Id: calculateEnergies.cc,v 1.10 2009/08/20 18:13:02 rhuey Exp $
 
  AutoDock  
 
@@ -259,6 +259,10 @@ void update_binding_energy_breakdown( EnergyBreakdown * eb )
         default:
             // Update the unbound internal energy, setting it to the current internal energy
             eb->e_unbound_internal_FE = eb->e_intra_lig;  // current internal energy of the ligand unbound state
+            eb->e_intra_moving_moving_rec = 0;  // internal energy of the rec moving atoms
+            eb->e_intra_moving_fixed_rec = 0;   // moving rec v. grids
+            eb->e_intra   = eb->e_intra_moving_moving_lig + eb->e_intra_moving_fixed_rec + eb->e_intra_moving_moving_rec;
+            eb->e_inter   = eb->e_inter_moving_fixed ;
             break;
         case User:
         case Extended:
