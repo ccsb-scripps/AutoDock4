@@ -1,16 +1,45 @@
 =============================================================================
                    AutoDock Release Notes
-                  Release 4.2.1 (June 2009)
+                  Release 4.2.2 (September 2009)
 =============================================================================
-
-The key changes since the last release (5/2007):
-    1. Improved overall reliability and detection of input file errors. 
-    2. Improved local search.
-
 Please note that the current distribution's executable programs, autogrid and 
 autodock, were compiled for single precision arithmetic.  We believe 
 compiling with double-precision would increase consistency across platforms. 
 (See -DUSE_DOUBLE option in Makefile.am)
+
+The changes since the 4.2.1 release (6/2009):
+
+Makefile.am
+-in response to bug 1137 reported by Steffen Moeller@gmx.de added 
+Wno-write-strings to Makefile.am and strncpy to setflags.cc
+
+calculateEnergies.cc
+-added setting the flexible residues internal energies to same_as_bound 
+(lines 262-265) after conversations with David, Mike and Garrett
+
+eintcal.cc
+-replaced missing backslash for newlines
+
+readPDBQT.cc
+-fixed bug in flexible residues overcounting number of pieces by changing 
+code so that ROOTs of all flexible residues are in the same rigid piece
+-changed cut-off for nrigid_piece from MAX_TORS to MAX_TORS + nres 
+to compensate for (unfortunate) fact that each flexible residue has a ROOT
+
+setflags.cc
+-repaired copying argv[2] in param_file_fn
+-modified lines 183-188 to check for filename length
+-in response to bug 1137 reported by Steffen Moeller@gmx.de added 
+Wno-write-strings to Makefile.am and strncpy to setflags.cc
+
+support.cc
+-replaced missing backslash for newlines
+
+=============================================================================
+
+The key changes since the 4.0.1 release (5/2007):
+    1. Improved overall reliability and detection of input file errors. 
+    2. Improved local search.
 
 =============================================================================
 
