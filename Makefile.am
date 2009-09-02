@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.24 2009/06/30 00:15:06 rhuey Exp $
+# $Id: Makefile.am,v 1.25 2009/09/02 21:17:30 rhuey Exp $
 # 
 # AutoDock  
 # 
@@ -425,6 +425,8 @@ test : autodock4 $(srcdir)/Tests/test_autodock4.py
 	@echo "Running the Python test_autodock4.py unit-tests on autodock4"
 	@echo " "
 	outputdir=`pwd` ;\
+	umask 0 ;\
+	test -d $$outputdir/Tests || mkdir $$outputdir/Tests ;\
 	cd $(srcdir)/Tests ; chmod u+w . ; python ./test_autodock4.py -d . -e $$outputdir/autodock4$(EXEEXT) -o $$outputdir/Tests
 #else
 #	@echo " "
