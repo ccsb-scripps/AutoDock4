@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.25 2009/05/06 23:26:45 rhuey Exp $
+# $Id: test_autodock4.py,v 1.26 2009/09/04 21:02:39 rhuey Exp $
 #
 
 """
@@ -13,6 +13,7 @@ import sys
 import os
 import unittest
 import getopt
+import subprocess
 from DlgParser import DlgParser
 
 #______________________________________________________________________________
@@ -69,12 +70,13 @@ def run_AutoDock( dpf_filename, dlg_filename ):
     dlg = test_output_directory + os.sep + dlg_filename
     command = "rm -f " + dlg
     os.system( command )
-    command = "%s -p %s -l %s" % ( autodock_executable, dpf, dlg )
+    command =   [autodock_executable, '-p', dpf, '-l', dlg] 
     print '\nRunning ' + autodock_executable + ' using DPF "'+dpf+'", saving results in "'+dlg+'":'
     try:
-        ( i, o, e ) = os.popen3( command ) # trap all the outputs
+        #( i, o, e ) = os.popen3( command ) # trap all the outputs
+        subprocess.call( command )
         # TODO os.wait seems to return (pid, exit_status)
-        os.wait() # for the child process to finish
+        #os.wait() # for the child process to finish
         # return True # this should really be os.wait()'s exit_status
         return find_success_in_DLG( dlg_filename )
     except:
