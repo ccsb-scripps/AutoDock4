@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.25 2009/09/02 21:17:30 rhuey Exp $
+# $Id: Makefile.am,v 1.26 2009/09/09 22:56:46 rhuey Exp $
 # 
 # AutoDock  
 # 
@@ -427,7 +427,12 @@ test : autodock4 $(srcdir)/Tests/test_autodock4.py
 	outputdir=`pwd` ;\
 	umask 0 ;\
 	test -d $$outputdir/Tests || mkdir $$outputdir/Tests ;\
-	cd $(srcdir)/Tests ; chmod u+w . ; python ./test_autodock4.py -d . -e $$outputdir/autodock4$(EXEEXT) -o $$outputdir/Tests
+    cp $(srcdir)/Tests/*.py   $$outputdir/Tests;\
+    cp $(srcdir)/Tests/*.dpf  $$outputdir/Tests;\
+    cp $(srcdir)/Tests/*.dat  $$outputdir/Tests;\
+    cp $(srcdir)/Tests/*.pdbqt  $$outputdir/Tests;\
+    cp $(srcdir)/Tests/*.map*  $$outputdir/Tests;\
+	cd Tests ;  python ./test_autodock4.py -d . -e ../autodock4$(EXEEXT) -o .
 #else
 #	@echo " "
 #	@echo "Python version 2.1 or higher needed for 'make check', but not found."
