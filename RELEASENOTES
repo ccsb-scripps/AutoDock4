@@ -1,11 +1,16 @@
 =============================================================================
                    AutoDock Release Notes
-                  Release 4.2.2 (September 2009)
+                  Release 4.2.2.1 (September 16 2009)
 =============================================================================
 Please note that the current distribution's executable programs, autogrid and 
 autodock, were compiled for single precision arithmetic.  We believe 
 compiling with double-precision would increase consistency across platforms. 
 (See -DUSE_DOUBLE option in Makefile.am)
+
+The changes since the 4.2.2 release (9/9/2009):
+
+Updated printout of unbound system's energy when using "epdb" option
+to correctly set unbound internal energy same_as_bound if appropriate.
 
 The changes since the 4.2.1 release (6/2009):
 
