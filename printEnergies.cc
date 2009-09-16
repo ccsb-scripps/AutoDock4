@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.17 2009/06/10 00:09:09 rhuey Exp $
+ $Id: printEnergies.cc,v 1.18 2009/09/16 21:57:52 rhuey Exp $
 
  AutoDock 
 
@@ -82,7 +82,8 @@ void printEnergies( EnergyBreakdown *eb,
                     int  ligand_is_inhibitor,
                     Real emap_total,
                     Real elec_total,
-                    Boole B_have_flexible_residues
+                    Boole B_have_flexible_residues, 
+                    Unbound_Model ad4_unbound_model
                    )
 
 {
@@ -152,7 +153,20 @@ void printEnergies( EnergyBreakdown *eb,
 
     pr( logFile, "%s(3) Torsional Free Energy           = ", prefixString); print1000(logFile, eb->e_torsFreeEnergy); pr( logFile, " kcal/mol\n");
 
-    pr( logFile, "%s(4) Unbound System's Energy         = ", prefixString); print1000(logFile, eb->e_unbound_internal_FE); pr( logFile, " kcal/mol\n");
+    switch(ad4_unbound_model){
+        // in AutoDock 4.1, the default unbound model is "unbound is same as bound"
+        case Unbound_Default:
+        case Unbound_Same_As_Bound:
+        default:
+            pr( logFile, "%s(4) Unbound System's Energy  [=(2)] = ", prefixString); 
+            break;
+        case User:
+        case Extended:
+        case Compact:
+            pr( logFile, "%s(4) Unbound System's Energy         = ", prefixString); 
+            break;
+    }
+    print1000(logFile, eb->e_unbound_internal_FE); pr( logFile, " kcal/mol\n");
 
     pr( logFile, "%s\n", prefixString);
     pr( logFile, "%s\n", prefixString);

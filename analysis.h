@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.h,v 1.19 2009/05/08 23:02:10 rhuey Exp $
+ $Id: analysis.h,v 1.20 2009/09/16 21:57:50 rhuey Exp $
 
  AutoDock  
 
@@ -79,6 +79,8 @@ void  analysis( int   Nnb,
                 GridMapSetInfo *info,
                 Boole B_use_non_bond_cutoff,
                 Boole B_have_flexible_residues,
-                Boole B_rms_atoms_ligand_only
+                Boole B_rms_atoms_ligand_only,
+                Unbound_Model ad4_unbound_model
+
                );
 #endif

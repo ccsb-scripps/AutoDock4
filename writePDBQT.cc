@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.21 2009/05/08 23:02:19 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.22 2009/09/16 21:57:52 rhuey Exp $
 
  AutoDock  
 
@@ -84,7 +84,8 @@ writePDBQT(int irun, FourByteLong seed[2],
          int state_type,  // 0 means the state is unbound, 1 means the state is docked
          char PDBQT_record[MAX_RECORDS][LINE_LEN],
          Boole B_use_non_bond_cutoff,
-         Boole B_have_flexible_residues
+         Boole B_have_flexible_residues,
+         Unbound_Model ad4_unbound_model
          )
 
 {
@@ -131,7 +132,7 @@ writePDBQT(int irun, FourByteLong seed[2],
 	for (unsigned int i = 0; i < sizeof AtmNamResNamNum; i++) { AtmNamResNamNum[i] = '\0'; }
 	for (unsigned int i = 0; i < sizeof AtmNamResNam; i++) { AtmNamResNam[i] = '\0'; }
 
-    initialise_binding_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE );
+    initialise_binding_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE, ad4_unbound_model );
 
     // Write out the state variables
 	if ((outlev > -1) && (outlev < 3)) {
@@ -157,7 +158,7 @@ writePDBQT(int irun, FourByteLong seed[2],
          crd, charge, abs_charge, type, map, info, B_outside, 
          ignore_inter, elec, emap, &elec_total, &emap_total,
          nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff );
+         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model);
 
     // Set the total intramolecular energy (sum of intramolecular energies of ligand and of protein)
     if (ntor > 0) {
@@ -190,7 +191,7 @@ writePDBQT(int irun, FourByteLong seed[2],
         pr( logFile, "%s: USER    DPF = %s\n", state_type_string, dpfFN );
         pr( logFile, "%s: USER  \n", state_type_string );
         
-        printEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues );
+        printEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model);
 
         // Write part of the "XML" state file
 		if (write_stateFile) {

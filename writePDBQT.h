@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.h,v 1.10 2009/05/08 23:02:19 rhuey Exp $
+ $Id: writePDBQT.h,v 1.11 2009/09/16 21:57:52 rhuey Exp $
 
  AutoDock  
 
@@ -71,7 +71,8 @@ void writePDBQT(int irun,FourByteLong seed[2],
                     int state_type,  // 0 means unbound, 1 means docked
                     char PDBQT_record[MAX_RECORDS][LINE_LEN],
                     Boole B_use_non_bond_cutoff,
-                    Boole B_have_flexible_residues
+                    Boole B_have_flexible_residues,
+                    Unbound_Model ad4_unbound_model
                     );
 
 void print_PDBQT( FILE *logFile, 

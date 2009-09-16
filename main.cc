@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.101 2009/09/01 23:55:01 rhuey Exp $
+ $Id: main.cc,v 1.102 2009/09/16 21:57:50 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -100,8 +100,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.101 2009/09/01 23:55:01 rhuey Exp $"};
-extern Unbound_Model ad4_unbound_model;
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.102 2009/09/16 21:57:50 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -289,7 +288,6 @@ Real search_freq = 0.06;
 Real unbound_internal_FE = 0.0;
 Real unbound_ext_internal_FE = 0.0;
 Real unbound_ad_internal_FE = 0.0;
-Real unbound_internal_FE_saved = 0.0;
 Real emap_total = 0.;
 Real elec_total = 0.;
 Real charge_total = 0.;
@@ -302,6 +300,9 @@ Real *lb_rho_ptr = NULL;
 Real psw_trans_scale = 1.0;//1 angstrom
 Real psw_rot_scale = 0.05;  //about 3 degrees, we think
 Real psw_tors_scale = 0.1; //about 6 degrees
+
+Unbound_Model ad4_unbound_model = Unbound_Default; 
+//NOT Same_As_Bound so user can specify in dpf
 
 EnergyBreakdown eb;
 
@@ -692,7 +693,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.101 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.102 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1560,7 +1561,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                               outlev,
                               ignore_inter,
                               B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                              info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+                              info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues, ad4_unbound_model);
 
                   // See also "calculateEnergies.cc", switch(ad4_unbound_model)
                   if (ad4_unbound_model == Unbound_Same_As_Bound) {
@@ -2865,7 +2866,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         parameterArray, unbound_internal_FE,
                         info, B_use_non_bond_cutoff,
                         B_have_flexible_residues,
-                        PDBQT_record);
+                        PDBQT_record,
+                        ad4_unbound_model
+                        );
 
             (void) fflush(logFile);
         break;
@@ -3080,7 +3083,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             map,
                             outlev, ignore_inter,
                             B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                            info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+                            info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues, ad4_unbound_model);
 
                 // See also "calculateEnergies.cc", switch(ad4_unbound_model)
                 if (ad4_unbound_model == Unbound_Same_As_Bound) {
@@ -3178,7 +3181,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                            outlev,
                            ignore_inter,
                            B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                           info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+                           info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues, ad4_unbound_model);
 
                // See also "calculateEnergies.cc", switch(ad4_unbound_model)
                if (ad4_unbound_model == Unbound_Same_As_Bound) {
@@ -3284,7 +3287,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                           outlev,
                           ignore_inter,
                           B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                          info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+                          info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues, ad4_unbound_model);
 
               // See also "calculateEnergies.cc", switch(ad4_unbound_model)
               if (ad4_unbound_model == Unbound_Same_As_Bound) {
@@ -3489,7 +3492,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                       ignore_inter, B_include_1_4_interactions, scale_1_4,
                       unbound_internal_FE,
                       info, B_use_non_bond_cutoff, B_have_flexible_residues,
-                      B_rms_atoms_ligand_only);
+                      B_rms_atoms_ligand_only, ad4_unbound_model);
 
             (void) fflush(logFile);
         break;
@@ -3948,7 +3951,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         outlev,
                         ignore_inter,
                         B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                        info, UNBOUND, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues);
+                        info, UNBOUND, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues, ad4_unbound_model);
             // end of Step 7 // }
 
             // Step 8 // {
@@ -3983,7 +3986,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  0 = NEW, or   PDBQT-71, and
          *  1 = OLD, or   PDBQT-55 (old PDBq format).
          */
-        Unbound_Model ad4_unbound_model_saved;
         outside = FALSE;
         atoms_outside = FALSE;
         eintra = 0.0L;
@@ -4066,9 +4068,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         sInit.ntor = ligand.S.ntor;
 
         // save any currently-computed unbound internal FE
-        unbound_internal_FE_saved = unbound_internal_FE;
-        ad4_unbound_model_saved = ad4_unbound_model;
-        ad4_unbound_model = User;
+        //unbound_internal_FE_saved = unbound_internal_FE;
+        //ad4_unbound_model_saved = ad4_unbound_model;
+        //ad4_unbound_model = User;
 
         // Initialise to zero, since we may call "epdb" more than once in a single DPF
         // Set the unbound free energy -- assume it is zero, since this is a "single-point energy calculation"
@@ -4085,7 +4087,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                 crdpdb, charge, abs_charge, type, map, info, outside,
                                 ignore_inter, elec, emap, &elec_total, &emap_total,
                                 nonbondlist, ad_energy_tables, Nnb, B_calcIntElec,
-                                B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff);
+                                B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
+                                B_use_non_bond_cutoff, ad4_unbound_model);
 
         pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
         pr(logFile,     "\t\t==============================\n\n");
@@ -4111,7 +4114,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile, "Total Intermolecular vdW + Hbond Energy   = %+.3lf kcal/mol\n", (double)emap_total);
         pr(logFile, "Total Intermolecular Electrostatic Energy = %+.3lf kcal/mol\n\n\n", (double)elec_total);
 
-        printEnergies( &eb, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues );
+        printEnergies( &eb, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model );
         pr(logFile, "\n");
 
         // remember to re-center the ligand
@@ -4122,8 +4125,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
 
         // restore the saved unbound internal FE
-        unbound_internal_FE = unbound_internal_FE_saved;
-        ad4_unbound_model = ad4_unbound_model_saved;
+        //unbound_internal_FE = unbound_internal_FE_saved;
+        //ad4_unbound_model = ad4_unbound_model_saved;
 
         (void) fflush(logFile);
         break;

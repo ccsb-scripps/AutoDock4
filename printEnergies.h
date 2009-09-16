@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.h,v 1.10 2009/06/10 00:09:09 rhuey Exp $
+ $Id: printEnergies.h,v 1.11 2009/09/16 21:57:52 rhuey Exp $
 
  AutoDock 
 
@@ -36,7 +36,8 @@ void printEnergies( EnergyBreakdown *eb,
                     int ligand_is_inhibitor,
                     Real emap_total,
                     Real elec_total,
-                    Boole B_have_flexible_residues);
+                    Boole B_have_flexible_residues,
+                    Unbound_Model ad4_unbound_model);
 
 void printStateEnergies( EnergyBreakdown *eb,
 			 const char  *prefixString, 

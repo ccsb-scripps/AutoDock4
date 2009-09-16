@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.h,v 1.16 2009/05/08 23:02:17 rhuey Exp $
+ $Id: simanneal.h,v 1.17 2009/09/16 21:57:52 rhuey Exp $
 
  AutoDock  
 
@@ -129,6 +129,7 @@ void simanneal( int   *P_nconf,
                 GridMapSetInfo *info,
                 Boole B_use_non_bond_cutoff,
                 Boole B_have_flexible_residues,
-                char  PDBQT_record[MAX_RECORDS][LINE_LEN]);
+                char  PDBQT_record[MAX_RECORDS][LINE_LEN],
+                Unbound_Model ad4_unbound_model);
 
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.33 2009/06/10 00:09:09 rhuey Exp $
+ $Id: analysis.cc,v 1.34 2009/09/16 21:57:50 rhuey Exp $
 
  AutoDock  
 
@@ -94,7 +94,8 @@ void analysis( int   Nnb,
                GridMapSetInfo *info,
                Boole B_use_non_bond_cutoff,
                Boole B_have_flexible_residues,
-               Boole B_rms_atoms_ligand_only
+               Boole B_rms_atoms_ligand_only,
+               Unbound_Model ad4_unbound_model
 
               )
 
@@ -268,11 +269,11 @@ void analysis( int   Nnb,
                  crd, charge, abs_charge, type, map, info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID,
                  ignore_inter, elec, emap, &elec_total, &emap_total,
                  nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-                 B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff );
+                 B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model );
      
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
 
-            printEnergies( &eb, "USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues);
+            printEnergies( &eb, "USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model);
      
             pr( logFile, "USER  \n");
             pr( logFile, "USER    DPF = %s\n", dock_param_fn);

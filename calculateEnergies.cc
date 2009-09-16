@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.10 2009/08/20 18:13:02 rhuey Exp $
+ $Id: calculateEnergies.cc,v 1.11 2009/09/16 21:57:50 rhuey Exp $
 
  AutoDock  
 
@@ -43,7 +43,6 @@ extern FILE *logFile;
 extern int true_ligand_atoms;
 extern int Nnb_array[3];
 extern Real nb_group_energy[3];
-extern Unbound_Model ad4_unbound_model;
 
 // EnergyBreakdown eb;
 // eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
@@ -195,14 +194,15 @@ EnergyBreakdown calculateBindingEnergies(
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
-    const Boole          B_use_non_bond_cutoff     // input  boolean whether to use a nonbond distance cutoff
+    const Boole          B_use_non_bond_cutoff,     // input  boolean whether to use a nonbond distance cutoff
+    Unbound_Model ad4_unbound_model
 
 )
 
 {
     EnergyBreakdown eb;
 
-    initialise_binding_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE );
+    initialise_binding_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE , ad4_unbound_model);
 
     // computing trilinear-interpolated energies from atom = 0 to atom < true_ligand_atoms
     // gives the intermolecular energy between the ligand and the protein
@@ -232,12 +232,12 @@ EnergyBreakdown calculateBindingEnergies(
     }
 
     // update the totals in the energy breakdown structure
-    update_binding_energy_breakdown( &eb );
+    update_binding_energy_breakdown( &eb, ad4_unbound_model );
 
     return eb;
 } // calculateBindingEnergies()
 
-void update_binding_energy_breakdown( EnergyBreakdown * eb )
+void update_binding_energy_breakdown( EnergyBreakdown * eb, Unbound_Model ad4_unbound_model )
 {
     // total intermolecular energy = (1) + (4)
     eb->e_inter     = eb->e_inter_moving_fixed + eb->e_inter_moving_moving;
@@ -279,7 +279,8 @@ void update_binding_energy_breakdown( EnergyBreakdown * eb )
 
 void initialise_binding_energy_breakdown( EnergyBreakdown * eb,
                                           Real torsFreeEnergy, 
-                                          Real unbound_internal_FE )
+                                          Real unbound_internal_FE ,
+                                          Unbound_Model ad4_unbound_model)
         {
     eb->e_inter_moving_fixed = 0.0;      // (1)  // trilinterp( 0, true_ligand_atoms, ...)
     eb->e_intra_moving_fixed_rec = 0.0;  // (2)  // trilinterp( true_ligand_atoms, natom, ...)

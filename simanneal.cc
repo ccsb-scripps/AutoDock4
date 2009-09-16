@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.26 2009/05/08 23:02:17 rhuey Exp $
+ $Id: simanneal.cc,v 1.27 2009/09/16 21:57:52 rhuey Exp $
 
  AutoDock  
 
@@ -42,7 +42,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern FILE *logFile;
 extern char *programname;
-extern Unbound_Model ad4_unbound_model;
 
 
 void simanneal ( int   *Addr_nconf,
@@ -142,7 +141,8 @@ void simanneal ( int   *Addr_nconf,
         GridMapSetInfo *info,
         Boole B_use_non_bond_cutoff,
         Boole B_have_flexible_residues, 
-        char PDBQT_record[MAX_RECORDS][LINE_LEN]
+        char PDBQT_record[MAX_RECORDS][LINE_LEN],
+        Unbound_Model ad4_unbound_model
         )
 
 {
@@ -278,7 +278,8 @@ void simanneal ( int   *Addr_nconf,
                      ignore_inter,
                      B_include_1_4_interactions, scale_1_4, 
                      unbound_internal_FE, info, 
-                     B_use_non_bond_cutoff, B_have_flexible_residues);
+                     B_use_non_bond_cutoff, B_have_flexible_residues,
+                     ad4_unbound_model);
 
         /* Initialize the "annealing" temperature */
         RT = RT0;                
@@ -515,7 +516,8 @@ void simanneal ( int   *Addr_nconf,
                          B_include_1_4_interactions, scale_1_4, 
                          unbound_internal_FE,
                          info, B_use_non_bond_cutoff,
-                         B_have_flexible_residues);
+                         B_have_flexible_residues,
+                         ad4_unbound_model);
 
             } else {
 
@@ -645,7 +647,8 @@ void simanneal ( int   *Addr_nconf,
                 outlev, ignore_inter,
                 B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                 info, 1 /* = DOCKED */, PDBQT_record, 
-                B_use_non_bond_cutoff, B_have_flexible_residues);
+                B_use_non_bond_cutoff, B_have_flexible_residues,
+                ad4_unbound_model);
 
         // See also "calculateEnergies.cc", switch(ad4_unbound_model)
         if (ad4_unbound_model == Unbound_Same_As_Bound) {

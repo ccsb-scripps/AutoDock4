@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.24 2009/05/08 23:02:12 rhuey Exp $
+ $Id: getInitialState.cc,v 1.25 2009/09/16 21:57:50 rhuey Exp $
 
  AutoDock  
 
@@ -95,7 +95,8 @@ void getInitialState(
 
             GridMapSetInfo *info,
             Boole B_use_non_bond_cutoff,
-            Boole B_have_flexible_residues
+            Boole B_have_flexible_residues,
+            Unbound_Model ad4_unbound_model
            )
 
 {
@@ -229,12 +230,12 @@ void getInitialState(
          crd, charge, abs_charge, type, map, info, SOME_ATOMS_OUTSIDE_GRID, 
          ignore_inter, elec, emap, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
          nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff );
+         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model );
 
     copyState( sMinm, *sInit );
     copyState( sLast, *sInit );
 
-    prInitialState( &eb, natom, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor, B_have_flexible_residues );
+    prInitialState( &eb, natom, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor, B_have_flexible_residues, ad4_unbound_model );
 
     initEnd = times( &tms_initEnd );
     pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);

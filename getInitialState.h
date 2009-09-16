@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.h,v 1.15 2009/05/08 23:02:12 rhuey Exp $
+ $Id: getInitialState.h,v 1.16 2009/09/16 21:57:50 rhuey Exp $
 
  AutoDock  
 
@@ -87,8 +87,8 @@ void getInitialState(
 
             GridMapSetInfo *info,
             Boole B_use_non_bond_cutoff,
-            Boole B_have_flexible_residues
-
+            Boole B_have_flexible_residues,
+            Unbound_Model ad4_unbound_model
            );
 
 #endif

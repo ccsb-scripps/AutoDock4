@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.9 2009/05/08 23:02:15 rhuey Exp $
+ $Id: prInitialState.cc,v 1.10 2009/09/16 21:57:52 rhuey Exp $
 
  AutoDock 
 
@@ -50,7 +50,9 @@ void prInitialState(
     Real elec[MAX_ATOMS],
     Real charge[MAX_ATOMS],
     int ligand_is_inhibitor,
-    Boole B_have_flexible_residues )
+    Boole B_have_flexible_residues,
+    Unbound_Model ad4_unbound_model
+    )
 
 {
     char rec8[10];
@@ -94,7 +96,7 @@ void prInitialState(
     }
     
 	pr( logFile, "\n\n" );
-    printEnergies( p_eb, "Initial ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues );
+    printEnergies( p_eb, "Initial ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model );
     pr( logFile, "\n\n" );
 
     flushLog;
