@@ -7,9 +7,9 @@
 #############################################################################
 
 
-# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.8 2009/03/03 15:50:49 rhuey Exp $
+# $Header: /Users/mp/facil/autodock/git-luna/autodock-cvstar/Tests/DlgParser.py,v 1.9 2009/09/16 21:57:03 rhuey Exp $
 #
-# $Id: DlgParser.py,v 1.8 2009/03/03 15:50:49 rhuey Exp $
+# $Id: DlgParser.py,v 1.9 2009/09/16 21:57:03 rhuey Exp $
 #
 #
 #
@@ -709,7 +709,7 @@ class DlgParser:
                 d['torsional_energy'] = float((ll)[6])
             elif find(l, "(4) Unbound System's Energy")>-1:
                 #USER    (4) Unbound System's Energy         =   -0.85 kcal/mol
-                d['unbound_energy'] = float((ll)[6])
+                d['unbound_energy'] = float((ll)[-2])
             elif find(l, 'ATOM')>-1:
                 coords.append([float(l[30:38]),float(l[38:46]),float(l[46:54])])
                 try:
