@@ -1,8 +1,13 @@
 #! /bin/bash
-# $Id: mkdisttars,v 1.3 2009/09/04 19:22:12 rhuey Exp $
+# $Id: mkdisttars,v 1.4 2009/09/21 22:21:38 rhuey Exp $
+# Usage example:
+# 
+#cd /mgl/works/rhuey/autodocksuite_4.2.2.1
+#/mgl/works/rhuey/autodock_1/autodock/mkdisttars
+
 archlist="i86Cygwin i86Linux2 sun4SunOS5 ia64Linux2 universalDarwin8 universalDarwin9 universalDarwin10"
 version=4
-umask 2
+umask 0
 
 # name for "arch" tar files is 
 # "autodocksuite-4.2.2-<arch>.tar.gz"
@@ -27,10 +32,10 @@ for arch in $archlist; do
    done
    if [ test$archok != testn ] ; then
      tar cvf \
-     autodocksuite-4.2.2-$arch.tar \
+     autodocksuite-4.2.2.1-$arch.tar \
      -C autodock $arch/autodock4$exeext \
      -C ../autogrid $arch/autogrid4$exeext 
-   gzip  autodocksuite-4.2.2-$arch.tar
+   gzip  autodocksuite-4.2.2.1-$arch.tar
    fi
 done
 
@@ -42,5 +47,5 @@ done
 #   with all *.cc *.h *.cpp README COPYING, ... Tests
 #   (checked out from CVS then "autoreconf -i" run, so 
 #     includes 'configure' but not Makefile)
-tar cf autodocksuite-4.2.2-src.tar src
-gzip autodocksuite-4.2.2-src.tar
+tar cf autodocksuite-4.2.2.1-src.tar src
+gzip autodocksuite-4.2.2.1-src.tar
