@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.18 2009/09/16 21:57:52 rhuey Exp $
+ $Id: printEnergies.cc,v 1.19 2009/09/22 20:42:39 rhuey Exp $
 
  AutoDock 
 
@@ -154,7 +154,7 @@ void printEnergies( EnergyBreakdown *eb,
     pr( logFile, "%s(3) Torsional Free Energy           = ", prefixString); print1000(logFile, eb->e_torsFreeEnergy); pr( logFile, " kcal/mol\n");
 
     switch(ad4_unbound_model){
-        // in AutoDock 4.1, the default unbound model is "unbound is same as bound"
+        // in AutoDock 4.2, the default unbound model is "unbound is same as bound"
         case Unbound_Default:
         case Unbound_Same_As_Bound:
         default:

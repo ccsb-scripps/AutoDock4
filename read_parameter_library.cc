@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.17 2009/06/10 00:09:09 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.18 2009/09/22 20:42:38 rhuey Exp $
 
  AutoDock 
 
@@ -217,7 +217,7 @@ void setup_parameter_library( int outlev, const char * model_text, Unbound_Model
     }
     else if (unbound_model==Unbound_Same_As_Bound) {
         param_string=param_string_4_1;
-        strncpy(parameter_library, "'same as bound' [AutoDock 4.1 default]", sizeof parameter_library);
+        strncpy(parameter_library, "'same as bound' [AutoDock 4.2 default]", sizeof parameter_library);
     }
     else {
         pr(logFile, "DEBUG: cannot determine %s parameter values \n",model_text);

@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.11 2009/09/16 21:57:50 rhuey Exp $
+ $Id: calculateEnergies.cc,v 1.12 2009/09/22 20:42:38 rhuey Exp $
 
  AutoDock  
 
@@ -253,7 +253,7 @@ void update_binding_energy_breakdown( EnergyBreakdown * eb, Unbound_Model ad4_un
 
     // Set the internal energy of the unbound state
     switch (ad4_unbound_model) {
-        // in AutoDock 4.1, the default unbound model is "unbound is same as bound"
+        // in AutoDock 4.2, the default unbound model is "unbound is same as bound"
         case Unbound_Default:
         case Unbound_Same_As_Bound:
         default:
@@ -297,7 +297,7 @@ void initialise_binding_energy_breakdown( EnergyBreakdown * eb,
 
     // Set the internal energy of the unbound state
     switch (ad4_unbound_model) {
-        // in AutoDock 4.1, the default unbound model is "unbound is same as bound"
+        // in AutoDock 4.2, the default unbound model is "unbound is same as bound"
         case Unbound_Same_As_Bound:
         default:
             // Update the unbound internal energy, setting it to the current internal energy
