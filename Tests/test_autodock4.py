@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.26 2009/09/04 21:02:39 rhuey Exp $
+# $Id: test_autodock4.py,v 1.27 2009/09/24 17:50:15 rhuey Exp $
 #
 
 """
@@ -277,6 +277,12 @@ class AutoDock4_1pgp_test( AutoDock_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_smaller_test( AutoDock_test ):
+    """Test that autodock4 executes using fewer parameters and an extremely short run."""
+    dpf_stem = "1pgp_smaller"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_no_parameter_file_test( AutoDock_test ):
     """Test that autodock4 works using default parameter library."""
     dpf_stem = "1pgp_no_parameter_file"
@@ -382,6 +388,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_unbound_model_illegal_test', #1
         ## tests which check for specific value
         'AutoDock4_1pgp_test',
+        'AutoDock4_1pgp_smaller_test',
         'AutoDock4_1pgp_no_parameter_file_test',
         ## tests for unbound values 
         'AutoDock4_1pgp_unbound_default_test',
