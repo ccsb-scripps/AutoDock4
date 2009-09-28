@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.23 2009/05/08 23:02:15 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.24 2009/09/28 20:28:47 rhuey Exp $
 
  AutoDock 
 
@@ -181,6 +181,9 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"autodock_parameter_version", DPF_PARAMETER_VERSION} 
               , {"unbound_model", DPF_UNBOUND_MODEL} 
               , {"unbound_energy", DPF_UNBOUND} 
+              , {"ga_proportional_selection", GA_PROPORTIONAL_SELECTION}
+              , {"ga_tournament_selection", GA_TOURNAMENT_SELECTION}      
+              , {"ga_boltzman_selection", GA_BOLTZMAN_SELECTION}
 
 #if defined(USING_COLINY)
               , {"coliny", DPF_COLINY}  

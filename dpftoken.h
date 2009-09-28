@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.20 2009/05/08 23:02:12 rhuey Exp $
+ $Id: dpftoken.h,v 1.21 2009/09/28 20:28:47 rhuey Exp $
 
  AutoDock 
 
@@ -156,6 +156,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define PSW_TRANS_SCALE	106
 #define PSW_ROT_SCALE	107
 #define PSW_TORS_SCALE	108
+#define GA_PROPORTIONAL_SELECTION	109
+#define GA_TOURNAMENT_SELECTION	110
+#define GA_BOLTZMAN_SELECTION	111
 
 #endif
 /* EOF */
