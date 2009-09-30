@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.27 2009/09/16 21:53:53 rhuey Exp $
+# $Id: Makefile.am,v 1.28 2009/09/30 16:09:47 garrett Exp $
 # 
 # AutoDock  
 # 
@@ -418,6 +418,8 @@ autodock4.html :
 	@echo "Creating a colour-coded HTML report of the AutoDock source code"
 	@echo " "
 	enscript -E --color -Whtml --toc -p$@ *.h *.cc
+
+check : test
 
 test : autodock4 $(srcdir)/Tests/test_autodock4.py
 #if HAVE_PYTHON
