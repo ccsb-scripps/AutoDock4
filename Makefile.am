@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.28 2009/09/30 16:09:47 garrett Exp $
+# $Id: Makefile.am,v 1.29 2009/10/02 22:33:47 rhuey Exp $
 # 
 # AutoDock  
 # 
@@ -50,11 +50,13 @@ CLEANFILES = default_parameters.h
 noinst_LIBRARIES = libad.a 
 
 libad_a_SOURCES = \
+    alea.cc \
     analysis.cc \
 	atom_parameter_manager.cc \
     banner.cc \
     bestpdb.cc \
 	calculateEnergies.cc \
+    call_cpso.cc \
     call_glss.cc \
     call_gs.cc \
     call_ls.cc \
@@ -67,6 +69,7 @@ libad_a_SOURCES = \
     cnv_state_to_coords.cc \
     com.cc \
     conformation_sampler.cc \
+    dimLibrary.cc\
 	distdepdiel.cc \
     stateLibrary.cc \
     readfield.cc \
@@ -140,11 +143,13 @@ libad_a_SOURCES = \
 		PDBQT_tokens.h \
 		analysis.h \
 		atom_parameter_manager.h \
+		alea.h \
 		autocomm.h \
 		autoglobal.h \
 		banner.h \
 		bestpdb.h \
 		calculateEnergies.h \
+		call_cpso.h \
 		call_glss.h \
 		call_gs.h \
 		call_ls.h \
@@ -159,6 +164,7 @@ libad_a_SOURCES = \
 		conformation_sampler.h \
 		constants.h \
 		default_parameters.h \
+		dimLibrary.h \
 		distdepdiel.h \
 		dpftoken.h \
 		eintcal.h \
