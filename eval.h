@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.21 2009/05/08 23:02:12 rhuey Exp $
+ $Id: eval.h,v 1.22 2009/10/02 22:12:38 rhuey Exp $
 
  AutoDock  
 
@@ -124,6 +124,7 @@ class Eval
       UnsignedFourByteLong evals(void);
       void reset(void);
       int write(FILE *out_file, Representation **rep);
+      double evalpso(State *state);
       void compute_intermol_energy(Boole init_B_compute_intermol_energy); // for computing unbound state
 };
 
