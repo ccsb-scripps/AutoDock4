@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.24 2009/09/28 20:28:47 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.25 2009/10/02 22:10:48 rhuey Exp $
 
  AutoDock 
 
@@ -184,6 +184,21 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"ga_proportional_selection", GA_PROPORTIONAL_SELECTION}
               , {"ga_tournament_selection", GA_TOURNAMENT_SELECTION}      
               , {"ga_boltzman_selection", GA_BOLTZMAN_SELECTION}
+              , {"pso_c1", PSO_c1}
+              , {"pso_c2", PSO_c2}
+              , {"pso_w", PSO_w}
+              , {"pso_w_start", PSO_w_start}
+              , {"pso_w_end", PSO_w_end}
+              , {"pso_mc", PSO_mc}
+              , {"pso_k", PSO_k}
+              , {"pso_swarm_moves", PSO_swarm_moves}
+              , {"pso_ss_factor", PSO_swarm_size_factor}
+              , {"pso_n_exec", PSO_n_exec}
+              , {"do_cpso", DPF_PSO_CONSTRICTION}
+              , {"do_spso_vw", DPF_PSO_STANDARD_VW}
+              , {"do_spso_cw", DPF_PSO_STANDARD_CW}
+              , {"do_ssmpso", DPF_PSO_SSM}
+              , {"do_pso", DPF_PARSWARMOPT}
 
 #if defined(USING_COLINY)
               , {"coliny", DPF_COLINY}  

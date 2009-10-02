@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.21 2009/09/28 20:28:47 rhuey Exp $
+ $Id: dpftoken.h,v 1.22 2009/10/02 22:10:48 rhuey Exp $
 
  AutoDock 
 
@@ -159,6 +159,20 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define GA_PROPORTIONAL_SELECTION	109
 #define GA_TOURNAMENT_SELECTION	110
 #define GA_BOLTZMAN_SELECTION	111
-
+#define PSO_w		112
+#define PSO_w_start	113
+#define PSO_w_end	114
+#define PSO_c1 		115
+#define PSO_c2 		116
+#define PSO_mc 		117
+#define PSO_swarm_moves	118
+#define PSO_swarm_size_factor	119
+#define PSO_n_exec	120
+#define PSO_k		121
+#define DPF_PSO_CONSTRICTION	122	
+#define DPF_PSO_STANDARD_VW	123	
+#define DPF_PSO_STANDARD_CW	124	
+#define DPF_PSO_SSM		125	
+#define DPF_PARSWARMOPT	126	
 #endif
 /* EOF */
