@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.105 2009/10/02 22:33:47 rhuey Exp $
+ $Id: main.cc,v 1.106 2009/10/09 21:57:16 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -104,7 +104,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.105 2009/10/02 22:33:47 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.106 2009/10/09 21:57:16 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -731,7 +731,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.105 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.106 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3639,9 +3639,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 		//pr(logFile, "Output level is set to %d.... about to invoke call_cpso:n_exec=%d, S=%d, D=%d, *xmin= %f, *xmax=%f, eval_max=%d, K=%f\n\n", outlev, n_exec, S, D, *xmin, *xmax, eval_max, K);
 		
 		//Start Particle Swarm Optimization Run	               
-		
-		sHist[n_exec] = call_cpso(n_exec, sInit, S, D, xmin, xmax, eval_max, K, c1, c2, outlev,
-						7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, search_freq, rho_ptr, lb_rho_ptr);	
+		//sHist[n_exec] = call_cpso(n_exec, sInit, S, D, xmin, xmax, eval_max, K, c1, c2, outlev,
+	//					7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, search_freq, rho_ptr, lb_rho_ptr);	
+		sHist[n_exec] = call_cpso(LocalSearchMethod, sInit, num_evals, S, D, xmin, xmax, eval_max, K, c1, c2, outlev);
 		//Finished Particle Swarm Optimization Run
 
 		
