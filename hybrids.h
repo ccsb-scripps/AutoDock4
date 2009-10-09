@@ -1,6 +1,6 @@
 /*
 
- $Id: hybrids.h,v 1.13 2009/05/08 23:02:13 rhuey Exp $
+ $Id: hybrids.h,v 1.14 2009/10/09 21:57:40 rhuey Exp $
 
  AutoDock 
 
@@ -103,6 +103,14 @@ State call_gs(Global_Search *global_method, State now, unsigned int num_evals, u
 
 #endif
 
+
+#ifndef CALL_PSO
+#define CALL_PSO
+
+State call_cpso(Local_Search  *local_method, State sInit, int num_evals,  int S, int D, 
+                double *xmin, double * xmax, int eval_max, int K, double c1, double c2, int outlev);
+
+#endif
 
 #ifndef MMM
 #define MMM
