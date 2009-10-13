@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.106 2009/10/09 21:57:16 rhuey Exp $
+ $Id: main.cc,v 1.107 2009/10/13 22:10:01 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -104,7 +104,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.106 2009/10/09 21:57:16 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.107 2009/10/13 22:10:01 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -731,7 +731,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.106 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.107 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3514,48 +3514,48 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
    
    case PSO_c1:
-	(void) sscanf(line, "%*s %lf", &c1);
-	pr(logFile, "PSO will be performed with the Second confidence Coefficient  (C1) %lf.\n", c1);
+        (void) sscanf(line, "%*s %lf", &c1);
+        pr(logFile, "PSO will be performed with the First Confidence Coefficient  (C1) %lf.\n", c1);
         (void) fflush(logFile);
         break;
 
 //______________________________________________________________________________
 
    case PSO_c2:
-	(void) sscanf(line, "%*s %lf", &c2);
-	pr(logFile, "PSO will be performed with the Second confidence Coefficient (C2) %lf.\n", c2);
+        (void) sscanf(line, "%*s %lf", &c2);
+        pr(logFile, "PSO will be performed with the Second Confidence Coefficient (C2) %lf.\n", c2);
         (void) fflush(logFile);
         break;
 
 //______________________________________________________________________________
 
    case PSO_k:
-	(void) sscanf(line, "%*s %d", &K);
-	pr(logFile, "Max number of particles informed by a given one = %d.\n", K);
+        (void) sscanf(line, "%*s %d", &K);
+        pr(logFile, "Max number of particles informed by a given one = %d.\n", K);
         (void) fflush(logFile);
         break;
 
 //______________________________________________________________________________
 
    case PSO_swarm_moves:
-	(void) sscanf(line, "%*s %d", &eval_max);
-	pr(logFile, "There will be %d swarm Moves.\n", eval_max);
+        (void) sscanf(line, "%*s %d", &eval_max);
+        pr(logFile, "There will be %d swarm Moves.\n", eval_max);
         (void) fflush(logFile);
         break;
 
 //______________________________________________________________________________
 
    case PSO_swarm_size_factor:
-	(void) sscanf(line, "%*s %d", &S_factor);
-	pr(logFile, "There will be %d Swarm Size Factor.\n", S_factor);
+        (void) sscanf(line, "%*s %d", &S_factor);
+        pr(logFile, "There will be %d Swarm Size Factor.\n", S_factor);
         (void) fflush(logFile);
         break;
 
 //______________________________________________________________________________
 
    case PSO_n_exec:
-	(void) sscanf(line, "%*s %d", &n_exec_max);
-	pr(logFile, "Number of requested PSO runs = %d.\n", n_exec_max);
+        (void) sscanf(line, "%*s %d", &n_exec_max);
+        pr(logFile, "Number of requested PSO runs = %d.\n", n_exec_max);
         (void) fflush(logFile);
         break;
 
@@ -3566,49 +3566,49 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	/* 
 	 * PSO Work 
 	 */
-	pr( logFile, "\nTotal number of torsions in the ligand = %d \n", ntor);
-	D = 7 + ntor; //Dimension D 
-	pr( logFile, "\nTotal number of dimension is equal to the number of Degrees of Freedom = %d \n", D);
-
-        pr( logFile, "Number of requested LGA dockings = %d run%c\n", n_exec_max, (n_exec_max > 1)?'s':' ');
-	
-
-	//No. of Particles in the Swarm 
-	S = S_factor + (int) (2 * sqrt(D)); //S - Swarm Size
-	pr( logFile, "\nTotal number of swarm size = %d \n", S);
+        pr( logFile, "\nTotal number of torsions in the ligand = %d \n", ntor);
+        D = 7 + ntor; //Dimension D 
+        pr( logFile, "\nTotal number of dimensions is equal to the number of Degrees of Freedom = %d \n", D);
+        pr( logFile, "Number of requested PSO dockings = %d run%c\n", n_exec_max, (n_exec_max > 1)?'s':' ');
+        //No. of Particles in the Swarm 
+        S = S_factor + (int) (2 * sqrt(D)); //S - Swarm Size (~somewhat analogous to pop_size)
+        pr( logFile, "\nTotal number in swarm size = %d \n", S);
         
-	//Checking the No. of Runs and No. of Particles 
-	if (n_exec_max > R_max ) 
-	{
-		prStr( error_message, "ERROR: %d runs requested, but only dimensioned for %d.\nChange \"R_max\" in \"constants.h\".", nruns, R_max);
-                stop( error_message );
-                exit( -1 );
-
+        //Checking the No. of Runs and No. of Particles 
+        if (n_exec_max > R_max ) //set to 1024 in constants.h
+        {
+		    prStr( error_message, "ERROR: %d runs requested, but only dimensioned for %d.\nChange \"R_max\" in \"constants.h\".", nruns, R_max);
+            stop( error_message );
+            exit( -1 );
         } else if ( S  > S_max ) 
-	{
-		prStr( error_message, "ERROR: %d Particles initailised in Swarm, but only dimensioned for %d.\nChange \"S_max\" in \"constants.h\".", S, S_max);
-                stop( error_message );
-                exit( -1 );
-	}
-            D = 7+ntor_ligand;
+        {
+		    prStr( error_message, "ERROR: %d Particles initialised in Swarm, but only dimensioned for %d.\nChange \"S_max\" in \"constants.h\".", S, S_max);
+            stop( error_message );
+            exit( -1 );
+        }
 
-	        initialiseDimension(info, xmin, xmax, D);
+        D = 7+ntor_ligand;
+        if (outlev > 3) {
+            pr( logFile, "\ncalling initialiseDimension: info->lo=%f %f %f , info->hi=%f %f %f,  \n", info->lo[0], info->lo[1], info->lo[2], info->hi[0], info->hi[1], info->hi[1]);
+	    };
+        initialiseDimension(info, xmin, xmax, D);
+        if (outlev > 3) {
+            pr( logFile, "\nAFTER initDim trans: xmin=%f %f %f , xmax=%f %f %f,  \n", xmin[0], xmin[1], xmin[2], xmax[0], xmax[1], xmax[1]);
+            pr( logFile, "\nAFTER initDim quat: xmin=%f %f %f %f, xmax=%f %f %f %f,  \n", xmin[3], xmin[4], xmin[5], xmin[6], xmax[3], xmax[4], xmax[5],xmax[6]);
+        };
 
+        evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
+                        elec, emap, nonbondlist, ad_energy_tables, Nnb,
+                        B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
+                        B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                        ignore_inter, B_include_1_4_interactions, scale_1_4,
+                        unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
+                        //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
-            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, map,
-                            elec, emap, nonbondlist, ad_energy_tables, Nnb,
-                            B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
-                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
-                            ignore_inter,
-                            B_include_1_4_interactions, scale_1_4,
-                            unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
-                            //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
-
-            evaluate.compute_intermol_energy(TRUE);
-
+        evaluate.compute_intermol_energy(TRUE);
 
 //	//Initialise the Dimension of xmax, xmin using the function
-	 //initialiseDimension(xlo, xhi, ylo, yhi, zlo, zhi, xmin, xmax, D);
+//initialiseDimension(xlo, xhi, ylo, yhi, zlo, zhi, xmin, xmax, D);
 
 
 //    evaluate.setup(crd, charge, type, natom, map, inv_spacing, 
@@ -3618,49 +3618,39 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //              B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, mol, 
 //              B_template, template_energy, template_stddev);
 
-	for (n_exec = 0; n_exec < n_exec_max; n_exec++)
-	{
-
-		j1 = n_exec + 1;
-		(void) fprintf( logFile, "\n\n\tBEGINNING PARTICLE SWARM OPTIMIZATION\n");
-		(void) fflush( logFile );
-		pr( logFile, "\nRun:\t%d / %d\n", j1, n_exec_max );
-		
-		
-		pr(logFile, "\nWorking with Constriction PSO\n");
-		pr(logFile, "Date:\t");
-                printdate( logFile, 2 );
-		(void) fflush( logFile );
-				
-										
-		psoStartClock = times(&tms_psoStartClock);
-
-                // Reiterate output level...
-		//pr(logFile, "Output level is set to %d.... about to invoke call_cpso:n_exec=%d, S=%d, D=%d, *xmin= %f, *xmax=%f, eval_max=%d, K=%f\n\n", outlev, n_exec, S, D, *xmin, *xmax, eval_max, K);
-		
-		//Start Particle Swarm Optimization Run	               
-		//sHist[n_exec] = call_cpso(n_exec, sInit, S, D, xmin, xmax, eval_max, K, c1, c2, outlev,
-	//					7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, search_freq, rho_ptr, lb_rho_ptr);	
-		sHist[n_exec] = call_cpso(LocalSearchMethod, sInit, num_evals, S, D, xmin, xmax, eval_max, K, c1, c2, outlev);
-		//Finished Particle Swarm Optimization Run
-
-		
-		psoEndClock = times(&tms_psoEndClock);
-		pr(logFile, "\n Run Completed; time taken for this PSO run:\n");
-		timesyshms(psoEndClock-psoStartClock, &tms_psoStartClock, &tms_psoEndClock);
-		pr(logFile, "\n");
-		printdate( logFile, 1 );
-		(void) fflush(logFile);
+        for (n_exec = 0; n_exec < n_exec_max; n_exec++)
+        {
+            j1 = n_exec + 1;
+            (void) fprintf( logFile, "\n\n\tBEGINNING PARTICLE SWARM OPTIMIZATION\n");
+            (void) fflush( logFile );
+            pr(logFile, "\nRun:\t%d / %d\n", j1, n_exec_max );
+            pr(logFile, "\nWorking with Constriction PSO\n");
+            pr(logFile, "Date:\t");
+            printdate( logFile, 2 );
+		    (void) fflush( logFile );
+            psoStartClock = times(&tms_psoStartClock);
+// Reiterate output level...
+//pr(logFile, "Output level is set to %d.... about to invoke call_cpso:n_exec=%d, S=%d, D=%d, 
+//   *xmin= %f, *xmax=%f, eval_max=%d, K=%f\n\n", outlev, n_exec, S, D, *xmin, *xmax, eval_max, K);
+//Start Particle Swarm Optimization Run	               
+//sHist[n_exec] = call_cpso(n_exec, sInit, S, D, xmin, xmax, eval_max, K, c1, c2, outlev,
+//					7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, search_freq, rho_ptr, lb_rho_ptr);	
+// swarmsize factor S is analogous to pop_size
+            sHist[n_exec] = call_cpso(LocalSearchMethod, sInit, n_exec, S, D, xmin, xmax, eval_max, K, c1, c2, outlev);
+            //Finished Particle Swarm Optimization Run
+            psoEndClock = times(&tms_psoEndClock);
+            pr(logFile, "\nRun completed. Time taken for this PSO run:\n");
+            timesyshms(psoEndClock-psoStartClock, &tms_psoStartClock, &tms_psoEndClock);
+            pr(logFile, "\n");
+            printdate( logFile, 1 );
+            (void) fflush(logFile);
 			
-                pr(logFile, "Total number of Energy Evaluations: %d\n", S * eval_max);
-                pr(logFile, "Total number of Swarm moves 	  %d\n", eval_max);
-						
-		
-		pr( logFile, "\n\n\tFINAL PARTICLE SWARM OPTIMIZATION (varCPSO-ls) DOCKED STATE\n" );
-		pr( logFile,     "\t_________________________________________________________________\n\n\n" );
-		
-		//Printing the Run in PDBQ Format 
-//		writeStateOfPDBQ(n_exec , FN_ligand, dock_param_fn, lig_center, 
+            pr(logFile, "Total number of Energy Evaluations: %d\n", S * eval_max);
+            pr(logFile, "Total number of Swarm moves 	  %d\n", eval_max);
+            pr( logFile, "\n\n\tFINAL PARTICLE SWARM OPTIMIZATION (varCPSO-ls) DOCKED STATE\n" );
+            pr( logFile,     "\t_________________________________________________________________\n\n\n" );
+//Printing the Run in PDBQ Format 
+//		    writeStateOfPDBQ(n_exec , FN_ligand, dock_param_fn, lig_center, 
 //        	            &(sHist[n_exec]), ntor, &eintra, &einter, natom, atomstuff, 
 //                	    crd, emap, elec, charge, 
 //	                    ligand_is_inhibitor,
@@ -3670,31 +3660,28 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //        	            map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
 //                	    B_template, template_energy, template_stddev,
 //	                    outlev);
-                //writePDBQT( j, seed,  FN_ligand, dock_param_fn, lig_center,
-                writePDBQT( n_exec, seed,  FN_ligand, dock_param_fn, lig_center,
-                            sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                            crd, emap, elec, charge, 
-                            abs_charge, qsp_abs_charge,
-                            ligand_is_inhibitor,
-                            torsFreeEnergy,
-                            vt, tlist, crdpdb, nonbondlist,
-                            ad_energy_tables,
-                            type, Nnb, B_calcIntElec, map,
-                            outlev, ignore_inter, B_include_1_4_interactions, 
-                            scale_1_4, parameterArray, unbound_internal_FE,
-                            info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, 
-                            B_have_flexible_residues, ad4_unbound_model);
 
+            writePDBQT( n_exec, seed,  FN_ligand, dock_param_fn, lig_center,
+                       sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
+                       crd, emap, elec, charge, 
+                       abs_charge, qsp_abs_charge,
+                       ligand_is_inhibitor,
+                       torsFreeEnergy,
+                       vt, tlist, crdpdb, nonbondlist,
+                       ad_energy_tables,
+                       type, Nnb, B_calcIntElec, map,
+                       outlev, ignore_inter, B_include_1_4_interactions, 
+                       scale_1_4, parameterArray, unbound_internal_FE,
+                       info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, //@@info
+                       B_have_flexible_residues, ad4_unbound_model);
 	
-                econf[nconf] = eintra + einter; // new2
-		++nconf;
-
-		pr( logFile, UnderLine );
-		
-	}
-	/* PSO Work*/
+            econf[nconf] = eintra + einter; // new2
+            ++nconf;
+            pr( logFile, UnderLine );
+        }
+        /* PSO Work*/
         break;
-	
+
 //______________________________________________________________________________
 
     case DPF_ANALYSIS:
