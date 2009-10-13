@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.27 2009/09/24 17:50:15 rhuey Exp $
+# $Id: test_autodock4.py,v 1.28 2009/10/13 23:54:02 rhuey Exp $
 #
 
 """
@@ -246,6 +246,12 @@ class AutoDock4_1pgp_unbound_model_illegal_test( AutoDock_simple_test ):
     in dpf """
     dpf_stem = "1pgp_unbound_model_illegal"
     expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_ga_select_tournament_test( AutoDock_simple_test ):
+    """Test that autodock 4.1 works when ga_select_tournament is set in the DPF."""
+    dpf_stem = "1pgp_ga_select_tournament"
+    expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
 
@@ -386,6 +392,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_two_mapsets_test',
         'AutoDock4_1pgp_unbound_set_illegal_test',
         'AutoDock4_1pgp_unbound_model_illegal_test', #1
+        'AutoDock4_1pgp_ga_select_tournament_test',
         ## tests which check for specific value
         'AutoDock4_1pgp_test',
         'AutoDock4_1pgp_smaller_test',
