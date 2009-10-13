@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.107 2009/10/13 22:10:01 rhuey Exp $
+ $Id: main.cc,v 1.108 2009/10/13 23:53:24 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -104,7 +104,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.107 2009/10/13 22:10:01 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.108 2009/10/13 23:53:24 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -488,6 +488,7 @@ int elitism = 1;
 int end_of_branch[MAX_TORS];
 
 Selection_Mode s_mode = Proportional;
+Real tournament_selection_probability_ratio = 2.0;
 Xover_Mode c_mode = TwoPt;  //  can be: OnePt, TwoPt, Uniform or Arithmetic
 Worst_Mode w_mode = AverageOfN;
 EvalMode e_mode = Normal_Eval;
@@ -731,7 +732,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.107 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.108 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2929,6 +2930,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                                  window_size, num_generations, outputEveryNgens );
       ((Genetic_Algorithm *)GlobalSearchMethod)->mutation_values( low, high, alpha, beta, trnStep0, qtwStep0, torStep0  );
       ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
+
+      if (s_mode==Tournament){
+        (void)((Genetic_Algorithm *)GlobalSearchMethod)->set_tournament_selection_probability_ratio(tournament_selection_probability_ratio);
+          pr( logFile, "\n\tSet tournament_selection_probability_ratio to %f.\n", tournament_selection_probability_ratio );
+      }
       
 
       (void) fflush(logFile);
@@ -4392,9 +4398,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case GA_TOURNAMENT_SELECTION:
         /*
-         * ga_tournament_selection 
+         * ga_tournament_selection [probability_ratio Real]
          */
         
+        (void) sscanf( line, "%*s %s", c_mode_str );
+        if (strcmp(c_mode_str, "probability_ratio") == 0){ 
+            (void) sscanf( line, "%*s %*s %f", &tournament_selection_probability_ratio);
+        }
+
         s_mode = Tournament;
         //Selection_Mode s_mode = Proportional;
         pr(logFile, "Tournament selection will be used in GA and LGA searches.\n");
