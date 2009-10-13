@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.13 2009/05/08 23:02:13 rhuey Exp $
+ $Id: gs.h,v 1.14 2009/10/13 23:46:35 rhuey Exp $
 
  AutoDock 
 
@@ -79,7 +79,8 @@ class Genetic_Algorithm : public Global_Search
       unsigned int m_table_size;
       double worst, avg;
       double *worst_window;
-	  Real tournament_prob;
+	  //Real tournament_prob;
+	  Real tournament_selection_probability_ratio;
 
       double worst_this_generation(Population &);
       void set_worst(Population &);
@@ -108,6 +109,7 @@ class Genetic_Algorithm : public Global_Search
       void reset(unsigned int);
       int terminate(void);
       int search(Population &);
+      int set_tournament_selection_probability_ratio(Real);
 };
 
 //  Inline Functions
@@ -133,6 +135,7 @@ inline Genetic_Algorithm::Genetic_Algorithm(void)
    worst = avg = 0.0L;
    converged = 0; // gmm 7-jan-98
    outputEveryNgens = OUTLEV1_GENS; // gmm 2000-nov-1
+   tournament_selection_probability_ratio = 2.0; //mp+rh 9/09
 }
 
 inline Genetic_Algorithm::~Genetic_Algorithm(void)

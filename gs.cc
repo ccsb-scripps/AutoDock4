@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.33 2009/05/20 16:08:57 rhuey Exp $
+ $Id: gs.cc,v 1.34 2009/10/13 23:46:35 rhuey Exp $
 
  AutoDock 
 
@@ -205,7 +205,8 @@ mutation_table(NULL),
 ordering(NULL),
 m_table_size(0),
 worst(0.0L),
-avg(0.0L)
+avg(0.0L),
+tournament_selection_probability_ratio(2.0)
 
 {
 #ifdef DEBUG
@@ -214,6 +215,15 @@ avg(0.0L)
 
    worst_window = new double[window_size];
 }
+
+int Genetic_Algorithm::set_tournament_selection_probability_ratio(Real r)
+{
+    if (r<0.) return -1;  //ERROR!
+    tournament_selection_probability_ratio = r;
+    return 1;
+}
+
+
 
 void Genetic_Algorithm::set_worst(Population &currentPop)
 {
@@ -1229,12 +1239,13 @@ void Genetic_Algorithm::selection_tournament(Population &original_population, In
 {
    register unsigned int i = 0, start_index = 0;
    int temp_ordering, temp_index;
-
+//#define DEBUG
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::");
    (void)fprintf(logFile, "selection_tournament(Population &original_population, Individual *new_pop)\n");
+   (void)fprintf(logFile, "gs.cc/ tournament_selection_probability_ratio=%f\n", tournament_selection_probability_ratio);
 #endif /* DEBUG */
-
+   Real tournament_prob =  tournament_selection_probability_ratio/(1+tournament_selection_probability_ratio);
    original_population.msort(original_population.num_individuals());
    for (i=0; i<original_population.num_individuals(); i++) {
       alloc[i] = original_population.num_individuals()*(2*tournament_prob - i*(4*tournament_prob - 2));
