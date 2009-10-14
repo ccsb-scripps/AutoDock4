@@ -287,5 +287,113 @@ State call_cpso(Local_Search * local_method,
         //printState(logFile, sTemp, 2);        
         return (sTemp);
 }
+
+//State SWLocalSearch(State *state, int ntor, unsigned int max_its, unsigned int max_succ, unsigned int max_fail,
+//		float expansion, float contraction, float *rho_ptr, float *lb_rho_ptr) 
+//{
+
+//float bias[7+MAX_TORS];
+//float deviates[7+MAX_TORS];
+//	
+//  State tmpstate;
+//  float temp_rho[7+MAX_TORS];
+//  //float expansion = 2.0;
+//  //float contraction = 0.5;
+//  register int i, j, num_successes = 0, num_failures = 0,  all_rho_stepsizes_too_small = 1;
+//  tmpstate.ntor = ntor;
+//  
+
+//  int size=ntor+7;
+
+//  //  Initialize the temp_rho's
+//  for (i=0; i < size; i++) {
+//    temp_rho[i] = rho_ptr[i];
+//  }
+//   
+//  //  Reset bias
+//  for (i=0; i < size; i++) {
+//    bias[i] = 0.0;
+//  }
+
+//  for (i=0; i < max_its; i++) {
+//    // Generate deviates
+//    for (j=0; j < size; j++) {
+//      deviates[j] = gennor(0.0, temp_rho[j]);
+//    }
+//    
+//    addDeviatesBias(state,&tmpstate,deviates,bias);
+//    
+//    if (evaluate.evalpso(&tmpstate) < evaluate.evalpso(state)) {
+//      num_successes++;
+//      num_failures = 0;
+//      memcpy(state,&tmpstate,sizeof(State));  //faster, better!, energy struct is copyied also!
+//      for (j=0; j < size; j++) {
+//	bias[j] = 0.20*bias[j] + 0.40*deviates[j];
+//      }
+//    } else  {
+//      for (j=0; j < size; j++) {
+//	deviates[j] *= -1.0;
+//      }
+//      
+//      addDeviatesBias(state,&tmpstate,deviates,bias);
+//      if (evaluate.evalpso(&tmpstate) < evaluate.evalpso(state)) {
+//	num_successes++;
+//	num_failures = 0;
+//	memcpy(state,&tmpstate,sizeof(State));
+//	for (j=0; j < size; j++) {
+//	  bias[j] -= 0.40*deviates[j];
+//	}
+//      } else {
+//	num_failures++;
+//	num_successes = 0;
+//	for (j=0; j < size; j++) {
+//	  bias[j] *= 0.50;
+//	}
+//      }
+//    }
+//    
+//    // Check to see if we need to expand or contract
+//    if (num_successes >= max_succ) {
+//      for(j=0; j < size; j++) {
+//	temp_rho[j] *= expansion;
+//      }
+//      num_successes = num_failures = 0;
+//    } else if (num_failures >= max_fail) {
+//      for(j=0; j < size; j++) {
+//	temp_rho[j] *= contraction;
+//      }
+//      num_successes = num_failures = 0;
+//    }
+//    
+//    //  WEH - Scott's code doesn't do anything!!! no stopping based upon step scale!!!
+//    //  GMM - corrected Scott's code; this does now stop correctly, based upon step scale.
+//    //  GMM - This version only exits if all the step sizes are too small...
+//    for(j=0; j < size; j++) {   
+//      all_rho_stepsizes_too_small = all_rho_stepsizes_too_small & (temp_rho[j] < lb_rho_ptr[j]);
+//    } //  j-loop
+//    if (all_rho_stepsizes_too_small) {
+//      break; //  GMM - THIS breaks out of i loop, which IS what we want...
+//    }
+//  } //  i-loop
+
+//} // void Pseudo_Solis_Wets::SW(Phenotype &vector)
+
+
+//void addDeviatesBias(State* srcstate, State* deststate, float* deviates, float* bias) {
+
+//  int i;
+//  deststate->T.x=srcstate->T.x+deviates[0]+bias[0];
+//  deststate->T.y=srcstate->T.y+deviates[1]+bias[1];
+//  deststate->T.z=srcstate->T.z+deviates[2]+bias[2];
+//  deststate->Q.nx=srcstate->Q.nx+deviates[3]+bias[3];
+//  deststate->Q.ny=srcstate->Q.ny+deviates[4]+bias[4];
+//  deststate->Q.nz=srcstate->Q.nz+deviates[5]+bias[5];
+//  deststate->Q.ang=srcstate->Q.ang+deviates[6]+bias[6];
+//  for (i=0; i < srcstate->ntor ; i++) {
+//    deststate->tor[i]=srcstate->tor[i]+deviates[7+i]+bias[7+i];
+//  }
+//}
+
+
 /* END OF PROGRAM */
 /* EOF */
