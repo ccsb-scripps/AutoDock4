@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.109 2009/10/14 23:53:37 rhuey Exp $
+ $Id: main.cc,v 1.110 2009/10/15 17:05:35 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -104,7 +104,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.109 2009/10/14 23:53:37 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.110 2009/10/15 17:05:35 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -732,7 +732,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.109 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.110 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3593,7 +3593,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             exit( -1 );
         }
 
-        D = 7+ntor_ligand;
         if (outlev > 3) {
             pr( logFile, "\ncalling initialiseDimension: info->lo=%f %f %f , info->hi=%f %f %f,  \n", info->lo[0], info->lo[1], info->lo[2], info->hi[0], info->hi[1], info->hi[1]);
 	    };
