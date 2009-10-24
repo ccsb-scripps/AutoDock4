@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.22 2009/10/02 22:10:48 rhuey Exp $
+ $Id: dpftoken.h,v 1.23 2009/10/24 00:04:31 mp Exp $
 
  AutoDock 
 
@@ -174,5 +174,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define DPF_PSO_STANDARD_CW	124	
 #define DPF_PSO_SSM		125	
 #define DPF_PARSWARMOPT	126	
+#define GA_LINEAR_RANKING_SELECTION	127
 #endif
 /* EOF */

@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.14 2009/10/13 23:46:35 rhuey Exp $
+ $Id: gs.h,v 1.15 2009/10/24 00:04:31 mp Exp $
 
  AutoDock 
 
@@ -36,7 +36,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "support.h"
 
 enum M_mode { ERR = -1, BitFlip, CauchyDev, IUniformSub };
-enum Selection_Mode { Proportional=0, Tournament=1, Boltzmann=2 };
+enum Selection_Mode { Proportional=0, LinearRanking=1, Tournament=2, Boltzmann=3 };
 enum Xover_Mode { TwoPt=0, OnePt=1, Uniform=2, Arithmetic=3, Branch=4 };
 enum Worst_Mode { AverageOfN, OfN, Ever };
 
@@ -79,8 +79,7 @@ class Genetic_Algorithm : public Global_Search
       unsigned int m_table_size;
       double worst, avg;
       double *worst_window;
-	  //Real tournament_prob;
-	  Real tournament_selection_probability_ratio;
+      Real linear_ranking_selection_probability_ratio;
 
       double worst_this_generation(Population &);
       void set_worst(Population &);
@@ -94,6 +93,7 @@ class Genetic_Algorithm : public Global_Search
       void crossover_uniform(Genotype &, Genotype &, unsigned int);
       void crossover_arithmetic(Genotype &, Genotype &, Real);
       void selection_proportional(Population &, Individual *);
+      void selection_linear_ranking(Population &, Individual *);
       void selection_tournament(Population &, Individual *);
       Individual *selection(Population &);
 
@@ -109,7 +109,7 @@ class Genetic_Algorithm : public Global_Search
       void reset(unsigned int);
       int terminate(void);
       int search(Population &);
-      int set_tournament_selection_probability_ratio(Real);
+      int set_linear_ranking_selection_probability_ratio(Real);
 };
 
 //  Inline Functions
@@ -135,7 +135,7 @@ inline Genetic_Algorithm::Genetic_Algorithm(void)
    worst = avg = 0.0L;
    converged = 0; // gmm 7-jan-98
    outputEveryNgens = OUTLEV1_GENS; // gmm 2000-nov-1
-   tournament_selection_probability_ratio = 2.0; //mp+rh 9/09
+   linear_ranking_selection_probability_ratio = 2.0; //mp+rh 10/2009
 }
 
 inline Genetic_Algorithm::~Genetic_Algorithm(void)

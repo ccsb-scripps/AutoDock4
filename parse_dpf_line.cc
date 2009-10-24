@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.25 2009/10/02 22:10:48 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.26 2009/10/24 00:04:31 mp Exp $
 
  AutoDock 
 
@@ -182,6 +182,7 @@ int parse_dpf_line( char line[LINE_LEN] )
               , {"unbound_model", DPF_UNBOUND_MODEL} 
               , {"unbound_energy", DPF_UNBOUND} 
               , {"ga_proportional_selection", GA_PROPORTIONAL_SELECTION}
+              , {"ga_linear_ranking_selection", GA_LINEAR_RANKING_SELECTION}      
               , {"ga_tournament_selection", GA_TOURNAMENT_SELECTION}      
               , {"ga_boltzman_selection", GA_BOLTZMAN_SELECTION}
               , {"pso_c1", PSO_c1}

@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.34 2009/10/13 23:46:35 rhuey Exp $
+ $Id: gs.cc,v 1.35 2009/10/24 00:04:31 mp Exp $
 
  AutoDock 
 
@@ -206,7 +206,7 @@ ordering(NULL),
 m_table_size(0),
 worst(0.0L),
 avg(0.0L),
-tournament_selection_probability_ratio(2.0)
+linear_ranking_selection_probability_ratio(2.0)
 
 {
 #ifdef DEBUG
@@ -216,10 +216,10 @@ tournament_selection_probability_ratio(2.0)
    worst_window = new double[window_size];
 }
 
-int Genetic_Algorithm::set_tournament_selection_probability_ratio(Real r)
+int Genetic_Algorithm::set_linear_ranking_selection_probability_ratio(Real r)
 {
     if (r<0.) return -1;  //ERROR!
-    tournament_selection_probability_ratio = r;
+    linear_ranking_selection_probability_ratio = r;
     return 1;
 }
 
@@ -1153,7 +1153,6 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
       for (; (alloc[i] >= 1.0) && (start_index < original_population.num_individuals());  alloc[i]-= 1.0) {
          new_pop[start_index] = original_population[i];
          //new_pop[start_index].incrementAge();
-         // DOTO 2008-11 why is this changing alloc[]
          ++start_index;
       }
    }
@@ -1243,9 +1242,8 @@ void Genetic_Algorithm::selection_tournament(Population &original_population, In
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::");
    (void)fprintf(logFile, "selection_tournament(Population &original_population, Individual *new_pop)\n");
-   (void)fprintf(logFile, "gs.cc/ tournament_selection_probability_ratio=%f\n", tournament_selection_probability_ratio);
 #endif /* DEBUG */
-   Real tournament_prob =  tournament_selection_probability_ratio/(1+tournament_selection_probability_ratio);
+   Real tournament_prob =  0.; // Dummy value - this code seems unfinished M Pique Oct 2009
    original_population.msort(original_population.num_individuals());
    for (i=0; i<original_population.num_individuals(); i++) {
       alloc[i] = original_population.num_individuals()*(2*tournament_prob - i*(4*tournament_prob - 2));
@@ -1272,6 +1270,85 @@ void Genetic_Algorithm::selection_tournament(Population &original_population, In
       i = (i+1)%original_population.num_individuals();
    }
 }
+/* Linear Ranking Selection
+ 
+  This type of selection was described in Goldberg and Deb (1991),
+  Section 4 and subsection 4.2. "Sort the population from best to
+  worst, assign the number of copies [alpha, or 'alloc[]' here] that
+  each individual should receive ..., and then perform proportionate
+  selection according to that assignment."
+ 
+ 
+  We can again parameterize this ranking with K, the relative probability
+  between the best and worst individual.  
+
+  M Pique: set c0 and c1 (selection coeffient for first individual, slope)
+   givens: k: ratio  k=c0/(c0-c1)   and that c1=2*(c0-1) (see text)
+  
+   k=c0/(c0-2*(c0-1))
+   c0= k*(c0-2*(c0-1))
+   c0= k*c0 -2*k*c0 +2*k
+   c0 = -k*c0 + 2*k
+   c0+(k*c0) =  2*k
+   (1+k)*c0= 2*k
+   c0 = 2*k/(1+k)
+  
+   ratio k is   c0 / (  c0 - c1), so k*c0 - k*c1 = c0, (k-1)*c0 = k*c1
+   Goldberg & Deb : c1=2*(c0-1) so 2*c0 = c1+2
+
+ ***/
+void Genetic_Algorithm::selection_linear_ranking(Population &original_population, Individual *new_pop)
+{
+   register unsigned int i = 0, start_index = 0;
+//#define DEBUG
+#ifdef DEBUG
+   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::");
+   (void)fprintf(logFile, "selection_linear_ranking(Population &original_population, Individual *new_pop)\n");
+   (void)fprintf(logFile, "gs.cc/ linear_ranking_selection_probability_ratio=%f\n", linear_ranking_selection_probability_ratio);
+#endif /* DEBUG */
+   Real c0 =  2*linear_ranking_selection_probability_ratio/(1+linear_ranking_selection_probability_ratio); // K
+   Real c1 = 2*(c0-1);
+   unsigned int num_indiv = original_population.num_individuals(); // abbreviation
+   original_population.msort(original_population.num_individuals());
+
+   for (i=0; i<num_indiv; i++) {
+      Real x; // range 0..1 as i ranges 0..num_indiv-1
+      if(num_indiv<2) x=0;
+      else x=i/(num_indiv-1);
+      alloc[i] = (c0-c1*x); // alpha
+   }
+
+   // allocate whole number parts of alloc (alpha) distribution
+   for (i=0;  i<num_indiv && start_index<num_indiv;  i++) {
+      while (alloc[i]>=1.0 && start_index<num_indiv) {
+         new_pop[start_index++] = original_population[i];
+	 alloc[i] -= 1.0;
+      }
+   }
+
+   // allocate fractional (residual) parts of alloc distribution
+   // The method here is not completly "fair" but is quick 
+   //  choose a random indiv (without replacement) and decide selection
+   // from biased coin flip
+   // Again see Goldberg & Deb 1991    -= M Pique October 2009
+   // WHILE loop has emergency breakout for "cant happen" cases... MP
+   int emergencydoor=15+num_indiv/10; // just in case
+   unsigned int fracalloc_start = start_index; // for statistics logging
+   while ( start_index < num_indiv && --emergencydoor>0 ) {
+	i = ignlgi()%num_indiv;
+	if(alloc[i]<=0) continue;
+	if(alloc[i]>ranf()) {
+	  new_pop[start_index++] = original_population[i];
+	  }
+	  alloc[i]=0; // remove from further consideration
+   }
+   if(start_index!=num_indiv) {
+     // put in log
+   (void)fprintf(logFile, "WARNING: gs.cc: linear_ranking_selection found no indiv for %d slot%s of %d.\n", num_indiv-start_index, (num_indiv-start_index)==1?"":"s", num_indiv-fracalloc_start);
+     // just copy most fit indiv into rest of array
+   while(start_index < num_indiv) new_pop[start_index++] = original_population[0];
+   }
+}
 
 Individual *Genetic_Algorithm::selection(Population &solutions)
 {
@@ -1289,8 +1366,14 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
       case Proportional:
          selection_proportional(solutions, next_generation);
          break;
+      case LinearRanking:
+         selection_linear_ranking(solutions, next_generation);
+         break;
       case Tournament:
-         selection_tournament(solutions, next_generation);
+         // M Pique October 2009 - does not work so disallowing for now
+	 // selection_tournament(solutions, next_generation);
+         (void)fprintf(logFile,"gs.cc/Unimplemented Selection Method - using proportional\n");
+         selection_proportional(solutions, next_generation);
          break;
       case Boltzmann:
          (void)fprintf(logFile,"gs.cc/Unimplemented Selection Method - using proportional\n");
