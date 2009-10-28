@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.42 2009/10/28 17:34:23 rhuey Exp $
+ $Id: call_glss.cc,v 1.43 2009/10/28 20:40:24 mp Exp $
 
  AutoDock  
 
@@ -377,8 +377,48 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
     (void)fprintf( logFile, "Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of %u\nenergy evaluations.\n\n", num_evals);
 
-    //thisPop.msort(1);
-    (void)fprintf(logFile,"Initial-Value: %.3f\n", thisPop[0].value(Normal_Eval));
+ // M Pique 28 Oct 2009 - adding a (harmless...) thisPop.msort(1) here
+ // broke the unbound-extended test. Investigating why
+ // Conclusion: the test is sensitive to population order since it does
+ // only one generation of glss.  So I'm removing the msort(1) and doing
+ // the search for lowest-energy individual by hand.
+#ifdef DEBUGMSORT
+     double *beforesort = new double[pop_size];
+     double *aftersort = new double[pop_size];
+     int *beforeorder = new int[pop_size];
+     int *afterorder = new int[pop_size];
+
+    (void)fprintf(logFile,"@@ #evals before msort %-6u  DEBUGMSORT call_glss.cc\n", evaluate.evals());
+     for (i=0; i<pop_size; i++) beforesort[i] = thisPop[i].value(Normal_Eval);
+     //thisPop.msort(1);
+     for (i=0; i<pop_size; i++) aftersort[i] = thisPop[i].value(Normal_Eval);
+
+     // set beforeorder[i] to location j of each aftersort value
+     for (i=0; i<pop_size; i++) beforeorder[i] = -1 ; // flag unset values
+     for (i=0; i<pop_size; i++) \
+     for (j=0;j<pop_size && aftersort[i]!=beforesort[beforeorder[i]=j];j++) ;
+     // set afterorder[i] to location j of each beforesort value
+     for (i=0; i<pop_size; i++) afterorder[i] = -1 ; // flag unset values
+     for (i=0; i<pop_size; i++) \
+     for (j=0;j<pop_size && beforesort[i]!=aftersort[afterorder[i]=j];j++) ;
+     // report 
+    (void)fprintf(logFile,"@@ #evals after msort %-6u  DEBUGMSORT call_glss.cc\n", evaluate.evals());
+    (void)fprintf(logFile,"@@ pop before     after sort   locn   DEBUGMSORT call_glss.cc\n");
+     for (i=0; i<pop_size; i++) 
+       (void)fprintf(logFile,"%3d %9.2f %3d   %9.2f %3d\n", 
+         i, beforesort[i], afterorder[i], aftersort[i], beforeorder[i]);
+
+      delete[] beforesort;
+      delete[] aftersort;
+      delete[] beforeorder;
+      delete[] afterorder;
+#endif
+    if(pop_size>0) {
+       double bestenergy = thisPop[0].value(Normal_Eval);
+       for (i=1; i<pop_size; i++) if(bestenergy>thisPop[i].value(Normal_Eval)) \
+         bestenergy=thisPop[i].value(Normal_Eval);
+       (void)fprintf(logFile,"Initial-Value: %.3f\n", bestenergy);
+     }
 
     do {
         ++num_generations;
