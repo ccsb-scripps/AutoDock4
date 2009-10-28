@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.41 2009/10/23 22:49:46 mp Exp $
+ $Id: call_glss.cc,v 1.42 2009/10/28 17:34:23 rhuey Exp $
 
  AutoDock  
 
@@ -377,7 +377,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
     (void)fprintf( logFile, "Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of %u\nenergy evaluations.\n\n", num_evals);
 
-    thisPop.msort(1);
+    //thisPop.msort(1);
     (void)fprintf(logFile,"Initial-Value: %.3f\n", thisPop[0].value(Normal_Eval));
 
     do {
