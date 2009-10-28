@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.35 2009/10/24 00:04:31 mp Exp $
+ $Id: gs.cc,v 1.36 2009/10/28 04:22:10 mp Exp $
 
  AutoDock 
 
@@ -1332,7 +1332,7 @@ void Genetic_Algorithm::selection_linear_ranking(Population &original_population
    // from biased coin flip
    // Again see Goldberg & Deb 1991    -= M Pique October 2009
    // WHILE loop has emergency breakout for "cant happen" cases... MP
-   int emergencydoor=15+num_indiv/10; // just in case
+   int emergencydoor=25+num_indiv/10; // just in case
    unsigned int fracalloc_start = start_index; // for statistics logging
    while ( start_index < num_indiv && --emergencydoor>0 ) {
 	i = ignlgi()%num_indiv;
