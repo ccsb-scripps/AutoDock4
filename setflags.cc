@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.17 2009/07/14 23:40:26 rhuey Exp $
+ $Id: setflags.cc,v 1.18 2009/12/07 22:56:04 rhuey Exp $
 
  AutoDock 
 
@@ -35,6 +35,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "openfile.h"
 #include "version.h"
 #include "banner.h"
+#include "strindex.h"
+
 
 extern FILE *parFile;
 extern FILE *logFile;
@@ -181,6 +183,12 @@ int setflags( int argc, char ** argv, const char * version_num)
             break;    
         case 'p':
             snprintf(dock_param_fn, PATH_MAX -1, "%s", argv[2] );
+            if ( strindex( dock_param_fn, ".dpf") != (int) strlen(dock_param_fn) - 4){
+                fprintf(stderr, "\n AutoDock needs the extension of the docking parameter file to be \".dpf\"");
+                fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
+                return(-1);
+            }
+
             if ( (parFile = ad_fopen(dock_param_fn, "r")) == NULL ) {
 #ifdef DEBUG
                 fprintf(stderr, "\n Parameter file name = %s\n", dock_param_fn);
