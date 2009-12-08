@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.28 2009/10/13 23:54:02 rhuey Exp $
+# $Id: test_autodock4.py,v 1.29 2009/12/08 18:06:20 rhuey Exp $
 #
 
 """
@@ -167,6 +167,48 @@ class AutoDock_simple_test( unittest.TestCase ):
             print "Testing that DLG exists and AutoDock did not complete."
         self.assertEqual( self.computed, self.expected_outcome )
 #______________________________________________________________________________
+
+class AutoDock4_1pgp_no_extension( AutoDock_simple_test ):
+    """Test that autodock4 stops early if .dpf extension is missing
+    keywords are specified."""
+    dpf_stem = "1pgp_no_extension"
+    print "in 1pgp_no_extension"
+    expected_outcome = False # True means Successful Completion!
+    def setUp( self ):
+        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
+        self.dlg_filename = "test_" + self.dpf_stem + ".dlg"
+        self.computed = run_AutoDock( self.dpf_stem , self.dlg_filename )
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_wrong_extension( AutoDock_simple_test ):
+    """Test that autodock4 stops early if extension is not '.dpf'
+    keywords are specified."""
+    dpf_stem = "1pgp.fpd"
+    print "in 1pgp_wrong_extension"
+    expected_outcome = False # True means Successful Completion!
+    def setUp( self ):
+        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
+        self.dlg_filename = "test_" + self.dpf_stem + ".dlg"
+        self.computed = run_AutoDock( self.dpf_stem , self.dlg_filename )
+
+#______________________________________________________________________________
+
+
+class AutoDock4_1pgp_two_extensions( AutoDock_simple_test ):
+    """Test that autodock4 stops early if dpf name includes two .dpf
+    keywords are specified."""
+    dpf_stem = "1pgp.dpf"
+    print "in 1pgp_two_extensions"
+    expected_outcome = False # True means Successful Completion!
+    def setUp( self ):
+        """Set up for autodock4 tests. Locate the autodock binary now during setUp."""
+        self.dlg_filename = "test_" + self.dpf_stem + ".dlg"
+        self.computed = run_AutoDock( self.dpf_stem +'.dpf', self.dlg_filename )
+
+
+#______________________________________________________________________________
+
 
 class AutoDock4_1pgp_ligand_types_map_mismatch( AutoDock_simple_test ):
     """Test that autodock4 stops early if number of maps do not equal number
@@ -379,6 +421,10 @@ if __name__ == '__main__':
     #  or conveniently comment out tests we're not interested in.
     #  NOTE:  Remember to add new TestCase class names to the list "test_cases"
     test_cases = [
+        # tests for .dpf extension:
+        'AutoDock4_1pgp_no_extension',
+        'AutoDock4_1pgp_wrong_extension',
+        'AutoDock4_1pgp_two_extensions',
         # simple tests:
         'AutoDock4_1pgp_ligand_types_map_mismatch',
         'AutoDock4_1pgp_illegal_keyword_test',
