@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.36 2009/10/28 04:22:10 mp Exp $
+ $Id: gs.cc,v 1.37 2009/12/10 17:47:31 garrett Exp $
 
  AutoDock 
 
@@ -717,8 +717,8 @@ void Genetic_Algorithm::crossover(Population &original_population)
                (void)fprintf(logFile, "gs.cc/  alpha = " FDFMT "\n", alpha);
                (void)fprintf(logFile, "gs.cc/ About to call crossover_arithmetic with original_population[%d] & [%d]\n", i, i+1);
 #endif /* DEBUG */
-               crossover_arithmetic( original_population[ i ].genotyp, 
-                                     original_population[i+1].genotyp, 
+               crossover_arithmetic( original_population[ordering[i]].genotyp, 
+                                     original_population[ordering[i+1]].genotyp, 
                                      alpha );
                 original_population[ordering[i]].age = 0L;
                 original_population[ordering[i+1]].age = 0L;
