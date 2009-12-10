@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.37 2009/12/10 17:47:31 garrett Exp $
+ $Id: gs.cc,v 1.38 2009/12/10 19:41:42 rhuey Exp $
 
  AutoDock 
 
@@ -612,13 +612,14 @@ void Genetic_Algorithm::crossover(Population &original_population)
 
       if (ranf() < c_rate) {
          // Perform crossover with a probability of c_rate
-         
+         int fi = ordering[i]; //index of father
+         int mi = ordering[i+1]; //index of mother 
          // Assert the quaternions of the mother and father are okay:
-         Genotype father = original_population[ordering[i]].genotyp;
-         Genotype mother = original_population[ordering[i+1]].genotyp;
+         Genotype father = original_population[fi].genotyp;
+         Genotype mother = original_population[mi].genotyp;
          Quat q_father, q_mother;
 #ifdef DEBUG_QUAT_PRINT
-         pr( logFile, "DEBUG_QUAT: crossover()  q_father (individual=%d)\n", ordering[i] );
+         pr( logFile, "DEBUG_QUAT: crossover()  q_father (individual=%d)\n", fi );
 #endif // endif DEBUG_QUAT_PRINT
          //  Make sure the quaternion is suitable for 3D rotation
          q_father = father.readQuat();
@@ -628,7 +629,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
 #endif // endif DEBUG_QUAT_PRINT
          assertQuatOK( q_father );
 #ifdef DEBUG_QUAT_PRINT
-         pr( logFile, "DEBUG_QUAT: crossover()  q_mother (individual=%d)\n", ordering[i+1] );
+         pr( logFile, "DEBUG_QUAT: crossover()  q_mother (individual=%d)\n", mi );
          (void) fflush(logFile);
 #endif // endif DEBUG_QUAT_PRINT
          //  Make sure the quaternion is suitable for 3D rotation
@@ -654,12 +655,10 @@ void Genetic_Algorithm::crossover(Population &original_population)
                     first_point = ignuin(1, original_population[i].genotyp.num_genes()-1);
                 } while ( is_within_rotation_index( first_point ) ) ;
                 //  We can accomplish one point crossover by using the 2pt crossover operator
-                crossover_2pt( original_population[ordering[i]].genotyp, 
-                               original_population[ordering[i+1]].genotyp,
+                crossover_2pt( original_population[fi].genotyp, 
+                               original_population[mi].genotyp,
                                first_point, 
-                               original_population[ordering[i]].genotyp.num_genes() );
-                original_population[ordering[i]].age = 0L;
-                original_population[ordering[i+1]].age = 0L;
+                               original_population[fi].genotyp.num_genes());//either one works
                 break;
             case TwoPt:
                 // To guarantee 2-point always creates 3 non-empty partitions,
@@ -673,12 +672,10 @@ void Genetic_Algorithm::crossover(Population &original_population)
                     second_point = ignuin(1, original_population[i].genotyp.num_genes()-1);
                 } while ( is_within_rotation_index( second_point ) || second_point == first_point );
                 // Do two-point crossover, with the crossed-over offspring replacing the parents in situ:
-                crossover_2pt( original_population[ordering[i]].genotyp, 
-                               original_population[ordering[i+1]].genotyp, 
+                crossover_2pt( original_population[fi].genotyp, 
+                               original_population[mi].genotyp, 
                                min( first_point, second_point ),
                                max( first_point, second_point) );
-                original_population[ordering[i]].age = 0L;
-                original_population[ordering[i+1]].age = 0L;
                 break;
             case Branch:
                 // New crossover mode, designed to exchange just one corresponding sub-trees (or "branch")
@@ -687,26 +684,22 @@ void Genetic_Algorithm::crossover(Population &original_population)
                 // 7 genes; this mode would not change anything in such rigid-body dockings.
                 if (original_population[i].genotyp.num_genes() <= 7) {
                     // Rigid body docking, so no torsion genes to crossover.
-                    break;
+                    continue; //TODO raise a fatal error if branch crossover with no torsions
                  } else {
                     // Pick a random torsion gene
                     first_point = ignuin(7, original_population[i].genotyp.num_genes()-1);
                     second_point = original_population.get_eob( first_point - 7 );
                     // Do two-point crossover, with the crossed-over offspring replacing the parents in situ:
-                    crossover_2pt( original_population[ordering[i]].genotyp, 
-                                   original_population[ordering[i+1]].genotyp, 
+                    crossover_2pt( original_population[fi].genotyp, 
+                                   original_population[mi].genotyp, 
                                    min( first_point, second_point ),
                                    max( first_point, second_point) );
-                    original_population[ordering[i]].age = 0L;
-                    original_population[ordering[i+1]].age = 0L;
                     break;
                  }
             case Uniform:
-                crossover_uniform( original_population[ordering[i]].genotyp, 
-                                   original_population[ordering[i+1]].genotyp,
-                                   original_population[ordering[i]].genotyp.num_genes());
-                original_population[ordering[i]].age = 0L;
-                original_population[ordering[i+1]].age = 0L;
+                crossover_uniform( original_population[fi].genotyp, 
+                                   original_population[mi].genotyp,
+                                   original_population[mi].genotyp.num_genes());
                 break;
             case Arithmetic:
                // select the parents A and B
@@ -715,20 +708,20 @@ void Genetic_Algorithm::crossover(Population &original_population)
                alpha = (Real) ranf();
 #ifdef DEBUG
                (void)fprintf(logFile, "gs.cc/  alpha = " FDFMT "\n", alpha);
-               (void)fprintf(logFile, "gs.cc/ About to call crossover_arithmetic with original_population[%d] & [%d]\n", i, i+1);
+               (void)fprintf(logFile, "gs.cc/ About to call crossover_arithmetic with original_population[%d] & [%d]\n", fi, mi);
 #endif /* DEBUG */
-               crossover_arithmetic( original_population[ordering[i]].genotyp, 
-                                     original_population[ordering[i+1]].genotyp, 
+               crossover_arithmetic( original_population[fi].genotyp, 
+                                     original_population[mi].genotyp, 
                                      alpha );
-                original_population[ordering[i]].age = 0L;
-                original_population[ordering[i+1]].age = 0L;
                break;
             default:
                 (void)fprintf(logFile,"gs.cc/ Unrecognized crossover mode!\n");
          }
+         original_population[fi].age = 0L;
+         original_population[mi].age = 0L;
          //map genotype to phenotype and evaluate energy
-         original_population[ i ].mapping();
-         original_population[i+1].mapping();
+         original_population[fi].mapping();
+         original_population[mi].mapping();
       }
    }
 }
