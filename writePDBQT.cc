@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.23 2009/12/11 19:06:01 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.24 2009/12/11 20:41:24 rhuey Exp $
 
  AutoDock  
 
@@ -142,6 +142,7 @@ writePDBQT(int irun, FourByteLong seed[2],
         pr(logFile,"\n\n");
 	} else if (outlev < 0) {
 		printState(logFile, state, 0);
+        pr(logFile,"\n");
 	}
 
     // Convert state variables to x,y,z-coordinates
