@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.22 2009/09/16 21:57:52 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.23 2009/12/11 19:06:01 rhuey Exp $
 
  AutoDock  
 
@@ -277,7 +277,7 @@ writePDBQT(int irun, FourByteLong seed[2],
                 }
                 if (keepresnum > 0) {
                     // Retain the original Residue Numbering
-                    strncpy(AtmNamResNamNum, &atomstuff[i][13], (size_t) 14);   /*  SF &atomstuff[i][12] was increased to 12 to fix the extra space     */
+                    strncpy(AtmNamResNamNum, &atomstuff[i][12], (size_t) 13);   /*  SF &atomstuff[i][12] was increased to 12 to fix the extra space     */
                     AtmNamResNamNum[14] = '\0';
                     (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESSTR, state_type_prefix_string, 
                                    i + 1, AtmNamResNamNum, crd[i][X], crd[i][Y], crd[i][Z], 
@@ -325,7 +325,8 @@ void print_PDBQT( FILE *logFile,
     register int i=0;
     char AtmNamResNamNum[15];
     for (i=0; i<true_ligand_atoms; i++) {
-        strncpy( AtmNamResNamNum, &atomstuff[i][14], (size_t) 14 );
+        //strncpy( AtmNamResNamNum, &atomstuff[i][14], (size_t) 14 );
+        strncpy(AtmNamResNamNum, &atomstuff[i][12], (size_t) 13);   /*  SF &atomstuff[i][12] was increased to 12 to fix the extra space     */
         AtmNamResNamNum[14] = '\0';
         (void) fprintf( logFile, FORMAT_PDBQT_ATOM_RESSTR, prefix, 
                         i + 1, AtmNamResNamNum, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z], 
