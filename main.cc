@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.111 2009/10/24 00:04:31 mp Exp $
+ $Id: main.cc,v 1.112 2009/12/11 21:56:37 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -104,7 +104,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.111 2009/10/24 00:04:31 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.112 2009/12/11 21:56:37 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -732,7 +732,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.111 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.112 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -871,7 +871,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             outputEveryNgens = (unsigned int) OUTLEV2_GENS;
             break;
         }
-        pr( logFile, "\n\tOutput every %u generations.\n", outputEveryNgens );
+        if(outputEveryNgens>0) pr( logFile, "\n\tOutput population statistics every %u generations.\n", outputEveryNgens );
+        else pr( logFile, "\n\tNever output generation-based population statistics.\n");
         (void) fflush(logFile);
         break;
 
@@ -2924,7 +2925,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       }
 
       if (debug > 0) {
-          pr( logFile, "\n\tOutput every %u generations.\n", outputEveryNgens );
+        if(outputEveryNgens>0) pr( logFile, "\n\tOutput population statistics every %u generations.\n", outputEveryNgens );
+        else pr( logFile, "\n\tNever output generation-based population statistics.\n");
       }
       GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate,
                                                  window_size, num_generations, outputEveryNgens );

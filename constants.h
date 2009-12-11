@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.25 2009/12/11 19:04:23 rhuey Exp $
+ $Id: constants.h,v 1.26 2009/12/11 21:56:37 rhuey Exp $
 
  AutoDock 
 
@@ -225,9 +225,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #define NROWS 16
 
-/* Output frequency in GAs */
+/* Statistics output frequency in GAs */
  
-#define OUTLEV0_GENS 30000 /* output every 30,000 generations */
+#define OUTLEV0_GENS 0   /* Never output based on number of generations */
 #define OUTLEV1_GENS 100 /* output every 100 generations */
 #define OUTLEV2_GENS 1 /* output every generation */
 

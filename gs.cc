@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.38 2009/12/10 19:41:42 rhuey Exp $
+ $Id: gs.cc,v 1.39 2009/12/11 21:56:37 rhuey Exp $
 
  AutoDock 
 
@@ -1497,7 +1497,8 @@ int Genetic_Algorithm::search(Population &solutions)
        (void)fprintf(logFile,"DEBUG:  Generation: %3u, outputEveryNgens = %3u, generations%%outputEveryNgens = %u\n",
                      generations, outputEveryNgens, generations%outputEveryNgens);
    }
-   if (generations%outputEveryNgens == 0) {
+       /* Only output if the output level is not 0. */
+   if (outputEveryNgens != 0 && generations%outputEveryNgens == 0) {
        oldest  = 0L;
        fittest = BIG;
        for (i=0; i<solutions.num_individuals(); i++) {
@@ -1510,10 +1511,7 @@ int Genetic_Algorithm::search(Population &solutions)
               fittestIndividual = i;
           }
        }
-       /* Only output if the output level is not 0. */
-       if (outputEveryNgens != OUTLEV0_GENS) {
            // (void)fprintf(logFile, "___\noutputEveryNgens = %d, OUTLEV0_GENS=%d\n___\n", outputEveryNgens, OUTLEV0_GENS);
-           if (outputEveryNgens > 1) {
     #ifndef DEBUG3
                (void)fprintf(logFile,"Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
                generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), 
@@ -1525,18 +1523,6 @@ int Genetic_Algorithm::search(Population &solutions)
                solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), 
                evaluate.evals() );
     #endif /* DEBUG3 */
-           } else {
-    #ifndef DEBUG3
-               (void)fprintf(logFile,"Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
-               generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), evaluate.evals() );
-    #else
-               (void)fprintf(logFile,"Generation: %3u   Oldest: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Num.evals.: %ld   Timing: ", 
-               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
-               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
-               solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), evaluate.evals() );
-    #endif /* DEBUG3 */
-           }
-       }
        genEnd = times( &tms_genEnd );
        timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd );
        genStart = times( &tms_genStart );
