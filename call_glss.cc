@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.43 2009/10/28 20:40:24 mp Exp $
+ $Id: call_glss.cc,v 1.44 2009/12/12 18:44:20 mp Exp $
 
  AutoDock  
 
@@ -418,6 +418,10 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
        for (i=1; i<pop_size; i++) if(bestenergy>thisPop[i].value(Normal_Eval)) \
          bestenergy=thisPop[i].value(Normal_Eval);
        (void)fprintf(logFile,"Initial-Value: %.3f\n", bestenergy);
+
+       // print "Population at Generation:" line with low/high/mean/median/stddev...
+       if(outlev>0) (void) thisPop.printPopulationStatisticsVerbose(logFile, 
+         num_generations, evaluate.evals(), TRUE);
      }
 
     do {
@@ -474,5 +478,10 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
     thisPop.msort(1);
     (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
+
+    // print "Population at Generation:" line with low/high/mean/median/stddev...
+    if(outlev>0) (void) thisPop.printPopulationStatisticsVerbose(logFile, 
+     num_generations, evaluate.evals(), TRUE);
+
     return( thisPop[0].state(sInit.ntor) );
 }

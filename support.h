@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.14 2009/05/08 23:02:18 rhuey Exp $
+ $Id: support.h,v 1.15 2009/12/12 18:44:20 mp Exp $
 
  AutoDock 
 
@@ -38,6 +38,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 ** $Log: support.h,v $
+** Revision 1.15  2009/12/12 18:44:20  mp
+** Added "Population at Generation:" statistics.
+**  Modified Files: call_glss.cc configure.ac gs.cc support.cc support.h
+**
 ** Revision 1.14  2009/05/08 23:02:18  rhuey
 ** Updated copyright notice in 188 source files
 **
@@ -272,6 +276,8 @@ class Population
       void msort(int); /* sorts the first m individuals using heap properties */
       // void print(ostream &, int); /* prints top int energies */
       void print(FILE *, int); /* like above */
+      int printPopulationStatistics(FILE *, int, Boole); /* prints best, worse, mean, etc energies */
+      int printPopulationStatisticsVerbose(FILE *, unsigned int, long int, Boole); /* print with generations & #evals */
       void printPopulationAsStates(FILE *, int, int); /*prints energies,states of top energies */
       void printPopulationAsCoordsEnergies(FILE *, int, int); /*prints energies,states of top energies */
       void set_eob(int init_end_of_branch[MAX_TORS]); // For Branch Crossover Mode

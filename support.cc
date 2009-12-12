@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.28 2009/07/14 23:42:33 rhuey Exp $
+ $Id: support.cc,v 1.29 2009/12/12 18:44:20 mp Exp $
 
  AutoDock 
 
@@ -205,6 +205,93 @@ void Population::print(FILE *output, int num) {
       (void)fprintf( output, "(%d):\t %8.2f\n", i+1, heap[i].value(Always_Eval));
    }
 }
+
+static int
+doublecompare(const void *p1, const void *p2)
+{
+	double i = *((double *)p1);
+	double j = *((double *)p2);
+	if ( i > j ) return 1;
+	if ( i < j ) return -1;
+	return 0;
+	}
+int Population::printPopulationStatistics(FILE *output, int level, Boole appendNewline) {
+// write best energy, etc, depending on level
+// return 0 if OK, non-zero if error
+// Code adapted from gs.cc  - M Pique  December 2009
+int returnCode=0;
+double sum, best_e, worst_e;
+unsigned long oldest;
+int oldestIndividual, best_i;
+   if(size<=0) return 2; // error, give up
+   sum=best_e=worst_e=heap[best_i=0].value(Normal_Eval);
+   oldest=heap[oldestIndividual=0].age;
+   for (int i=1; i<size; i++) {
+      double e = heap[i].value(Normal_Eval);
+      sum+=e;
+      if(e>worst_e) worst_e = e;
+      if(e<best_e) {
+          best_e = e;
+	  best_i = i;
+	  }
+      if (heap[i].age >= oldest) {
+          oldest = heap[i].age;
+          oldestIndividual = i;
+      }
+   }
+
+   // level == 1 - short output as gs.cc did previously: print oldest and best (in exactly same format)
+   // level == 2 - add age info (supporting DEBUG3 option in gs.cc)
+   // level == 3 - no age info, but add worst, mean, median, standard deviation to (1) in simpler format
+switch (level) {
+    case 1:
+	    (void)fprintf(output," Oldest's energy: %.3f    Lowest energy: %.3f", 
+               heap[oldestIndividual].value(Normal_Eval), best_e);
+	       break;
+    case 2:
+       (void)fprintf(output," Oldest ind.: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f", 
+               oldestIndividual+1, size,
+	       heap[oldestIndividual].age, 
+               heap[oldestIndividual].value(Normal_Eval),
+	       best_i+1, size, 
+               heap[best_i].age, best_e);
+	       break;
+    default:
+	{
+	double mean, sum_squares, median, stddev;
+	double energy[size]; // array for sorting
+	mean = sum/size;
+	sum_squares=0;
+	for (int i=0; i<size; i++) energy[i] = heap[i].value(Normal_Eval);
+	for (int i=0; i<size; i++) sum_squares += (energy[i]-mean)*(energy[i]-mean);
+	if(size<2) stddev=0; else stddev=sqrt(sum_squares/(size-1));
+	// compute median - avoids using msort because reordering the actual population
+	//  causes runs to produce different results depending on statistics output level
+	qsort( (void *) energy, size, sizeof(*energy), doublecompare);
+	if( 1 == (size%2) ) median = energy[size/2]; // odd size
+	else median = (energy[size/2] + energy[size/2-1])/2.0; // even size
+	(void) fprintf(output, "Lowest: %.3f Highest: %.3f Mean: %.3f Median: %.3f Std.Dev: %.3f",
+	  best_e, worst_e, mean, median, stddev);
+	  // debug print every energy:
+	  if(level>3) for(int i=0; i<size; i++) fprintf(output, " %.3f", energy[i]);
+	  }
+	break;
+	}
+    if(appendNewline) fprintf(output, "\n");
+    return returnCode;
+ }
+int Population::printPopulationStatisticsVerbose(FILE * output, 
+ unsigned int generations, long int nevals, Boole appendNewline){ /* print with generations & #evals */
+int returnCode=0;
+   // print "Population at Generation:" line with low/high/mean/median/stddev...
+   (void) fprintf(output,"Population at Generation: %3u ", generations);
+   // highest level, with newline at end:
+   returnCode= printPopulationStatistics(logFile, 3, FALSE);
+   (void) fprintf(logFile," Num.evals: %ld", nevals );
+    if(appendNewline) fprintf(output, "\n");
+    return returnCode; 
+}
+ 	
 
 void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    register int i;
