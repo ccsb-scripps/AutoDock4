@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.112 2009/12/11 21:56:37 rhuey Exp $
+ $Id: main.cc,v 1.113 2009/12/12 18:49:31 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -104,7 +104,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.112 2009/12/11 21:56:37 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.113 2009/12/12 18:49:31 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -732,7 +732,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.112 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.113 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1305,7 +1305,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         // Initialisations that must be done before reading in a new ligand...
         //
         if (num_maps != num_atom_types + NUM_NON_VDW_MAPS) { //  dsolv map and elec map
-            pr_2x( logFile, stderr, error_message );
             prStr(error_message, "\n\nMISSING MAP ERROR:\nnumber of maps %d does not match number expected for %d ligand types. \nUnable to continue.\n", num_maps, num_atom_types);
             stop(error_message);
             exit(-1);
