@@ -1,6 +1,6 @@
 /*
 
- $Id: bestpdb.cc,v 1.6 2009/05/08 23:02:10 rhuey Exp $
+ $Id: bestpdb.cc,v 1.7 2009/12/15 19:09:45 rhuey Exp $
 
  AutoDock 
 
@@ -105,14 +105,14 @@ void bestpdb( int ncluster,
             if (keepresnum > 0) {
                 fprintf( logFile, "USER                              x       y       z   Rank Run  Energy    RMS\n");
                 for (j = 0;  j < natom;  j++) {
-                    strncpy( rec13, &atomstuff[j][13], (size_t)13);
+                    strncpy( rec13, &atomstuff[j][12], (size_t)14); //changed start index from 13->12 so increased number to copy
                     rec13[13]='\0';
                     fprintf( logFile, FORMAT_PDBQ_ATOM_RANKRUN_STR, j+1, rec13, crd[c][j][X], crd[c][j][Y], crd[c][j][Z], i1, c1, econf[c], ref_rms[c] );
                 } /* j */
             } else {
                 fprintf( logFile, "USER                   Rank       x       y       z    Run   Energy    RMS\n");
                 for (j = 0;  j < natom;  j++) {
-                    strncpy( rec8, &atomstuff[j][13], (size_t)8);
+                    strncpy( rec8, &atomstuff[j][12], (size_t)9); //changed start index from 13->12 so increased number to copy
                     rec8[8]='\0';
                     fprintf( logFile, FORMAT_PDBQ_ATOM_RUN_NUM, j+1, rec8, i1, crd[c][j][X], crd[c][j][Y], crd[c][j][Z], c1, econf[c], ref_rms[c] );
                 } /* j */

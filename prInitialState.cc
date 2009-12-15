@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.10 2009/09/16 21:57:52 rhuey Exp $
+ $Id: prInitialState.cc,v 1.11 2009/12/15 19:09:45 rhuey Exp $
 
  AutoDock 
 
@@ -75,7 +75,7 @@ void prInitialState(
 	    pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, rec13,   crd[i][X], crd[i][Y], crd[i][Z], 1.0, 0.0, charge[i]);
 	    pr(logFile, "\n");
 	} else {
-	    strncpy( rec8, &atomstuff[i][13], (size_t)8);
+	    strncpy( rec8, &atomstuff[i][12], (size_t)9); //changed start index from 13->12 so increased number to copy
 	    pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, "", i+1, rec8, 0, crd[i][X], crd[i][Y], crd[i][Z], 1.0, 0.0, charge[i]);
 	    pr(logFile, "\n");
 	}

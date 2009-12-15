@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.35 2009/12/11 19:01:10 rhuey Exp $
+ $Id: analysis.cc,v 1.36 2009/12/15 19:09:45 rhuey Exp $
 
  AutoDock  
 
@@ -313,7 +313,8 @@ void analysis( int   Nnb,
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
                     for (j = 0;  j < natom;  j++) {
-                        strncpy( rec9, &atomstuff[j][13], (size_t)8);
+                        strncpy( rec9, &atomstuff[j][12], (size_t)9); //changed start index from 13->12 so increased number to copy
+
                         rec9[8]='\0';
                         pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, "", j+1, rec9, i1, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
                         pr(logFile," %6.3f\n", ref_rms[c]); 
