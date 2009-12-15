@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.29 2009/12/12 18:44:20 mp Exp $
+ $Id: support.cc,v 1.30 2009/12/15 06:21:02 mp Exp $
 
  AutoDock 
 
@@ -215,6 +215,37 @@ doublecompare(const void *p1, const void *p2)
 	if ( i < j ) return -1;
 	return 0;
 	}
+static double
+compute_k_quantile(const int k, const int q, 
+ const double energy[], const int size)
+{
+ // return k-th (0-origin) "q"-tile of array (assumed sorted ascending)
+ // example: median is k=1  q=2
+ // example: first quartile is k=1 q=4
+ //
+ // If the computed index falls between two input sample values, the
+ //   weighted average of the two is returned.
+ //
+ // M Pique December 2009 from wikipedia "Quantile" 
+ //    "Estimating the quantiles of a population", "Weighted average"
+ //    http://en.wikipedia.org/wiki/Quantile 
+double p = (size-1) * k / q;
+double j_double; // integer part of p
+double g; // fractional part of p
+int ilow, ihigh; // indices to be weighted
+  g = modf(p, &j_double);
+  ilow = (int) j_double;
+  assert(ilow>=0 && ilow<size);
+  if (g == 0.0) return energy[ilow];
+  ihigh=ilow+1;
+  assert(ihigh<size);
+  return energy[ilow] + g*(energy[ihigh]-energy[ilow]);
+  }
+
+
+  
+   
+
 int Population::printPopulationStatistics(FILE *output, int level, Boole appendNewline) {
 // write best energy, etc, depending on level
 // return 0 if OK, non-zero if error
@@ -242,7 +273,8 @@ int oldestIndividual, best_i;
 
    // level == 1 - short output as gs.cc did previously: print oldest and best (in exactly same format)
    // level == 2 - add age info (supporting DEBUG3 option in gs.cc)
-   // level == 3 - no age info, but add worst, mean, median, standard deviation to (1) in simpler format
+   // level == 3 - no age info, but add worst, mean, median, quartiles,
+   //    standard deviation to (1) in simpler format
 switch (level) {
     case 1:
 	    (void)fprintf(output," Oldest's energy: %.3f    Lowest energy: %.3f", 
@@ -259,19 +291,39 @@ switch (level) {
     default:
 	{
 	double mean, sum_squares, median, stddev;
+	//double q14, q34; // 1st and 3rd quartiles
+	//double q15, q45; // 1st and 4th quintiles
 	double energy[size]; // array for sorting
 	mean = sum/size;
 	sum_squares=0;
 	for (int i=0; i<size; i++) energy[i] = heap[i].value(Normal_Eval);
 	for (int i=0; i<size; i++) sum_squares += (energy[i]-mean)*(energy[i]-mean);
 	if(size<2) stddev=0; else stddev=sqrt(sum_squares/(size-1));
-	// compute median - avoids using msort because reordering the actual population
+	// compute median and quartiles 
+	//  Avoid using msort because reordering the actual population
 	//  causes runs to produce different results depending on statistics output level
-	qsort( (void *) energy, size, sizeof(*energy), doublecompare);
+	qsort( (void *) energy, size, sizeof(*energy), doublecompare); // ascend
+
 	if( 1 == (size%2) ) median = energy[size/2]; // odd size
 	else median = (energy[size/2] + energy[size/2-1])/2.0; // even size
+
 	(void) fprintf(output, "Lowest: %.3f Highest: %.3f Mean: %.3f Median: %.3f Std.Dev: %.3f",
 	  best_e, worst_e, mean, median, stddev);
+
+	// quartiles and quintiles
+	//q15 = compute_k_quantile(1,5, energy, size);
+	//q14 = compute_k_quantile(1,4, energy, size);
+	//q34 = compute_k_quantile(3,4, energy, size);
+	//q45 = compute_k_quantile(4,5, energy, size);
+#define quantile(k,q) \
+	(void) fprintf(output, " Q%d/%d: %.3f", \
+	  k, q, compute_k_quantile(k,q, energy, size))
+
+	quantile(1,5);
+	quantile(1,4);
+	quantile(3,4);
+	quantile(4,5);
+#undef quantile
 	  // debug print every energy:
 	  if(level>3) for(int i=0; i<size; i++) fprintf(output, " %.3f", energy[i]);
 	  }

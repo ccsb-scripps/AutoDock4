@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.44 2009/12/12 18:44:20 mp Exp $
+ $Id: call_glss.cc,v 1.45 2009/12/15 06:21:02 mp Exp $
 
  AutoDock  
 
@@ -420,8 +420,17 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
        (void)fprintf(logFile,"Initial-Value: %.3f\n", bestenergy);
 
        // print "Population at Generation:" line with low/high/mean/median/stddev...
-       if(outlev>0) (void) thisPop.printPopulationStatisticsVerbose(logFile, 
-         num_generations, evaluate.evals(), TRUE);
+       // and search counts (expected to be zero)
+       if(outlev>0) {
+         (void) thisPop.printPopulationStatisticsVerbose(logFile, 
+         num_generations, evaluate.evals(), FALSE);
+	 fprintf(logFile, " cg_count: %u", global_method->cg_count);
+	 fprintf(logFile, " ci_count: %u", global_method->ci_count);
+	 fprintf(logFile, " mg_count: %u", global_method->mg_count);
+	 fprintf(logFile, " mi_count: %u", global_method->mi_count);
+	 fprintf(logFile, " ls_count: %u", local_method->count);
+	 fprintf(logFile, "\n");
+	 }
      }
 
     do {
@@ -462,6 +471,19 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
+       if (extOutputEveryNgens != 0 && num_generations%extOutputEveryNgens == 0) {
+	       // print "Population at Generation:" line with low/high/mean/median/stddev...
+	       // followed by global search stats (crossover count, mutation count)
+	       // and local search stats (invocation count)
+	       (void) thisPop.printPopulationStatisticsVerbose(logFile, 
+		 num_generations, evaluate.evals(), FALSE); // FALSE== no newline at end
+		 fprintf(logFile, " cg_count: %u", global_method->cg_count);
+		 fprintf(logFile, " ci_count: %u", global_method->ci_count);
+		 fprintf(logFile, " mg_count: %u", global_method->mg_count);
+		 fprintf(logFile, " mi_count: %u", global_method->mi_count);
+		 fprintf(logFile, " ls_count: %u", local_method->count);
+		 fprintf(logFile, "\n");
+		 }
         if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
 
         if (strcmp (FN_pop_file, "") != 0) { // YES, do print!
@@ -480,8 +502,16 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
 
     // print "Population at Generation:" line with low/high/mean/median/stddev...
-    if(outlev>0) (void) thisPop.printPopulationStatisticsVerbose(logFile, 
-     num_generations, evaluate.evals(), TRUE);
+    if(outlev>0) {
+       (void) thisPop.printPopulationStatisticsVerbose(logFile, 
+        num_generations, evaluate.evals(), FALSE);
+	 fprintf(logFile, " cg_count: %u", global_method->cg_count);
+	 fprintf(logFile, " ci_count: %u", global_method->ci_count);
+	 fprintf(logFile, " mg_count: %u", global_method->mg_count);
+	 fprintf(logFile, " mi_count: %u", global_method->mi_count);
+	 fprintf(logFile, " ls_count: %u", local_method->count);
+	 fprintf(logFile, "\n");
+	 }
 
     return( thisPop[0].state(sInit.ntor) );
 }

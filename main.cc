@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.113 2009/12/12 18:49:31 mp Exp $
+ $Id: main.cc,v 1.114 2009/12/15 06:21:01 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -104,7 +104,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.113 2009/12/12 18:49:31 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.114 2009/12/15 06:21:01 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -732,7 +732,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.113 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.114 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3416,6 +3416,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
        (void) sscanf(line, "%*s " FDFMT, &m_rate);
        pr(logFile, "The mutation rate is %f.\n", m_rate);
         (void) fflush(logFile);
+      // if m_rate is out of range, make_table will fail 
+      if (m_rate < 0 || m_rate > 1) {
+	prStr(error_message, "mutation rate must be within range 0 to 1 (inclusive).\n");
+	stop(error_message);
+	}
        break;
 
 //______________________________________________________________________________

@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.40 2009/12/12 18:44:20 mp Exp $
+ $Id: gs.cc,v 1.41 2009/12/15 06:21:02 mp Exp $
 
  AutoDock 
 
@@ -322,6 +322,7 @@ void Genetic_Algorithm::make_table(int size, Real prob)
       fprintf(logFile,"j= %d (size+1-j)= %d log(_)= %.4f log(j)=%.4f L= %.4f\n", j, (size+1-j), log(size+1-j), log(j), L);
 #endif
 
+      assert( i > 0 && i<=size); // M Pique 2009-12 TODO - suspect problem if m_rate>1
       mutation_table[i] = mutation_table[i-1]+exp(L);
 #ifdef DEBUG_MUTATION
       fprintf(logFile,"mutation_table[%d] = %.3f\n", i, mutation_table[i]);
@@ -565,6 +566,11 @@ void Genetic_Algorithm::mutation(Population &pure)
    (void)fprintf(logFile, "num_mutations= %d\n", num_mutations );
 #endif /* DEBUG */
 
+   if(num_mutations<=0) return;
+
+   Boole individual_mutated[pure.num_individuals()]; // for statistics only
+   for(unsigned int i=0;i<pure.num_individuals();i++) individual_mutated[i]=FALSE;
+
    //  Note we don't check to see if we mutate the same gene twice.
    //  So, effectively we are lowering the mutation rate, etc...
    //  Might want to check out Bentley's chapter on selection.
@@ -577,7 +583,13 @@ void Genetic_Algorithm::mutation(Population &pure)
       mutate(pure[individual].genotyp, gene_number);
       pure[individual].age = 0L;
       pure[individual].mapping();//map genotype to phenotype and evaluate
+
+      mg_count++; // update statistics: count of mutated genes per run
+      individual_mutated[individual] = TRUE; // for statistics only
    }
+   // update statistics: count of mutated individuals per run
+   for(unsigned int i=0;i<pure.num_individuals();i++) \
+     if(individual_mutated[i]) mi_count++; 
 }
 
 void Genetic_Algorithm::crossover(Population &original_population)
@@ -722,6 +734,8 @@ void Genetic_Algorithm::crossover(Population &original_population)
          //map genotype to phenotype and evaluate energy
          original_population[fi].mapping();
          original_population[mi].mapping();
+	 // update statistics
+         ci_count++; // count of crossovers, individ-by-individ
       }
    }
 }
@@ -746,6 +760,7 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
       Element temp = father.gread(i);
       father.write(mother.gread(i), i);
       mother.write(temp, i);
+      cg_count++; // count of crossovers, gene-by-gene
 #ifdef DEBUG
       //(void)fprintf(logFile,"gs.cc/1::At pt %d   father: %.3lf   mother: %.3lf\n",
       //i, *((double *)father.gread(i)), *((double *)mother.gread(i)) );
@@ -854,6 +869,7 @@ void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, un
             assertQuatOK( q_mother );
 #endif // endif DEBUG_QUAT
         } // is_rotation_index( i )
+    cg_count++; // count of crossovers, gene-by-gene
     } // next i
 }
 
@@ -917,6 +933,7 @@ void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, Real alph
            (void)fflush(logFile);
            exit(-1);
        }
+   cg_count++; // count of crossovers, gene-by-gene
    }
 }
 
@@ -1502,10 +1519,6 @@ int Genetic_Algorithm::search(Population &solutions)
        /* Only output statistics if the output level is not 0. */
    if (outputEveryNgens != 0 && generations%outputEveryNgens == 0) {
 
-
-       // print "Population at Generation:" line with low/high/mean/median/stddev...
-       (void) solutions.printPopulationStatisticsVerbose(logFile, 
-         generations, evaluate.evals(), TRUE);
 
        // print "Generation:" line (basic info, no mean/median/stddev...
        (void)fprintf(logFile,"Generation: %3u   ", generations);

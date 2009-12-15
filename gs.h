@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.15 2009/10/24 00:04:31 mp Exp $
+ $Id: gs.h,v 1.16 2009/12/15 06:21:02 mp Exp $
 
  AutoDock 
 
@@ -49,6 +49,13 @@ class Global_Search
       virtual int terminate(void) = 0;
       virtual void reset(void) = 0;
       virtual void reset(unsigned int) = 0;
+      // the next four are only applicable to Genetic_Algorithm
+      // but I'm uncertain how best to fit statistics into the
+      // existing classes so bear with me  - Mike Pique Dec 2009
+      unsigned int cg_count; // statistics - crossover gene-by-gene count
+      unsigned int ci_count; // statistics - crossover indiv-by-indiv count
+      unsigned int mg_count; // statistics - mutation gene-by-gene count
+      unsigned int mi_count; // statistics - mutation indiv-by-indiv count
 };
 
 // The class Genetic_Algorithm is a Global_Search method,
@@ -115,6 +122,7 @@ class Genetic_Algorithm : public Global_Search
 //  Inline Functions
 inline Global_Search::Global_Search(void)
 {
+   cg_count = ci_count = mg_count = mi_count = 0;
 }
 
 inline Global_Search::~Global_Search(void)
@@ -189,6 +197,7 @@ inline void Genetic_Algorithm::reset(void)
 {
    generations = 0;
    converged = 0; // gmm 7-jan-98
+   cg_count = ci_count = mg_count = mi_count = 0; // restart statistics
 }
 
 inline void Genetic_Algorithm::reset(unsigned int extOutputEveryNgens) // gmm 2000.11.1
@@ -196,6 +205,7 @@ inline void Genetic_Algorithm::reset(unsigned int extOutputEveryNgens) // gmm 20
    outputEveryNgens = extOutputEveryNgens; // gmm 2000.11.1
    generations = 0;
    converged = 0; // gmm 7-jan-98
+   cg_count = ci_count = mg_count = mi_count = 0; // restart statistics
 }
 
 #endif
