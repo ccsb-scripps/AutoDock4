@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.18 2009/12/07 22:56:04 rhuey Exp $
+ $Id: setflags.cc,v 1.19 2009/12/15 06:15:03 mp Exp $
 
  AutoDock 
 
@@ -100,6 +100,9 @@ int setflags( int argc, char ** argv, const char * version_num)
     programname = argv[0];
     parFile = stdin;
     logFile = stdout;
+    char logFileName[PATH_MAX+2];
+    static char * p_logFileName = "stdout"; // change with -l <NAME> or defaults
+     // to parFile name with last 3 chars changed from "dpf" to "dlg"
     /*
      * see autoglobal.h for initialization of debug, keepresnum and logicals...
      */
@@ -147,15 +150,7 @@ int setflags( int argc, char ** argv, const char * version_num)
             fprintf(stderr, "\n%s: command mode is not supported in this version of autodock\n", programname );
             break;
         case 'l':
-            if ( (logFile = ad_fopen(argv[2], "w")) == NULL ) {
-#ifdef DEBUG
-                fprintf(stderr, "\n Log file name = %s\n", argv[2]); 
-#endif /* DEBUG */
-                fprintf(stderr, "\n%s: can't create log file %s\n", programname, argv[2]);
-                fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
-                return(-1);
-            }
-            setlinebuf(logFile); // to ensure output even if crash
+	    p_logFileName = argv[2];
             argv++;
             argc--;
             argindex++;
@@ -222,6 +217,24 @@ int setflags( int argc, char ** argv, const char * version_num)
         argc--;
         argv++;
     }
+    // set docking log file name from parameter file name if
+    // a "-p <DPF>" appeared but no "-l <DLG>" appeared
+    if ( parFile != stdin  && 0==strcmp(p_logFileName, "stdout")) {
+            strncpy(logFileName, dock_param_fn, strlen(dock_param_fn)-4);
+	    logFileName[strlen(dock_param_fn)] = '\0';
+            strcat(logFileName, ".dlg");
+	    }
+    else snprintf(logFileName, sizeof logFileName, "%s", p_logFileName);
+
+    if ( (logFile = ad_fopen(logFileName, "w")) == NULL ) {
+#ifdef DEBUG
+                fprintf(stderr, "\n Log file name = %s\n", logFileName); 
+#endif /* DEBUG */
+                fprintf(stderr, "\n%s: can't create log file %s\n", programname, logFileName);
+                fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
+                return(-1);
+            }
+            setlinebuf(logFile); // to ensure output even if crash
     return(argindex);
 }
 /* EOF */
