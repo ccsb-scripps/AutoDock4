@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.36 2009/12/15 19:09:45 rhuey Exp $
+ $Id: analysis.cc,v 1.37 2009/12/16 23:35:54 rhuey Exp $
 
  AutoDock  
 
@@ -103,8 +103,6 @@ void analysis( int   Nnb,
     /* register int   imol = 0; */
     char  filename[PATH_MAX];
     static char  label[MAX_CHARS];
-    static char  rec14[14];
-    static char  rec9[9];
 
     static Real clu_rms[MAX_RUNS][MAX_RUNS];
     static Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
@@ -302,9 +300,8 @@ void analysis( int   Nnb,
                     pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     for (j = 0;  j < natom;  j++) {
-                        strncpy( rec14, &atomstuff[j][12], (size_t)13);
-                        rec14[13]='\0';
-                        pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", j+1, rec14, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
+                        print_PDBQ_atom_resstr( logFile, "", j, atomstuff[j],  crd, 
+                          min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j],"");
                         pr(logFile," %6.3f\n", ref_rms[c]); 
                     }
                     //]
@@ -313,10 +310,8 @@ void analysis( int   Nnb,
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
                     for (j = 0;  j < natom;  j++) {
-                        strncpy( rec9, &atomstuff[j][12], (size_t)9); //changed start index from 13->12 so increased number to copy
-
-                        rec9[8]='\0';
-                        pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, "", j+1, rec9, i1, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
+                        print_PDBQ_atom_resnum( logFile, "", j, atomstuff[j],  i1, crd, 
+                          min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j],"");
                         pr(logFile," %6.3f\n", ref_rms[c]); 
                     }/*j*/
                     //]

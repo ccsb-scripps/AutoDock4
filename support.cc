@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.30 2009/12/15 06:21:02 mp Exp $
+ $Id: support.cc,v 1.31 2009/12/16 23:35:55 rhuey Exp $
 
  AutoDock 
 
@@ -13,7 +13,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
@@ -143,7 +143,7 @@ void Population::msort(int m)
    register int i;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Population::msort(int m=%d)\n",m);
+   (void)fprintf(logFile, "support.cc/void Population::msort(int m=%d)\n", m);
 #endif /* DEBUG */
 
    
@@ -165,12 +165,12 @@ void Population::msort(int m)
 
    for (i=0; i<m && i<size-1; i++) {
 #ifdef DEBUG
-   (void)fprintf(stderr, "support.cc/placing %d of %d best of %d, lhb=%d )\n",i,m,size,lhb);
+   (void)fprintf(stderr, "support.cc/placing %d of %d best of %d, lhb=%d )\n", i, m, size, lhb);
 #endif /* DEBUG */
       swap(heap[i], heap[size-1]);
       lhb++;
 #ifdef DEBUG
-   (void)fprintf(stderr, "support.cc/calling SiftDown lhb=%d )\n",lhb);
+   (void)fprintf(stderr, "support.cc/calling SiftDown lhb=%d )\n", lhb);
 #endif /* DEBUG */
       SiftDown();
    }
@@ -183,13 +183,13 @@ void Population::msort(int m)
    //register int i;
 
 //#ifdef DEBUG
-   //(void)fprintf(logFile, "support.cc/void Population::print(ostream &output, int num=%d)\n",num);
+   //(void)fprintf(logFile, "support.cc/void Population::print(ostream &output, int num=%d)\n", num);
 //#endif /* DEBUG */
 
 
    //(void)fprintf(logFile, "The top %d individuals in the population:\n", num);
    //for (i=0; i<num; i++) {
-      //(void)fprintf(logFile,"%lf\n", heap[i].value(Normal_Eval));
+      //(void)fprintf(logFile, "%lf\n", heap[i].value(Normal_Eval));
    //}
 //}
 
@@ -197,7 +197,7 @@ void Population::print(FILE *output, int num) {
    register int i;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Population::print(FILE *output, int num=%d)\n",num);
+   (void)fprintf(logFile, "support.cc/void Population::print(FILE *output, int num=%d)\n", num);
 #endif /* DEBUG */
 
    (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
@@ -273,18 +273,18 @@ int oldestIndividual, best_i;
 
    // level == 1 - short output as gs.cc did previously: print oldest and best (in exactly same format)
    // level == 2 - add age info (supporting DEBUG3 option in gs.cc)
-   // level == 3 - no age info, but add worst, mean, median, quartiles,
+   // level == 3 - no age info, but add worst, mean, median, quartiles, 
    //    standard deviation to (1) in simpler format
 switch (level) {
     case 1:
-	    (void)fprintf(output," Oldest's energy: %.3f    Lowest energy: %.3f", 
+	    (void)fprintf(output, " Oldest's energy: %.3f    Lowest energy: %.3f", 
                heap[oldestIndividual].value(Normal_Eval), best_e);
 	       break;
     case 2:
-       (void)fprintf(output," Oldest ind.: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f", 
-               oldestIndividual+1, size,
+       (void)fprintf(output, " Oldest ind.: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f", 
+               oldestIndividual+1, size, 
 	       heap[oldestIndividual].age, 
-               heap[oldestIndividual].value(Normal_Eval),
+               heap[oldestIndividual].value(Normal_Eval), 
 	       best_i+1, size, 
                heap[best_i].age, best_e);
 	       break;
@@ -307,22 +307,22 @@ switch (level) {
 	if( 1 == (size%2) ) median = energy[size/2]; // odd size
 	else median = (energy[size/2] + energy[size/2-1])/2.0; // even size
 
-	(void) fprintf(output, "Lowest: %.3f Highest: %.3f Mean: %.3f Median: %.3f Std.Dev: %.3f",
+	(void) fprintf(output, "Lowest: %.3f Highest: %.3f Mean: %.3f Median: %.3f Std.Dev: %.3f", 
 	  best_e, worst_e, mean, median, stddev);
 
 	// quartiles and quintiles
-	//q15 = compute_k_quantile(1,5, energy, size);
-	//q14 = compute_k_quantile(1,4, energy, size);
-	//q34 = compute_k_quantile(3,4, energy, size);
-	//q45 = compute_k_quantile(4,5, energy, size);
-#define quantile(k,q) \
+	//q15 = compute_k_quantile(1, 5, energy, size);
+	//q14 = compute_k_quantile(1, 4, energy, size);
+	//q34 = compute_k_quantile(3, 4, energy, size);
+	//q45 = compute_k_quantile(4, 5, energy, size);
+#define quantile(k, q) \
 	(void) fprintf(output, " Q%d/%d: %.3f", \
-	  k, q, compute_k_quantile(k,q, energy, size))
+	  k, q, compute_k_quantile(k, q, energy, size))
 
-	quantile(1,5);
-	quantile(1,4);
-	quantile(3,4);
-	quantile(4,5);
+	quantile(1, 5);
+	quantile(1, 4);
+	quantile(3, 4);
+	quantile(4, 5);
 #undef quantile
 	  // debug print every energy:
 	  if(level>3) for(int i=0; i<size; i++) fprintf(output, " %.3f", energy[i]);
@@ -336,10 +336,10 @@ int Population::printPopulationStatisticsVerbose(FILE * output,
  unsigned int generations, long int nevals, Boole appendNewline){ /* print with generations & #evals */
 int returnCode=0;
    // print "Population at Generation:" line with low/high/mean/median/stddev...
-   (void) fprintf(output,"Population at Generation: %3u ", generations);
+   (void) fprintf(output, "Population at Generation: %3u ", generations);
    // highest level, with newline at end:
    returnCode= printPopulationStatistics(logFile, 3, FALSE);
-   (void) fprintf(logFile," Num.evals: %ld", nevals );
+   (void) fprintf(logFile, " Num.evals: %ld", nevals );
     if(appendNewline) fprintf(output, "\n");
     return returnCode; 
 }
@@ -354,7 +354,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    double thisValue;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsStates(FILE *output, int num=%d, int ntor=%d)\n",num,ntor);
+   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsStates(FILE *output, int num=%d, int ntor=%d)\n", num, ntor);
 #endif /* DEBUG */
 
    // Print an XML-like tag indicating this is a population, with attribute size
@@ -372,9 +372,8 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
       cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);//debug
       (void)fprintf(logFile, "MODEL     %4d\n", i+1);
       for (j=0; j<heap[i].mol->natom; j++) {//debug
-        (void)sprintf(resstr, "C   RES  %4d", 1); // replace 1 with i+1 for incrementing residue numbers.
-        (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "" , j+1, resstr, heap[i].mol->crd[j][X], heap[i].mol->crd[j][Y], heap[i].mol->crd[j][Z], 0.0, 0.0, 0.0); //debug
-        (void)fprintf(logFile, "\n"); //debug
+            print_PDBQ_atom_resnum( logFile, "", j, " C   RES  ",   1,  // replace 1 with i+1 for incrementing residue numbers.
+            heap[i].mol->crd, 0.0, 0.0, 0.0, "\n"); //debug
       }/*j*///debug
       (void)fprintf(logFile, "ENDMDL\n");
       // to print only infinite or NaN structures // }// thisValue is either infinite or not-a-number.//debug
@@ -389,7 +388,7 @@ void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor
    double thisValue;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsCoordsEnergies(FILE *output, int num=%d, int ntor=%d)\n",num,ntor);
+   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsCoordsEnergies(FILE *output, int num=%d, int ntor=%d)\n", num, ntor);
 #endif // DEBUG
 
    //(void)fprintf( output, "The top %d individuals in the population:\n\n", num);
@@ -445,13 +444,13 @@ int Population::get_eob(int init_tor)
 
 Genotype::Genotype(unsigned int init_number_of_vectors, Representation **
 init_rep_vector)
-: number_of_vectors(init_number_of_vectors), rep_vector(init_rep_vector),
+: number_of_vectors(init_number_of_vectors), rep_vector(init_rep_vector), 
   modified(0)
 {
    register unsigned int i, j, k;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/Genotype::Genotype(unsigned int init_number_of_vectors=%d, Representation **init_rep_vector)\n",init_number_of_vectors);
+   (void)fprintf(logFile, "support.cc/Genotype::Genotype(unsigned int init_number_of_vectors=%d, Representation **init_rep_vector)\n", init_number_of_vectors);
 #endif /* DEBUG */
 
 
@@ -459,7 +458,7 @@ init_rep_vector)
    for (i=0; i<number_of_vectors; i++) {
       number_of_genes += rep_vector[i]->number_of_points();
 #ifdef DEBUG
-      (void)fprintf(logFile, "support.cc/Genotype::Genotype(init_number_of_vectors=%d, **init_rep_vector) number_of_genes=%d   rep_vector[%d]->number_of_points()=%d\n",init_number_of_vectors, number_of_genes, i, rep_vector[i]->number_of_points());
+      (void)fprintf(logFile, "support.cc/Genotype::Genotype(init_number_of_vectors=%d, **init_rep_vector) number_of_genes=%d   rep_vector[%d]->number_of_points()=%d\n", init_number_of_vectors, number_of_genes, i, rep_vector[i]->number_of_points());
 #endif /* DEBUG */
    }
  
@@ -595,7 +594,7 @@ void Genotype::write(Element value, int gene_number)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Genotype::write(Element value, int gene_number=%d)\n",gene_number);
+   (void)fprintf(logFile, "support.cc/void Genotype::write(Element value, int gene_number=%d)\n", gene_number);
 #endif /* DEBUG */
 
    modified = 1;
@@ -606,7 +605,7 @@ void Genotype::write(unsigned char value, int gene_number)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Genotype::write(unsigned char value=%c, int gene_number=%d)\n",value,gene_number);
+   (void)fprintf(logFile, "support.cc/void Genotype::write(unsigned char value=%c, int gene_number=%d)\n", value, gene_number);
 #endif /* DEBUG */
 
    modified = 1;
@@ -617,7 +616,7 @@ void Genotype::write(FourByteLong value, int gene_number)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Genotype::write(FourByteLong value=%ld, int gene_number=%d)\n",value, gene_number);
+   (void)fprintf(logFile, "support.cc/void Genotype::write(FourByteLong value=%ld, int gene_number=%d)\n", value, gene_number);
 #endif /* DEBUG */
 
    modified = 1;
@@ -628,7 +627,7 @@ void Genotype::write(double value, int gene_number)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Genotype::write(double value=%lf, int gene_number=%d)\n",value,gene_number);
+   (void)fprintf(logFile, "support.cc/void Genotype::write(double value=%lf, int gene_number=%d)\n", value, gene_number);
 #endif /* DEBUG */
 
    modified = 1;
@@ -639,7 +638,7 @@ void Genotype::write(const Representation &value, int gene_number)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Genotype::write(const Representation &value, int gene_number=%d)\n",gene_number);
+   (void)fprintf(logFile, "support.cc/void Genotype::write(const Representation &value, int gene_number=%d)\n", gene_number);
 #endif /* DEBUG */
 
    modified = 1;
@@ -687,13 +686,13 @@ void Phenotype::writeQuat( Quat q )
 
 //  Maybe we should evaluate the Phenotype?
 Phenotype::Phenotype(unsigned int init_number_of_dimensions, Representation **init_value_vector)
-: number_of_dimensions(init_number_of_dimensions), value_vector(init_value_vector),
+: number_of_dimensions(init_number_of_dimensions), value_vector(init_value_vector), 
   value(0.0), evalflag(0)
 {
    register unsigned int i, j, k;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/Phenotype::Phenotype(unsigned int init_number_of_dimensions=%d, Representation **init_value_vector)\n",init_number_of_dimensions);
+   (void)fprintf(logFile, "support.cc/Phenotype::Phenotype(unsigned int init_number_of_dimensions=%d, Representation **init_value_vector)\n", init_number_of_dimensions);
 #endif /* DEBUG */
 
 
@@ -812,7 +811,7 @@ void Phenotype::write(Element value, int gene_number)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Phenotype::write(Element value, int gene_number=%d)\n",gene_number);
+   (void)fprintf(logFile, "support.cc/void Phenotype::write(Element value, int gene_number=%d)\n", gene_number);
 #endif /* DEBUG */
 
    evalflag = 0;
@@ -823,7 +822,7 @@ void Phenotype::write(unsigned char value, int gene_number)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Phenotype::write(unsigned char value=%c, int gene_number=%d)\n",value,gene_number);
+   (void)fprintf(logFile, "support.cc/void Phenotype::write(unsigned char value=%c, int gene_number=%d)\n", value, gene_number);
 #endif /* DEBUG */
 
    evalflag = 0;
@@ -834,7 +833,7 @@ void Phenotype::write(FourByteLong value, int gene_number)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Phenotype::write(FourByteLong value=%ld, int gene_number=%d)\n",value,gene_number);
+   (void)fprintf(logFile, "support.cc/void Phenotype::write(FourByteLong value=%ld, int gene_number=%d)\n", value, gene_number);
 #endif /* DEBUG */
 
    evalflag = 0;
@@ -845,7 +844,7 @@ void Phenotype::write(double value, int gene_number)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Phenotype::write(double value=%lf, int gene_number=%d)\n",value,gene_number);
+   (void)fprintf(logFile, "support.cc/void Phenotype::write(double value=%lf, int gene_number=%d)\n", value, gene_number);
 #endif /* DEBUG */
 
    evalflag = 0;
@@ -856,7 +855,7 @@ void Phenotype::write(const Representation &value, int gene_number)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Phenotype::write(const Representation &value, int gene_number=%d)\n",gene_number);
+   (void)fprintf(logFile, "support.cc/void Phenotype::write(const Representation &value, int gene_number=%d)\n", gene_number);
 #endif /* DEBUG */
 
    evalflag = 0;
@@ -895,7 +894,7 @@ double Phenotype::evaluate(EvalMode mode)
          evalflag = 0;
          break;
       default:
-         (void)fprintf(logFile,"Unknown Evaluation Mode!\n");
+         (void)fprintf(logFile, "Unknown Evaluation Mode!\n");
          break;
    }
 
@@ -907,7 +906,7 @@ State Phenotype::make_state(int ntor)
    State retval;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/State Phenotype::make_state(int ntor=%d)\n",ntor);
+   (void)fprintf(logFile, "support.cc/State Phenotype::make_state(int ntor=%d)\n", ntor);
 #endif /* DEBUG */
 
 
@@ -920,11 +919,11 @@ Individual &Population::operator[](int ind_num)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/Individual &Population::operator[](int ind_num=%d)\n",ind_num);
+   (void)fprintf(logFile, "support.cc/Individual &Population::operator[](int ind_num=%d)\n", ind_num);
 #endif /* DEBUG */
 
    if ((ind_num<0)||(ind_num>=size)) {
-      (void)fprintf(logFile,"ERROR: support.cc/Trying to access %d, an out of bounds individual! (0<i<%d)\n",ind_num,size);
+      (void)fprintf(logFile, "ERROR: support.cc/Trying to access %d, an out of bounds individual! (0<i<%d)\n", ind_num, size);
       return(heap[0]);
    } else {
       return(heap[ind_num]);
@@ -935,7 +934,7 @@ State Individual::state(int ntor)
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/State Individual::state(int ntor=%d)\n",ntor);
+   (void)fprintf(logFile, "support.cc/State Individual::state(int ntor=%d)\n", ntor);
 #endif /* DEBUG */
 
    return(phenotyp.make_state(ntor));

@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.24 2009/12/11 20:41:24 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.25 2009/12/16 23:35:55 rhuey Exp $
 
  AutoDock  
 
@@ -337,5 +337,50 @@ void print_PDBQT( FILE *logFile,
     }
     pr( logFile, "\n\n" );
 } // end Print out the coordinates
+
+void print_PDBQ_atom_resstr( FILE *logFile, 
+                  const char prefix[MAX_CHARS],
+                  int atom_num, // 0-origin 
+                  const char atomstuff[],
+                  const Real crd[MAX_ATOMS][SPACE],
+                  const Real vdW,
+                  const Real Elec,
+                  const Real charge,
+                  const char * suffix //newline or empty
+                  )
+{
+    char  rec15[16];
+    strncpy( rec15, atomstuff+12, (size_t)15);
+    rec15[15]='\0';
+    #define FORMAT_PDBQ_ATOM_RESSTR         "%sATOM  %5d %.15s   %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f%s"
+    pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, prefix, atom_num+1, rec15, 
+       crd[atom_num][X], crd[atom_num][Y], crd[atom_num][Z], 
+       vdW, Elec,  charge, suffix);
+}
+
+void print_PDBQ_atom_resnum( FILE *logFile, 
+                  const char prefix[MAX_CHARS],
+                  int atom_num, // 0-origin 
+                  const char atomstuff[],
+                  const int resnum,
+                  const Real crd[MAX_ATOMS][SPACE],
+                  const Real vdW,
+                  const Real Elec,
+                  const Real charge,
+                  const char * suffix //newline or empty
+                  )
+{
+    char  rec10[11];
+    strncpy( rec10, atomstuff+12, (size_t)10);
+    rec10[10]='\0';
+    #define FORMAT_PDBQ_ATOM_RESNUM         "%sATOM  %5d %.10s%4d    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f%s"
+    pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, prefix, atom_num+1, rec10, 
+       resnum,
+       crd[atom_num][X], crd[atom_num][Y], crd[atom_num][Z], 
+       vdW, Elec,  charge, suffix);
+}
+
+
+
 
 /* EOF */

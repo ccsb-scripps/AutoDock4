@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.h,v 1.11 2009/09/16 21:57:52 rhuey Exp $
+ $Id: writePDBQT.h,v 1.12 2009/12/16 23:35:55 rhuey Exp $
 
  AutoDock  
 
@@ -84,4 +84,30 @@ void print_PDBQT( FILE *logFile,
                   const int type[MAX_ATOMS],
                   const char prefix[MAX_CHARS] );
 
+
+
+void print_PDBQ_atom_resstr( FILE *logFile, 
+                  const char prefix[MAX_CHARS],
+                  int atom_num, // 0-origin 
+                  const char atomstuff[],
+                  const Real crdpdb[MAX_ATOMS][SPACE],
+                  const Real vdW,
+                  const Real Elec,
+                  const Real charge,
+                  const char * suffix //newline or empty
+                  );
+        
+
+void print_PDBQ_atom_resnum( FILE *logFile, 
+                  const char prefix[MAX_CHARS],
+                  int atom_num, // 0-origin 
+                  const char atomstuff[],
+                  const int resnum,
+                  const Real crdpdb[MAX_ATOMS][SPACE],
+                  const Real vdW,
+                  const Real Elec,
+                  const Real charge,
+                  const char * suffix //newline or empty
+                  );
+        
 #endif

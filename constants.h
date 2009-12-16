@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.27 2009/12/15 19:08:16 rhuey Exp $
+ $Id: constants.h,v 1.28 2009/12/16 23:35:54 rhuey Exp $
 
  AutoDock 
 
@@ -427,10 +427,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  * "DOCKED: "  gives DOCKED prefix.
  * Note: no new line at end of some of these formats:
  */
-#define FORMAT_PDBQ_ATOM_RESSTR         "%sATOM  %5d %.13s     %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f"
-#define FORMAT_PDBQ_ATOM_RESNUM         "%sATOM  %5d %.8s%5d     %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f"
-#define FORMAT_PDBQ_ATOM_RANKRUN_STR      "ATOM  %5d %.13s     %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f\n"
-#define FORMAT_PDBQ_ATOM_RUN_NUM          "ATOM  %5d %.8s%5d     %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f\n"
 
 /* 
  * PDBQT format

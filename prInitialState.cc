@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.11 2009/12/15 19:09:45 rhuey Exp $
+ $Id: prInitialState.cc,v 1.12 2009/12/16 23:35:54 rhuey Exp $
 
  AutoDock 
 
@@ -33,6 +33,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include <string.h>
 #include "prInitialState.h"
+#include "writePDBQT.h"
 
 
 extern int keepresnum;
@@ -55,8 +56,6 @@ void prInitialState(
     )
 
 {
-    char rec8[10];
-    char rec13[15];
     char descriptor[17];
     register int i = 0;
     int a = 0;
@@ -69,16 +68,10 @@ void prInitialState(
 
     pr( logFile, "%sUSER    Transformed Initial Coordinates\n", descriptor );
     for (i = 0;  i < natom;  i++) {
-        pr( logFile, "%s", descriptor);
-	if (keepresnum > 0) {
-	    strncpy( rec13, &atomstuff[i][13], (size_t)13);
-	    pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, rec13,   crd[i][X], crd[i][Y], crd[i][Z], 1.0, 0.0, charge[i]);
-	    pr(logFile, "\n");
-	} else {
-	    strncpy( rec8, &atomstuff[i][12], (size_t)9); //changed start index from 13->12 so increased number to copy
-	    pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, "", i+1, rec8, 0, crd[i][X], crd[i][Y], crd[i][Z], 1.0, 0.0, charge[i]);
-	    pr(logFile, "\n");
-	}
+        if (keepresnum > 0) print_PDBQ_atom_resstr( logFile, descriptor, i, atomstuff[i],  crd, 
+	     1.0, 0.0, charge[i], "\n");
+        else  print_PDBQ_atom_resnum( logFile, descriptor, i, atomstuff[i],  0, crd, 
+	     1.0, 0.0, charge[i], "\n");
     } /* i */
     pr( logFile, "%sTER\n\n\n", descriptor );
 

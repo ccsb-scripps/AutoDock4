@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.27 2009/10/02 22:12:38 rhuey Exp $
+ $Id: eval.cc,v 1.28 2009/12/16 23:35:54 rhuey Exp $
 
  AutoDock  
 
@@ -236,8 +236,8 @@ double Eval::eval(int term)
       (void)fprintf( logFile, "eval.cc:  ERROR!  energy is %s!\n\n",
        (!finite(energy))?"infinite":"not a number");
       for (i=0; i<natom; i++) {
-          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   INF     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
-          (void)fprintf(logFile, "\n");
+            print_PDBQ_atom_resstr( logFile, "", i,   " C   INF     1 ", crd, 
+             0.0, 0.0, charge[i],"\n"); 
       } // i
    }
     switch (term) {
@@ -276,12 +276,8 @@ int Eval::write(FILE *out_file, Representation **rep)
     // cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdreo, crd, natom);
     cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
     for (i=0; i<natom; i++) {
-        // strncpy( rec14, &atomstuff[i][13], (size_t)13);
-        // rec14[13]='\0';
-        //strncpy(rec14, "C   RES     1\0", (size_t)14);
-        //retval = fprintf( out_file, "ATOM  %5d  %13s    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, rec14, crd[i][X], crd[i][Y], crd[i][Z], 0., 0., charge[i]); 
-        retval = fprintf( out_file, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   RES     1", crd[i][X], crd[i][Y], crd[i][Z], 0., 0., charge[i]); 
-        (void)fprintf(out_file, "\n");
+            print_PDBQ_atom_resstr( logFile, "", i,   " C   RES     1 ", crd, 
+             0.0, 0.0, charge[i],"\n"); 
     } // i
     return retval;
 }
@@ -477,17 +473,15 @@ double Eval::evalpso(State *state)
    if (!finite(energy)) {
       (void)fprintf( logFile, "eval.cc:  ERROR!  energy is infinite!\n\n");
       for (i=0; i<natom; i++) {
-           // (void)fprintf( logFile, "ATOM  %5d  C   INF     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]); 
-          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   INF     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
-          (void)fprintf(logFile, "\n");
+            print_PDBQ_atom_resstr( logFile, "", i,   " C   INF     1 ", crd, 
+             0.0, 0.0, charge[i],"\n"); 
       } // i
    }
    if (ISNAN(energy)) {
       (void)fprintf( logFile, "eval.cc:  ERROR!  energy is not a number!\n\n");
       for (i=0; i<natom; i++) {
-          // (void)fprintf( logFile, "ATOM  %5d  C   NaN     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]); 
-          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   NaN     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
-          (void)fprintf(logFile, "\n");
+            print_PDBQ_atom_resstr( logFile, "", i,   " C   NaN     1 ", crd, 
+             0.0, 0.0, charge[i],"\n"); 
       } // i
    }
 
