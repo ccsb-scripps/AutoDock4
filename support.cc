@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.31 2009/12/16 23:35:55 rhuey Exp $
+ $Id: support.cc,v 1.32 2009/12/17 00:24:55 rhuey Exp $
 
  AutoDock 
 
@@ -319,10 +319,13 @@ switch (level) {
 	(void) fprintf(output, " Q%d/%d: %.3f", \
 	  k, q, compute_k_quantile(k, q, energy, size))
 
+	quantile(1,10);
 	quantile(1, 5);
 	quantile(1, 4);
 	quantile(3, 4);
 	quantile(4, 5);
+	quantile(9,10);
+
 #undef quantile
 	  // debug print every energy:
 	  if(level>3) for(int i=0; i<size; i++) fprintf(output, " %.3f", energy[i]);
