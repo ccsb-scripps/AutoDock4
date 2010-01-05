@@ -12,6 +12,10 @@ The changes since the 4.2.2 release (9/9/2009):
 Updated printout of unbound system's energy when using "epdb" option
 to correctly set unbound internal energy same_as_bound if appropriate.
 
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.2 (September 9 2009)
+=============================================================================
 The changes since the 4.2.1 release (6/2009):
 
 Makefile.am
@@ -40,13 +44,15 @@ Wno-write-strings to Makefile.am and strncpy to setflags.cc
 support.cc
 -replaced missing backslash for newlines
 
-=============================================================================
 
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.1 (June 9 2009)
+=============================================================================
 The key changes since the 4.0.1 release (5/2007):
     1. Improved overall reliability and detection of input file errors. 
     2. Improved local search.
 
-=============================================================================
 
 ----------------------------
 AD4.1_bound.dat
