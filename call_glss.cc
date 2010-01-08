@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.45 2009/12/15 06:21:02 mp Exp $
+ $Id: call_glss.cc,v 1.46 2010/01/08 20:13:47 mp Exp $
 
  AutoDock  
 
@@ -423,7 +423,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
        // and search counts (expected to be zero)
        if(outlev>0) {
          (void) thisPop.printPopulationStatisticsVerbose(logFile, 
-         num_generations, evaluate.evals(), FALSE);
+         num_generations, evaluate.evals(), "");
 	 fprintf(logFile, " cg_count: %u", global_method->cg_count);
 	 fprintf(logFile, " ci_count: %u", global_method->ci_count);
 	 fprintf(logFile, " mg_count: %u", global_method->mg_count);
@@ -471,12 +471,21 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
-       if (extOutputEveryNgens != 0 && num_generations%extOutputEveryNgens == 0) {
+       // Print extended generational statistics 
+       //  every generation 1 to 20
+       //  every tenth generation 20 to extOutputEveryNgens (100)
+       //  every "extOutputEveryNgens" (100) if greater than that
+       // This is purely for studying population convergence -  M Pique 2010
+       if (outlev > 1 && extOutputEveryNgens != 0 && (
+	 (num_generations <= 20) ||
+	 (num_generations <= extOutputEveryNgens && num_generations%10 == 0) ||
+         (num_generations%extOutputEveryNgens == 0 )
+	 )) {
 	       // print "Population at Generation:" line with low/high/mean/median/stddev...
 	       // followed by global search stats (crossover count, mutation count)
 	       // and local search stats (invocation count)
 	       (void) thisPop.printPopulationStatisticsVerbose(logFile, 
-		 num_generations, evaluate.evals(), FALSE); // FALSE== no newline at end
+		 num_generations, evaluate.evals(), "");
 		 fprintf(logFile, " cg_count: %u", global_method->cg_count);
 		 fprintf(logFile, " ci_count: %u", global_method->ci_count);
 		 fprintf(logFile, " mg_count: %u", global_method->mg_count);
@@ -504,7 +513,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     // print "Population at Generation:" line with low/high/mean/median/stddev...
     if(outlev>0) {
        (void) thisPop.printPopulationStatisticsVerbose(logFile, 
-        num_generations, evaluate.evals(), FALSE);
+        num_generations, evaluate.evals(), "");
 	 fprintf(logFile, " cg_count: %u", global_method->cg_count);
 	 fprintf(logFile, " ci_count: %u", global_method->ci_count);
 	 fprintf(logFile, " mg_count: %u", global_method->mg_count);

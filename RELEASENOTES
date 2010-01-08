@@ -1,5 +1,21 @@
 =============================================================================
                    AutoDock Release Notes
+                  Release 4.2.3 (January XX 2010)
+=============================================================================
+The changes since the 4.2.2.1 release (9/16/2009):
+
+Corrected printing of atom records whose element names are
+two characters long (such as Br).  Our thanks to *** for reporting
+this problem and working with us on the correction.
+
+Corrected genetic algorithm gene crossover flaw that slowed
+search progress for ligands with many torsions. Our thanks to 
+Garrett Morris and *** for reporting
+this problem and working with us on the correction.
+
+
+=============================================================================
+                   AutoDock Release Notes
                   Release 4.2.2.1 (September 16 2009)
 =============================================================================
 Please note that the current distribution's executable programs, autogrid and 

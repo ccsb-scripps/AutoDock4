@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.32 2009/12/17 00:24:55 rhuey Exp $
+ $Id: support.cc,v 1.33 2010/01/08 20:13:47 mp Exp $
 
  AutoDock 
 
@@ -336,14 +336,13 @@ switch (level) {
     return returnCode;
  }
 int Population::printPopulationStatisticsVerbose(FILE * output, 
- unsigned int generations, long int nevals, Boole appendNewline){ /* print with generations & #evals */
+ unsigned int generations, long int nevals, const char suffix[]){ /* print with generations & #evals */
 int returnCode=0;
    // print "Population at Generation:" line with low/high/mean/median/stddev...
    (void) fprintf(output, "Population at Generation: %3u ", generations);
    // highest level, with newline at end:
    returnCode= printPopulationStatistics(logFile, 3, FALSE);
-   (void) fprintf(logFile, " Num.evals: %ld", nevals );
-    if(appendNewline) fprintf(output, "\n");
+   (void) fprintf(logFile, " Num.evals: %ld%s", nevals, suffix );
     return returnCode; 
 }
  	
