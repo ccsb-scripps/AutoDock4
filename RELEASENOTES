@@ -4,14 +4,13 @@
 =============================================================================
 The changes since the 4.2.2.1 release (9/16/2009):
 
-Corrected printing of atom records whose element names are
-two characters long (such as Br).  Our thanks to *** for reporting
-this problem and working with us on the correction.
+Corrected printing of atom records whose element names are two characters 
+long (such as Br).  Our thanks to David Lancia for reporting this problem 
+and working with us on the correction.
 
-Corrected genetic algorithm gene crossover flaw that slowed
-search progress for ligands with many torsions. Our thanks to 
-Garrett Morris and *** for reporting
-this problem and working with us on the correction.
+Corrected genetic algorithm gene crossover flaw that slowed search progress 
+for ligands with many torsions. Our thanks to Garrett Morris and Sarnath for 
+reporting this problem and working with us on the correction.
 
 
 =============================================================================
