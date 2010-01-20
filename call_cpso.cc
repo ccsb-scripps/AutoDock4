@@ -114,7 +114,7 @@ State call_cpso(Local_Search * local_method,
                 evaluations++;
                 if (outlev >1)
                 {
-                        pr(logFile, "PSO: Updating the swarm at move %d (= %d and %d evaluations)\n", nb_eval+1, evaluations, evaluate.evals());
+                        pr(logFile, "PSO: Updating the swarm at move %d (= %d and %u evaluations)\n", nb_eval+1, evaluations, (unsigned int) evaluate.evals());
                 }
                 Xi[s].size = D; 
                 Vi[s].size = D;
@@ -178,7 +178,7 @@ State call_cpso(Local_Search * local_method,
                         evaluations++;
                         if (outlev >2)
                         {
-                                pr(logFile, "\nPSO: Updating the swarm at move %d (= %d and %d evaluations)\n", nb_eval+1, evaluations, evaluate.evals());
+                                pr(logFile, "\nPSO: Updating the swarm at move %d (= %d and %u evaluations)\n", nb_eval+1, evaluations, (unsigned int) evaluate.evals());
                         }
                         //..find the best informant
                         g = s;
@@ -276,7 +276,7 @@ State call_cpso(Local_Search * local_method,
                 else init_links = 0;
                 energy_prev = pso_energy;
                 if (outlev > 2) {
-                      pr(logFile, "PSO- Run: %2d \tPSObest Energy@Swarm_Move: %4d \tP= %8.2lf  \t(nbeval= %d and %d )\n", n_exec+1, nb_eval+1, pso_energy, evaluations, evaluate.evals());
+                      pr(logFile, "PSO- Run: %2d \tPSObest Energy@Swarm_Move: %4d \tP= %8.2lf  \t(nbeval= %d and %u )\n", n_exec+1, nb_eval+1, pso_energy, evaluations, (unsigned int) evaluate.evals());
         };
         //}        
         }while(evaluate.evals() < num_evals);
