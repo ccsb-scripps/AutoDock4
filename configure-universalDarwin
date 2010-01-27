@@ -1,18 +1,12 @@
 #! /bin/bash
-# $Id: configure-universalDarwin,v 1.1 2009/09/17 22:08:01 rhuey Exp $
+# $Id: configure-universalDarwin,v 1.2 2010/01/27 00:41:28 mp Exp $
 
 # run configure (or ../configure) for universalDarwinNN
+# NN=8,9,10 (Tiger, Leopard, Snow Leopard)
 
-# required argument - in form universalDarwinNN   NN=8,9,10
 
-
-ver=$1;shift
-
-if [ t$ver = t ]; then
-	echo "$0: usage: configure-universalDarwin NN"
-	echo "  NN=8,9,10 or any string that ends with one of those."
-	exit 1
-fi
+osrev=$(uname -r)  # example 9.8.0 is Darwin 9.8 or Mac OS 10.9.8
+ver=${osrev%%.*}  # example 9 is Darwin 9
 
 if [ -x configure ]; then
 	config=configure
@@ -40,7 +34,7 @@ case $ver in
 	sdkver=6
 	;;
   *)
-  	echo $0 unrecogized Darwin version $ver
+  	echo $0 unrecogized Darwin version $ver \( osrev = $osrev \)
 	exit 1
 	;;
 esac
@@ -54,6 +48,10 @@ if [ ! -d $rootdir ]; then
 	echo "Please download \"Developer Tools\" from apple.com."
 	exit 1
 fi
+
+echo running env CXXFLAGS="-O3 -isysroot $rootdir $archlist" \
+    LDFLAGS="$archlist" \
+    $config $configopts
 
 env CXXFLAGS="-O3 -isysroot $rootdir $archlist" \
     LDFLAGS="$archlist" \

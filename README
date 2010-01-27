@@ -1,4 +1,4 @@
-AutoDock README $Id: README,v 1.4 2009/09/01 23:55:01 rhuey Exp $
+AutoDock README $Id: README,v 1.5 2010/01/27 00:41:28 mp Exp $
 
 
 What is AutoDock?
@@ -49,13 +49,15 @@ necessary to make autodock:
  % aclocal
  % autoconf
  % automake -a
- % ./configure
+ % ./configure    (* see below)
  % make 
+ % make test   ( optional, recommended, requires "python")
  % make install
  
- This will create and install autodock4 executable, where 
- autodock4 is autodock version 4.2.2.
+ This will create and install autodock4 executable.
  
+ * On Macintosh Mac OS X, use instead "./configure-universalDarwin"
+   if you wish to compile a "universal binary"
  
 
 
