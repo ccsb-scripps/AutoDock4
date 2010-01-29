@@ -1,6 +1,6 @@
 =============================================================================
                    AutoDock Release Notes
-                  Release 4.2.3 (January XX 2010)
+                  Release 4.2.3 (January 29 2010)
 =============================================================================
 The changes since the 4.2.2.1 release (9/16/2009):
 
@@ -12,6 +12,7 @@ Corrected genetic algorithm gene crossover flaw that slowed search progress
 for ligands with many torsions. Our thanks to Garrett Morris and Sarnath for 
 reporting this problem and working with us on the correction.
 
+AutoGrid 4.2.3 differs from AutoGrid 4.2.2 only in the version number.
 
 =============================================================================
                    AutoDock Release Notes
