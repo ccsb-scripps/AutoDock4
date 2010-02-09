@@ -1,6 +1,7 @@
 #! /bin/bash
-# $Id: mkdistbins,v 1.2 2010/01/27 00:50:46 mp Exp $
+# $Id: mkdistbins,v 1.3 2010/02/09 00:20:47 rhuey Exp $
 distdir=/mgl/works/rhuey/autodocksuite-4.2.3
+#archlist="sun4SunOS5 ia64Linux2 universalDarwin8 universalDarwin9"
 archlist="i86Cygwin i86Linux2 sun4SunOS5 ia64Linux2 universalDarwin8 universalDarwin9 universalDarwin10"
 proglist="autodock autogrid"
 version=4
@@ -17,11 +18,6 @@ for arch in $archlist; do
     esac
     
     case $arch in
-    *Darwin*) config_cmd="../configure-universalDarwin" ;;
-    *) config_cmd="../configure";;
-    esac
-
-    case $arch in
     i86Cygwin) host=hao;; # dummy
     i86Linux2) host=saul;;
     sun4SunOS5) host=riscfs2;;
@@ -33,6 +29,16 @@ for arch in $archlist; do
     esac
 
     for prog in autodock autogrid; do
+       case $arch in
+       *Darwin*) 
+           case $prog in
+              autodock) config_cmd="../configure-universalDarwin" ;;
+              autogrid) config_cmd="../../autodock/configure-universalDarwin" ;;
+           esac
+           ;;
+       *) config_cmd="../configure";;
+       esac
+
         $run "umask 0; mkdir $distdir/$prog/$arch"
         # wish list:
         rcmd="umask 0;cd $distdir/$prog/$arch; $config_cmd; make; make test"

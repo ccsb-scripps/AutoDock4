@@ -1,5 +1,5 @@
 #! /bin/bash
-# $Id: mkdisttars,v 1.5 2010/01/27 00:50:46 mp Exp $
+# $Id: mkdisttars,v 1.6 2010/02/09 00:20:47 rhuey Exp $
 # Usage example:
 # 
 #cd /mgl/works/rhuey/autodocksuite_4.2.2.1
@@ -40,13 +40,22 @@ for arch in $archlist; do
    fi
 done
 
-
 # name for "src" tar file is 
 # "autodocksuite-${release}-src-tar.gz"
 # content for "src" tar file is 
 #   "autodocksuite-${release}/src/auto{grid,dock}-${release}/"
 #   with all *.cc *.h *.cpp README COPYING, ... Tests
-#   (checked out from CVS then "autoreconf -i" run, so 
-#     includes 'configure' but not Makefile)
+# NOTE:    includes 'configure' but not Makefile)
+
+# how to create src directory:
+#
+# cd  autodocksuite-${release}
+# mkdir src
+# cd src
+# cvs co autodock autogrid
+# cd autodock; autoreconf -i; cd ..
+# cd autogrid; autoreconf -i; cd ..
+# find . \( -name CVS -o -name test -o -name testdir \) -exec /bin/rm -rf {}  \;
+# 
 tar cf autodocksuite-${release}-src.tar src
 gzip autodocksuite-${release}-src.tar
