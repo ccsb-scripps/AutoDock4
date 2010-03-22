@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.16 2009/05/08 23:02:17 rhuey Exp $
+ $Id: stateLibrary.cc,v 1.17 2010/03/22 20:40:56 mp Exp $
 
  AutoDock 
 
@@ -149,6 +149,19 @@ void printState( FILE *fp,
         case 3:
             // Writes only the translation component of the state
             (void)fprintf( fp, "%.3f %.3f %.3f", S.T.x, S.T.y, S.T.z );
+            break;
+        case 4:
+	    // Writes in compact format with underscore separations, no newline
+	    // Used by PrintPopulationStatisticsVerbose (M Pique 2010-03) @@
+            (void)fprintf( fp, "%.3f_%.3f_%.3f", S.T.x, S.T.y, S.T.z );
+            (void)fprintf( fp, "_%.4f_%.4f_%.4f_%.4f", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
+            for (i=0; i<S.ntor; i++) {
+                    S.tor[i] = WrpRad( ModRad( S.tor[i] ) );
+                    torDegTmp = RadiansToDegrees( S.tor[i] );
+                    torDegTmp = ModDeg( torDegTmp );
+                    torDegTmp = WrpDeg( torDegTmp );
+                    pr( fp, "_%.2f", torDegTmp );
+            }
             break;
     }
 }

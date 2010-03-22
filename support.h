@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.16 2010/01/08 20:13:47 mp Exp $
+ $Id: support.h,v 1.17 2010/03/22 20:40:56 mp Exp $
 
  AutoDock 
 
@@ -38,6 +38,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 ** $Log: support.h,v $
+** Revision 1.17  2010/03/22 20:40:56  mp
+** Added reporting state vector for best individual to "Population at Generation:"
+** line as underscore-separated string
+**  Modified Files: call_glss.cc configure.ac stateLibrary.cc support.cc support.h
+**
 ** Revision 1.16  2010/01/08 20:13:47  mp
 ** Extended population generations statistics, turned on if outlev>1.
 **  Modified Files: RELEASENOTES call_glss.cc support.cc support.h
@@ -280,8 +285,12 @@ class Population
       void msort(int); /* sorts the first m individuals using heap properties */
       // void print(ostream &, int); /* prints top int energies */
       void print(FILE *, int); /* like above */
+      // best_e and best_i added M Pique 2010-03 strictly for statistics in log
+      //  see printPopulationStatistics (TODO - put in better place)
+      double best_e; // best energy
+      int best_i; // index in heap[] of indiv with best energy
       int printPopulationStatistics(FILE *, int, Boole); /* prints best, worse, mean, etc energies */
-      int printPopulationStatisticsVerbose(FILE *, unsigned int, long int, const char []); /* print with generations & #evals */
+      int printPopulationStatisticsVerbose(FILE *, unsigned int, long int, int, const char []); /* print with generations & #evals */
       void printPopulationAsStates(FILE *, int, int); /*prints energies,states of top energies */
       void printPopulationAsCoordsEnergies(FILE *, int, int); /*prints energies,states of top energies */
       void set_eob(int init_end_of_branch[MAX_TORS]); // For Branch Crossover Mode

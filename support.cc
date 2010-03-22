@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.33 2010/01/08 20:13:47 mp Exp $
+ $Id: support.cc,v 1.34 2010/03/22 20:40:56 mp Exp $
 
  AutoDock 
 
@@ -251,9 +251,10 @@ int Population::printPopulationStatistics(FILE *output, int level, Boole appendN
 // return 0 if OK, non-zero if error
 // Code adapted from gs.cc  - M Pique  December 2009
 int returnCode=0;
-double sum, best_e, worst_e;
+double sum, worst_e;
 unsigned long oldest;
-int oldestIndividual, best_i;
+int oldestIndividual;
+// best_e and best_i are set here, TODO move to better place M Pique 2010-03
    if(size<=0) return 2; // error, give up
    sum=best_e=worst_e=heap[best_i=0].value(Normal_Eval);
    oldest=heap[oldestIndividual=0].age;
@@ -336,12 +337,21 @@ switch (level) {
     return returnCode;
  }
 int Population::printPopulationStatisticsVerbose(FILE * output, 
- unsigned int generations, long int nevals, const char suffix[]){ /* print with generations & #evals */
+ unsigned int generations, long int nevals, int ntor, const char suffix[]){ /* print with generations & #evals */
 int returnCode=0;
    // print "Population at Generation:" line with low/high/mean/median/stddev...
    (void) fprintf(output, "Population at Generation: %3u ", generations);
-   // highest level, with newline at end:
-   returnCode= printPopulationStatistics(logFile, 3, FALSE);
+
+   // highest level, without newline at end, sets population best_i, best_e:
+   returnCode= printPopulationStatistics(output, 3, FALSE);
+
+   // print "State0:" field with compact state for best individual.
+   //  Note we cannot use printIndividualsState method because it
+   //    appends a newline so we call lower-level printState() from 
+   //    stateLibrary.cc   @@
+   (void) fprintf(output," State0: ");
+   heap[best_i].printIndividualsState( output, ntor, 4); // 4 means print compact state
+
    (void) fprintf(logFile, " Num.evals: %ld%s", nevals, suffix );
     return returnCode; 
 }
@@ -367,6 +377,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
       (void)fprintf( output, "%4d\t%9.4lg\t", i+1, thisValue);
       (void)fprintf( output, "%4lu\t", heap[i].age );
       heap[i].printIndividualsState(output, ntor, 0);
+      (void)fprintf( output, "\n");
 
 #ifdef DEBUG2
       // to print only infinite or NaN structures // if (!finite(thisValue) || ISNAN(thisValue)) {//debug
@@ -402,6 +413,7 @@ void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor
       // Print the translation
       heap[i].printIndividualsState(output, ntor, 3);  // 3 means print just the translation
       //heap[i].printIndividualsState(output, ntor, 0);  // 0 means print the whole state
+      (void)fprintf( output, "\n");
 
       // Print the energy
       thisValue = heap[i].value(Normal_Eval); // was Always_Eval before 13-Jan-2006
@@ -957,11 +969,10 @@ void Individual::getMol(Molecule *returnedMol)
 void Individual::printIndividualsState(FILE *filePtr, int ntor, int detail) 
 {
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Individual::printIndividualsState(FILE *filePtr, int ntor=%d, int detaiil=%d)\n", ntor, detail);
+   (void)fprintf(logFile, "support.cc/void Individual::printIndividualsState(FILE *filePtr, int ntor=%d, int detail=%d)\n", ntor, detail);
 #endif /* DEBUG */
 
     printState( filePtr, state(ntor), detail ); 
-    fprintf( filePtr, "\n" );
 }
 
 void Individual::incrementAge(void)
