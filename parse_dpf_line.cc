@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.26 2009/10/24 00:04:31 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.27 2010/04/09 18:49:10 mp Exp $
 
  AutoDock 
 
@@ -102,6 +102,7 @@ int parse_dpf_line( char line[LINE_LEN] )
                       {"charmap", DPF_CHARMAP}, 
                       {"rmsnosym", DPF_RMSNOSYM}, 
                       {"rmsref", DPF_RMSREF}, 
+                      {"rmsmode", DPF_RMSMODE}, 
                       {"watch", DPF_WATCH}, 
                       {"linear_schedule", DPF_SCHEDLIN}, 
                       {"schedule_linear", DPF_SCHEDLIN}, 

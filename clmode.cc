@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.9 2009/05/08 23:02:11 rhuey Exp $
+ $Id: clmode.cc,v 1.10 2010/04/09 18:49:09 mp Exp $
 
  AutoDock 
 
@@ -50,7 +50,8 @@ void  clmode( int   num_atm_maps,
               char  *clusFN,
               Real crdpdb[MAX_ATOMS][SPACE],
               Real sml_center[SPACE],
-              Boole symmetry_flag,
+              Boole B_symmetry_flag,
+	      Boole B_unique_pair_flag,
               char  *rms_ref_crds )
 
 {
@@ -298,7 +299,8 @@ void  clmode( int   num_atm_maps,
 
         ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort, 
                                      nconf, natom, type, crdSave, crdpdb, 
-                                     sml_center, clu_rms, symmetry_flag,
+                                     sml_center, clu_rms, 
+				     B_symmetry_flag, B_unique_pair_flag,
                                      ref_crds, ref_natoms, ref_rms);
 
         pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );

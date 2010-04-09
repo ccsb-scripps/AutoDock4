@@ -1,6 +1,6 @@
 /*
 
- $Id: cluster_analysis.h,v 1.5 2009/05/08 23:02:11 rhuey Exp $
+ $Id: cluster_analysis.h,v 1.6 2010/04/09 18:49:09 mp Exp $
 
  AutoDock 
 
@@ -42,6 +42,7 @@ int  cluster_analysis( Real clus_rms_tol,
                        Real sml_center[SPACE], 
                        Real clu_rms[MAX_RUNS][MAX_RUNS], 
                        Boole B_symmetry_flag,
+                       Boole B_unique_pair_flag,
                        Real ref_crds[MAX_ATOMS][SPACE],
                        int   ref_natoms,
                        Real ref_rms[MAX_RUNS]);

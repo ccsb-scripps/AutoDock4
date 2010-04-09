@@ -1,6 +1,6 @@
 /*
 
- $Id: getrms.cc,v 1.6 2009/05/08 23:02:13 rhuey Exp $
+ $Id: getrms.cc,v 1.7 2010/04/09 18:49:09 mp Exp $
 
  AutoDock 
 
@@ -35,26 +35,35 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 Real getrms ( Real Crd[MAX_ATOMS][SPACE], 
                Real CrdRef[MAX_ATOMS][SPACE], 
                Boole B_symmetry_flag, 
+	       Boole B_unique_pair_flag,
                int natom, 
                int type[MAX_ATOMS] )
 
 {
     double sqrSum, sqrMin, dc[SPACE];
+    Boole is_available[MAX_ATOMS]; // available to be chosen as atom i's symmetry mate 
     register int i, j, xyz;
 
     sqrSum = 0.;
 
     if (B_symmetry_flag) {
+        for (i = 0;  i < natom;  i++) is_available[i] = TRUE;
         for (i = 0;  i < natom;  i++) {
             sqrMin = BIG;
+	    int nearest_j_to_i;
             for (j = 0;  j < natom;  j++) {                
-                if (type[i] == type[j]) {
+                if (type[i] == type[j] && is_available[j]) {
                     for (xyz = 0;  xyz < SPACE;  xyz++) {
                         dc[xyz]= Crd[i][xyz] - CrdRef[j][xyz];
                     } /* xyz */
-                    sqrMin = min( sqhypotenuse(dc[X], dc[Y], dc[Z]), sqrMin );
+		    double dist2= sqhypotenuse(dc[X], dc[Y], dc[Z]);
+                    if(dist2<sqrMin) {
+		    	sqrMin=dist2;
+			nearest_j_to_i = j;
+		    }
                 }
             } /*  next j  */
+	    if(B_unique_pair_flag) is_available[nearest_j_to_i] = FALSE;
             sqrSum += sqrMin;
         } /*  next i  */
     } else {

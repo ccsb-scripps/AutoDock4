@@ -1,6 +1,6 @@
 /*
 
- $Id: getrms.h,v 1.5 2009/05/08 23:02:13 rhuey Exp $
+ $Id: getrms.h,v 1.6 2010/04/09 18:49:09 mp Exp $
 
  AutoDock 
 
@@ -32,6 +32,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 Real  getrms( Real Crd[MAX_ATOMS][SPACE], 
                Real CrdRef[MAX_ATOMS][SPACE], 
                Boole B_symmetry_flag, 
+               Boole B_unique_pair_flag, 
                int   natom, 
                int   type[MAX_ATOMS] );
 #endif

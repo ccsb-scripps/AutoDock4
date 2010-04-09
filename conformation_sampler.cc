@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.10 2009/05/08 23:02:12 rhuey Exp $
+ $Id: conformation_sampler.cc,v 1.11 2010/04/09 18:49:09 mp Exp $
 
  AutoDock 
 
@@ -39,6 +39,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define Vconf 1.0
 
 #define RMSD_SYMMETRY TRUE
+#define RMSD_UNIQUE_PAIR TRUE
 #define TRAN_STEP 0.03 // size of translation steps (x,y,z)
 #define ROT_ANG_STEP 0.025 // size of step for rotation angle
 #define TOR_ANG_STEP 0.03 // size of step for torsion angles
@@ -206,11 +207,11 @@ Real ConformationSampler::current_rmsd(void) {
 	probe_ind.inverse_mapping();
 	probe_state = probe_ind.state(base_state.ntor);
 	cnv_state_to_coords(probe_state, vt, tlist, probe_state.ntor, crdpdb, crd, natom);
-	return getrms(crd, base_crd, RMSD_SYMMETRY, natom, type);
+	return getrms(crd, base_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type);
 }
 
 Real ConformationSampler::reference_rmsd(void) {
-	return getrms(base_crd, ref_crd, RMSD_SYMMETRY, natom, type);
+	return getrms(base_crd, ref_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type);
 }
 
 void ConformationSampler::update_bounds(void) {

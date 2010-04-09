@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.h,v 1.20 2009/09/16 21:57:50 rhuey Exp $
+ $Id: analysis.h,v 1.21 2010/04/09 18:49:09 mp Exp $
 
  AutoDock  
 
@@ -62,6 +62,7 @@ void  analysis( int   Nnb,
                 char  *smFileName, 
                 Real sml_center[SPACE], 
                 Boole B_symmetry_flag, 
+                Boole B_unique_pair_flag, 
                 int   tlist[MAX_TORS][MAX_ATOMS], 
                 int   type[MAX_ATOMS], 
                 Real vt[MAX_TORS][SPACE],

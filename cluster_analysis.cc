@@ -1,6 +1,6 @@
 /*
 
- $Id: cluster_analysis.cc,v 1.6 2009/05/08 23:02:11 rhuey Exp $
+ $Id: cluster_analysis.cc,v 1.7 2010/04/09 18:49:09 mp Exp $
 
  AutoDock 
 
@@ -44,6 +44,7 @@ int cluster_analysis( Real clus_rms_tol,
                       Real sml_center[SPACE], 
                       Real clu_rms[MAX_RUNS][MAX_RUNS], 
                       Boole B_symmetry_flag,
+                      Boole B_unique_pair_flag,
                       Real ref_crds[MAX_ATOMS][SPACE],
                       int ref_natoms,
                       Real ref_rms[MAX_RUNS])
@@ -86,13 +87,13 @@ int cluster_analysis( Real clus_rms_tol,
 
     num_in_clus[0] = nClusters = 1;         
     clu_rms[0][0]  = getrms(crd[thisconf], ref_crds,
-                            B_symmetry_flag, natom, type);
+                            B_symmetry_flag, B_unique_pair_flag, natom, type);
 
 /* Go through *all* conformations... */
     for ( i=0; i<nconf; i++) {
 
 /* Calculate the RMSD to the reference structure: */
-        ref_rms[i] = getrms(crd[i], ref_crds, B_symmetry_flag, natom, type);
+        ref_rms[i] = getrms(crd[i], ref_crds, B_symmetry_flag, B_unique_pair_flag, natom, type);
     }
 
 /* Go through all conformations *except* 0-th... */
@@ -107,7 +108,7 @@ int cluster_analysis( Real clus_rms_tol,
         for ( compare=0; compare<nClusters; compare++ ) {
 
             rms = getrms(crd[thisconf], crd[cluster[compare][0]],
-                         B_symmetry_flag, natom, type);
+                         B_symmetry_flag, B_unique_pair_flag, natom, type);
 
 /* Check rms; if greater than tolerance, */
             if ( rms > clus_rms_tol ) {
@@ -130,7 +131,7 @@ int cluster_analysis( Real clus_rms_tol,
 /* Start a new cluster...  */
             cluster[ nClusters ][0] = thisconf;
             clu_rms[ nClusters ][0] = getrms(crd[thisconf], ref_crds,
-                                             B_symmetry_flag, natom, type);
+                                             B_symmetry_flag, B_unique_pair_flag, natom, type);
             num_in_clus[ nClusters ] = 1;
 
 /* Increment the number of clusters... */

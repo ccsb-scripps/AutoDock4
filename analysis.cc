@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.37 2009/12/16 23:35:54 rhuey Exp $
+ $Id: analysis.cc,v 1.38 2010/04/09 18:49:09 mp Exp $
 
  AutoDock  
 
@@ -78,6 +78,7 @@ void analysis( int   Nnb,
                char  *smFileName, 
                Real  sml_center[SPACE],
                Boole B_symmetry_flag, 
+	       Boole B_unique_pair_flag,
                int   tlist[MAX_TORS][MAX_ATOMS], 
                int   type[MAX_ATOMS], 
                Real  vt[MAX_TORS][SPACE],
@@ -195,7 +196,7 @@ void analysis( int   Nnb,
         /* fprintf( logFile, "Saving coordinates of state %d.\n", k); */
 
         /* Save coordinates in crdSave array...  */
-        (void)memcpy(crdSave[k], crd, natom*3*sizeof(Real));
+        (void)memcpy(crdSave[k], crd, natom*SPACE*sizeof(Real));
     } /*k*/
 
     flushLog;
@@ -208,7 +209,7 @@ void analysis( int   Nnb,
         // of flexibility in the receptor sidechains...
         ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort, 
                     nconf, n_rms_atoms, type, crdSave, crdpdb, 
-                    sml_center, clu_rms, B_symmetry_flag,
+                    sml_center, clu_rms, B_symmetry_flag, B_unique_pair_flag,
                     ref_crds, ref_natoms, ref_rms);
 
         pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
@@ -230,7 +231,7 @@ void analysis( int   Nnb,
         pr( logFile, "\nSorry!  Unable to perform cluster analysis, because not enough conformations were generated.\n\n\n" );
 
         ncluster = 1;
-        ref_rms[0] = getrms( crd, ref_crds, B_symmetry_flag, n_rms_atoms, type);
+        ref_rms[0] = getrms( crd, ref_crds, B_symmetry_flag, B_unique_pair_flag, n_rms_atoms, type);
         clu_rms[0][0] = 0.;
         num_in_clu[0] = 1;
         cluster[0][0] = 0;

@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.20 2009/05/08 23:02:13 rhuey Exp $
+ $Id: investigate.cc,v 1.21 2010/04/09 18:49:09 mp Exp $
 
  AutoDock  
 
@@ -74,6 +74,7 @@ void investigate( int   Nnb,
                     Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                     int   N_con[MAX_TORS],
                     Boole B_symmetry_flag,
+                    Boole B_unique_pair_flag,
                     char  *FN_rms_ref_crds,
                     int   OutputEveryNTests,
                     int   NumLocalTests,
@@ -205,7 +206,7 @@ void investigate( int   Nnb,
                 } while (B_outside);
                 /* Now, ligand is inside grid */
                 /* Calculate RMSD from reference structure */
-                rms = getrms( crd, ref_crds, B_symmetry_flag, natom, type);
+                rms = getrms( crd, ref_crds, B_symmetry_flag, B_unique_pair_flag, natom, type);
             } while (rms > MaxRms);
             /* Calculate Energy of System, */
             e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, info, 

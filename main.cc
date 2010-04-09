@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.114 2009/12/15 06:21:01 mp Exp $
+ $Id: main.cc,v 1.115 2010/04/09 18:49:09 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -68,6 +68,7 @@
 #include <stdlib.h>
 #include <string>
 using std::string;
+#define streq(a,b) (0==strcmp(a,b)) // convenience function
 
 #include <sys/param.h>
 #include <ctype.h> // tolower
@@ -104,7 +105,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.114 2009/12/15 06:21:01 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.115 2010/04/09 18:49:09 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -342,6 +343,7 @@ Boole B_linear_schedule = FALSE;
 Boole B_qtwReduc = FALSE;
 Boole B_selectmin = FALSE;
 Boole B_symmetry_flag = TRUE;
+Boole B_unique_pair_flag = FALSE;
 Boole B_tempChange = TRUE;
 Boole B_torReduc = FALSE;
 Boole B_trnReduc = FALSE;
@@ -732,7 +734,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.114 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.115 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2590,7 +2592,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         clmode( num_atom_types, clus_rms_tol,
                 hostnm, jobStart, tms_jobStart,
                 B_write_all_clusmem, FN_clus, crdpdb, lig_center,
-                B_symmetry_flag, FN_rms_ref_crds );
+                B_symmetry_flag, B_unique_pair_flag, FN_rms_ref_crds );
         (void) fflush(logFile);
         break;
 
@@ -2618,6 +2620,35 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         B_symmetry_flag = FALSE;
         if (outlev >= 0) {
             pr( logFile, "Symmetry will be ignored in RMS calculations.\n\n" );
+        }
+        (void) fflush(logFile);
+        break;
+
+//______________________________________________________________________________
+
+    case DPF_RMSMODE:
+        /*
+        **  rmsmode atype|unique_pair
+        **  Calculate symmetrical RMS values 
+        **  considering each atom to be paired at most one time (unique_pair)
+	**  or used repeatedly (atype) (AD 4.2 default)
+        */
+        char rms_mode[LINE_LEN];
+        (void) sscanf( line, "%*s %s", rms_mode );
+        if (streq(rms_mode, "unique_pair")||streq(rms_mode, "uniquepair")) {
+		B_unique_pair_flag = TRUE;
+		if (outlev >= 0) {
+		    pr( logFile, "Symmetry in RMS calculations will consider only unique atom pairs.\n\n" );
+		}
+	} else if (streq(rms_mode, "atype")) {
+		B_unique_pair_flag = FALSE;
+		if (outlev >= 0) {
+		    pr( logFile, "Symmetry in RMS calculations will consider all atom pairs.\n\n" );
+		}
+        } else {
+            pr( logFile, "%s:  ERROR:  Unrecognized rms mode type \"%s\" .\n",
+                    programname, rms_mode );
+            stop("");
         }
         (void) fflush(logFile);
         break;
@@ -2867,7 +2898,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 clmode( num_atom_types, clus_rms_tol,
                         hostnm, jobStart, tms_jobStart,
                         B_write_all_clusmem, FN_clus, crdpdb, lig_center,
-                        B_symmetry_flag, FN_rms_ref_crds );
+                        B_symmetry_flag, B_unique_pair_flag, FN_rms_ref_crds );
             }
             for (j = 0; j < MAX_RUNS; j++) {
                 econf[j] = torsFreeEnergy;
@@ -3706,7 +3737,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             analysis( Nnb, atomstuff, charge, abs_charge, qsp_abs_charge, B_calcIntElec, clus_rms_tol,
                       crdpdb, ad_energy_tables, map, econf, nruns,
                       natom, nonbondlist, nconf, ntor, sHist, FN_ligand,
-                      lig_center, B_symmetry_flag, tlist, type, vt, FN_rms_ref_crds,
+                      lig_center, B_symmetry_flag, B_unique_pair_flag, tlist, type, vt, FN_rms_ref_crds,
                       torsFreeEnergy, B_write_all_clusmem, ligand_is_inhibitor,
                       outlev,
                       ignore_inter, B_include_1_4_interactions, scale_1_4,
@@ -3759,7 +3790,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             map, natom, nonbondlist, ntor,
                             outlev, tlist, type, vt, B_isGaussTorCon, US_torProfile,
                             B_isTorConstrained, B_ShowTorE, US_TorE,
-                            F_TorConRange, N_con, B_symmetry_flag, FN_rms_ref_crds,
+                            F_TorConRange, N_con, B_symmetry_flag, B_unique_pair_flag, FN_rms_ref_crds,
                             OutputEveryNTests, NumLocalTests, trnStep0, torStep0,
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4,

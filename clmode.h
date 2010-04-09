@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.h,v 1.7 2009/05/08 23:02:11 rhuey Exp $
+ $Id: clmode.h,v 1.8 2010/04/09 18:49:09 mp Exp $
 
  AutoDock 
 
@@ -49,5 +49,6 @@ void  clmode( int   num_atm_maps,
               Real crdpdb[MAX_ATOMS][SPACE], 
               Real sml_center[SPACE], 
               Boole B_symmetry_flag,
+              Boole B_unique_pair_flag,
               char  *rms_ref_crds );
 #endif
