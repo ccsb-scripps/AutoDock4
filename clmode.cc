@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.10 2010/04/09 18:49:09 mp Exp $
+ $Id: clmode.cc,v 1.11 2010/04/13 22:20:47 rhuey Exp $
 
  AutoDock 
 
@@ -111,12 +111,14 @@ void  clmode( int   num_atm_maps,
      */
     while ( fgets( line, LINE_LEN, clusFile) != NULL ) {
 
-        pr( logFile, "INPUT-PDBQ: %s", line);
+        pr( logFile, "INPUT-PDBQT: %s", line);
 
         for (ii = 0; ii < 4; ii++) { rec5[ii] = tolower( (int)line[ii] ); };
 
         if (( strindex( line, "USER    Total Interaction Energy of Complex") >= 0 )
-         || ( strindex( line, "REMARK  Total Interaction Energy of Complex") >= 0 )) {
+         || ( strindex( line, "REMARK  Total Interaction Energy of Complex") >= 0 )
+         || ( strindex( line, "USER    Estimated Free Energy of Binding") >= 0 )  // Added for 4.2.x compatibility SF
+				) {
             /*
              * Read in the energy of this conformation;
              * This is preferred over "Final Docked Energy" because this is never
@@ -204,7 +206,8 @@ void  clmode( int   num_atm_maps,
                     atomstuff[atomCounter][30] = '\0';
                     if ( ! haveTypes ) {
                         type[atomCounter] = -1;
-                        sscanf( &line[12], "%s", pdbaname[atomCounter] );
+                        //sscanf( &line[12], "%s", pdbaname[atomCounter] );
+                        sscanf( &line[77], "%s", pdbaname[atomCounter] ); //  Added for 4.2.x compatibility SF
                         /*
                          * Determine this atom's atom type:
                          */
