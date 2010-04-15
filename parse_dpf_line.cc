@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.27 2010/04/09 18:49:10 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.28 2010/04/15 19:30:44 mp Exp $
 
  AutoDock 
 
@@ -154,6 +154,7 @@ int parse_dpf_line( char line[LINE_LEN] )
               {"template", DPF_TEMPL_ENERGY}, 
               {"template_energy_file", DPF_TEMPL_ENERGY}, 
               {"include_1_4_interactions", DPF_INCLUDE_1_4_INTERACTIONS}, 
+	      {"scale_eintermol", DPF_SCALE_EINTERMOL},
               {"parameter_library", DPF_PARAMETER_LIBRARY}, 
               {"parameter_file", DPF_PARAMETER_LIBRARY} 
               , {"receptor_types", DPF_RECEPTOR_TYPES}  

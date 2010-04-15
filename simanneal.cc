@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.27 2009/09/16 21:57:52 rhuey Exp $
+ $Id: simanneal.cc,v 1.28 2010/04/15 19:30:44 mp Exp $
 
  AutoDock  
 
@@ -133,6 +133,7 @@ void simanneal ( int   *Addr_nconf,
         
         const Boole         B_include_1_4_interactions,
         const Real scale_1_4,
+        const Real scale_eintermol,
         
         const ParameterEntry parameterArray[MAX_ATOM_TYPES],
 
@@ -276,7 +277,7 @@ void simanneal ( int   *Addr_nconf,
                      ntor, tlist, type, vt, irun1, outlev, MaxRetries,
                      torsFreeEnergy, ligand_is_inhibitor,
                      ignore_inter,
-                     B_include_1_4_interactions, scale_1_4, 
+                     B_include_1_4_interactions, scale_1_4, scale_eintermol,
                      unbound_internal_FE, info, 
                      B_use_non_bond_cutoff, B_have_flexible_residues,
                      ad4_unbound_model);
@@ -398,7 +399,7 @@ void simanneal ( int   *Addr_nconf,
                         /*
                         ** MORE ACCURATE METHOD, (SLOWER):
                         */
-                        e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+                        e = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                                         info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW,
                                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
                            + (eintra = eintcal(nonbondlist, ptr_ad_energy_tables, crd, Nnb,
@@ -513,7 +514,7 @@ void simanneal ( int   *Addr_nconf,
                          ntor, tlist, type, vt, irun1, outlev, MaxRetries,
                          torsFreeEnergy, ligand_is_inhibitor,
                          ignore_inter,
-                         B_include_1_4_interactions, scale_1_4, 
+                         B_include_1_4_interactions, scale_1_4, scale_eintermol,
                          unbound_internal_FE,
                          info, B_use_non_bond_cutoff,
                          B_have_flexible_residues,
@@ -632,7 +633,7 @@ void simanneal ( int   *Addr_nconf,
         } else {
             eintra = 0.0 ;
         }
-        einter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+        einter = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                     info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
                     NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
 

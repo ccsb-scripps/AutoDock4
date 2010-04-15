@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.25 2009/09/16 21:57:50 rhuey Exp $
+ $Id: getInitialState.cc,v 1.26 2010/04/15 19:30:44 mp Exp $
 
  AutoDock  
 
@@ -89,6 +89,7 @@ void getInitialState(
 
             const Boole         B_include_1_4_interactions,
             const Real scale_1_4,
+	    const Real           scale_eintermol,  // input  scaling factor for intermolecular energies
 
 
             const Real unbound_internal_FE,
@@ -179,7 +180,7 @@ void getInitialState(
             initautodock( atomstuff, crd, crdpdb, 
                 natom, ntor, sInit, tlist, vt, outlev, info);
             
-            e0inter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+            e0inter = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                         info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
             e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 

@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.h,v 1.17 2009/09/16 21:57:52 rhuey Exp $
+ $Id: simanneal.h,v 1.18 2010/04/15 19:30:44 mp Exp $
 
  AutoDock  
 
@@ -123,6 +123,7 @@ void simanneal( int   *P_nconf,
                 int   ignore_inter[MAX_ATOMS],
                 const Boole         B_include_1_4_interactions,
                 const Real scale_1_4,
+                const Real scale_eintermol,
                 const ParameterEntry parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
                 const Real unbound_internal_FE,
 

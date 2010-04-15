@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.22 2009/10/02 22:12:38 rhuey Exp $
+ $Id: eval.h,v 1.23 2010/04/15 19:30:44 mp Exp $
 
  AutoDock  
 
@@ -73,6 +73,7 @@ class Eval
       int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
       Boole         B_include_1_4_interactions; // gmm 2005-01-8, for scaling 1-4 nonbonds
       Real scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
+      Real scale_eintermol;  // for scaling intermolecular energy term
       //ParameterEntry *parameterArray;
       Real  unbound_internal_FE;
       Boole B_compute_intermol_energy; // use for computing unbound state
@@ -105,6 +106,7 @@ class Eval
                   int            init_ignore_inter[MAX_ATOMS],
                   Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
                   Real  init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
+                  Real  init_scale_eintermol,
                   //ParameterEntry init_parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
                   Real  init_unbound_internal_FE,
                   GridMapSetInfo *init_info,
@@ -163,6 +165,7 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
 
                         Boole init_B_include_1_4_interactions,
                         Real init_scale_1_4,
+                        Real init_scale_eintermol, 
 
                         //ParameterEntry init_parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
 
@@ -211,6 +214,7 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
 
     B_include_1_4_interactions = init_B_include_1_4_interactions;
     scale_1_4 = init_scale_1_4;
+    scale_eintermol = init_scale_eintermol;
 
     //parameterArray = init_parameterArray;
 

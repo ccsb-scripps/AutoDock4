@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.21 2010/04/09 18:49:09 mp Exp $
+ $Id: investigate.cc,v 1.22 2010/04/15 19:30:44 mp Exp $
 
  AutoDock  
 
@@ -85,6 +85,7 @@ void investigate( int   Nnb,
                     
                     const Boole         B_include_1_4_interactions,
                     const Real scale_1_4,
+                    const Real scale_eintermol,
 
 
                     const Real unbound_internal_FE,
@@ -209,7 +210,7 @@ void investigate( int   Nnb,
                 rms = getrms( crd, ref_crds, B_symmetry_flag, B_unique_pair_flag, natom, type);
             } while (rms > MaxRms);
             /* Calculate Energy of System, */
-            e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, info, 
+            e = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, info, 
                 ALL_ATOMS_INSIDE_GRID, ignore_inter, 
                 NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
                  + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,

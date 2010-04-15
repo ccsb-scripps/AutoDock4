@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.28 2009/12/16 23:35:54 rhuey Exp $
+ $Id: eval.cc,v 1.29 2010/04/15 19:30:44 mp Exp $
 
  AutoDock  
 
@@ -196,11 +196,11 @@ double Eval::eval(int term)
 
     if (B_compute_intermol_energy) {
         if(term==3) // do not need energy breakdown in this eval() case
-        energy = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+        energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                              info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
                              ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
         else
-        energy = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+        energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                              info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
                              ignore_inter, elec, emap, &elec_total, &emap_total);
     }
@@ -399,7 +399,7 @@ double Eval::evalpso(State *state)
 
         // formerly quicktrilinterp->last 4 arguments are NULL:
         // use NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-        energy = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+        energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                              info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
                              ignore_inter, elec, emap, &elec_total, &emap_total);
                              //ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
@@ -428,7 +428,7 @@ double Eval::evalpso(State *state)
         //                            info->lo[0], info->lo[1], info->lo[2],
         //                            info->hi[0], info->hi[1], info->hi[2],  
         //                            info->cen[0], info->cen[1], info->cen[2] )
-        energy = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+        energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                          info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
                          ignore_inter, elec, emap, &elec_total, &emap_total);
         

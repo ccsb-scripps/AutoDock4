@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.h,v 1.16 2009/09/16 21:57:50 rhuey Exp $
+ $Id: getInitialState.h,v 1.17 2010/04/15 19:30:44 mp Exp $
 
  AutoDock  
 
@@ -81,6 +81,7 @@ void getInitialState(
 
             const Boole         B_include_1_4_interactions,
             const Real scale_1_4,
+	    const Real scale_eintermol,
 
 
             const Real unbound_internal_FE,

@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.h,v 1.8 2009/09/16 21:57:50 rhuey Exp $
+ $Id: calculateEnergies.h,v 1.9 2010/04/15 19:30:44 mp Exp $
 
  AutoDock  
 
@@ -59,6 +59,7 @@ EnergyBreakdown calculateEnergies(
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
+    const Real           scale_eintermol,                 // input  scaling factor for intermolecular energies
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
     const Boole          B_use_non_bond_cutoff,     // input  boolean whether to use a nonbond distance cutoff
     Unbound_Model ad4_unbound_model

@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.116 2010/04/13 22:19:21 rhuey Exp $
+ $Id: main.cc,v 1.117 2010/04/15 19:30:44 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -105,7 +105,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.116 2010/04/13 22:19:21 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.117 2010/04/15 19:30:44 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -267,6 +267,7 @@ double Rj, epsj, Rj_hb, epsj_hb;
 hbond_type hbondj;
 
 Real scale_1_4 = 0.5;
+Real scale_eintermol = 1.0; // scale factor for intermolecular energy term vs intra
 Real c=0.0;
 Real clus_rms_tol = 0.0;
 Real e0max = BIG;
@@ -735,7 +736,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.116 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.117 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -921,6 +922,20 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         break;
 
 //______________________________________________________________________________
+
+
+    case DPF_SCALE_EINTERMOL:
+        /*
+        **  scale_eintermol
+        **  re-scale intermolecular energy term
+        */
+        retval = sscanf( line, "%*s " FDFMT, &scale_eintermol);
+	if(retval==1) 
+	  pr(logFile,"  Intermolecular energy term will be scaled by factor %f\n", scale_eintermol);
+         else stop("Error encountered reading scale_eintermol value!\n");
+	 break;
+//______________________________________________________________________________
+
 
     case DPF_INTELEC:
         /*
@@ -1506,7 +1521,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             Nnb, B_calcIntElec, B_isGaussTorCon, B_isTorConstrained, B_ShowTorE,
                             US_TorE, US_torProfile,
                             vt, tlist,
-                            crdpdb, crdreo, sInit, ligand, ignore_inter, B_include_1_4_interactions, scale_1_4,
+                            crdpdb, crdreo, sInit, ligand, ignore_inter, B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE, info,
                             B_use_non_bond_cutoff, B_have_flexible_residues);
 
@@ -2934,7 +2949,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                         e0max, torsFreeEnergy, MaxRetries, ligand_is_inhibitor,
                         ignore_inter,
-                        B_include_1_4_interactions, scale_1_4,
+                        B_include_1_4_interactions, scale_1_4, scale_eintermol,
                         parameterArray, unbound_internal_FE,
                         info, B_use_non_bond_cutoff,
                         B_have_flexible_residues,
@@ -3087,7 +3102,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             ignore_inter,
-                            B_include_1_4_interactions, scale_1_4,
+                            B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                             //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
@@ -3211,7 +3226,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                            Nnb, B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                            ignore_inter,
-                           B_include_1_4_interactions, scale_1_4,
+                           B_include_1_4_interactions, scale_1_4, scale_eintermol,
                            unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                            //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
@@ -3312,7 +3327,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                           Nnb, B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
                           B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                           ignore_inter,
-                          B_include_1_4_interactions, scale_1_4,
+                          B_include_1_4_interactions, scale_1_4, scale_eintermol,
                           unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                           //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
@@ -3645,7 +3660,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         elec, emap, nonbondlist, ad_energy_tables, Nnb,
                         B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                         B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
-                        ignore_inter, B_include_1_4_interactions, scale_1_4,
+                        ignore_inter, B_include_1_4_interactions, scale_1_4, scale_eintermol,
                         unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                         //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
 
@@ -3795,7 +3810,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             F_TorConRange, N_con, B_symmetry_flag, B_unique_pair_flag, FN_rms_ref_crds,
                             OutputEveryNTests, NumLocalTests, trnStep0, torStep0,
                             ignore_inter,
-                            B_include_1_4_interactions, scale_1_4,
+                            B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE,
                             info, B_use_non_bond_cutoff, B_have_flexible_residues );
 
@@ -3956,7 +3971,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             ignore_inter,
-                            B_include_1_4_interactions, scale_1_4,
+                            B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                             //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
             //
@@ -4063,7 +4078,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
                             ignore_inter,
-                            B_include_1_4_interactions, scale_1_4,
+                            B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
                             //parameterArray, unbound_internal_FE, info, B_use_non_bond_cutoff, B_have_flexible_residues);
             // end of Step 3 // }

@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.12 2009/09/22 20:42:38 rhuey Exp $
+ $Id: calculateEnergies.cc,v 1.13 2010/04/15 19:30:44 mp Exp $
 
  AutoDock  
 
@@ -49,7 +49,7 @@ extern Real nb_group_energy[3];
 //      tcoord, charge, abs_charge, type, map, ptr_info, B_outside, 
 //      ignore_inter, elec, emap, p_elec_total, p_emap_total,
 //      nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, 
-//      B_include_1_4_interactions, scale_1_4, qsp_abs_charge,  B_use_non_bond_cutoff );
+//      B_include_1_4_interactions, scale_1_4, scale_eintermol, qsp_abs_charge,  B_use_non_bond_cutoff );
 
 EnergyBreakdown calculateEnergies(
     int                  natom,                     // input  number of atoms
@@ -79,6 +79,7 @@ EnergyBreakdown calculateEnergies(
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
+    const Real           scale_eintermol,                 // input  scaling factor for intermolecular energies
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
     const Boole          B_use_non_bond_cutoff     // input  boolean whether to use a nonbond distance cutoff
 
@@ -91,7 +92,7 @@ EnergyBreakdown calculateEnergies(
 
     // computing trilinear-interpolated energies from atom = 0 to atom < true_ligand_atoms
     // gives the intermolecular energy between the ligand and the protein
-    eb.e_inter_moving_fixed = trilinterp( 0, true_ligand_atoms, tcoord, charge, abs_charge, type, map, 
+    eb.e_inter_moving_fixed = scale_eintermol * trilinterp( 0, true_ligand_atoms, tcoord, charge, abs_charge, type, map, 
                          info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
                          ignore_inter, elec, emap,
                          p_elec_total, p_emap_total);
