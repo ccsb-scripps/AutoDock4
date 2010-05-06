@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.27 2009/08/18 23:36:25 rhuey Exp $
+ $Id: readPDBQT.cc,v 1.28 2010/05/06 22:11:53 mp Exp $
 
  AutoDock 
 
@@ -326,7 +326,11 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 atomstuff[natom][30] = '\0';
                 strcpy(mol.atomstr[natom], atomstuff[natom]);
 
-                sscanf(&input_line[12], "%s", pdbaname[natom]);
+                //sscanf(&input_line[12], "%s", pdbaname[natom]);
+		// safer:
+		strncpy(pdbaname[natom], &input_line[12],  
+		  sizeof(pdbaname[natom])-1);
+		pdbaname[natom][sizeof(pdbaname[natom])-1]='\0';
 
                 // "map_index" is used as an index into the AutoGrid "map" array to look up 
                 // the correct energies in the current grid cell, thus:	map[][][][map_index[natom]]
