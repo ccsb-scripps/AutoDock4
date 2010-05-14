@@ -1,6 +1,6 @@
 /*
 
- $Id: call_gs.cc,v 1.11 2009/05/08 23:02:11 rhuey Exp $
+ $Id: call_gs.cc,v 1.12 2010/05/14 21:25:51 mp Exp $
 
  AutoDock 
 
@@ -49,14 +49,14 @@ extern Eval evaluate;
 
 State call_gs(Global_Search *global_method, State now, unsigned int num_evals, unsigned int pop_size,
               Molecule *mol,
-              int extOutputEveryNgens,
+              Output_pop_stats  extOutput_pop_stats,
               GridMapSetInfo *info,
               int end_of_branch[MAX_TORS])
 {
    register unsigned int i;
 
    evaluate.reset();
-   global_method->reset(extOutputEveryNgens);
+   global_method->reset(extOutput_pop_stats);
 
    Population thisPop(pop_size);
    thisPop.set_eob(end_of_branch);

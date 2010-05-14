@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.17 2010/03/22 20:40:56 mp Exp $
+ $Id: stateLibrary.cc,v 1.18 2010/05/14 21:25:51 mp Exp $
 
  AutoDock 
 
@@ -34,6 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "qmultiply.h"
 
 extern FILE *logFile;
+static void writeStateAQ( FILE *, State, char);
 
 void initialiseState( State *S )
 {
@@ -46,6 +47,9 @@ void initialiseState( State *S )
     for (i = 0; i  < MAX_TORS;  i++ ) {
         S->tor[i] = 0.0;
     }
+    S->Center.x = 0.0;
+    S->Center.y = 0.0;
+    S->Center.z = 0.0;
 }
 
 void initialiseQuat( Quat *Q )
@@ -66,24 +70,8 @@ void copyState( State *D,  /* Destination -- copy to here */
 {
     register int i;
         
-    /*
-    D->T.x    = S.T.x;
-    D->T.y    = S.T.y;
-    D->T.z    = S.T.z;
-    */
     D->T = S.T;
     
-    /*
-    D->Q.nx   = S.Q.nx;
-    D->Q.ny   = S.Q.ny;
-    D->Q.nz   = S.Q.nz;
-    D->Q.ang  = S.Q.ang;
-    D->Q.x    = S.Q.x;
-    D->Q.y    = S.Q.y;
-    D->Q.z    = S.Q.z;
-    D->Q.w    = S.Q.w;
-    D->Q.qmag = S.Q.qmag;
-    */
     D->Q = S.Q;
  
     D->ntor   = S.ntor;
@@ -94,13 +82,15 @@ void copyState( State *D,  /* Destination -- copy to here */
 
     D->hasEnergy = S.hasEnergy;
 
-    /*
-    D->e.total = S.e.total;
-    D->e.intra = S.e.intra;
-    D->e.inter = S.e.inter;
-    D->e.FE = S.e.FE;
-    */
     D->e = S.e;
+    D->Center = S.Center;
+}
+
+static Real RadCanonicalDeg( Real x) {
+   // convert torsion value from radians to degrees, 
+   // wrapping angles at all points.
+   // Probably could be simplified.
+	return WrpDeg( ModDeg( RadiansToDegrees( WrpRad( ModRad( x )))));
 }
 
 void printState( FILE *fp, 
@@ -108,23 +98,22 @@ void printState( FILE *fp,
                  int detail )
 {
     register int i;
-    Real torDegTmp;
 
     switch( detail ) {
         case 0:
         case 1:
-            writeState(fp,S);
+            writeStateAQ(fp,S,'A'); // short format, axis-angle convention
             break;
 
         case 2:
         default:
             (void)fprintf( fp, "\nSTATE VARIABLES:\n________________\n\n" );
             (void)fprintf( fp, "Translation x,y,z         = %.3f %.3f %.3f\n", S.T.x, S.T.y, S.T.z );
-            (void)fprintf( fp, "Quaternion x,y,z,w        = %.3f %.3f %.3f %.3f\n", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
+            (void)fprintf( fp, "Quaternion x,y,z,w        = %.6f %.6f %.6f %.6f\n", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
             S.Q = convertQuatToRot( S.Q );
-            S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-            (void)fprintf( fp, "Axis-Angle nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
+            (void)fprintf( fp, "Axis-Angle nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, RadCanonicalDeg(S.Q.ang) );
             //(void)fprintf( fp, "Quaternion qmag           = %.3f\n", S.Q.qmag );
+            (void)fprintf( fp, "Center x,y,z         = %.3f %.3f %.3f\n", S.Center.x, S.Center.y, S.Center.z );
             (void)fprintf( fp, "Number of Torsions        = %d\n", S.ntor );
             if (S.ntor > 0) {
                 (void)fprintf( fp, "Torsions (degrees)        =");
@@ -132,10 +121,7 @@ void printState( FILE *fp,
                     S.tor[i] = WrpRad( ModRad( S.tor[i] ) );
                 }
                 for (i=0; i<S.ntor; i++) {
-                    torDegTmp = RadiansToDegrees( S.tor[i] );
-                    torDegTmp = ModDeg( torDegTmp );
-                    torDegTmp = WrpDeg( torDegTmp );
-                    pr( fp, " %.2f", torDegTmp );
+                    pr( fp, " %.2f", RadCanonicalDeg( S.tor[i]));
                     //if ((B_isTorConstrained[i] == 1) && B_ShowTorE) {
                         //pr( fp, ", Energetic penalty = %uhd\n", US_TorE[i]);
                     //} else {
@@ -152,55 +138,69 @@ void printState( FILE *fp,
             break;
         case 4:
 	    // Writes in compact format with underscore separations, no newline
-	    // Used by PrintPopulationStatisticsVerbose (M Pique 2010-03) @@
+	    // Used by PrintPopulationStatisticsVerbose (M Pique 2010-03)
             (void)fprintf( fp, "%.3f_%.3f_%.3f", S.T.x, S.T.y, S.T.z );
-            (void)fprintf( fp, "_%.4f_%.4f_%.4f_%.4f", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
+            (void)fprintf( fp, "_%.6f_%.6f_%.6f_%.6f", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
             for (i=0; i<S.ntor; i++) {
-                    S.tor[i] = WrpRad( ModRad( S.tor[i] ) );
-                    torDegTmp = RadiansToDegrees( S.tor[i] );
-                    torDegTmp = ModDeg( torDegTmp );
-                    torDegTmp = WrpDeg( torDegTmp );
-                    pr( fp, "_%.2f", torDegTmp );
+                    pr( fp, "_%.3f", RadCanonicalDeg(S.tor[i]) );
             }
+            break;
+        case 5:
+            writeStateAQ(fp,S,'Q'); // short format, quaternion convention
+            break;
+        case 6:
+	    // verbose state including center and ntors
+	    //  for writing "Detailed state:" line into DLG  (M Pique 2010-05) 
+	    // Torsions are written out in degrees
+	    // Does not append newline
+            (void)fprintf( fp, " trans %.3f %.3f %.3f", S.T.x, S.T.y, S.T.z );
+            (void)fprintf( fp, " quatxyzw %.6f %.6f %.6f %.6f", 
+	      S.Q.x, S.Q.y, S.Q.z, S.Q.w );
+            (void)fprintf( fp, " center %.3f %.3f %.3f", 
+	      S.Center.x, S.Center.y, S.Center.z );
+            (void)fprintf( fp, " ntor %d", S.ntor);
+            for (i=0; i<S.ntor; i++) pr( fp, " %.4f", RadCanonicalDeg(S.tor[i]));
             break;
     }
 }
 
-void writeState( FILE *fp, State S )
+static void writeStateAQ( FILE *fp, State S, char convention )
 {
     register int i;
-    Real torDegTmp;
 
-    //    (void)fprintf( fp, "State= " );
 
     // Write translation.
     (void)fprintf( fp, "%7.3f %7.3f %7.3f  ", S.T.x, S.T.y, S.T.z );
 
-    // Convert quaternion to axis-angle.
-    S.Q = convertQuatToRot( S.Q );
+    switch (convention) {
+       case 'Q':
+       case 'q':
+	    // quaternion
+	    (void)fprintf( fp, "%.5f %.5f %.5f %.5f  ", S.Q.x, S.Q.y, S.Q.z, S.Q.w);
+	    break;
 
-    // Write axis-angle.
-    S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-    (void)fprintf( fp, "%6.3f %6.3f %6.3f %6.3f  ", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
-    
+       case 'A':
+       case 'a':
+       default:
+	    //  axis-angle.
+	    S.Q = convertQuatToRot( S.Q ); // quaternion to axis-angle.
+
+	    S.Q.ang = WrpRad( ModRad( S.Q.ang ));
+	    (void)fprintf( fp, "%6.3f %6.3f %6.3f %6.3f  ", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
+	    break;
+    }
     // Write torsion angles.
     if (S.ntor > 0) {
         for (i=0; i<S.ntor; i++) {
-            S.tor[i] = WrpRad( ModRad( S.tor[i] ) );
-        }
-        for (i=0; i<S.ntor; i++) {
-            torDegTmp = RadiansToDegrees( S.tor[i] );
-            torDegTmp = ModDeg( torDegTmp );
-            torDegTmp = WrpDeg( torDegTmp );
-            // Commented out next line to make format more consistent, now all
-            // numbers are space-delimited.
-            //pr( fp, " %.2f%c", torDegTmp, (i==(S.ntor-1) ? '.' : ','));
-            pr( fp, " %7.2f", torDegTmp );
+            pr( fp, " %7.2f", RadCanonicalDeg(S.tor[i]));
         }
     }
-    // Leave fp on this line for energies which follow....
-    //    (void)fprintf( fp, "\n");
 }
+void writeState( FILE *fp, State S )
+{
+	// simple wrapper to write state with axis-angle convention
+	writeStateAQ( fp, S, 'A');
+	}
 
 int checkState( const State *D )
 {
@@ -275,18 +275,8 @@ int checkState( const State *D )
 Molecule copyStateToMolecule(State *S, Molecule *mol) /* S is the source */
 {
     register int i;
-    mol->S.T.x = S->T.x;
-    mol->S.T.y = S->T.y;
-    mol->S.T.z = S->T.z;
-    mol->S.Q.nx = S->Q.nx;
-    mol->S.Q.ny = S->Q.ny;
-    mol->S.Q.nz = S->Q.nz;
-    mol->S.Q.ang = S->Q.ang;
-    mol->S.Q.x = S->Q.x;
-    mol->S.Q.y = S->Q.y;
-    mol->S.Q.z = S->Q.z;
-    mol->S.Q.w = S->Q.w;
-    mol->S.Q.qmag = S->Q.qmag;
+    mol->S.T = S->T;
+    mol->S.Q = S->Q;
     mol->S.ntor = S->ntor;
     for (i = 0; i  < MAX_TORS;  i++ ) {
         mol->S.tor[i] = S->tor[i];

@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.25 2009/12/16 23:35:55 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.26 2010/05/14 21:25:51 mp Exp $
 
  AutoDock  
 
@@ -137,7 +137,20 @@ writePDBQT(int irun, FourByteLong seed[2],
     // Write out the state variables
 	if ((outlev > -1) && (outlev < 3)) {
         // "outlev" is the level of detail: 2 is high, 0 is low
-        pr(logFile,"State:\t");
+
+	// pass original center to printState - could be improved - MP 2010-05
+	state.Center.x = sml_center[X];
+	state.Center.y = sml_center[Y];
+	state.Center.z = sml_center[Z];
+	pr(logFile,"Detailed state:\t");
+	printState(logFile, state, 6); // detailed, include center, ntor
+	pr(logFile,"\n");
+
+        pr(logFile,"QState:\t");
+        printState(logFile, state, 5); // short format, as quaternion
+        pr(logFile,"\n");
+
+        pr(logFile,"State:\t"); // various possibly longer formats, as axis-angle
         printState(logFile, state, outlev);
         pr(logFile,"\n\n");
 	} else if (outlev < 0) {

@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.41 2009/12/15 06:21:02 mp Exp $
+ $Id: gs.cc,v 1.42 2010/05/14 21:25:51 mp Exp $
 
  AutoDock 
 
@@ -179,7 +179,7 @@ Genetic_Algorithm::Genetic_Algorithm( EvalMode init_e_mode,
                                       Real init_m_rate, 
                                       int init_window_size, 
                                       unsigned int init_max_generations,
-                                      unsigned int outputEveryNgens)
+                                      Output_pop_stats init_output_pop_stats)
 
 :  e_mode(init_e_mode),
 s_mode(init_s_mode),
@@ -198,7 +198,7 @@ low(-100),
 high(100),
 generations(0),
 max_generations(init_max_generations),
-outputEveryNgens(100),
+output_pop_stats(init_output_pop_stats),
 converged(0),
 alloc(NULL),
 mutation_table(NULL),
@@ -1513,21 +1513,21 @@ int Genetic_Algorithm::search(Population &solutions)
    // generation is over, tabulate statistics
 
    if (debug > 0) {
-       (void)fprintf(logFile,"DEBUG:  Generation: %3u, outputEveryNgens = %3d, generations%%outputEveryNgens = %u\n",
-       generations, outputEveryNgens, outputEveryNgens>0?generations%outputEveryNgens:0);
+       (void)fprintf(logFile,"DEBUG:  Generation: %3u, output_pop_stats.everyNgens = %3d, generations%%output_pop_stats.everyNgens = %u\n",
+       generations, output_pop_stats.everyNgens, output_pop_stats.everyNgens>0?generations%output_pop_stats.everyNgens:0);
    }
        /* Only output statistics if the output level is not 0. */
-   if (outputEveryNgens != 0 && generations%outputEveryNgens == 0) {
+   if (output_pop_stats.everyNgens != 0 && generations%output_pop_stats.everyNgens == 0) {
 
 
        // print "Generation:" line (basic info, no mean/median/stddev...
        (void)fprintf(logFile,"Generation: %3u   ", generations);
 #ifdef DEBUG3
-       // medium (with age/pop info) output level
-       (void) solutions.printPopulationStatistics(logFile, 2, FALSE);
+       // medium (with age/pop info) output level, no newline at end
+       (void) solutions.printPopulationStatistics(logFile, 2, "");
 #else
-       // lowest output level, no newline
-       (void) solutions.printPopulationStatistics(logFile, 1, FALSE); 
+       // lowest output level, no newline at end
+       (void) solutions.printPopulationStatistics(logFile, 1, ""); 
 #endif /* DEBUG3 */
        (void)fprintf(logFile,"    Num.evals.: %ld   Timing: ", 
                evaluate.evals() );

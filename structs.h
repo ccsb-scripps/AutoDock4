@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.23 2009/10/02 22:10:48 rhuey Exp $
+ $Id: structs.h,v 1.24 2010/05/14 21:25:51 mp Exp $
 
  AutoDock  
 
@@ -74,15 +74,15 @@ typedef struct coord
 
 typedef struct quat
 {
+  double x;			/* quaternion's x-component */
+  double y;			/* quaternion's y-component */
+  double z;			/* quaternion's z-component */
+  double w;			/* quaternion's w-component */
+  double qmag;			/* quaternion's 4-D magnitude */
   double nx;			/* unit vector's x-component */
   double ny;			/* unit vector's y-component */
   double nz;			/* unit vector's z-component */
   double ang;			/* angle of rotation about unit-vector */
-  double w;			/* quaternion's w-component */
-  double x;			/* quaternion's x-component */
-  double y;			/* quaternion's y-component */
-  double z;			/* quaternion's z-component */
-  double qmag;			/* quaternion's 4-D magnitude */
 } Quat;
 
 typedef struct quaternion
@@ -126,6 +126,8 @@ typedef struct state
   int ntor;			/* number of torsions in molecule */
   int hasEnergy;		/* if 0, this state has an undefined energy */
   Energy e;			/* energy structure */
+  Coord Center;			/* original input ligand center (pivot point)
+     					as set by 'about' DPF keyword */
 } State;
 
 /* ____________________________________________________________________________ */
@@ -293,6 +295,17 @@ typedef struct statistics
     Real maximum;
     /* Real standard_deviation; */
 } Statistics;
+
+/* ______________________________________________________________________________ */
+/* Output_pop_stats (Output Population Statistics)   added 2010-05 M Pique */
+
+typedef struct output_pop_stats
+{
+    unsigned int level;  // 0 means minimal, 1 means "basic" controlled by ngens, nevals:
+    unsigned int everyNgens;
+    unsigned int everyNevals;
+} Output_pop_stats;
+
 
 /* ______________________________________________________________________________ */
 /* EnergyBreakdown */

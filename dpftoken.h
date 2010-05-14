@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.25 2010/04/15 19:30:44 mp Exp $
+ $Id: dpftoken.h,v 1.26 2010/05/14 21:25:51 mp Exp $
 
  AutoDock 
 
@@ -177,5 +177,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define GA_LINEAR_RANKING_SELECTION	127
 #define DPF_RMSMODE	128
 #define DPF_SCALE_EINTERMOL	129
+#define DPF_OUTPUT_POP_STATS	130
 #endif
 /* EOF */

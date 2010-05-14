@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.34 2010/03/22 20:40:56 mp Exp $
+ $Id: support.cc,v 1.35 2010/05/14 21:25:51 mp Exp $
 
  AutoDock 
 
@@ -246,8 +246,8 @@ int ilow, ihigh; // indices to be weighted
   
    
 
-int Population::printPopulationStatistics(FILE *output, int level, Boole appendNewline) {
-// write best energy, etc, depending on level
+int Population::printPopulationStatistics(FILE *output, int level, const char suffix[]) {
+// write best energy, etc, depending on level, followed by suffix string
 // return 0 if OK, non-zero if error
 // Code adapted from gs.cc  - M Pique  December 2009
 int returnCode=0;
@@ -333,7 +333,7 @@ switch (level) {
 	  }
 	break;
 	}
-    if(appendNewline) fprintf(output, "\n");
+    if(suffix!=NULL) fprintf(output, "%s", suffix);
     return returnCode;
  }
 int Population::printPopulationStatisticsVerbose(FILE * output, 
@@ -343,12 +343,12 @@ int returnCode=0;
    (void) fprintf(output, "Population at Generation: %3u ", generations);
 
    // highest level, without newline at end, sets population best_i, best_e:
-   returnCode= printPopulationStatistics(output, 3, FALSE);
+   returnCode= printPopulationStatistics(output, 3, "");
 
    // print "State0:" field with compact state for best individual.
    //  Note we cannot use printIndividualsState method because it
    //    appends a newline so we call lower-level printState() from 
-   //    stateLibrary.cc   @@
+   //    stateLibrary.cc  
    (void) fprintf(output," State0: ");
    heap[best_i].printIndividualsState( output, ntor, 4); // 4 means print compact state
 

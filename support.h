@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.17 2010/03/22 20:40:56 mp Exp $
+ $Id: support.h,v 1.18 2010/05/14 21:25:51 mp Exp $
 
  AutoDock 
 
@@ -38,6 +38,16 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 ** $Log: support.h,v $
+** Revision 1.18  2010/05/14 21:25:51  mp
+** Added printing of "Detailed state:" and "QState:".
+** Added DPF keyword "output_population_statistics" to control the detailed
+**   "Population at Generation:" logging, with partial implementation,
+**   triggered by number of generations only, not number of evaluations (yet).
+**  Modified Files:
+**  	call_glss.cc call_gs.cc configure.ac dpftoken.h gs.cc gs.h
+**  	hybrids.h main.cc parse_dpf_line.cc stateLibrary.cc structs.h
+**  	support.cc support.h writePDBQT.cc
+**
 ** Revision 1.17  2010/03/22 20:40:56  mp
 ** Added reporting state vector for best individual to "Population at Generation:"
 ** line as underscore-separated string
@@ -289,7 +299,7 @@ class Population
       //  see printPopulationStatistics (TODO - put in better place)
       double best_e; // best energy
       int best_i; // index in heap[] of indiv with best energy
-      int printPopulationStatistics(FILE *, int, Boole); /* prints best, worse, mean, etc energies */
+      int printPopulationStatistics(FILE *, int, const char []); /* prints best, worse, mean, etc energies */
       int printPopulationStatisticsVerbose(FILE *, unsigned int, long int, int, const char []); /* print with generations & #evals */
       void printPopulationAsStates(FILE *, int, int); /*prints energies,states of top energies */
       void printPopulationAsCoordsEnergies(FILE *, int, int); /*prints energies,states of top energies */

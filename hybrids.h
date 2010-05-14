@@ -1,6 +1,6 @@
 /*
 
- $Id: hybrids.h,v 1.15 2009/10/13 22:11:03 rhuey Exp $
+ $Id: hybrids.h,v 1.16 2010/05/14 21:25:51 mp Exp $
 
  AutoDock 
 
@@ -46,7 +46,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 State call_glss(Global_Search *global_method, Local_Search *local_method, 
 		State now, unsigned int num_evals, unsigned int pop_size, 
-		int outlev, unsigned int extOutputEveryNgens, Molecule *mol,
+		int outlev, Output_pop_stats extOutput_pop_stats, Molecule *mol,
 		Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
         GridMapSetInfo *info, char *FN_pop_file,
         int end_of_branch[MAX_TORS] );
@@ -70,7 +70,7 @@ Individual random_ind(int num_torsions, GridMapSetInfo *info );
 
 State call_glss_tors(Global_Search *global_method, Local_Search *local_method, 
 		State now, unsigned int num_evals, unsigned int pop_size, 
-		int outlev, unsigned int extOutputEveryNgens, Molecule *mol,
+		int outlev, Output_pop_stats extOutput_pop_stats, Molecule *mol,
 		Boole B_RandomDihe0,
         GridMapSetInfo *info, char FN_pop_file[MAX_CHARS] );
 
@@ -97,7 +97,7 @@ State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Mole
 
 State call_gs(Global_Search *global_method, State now, unsigned int num_evals, unsigned int pop_size,
               Molecule *mol,
-              int extOutputEveryNgens,
+              Output_pop_stats extOutput_pop_stats,
               GridMapSetInfo *info,
               int end_of_branch[MAX_TORS] );
 

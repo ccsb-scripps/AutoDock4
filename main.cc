@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.117 2010/04/15 19:30:44 mp Exp $
+ $Id: main.cc,v 1.118 2010/05/14 21:25:51 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -105,7 +105,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.117 2010/04/15 19:30:44 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.118 2010/05/14 21:25:51 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -326,7 +326,7 @@ EnergyBreakdown eb;
 
 initialise_energy_breakdown(&eb, 0, 0);
 
-unsigned int outputEveryNgens = 100;
+static Output_pop_stats output_pop_stats;
 
 Boole B_atom_types_found = FALSE;
 Boole B_isGaussTorCon = FALSE;
@@ -696,19 +696,23 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Output level,
         */
         retval = sscanf( line, "%*s %d", &outlev );
+	if(retval!=1) outlev=0; // TODO should be syntax error
+
+	// set frequency of printing minimal generational statistics
+	//  For more verbose population statistics, use "output_pop_stats"
         switch ( outlev ) {
         case -1:
-            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
             break;
         case 0:
-            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
             break;
         case 1:
-            outputEveryNgens = (unsigned int) OUTLEV1_GENS;
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV1_GENS;
             break;
         case 2:
         default:
-            outputEveryNgens = (unsigned int) OUTLEV2_GENS;
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV2_GENS;
             break;
         }
         break;
@@ -736,7 +740,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.117 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.118 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -850,6 +854,23 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 /*____________________________________________________________________________*/
 
+    case DPF_OUTPUT_POP_STATS:
+        /*
+        **  output_population_statistics [option string]
+	*  must be after outlev line to have effect
+        */
+        retval = sscanf( line, "%*s %s %d %d", 
+	  c_mode_str, 
+	  &output_pop_stats.everyNgens,
+	  &output_pop_stats.everyNevals );
+        if (retval==3 && streq(c_mode_str, "basic")) {
+	    output_pop_stats.level = 1; // basic
+	    }
+	    // nothing besides "basic (int) (int)" is supported yet
+        else stop("unsupported option in \"output_population_statistics\" line.\n");
+	break;
+/*____________________________________________________________________________*/
+
     case DPF_OUTLEV:
         /*
         **  outlev
@@ -859,23 +880,23 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         switch ( outlev ) {
         case -1:
             pr( logFile, "Output Level = -1.  ONLY STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
-            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
             break;
         case 0:
             pr( logFile, "Output Level = 0.\n" );
-            outputEveryNgens = (unsigned int) OUTLEV0_GENS;
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
             break;
         case 1:
             pr( logFile, "Output Level = 1.  MINIMUM OUTPUT DURING DOCKING.\n" );
-            outputEveryNgens = (unsigned int) OUTLEV1_GENS;
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV1_GENS;
             break;
         case 2:
         default:
             pr( logFile, "Output Level = 2.  FULL OUTPUT DURING DOCKING.\n" );
-            outputEveryNgens = (unsigned int) OUTLEV2_GENS;
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV2_GENS;
             break;
         }
-        if(outputEveryNgens>0) pr( logFile, "\n\tOutput population statistics every %u generations.\n", outputEveryNgens );
+        if(output_pop_stats.everyNgens>0) pr( logFile, "\n\tOutput population statistics every %u generations.\n", output_pop_stats.everyNgens );
         else pr( logFile, "\n\tNever output generation-based population statistics.\n");
         (void) fflush(logFile);
         break;
@@ -1658,6 +1679,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr( logFile, "Small molecule center of rotation =\t" );
         pr( logFile, "(%+.3f, %+.3f, %+.3f)\n\n", lig_center[X], lig_center[Y], lig_center[Z]);
         B_found_about_keyword = TRUE; //set false by 'move' true by 'about'
+	/* record center used as part of overall State */
+	sInit.Center.x=lig_center[X];
+	sInit.Center.y=lig_center[Y];
+	sInit.Center.z=lig_center[Z];
+	ligand.S.Center.x = lig_center[X];
+	ligand.S.Center.y = lig_center[Y];
+	ligand.S.Center.z = lig_center[Z];
         /*
         **  Center the ligand,
         */
@@ -1670,6 +1698,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
             /*
             **  Zero-out on central point...
+	    * TODO this will fail if "about" appears more than once - MP
             */
             maxrad = -1.0;
             for ( i=0; i<true_ligand_atoms; i++ ) { /*new, gmm, 6-23-1998*/
@@ -2972,11 +3001,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       }
 
       if (debug > 0) {
-        if(outputEveryNgens>0) pr( logFile, "\n\tOutput population statistics every %u generations.\n", outputEveryNgens );
+        if(output_pop_stats.everyNgens>0) pr( logFile, "\n\tOutput population statistics every %u generations.\n", output_pop_stats.everyNgens );
         else pr( logFile, "\n\tNever output generation-based population statistics.\n");
       }
       GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate,
-                                                 window_size, num_generations, outputEveryNgens );
+                                                 window_size, num_generations, output_pop_stats);
       ((Genetic_Algorithm *)GlobalSearchMethod)->mutation_values( low, high, alpha, beta, trnStep0, qtwStep0, torStep0  );
       ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
 
@@ -3146,7 +3175,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                           sInit,
                                           num_evals, pop_size,
                                           outlev,
-                                          outputEveryNgens, &ligand,
+                                          output_pop_stats, &ligand,
                                           B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                                           info, FN_pop_file, end_of_branch );
                 // State of best individual at end of GA-LS run is returned.
@@ -3350,7 +3379,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               gaStart = times(&tms_gaStart);
 
               sHist[nconf] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size,
-                                      &ligand, outputEveryNgens, info, end_of_branch);
+                                      &ligand, output_pop_stats, info, end_of_branch);
 
               pr(logFile, "\nFinal docked state:\n");
               printState(logFile, sHist[nconf], 2);
@@ -3996,7 +4025,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                       sInit,
                                       num_evals_unbound, pop_size,
                                       outlev,
-                                      outputEveryNgens, &ligand,
+                                      output_pop_stats, &ligand,
                                       // B_RandomDihe0, // use this line with call_glss_tors()
                                       B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                                       info, FN_pop_file, end_of_branch );
@@ -4141,7 +4170,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                          sInit,
                                          num_evals_unbound, pop_size,
                                          outlev,
-                                         outputEveryNgens, &ligand,
+                                         output_pop_stats, &ligand,
                                          B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                                          info, FN_pop_file, end_of_branch );
                 // State of best individual at end of GA-LS run, sUnbound_ad, is returned.

@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.47 2010/03/22 20:40:56 mp Exp $
+ $Id: call_glss.cc,v 1.48 2010/05/14 21:25:51 mp Exp $
 
  AutoDock  
 
@@ -253,7 +253,8 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
                 State sInit, 
                 unsigned int num_evals, unsigned int pop_size, 
                 int outlev, 
-                unsigned int extOutputEveryNgens, Molecule *mol, 
+		Output_pop_stats output_pop_stats,
+                Molecule *mol, 
                 Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
                 GridMapSetInfo *info, char *FN_pop_file,
                 int end_of_branch[MAX_TORS])
@@ -267,7 +268,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     EvalMode localEvalMode = Normal_Eval;
     FILE *pop_fileptr;
 
-    global_method->reset(extOutputEveryNgens);
+    global_method->reset(output_pop_stats);
     local_method->reset();
     evaluate.reset();
 
@@ -388,7 +389,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
      int *beforeorder = new int[pop_size];
      int *afterorder = new int[pop_size];
 
-    (void)fprintf(logFile,"@@ #evals before msort %-6u  DEBUGMSORT call_glss.cc\n", evaluate.evals());
+    (void)fprintf(logFile,"#evals before msort %-6u  DEBUGMSORT call_glss.cc\n", evaluate.evals());
      for (i=0; i<pop_size; i++) beforesort[i] = thisPop[i].value(Normal_Eval);
      //thisPop.msort(1);
      for (i=0; i<pop_size; i++) aftersort[i] = thisPop[i].value(Normal_Eval);
@@ -402,8 +403,8 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
      for (i=0; i<pop_size; i++) \
      for (j=0;j<pop_size && beforesort[i]!=aftersort[afterorder[i]=j];j++) ;
      // report 
-    (void)fprintf(logFile,"@@ #evals after msort %-6u  DEBUGMSORT call_glss.cc\n", evaluate.evals());
-    (void)fprintf(logFile,"@@ pop before     after sort   locn   DEBUGMSORT call_glss.cc\n");
+    (void)fprintf(logFile,"#evals after msort %-6u  DEBUGMSORT call_glss.cc\n", evaluate.evals());
+    (void)fprintf(logFile,"pop before     after sort   locn   DEBUGMSORT call_glss.cc\n");
      for (i=0; i<pop_size; i++) 
        (void)fprintf(logFile,"%3d %9.2f %3d   %9.2f %3d\n", 
          i, beforesort[i], afterorder[i], aftersort[i], beforeorder[i]);
@@ -422,7 +423,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
        // print "Population at Generation:" line 
        //   with low/high/mean/median/stddev/state_of_best_indiv...
        // and search counts (expected to be zero)
-       if(outlev>0) {
+       if(output_pop_stats.level==1) { // "basic"
          (void) thisPop.printPopulationStatisticsVerbose(logFile, 
          num_generations, evaluate.evals(), sInit.ntor, "");
 	 fprintf(logFile, " cg_count: %u", global_method->cg_count);
@@ -474,14 +475,14 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
        // Print extended generational statistics 
        //  every generation 1 to 20
-       //  every tenth generation 20 to extOutputEveryNgens (100)
-       //  every "extOutputEveryNgens" (100) if greater than that
+       //  every tenth generation 20 to output_pop_stats.everyNgens (100)
+       //  every "output_pop_stats.everyNgens" (100) if greater than that
        // This is purely for studying population convergence -  M Pique 2010
-       // note: next line is "outlev > 1" in released code but "> 0" at TSRI
-       if (outlev > 0 && extOutputEveryNgens != 0 && (
+       // @@note: next line is "outlev > 1" in released code but "> 0" at TSRI
+       if (output_pop_stats.level > 0 && output_pop_stats.everyNgens != 0 && (
 	 (num_generations <= 20) ||
-	 (num_generations <= extOutputEveryNgens && num_generations%10 == 0) ||
-         (num_generations%extOutputEveryNgens == 0 )
+	 (num_generations <= (int)output_pop_stats.everyNgens && num_generations%10 == 0) ||
+         (num_generations%output_pop_stats.everyNgens == 0 )
 	 )) {
 	       // print "Population at Generation:" line 
 	       //   with low/high/mean/median/stddev/state_of_best_indiv...

@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.16 2009/12/15 06:21:02 mp Exp $
+ $Id: gs.h,v 1.17 2010/05/14 21:25:51 mp Exp $
 
  AutoDock 
 
@@ -48,7 +48,7 @@ class Global_Search
       virtual int search(Population &) = 0;
       virtual int terminate(void) = 0;
       virtual void reset(void) = 0;
-      virtual void reset(unsigned int) = 0;
+      virtual void reset(Output_pop_stats) = 0;
       // the next four are only applicable to Genetic_Algorithm
       // but I'm uncertain how best to fit statistics into the
       // existing classes so bear with me  - Mike Pique Dec 2009
@@ -78,7 +78,7 @@ class Genetic_Algorithm : public Global_Search
       int low, high; // should these be int or Real?
       unsigned int generations; 
 	  unsigned int max_generations;
-      unsigned int outputEveryNgens; // gmm 2000.11.1,2003.08.18
+      Output_pop_stats output_pop_stats;// gmm 2000.11.1,2003.08.18, MPique 2010.05 
       unsigned int converged; // gmm 7-jan-98
  	  Real *alloc;
       Real *mutation_table;
@@ -107,13 +107,14 @@ class Genetic_Algorithm : public Global_Search
    public:
       Genetic_Algorithm(void);
       // Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, Real, Real, int, unsigned int); // before 2000.11.1
-      Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, Real, Real, int, unsigned int, unsigned int); // after 2000.11.1
+      //Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, Real, Real, int, unsigned int, unsigned int); // after 2000.11.1
+      Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, Real, Real, int, unsigned int, Output_pop_stats); // after 2010.05
       ~Genetic_Algorithm(void);
       void initialize(unsigned int, unsigned int);
       void mutation_values(int, int, Real, Real,  Real, Real, Real );
       unsigned int num_generations(void);
       void reset(void);
-      void reset(unsigned int);
+      void reset(Output_pop_stats);
       int terminate(void);
       int search(Population &);
       int set_linear_ranking_selection_probability_ratio(Real);
@@ -142,7 +143,9 @@ inline Genetic_Algorithm::Genetic_Algorithm(void)
    quatStep = torsStep = DegreesToRadians( 30.0 );
    worst = avg = 0.0L;
    converged = 0; // gmm 7-jan-98
-   outputEveryNgens = OUTLEV1_GENS; // gmm 2000-nov-1
+   output_pop_stats.level = 0;
+   output_pop_stats.everyNgens = OUTLEV1_GENS; // gmm 2000-nov-1
+   output_pop_stats.everyNevals = 0;
    linear_ranking_selection_probability_ratio = 2.0; //mp+rh 10/2009
 }
 
@@ -200,9 +203,9 @@ inline void Genetic_Algorithm::reset(void)
    cg_count = ci_count = mg_count = mi_count = 0; // restart statistics
 }
 
-inline void Genetic_Algorithm::reset(unsigned int extOutputEveryNgens) // gmm 2000.11.1
+inline void Genetic_Algorithm::reset(Output_pop_stats extOutput_pop_stats)
 {
-   outputEveryNgens = extOutputEveryNgens; // gmm 2000.11.1
+   output_pop_stats = extOutput_pop_stats; // gmm 2000.11.1   MPique 2010.05
    generations = 0;
    converged = 0; // gmm 7-jan-98
    cg_count = ci_count = mg_count = mi_count = 0; // restart statistics
