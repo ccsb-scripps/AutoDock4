@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.48 2010/05/14 21:25:51 mp Exp $
+ $Id: call_glss.cc,v 1.49 2010/05/19 19:47:13 mp Exp $
 
  AutoDock  
 
@@ -276,6 +276,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     Population thisPop(pop_size);
     //  Pass in the end_of_branch tree for Branch Crossover Mode.
     thisPop.set_eob( end_of_branch );
+    thisPop.nevals_last_pop_stats = 0;  // reset last time stats were printed
 
     if (sInit.ntor > 0) {
         (void)fprintf( logFile, "\nAssigning a random translation, a random orientation and %d random torsions to each of the %u individuals.\n\n", sInit.ntor, pop_size);
@@ -430,7 +431,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 	 fprintf(logFile, " ci_count: %u", global_method->ci_count);
 	 fprintf(logFile, " mg_count: %u", global_method->mg_count);
 	 fprintf(logFile, " mi_count: %u", global_method->mi_count);
-	 fprintf(logFile, " ls_count: %u", local_method->count);
+	 fprintf(logFile, " ls_count: %u", local_method->ls_count);
 	 fprintf(logFile, "\n");
 	 }
      }
@@ -475,15 +476,26 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
        // Print extended generational statistics 
        //  every generation 1 to 20
-       //  every tenth generation 20 to output_pop_stats.everyNgens (100)
-       //  every "output_pop_stats.everyNgens" (100) if greater than that
-       // This is purely for studying population convergence -  M Pique 2010
-       // @@note: next line is "outlev > 1" in released code but "> 0" at TSRI
-       if (output_pop_stats.level > 0 && output_pop_stats.everyNgens != 0 && (
-	 (num_generations <= 20) ||
-	 (num_generations <= (int)output_pop_stats.everyNgens && num_generations%10 == 0) ||
-         (num_generations%output_pop_stats.everyNgens == 0 )
-	 )) {
+       //  every tenth generation 20 to output_pop_stats.everyNgens (typically 100)
+       //  every "output_pop_stats.everyNgens" (typically 100) if greater than that
+       //
+       //  or..
+       //  every "output_pop_stats.everyNevals" (typically 1,000,000)
+       // The number of evals when last printed is kept in 'thisPop'.
+       //
+       // This is purely for studying population convergence and is
+       // controlled by the "output_population_statistics" DPF keyword. - M Pique 2010
+       if (output_pop_stats.level > 0 && 
+            (output_pop_stats.everyNgens != 0 && (
+	    (num_generations <= 20) ||
+	    (num_generations <= (int)output_pop_stats.everyNgens 
+	       && num_generations%10 == 0) ||
+            (num_generations%output_pop_stats.everyNgens == 0 ) ) )
+	  || (output_pop_stats.everyNevals != 0 &&
+	     evaluate.evals() - thisPop.nevals_last_pop_stats 
+	       >= output_pop_stats.everyNevals)
+
+	 ) {
 	       // print "Population at Generation:" line 
 	       //   with low/high/mean/median/stddev/state_of_best_indiv...
 	       // followed by global search stats (crossover count, mutation count)
@@ -494,8 +506,9 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 		 fprintf(logFile, " ci_count: %u", global_method->ci_count);
 		 fprintf(logFile, " mg_count: %u", global_method->mg_count);
 		 fprintf(logFile, " mi_count: %u", global_method->mi_count);
-		 fprintf(logFile, " ls_count: %u", local_method->count);
+		 fprintf(logFile, " ls_count: %u", local_method->ls_count);
 		 fprintf(logFile, "\n");
+		 thisPop.nevals_last_pop_stats = evaluate.evals();
 		 }
         if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
 
@@ -514,16 +527,17 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
     thisPop.msort(1);
     (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
 
-    // print "Population at Generation:" line 
+    // print "Population at Generation:" line one last time (if needed)
     //   with low/high/mean/median/stddev/state_of_best_indiv...
-    if(outlev>0) {
+    if(output_pop_stats.level==1  // "basic"
+	     && evaluate.evals() > thisPop.nevals_last_pop_stats) {
        (void) thisPop.printPopulationStatisticsVerbose(logFile, 
         num_generations, evaluate.evals(), sInit.ntor, "");
 	 fprintf(logFile, " cg_count: %u", global_method->cg_count);
 	 fprintf(logFile, " ci_count: %u", global_method->ci_count);
 	 fprintf(logFile, " mg_count: %u", global_method->mg_count);
 	 fprintf(logFile, " mi_count: %u", global_method->mi_count);
-	 fprintf(logFile, " ls_count: %u", local_method->count);
+	 fprintf(logFile, " ls_count: %u", local_method->ls_count);
 	 fprintf(logFile, "\n");
 	 }
 

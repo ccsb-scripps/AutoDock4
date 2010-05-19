@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.h,v 1.8 2009/12/14 22:28:52 rhuey Exp $
+ $Id: ls.h,v 1.9 2010/05/19 19:47:13 mp Exp $
 
  AutoDock 
 
@@ -49,7 +49,7 @@ class Local_Search
       virtual void reset(void) = 0;
       virtual int terminate(void) = 0;
       virtual int search(Individual &) = 0;
-      unsigned int count;//search invocation count, for run statistics
+      unsigned int ls_count;//search invocation count, for run statistics
 };
 
 class Pattern_Search : public Local_Search
@@ -205,7 +205,7 @@ inline Solis_Wets_Base::~Solis_Wets_Base(void)
 
 inline void Solis_Wets_Base::reset(void)
 {
-   count = 0; // reset Statistics
+   ls_count = 0; // reset Statistics
 }
 
 inline int Solis_Wets_Base::terminate(void)

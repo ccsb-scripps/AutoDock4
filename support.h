@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.18 2010/05/14 21:25:51 mp Exp $
+ $Id: support.h,v 1.19 2010/05/19 19:47:13 mp Exp $
 
  AutoDock 
 
@@ -38,6 +38,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 ** $Log: support.h,v $
+** Revision 1.19  2010/05/19 19:47:13  mp
+** Implemented number-of-evaluations trigger, set by "output_population_statistics"
+** DPF keyword, most of the logic is in call_glss.cc
+**  Modified Files:	call_glss.cc configure.ac ls.cc ls.h main.cc support.h
+**
 ** Revision 1.18  2010/05/14 21:25:51  mp
 ** Added printing of "Detailed state:" and "QState:".
 ** Added DPF keyword "output_population_statistics" to control the detailed
@@ -301,6 +306,7 @@ class Population
       int best_i; // index in heap[] of indiv with best energy
       int printPopulationStatistics(FILE *, int, const char []); /* prints best, worse, mean, etc energies */
       int printPopulationStatisticsVerbose(FILE *, unsigned int, long int, int, const char []); /* print with generations & #evals */
+      unsigned long nevals_last_pop_stats; // when pop stats were last printed, see call_glss.cc
       void printPopulationAsStates(FILE *, int, int); /*prints energies,states of top energies */
       void printPopulationAsCoordsEnergies(FILE *, int, int); /*prints energies,states of top energies */
       void set_eob(int init_end_of_branch[MAX_TORS]); // For Branch Crossover Mode
