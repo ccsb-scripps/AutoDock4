@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.29 2010/05/14 21:25:51 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.30 2010/05/27 22:45:07 mp Exp $
 
  AutoDock 
 
@@ -35,7 +35,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 
 
-int parse_dpf_line( char line[LINE_LEN] )
+int parse_dpf_line( const char *line )
 
 /******************************************************************************/
 /*      Name: parse_dpf_line                                                  */
@@ -46,17 +46,18 @@ int parse_dpf_line( char line[LINE_LEN] )
 /*      Date: 19/05/94                                                        */
 /*----------------------------------------------------------------------------*/
 /*    Inputs: line                                                            */
-/*   Returns: integer token describing the keyword found.                     */
+/*   Returns: integer token describing the keyword found, or -1 if unknown    */
 /*   Globals: none.                                                           */
 /*----------------------------------------------------------------------------*/
 /* Modification Record                                                        */
 /* Date     Inits   Comments                                                  */
+/* 27 May 2010 M Pique     length of keyword must match length of token    */
 /* 06/09/95 RSH     Changed to an array implementation                        */
 /* 19/05/94 GMM     Entered code.                                             */
 /******************************************************************************/
 
 {
-    int j, i, token = DPF_;               /* return -1 if nothing is recognized. */
+    int j, i, token;
     char c[LINE_LEN];
 
     const struct {
@@ -207,17 +208,14 @@ int parse_dpf_line( char line[LINE_LEN] )
 #if defined(USING_COLINY)
               , {"coliny", DPF_COLINY}  
 #endif
-              , {"//END", DPF_NULL}
               };
 
-    // build lower-case version of the token into 'c'
-    c[0] = '\0';
-    for (j=0; line[j]!='\0' && !isspace(line[j]); j++) {
-        /*  Ignore case */
-        c[j] = (char)tolower((int)line[j]);
-        /*(void)fprintf(stderr,"%c",c[j]);*/
+    // build guaranteed-terminated copy of the input line first token into 'c'
+    for (j=0; j<sizeof(c) && line[j]!='\0' && !isspace(line[j]); j++) {
+        c[j] = line[j];
     }
-    /*(void)fprintf(stderr,"/n,j = %d\n",j);*/
+    c[j]='\0'; // assure termination
+    token = DPF_UNKNOWN;               /* return -1 if nothing is recognized. */
 
     /*  Recognize one character tokens  */
 
@@ -225,14 +223,15 @@ int parse_dpf_line( char line[LINE_LEN] )
         token = DPF_NULL;
     } else if (c[0]=='#') {
         token = DPF_COMMENT;
-    } else for (i=0;  (tokentable[i].tokenvalue!=DPF_NULL) ;  i++) {
+    } else for (i=0;  i<sizeof(tokentable); i++) {
     /*  Recognize token strings  */
         /*(void)fprintf(stderr,"i = %d, tokentable[i].lexeme = %s, tokentable[i].value = %d, c = %s\n",i,tokentable[i].lexeme,tokentable[i].tokenvalue,c);*/
-        if (strncasecmp(tokentable[i].lexeme, c, j) == 0) {
+        // short match version: if (strncasecmp(tokentable[i].lexeme, c, j) == 0) {
+        if (strcasecmp(tokentable[i].lexeme, c) == 0) {
             token = tokentable[i].tokenvalue;
             break;
         }
-    }
+   }
     return(token);
 }
 /* EOF */

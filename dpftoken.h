@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.26 2010/05/14 21:25:51 mp Exp $
+ $Id: dpftoken.h,v 1.27 2010/05/27 22:45:07 mp Exp $
 
  AutoDock 
 
@@ -46,7 +46,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef DPF_TOKENS
 #define DPF_TOKENS
 
-#define	DPF_		-1
+#define	DPF_UNKNOWN	-1
 #define	DPF_NULL	 0
 #define	DPF_COMMENT	 1
 // 2 // (DPF_TYPES was removed, since the "types" command is no longer supported in AD4

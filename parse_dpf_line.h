@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.h,v 1.3 2009/05/08 23:02:15 rhuey Exp $
+ $Id: parse_dpf_line.h,v 1.4 2010/05/27 22:45:07 mp Exp $
 
  AutoDock 
 
@@ -28,6 +28,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define PARSE_DPF_LINE
 
 #include "constants.h"
-int  parse_dpf_line( char  line[LINE_LEN] );
+int  parse_dpf_line( const char  *line );
 
 #endif

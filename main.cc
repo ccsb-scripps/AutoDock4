@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.119 2010/05/19 19:47:13 mp Exp $
+ $Id: main.cc,v 1.120 2010/05/27 22:45:07 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -68,7 +68,7 @@
 #include <stdlib.h>
 #include <string>
 using std::string;
-#define streq(a,b) (0==strcmp(a,b)) // convenience function
+#define streq(a,b) (0==strcasecmp(a,b)) // convenience function
 
 #include <sys/param.h>
 #include <ctype.h> // tolower
@@ -105,7 +105,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.119 2010/05/19 19:47:13 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.120 2010/05/27 22:45:07 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -174,7 +174,7 @@ NonbondParam *nonbondlist = new NonbondParam[MAX_NONBONDS];
 
 //   LINE_LEN
 //
-char error_message[LINE_LEN];
+char error_message[LINE_LEN+100];
 char message[LINE_LEN];
 char line[LINE_LEN];
 char torfmt[LINE_LEN];
@@ -401,7 +401,7 @@ int num_maps = 0;
 int num_atom_types = 0;
 int nval = 0;
 int outlev = -1;
-int retval = 0;
+int nfields = 0;
 int trj_end_cyc = 0;
 int trj_begin_cyc = 0;
 int trj_freq = 0;
@@ -695,8 +695,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  outlev
         **  Output level,
         */
-        retval = sscanf( line, "%*s %d", &outlev );
-	if(retval!=1) outlev=0; // TODO should be syntax error
+        nfields = sscanf( line, "%*s %d", &outlev );
+	if(nfields!=1) outlev=0; // TODO should be syntax error
 
 	// set frequency of printing minimal generational statistics
 	//  For more verbose population statistics, use "output_pop_stats"
@@ -723,7 +723,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         // -- set a flag
         // -- get the filename
         B_have_flexible_residues = TRUE;
-        (void) sscanf( line, "%*s %s", FN_flexres );
+        nfields = sscanf( line, "%*s %s", FN_flexres );
+	if(nfields!=1) stop("syntax error in FLEXIBLE_RESIDUES line");
         break;
 
     default:
@@ -741,7 +742,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.119 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.120 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -860,11 +861,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  output_population_statistics [option string]
 	*  must be after outlev line to have effect
         */
-        retval = sscanf( line, "%*s %s %d %d", 
+        nfields = sscanf( line, "%*s %s %d %d", 
 	  c_mode_str, 
 	  &output_pop_stats.everyNgens,
 	  &output_pop_stats.everyNevals );
-        if (retval==3 && streq(c_mode_str, "basic")) {
+        if (nfields==3 && streq(c_mode_str, "basic")) {
 	    output_pop_stats.level = 1; // basic
 	    }
 	    // nothing besides "basic (int) (int)" is supported yet
@@ -877,7 +878,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  outlev
         **  Output level,
         */
-        retval = sscanf( line, "%*s %d", &outlev );
+        nfields = sscanf( line, "%*s %d", &outlev );
         switch ( outlev ) {
         case -1:
             pr( logFile, "Output Level = -1.  ONLY STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
@@ -915,7 +916,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** initial implementation based on hsearch was suggested by Mike Pique
         */
 
-        parameter_library_found = sscanf( line, "%*s %s", FN_parameter_library );
+        parameter_library_found = 1==sscanf( line, "%*s %s", FN_parameter_library );
         (void) fflush(logFile);
 
         read_parameter_library(FN_parameter_library, outlev);
@@ -940,7 +941,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // been given before this!
             pr(logFile, "\nWARNING:  This command will be ignored.\n\nYou must put this command _before_ the \"move ligand.pdbqt\" command, since this command affects how the PDBQT file will be interpreted.\n\n");
         }
-        (void) sscanf( line, "%*s " FDFMT, &scale_1_4 );
+        nfields = sscanf( line, "%*s " FDFMT, &scale_1_4 );
+	if(nfields!=1) stop("Error encountered reading include_1_4_interactions value");
         B_include_1_4_interactions = TRUE;
         print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
         break;
@@ -953,8 +955,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  scale_eintermol
         **  re-scale intermolecular energy term
         */
-        retval = sscanf( line, "%*s " FDFMT, &scale_eintermol);
-	if(retval==1) 
+        nfields = sscanf( line, "%*s " FDFMT, &scale_eintermol);
+	if(nfields==1) 
 	  pr(logFile,"  Intermolecular energy term will be scaled by factor %f\n", scale_eintermol);
          else stop("Error encountered reading scale_eintermol value!\n");
 	 break;
@@ -970,8 +972,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (outlev >= 0) {
             pr( logFile, "Electrostatic energies will be calculated for all non-bonds between moving atoms.\n\n");
         }
-        retval = sscanf( line, "%*s " FDFMT, &AD3_FE_coeff_estat );
-        if (retval == 1) {
+        nfields = sscanf( line, "%*s " FDFMT, &AD3_FE_coeff_estat );
+        if (nfields == 1) {
             if (outlev >= 0) {
                 pr(logFile, "NOTE!  Internal electrostatics will NOT be scaled by the factor specified by this command,  %.4f -- the coefficient set by this command is ignored in AutoDock 4;\n", AD3_FE_coeff_estat);
                 pr(logFile, "       the coefficient that will actually be used should be set in the parameter library file.\n");
@@ -996,24 +998,24 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  seed
         **  Set the random-number gerator's seed value,
         */
-        retval = (int)sscanf( line, "%*s %s %s", param[0], param[1]);
+        nfields = sscanf( line, "%*s %s %s", param[0], param[1]);
         timeSeedIsSet[0] = 'F';
         timeSeedIsSet[1] = 'F';
-        pr(logFile, "%d seed%c found.\n", retval, ((retval==1)? ' ' : 's'));
-        for (j=0; j<retval; j++) {
+        pr(logFile, "%d seed%c found.\n", nfields, ((nfields==1)? ' ' : 's'));
+        for (j=0; j<nfields; j++) {
             for (i=0; i<(int)strlen(param[j]); i++) {
                 param[j][i] = (char)tolower( (int)param[j][i] );
             }
             pr(logFile, "argument \"%s\" found\n", param[j]);
         }
-        if ((retval==2) || (retval==1)) {
-            for (i=0; i<retval ; i++ ) {
-                if (equal(param[i], "tim", 3)) {
+        if ((nfields==2) || (nfields==1)) {
+            for (i=0; i<nfields ; i++ ) {
+                if (streq(param[i], "time")||streq(param[i],"tim")) {
                     timeSeedIsSet[i] = 'T';
                     seed[i] = (FourByteLong)time( &time_seed );
                     seed_random(seed[i]);
                     pr(logFile,"Random number generator was seeded with the current time, value = %ld\n",seed[i]);
-                } else if (equal(param[i], "pid", 3)) {
+                } else if (streq(param[i], "pid")) {
                     timeSeedIsSet[i] = 'F';
                     seed[i] = getpid();
                     seed_random(seed[i]);
@@ -1026,7 +1028,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 }
             }/*i*/
             pr(logFile, "\n");
-            if (retval==2) {
+            if (nfields==2) {
                 setall(seed[0], seed[1]);
                 initgn(-1);  // Reinitializes the state of the current random number generator
                 pr(logFile,"Portable random number generator was seeded with the user-specified values  %ld, %ld\n", seed[0], seed[1]);
@@ -1678,7 +1680,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  about
         **  Rotation center for current ligand,
         */
-        (void) sscanf( line, "%*s " FDFMT3, &lig_center[X], &lig_center[Y], &lig_center[Z]);
+        nfields = sscanf( line, "%*s " FDFMT3, &lig_center[X], &lig_center[Y], &lig_center[Z]);
+	if(nfields!=3) stop("syntax error in ABOUT line");
         pr( logFile, "Small molecule center of rotation =\t" );
         pr( logFile, "(%+.3f, %+.3f, %+.3f)\n\n", lig_center[X], lig_center[Y], lig_center[Z]);
         B_found_about_keyword = TRUE; //set false by 'move' true by 'about'
@@ -1734,18 +1737,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  reorient <axis-x> <axis-y> <axis-z> <angle>
          *      # applies the specified rotation to the input ligand
          */
-        (void) sscanf( line, "%*s %s", param[0] );
+        nfields = sscanf( line, "%*s %s", param[0] );
+	if(nfields!=1) stop("syntax error in REORIENT line");
         { // Parse the reorient command
             for (i=0; i<6; i++) {
                 param[0][i] = (char)tolower( (int)param[0][i] );
             }
-            if (equal(param[0],"random",6)) {
+            if (streq(param[0],"random")) {
                 // reorient random
                 B_reorient_random = TRUE; // create a new random orientation before docking
 
                 create_random_orientation( &q_reorient );
 
-            } else if (equal(param[0],"standard",8)) {
+            } else if (streq(param[0],"standard")) {
                 { // reorient standard
                 B_reorient_random = FALSE; // do not create a new random orientation before docking
 
@@ -1851,8 +1855,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     B_reorient_random = FALSE; // do not create a new random orientation before docking
 
                     // Read the specified initial orientation for the ligand
-                    retval = (int)sscanf( line,"%*s %lf %lf %lf %lf", &(q_reorient.nx), &(q_reorient.ny), &(q_reorient.nz), &(q_reorient.ang) );
-                    if ( retval == 4 ) {
+                    nfields = sscanf( line,"%*s %lf %lf %lf %lf", &(q_reorient.nx), &(q_reorient.ny), &(q_reorient.nz), &(q_reorient.ang) );
+                    if ( nfields == 4 ) {
                         // Normalise the vector defining the axis of rotation:
                         q_reorient = normRot( q_reorient );
                         // Make sure angle is in radians, and ranges from -PI to PI
@@ -1888,18 +1892,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  tran0
         **  Initial_translation,
         */
-        (void) sscanf( line, "%*s %s", param[0]);
-        for (i=0; i<6; i++) {
-            param[0][i] = (char)tolower( (int)param[0][i] );
-        }
-        if (equal(param[0],"random",6)) {
+        nfields = sscanf( line, "%*s %s", param[0]);
+	if(nfields!=1) stop("syntax error in TRAN0 line");
+        if (streq(param[0],"random")) {
             B_RandomTran0 = TRUE;
             ligand.S.T.x = sInit.T.x = random_range( info->lo[X], info->hi[X] );
             ligand.S.T.y = sInit.T.y = random_range( info->lo[Y], info->hi[Y] );
             ligand.S.T.z = sInit.T.z = random_range( info->lo[Z], info->hi[Z] );
         } else {
             B_RandomTran0 = FALSE;
-            (void) sscanf( line,"%*s %lf %lf %lf", &(sInit.T.x), &(sInit.T.y), &(sInit.T.z));
+            nfields = sscanf( line,"%*s %lf %lf %lf", &(sInit.T.x), &(sInit.T.y), &(sInit.T.z));
+	    if(nfields!=3) stop("syntax error in TRAN0 X Y Z line");
             ligand.S.T.x = sInit.T.x;
             ligand.S.T.y = sInit.T.y;
             ligand.S.T.z = sInit.T.z;
@@ -1930,11 +1933,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         {
         // Local Block...
         double a, b, c, d;
-        (void) sscanf( line, "%*s %s", param[0]);
-        for (i=0; i<6; i++) {
-            param[0][i] = (char)tolower( (int)param[0][i] );
-        }
-        if (equal(param[0],"random",6)) {
+        nfields = sscanf( line, "%*s %s", param[0]);
+	if(nfields!=1) stop("syntax error in QUATERNION0 or AXISANGLE0 line");
+        if (streq(param[0],"random")) {
             // Make a random initial quaternion,
             // and set the boolean B_RandomQuat0 to true,
             // so we can generate random quaternions in population-based methods.
@@ -1947,7 +1948,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // Read in the user-defined axis-angle values for the initial quaternion
             // and set the boolean B_RandomQuat0 to false,
             B_RandomQuat0 = FALSE;
-            (void) sscanf( line, "%*s %lf %lf %lf %lf", &a, &b, &c, &d);
+            nfields = sscanf( line, "%*s %lf %lf %lf %lf", &a, &b, &c, &d);
+	    if(nfields!=4) stop("syntax error in AXISANGLE0 or QUATERNION0 values ");
             sInit.Q = (dpf_keyword == DPF_QUATERNION0) ?
                       quatComponentsToQuat(a,b,c,d) :
                       axisDegreeToQuat(a,b,c,d);
@@ -1986,7 +1988,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  ndihe
         **  Number of dihedral angles to be specified by "dihe0"
         */
-        (void) sscanf( line, "%*s %d", &ndihed );
+        nfields = sscanf( line, "%*s %d", &ndihed );
+	if(nfields!=1) stop("syntax error in NDIHE line");
         if ( nmol == 0 ) {
             if (outlev >= 0) {
                 pr( logFile, "Must specify a ligand PDBQT file, using the \"move\" command.\n");
@@ -2009,11 +2012,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  dihe0
         **  Initial dihedral angles, input in degrees,
         */
-        (void) sscanf( line, "%*s %s", param[0]);
-        for (i=0; i<6; i++) {
-            param[0][i] = (char)tolower( (int)param[0][i] );
-        }
-        if (equal(param[0],"random",6)) {
+        nfields = sscanf( line, "%*s %s", param[0]);
+	if(nfields!=1) stop("syntax error in DIHE0 line");
+        if (streq(param[0],"random")) {
             B_RandomDihe0 = TRUE;
             sInit.ntor = nval = ntor;
             for ( i=0; i<nval; i++ ) {
@@ -2021,20 +2022,20 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
         } else {
             B_RandomDihe0 = FALSE;
-            retval = (int)sscanf( line, torfmt, TOR_ARG_LIST );
-            if (retval == 0) {
+            nfields = (int)sscanf( line, torfmt, TOR_ARG_LIST );
+            if (nfields == 0) {
                 pr( logFile, "WARNING!  AutoDock could not read any torsions!\n" );
-            } else if (retval == EOF) {
+            } else if (nfields == EOF) {
                 pr( logFile, "WARNING!  End of file encountered while reading dihe0 line\n");
-            } else if (retval < ntor) {
-                pr( logFile, "WARNING!  Only %d initial torsion angles were detected on input line.\n",retval);
+            } else if (nfields < ntor) {
+                pr( logFile, "WARNING!  Only %d initial torsion angles were detected on input line.\n",nfields);
                 pr( logFile, "WARNING!  I am sorry, the number of torsions detected in the PDBQT files was %d torsions.\n", ntor);
             } else {
                 if (outlev >= 0) {
-                    pr( logFile, "%d initial torsion angles were detected on input line.\n", retval );
+                    pr( logFile, "%d initial torsion angles were detected on input line.\n", nfields );
                 }
             }
-            nval = retval;
+            nval = nfields;
         }
         if (nval != ntor) {
             pr( logFile, "%s: WARNING!  The number of torsions specified (%d) does not match the number found in the PDBQT file (i.e. %d)\n", programname, nval, ntor);
@@ -2056,15 +2057,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  tstep
         **  Translation_step,
         */
-        retval = (int)sscanf( line, "%*s " FDFMT2, &trnStep0, &trnStepFinal );
-        if (retval == 0) {
+        nfields = sscanf( line, "%*s " FDFMT2, &trnStep0, &trnStepFinal );
+        if (nfields == 0) {
             pr( logFile, "WARNING!  AutoDock could not read any arguments!\n" );
-        } else if (retval == EOF) {
+        } else if (nfields == EOF) {
             pr( logFile, "WARNING!  End of file encountered!\n");
-        } else if (retval > 0) {
+        } else if (nfields > 0) {
             pr( logFile, "Initial cycle, maximum translation step = +/- %-.1f Angstroms\n", trnStep0);
         }
-        if (retval == 2) {
+        if (nfields == 2) {
             B_CalcTrnRF = TRUE;
             if (outlev >= 0) {
                 pr( logFile, "Final cycle,   maximum translation step = +/- %-.1f Angstroms\n", trnStepFinal);
@@ -2081,19 +2082,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  qstep
         **  Quaternion_step,
         */
-        retval = (int)sscanf( line, "%*s " FDFMT2, &qtwStep0, &qtwStepFinal );
-        if (retval == 0) {
+        nfields = sscanf( line, "%*s " FDFMT2, &qtwStep0, &qtwStepFinal );
+        if (nfields == 0) {
             pr( logFile, "WARNING!  AutoDock could not read any arguments!\n" );
-        } else if (retval == EOF) {
+        } else if (nfields == EOF) {
             pr( logFile, "WARNING!  End of file encountered!\n");
-        } else if (retval > 0) {
+        } else if (nfields > 0) {
             if (outlev >= 0) {
                 pr( logFile, "Initial cycle, maximum quaternion angle step = +/- %-.1f deg\n", qtwStep0);
             }
             /* convert to radians */
             qtwStep0 = DegreesToRadians( qtwStep0 );
         }
-        if (retval == 2) {
+        if (nfields == 2) {
             B_CalcQtwRF = TRUE;
             if (outlev >= 0) {
                 pr( logFile, "Final cycle,   maximum quaternion angle step = +/- %-.1f deg\n", qtwStepFinal);
@@ -2112,19 +2113,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  dstep
         **  Torsion_step,
         */
-        retval = (int)sscanf( line, "%*s " FDFMT2, &torStep0, &torStepFinal );
-        if (retval == 0) {
+        nfields = sscanf( line, "%*s " FDFMT2, &torStep0, &torStepFinal );
+        if (nfields == 0) {
             pr( logFile, "WARNING!  AutoDock could not read any arguments!\n" );
-        } else if (retval == EOF) {
+        } else if (nfields == EOF) {
             pr( logFile, "WARNING!  End of file encountered!\n");
-        } else if (retval > 0) {
+        } else if (nfields > 0) {
             if (outlev >= 0) {
                 pr( logFile, "Initial cycle, maximum torsion angle step = +/- %-.1f deg\n", torStep0);
             }
             /* convert to radians */
             torStep0 = DegreesToRadians( torStep0 );
         }
-        if (retval == 2) {
+        if (nfields == 2) {
             B_CalcTorRF = TRUE;
             if (outlev >= 0) {
                 pr( logFile, "Final cycle,   maximum torsion angle step = +/- %-.1f deg\n", torStepFinal);
@@ -2204,7 +2205,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  DPF_INTNBP_REQM_EPS: Using epsilon and r-equilibrium values...
         **  DPF_INTNBP_COEFFS: Using coefficients...
         */
-        (void) sscanf( line, "%*s " FDFMT2 " %d %d %s %s", &Rij, &epsij, &xA, &xB, param[0], param[1] );
+        nfields = sscanf( line, "%*s " FDFMT2 " %d %d %s %s", &Rij, &epsij, &xA, &xB, param[0], param[1] );
+	if(nfields!=6) stop("syntax error, not 6 values in intnbp_r_eps line");
         if ( dpf_keyword == DPF_INTNBP_REQM_EPS ) {
         /* check that the Rij is reasonable */
 	/* SF ...but only if there are no G-atoms. */        /* SF RING CLOSURE */
@@ -2272,7 +2274,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  unbound_intnbp_coeffs
         **  Read internal energy parameters for unbound extended state calculation:
         */
-        (void) sscanf( line, "%*s " FDFMT2 " %d %d", &cA_unbound, &cB_unbound, &xA_unbound, &xB_unbound );
+        nfields = sscanf( line, "%*s " FDFMT2 " %d %d", &cA_unbound, &cB_unbound, &xA_unbound, &xB_unbound );
+	if(nfields!=2) stop("syntax error, not 2 values in UNBOUND_INTNBP_COEFFS line");
 
         pr(logFile, "\nSetting the internal non-bonded interaction energy parameters for the\nunbound docking calculation, E = %.1f / r^%d - %.1f / r^%d\n\n", cA_unbound, xA_unbound, cB_unbound, xB_unbound);
         (void) fflush(logFile);
@@ -2334,7 +2337,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  runs
         **  Number of docking runs,
         */
-        (void) sscanf( line, "%*s %d", &nruns );
+        nfields = sscanf( line, "%*s %d", &nruns );
+        if(nfields!=1) stop("syntax error in RUNS line");
         if ( nruns > MAX_RUNS ) {
             prStr( error_message, "%s:  ERROR: %d runs were requested, but AutoDock is only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
             stop( error_message );
@@ -2445,7 +2449,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  rmstol
         **  Cluster tolerance,
         */
-        (void) sscanf( line, "%*s " FDFMT, &clus_rms_tol);
+        nfields = sscanf( line, "%*s " FDFMT, &clus_rms_tol);
+	if(nfields!=1) stop("syntax error in RMSTOL line");
         if (outlev >= 0) {
             pr( logFile, "Maximum RMS tolerance for conformational cluster analysis = %.2f Angstroms\n", clus_rms_tol);
         }
@@ -2459,7 +2464,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  rmsref
         **  RMS Reference Coordinates:
         */
-        (void) sscanf( line, "%*s %s", FN_rms_ref_crds);
+        nfields = sscanf( line, "%*s %s", FN_rms_ref_crds);
+	if(nfields!=1) stop("syntax error in RMSREF line");
         if (outlev >= 0) {
             pr( logFile, "RMS reference coordinates will taken from \"%s\"\n", FN_rms_ref_crds );
         }
@@ -2476,8 +2482,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Set the atoms to compute the RMSD values for cluster analysis
         **  either "ligand_only" (the default) or "all" moving atoms (ligand + receptor)
         */
-        retval = sscanf( line, "%*s %s", rms_atoms_cmd);
-        if (retval != 1) {
+        nfields = sscanf( line, "%*s %s", rms_atoms_cmd);
+        if (nfields != 1) {
             pr( logFile, "%s:  ERROR: please specify an argument (either \"ligand_only\" or \"all\").  By default, only the ligand atoms will be used for the cluster analysis.\n", programname );
             B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
         } else {
@@ -2683,7 +2689,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	**  or used repeatedly (atype) (AD 4.2 default)
         */
         char rms_mode[LINE_LEN];
-        (void) sscanf( line, "%*s %s", rms_mode );
+        nfields = sscanf( line, "%*s %s", rms_mode );
+	if(nfields!=1) stop("syntax error in RMS_MODE line");
         if (streq(rms_mode, "unique_pair")||streq(rms_mode, "uniquepair")) {
 		B_unique_pair_flag = TRUE;
 		if (outlev >= 0) {
@@ -2876,14 +2883,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  e0max
         **  Set maximum initial energy,
         */
-        retval = sscanf( line, "%*s " FDFMT " %d", &e0max, &MaxRetries );
-        if (retval == 0) {
+        nfields = sscanf( line, "%*s " FDFMT " %d", &e0max, &MaxRetries );
+        if (nfields == 0) {
             pr( logFile, "Could not read any arguments!\n" );
-        } else if (retval == EOF) {
+        } else if (nfields == EOF) {
             pr( logFile, "End of file encountered!\n");
-        } else if (retval == 1) {
+        } else if (nfields == 1) {
             pr(logFile,"Using the default maximum number of retries for initialization, %d retries.\n\n", MaxRetries);
-        } else if (retval == 2) {
+        } else if (nfields == 2) {
             pr(logFile,"Using user-specified maximum number of retries for initialization, %d retries.\n\n", MaxRetries);
         }
         if (e0max < 0.) {
@@ -3109,7 +3116,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         ** Genetic Algorithm-Local search,  a.k.a. Lamarckian Genetic Algorithm
         */
-            (void) sscanf( line, "%*s %d",&nruns );
+            nfields = sscanf( line, "%*s %d",&nruns );
+	    if(nfields!=1) stop("syntax error in GA_RUN of GALS_RUN line");
             if ( nruns > MAX_RUNS ) {
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
@@ -3232,8 +3240,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case DPF_LS:
-       // do_local_only
-       (void) sscanf(line, "%*s %d", &nruns);
+       // ls_run  |  do_local_only
+	       nfields = sscanf(line, "%*s %d", &nruns);
+	    if(nfields!=1) stop("syntax error in LS_RUN or DO_LOCAL_ONLY line");
 
             if ( nruns > MAX_RUNS ) {
 
@@ -3331,8 +3340,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case DPF_GS:
-      (void) sscanf(line, "%*s %d", &nruns);
+      nfields = sscanf(line, "%*s %d", &nruns);
 
+	    if(nfields!=1) stop("syntax error in GA_ONLY_RUN or DO_GLOBAL_ONLY line");
           if (nruns>MAX_RUNS) {
 
               prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
@@ -3437,7 +3447,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_pop_size:
-       (void) sscanf(line, "%*s %u", &pop_size);
+       nfields = sscanf(line, "%*s %u", &pop_size);
+       if(nfields!=1) stop("syntax error in GA_POP_SIZE line");
        pr(logFile, "A population of %u individuals will be used\n", pop_size);
         (void) fflush(logFile);
        break;
@@ -3445,7 +3456,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_num_generations:
-       (void) sscanf(line, "%*s %u", &num_generations);
+       nfields = sscanf(line, "%*s %u", &num_generations);
+       if(nfields!=1) stop("syntax error in GA_NUM_GENERATIONS line");
        pr(logFile, "The GA will run for at most %u generations.\n", num_generations);
         (void) fflush(logFile);
        break;
@@ -3453,7 +3465,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_num_evals:
-       (void) sscanf(line, "%*s %u", &num_evals);
+       nfields = sscanf(line, "%*s %u", &num_evals);
+       if(nfields!=1) stop("syntax error in GA_NUM_EVALS line");
        pr(logFile, "There will be at most %u function evaluations used.\n", num_evals);
         (void) fflush(logFile);
        break;
@@ -3485,7 +3498,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_elitism:
-       (void) sscanf(line, "%*s %d", &elitism);
+       nfields = sscanf(line, "%*s %d", &elitism);
+       if(nfields!=1) stop("syntax error in GA_ELITISM line");
        pr(logFile, "The %d best will be preserved each generation.\n", elitism);
         (void) fflush(logFile);
        break;
@@ -3493,7 +3507,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_mutation_rate:
-       (void) sscanf(line, "%*s " FDFMT, &m_rate);
+       nfields = sscanf(line, "%*s " FDFMT, &m_rate);
+       if(nfields!=1) stop("syntax error in GA_MUTATION_RATE line");
        pr(logFile, "The mutation rate is %f.\n", m_rate);
         (void) fflush(logFile);
       // if m_rate is out of range, make_table will fail 
@@ -3506,7 +3521,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_crossover_rate:
-       (void) sscanf(line, "%*s " FDFMT, &c_rate);
+       nfields = sscanf(line, "%*s " FDFMT, &c_rate);
+       if(nfields!=1) stop("syntax error in GA_CROSSOVER_RATE line");
        pr(logFile, "The crossover rate is %f.\n", c_rate);
         (void) fflush(logFile);
        break;
@@ -3514,7 +3530,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_Cauchy_alpha:
-       (void) sscanf(line, "%*s " FDFMT, &alpha);
+       nfields = sscanf(line, "%*s " FDFMT, &alpha);
+       if(nfields!=1) stop("syntax error in GA_CAUCHY_ALPHA line");
        pr(logFile, "The alpha parameter (for the Cauchy distribution) is being set to %f.\n",
           alpha);
         (void) fflush(logFile);
@@ -3523,7 +3540,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case GA_Cauchy_beta:
-       (void) sscanf(line, "%*s " FDFMT, &beta);
+       nfields = sscanf(line, "%*s " FDFMT, &beta);
+       if(nfields!=1) stop("syntax error in GA_CAUCHY_BETA line");
        pr(logFile, "The beta parameter (for the Cauchy distribution) is being set to %f.\n",
           beta);
         (void) fflush(logFile);
@@ -3532,7 +3550,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case SW_max_its:
-       (void) sscanf(line, "%*s %u", &max_its);
+       nfields = sscanf(line, "%*s %u", &max_its);
+       if(nfields!=1) stop("syntax error in SW_MAX_ITS line");
        pr(logFile, "Solis & Wets algorithms will perform at most %u iterations.\n", max_its);
         (void) fflush(logFile);
        break;
@@ -3540,7 +3559,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case SW_max_succ:
-       (void) sscanf(line, "%*s %u", &max_succ);
+       nfields = sscanf(line, "%*s %u", &max_succ);
+       if(nfields!=1) stop("syntax error in SW_MAX_SUCC line");
        pr(logFile, "Solis & Wets algorithms expand rho every %u in a row successes.\n", max_succ);
         (void) fflush(logFile);
       break;
@@ -3548,7 +3568,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case SW_max_fail:
-       (void) sscanf(line, "%*s %u", &max_fail);
+       nfields = sscanf(line, "%*s %u", &max_fail);
+       if(nfields!=1) stop("syntax error in SW_MAX_FAIL line");
        pr(logFile, "Solis & Wets algorithms contract rho every %u in a row failures.\n", max_fail);
         (void) fflush(logFile);
       break;
@@ -3556,7 +3577,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case SW_rho:
-       (void) sscanf(line, "%*s " FDFMT, &rho);
+       nfields = sscanf(line, "%*s " FDFMT, &rho);
+       if(nfields!=1) stop("syntax error in SW_RHO line");
        pr(logFile, "rho is set to %f.\n", rho);
         (void) fflush(logFile);
       break;
@@ -3565,7 +3587,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case SW_lb_rho:
-        (void) sscanf(line, "%*s " FDFMT, &lb_rho);
+        nfields = sscanf(line, "%*s " FDFMT, &lb_rho);
+        if(nfields!=1) stop("syntax error in SW_LB_RHO line");
         pr(logFile, "rho will never get smaller than %f.\n", lb_rho);
         (void) fflush(logFile);
         break;
@@ -3573,7 +3596,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case PSW_TRANS_SCALE:
-        (void) sscanf(line, "%*s " FDFMT, &psw_trans_scale);
+        nfields = sscanf(line, "%*s " FDFMT, &psw_trans_scale);
+        if(nfields!=1) stop("syntax error in PSW_TRANS_SCALE line");
         pr(logFile, "psw_trans_scale is set to %f.\n", psw_trans_scale);
         (void) fflush(logFile);
         break;
@@ -3581,7 +3605,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case PSW_ROT_SCALE:
-        (void) sscanf(line, "%*s " FDFMT, &psw_rot_scale);
+        nfields = sscanf(line, "%*s " FDFMT, &psw_rot_scale);
+        if(nfields!=1) stop("syntax error in PSW_ROT_SCALE line");
         pr(logFile, "psw_rot_scale is set to %f.\n", psw_rot_scale);
         (void) fflush(logFile);
         break;
@@ -3589,7 +3614,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
     case PSW_TORS_SCALE:
-        (void) sscanf(line, "%*s " FDFMT, &psw_tors_scale);
+        nfields = sscanf(line, "%*s " FDFMT, &psw_tors_scale);
+        if(nfields!=1) stop("syntax error in PSW_TORS_SCALE line");
         pr(logFile, "psw_tors_scale is set to %f.\n", psw_tors_scale);
         (void) fflush(logFile);
         break;
@@ -3598,7 +3624,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 
     case LS_search_freq:
-        (void) sscanf(line, "%*s " FDFMT, &search_freq);
+        nfields = sscanf(line, "%*s " FDFMT, &search_freq);
+        if(nfields!=1) stop("syntax error in LS_SEARCH_FREQ line");
         pr(logFile, "Local search will be performed with frequency %f.\n", search_freq);
         (void) fflush(logFile);
         break;
@@ -3762,7 +3789,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                        type, Nnb, B_calcIntElec, map,
                        outlev, ignore_inter, B_include_1_4_interactions, 
                        scale_1_4, parameterArray, unbound_internal_FE,
-                       info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, //@@info
+                       info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, //info
                        B_have_flexible_residues, ad4_unbound_model);
 	
             econf[nconf] = eintra + einter; // new2
@@ -3803,8 +3830,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         ** torsdof %d %f
         */
-        retval = sscanf( line, "%*s %d " FDFMT, &ntorsdof, &torsdoffac );
-        if (retval == 2) {
+        nfields = sscanf( line, "%*s %d " FDFMT, &ntorsdof, &torsdoffac );
+        if (nfields == 2) {
             pr( logFile, "WARNING:  The torsional DOF coefficient is now read in from the parameter file; the value specified here (%.4lf) will be ignored.\n\n", (double)torsdoffac);
         }
         pr( logFile, "Number of torsional degrees of freedom = %d\n", ntorsdof);
@@ -3868,15 +3895,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **    extended is alias for "compute_unbound_extended" token
         */
         char unbound_model_type[LINE_LEN];
-        (void) sscanf( line, "%*s %s", unbound_model_type );
+        nfields = sscanf( line, "%*s %s", unbound_model_type );
+	if(nfields!=1) stop("syntax error in UNBOUND_MODEL_TYPE line");
 
-        if (equal( unbound_model_type, "bound", 5 )
-        || equal( unbound_model_type, "same_as_bound", 13 )
-        || equal( unbound_model_type, "unbound_same_as_bound", 21 )) {
+        if (streq( unbound_model_type, "bound")
+        || streq( unbound_model_type, "same_as_bound")
+        || streq( unbound_model_type, "unbound_same_as_bound")) {
             if (ad4_unbound_model != Unbound_Same_As_Bound)  // default for Autodock 4.1
                 setup_parameter_library(outlev, "Unbound_Same_As_Bound", Unbound_Same_As_Bound);
             ad4_unbound_model = Unbound_Same_As_Bound;
-        } else if (equal( unbound_model_type, "extended", 8 )) {
+        } else if (streq( unbound_model_type, "extended")) {
             if (ad4_unbound_model != Unbound_Default) { //illegal to set extended after other
                 pr( logFile, "%s:  ERROR:  Setting unbound model type twice: \"%s\" .\n",
                     programname, unbound_model_type );
@@ -3887,7 +3915,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 setup_parameter_library(outlev, "unbound_extended", ad4_unbound_model);
             }
             else goto process_DPF_COMPUTE_UNBOUND_EXTENDED; // case DPF_COMPUTE_UNBOUND_EXTENDED below
-        } else if (equal( unbound_model_type, "compact", 6 )) {
+        } else if (streq( unbound_model_type, "compact")) {
             ad4_unbound_model = Compact;
         } else {
             // note that "User" is not acceptable in dpf file
@@ -3972,7 +4000,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             if ((GlobalSearchMethod==NULL)||(LocalSearchMethod==NULL)) {
                 prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n", programname);
                 stop(error_message);
-                exit(-1);
             }
             exit_if_missing_elecmap_desolvmap_about("compute_unbound_extended");
 
@@ -4293,8 +4320,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         etotal = 0.0L;
 
         pr(logFile, "WARNING This command, \"epdb\", currently computes the energy of the ligand specified by the \"move lig.pdbqt\" command.\n");
-        retval = sscanf(line, "%*s %s", dummy_FN_ligand);
-        if (retval >= 1) {
+        nfields = sscanf(line, "%*s %s", dummy_FN_ligand);
+        if (nfields >= 1) {
             pr(logFile, "WARNING  -- it will not read in the PDBQT file specified on the \"epdb\" command line.\n");
         }
 
@@ -4456,7 +4483,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *
          * Xover_Mode c_mode = OnePt;  //  can be: OnePt, TwoPt, Uniform or Arithmetic
          */
-        (void) sscanf( line, "%*s %s", c_mode_str );
+	c_mode_str[0]='\0';
+        nfields = sscanf( line, "%*s %s", c_mode_str );
+	if(nfields!=1) stop("syntax error in ga_crossover_mode line");
         if (strcmp(c_mode_str, "onept") == 0) {
             c_mode = OnePt;
             pr(logFile, "One-point crossover will be used in GA and LGA searches.\n");
@@ -4473,7 +4502,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             c_mode = Branch;
             pr(logFile, "Branch crossover will be used in GA and LGA searches.\n");
         } else {
-            c_mode = TwoPt; // default
+		stop("unrecognized mode in ga_crossover_mode line");
         }
         (void) fflush(logFile);
         break;
@@ -4501,8 +4530,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          * ga_linear_ranking_selection [probability_ratio Real]
          */
         
-        (void) sscanf( line, "%*s %s", c_mode_str );
-        if (strcmp(c_mode_str, "probability_ratio") == 0){ 
+        nfields = sscanf( line, "%*s %s", c_mode_str );
+        if (nfields>0&&streq(c_mode_str, "probability_ratio")){ 
             (void) sscanf( line, "%*s %*s %f", &linear_ranking_selection_probability_ratio);
         }
 
@@ -4546,8 +4575,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  Used to write out the population to a file at the end of
          *  every GA.
          */
-        (void) sscanf( line, "%*s %s", FN_pop_file);
-        (void) fflush(logFile);
+        nfields = sscanf( line, "%*s %s", FN_pop_file);
+	if(nfields!=1) stop("syntax error in output_pop_file line");
         pr( logFile, "The population will be written to the file \"%s\" at the end of every generation.\n", FN_pop_file);
         break;
 
@@ -4566,7 +4595,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         exit_if_missing_elecmap_desolvmap_about("confsampler");
 
-        if (strcmp(confsampler_type, "systematic") == 0) {
+        if (streq(confsampler_type, "systematic")) {
             systematic_conformation_sampler(sHist, nconf, vt, crdpdb, tlist, lig_center, natom, type, info);
         }
 
@@ -4597,25 +4626,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) fflush(logFile);
         break;
 
-/*_12yy_______________________________________________________________________*/
+//______________________________________________________________________________
+/* illegal or unhandled keyword - fatal error as of May 2010 */
 
-    case DPF_:
+    case DPF_UNKNOWN:
+    default:
         /*
          *
          */
-        /*
-        (void) sscanf( line, "%*s %d", &i );
-        (void) fflush(logFile);
-        break;
-        */
-
-//______________________________________________________________________________
-
-    default:
-        /*
-        **  Do nothing...
-        */
-        break;
+         prStr(error_message, "unrecognized DPF keyword in \"%s\"", line);
+         stop(error_message);
+	break;
 
 //______________________________________________________________________________
 
@@ -4674,7 +4695,7 @@ return 0;
 static void exit_if_missing_elecmap_desolvmap_about(string keyword)
 {
 
-    char error_message[LINE_LEN];
+    char error_message[LINE_LEN+100];
 
     if (!B_found_elecmap) {
          prStr(error_message, "%s:  %s command: no \"elecmap\" command has been specified!\n", programname, keyword.c_str());
