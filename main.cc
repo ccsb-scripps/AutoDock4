@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.120 2010/05/27 22:45:07 mp Exp $
+ $Id: main.cc,v 1.121 2010/05/27 23:19:20 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -68,7 +68,7 @@
 #include <stdlib.h>
 #include <string>
 using std::string;
-#define streq(a,b) (0==strcasecmp(a,b)) // convenience function
+#define streq(a,b) (0==strcasecmp(a,b)) // case-independent string match
 
 #include <sys/param.h>
 #include <ctype.h> // tolower
@@ -105,7 +105,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.120 2010/05/27 22:45:07 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.121 2010/05/27 23:19:20 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -742,7 +742,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.120 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.121 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1001,13 +1001,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         nfields = sscanf( line, "%*s %s %s", param[0], param[1]);
         timeSeedIsSet[0] = 'F';
         timeSeedIsSet[1] = 'F';
-        pr(logFile, "%d seed%c found.\n", nfields, ((nfields==1)? ' ' : 's'));
-        for (j=0; j<nfields; j++) {
-            for (i=0; i<(int)strlen(param[j]); i++) {
-                param[j][i] = (char)tolower( (int)param[j][i] );
-            }
-            pr(logFile, "argument \"%s\" found\n", param[j]);
-        }
+        //pr(logFile, "%d seed%c found.\n", nfields, ((nfields==1)? ' ' : 's'));
         if ((nfields==2) || (nfields==1)) {
             for (i=0; i<nfields ; i++ ) {
                 if (streq(param[i], "time")||streq(param[i],"tim")) {
@@ -1740,9 +1734,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         nfields = sscanf( line, "%*s %s", param[0] );
 	if(nfields!=1) stop("syntax error in REORIENT line");
         { // Parse the reorient command
-            for (i=0; i<6; i++) {
-                param[0][i] = (char)tolower( (int)param[0][i] );
-            }
             if (streq(param[0],"random")) {
                 // reorient random
                 B_reorient_random = TRUE; // create a new random orientation before docking

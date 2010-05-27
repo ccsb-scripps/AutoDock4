@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.30 2010/05/27 22:45:07 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.31 2010/05/27 23:19:21 mp Exp $
 
  AutoDock 
 
@@ -210,9 +210,10 @@ int parse_dpf_line( const char *line )
 #endif
               };
 
-    // build guaranteed-terminated copy of the input line first token into 'c'
-    for (j=0; j<sizeof(c) && line[j]!='\0' && !isspace(line[j]); j++) {
-        c[j] = line[j];
+    // build guaranteed-terminated copy of the input line's first token into 'c'
+    for (i=0; line[i]!='\0' && isspace(line[i]); i++) ; // skip leading blanks
+    for (j=0; j<(int)sizeof(c) && line[i]!='\0' && !isspace(line[i]); i++, j++) {
+        c[j] = line[i];
     }
     c[j]='\0'; // assure termination
     token = DPF_UNKNOWN;               /* return -1 if nothing is recognized. */
@@ -223,7 +224,7 @@ int parse_dpf_line( const char *line )
         token = DPF_NULL;
     } else if (c[0]=='#') {
         token = DPF_COMMENT;
-    } else for (i=0;  i<sizeof(tokentable); i++) {
+    } else for (i=0;  i<(int)(sizeof(tokentable)/sizeof(*tokentable)); i++) {
     /*  Recognize token strings  */
         /*(void)fprintf(stderr,"i = %d, tokentable[i].lexeme = %s, tokentable[i].value = %d, c = %s\n",i,tokentable[i].lexeme,tokentable[i].tokenvalue,c);*/
         // short match version: if (strncasecmp(tokentable[i].lexeme, c, j) == 0) {
