@@ -1,6 +1,6 @@
 /*
 
- $Id: getrms.cc,v 1.7 2010/04/09 18:49:09 mp Exp $
+ $Id: getrms.cc,v 1.8 2010/05/28 01:22:35 mp Exp $
 
  AutoDock 
 
@@ -50,7 +50,7 @@ Real getrms ( Real Crd[MAX_ATOMS][SPACE],
         for (i = 0;  i < natom;  i++) is_available[i] = TRUE;
         for (i = 0;  i < natom;  i++) {
             sqrMin = BIG;
-	    int nearest_j_to_i;
+	    int nearest_j_to_i=0;
             for (j = 0;  j < natom;  j++) {                
                 if (type[i] == type[j] && is_available[j]) {
                     for (xyz = 0;  xyz < SPACE;  xyz++) {
