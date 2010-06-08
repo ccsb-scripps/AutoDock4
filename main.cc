@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.121 2010/05/27 23:19:20 mp Exp $
+ $Id: main.cc,v 1.122 2010/06/08 23:15:26 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -105,7 +105,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.121 2010/05/27 23:19:20 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.122 2010/06/08 23:15:26 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -742,7 +742,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.121 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.122 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3108,7 +3108,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** Genetic Algorithm-Local search,  a.k.a. Lamarckian Genetic Algorithm
         */
             nfields = sscanf( line, "%*s %d",&nruns );
-	    if(nfields!=1) stop("syntax error in GA_RUN of GALS_RUN line");
+	    if(nfields!=1) stop("syntax error in GA_RUN or GALS_RUN line");
             if ( nruns > MAX_RUNS ) {
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
@@ -4567,7 +4567,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  every GA.
          */
         nfields = sscanf( line, "%*s %s", FN_pop_file);
-	if(nfields!=1) stop("syntax error in output_pop_file line");
+	if(nfields!=1) stop("syntax error in OUTPUT_POP_FILE line");
         pr( logFile, "The population will be written to the file \"%s\" at the end of every generation.\n", FN_pop_file);
         break;
 
