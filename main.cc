@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.123 2010/06/09 04:00:58 mp Exp $
+ $Id: main.cc,v 1.124 2010/06/09 22:03:36 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -109,7 +109,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.123 2010/06/09 04:00:58 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.124 2010/06/09 22:03:36 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -391,7 +391,6 @@ int naccmax = 0;
 int natom = 0;
 int nconf = 0;
 int ncycm1 = 1;
-int ndihed = 0;
 int nlig = 0;
 int nres = 0;
 int nmol = 0;
@@ -743,7 +742,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.123 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.124 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1950,21 +1949,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_NDIHE:
         /*
         **  ndihe
-        **  Number of dihedral angles to be specified by "dihe0"
+        **  Formerly, number of dihedral angles to be specified by "dihe0"
         */
-        get1arg( line, "%*s %d", &ndihed, "NDIHE" );
-        if ( nmol == 0 ) {
-            if (outlev >= 0) {
-                pr( logFile, "Must specify a ligand PDBQT file, using the \"move\" command.\n");
-            }
-        } else {
             if (outlev >= 0) {
                 pr( logFile, "%s: WARNING!  The \"ndihe\" command is no longer supported.  The number of torsions in the PDBQT file(s) is the number that will be used (i.e. %d)\n", programname, ntor);
             }
-            if ( ndihed != ntor ) {
-                pr( logFile, "%s: WARNING!  You requested %d torsions, but I found %d in PDBQT-file specifications.\n", programname, ndihed, ntor );
-            } /* if */
-        }
         break;
 
 //______________________________________________________________________________
@@ -1991,7 +1980,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } else if (nfields < ntor) {
                 pr( logFile, "Only %d initial torsion angles were detected on input DIHE0 line.\n",nfields);
                 pr( logFile, "The number of torsions detected in the PDBQT files was %d torsions.\n", ntor);
-	        // MP TODO ASKRUTH @@ stop("torsion count mismatch");
+	        stop("torsion count mismatch");
             } else {
                 if (outlev >= 0) {
                     pr( logFile, "%d initial torsion angles were detected on input line.\n", nfields );
@@ -4351,12 +4340,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	// M Pique - does not appear to work so disabling for now (Oct 2009)
         //s_mode = Tournament;
         //pr(logFile, "Tournament selection will be used in GA and LGA searches.\n");
-        //TODO MP ASKRUTH @@ prStr( error_message, "%s:  ERROR! Tournament selection is not yet implemented!\n", programname);
-        //TODO MP ASKRUTH @@ pr_2x( logFile, stderr, error_message );
-        //TODO MP ASKRUTH @@ (void) fflush(logFile);
-	//TODO MP ASKRUTH @@ stop(error_message);
-        //TODO MP ASKRUTH @@ break;
-	//TODO MP ASKRUTH @@    fall through: treat as Linear Ranking Selection
+         prStr( error_message, "%s:  ERROR! Tournament selection is not yet implemented!\n", programname);
+         pr_2x( logFile, stderr, error_message );
+         (void) fflush(logFile);
+	 stop(error_message);
+         break;
 
 /*____________________________________________________________________________*/
 
