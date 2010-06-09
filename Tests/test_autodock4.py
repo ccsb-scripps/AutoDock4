@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.29 2009/12/08 18:06:20 rhuey Exp $
+# $Id: test_autodock4.py,v 1.30 2010/06/09 22:04:11 mp Exp $
 #
 
 """
@@ -291,8 +291,15 @@ class AutoDock4_1pgp_unbound_model_illegal_test( AutoDock_simple_test ):
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_ga_select_tournament_test( AutoDock_simple_test ):
-    """Test that autodock 4.1 works when ga_select_tournament is set in the DPF."""
+    """Test that autodock 4.2 stops when ga_select_tournament is set in the DPF."""
     dpf_stem = "1pgp_ga_select_tournament"
+    expected_outcome = False # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_ga_select_linear_ranking_test( AutoDock_simple_test ):
+    """Test that autodock 4.2 works when ga_select_linear_ranking is set in the DPF."""
+    dpf_stem = "1pgp_ga_select_linear_ranking"
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
@@ -439,6 +446,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_unbound_set_illegal_test',
         'AutoDock4_1pgp_unbound_model_illegal_test', #1
         'AutoDock4_1pgp_ga_select_tournament_test',
+        'AutoDock4_1pgp_ga_select_linear_ranking_test',
         ## tests which check for specific value
         'AutoDock4_1pgp_test',
         'AutoDock4_1pgp_smaller_test',

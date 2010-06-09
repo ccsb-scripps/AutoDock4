@@ -40,7 +40,7 @@ ga_crossover_rate 0.8                # rate of crossover
 ga_window_size 10                    # 
 ga_cauchy_alpha 0.0                  # Alpha parameter of Cauchy distribution
 ga_cauchy_beta 1.0                   # Beta parameter Cauchy distribution
-ga_tournament_selection probability_ratio 3  # TESTING
+ga_tournament_selection	  	     # not working so removed 2009
 set_ga                               # set the above parameters for GA or LGA
 
 sw_max_its 30                        # iterations of Solis & Wets local search
