@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.19 2009/12/15 06:15:03 mp Exp $
+ $Id: setflags.cc,v 1.20 2010/06/09 04:02:00 mp Exp $
 
  AutoDock 
 
@@ -202,8 +202,10 @@ int setflags( int argc, char ** argv, const char * version_num)
         case 'v':
             fprintf(stdout, "AutoDock %-8s\n", version_num);
             fprintf(stdout, " Copyright (C) 2009 The Scripps Research Institute.\n");
+// GNU BEGIN   (see maintenance script update_license_de-GNU)
             fprintf(stdout, " License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>\n");
             fprintf(stdout, " This is free software: you are free to change and redistribute it.\n");
+// GNU END   (see maintenance script update_license_de-GNU)
             fprintf(stdout, " There is NO WARRANTY, to the extent permitted by law.\n");
             exit(0);
             break;

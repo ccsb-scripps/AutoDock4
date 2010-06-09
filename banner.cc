@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.19 2009/06/10 00:09:09 rhuey Exp $
+ $Id: banner.cc,v 1.20 2010/06/09 04:02:00 mp Exp $
 
  AutoDock 
 
@@ -91,9 +91,11 @@ void banner( const char * version_num )
     (void) fprintf(logFile, "                 |______________________________________|\n");
     (void) fprintf(logFile, "\n\n");
     (void) fprintf(logFile, "        AutoDock comes with ABSOLUTELY NO WARRANTY.\n");
+// GNU BEGIN   (see maintenance script update_license_de-GNU)
     (void) fprintf(logFile, "        AutoDock is free software, and you are welcome\n");
     (void) fprintf(logFile, "        to redistribute it under certain conditions;\n");
     (void) fprintf(logFile, "        for details type 'autodock -C'\n\n");
+// GNU END   (see maintenance script update_license_de-GNU)
 
 }
 
@@ -102,6 +104,7 @@ void banner( const char * version_num )
 void show_copyright( FILE *fp )
 {
 
+// GNU BEGIN   (see maintenance script update_license_de-GNU)
     (void) fprintf( fp, "GNU GENERAL PUBLIC LICENSE\n");
     (void) fprintf( fp, "\n");
     (void) fprintf( fp, "Version 2, June 1991\n");
@@ -355,6 +358,7 @@ void show_copyright( FILE *fp )
     (void) fprintf( fp, "sometimes make exceptions for this. Our decision will be guided by the\n");
     (void) fprintf( fp, "two goals of preserving the free status of all derivatives of our free\n");
     (void) fprintf( fp, "software and of promoting the sharing and reuse of software generally.\n\n\n");
+// GNU END   (see maintenance script update_license_de-GNU)
 
     return;
 }
@@ -366,7 +370,9 @@ void show_warranty( FILE *fp )
 
     (void) fprintf( fp, "NO WARRANTY\n");
     (void) fprintf( fp, "\n");
+// GNU BEGIN   (see maintenance script update_license_de-GNU)
     (void) fprintf( fp, "11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY\n");
+    (void) fprintf( fp, " THERE IS NO WARRANTY\n");
     (void) fprintf( fp, "FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN\n");
     (void) fprintf( fp, "OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES\n");
     (void) fprintf( fp, "PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, EITHER\n");
@@ -386,6 +392,7 @@ void show_warranty( FILE *fp )
     (void) fprintf( fp, "THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR\n");
     (void) fprintf( fp, "OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.\n\n\n");
 
+// GNU END   (see maintenance script update_license_de-GNU)
     return;
 }
 
