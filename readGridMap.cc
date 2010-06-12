@@ -1,6 +1,6 @@
 /*
 
- $Id: readGridMap.cc,v 1.8 2009/05/08 23:02:16 rhuey Exp $
+ $Id: readGridMap.cc,v 1.9 2010/06/12 05:54:04 mp Exp $
 
  AutoDock  
 
@@ -231,6 +231,7 @@ void readmap( Boole *P_B_HaveMap,
                         nv++;
                     }
                 } else {
+		    // TODO MPique - why allow only one value per line? 2010
                     if (fgets( mapline, LINE_LEN, mapFilePtr) != NULL) { /*new*/
                         double v;
                         if (sscanf( mapline,  "%lf",  &v ) != 1) continue;

@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.15 2009/05/08 23:02:18 rhuey Exp $
+ $Id: trilinterp.cc,v 1.16 2010/06/12 05:54:04 mp Exp $
 
  AutoDock  
 
@@ -85,7 +85,7 @@ Real trilinterp(
 /******************************************************************************/
 
 {
-    register double elec_total=0, emap_total=0;
+    double elec_total=0, emap_total=0;
     register int i;               /* i-th atom */
 
     // for (i=0; i<total_atoms; i++) {
@@ -141,12 +141,19 @@ Real trilinterp(
         iy = (p0v < p1v)? v0 : v1;				    /*MINPOINT*/
         iz = (p0w < p1w)? w0 : w1;				    /*MINPOINT*/
 
+#ifdef MAPSUBSCRIPT
         e = map[iz][iy][ix][ElecMap];               /*MINPOINT*/
         m = map[iz][iy][ix][AtomType]; 	            /*MINPOINT*/
         d = map[iz][iy][ix][DesolvMap]; 	        /*MINPOINT*/
 #else
-        e = m = d = 0.0L;
+	e = GetMap(map, info, iz, iy, ix, ElecMap); // MINPOINT
+	m = GetMap(map, info, iz, iy, ix, AtomType); // MINPOINT
+	d = GetMap(map, info, iz, iy, ix, DesolvMap); // MIDPOINT
 
+#endif
+#else
+        e = m = d = 0.0L;
+#ifdef MAPSUBSCRIPT
         e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
         m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
         d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
@@ -178,6 +185,17 @@ Real trilinterp(
         d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
         m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
         e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
+#else
+	// TODO study unrolling loop, caching subscripts
+	MapType pu[2] = { p1u, p0u };
+	MapType pv[2] = { p1v, p0v };
+	MapType pw[2] = { p1w, p0w };
+	for(int w=0;w<=1;w++) for(int v=0;v<=1;v++) for(int u=0;u<=1;u++) {
+	 e += pu[u]*pv[v]*pw[w]*GetMap(map,info,w0+w, v0+v, u0+u, ElecMap);
+	 m += pu[u]*pv[v]*pw[w]*GetMap(map,info,w0+w, v0+v, u0+u, AtomType);
+	 d += pu[u]*pv[v]*pw[w]*GetMap(map,info,w0+w, v0+v, u0+u, DesolvMap);
+	 }
+#endif /* not MAPSUBSCRIPT */
 #endif /* not MINPOINT */
 
         elec_total += e * charge[i];

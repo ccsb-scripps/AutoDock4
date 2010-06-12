@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.23 2010/04/15 19:30:44 mp Exp $
+ $Id: eval.h,v 1.24 2010/06/12 05:54:04 mp Exp $
 
  AutoDock  
 
@@ -57,6 +57,7 @@ class Eval
       UnsignedFourByteLong num_evals;
       int natom, Nnb;
       GridMapSetInfo *info;
+      MapType *map;
       Real eval_elec[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
       Real eval_emap[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
@@ -67,7 +68,6 @@ class Eval
       Real *charge, *abs_charge, *qsp_abs_charge;
       Real (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE], (*crdreo)[SPACE];
       EnergyTables *ptr_ad_energy_tables;
-      Real (*map)[MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
       Boole *B_isTorConstrained;
       Molecule mol;
       int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
@@ -87,7 +87,8 @@ class Eval
                   Real  init_abs_charge[MAX_ATOMS],
                   Real  init_qsp_abs_charge[MAX_ATOMS],
                   int            init_type[MAX_ATOMS], int init_natom,
-                  Real  init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                  GridMapSetInfo *init_info,
+                  MapType  *init_map,
 
                   Real  init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
                   Real  init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
@@ -109,7 +110,6 @@ class Eval
                   Real  init_scale_eintermol,
                   //ParameterEntry init_parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
                   Real  init_unbound_internal_FE,
-                  GridMapSetInfo *init_info,
                   Boole  init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
                   Boole  init_B_have_flexible_residues
                   );
@@ -141,7 +141,8 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
                         Real init_qsp_abs_charge[MAX_ATOMS],
                         int init_type[MAX_ATOMS],
                         int init_natom,
-                        Real init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                        GridMapSetInfo *init_info,
+                        MapType *init_map,
 
                         Real init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
                         Real init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
@@ -170,7 +171,6 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
                         //ParameterEntry init_parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
 
                         Real init_unbound_internal_FE,
-                        GridMapSetInfo *init_info,
                         Boole init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
                         Boole init_B_have_flexible_residues
                        )
@@ -221,6 +221,7 @@ inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
     unbound_internal_FE = init_unbound_internal_FE;
 
     info = init_info;
+    map = init_map;
     B_compute_intermol_energy = TRUE; // default is "Yes, calculate the intermolecular energy".
 
     B_use_non_bond_cutoff = init_B_use_non_bond_cutoff;  // set this to FALSE if we are computing unbound extended conformations

@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.11 2009/05/08 23:02:17 rhuey Exp $
+ $Id: readmap.cc,v 1.12 2010/06/12 05:54:04 mp Exp $
 
  AutoDock 
 
@@ -54,8 +54,7 @@ Statistics readmap( char           line[LINE_LEN],
                     Boole          *P_B_HaveMap, 
                     int            num_maps, 
                     GridMapSetInfo *info,
-                    Real           map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
-                    // double *maps 
+                    MapType           *map,
                     char           map_type
                   )
 
@@ -231,21 +230,22 @@ Statistics readmap( char           line[LINE_LEN],
     for ( k = 0;  k < info->num_points1[Z];  k++) {
         for ( j = 0;  j < info->num_points1[Y];  j++) {
             for ( i = 0;  i < info->num_points1[X];  i++) {
+		float thisval;
                 if (B_charMap) {
                     if (fgets(map_line, LINE_LEN, map_file) != NULL) { /*new*/
                         if (sscanf( map_line,  "%c",  &C_mapValue ) != 1) continue;
-                        map[k][j][i][num_maps] = mapc2f(C_mapValue);
-                        nv++;
+			thisval=mapc2f(C_mapValue);
                     }
                 } else {
                     if (fgets( map_line, LINE_LEN, map_file) != NULL) { /*new*/
-                        if (sscanf( map_line,  FDFMT,  &map[k][j][i][num_maps] ) != 1) continue;
-                        nv++;
+                        if (sscanf( map_line,  "%f",  &thisval) != 1) continue;
                     }
                 }
-                map_max = max( map_max, map[k][j][i][num_maps] );
-                map_min = min( map_min, map[k][j][i][num_maps] );
-                map_total += map[k][j][i][num_maps];
+		SetMap(map,info,k,j,i,num_maps,thisval);
+		map_max = max( map_max, thisval );
+                map_min = min( map_min, thisval );
+                map_total += thisval;
+		nv++;
             }
         }
     }
@@ -262,7 +262,11 @@ Statistics readmap( char           line[LINE_LEN],
         for ( k = 0;  k < info->num_points1[Z];  k++) {
             for ( j = 0;  j < info->num_points1[Y];  j++) {
                 for ( i = 0;  i < info->num_points1[X];  i++) {
+#ifdef MAPSUBSCRIPT 
                     deviation = map[k][j][i][num_maps] - map_stats.mean;
+#else
+                    deviation = GetMap(map,info,k,j,i,num_maps) - map_stats.mean;
+#endif
                     sum_squares += deviation * deviation;
                 }
             }

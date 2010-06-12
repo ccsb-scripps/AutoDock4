@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.h,v 1.10 2009/05/08 23:02:17 rhuey Exp $
+ $Id: readmap.h,v 1.11 2010/06/12 05:54:04 mp Exp $
 
  AutoDock  
 
@@ -66,8 +66,7 @@ Statistics readmap( char line[LINE_LEN],
              int num_maps, 
              
              GridMapSetInfo *info,
-             // double *maps 
-                #include "map_declare.h"
+             #include "map_declare.h"
              char map_type
              );
 

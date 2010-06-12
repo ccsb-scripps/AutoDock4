@@ -1,6 +1,6 @@
 /*
 
- $Id: readfield.cc,v 1.5 2009/05/08 23:02:17 rhuey Exp $
+ $Id: readfield.cc,v 1.6 2010/06/12 05:54:04 mp Exp $
 
  AutoDock 
 
@@ -86,21 +86,19 @@ void readfield( GridMapSetInfo *info,
     for (i=0; i<SPACE; i++) {
         if ( (info->num_points[i])%2 != 0 ) {
             stop("the number of user-specified grid points must be even in the \"#NELEMENTS\" line in the \".fld\" file.");
-            exit(-1);
         }
     }
 
     pr( logFile, "Even Number of User-specified Grid Points =\t%d x-points\n\t\t\t\t\t\t%d y-points\n\t\t\t\t\t\t%d z-points\n\n", info->num_points[X],info->num_points[Y],info->num_points[Z]);
     for (i = 0;  i < SPACE;  i++) {
         info->num_points1[i] = info->num_points[i] + 1;
+	info->num_alloc[i] = info->num_points1[i]; // this is an odd number
     } /* i */
     pr( logFile, "Adding the Central Grid Point makes:\t\t%d x-points\n\t\t\t\t\t\t%d y-points\n\t\t\t\t\t\t%d z-points\n\n", info->num_points1[X], info->num_points1[Y], info->num_points1[Z]);
     if ( (info->num_points[X] <= 0)||(info->num_points[Y] <= 0)||(info->num_points[Z] <= 0) ) {
         stop("insufficient grid points." );
-        exit( -1 );
     } else if ((info->num_points[X] > MAX_GRID_PTS)||(info->num_points[Y] > MAX_GRID_PTS)||(info->num_points[Z] > MAX_GRID_PTS)) {
         stop("too many grid points." );
-        exit( -1 );
     }
 
     /*

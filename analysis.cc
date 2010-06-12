@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.38 2010/04/09 18:49:09 mp Exp $
+ $Id: analysis.cc,v 1.39 2010/06/12 05:54:04 mp Exp $
 
  AutoDock  
 
@@ -67,7 +67,7 @@ void analysis( int   Nnb,
 
                const EnergyTables *ptr_ad_energy_tables,
 
-               Real  map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+	       #include "map_declare.h"
                Real  econf[MAX_RUNS], 
                int   irunmax, 
                int   natom, 

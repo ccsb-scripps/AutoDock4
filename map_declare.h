@@ -1,6 +1,6 @@
 /*
- $Id: map_declare.h,v 1.1 2008/10/15 23:59:14 rhuey Exp $
+ $Id: map_declare.h,v 1.2 2010/06/12 05:54:04 mp Exp $
 */
 
-MapType map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    //  intermolecular interaction energies
+MapType *map, // [MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS] intermolecular interaction energies
 
