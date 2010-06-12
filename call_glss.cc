@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.49 2010/05/19 19:47:13 mp Exp $
+ $Id: call_glss.cc,v 1.50 2010/06/12 04:22:35 mp Exp $
 
  AutoDock  
 
@@ -424,7 +424,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
        // print "Population at Generation:" line 
        //   with low/high/mean/median/stddev/state_of_best_indiv...
        // and search counts (expected to be zero)
-       if(output_pop_stats.level==1) { // "basic"
+       if(outlev>0 && output_pop_stats.level==1) { // "basic"
          (void) thisPop.printPopulationStatisticsVerbose(logFile, 
          num_generations, evaluate.evals(), sInit.ntor, "");
 	 fprintf(logFile, " cg_count: %u", global_method->cg_count);
@@ -485,7 +485,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
        //
        // This is purely for studying population convergence and is
        // controlled by the "output_population_statistics" DPF keyword. - M Pique 2010
-       if (output_pop_stats.level > 0 && 
+       if (outlev>0 && output_pop_stats.level > 0 && 
             (output_pop_stats.everyNgens != 0 && (
 	    (num_generations <= 20) ||
 	    (num_generations <= (int)output_pop_stats.everyNgens 
@@ -512,7 +512,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 		 }
         if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
 
-        if (strcmp (FN_pop_file, "") != 0) { // YES, do print!
+        if (strlen(FN_pop_file) > 0) { // YES, do print!
             if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
                 pr(logFile, "\n%s: ERROR:  I'm sorry, I cannot create\"%s\".\n\n", programname, FN_pop_file);
             } else {
@@ -529,7 +529,7 @@ State call_glss(Global_Search *global_method, Local_Search *local_method,
 
     // print "Population at Generation:" line one last time (if needed)
     //   with low/high/mean/median/stddev/state_of_best_indiv...
-    if(output_pop_stats.level==1  // "basic"
+    if(outlev>0 && output_pop_stats.level==1  // "basic"
 	     && evaluate.evals() > thisPop.nevals_last_pop_stats) {
        (void) thisPop.printPopulationStatisticsVerbose(logFile, 
         num_generations, evaluate.evals(), sInit.ntor, "");
