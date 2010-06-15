@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.h,v 1.8 2009/05/08 23:02:14 rhuey Exp $
+ $Id: nonbonds.h,v 1.9 2010/06/15 23:29:44 mp Exp $
 
  AutoDock 
 
@@ -27,7 +27,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef NONBONDS
 #define NONBONDS
 #include "constants.h"
-void  nonbonds( const Real crdpdb[MAX_ATOMS][SPACE],  
+int
+nonbonds( const Real crdpdb[MAX_ATOMS][SPACE],  
 			    int         nbmatrix[MAX_ATOMS][MAX_ATOMS],
 			    const int   natom, 
 			    const int   bond_index[MAX_ATOMS],
@@ -38,7 +39,8 @@ void  nonbonds( const Real crdpdb[MAX_ATOMS][SPACE],
 #ifndef GETBONDS
 #define GETBONDS
 #include "constants.h"
-void getbonds(const Real crdpdb[MAX_ATOMS][SPACE], 
+int
+getbonds(const Real crdpdb[MAX_ATOMS][SPACE], 
               const int from_atom,
               const int to_atom,
 			  const int bond_index[MAX_ATOMS],

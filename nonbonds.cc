@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.12 2009/05/08 23:02:14 rhuey Exp $
+ $Id: nonbonds.cc,v 1.13 2010/06/15 23:29:44 mp Exp $
 
  AutoDock 
 
@@ -41,7 +41,9 @@ extern char *programname;
 
 using namespace std;
 
-void nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
+// nonbonds - returns 0 if OK, else non-zero for error
+int
+nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
 		      int         nbmatrix[MAX_ATOMS][MAX_ATOMS],
 		      const int   natom, 
               const int   bond_index[MAX_ATOMS],
@@ -50,6 +52,7 @@ void nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
 {
 	int i,j,k,l;
     int nonbond_type;
+    int errorcode = 0;
 
     if (debug>0) {
         printbonds(natom, bonded, "\nDEBUG:  3. INSIDE nonbonds, bonded[][] array is:\n\n", 0);
@@ -102,12 +105,12 @@ void nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
                 if (bonded[i][j] < 0) {
                     (void)fprintf(logFile, "%s:  WARNING! The count of bonds, %d, to atom %d does not match the list of bonded atoms.\n\n", programname, bonded[i][5], i);
                     (void)fprintf(logFile, "%s:  WARNING! bonded[%d][] = %d, %d, %d, %d, %d, %d.\n\n", programname, i, bonded[i][0], bonded[i][1], bonded[i][2], bonded[i][3], bonded[i][4], bonded[i][5]);
-                    continue;
+                    errorcode |= 1;
                 }
                 if (bonded[ bonded[i][j] ][k] < 0) {
                     (void)fprintf(logFile, "%s:  WARNING! The count of bonds, %d, to atom %d does not match the list of bonded atoms.\n\n", programname, bonded[bonded[i][j]][5], bonded[i][j]);
                     (void)fprintf(logFile, "%s:  WARNING! bonded[%d][] = %d, %d, %d, %d, %d, %d.\n\n", programname, bonded[i][j], bonded[bonded[i][j]][0], bonded[bonded[i][j]][1], bonded[bonded[i][j]][2], bonded[bonded[i][j]][3], bonded[bonded[i][j]][4], bonded[bonded[i][j]][5]);
-                    continue;
+                    errorcode |= 2;
                 }
                 for (l=0; l<bonded[bonded[bonded[i][j]][k]][5]; l++) { 
                     nbmatrix[i][bonded[bonded[bonded[i][j]][k]][l]] = nonbond_type;
@@ -117,12 +120,14 @@ void nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
 			} //  k
 		} //  j
 	} //  i
-	return;
+	return errorcode;
 } // end of nonbonds
 
 /*----------------------------------------------------------------------------*/
 
-void getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
+// getbonds - returns 0 if OK, else non-zero for error
+int
+getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
               const int from_atom,
               const int to_atom,
               const int bond_index[MAX_ATOMS],
@@ -132,6 +137,7 @@ void getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
 	double dist,dx,dy,dz;
     Real distance[MAX_ATOMS];
     int isort[MAX_ATOMS];
+    int errorcode = 0;
 
     // set up all the minimum and maximum possible distances for bonds
 	mdist();
@@ -183,24 +189,30 @@ void getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
                 // bonded[x][5] is the current number of bonds that atom "x" has.
 	            // Remember:   int bonded[MAX_ATOMS][6];	
 
-                if ((bonded[i][5] >= 5) || (bonded[j][5] >= 5)) {
+                    if (bonded[i][5] >= 5 || bonded[j][5] >=5) {
                     if (bonded[i][5] >= 5) {
-                        // bonded array for the i-th atom is full; we could return a failure code here.
-                        fprintf( logFile, "%s: WARNING!  Atom %d has too many bonds (%d is the maximum)!\n\n", programname, i, 5 );
-                    } else {
-                        // bonded array for the j-th atom is full; we could return a failure code here.
-                        fprintf( logFile, "%s: WARNING!  Atom %d has too many bonds (%d is the maximum)!\n\n", programname, j, 5 );
-                    }
-                    // Skip the addition of this bond, between i and j, and go onto the next j-th atom
-                    continue;
-                }
+                        // bonded array for the i-th atom is full; return failure code here.
+                        fprintf( logFile, "%s: WARNING!  Atom %d has too many bonds %d (%d is the maximum): ", programname, i+1, bonded[i][5], 5 );
+                        for(int k=0;k<5;k++) fprintf( logFile, "%d ", bonded[i][k]+1);
+                        fprintf( logFile, "[%d...]\n", j+1);
+			errorcode |= 1;
+			}
+                    if (bonded[j][5] >= 5) {
+                        // bonded array for the j-th atom is full; return failure code here.
+                        fprintf( logFile, "%s: WARNING!  Atom %d has too many bonds %d (%d is the maximum): ", programname, j+1, bonded[j][5], 5 );
+                        for(int k=0;k<5;k++) fprintf( logFile, "%d ", bonded[j][k]+1);
+                        fprintf( logFile, "[%d...]\n", i+1);
+			errorcode |= 2;
+			}
 
+		    } else {
                 // add a bond between i and j
 				bonded[i][ bonded[i][5] ] = j;
 				bonded[j][ bonded[j][5] ] = i;
                 // increment the number of bonds to i and j
 				bonded[i][5] += 1;
 				bonded[j][5] += 1;
+		   }
 
                 if (debug>0) {
                     // print out distances
@@ -216,7 +228,7 @@ void getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
 		} //  j
  	} //  i
 
-	return;
+	return errorcode;
 } // end of get bonds
 
 /*----------------------------------------------------------------------------*/
