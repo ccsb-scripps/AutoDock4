@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.39 2010/06/12 05:54:04 mp Exp $
+ $Id: analysis.cc,v 1.40 2010/06/15 23:30:55 mp Exp $
 
  AutoDock  
 
@@ -184,6 +184,10 @@ void analysis( int   Nnb,
 
         /* fprintf( logFile, "\n\nState hist[%d].\n", k); */
         if (outlev > -1) {
+	    // pass center to printState - could be improved MPique 2010
+	    hist[k].Center.x = sml_center[X];
+	    hist[k].Center.y = sml_center[Y];
+	    hist[k].Center.z = sml_center[Z];
             printState( logFile, hist[k], 2 );
         }
 

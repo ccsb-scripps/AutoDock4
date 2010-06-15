@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.28 2010/05/06 22:11:53 mp Exp $
+ $Id: readPDBQT.cc,v 1.29 2010/06/15 23:30:55 mp Exp $
 
  AutoDock 
 
@@ -127,6 +127,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	int             nres = 0;
 	int             nrigid_piece = 0;
 	int             piece; 
+	int		errorcode = 0;
 
 	Boole           B_found_begin_res = FALSE; //tracks whether any flexres found
 	Boole           B_found_first_flexres = FALSE; //tracks whether first flexres ROOT found
@@ -597,18 +598,30 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 			printbonds(natom, bonded, "\nDEBUG:  1. BEFORE getbonds, bonded[][] array is:\n\n", 1);
 		}
         // find all the bonds in the ligand
-		getbonds(crdpdb, 0, true_ligand_atoms, bond_index, bonded);
+		errorcode = getbonds(crdpdb, 0, true_ligand_atoms, bond_index, bonded);
+	   if(errorcode!=0)  {
+			pr(logFile, " ERROR in ligand getbonds, code=%d\n", errorcode);
+			// TODO stop here M Pique 2010
+			}
 
         if (B_have_flexible_residues) {
             // find all the bonds in the receptor
-            getbonds(crdpdb, true_ligand_atoms, natom, bond_index, bonded);
+            errorcode = getbonds(crdpdb, true_ligand_atoms, natom, bond_index, bonded);
+	   if(errorcode!=0)  {
+			pr(logFile, " ERROR in receptor getbonds, code=%d\n", errorcode);
+			// TODO stop here M Pique 2010
+			}
         }
 
 		if (debug > 0) {
 			printbonds(natom, bonded, "\nDEBUG:  2. AFTER getbonds, bonded[][] array is:\n\n", 0);
 			pr(logFile, "Detecting all non-bonds.\n\n");
 		}
-		nonbonds(crdpdb, nbmatrix, natom, bond_index, B_include_1_4_interactions, bonded);
+		errorcode = nonbonds(crdpdb, nbmatrix, natom, bond_index, B_include_1_4_interactions, bonded);
+		if(errorcode!=0)  {
+			pr(logFile, " ERROR in nonbonds, code=%d\n", errorcode);
+			// TODO stop here M Pique 2010
+			}
 
 		if (debug > 0) {
 			printbonds(natom, bonded, "\nDEBUG:  4. AFTER nonbonds, bonded[][] array is:\n\n", 0);

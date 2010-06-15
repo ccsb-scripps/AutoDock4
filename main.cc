@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.125 2010/06/12 05:54:04 mp Exp $
+ $Id: main.cc,v 1.126 2010/06/15 23:30:55 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -109,7 +109,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.125 2010/06/12 05:54:04 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.126 2010/06/15 23:30:55 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -737,7 +737,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.125 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.126 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1223,7 +1223,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	// plus the electrostatic potential and the desolvation map
 
 	free(map); // note: it is OK to free even if NULL
-	info->num_all_maps = info->num_atom_types+2;
+	info->num_all_maps = info->num_atom_types+NUM_NON_VDW_MAPS;
 	info->num_alloc_maps = info->num_all_maps;
 	info->map_alloc_size =
 	   info->num_alloc[Z] * info->num_alloc[Y] * 
@@ -1598,6 +1598,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   make_state_from_rep( (double *)&(finalpt[0]), int(finalpt.size()), &sHist[nconf]);
 
                   pr(logFile, "\nTotal Num Evals: %d\n", neval);
+                  sHist[nconf].Center.x = lig_center[X];
+                  sHist[nconf].Center.y = lig_center[Y];
+                  sHist[nconf].Center.z = lig_center[Z];
                   printState(logFile, sHist[nconf], 2);
 
                   colinyEnd = times(&tms_colinyEnd);
@@ -3283,6 +3286,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                       &ligand, output_pop_stats, info, end_of_branch);
 
               pr(logFile, "\nFinal docked state:\n");
+              sHist[nconf].Center.x = lig_center[X];
+              sHist[nconf].Center.y = lig_center[Y];
+              sHist[nconf].Center.z = lig_center[Z];
               printState(logFile, sHist[nconf], 2);
 
               gaEnd = times(&tms_gaEnd);
