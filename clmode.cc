@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.11 2010/04/13 22:20:47 rhuey Exp $
+ $Id: clmode.cc,v 1.12 2010/06/19 02:51:24 mp Exp $
 
  AutoDock 
 
@@ -205,17 +205,22 @@ void  clmode( int   num_atm_maps,
                     strncpy( atomstuff[atomCounter], line, (size_t)30 );
                     atomstuff[atomCounter][30] = '\0';
                     if ( ! haveTypes ) {
-                        type[atomCounter] = -1;
                         //sscanf( &line[12], "%s", pdbaname[atomCounter] );
-                        sscanf( &line[77], "%s", pdbaname[atomCounter] ); //  Added for 4.2.x compatibility SF
+			if(strlen(line)<77+1) {
+			    // TODO MPique 2010-06 write test for this 77+1
+                            pr( logFile, "\nNOTE: Atom number %d, line too short, cannot determine atom type\n", atomCounter+1);
+			    strcpy(pdbaname[atomCounter], "?");
+			    }
+				
+                        else sscanf( &line[77], "%s", pdbaname[atomCounter] ); //  Added for 4.2.x compatibility SF
                         /*
                          * Determine this atom's atom type:
                          */
-                        type[atomCounter] = get_atom_type(pdbaname[atomCounter]);
+			type[atomCounter] = get_atom_type(pdbaname[atomCounter]);
 
                         if (type[atomCounter] == -1) {
                             pr( logFile, "\nNOTE: Atom number %d, using default atom type 1...\n\n", atomCounter+1);
-                            type[atomCounter] = 1;
+                            type[atomCounter] = 0; // internal 0-origin
                         } else {
                             pr( logFile, "\nAtom number %d, recognized atom type = %d...\n\n", atomCounter+1, type[atomCounter]+1);
                         }

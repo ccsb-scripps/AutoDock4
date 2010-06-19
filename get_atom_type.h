@@ -1,6 +1,6 @@
 /*
 
- $Id: get_atom_type.h,v 1.5 2009/05/08 23:02:12 rhuey Exp $
+ $Id: get_atom_type.h,v 1.6 2010/06/19 02:51:24 mp Exp $
 
  AutoDock 
 
@@ -29,5 +29,5 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "autocomm.h"
 
-int  get_atom_type( char  aname[4] );
+int  get_atom_type( const char aname[] );
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.h,v 1.9 2010/06/15 23:29:44 mp Exp $
+ $Id: nonbonds.h,v 1.10 2010/06/19 02:51:24 mp Exp $
 
  AutoDock 
 
@@ -33,7 +33,9 @@ nonbonds( const Real crdpdb[MAX_ATOMS][SPACE],
 			    const int   natom, 
 			    const int   bond_index[MAX_ATOMS],
                 int         B_include_1_4_interactions,
-                int         bonded[MAX_ATOMS][6]);
+
+		int	nbonds[MAX_ATOMS], // per atom
+                int         bonded[MAX_ATOMS][MAX_NBONDS]);
 #endif
 
 #ifndef GETBONDS
@@ -44,13 +46,14 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
               const int from_atom,
               const int to_atom,
 			  const int bond_index[MAX_ATOMS],
-              int bonded[MAX_ATOMS][6]);
+	      int nbonds[MAX_ATOMS], // per atom
+              int bonded[MAX_ATOMS][MAX_NBONDS]);
 #endif
 
 #ifndef PRINTBONDS
 #define PRINTBONDS
 #include "constants.h"
-void printbonds(const int natom, const int bonded[MAX_ATOMS][6], const char *message, const int B_print_all_bonds);
+void printbonds(const int natom, const int nbonds[MAX_ATOMS], const int bonded[MAX_ATOMS][MAX_NBONDS], const char *message, const int B_print_all_bonds);
 #endif
 
 #ifndef PRINT14

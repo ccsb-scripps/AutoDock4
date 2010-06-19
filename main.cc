@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.126 2010/06/15 23:30:55 mp Exp $
+ $Id: main.cc,v 1.127 2010/06/19 02:51:24 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -109,7 +109,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.126 2010/06/15 23:30:55 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.127 2010/06/19 02:51:24 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -737,7 +737,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.126 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.127 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2206,7 +2206,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 foundParameter = apm_find(param[i]);
                 if ( NULL == foundParameter ) {
                     prStr( error_message,"%s: ERROR:  Unknown ligand atom type \"%s\"; add parameters for it to the parameter library first!\n", programname, param[i]);
-                    exit(-1);
+                    stop(" unknown ligand atom type");
                 }
                 else a[i] = foundParameter->map_index;
             }

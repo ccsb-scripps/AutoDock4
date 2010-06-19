@@ -1,6 +1,6 @@
 /*
 
- $Id: get_atom_type.cc,v 1.8 2009/05/08 23:02:12 rhuey Exp $
+ $Id: get_atom_type.cc,v 1.9 2010/06/19 02:51:24 mp Exp $
 
  AutoDock 
 
@@ -43,7 +43,9 @@ extern FILE *logFile;
 extern int debug;
 
 
-int get_atom_type( char aname[4] )
+// get_atom_type - returns integer atom type (0 or greater) or -1 for unknown
+// As of 2010-06, no longer covers up failure to find atom type
+int get_atom_type( const char aname[] )
 {
     ParameterEntry * found_parm;
     ParameterEntry thisparm;
@@ -56,9 +58,9 @@ int get_atom_type( char aname[4] )
     // thus:  map[][][][map_index]
 
     // AutoGrid 4 Typing
-    strcpy(thisparm.autogrid_type, aname);
-    found_parm = apm_find(thisparm.autogrid_type);
+    found_parm = apm_find(aname);
     if (found_parm != NULL) {
+	strcpy(thisparm.autogrid_type, aname);
         map_index = found_parm->map_index;
         bond_index = found_parm->bond_index;
         if (debug > 0) {
@@ -74,11 +76,6 @@ int get_atom_type( char aname[4] )
     }
     // /--AutoGrid4 
     
-    if (map_index == -1) {
-        pr( logFile, "%s: WARNING:  atom type not found, using the default, atom type = 1, instead.\n", programname);
-        map_index = 0;  // we are 0-based internally, 1-based in printed output, for human's sake
-        bond_index = 0;  // we are 0-based internally, 1-based in printed output, for human's sake
-    }
     return (map_index);
 }
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.13 2010/06/15 23:29:44 mp Exp $
+ $Id: nonbonds.cc,v 1.14 2010/06/19 02:51:24 mp Exp $
 
  AutoDock 
 
@@ -48,14 +48,15 @@ nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
 		      const int   natom, 
               const int   bond_index[MAX_ATOMS],
               int         B_include_1_4_interactions,
-              int         bonded[MAX_ATOMS][6])
+	      int	nbonds[MAX_ATOMS],
+              int         bonded[MAX_ATOMS][MAX_NBONDS])
 {
 	int i,j,k,l;
     int nonbond_type;
     int errorcode = 0;
 
     if (debug>0) {
-        printbonds(natom, bonded, "\nDEBUG:  3. INSIDE nonbonds, bonded[][] array is:\n\n", 0);
+        printbonds(natom, nbonds, bonded, "\nDEBUG:  3. INSIDE nonbonds, bonded[][] array is:\n\n", 0);
     }
 
     //
@@ -71,7 +72,7 @@ nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
     } // i
 
 	for (i = 0; i<natom; i++) {  // loop over atoms, "i", from 1 to natom
-        for (j=0; j<bonded[i][5]; j++) {  // loop over this atom's "j" bonds
+        for (j=0; j<nbonds[i]; j++) {  // loop over this atom's "j" bonds
             // Ignore 1-2 Interactions
             nbmatrix[ i            ][ bonded[i][j] ] = 0;
             nbmatrix[ bonded[i][j] ][ i            ] = 0;
@@ -79,8 +80,8 @@ nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
     } // i
 
 	for (i=0; i<natom; i++) {  // loop over all the atoms, "i"; there are "natom" atoms
-		for (j=0; j<bonded[i][5]; j++) {  // loop over all the atoms "j" bonded to the current atom, "i"; there are "bonded[i][5]" bonded atoms
-			for (k=0; k<bonded[bonded[i][j]][5]; k++) {  // loop over each atom "k" bonded to the current atom "j"
+		for (j=0; j<nbonds[i]; j++) {  // loop over all the atoms "j" bonded to the current atom, "i"
+			for (k=0; k<nbonds[bonded[i][j]]; k++) {  // loop over each atom "k" bonded to the current atom "j"
 
 				// Ignore "1-3 Interactions"
 				nbmatrix[bonded[bonded[i][j]][k]][i] = 0;
@@ -99,20 +100,20 @@ nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
                 // Loop over each atom "l" bonded to the atom "k" bonded to the atom "j" bonded to the atom "i"...
                 if (debug>0) {
                     (void)fprintf(logFile, "bonded[ %d ][ %d ] = %d\n", bonded[i][j], k, bonded[bonded[i][j]][k] );
-                    (void)fprintf(logFile, "bonded[ %d ][ 5 ] = %d\n", bonded[bonded[i][j]][k], bonded[bonded[bonded[i][j]][k]][5] );
+                    (void)fprintf(logFile, "nbonds[ %d ] = %d\n", bonded[bonded[i][j]][k], nbonds[bonded[bonded[i][j]][k]] );
                 }
                 // validate the bonded[][] values before they used as indices in the for l-loop.
                 if (bonded[i][j] < 0) {
-                    (void)fprintf(logFile, "%s:  WARNING! The count of bonds, %d, to atom %d does not match the list of bonded atoms.\n\n", programname, bonded[i][5], i);
-                    (void)fprintf(logFile, "%s:  WARNING! bonded[%d][] = %d, %d, %d, %d, %d, %d.\n\n", programname, i, bonded[i][0], bonded[i][1], bonded[i][2], bonded[i][3], bonded[i][4], bonded[i][5]);
+                    (void)fprintf(logFile, "%s:  WARNING! The count of bonds, %d, to atom %d does not match the list of bonded atoms.\n\n", programname, nbonds[i], i);
+                    (void)fprintf(logFile, "%s:  WARNING! bonded[%d][] = %d, %d, %d, %d, %d, nbonds=%d.\n\n", programname, i, bonded[i][0], bonded[i][1], bonded[i][2], bonded[i][3], bonded[i][4], nbonds[i]);
                     errorcode |= 1;
                 }
                 if (bonded[ bonded[i][j] ][k] < 0) {
-                    (void)fprintf(logFile, "%s:  WARNING! The count of bonds, %d, to atom %d does not match the list of bonded atoms.\n\n", programname, bonded[bonded[i][j]][5], bonded[i][j]);
-                    (void)fprintf(logFile, "%s:  WARNING! bonded[%d][] = %d, %d, %d, %d, %d, %d.\n\n", programname, bonded[i][j], bonded[bonded[i][j]][0], bonded[bonded[i][j]][1], bonded[bonded[i][j]][2], bonded[bonded[i][j]][3], bonded[bonded[i][j]][4], bonded[bonded[i][j]][5]);
+                    (void)fprintf(logFile, "%s:  WARNING! The count of bonds, %d, to atom %d does not match the list of bonded atoms.\n\n", programname, nbonds[bonded[i][j]], bonded[i][j]);
+                    (void)fprintf(logFile, "%s:  WARNING! bonded[%d][] = %d, %d, %d, %d, %d, nbonds=%d.\n\n", programname, bonded[i][j], bonded[bonded[i][j]][0], bonded[bonded[i][j]][1], bonded[bonded[i][j]][2], bonded[bonded[i][j]][3], bonded[bonded[i][j]][4], nbonds[bonded[i][j]]); // gadzooks
                     errorcode |= 2;
                 }
-                for (l=0; l<bonded[bonded[bonded[i][j]][k]][5]; l++) { 
+                for (l=0; l<nbonds[bonded[bonded[i][j]][k]]; l++) { 
                     nbmatrix[i][bonded[bonded[bonded[i][j]][k]][l]] = nonbond_type;
                     nbmatrix[bonded[bonded[bonded[i][j]][k]][l]][i] = nonbond_type;
                 } //  l
@@ -131,7 +132,8 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
               const int from_atom,
               const int to_atom,
               const int bond_index[MAX_ATOMS],
-              int   bonded[MAX_ATOMS][6])
+	      int	nbonds[MAX_ATOMS],
+              int         bonded[MAX_ATOMS][MAX_NBONDS])
 {
 	int i,j;
 	double dist,dx,dy,dz;
@@ -186,42 +188,41 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
 			if (dist >= mindist[bond_index[i]][bond_index[j]] && 
                 dist <= maxdist[bond_index[i]][bond_index[j]]) {  
 
-                // bonded[x][5] is the current number of bonds that atom "x" has.
-	            // Remember:   int bonded[MAX_ATOMS][6];	
+	            // Remember:   int bonded[MAX_ATOMS][MAX_NBONDS];	
 
-                    if (bonded[i][5] >= 5 || bonded[j][5] >=5) {
-                    if (bonded[i][5] >= 5) {
+                    if (nbonds[i] >= MAX_NBONDS || nbonds[j] >= MAX_NBONDS) {
+                    if (nbonds[i] >= MAX_NBONDS) {
                         // bonded array for the i-th atom is full; return failure code here.
-                        fprintf( logFile, "%s: WARNING!  Atom %d has too many bonds %d (%d is the maximum): ", programname, i+1, bonded[i][5], 5 );
-                        for(int k=0;k<5;k++) fprintf( logFile, "%d ", bonded[i][k]+1);
+                        fprintf( logFile, "%s: WARNING!  Atom %d has too many bonds %d (%d is the maximum): ", programname, i+1, nbonds[i], MAX_NBONDS );
+                        for(int k=0;k<MAX_NBONDS;k++) fprintf( logFile, "%d ", bonded[i][k]+1);
                         fprintf( logFile, "[%d...]\n", j+1);
 			errorcode |= 1;
 			}
-                    if (bonded[j][5] >= 5) {
+                    if (nbonds[j] >= MAX_NBONDS) {
                         // bonded array for the j-th atom is full; return failure code here.
-                        fprintf( logFile, "%s: WARNING!  Atom %d has too many bonds %d (%d is the maximum): ", programname, j+1, bonded[j][5], 5 );
-                        for(int k=0;k<5;k++) fprintf( logFile, "%d ", bonded[j][k]+1);
+                        fprintf( logFile, "%s: WARNING!  Atom %d has too many bonds %d (%d is the maximum): ", programname, j+1, nbonds[j], MAX_NBONDS );
+                        for(int k=0;k<MAX_NBONDS;k++) fprintf( logFile, "%d ", bonded[j][k]+1);
                         fprintf( logFile, "[%d...]\n", i+1);
 			errorcode |= 2;
 			}
 
 		    } else {
                 // add a bond between i and j
-				bonded[i][ bonded[i][5] ] = j;
-				bonded[j][ bonded[j][5] ] = i;
+				bonded[i][ nbonds[i] ] = j;
+				bonded[j][ nbonds[j] ] = i;
                 // increment the number of bonds to i and j
-				bonded[i][5] += 1;
-				bonded[j][5] += 1;
+				nbonds[i] += 1;
+				nbonds[j] += 1;
 		   }
 
                 if (debug>0) {
                     // print out distances
                     (void)fprintf(logFile,"Adding a bond between %d and %d (dist=%.3lf, mindist=%.3lf, maxdist=%.3lf)\n", i, j, 
                                   dist, mindist[bond_index[i]][bond_index[j]], maxdist[bond_index[i]][bond_index[j]]);
-                    (void)fprintf(logFile,"  bonded[%d][ bonded[%d][5]=%d ] = %d\n", i, i, bonded[i][5], j);
-                    (void)fprintf(logFile,"  bonded[%d][ bonded[%d][5]=%d ] = %d\n", j, j, bonded[j][5], i);
-                    (void)fprintf(logFile,"  bonded[%d][5]=%d\n", i, bonded[i][5]);
-                    (void)fprintf(logFile,"  bonded[%d][5]=%d\n", j, bonded[j][5]);
+                    (void)fprintf(logFile,"  bonded[%d][ nbonds[%d]=%d ] = %d\n", i, i, nbonds[i], j);
+                    (void)fprintf(logFile,"  bonded[%d][ nbonds[%d]=%d ] = %d\n", j, j, nbonds[j], i);
+                    (void)fprintf(logFile,"  nbonds[%d]=%d\n", i, nbonds[i]);
+                    (void)fprintf(logFile,"  nbonds[%d]=%d\n", j, nbonds[j]);
                 }
 				
 			} //  dist is in bonding range for these atom types
@@ -233,21 +234,16 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
 
 /*----------------------------------------------------------------------------*/
 
-void printbonds(const int natom, const int bonded[MAX_ATOMS][6], const char *message, const int B_print_all_bonds)
+void printbonds(const int natom, const int nbonds[MAX_ATOMS], const int bonded[MAX_ATOMS][MAX_NBONDS], const char *message, const int B_print_all_bonds)
 {
-    register int i, j;
     pr(logFile, message);
-    for (i = 0; i<natom; i++) {  // loop over atoms, "i", from 1 to natom
+    for (int i = 0; i<natom; i++) {  // loop over atoms, "i", from 1 to natom
         pr(logFile, "DEBUG:  atom %d  bonded to ", i+1);
-        if (B_print_all_bonds == 1) {
-            for (j=0; j<6; j++) {  // loop over all the slots for this atom's "j" bonds
-                pr(logFile, "  %d", bonded[i][j]+1);
-            } // j
-        } else {
-            for (j=0; j<bonded[i][5]; j++) {  // loop over this atom's "j" bonds
-                pr(logFile, "  %d", bonded[i][j]+1);
-            } // j
-        }
+        for (int j=0; j< 
+	    B_print_all_bonds 
+	    ? MAX_NBONDS // loop over all the slots for this atom's "j" bonds
+	    : nbonds[i]; // loop over this atom's "j" bonds
+	    j++) pr(logFile, "  %d", bonded[i][j]+1);
         pr(logFile, "\n");
     } // i
 } // end of printbonds

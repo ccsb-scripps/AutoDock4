@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.29 2010/06/15 23:30:55 mp Exp $
+ $Id: readPDBQT.cc,v 1.30 2010/06/19 02:51:24 mp Exp $
 
  AutoDock 
 
@@ -135,7 +135,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	Boole           B_is_in_branch = FALSE;
 	Boole           B_is_in_flexres = FALSE;
 
-	int             bonded[MAX_ATOMS][6];
 
 	register int    i = 0;
 	register int    j = 0;
@@ -352,6 +351,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     // We could not find this parameter -- return an error
                     prStr(message, "\n%s: *** WARNING!  Unknown atom type \"%s\" found.  You should add parameters for it to the parameter library first! ***\n\n", programname, this_parameter_entry.autogrid_type);
                     pr_2x(stderr, logFile, message);
+		    stop("unknown atom type");
                 }
 
                 if (map_index[natom] == -1) {
@@ -583,48 +583,52 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 	if (ntor > 0) {
         //  Create a list of internal non-bonds to be used in internal energy calculation...
+	//int		nbonds[MAX_ATOMS];
+	//int             bonded[MAX_ATOMS][MAX_NBONDS];
+	int		*nbonds; // [natom];
+	int             (*bonded) /* [natom] */ [MAX_NBONDS];
 		if (debug > 0) {
 			pr(logFile, "Finding bonds.\n\n");
 		}
-		// Initialise the bonded array
-        for (i = 0; i < natom; i++) {
-			for (j = 0; j < 5; j++) {
-				bonded[i][j] = -1;
-			} // j
-            bonded[i][5] = 0;
-		} // i
+		// Initialise the bonded and nbonds arrays
+	nbonds=(int *) calloc(natom, sizeof *nbonds);
+	bonded=(int (*)[MAX_NBONDS])  malloc(natom * sizeof *bonded);
+	if(nbonds==NULL || bonded==NULL) stop("memory alloc failure in readPDBQT");
+        for (i = 0; i < natom; i++)  for (j = 0; j < MAX_NBONDS; j++) {
+		bonded[i][j] = -1;
+	}
 
         if (debug > 0) {
-			printbonds(natom, bonded, "\nDEBUG:  1. BEFORE getbonds, bonded[][] array is:\n\n", 1);
+			printbonds(natom, nbonds, bonded, "\nDEBUG:  1. BEFORE getbonds, bonded[][] array is:\n\n", 1);
 		}
         // find all the bonds in the ligand
-		errorcode = getbonds(crdpdb, 0, true_ligand_atoms, bond_index, bonded);
+		errorcode = getbonds(crdpdb, 0, true_ligand_atoms, bond_index, nbonds, bonded);
 	   if(errorcode!=0)  {
 			pr(logFile, " ERROR in ligand getbonds, code=%d\n", errorcode);
-			// TODO stop here M Pique 2010
+			stop(" ERROR in ligand getbonds");
 			}
 
         if (B_have_flexible_residues) {
             // find all the bonds in the receptor
-            errorcode = getbonds(crdpdb, true_ligand_atoms, natom, bond_index, bonded);
+            errorcode = getbonds(crdpdb, true_ligand_atoms, natom, bond_index, nbonds, bonded);
 	   if(errorcode!=0)  {
 			pr(logFile, " ERROR in receptor getbonds, code=%d\n", errorcode);
-			// TODO stop here M Pique 2010
+			stop(" ERROR in receptor getbonds");
 			}
         }
 
 		if (debug > 0) {
-			printbonds(natom, bonded, "\nDEBUG:  2. AFTER getbonds, bonded[][] array is:\n\n", 0);
+			printbonds(natom, nbonds, bonded, "\nDEBUG:  2. AFTER getbonds, bonded[][] array is:\n\n", 0);
 			pr(logFile, "Detecting all non-bonds.\n\n");
 		}
-		errorcode = nonbonds(crdpdb, nbmatrix, natom, bond_index, B_include_1_4_interactions, bonded);
+		errorcode = nonbonds(crdpdb, nbmatrix, natom, bond_index, B_include_1_4_interactions, nbonds, bonded);
 		if(errorcode!=0)  {
 			pr(logFile, " ERROR in nonbonds, code=%d\n", errorcode);
-			// TODO stop here M Pique 2010
+			stop(" ERROR in nonbonds");
 			}
 
 		if (debug > 0) {
-			printbonds(natom, bonded, "\nDEBUG:  4. AFTER nonbonds, bonded[][] array is:\n\n", 0);
+			printbonds(natom, nbonds, bonded, "\nDEBUG:  4. AFTER nonbonds, bonded[][] array is:\n\n", 0);
 			pr(logFile, "Weeding out non-bonds in rigid parts of the torsion tree.\n\n");
 		}
 		weedbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, P_Nnb, nonbondlist, outlev, map_index);
@@ -636,6 +640,8 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 		flushLog;
 
+	free(nbonds);
+	free(bonded);
 	} else {
 		fprintf(logFile, ">>> No torsions detected, so skipping \"nonbonds\", \"weedbonds\" and \"torNorVec\" <<<\n\n");
 	}

@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.28 2009/12/16 23:35:54 rhuey Exp $
+ $Id: constants.h,v 1.29 2010/06/19 02:51:24 mp Exp $
 
  AutoDock 
 
@@ -101,6 +101,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #else
 #define MAX_RUNS     256      /* Maximum number of runs. */
 #define MAX_ATOMS    2048     /* Maximum number of atoms in Small Molecule. */
+#define MAX_NBONDS    16     /* Maximum number of bonds per atom, in readPDBQT  */
 #define MAX_RECORDS  2048     /* Maximum number of PDBQ records =~1.5*MAX_ATOMS */
 #define MAX_NONBONDS 524288 /* 1048576   Maximum number of non-bonds in Small Molecule.*/
 #endif

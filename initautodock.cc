@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.cc,v 1.12 2009/05/08 23:02:13 rhuey Exp $
+ $Id: initautodock.cc,v 1.13 2010/06/19 02:51:24 mp Exp $
 
  AutoDock 
 
@@ -61,7 +61,7 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 
     char  note[LINE_LEN];
     char  rec8[10];
-    char  axis[5];
+    static char  axis[] = {"xyz"};
 
     Real delta[MAX_ATOMS][SPACE];
     Real delta_max[SPACE];
@@ -78,8 +78,6 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
 /*
 **  Initialize the automated docking simulation,
 */
-    strcpy( axis, "xyz\0" );
-
     /* Initialize the delta arrays... */
     for (xyz = 0;  xyz < SPACE;  xyz++) {
         delta_min[xyz] =  BIG;
