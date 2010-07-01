@@ -1,0 +1,2898 @@
+      ________________________________________________________________
+
+__________//___________________________/////___________________/____________
+_________/__/__________________________/____/__________________/____________
+________/____/___________/_____________/_____/_________________/____________
+________/____/__/_____/_/////___/////__/_____/__/////___/////__/___/________
+_______/______/_/_____/__/_____/_____/_/_____/_/_____/_/_____/_/_//_________
+_______////////_/_____/__/_____/_____/_/_____/_/_____/_/_______//_/_________
+_______/______/_/____//__/___/_/_____/_/____/__/_____/_/_____/_/___/________
+_______/______/__////_/___///___/////__/////____/////___/////__/____/_______
+
+      ________________________________________________________________
+
+                                ______
+                               /      \
+                              /        \
+                             /          \
+                             \    /\    /
+                              \  /  \  /
+                               \/ /\ \/
+                                 /  \
+                                /____\
+
+                  ______________________________________ 
+                 |                                      |
+                 |      AutoDock 4.2 Release 4.2.3      |
+                 |            (c) 1989-2009             |
+                 |    The Scripps Research Institute    |
+                 |                                      |
+                 |        Garrett M. Morris, TSRI       |
+                 |            Ruth Huey, TSRI           |
+                 |          Michael Pique, TSRI         |
+                 |        William E. Hart, Sandia       |
+                 |   R. Scott Halliday, Hewlett Packard |
+                 |        William Lindstrom, TSRI       |
+                 |           Max Chang, TSRI            |
+                 |        Alexander Gillet, TSRI        |
+                 |         Stefano Forli, TSRI          |
+                 |        Richard K. Belew, UCSD        |
+                 |       David S. Goodsell, TSRI        |
+                 |        Arthur J. Olson, TSRI         |
+                 |______________________________________|
+
+                  ______________________________________ 
+                 |                                      |
+                 | Automated Docking of Flexible Ligand |
+                 |  to Flexible Macromolecular Receptor |
+                 |                                      |
+                 | For help, email autodock@scripps.edu |
+                 |______________________________________|
+
+
+        AutoDock comes with ABSOLUTELY NO WARRANTY.
+        AutoDock is free software, and you are welcome
+        to redistribute it under certain conditions;
+        for details type 'autodock -C'
+
+                           $Revision: 1.1 $
+
+                   Compiled on Jan 29 2010 at 11:47:01
+
+
+This file was created at:			1:31 40" p.m., 03/17/2010
+                   using:			"saul"
+
+NOTE: "rus" stands for:
+
+      r = Real, wall-clock or elapsed time;
+      u = User or cpu-usage time;
+      s = System time
+
+All timings are in seconds, unless otherwise stated.
+
+
+
+      ________________________________________________________________
+
+                   SETTING UP DEFAULT PARAMETER LIBRARY
+      ________________________________________________________________
+
+
+Setting up parameter library with AutoDock default Unbound_Same_As_Bound values.
+
+
+Free energy coefficient for the van der Waals term = 	0.1662
+
+Free energy coefficient for the H-bonding term     = 	0.1209
+
+Free energy coefficient for the electrostatic term = 	0.1406
+
+Free energy coefficient for the desolvation term   = 	0.1322
+
+Free energy coefficient for the torsional term     = 	0.2983
+
+Parameters for the atom type "H" were initialised with the following default values:
+
+	R-eqm = 2.00 Angstrom,  weighted epsilon = 0.003,
+	At.frag.vol. = 0.000,  At.solv.par. = 0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 3
+
+Parameters for the atom type "HD" were initialised with the following default values:
+
+	R-eqm = 2.00 Angstrom,  weighted epsilon = 0.003,
+	At.frag.vol. = 0.000,  At.solv.par. = 0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 2,  bond index = 3
+
+Parameters for the atom type "HS" were initialised with the following default values:
+
+	R-eqm = 2.00 Angstrom,  weighted epsilon = 0.003,
+	At.frag.vol. = 0.000,  At.solv.par. = 0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 1,  bond index = 3
+
+Parameters for the atom type "C" were initialised with the following default values:
+
+	R-eqm = 4.00 Angstrom,  weighted epsilon = 0.025,
+	At.frag.vol. = 33.510,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 0
+
+Parameters for the atom type "A" were initialised with the following default values:
+
+	R-eqm = 4.00 Angstrom,  weighted epsilon = 0.025,
+	At.frag.vol. = 33.510,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 0
+
+Parameters for the atom type "N" were initialised with the following default values:
+
+	R-eqm = 3.50 Angstrom,  weighted epsilon = 0.027,
+	At.frag.vol. = 22.449,  At.solv.par. = -0.002,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 1
+
+Parameters for the atom type "NA" were initialised with the following default values:
+
+	R-eqm = 3.50 Angstrom,  weighted epsilon = 0.027,
+	At.frag.vol. = 22.449,  At.solv.par. = -0.002,
+	Hb R-eqm = 1.900,  weighted Hb epsilon = 0.604,
+	Hb type = 4,  bond index = 1
+
+Parameters for the atom type "NS" were initialised with the following default values:
+
+	R-eqm = 3.50 Angstrom,  weighted epsilon = 0.027,
+	At.frag.vol. = 22.449,  At.solv.par. = -0.002,
+	Hb R-eqm = 1.900,  weighted Hb epsilon = 0.604,
+	Hb type = 3,  bond index = 1
+
+Parameters for the atom type "OA" were initialised with the following default values:
+
+	R-eqm = 3.20 Angstrom,  weighted epsilon = 0.033,
+	At.frag.vol. = 17.157,  At.solv.par. = -0.003,
+	Hb R-eqm = 1.900,  weighted Hb epsilon = 0.604,
+	Hb type = 5,  bond index = 2
+
+Parameters for the atom type "OS" were initialised with the following default values:
+
+	R-eqm = 3.20 Angstrom,  weighted epsilon = 0.033,
+	At.frag.vol. = 17.157,  At.solv.par. = -0.003,
+	Hb R-eqm = 1.900,  weighted Hb epsilon = 0.604,
+	Hb type = 3,  bond index = 2
+
+Parameters for the atom type "F" were initialised with the following default values:
+
+	R-eqm = 3.09 Angstrom,  weighted epsilon = 0.013,
+	At.frag.vol. = 15.448,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "Mg" were initialised with the following default values:
+
+	R-eqm = 1.30 Angstrom,  weighted epsilon = 0.145,
+	At.frag.vol. = 1.560,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "MG" were initialised with the following default values:
+
+	R-eqm = 1.30 Angstrom,  weighted epsilon = 0.145,
+	At.frag.vol. = 1.560,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "P" were initialised with the following default values:
+
+	R-eqm = 4.20 Angstrom,  weighted epsilon = 0.033,
+	At.frag.vol. = 38.792,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 5
+
+Parameters for the atom type "SA" were initialised with the following default values:
+
+	R-eqm = 4.00 Angstrom,  weighted epsilon = 0.033,
+	At.frag.vol. = 33.510,  At.solv.par. = -0.002,
+	Hb R-eqm = 2.500,  weighted Hb epsilon = 0.121,
+	Hb type = 5,  bond index = 6
+
+Parameters for the atom type "S" were initialised with the following default values:
+
+	R-eqm = 4.00 Angstrom,  weighted epsilon = 0.033,
+	At.frag.vol. = 33.510,  At.solv.par. = -0.002,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 6
+
+Parameters for the atom type "Cl" were initialised with the following default values:
+
+	R-eqm = 4.09 Angstrom,  weighted epsilon = 0.046,
+	At.frag.vol. = 35.824,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "CL" were initialised with the following default values:
+
+	R-eqm = 4.09 Angstrom,  weighted epsilon = 0.046,
+	At.frag.vol. = 35.824,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "Ca" were initialised with the following default values:
+
+	R-eqm = 1.98 Angstrom,  weighted epsilon = 0.091,
+	At.frag.vol. = 2.770,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "CA" were initialised with the following default values:
+
+	R-eqm = 1.98 Angstrom,  weighted epsilon = 0.091,
+	At.frag.vol. = 2.770,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "Mn" were initialised with the following default values:
+
+	R-eqm = 1.30 Angstrom,  weighted epsilon = 0.145,
+	At.frag.vol. = 2.140,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "MN" were initialised with the following default values:
+
+	R-eqm = 1.30 Angstrom,  weighted epsilon = 0.145,
+	At.frag.vol. = 2.140,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "Fe" were initialised with the following default values:
+
+	R-eqm = 1.30 Angstrom,  weighted epsilon = 0.002,
+	At.frag.vol. = 1.840,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "FE" were initialised with the following default values:
+
+	R-eqm = 1.30 Angstrom,  weighted epsilon = 0.002,
+	At.frag.vol. = 1.840,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "Zn" were initialised with the following default values:
+
+	R-eqm = 1.48 Angstrom,  weighted epsilon = 0.091,
+	At.frag.vol. = 1.700,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "ZN" were initialised with the following default values:
+
+	R-eqm = 1.48 Angstrom,  weighted epsilon = 0.091,
+	At.frag.vol. = 1.700,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "Br" were initialised with the following default values:
+
+	R-eqm = 4.33 Angstrom,  weighted epsilon = 0.065,
+	At.frag.vol. = 42.566,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "BR" were initialised with the following default values:
+
+	R-eqm = 4.33 Angstrom,  weighted epsilon = 0.065,
+	At.frag.vol. = 42.566,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "I" were initialised with the following default values:
+
+	R-eqm = 4.72 Angstrom,  weighted epsilon = 0.091,
+	At.frag.vol. = 55.059,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 4
+
+Parameters for the atom type "Z" were initialised with the following default values:
+
+	R-eqm = 4.00 Angstrom,  weighted epsilon = 0.025,
+	At.frag.vol. = 33.510,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 0
+
+Parameters for the atom type "G" were initialised with the following default values:
+
+	R-eqm = 4.00 Angstrom,  weighted epsilon = 0.025,
+	At.frag.vol. = 33.510,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 0
+
+Parameters for the atom type "GA" were initialised with the following default values:
+
+	R-eqm = 4.00 Angstrom,  weighted epsilon = 0.025,
+	At.frag.vol. = 33.510,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 0
+
+Parameters for the atom type "J" were initialised with the following default values:
+
+	R-eqm = 4.00 Angstrom,  weighted epsilon = 0.025,
+	At.frag.vol. = 33.510,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 0
+
+Parameters for the atom type "Q" were initialised with the following default values:
+
+	R-eqm = 4.00 Angstrom,  weighted epsilon = 0.025,
+	At.frag.vol. = 33.510,  At.solv.par. = -0.001,
+	Hb R-eqm = 0.000,  weighted Hb epsilon = 0.000,
+	Hb type = 0,  bond index = 0
+
+
+
+Preparing Energy Tables for Bound Calculation:
+
+Calculating distance-dependent dielectric function using the method of Mehler & Solmajer
+
+
+Preparing Energy Tables for Unbound Calculation:
+
+Calculating distance-dependent dielectric function using the method of Mehler & Solmajer
+
+
+
+      ___________________________________________________
+
+             PARSING INPUT DOCKING PARAMETER FILE
+      ___________________________________________________
+
+Docking parameter file (DPF) used for this docking:		1dwd_epdb.dpf
+
+
+
+DPF> autodock_parameter_version 4.2       # used by autodock to validate parameter set
+
+
+	Autodock parameter version 4.2.
+
+
+DPF> outlev 1                             # diagnostic output level
+
+Output Level = 1.  MINIMUM OUTPUT DURING DOCKING.
+
+	Output population statistics every 100 generations.
+
+
+DPF> intelec                              # calculate internal electrostatics
+
+Electrostatic energies will be calculated for all non-bonds between moving atoms.
+
+
+
+DPF> ligand_types A C HD N OA S           # atoms types in ligand
+
+Parameters found for ligand type "A" (grid map index = 0, weighted well depth, epsilon = 0.0249)
+Parameters found for ligand type "C" (grid map index = 1, weighted well depth, epsilon = 0.0249)
+Parameters found for ligand type "HD" (grid map index = 2, weighted well depth, epsilon = 0.0033)
+Parameters found for ligand type "N" (grid map index = 3, weighted well depth, epsilon = 0.0266)
+Parameters found for ligand type "OA" (grid map index = 4, weighted well depth, epsilon = 0.0332)
+Parameters found for ligand type "S" (grid map index = 5, weighted well depth, epsilon = 0.0332)
+
+
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for A-A interactions, used in internal energy calculations:
+
+                418256.0           204.2 
+    E      =  -----------  -  -----------
+      A,A          12               6
+                  r               r 
+
+Calculating A-A interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.01,  CPU= 0.00,  System= 0.01
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for A-A interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      A,A          12
+                  r
+
+Calculating A-A interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for A-C and C-A interactions, used in internal energy calculations:
+
+                418256.0           204.2 
+    E      =  -----------  -  -----------
+      A,C          12               6
+                  r               r 
+
+Calculating A-C interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for A-C and C-A interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      A,C          12
+                  r
+
+Calculating A-C interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for A-HD and HD-A interactions, used in internal energy calculations:
+
+                  4837.8            13.3 
+    E      =  -----------  -  -----------
+      A,HD         12               6
+                  r               r 
+
+Calculating A-HD interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for A-HD and HD-A interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      A,HD         12
+                  r
+
+Calculating A-HD interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for A-N and N-A interactions, used in internal energy calculations:
+
+                199118.6           143.2 
+    E      =  -----------  -  -----------
+      A,N          12               6
+                  r               r 
+
+Calculating A-N interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for A-N and N-A interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      A,N          12
+                  r
+
+Calculating A-N interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for A-OA and OA-A interactions, used in internal energy calculations:
+
+                136402.2           125.3 
+    E      =  -----------  -  -----------
+      A,OA         12               6
+                  r               r 
+
+Calculating A-OA interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for A-OA and OA-A interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      A,OA         12
+                  r
+
+Calculating A-OA interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for A-S and S-A interactions, used in internal energy calculations:
+
+                482960.4           235.8 
+    E      =  -----------  -  -----------
+      A,S          12               6
+                  r               r 
+
+Calculating A-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for A-S and S-A interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      A,S          12
+                  r
+
+Calculating A-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for C-C interactions, used in internal energy calculations:
+
+                418256.0           204.2 
+    E      =  -----------  -  -----------
+      C,C          12               6
+                  r               r 
+
+Calculating C-C interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.01,  CPU= 0.01,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for C-C interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      C,C          12
+                  r
+
+Calculating C-C interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for C-HD and HD-C interactions, used in internal energy calculations:
+
+                  4837.8            13.3 
+    E      =  -----------  -  -----------
+      C,HD         12               6
+                  r               r 
+
+Calculating C-HD interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for C-HD and HD-C interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      C,HD         12
+                  r
+
+Calculating C-HD interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for C-N and N-C interactions, used in internal energy calculations:
+
+                199118.6           143.2 
+    E      =  -----------  -  -----------
+      C,N          12               6
+                  r               r 
+
+Calculating C-N interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for C-N and N-C interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      C,N          12
+                  r
+
+Calculating C-N interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for C-OA and OA-C interactions, used in internal energy calculations:
+
+                136402.2           125.3 
+    E      =  -----------  -  -----------
+      C,OA         12               6
+                  r               r 
+
+Calculating C-OA interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for C-OA and OA-C interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      C,OA         12
+                  r
+
+Calculating C-OA interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for C-S and S-C interactions, used in internal energy calculations:
+
+                482960.4           235.8 
+    E      =  -----------  -  -----------
+      C,S          12               6
+                  r               r 
+
+Calculating C-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for C-S and S-C interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      C,S          12
+                  r
+
+Calculating C-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for HD-HD interactions, used in internal energy calculations:
+
+                    13.6             0.4 
+    E      =  -----------  -  -----------
+     HD,HD         12               6
+                  r               r 
+
+Calculating HD-HD interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for HD-HD interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+     HD,HD         12
+                  r
+
+Calculating HD-HD interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for HD-N and N-HD interactions, used in internal energy calculations:
+
+                  1758.7             8.1 
+    E      =  -----------  -  -----------
+     HD,N          12               6
+                  r               r 
+
+Calculating HD-N interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for HD-N and N-HD interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+     HD,N          12
+                  r
+
+Calculating HD-N interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for HD-OA and OA-HD interactions, used in internal energy calculations:
+
+                  6689.7          2223.7 
+    E      =  -----------  -  -----------
+     HD,OA         12              10
+                  r               r 
+
+Calculating HD-OA interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for HD-OA and OA-HD interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+     HD,OA         12
+                  r
+
+Calculating HD-OA interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.01,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for HD-S and S-HD interactions, used in internal energy calculations:
+
+                  5586.2            15.3 
+    E      =  -----------  -  -----------
+     HD,S          12               6
+                  r               r 
+
+Calculating HD-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.01,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for HD-S and S-HD interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+     HD,S          12
+                  r
+
+Calculating HD-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for N-N interactions, used in internal energy calculations:
+
+                 89860.2            97.8 
+    E      =  -----------  -  -----------
+      N,N          12               6
+                  r               r 
+
+Calculating N-N interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for N-N interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      N,N          12
+                  r
+
+Calculating N-N interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for N-OA and OA-N interactions, used in internal energy calculations:
+
+                 59394.1            84.0 
+    E      =  -----------  -  -----------
+      N,OA         12               6
+                  r               r 
+
+Calculating N-OA interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for N-OA and OA-N interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      N,OA         12
+                  r
+
+Calculating N-OA interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for N-S and S-N interactions, used in internal energy calculations:
+
+                229922.4           165.4 
+    E      =  -----------  -  -----------
+      N,S          12               6
+                  r               r 
+
+Calculating N-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for N-S and S-N interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      N,S          12
+                  r
+
+Calculating N-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for OA-OA interactions, used in internal energy calculations:
+
+                 38323.1            71.4 
+    E      =  -----------  -  -----------
+     OA,OA         12               6
+                  r               r 
+
+Calculating OA-OA interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for OA-OA interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+     OA,OA         12
+                  r
+
+Calculating OA-OA interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for OA-S and S-OA interactions, used in internal energy calculations:
+
+                157503.8           144.7 
+    E      =  -----------  -  -----------
+     OA,S          12               6
+                  r               r 
+
+Calculating OA-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for OA-S and S-OA interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+     OA,S          12
+                  r
+
+Calculating OA-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for docking calculation;
+
+Non-bonded parameters for S-S interactions, used in internal energy calculations:
+
+                557674.7           272.3 
+    E      =  -----------  -  -----------
+      S,S          12               6
+                  r               r 
+
+Calculating S-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+Calculating internal non-bonded interaction energies for unbound conformation calculation;
+
+Non-bonded parameters for S-S interactions, used in unbound energy calculations:
+
+                392586.8
+    E      =  -----------  -  r
+      S,S          12
+                  r
+
+Calculating S-S interaction energy versus atomic separation (2048 data points).
+Time taken: Real= 0.00,  CPU= 0.00,  System= 0.00
+
+
+DPF> fld 1dwd_rec.maps.fld                # grid_data_file
+
+Opening Grid Map Dimensions file:		1dwd_rec.maps.fld
+
+Grid Point Spacing =				0.375 Angstroms
+
+Even Number of User-specified Grid Points =	60 x-points
+						60 y-points
+						60 z-points
+
+Adding the Central Grid Point makes:		61 x-points
+						61 y-points
+						61 z-points
+
+Coordinates of Central Grid Point of Maps =	(32.192, 14.174, 25.076)
+
+Macromolecule file used to create Grid Maps =	1dwd_rec.pdbqt
+
+Grid Parameter file used to create Grid Maps =	1dwd_1dwd.gpf
+
+Minimum coordinates in grid = (20.942, 2.924, 13.826)
+Maximum coordinates in grid = (43.442, 25.424, 36.326)
+
+
+
+DPF> map 1dwd_rec.A.map                   # atom-specific affinity map
+
+Opened Grid Map 1 (A):				1dwd_rec.A.map
+Checking header information.
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 1... 
+Closing file.
+226981 energies found for map 1
+Minimum energy = -0.89,  maximum energy = 202628.70
+
+Time taken (s): Real= 0.21,  CPU= 0.16,  System= 0.04
+
+Min= -0.888 Mean= 14690.813 Max= 202628.703
+
+
+
+DPF> map 1dwd_rec.C.map                   # atom-specific affinity map
+
+Opened Grid Map 2 (C):				1dwd_rec.C.map
+Checking header information.
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 2... 
+Closing file.
+226981 energies found for map 2
+Minimum energy = -1.00,  maximum energy = 202628.61
+
+Time taken (s): Real= 0.19,  CPU= 0.16,  System= 0.00
+
+Min= -0.995 Mean= 14690.743 Max= 202628.609
+
+
+
+DPF> map 1dwd_rec.HD.map                  # atom-specific affinity map
+
+Opened Grid Map 3 (HD):				1dwd_rec.HD.map
+Checking header information.
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 3... 
+Closing file.
+226981 energies found for map 3
+Minimum energy = -0.72,  maximum energy = 113136.78
+
+Time taken (s): Real= 0.17,  CPU= 0.15,  System= 0.01
+
+Min= -0.721 Mean= 3573.607 Max= 113136.781
+
+
+
+DPF> map 1dwd_rec.N.map                   # atom-specific affinity map
+
+Opened Grid Map 4 (N):				1dwd_rec.N.map
+Checking header information.
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 4... 
+Closing file.
+226981 energies found for map 4
+Minimum energy = -0.96,  maximum energy = 200541.05
+
+Time taken (s): Real= 0.19,  CPU= 0.17,  System= 0.00
+
+Min= -0.961 Mean= 11527.543 Max= 200541.047
+
+
+
+DPF> map 1dwd_rec.OA.map                  # atom-specific affinity map
+
+Opened Grid Map 5 (OA):				1dwd_rec.OA.map
+Checking header information.
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 5... 
+Closing file.
+226981 energies found for map 5
+Minimum energy = -1.61,  maximum energy = 200249.88
+
+Time taken (s): Real= 0.17,  CPU= 0.15,  System= 0.01
+
+Min= -1.611 Mean= 10490.801 Max= 200249.875
+
+
+
+DPF> map 1dwd_rec.S.map                   # atom-specific affinity map
+
+Opened Grid Map 6 (S):				1dwd_rec.S.map
+Checking header information.
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 6... 
+Closing file.
+226981 energies found for map 6
+Minimum energy = -1.24,  maximum energy = 203035.17
+
+Time taken (s): Real= 0.17,  CPU= 0.16,  System= 0.01
+
+Min= -1.237 Mean= 15363.858 Max= 203035.172
+
+
+
+DPF> elecmap 1dwd_rec.e.map               # electrostatics map
+
+Opened Grid Map 7 (e):				1dwd_rec.e.map
+Checking header information.
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 7... 
+Closing file.
+226981 energies found for map 7
+Minimum electrostatic potential = -41.58,  maximum electrostatic potential = 32.69
+
+Time taken (s): Real= 0.16,  CPU= 0.15,  System= 0.00
+
+Min= -41.581 Mean= -0.208 Max= 32.689
+
+
+
+DPF> desolvmap 1dwd_rec.d.map             # desolvation map
+
+Opened Grid Map 8 (d):				1dwd_rec.d.map
+Checking header information.
+Number of grid points expected in  x-dimension:  61
+Number of grid points expected in  y-dimension:  61
+Number of grid points expected in  z-dimension:  61
+Looking for 226981 energies from Grid Map 8... 
+Closing file.
+226981 energies found for map 8
+Minimum energy = 0.00,  maximum energy = 1.55
+
+Time taken (s): Real= 0.20,  CPU= 0.14,  System= 0.01
+
+Min= 0.000 Mean= 0.843 Max= 1.549
+
+
+
+DPF> move 1dwd_lig.pdbqt                  # small molecule
+
+1,4-interactions will be _ignored_ in the non-bonded internal energy calculation.
+
+Ligand PDBQT file = "1dwd_lig.pdbqt"
+
+INPUT LIGAND PDBQT FILE:
+________________________
+
+INPUT-LIGAND-PDBQT: REMARK  8 active torsions:
+INPUT-LIGAND-PDBQT: REMARK  status: ('A' for Active; 'I' for Inactive)
+INPUT-LIGAND-PDBQT: REMARK    1  A    between atoms: C11_4828  and  A12_4831 
+INPUT-LIGAND-PDBQT: REMARK       I    between atoms: N1_4806  and  C9_4826 
+INPUT-LIGAND-PDBQT: REMARK    2  A    between atoms: C8_4824  and  C9_4826 
+INPUT-LIGAND-PDBQT: REMARK       I    between atoms: C35_4868  and  N36_4869 
+INPUT-LIGAND-PDBQT: REMARK    3  A    between atoms: N18_4841  and  S22_4848 
+INPUT-LIGAND-PDBQT: REMARK    4  A    between atoms: C8_4824  and  C11_4828 
+INPUT-LIGAND-PDBQT: REMARK       I    between atoms: N7_4822  and  C20_4846 
+INPUT-LIGAND-PDBQT: REMARK       I    between atoms: A17_4840  and  C35_4868 
+INPUT-LIGAND-PDBQT: REMARK    5  A    between atoms: N7_4822  and  C8_4824 
+INPUT-LIGAND-PDBQT: REMARK    6  A    between atoms: N18_4841  and  C19_4843 
+INPUT-LIGAND-PDBQT: REMARK    7  A    between atoms: S22_4848  and  A26_4853 
+INPUT-LIGAND-PDBQT: REMARK    8  A    between atoms: C19_4843  and  C20_4846 
+INPUT-LIGAND-PDBQT: ROOT
+INPUT-LIGAND-PDBQT: ATOM      1  C8  MID     1      32.710  14.342  22.327  1.00 12.67     0.164 C 
+INPUT-LIGAND-PDBQT: ENDROOT
+INPUT-LIGAND-PDBQT: BRANCH   1   2
+INPUT-LIGAND-PDBQT: ATOM      2  N7  MID     1      31.432  14.076  23.007  1.00 17.28    -0.337 N 
+INPUT-LIGAND-PDBQT: ATOM      3  H11 MID     1      30.593  13.997  22.470  1.00  0.00     0.164 HD
+INPUT-LIGAND-PDBQT: ATOM      4  C20 MID     1      31.357  13.878  24.346  1.00 19.97     0.254 C 
+INPUT-LIGAND-PDBQT: ATOM      5  O21 MID     1      32.343  13.957  25.088  1.00 22.60    -0.270 OA
+INPUT-LIGAND-PDBQT: BRANCH   4   6
+INPUT-LIGAND-PDBQT: ATOM      6  C19 MID     1      29.999  13.608  24.785  1.00 20.01     0.196 C 
+INPUT-LIGAND-PDBQT: BRANCH   6   7
+INPUT-LIGAND-PDBQT: ATOM      7  N18 MID     1      30.002  13.424  26.198  1.00 23.25    -0.290 N 
+INPUT-LIGAND-PDBQT: ATOM      8  H19 MID     1      30.729  13.877  26.718  1.00  0.00     0.174 HD
+INPUT-LIGAND-PDBQT: BRANCH   7   9
+INPUT-LIGAND-PDBQT: ATOM      9  S22 MID     1      29.437  12.014  26.802  1.00 24.09     0.261 S 
+INPUT-LIGAND-PDBQT: ATOM     10  O23 MID     1      28.674  11.347  25.774  1.00 25.99    -0.200 OA
+INPUT-LIGAND-PDBQT: ATOM     11  O24 MID     1      28.928  12.271  28.138  1.00 29.33    -0.200 OA
+INPUT-LIGAND-PDBQT: BRANCH   9  12
+INPUT-LIGAND-PDBQT: ATOM     12  A26 MID     1      30.856  11.006  27.018  1.00 19.26     0.103 A 
+INPUT-LIGAND-PDBQT: ATOM     13  A25 MID     1      30.841   9.779  26.364  1.00 19.50     0.013 A 
+INPUT-LIGAND-PDBQT: ATOM     14  A27 MID     1      31.920  11.408  27.767  1.00 15.97     0.013 A 
+INPUT-LIGAND-PDBQT: ATOM     15  A30 MID     1      31.898   8.917  26.467  1.00 19.62     0.001 A 
+INPUT-LIGAND-PDBQT: ATOM     16  A29 MID     1      33.000   9.266  27.256  1.00 18.24     0.000 A 
+INPUT-LIGAND-PDBQT: ATOM     17  A34 MID     1      34.090   8.367  27.365  1.00 19.55     0.000 A 
+INPUT-LIGAND-PDBQT: ATOM     18  A28 MID     1      33.034  10.543  27.869  1.00 17.09     0.001 A 
+INPUT-LIGAND-PDBQT: ATOM     19  A33 MID     1      35.192   8.739  28.076  1.00 20.84     0.000 A 
+INPUT-LIGAND-PDBQT: ATOM     20  A32 MID     1      35.229  10.020  28.705  1.00 22.06     0.000 A 
+INPUT-LIGAND-PDBQT: ATOM     21  A31 MID     1      34.167  10.913  28.603  1.00 19.05     0.000 A 
+INPUT-LIGAND-PDBQT: ENDBRANCH   9  12
+INPUT-LIGAND-PDBQT: ENDBRANCH   7   9
+INPUT-LIGAND-PDBQT: ENDBRANCH   6   7
+INPUT-LIGAND-PDBQT: ENDBRANCH   4   6
+INPUT-LIGAND-PDBQT: ENDBRANCH   1   2
+INPUT-LIGAND-PDBQT: BRANCH   1  22
+INPUT-LIGAND-PDBQT: ATOM     22  C9  MID     1      32.876  13.242  21.334  1.00 16.44     0.254 C 
+INPUT-LIGAND-PDBQT: ATOM     23  N1  MID     1      33.607  12.167  21.847  1.00 14.67    -0.319 N 
+INPUT-LIGAND-PDBQT: ATOM     24  O10 MID     1      32.443  13.256  20.177  1.00 20.52    -0.270 OA
+INPUT-LIGAND-PDBQT: ATOM     25  C6  MID     1      34.121  12.210  23.229  1.00 15.23     0.104 C 
+INPUT-LIGAND-PDBQT: ATOM     26  C2  MID     1      33.847  10.982  21.031  1.00 12.35     0.104 C 
+INPUT-LIGAND-PDBQT: ATOM     27  C5  MID     1      33.693  10.967  24.018  1.00 14.07     0.024 C 
+INPUT-LIGAND-PDBQT: ATOM     28  C4  MID     1      34.012   9.686  23.219  1.00 13.89     0.004 C 
+INPUT-LIGAND-PDBQT: ATOM     29  C3  MID     1      33.369   9.742  21.801  1.00 12.40     0.024 C 
+INPUT-LIGAND-PDBQT: ENDBRANCH   1  22
+INPUT-LIGAND-PDBQT: BRANCH   1  30
+INPUT-LIGAND-PDBQT: ATOM     30  C11 MID     1      32.632  15.671  21.590  1.00  6.47     0.058 C 
+INPUT-LIGAND-PDBQT: BRANCH  30  31
+INPUT-LIGAND-PDBQT: ATOM     31  A12 MID     1      32.636  16.760  22.572  1.00  6.00    -0.020 A 
+INPUT-LIGAND-PDBQT: ATOM     32  A14 MID     1      31.443  17.235  23.050  1.00  7.63    -0.004 A 
+INPUT-LIGAND-PDBQT: ATOM     33  A13 MID     1      33.821  17.247  23.054  1.00  7.87    -0.004 A 
+INPUT-LIGAND-PDBQT: ATOM     34  A16 MID     1      31.409  18.275  23.983  1.00  9.72     0.019 A 
+INPUT-LIGAND-PDBQT: ATOM     35  A17 MID     1      32.597  18.806  24.449  1.00  8.97     0.198 A 
+INPUT-LIGAND-PDBQT: ATOM     36  A15 MID     1      33.810  18.296  23.992  1.00  9.10     0.019 A 
+INPUT-LIGAND-PDBQT: ATOM     37  C35 MID     1      32.576  19.878  25.454  1.00  8.79     0.582 C 
+INPUT-LIGAND-PDBQT: ATOM     38  N36 MID     1      31.419  20.406  25.893  1.00  6.31    -0.254 N 
+INPUT-LIGAND-PDBQT: ATOM     39  N37 MID     1      33.665  20.623  25.684  1.00 11.59    -0.254 N 
+INPUT-LIGAND-PDBQT: ATOM     40  H29 MID     1      31.457  21.138  26.569  1.00  0.00     0.172 HD
+INPUT-LIGAND-PDBQT: ATOM     41  H30 MID     1      30.532  19.956  25.794  1.00  0.00     0.172 HD
+INPUT-LIGAND-PDBQT: ATOM     42  H31 MID     1      33.632  21.386  26.335  1.00  0.00     0.172 HD
+INPUT-LIGAND-PDBQT: ATOM     43  H32 MID     1      34.579  20.326  25.410  1.00  0.00     0.172 HD
+INPUT-LIGAND-PDBQT: ENDBRANCH  30  31
+INPUT-LIGAND-PDBQT: ENDBRANCH   1  30
+INPUT-LIGAND-PDBQT: TORSDOF 10
+________________________________________________________________________________
+
+
+Determining Atom Types and Parameters for the Moving Atoms
+__________________________________________________________
+
+Found parameters for atom 1, atom type "C", grid map index = 1
+Found parameters for atom 2, atom type "N", grid map index = 3
+Found parameters for atom 3, atom type "HD", grid map index = 2
+Found parameters for atom 4, atom type "C", grid map index = 1
+Found parameters for atom 5, atom type "OA", grid map index = 4
+Found parameters for atom 6, atom type "C", grid map index = 1
+Found parameters for atom 7, atom type "N", grid map index = 3
+Found parameters for atom 8, atom type "HD", grid map index = 2
+Found parameters for atom 9, atom type "S", grid map index = 5
+Found parameters for atom 10, atom type "OA", grid map index = 4
+Found parameters for atom 11, atom type "OA", grid map index = 4
+Found parameters for atom 12, atom type "A", grid map index = 0
+Found parameters for atom 13, atom type "A", grid map index = 0
+Found parameters for atom 14, atom type "A", grid map index = 0
+Found parameters for atom 15, atom type "A", grid map index = 0
+Found parameters for atom 16, atom type "A", grid map index = 0
+Found parameters for atom 17, atom type "A", grid map index = 0
+Found parameters for atom 18, atom type "A", grid map index = 0
+Found parameters for atom 19, atom type "A", grid map index = 0
+Found parameters for atom 20, atom type "A", grid map index = 0
+Found parameters for atom 21, atom type "A", grid map index = 0
+Found parameters for atom 22, atom type "C", grid map index = 1
+Found parameters for atom 23, atom type "N", grid map index = 3
+Found parameters for atom 24, atom type "OA", grid map index = 4
+Found parameters for atom 25, atom type "C", grid map index = 1
+Found parameters for atom 26, atom type "C", grid map index = 1
+Found parameters for atom 27, atom type "C", grid map index = 1
+Found parameters for atom 28, atom type "C", grid map index = 1
+Found parameters for atom 29, atom type "C", grid map index = 1
+Found parameters for atom 30, atom type "C", grid map index = 1
+Found parameters for atom 31, atom type "A", grid map index = 0
+Found parameters for atom 32, atom type "A", grid map index = 0
+Found parameters for atom 33, atom type "A", grid map index = 0
+Found parameters for atom 34, atom type "A", grid map index = 0
+Found parameters for atom 35, atom type "A", grid map index = 0
+Found parameters for atom 36, atom type "A", grid map index = 0
+Found parameters for atom 37, atom type "C", grid map index = 1
+Found parameters for atom 38, atom type "N", grid map index = 3
+Found parameters for atom 39, atom type "N", grid map index = 3
+Found parameters for atom 40, atom type "HD", grid map index = 2
+Found parameters for atom 41, atom type "HD", grid map index = 2
+Found parameters for atom 42, atom type "HD", grid map index = 2
+Found parameters for atom 43, atom type "HD", grid map index = 2
+
+Number of atoms in movable ligand = 43
+
+Number of non-hydrogen atoms in movable ligand = 37
+
+
+Number of atoms found in flexible receptor sidechains ("residues") =	0 atoms
+
+Total number of atoms found =	43 atoms
+
+Number of flexible residues found in the receptor =	0 residues
+
+
+Summary of number of atoms of a given atom type:
+------------------------------------------------
+
+Number of atoms with atom type 1 = 16
+Number of atoms with atom type 2 = 11
+Number of atoms with atom type 3 =  6
+Number of atoms with atom type 4 =  5
+Number of atoms with atom type 5 =  4
+Number of atoms with atom type 6 =  1
+
+
+Summary of total charge on ligand, residues and overall:
+-------------------------------------------------------
+
+Total charge on ligand                               =	+1.000 e
+REMARK  8 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: C11_4828  and  A12_4831 
+REMARK       I    between atoms: N1_4806  and  C9_4826 
+REMARK    2  A    between atoms: C8_4824  and  C9_4826 
+REMARK       I    between atoms: C35_4868  and  N36_4869 
+REMARK    3  A    between atoms: N18_4841  and  S22_4848 
+REMARK    4  A    between atoms: C8_4824  and  C11_4828 
+REMARK       I    between atoms: N7_4822  and  C20_4846 
+REMARK       I    between atoms: A17_4840  and  C35_4868 
+REMARK    5  A    between atoms: N7_4822  and  C8_4824 
+REMARK    6  A    between atoms: N18_4841  and  C19_4843 
+REMARK    7  A    between atoms: S22_4848  and  A26_4853 
+REMARK    8  A    between atoms: C19_4843  and  C20_4846 
+
+TORSDOF record detected: number of torsional degress of freedom has been set to 10.
+
+
+Number of Rotatable Bonds in Small Molecule =	8 torsions
+
+
+TORSION TREE
+____________
+
+Sorted in order of increasing number of atoms moved:
+
+Torsion                    #
+ #  Atom1--Atom2 Moved List of Atoms Moved
+___ ____________ _____ ________________________________________________________
+ 1     C8--C9       7  N1,O10,C6,C2,C5,C4,C3.
+ 2    S22--A26      9  A25,A27,A30,A29,A34,A28,A33,A32,A31.
+ 3    N18--S22     12  O23,O24,A26,A25,A27,A30,A29,A34,A28,A33,A32,A31.
+ 4    C11--A12     12  A14,A13,A16,A17,A15,C35,N36,N37,H29,H30,H31,H32.
+ 5     C8--C11     13  A12,A14,A13,A16,A17,A15,C35,N36,N37,H29,H30,H31,H32.
+ 6    C19--N18     14  H19,S22,O23,O24,A26,A25,A27,A30,A29,A34,A28,A33,A32,A31.
+ 7    C20--C19     15  N18,H19,S22,O23,O24,A26,A25,A27,A30,A29,A34,A28,A33,A32,A31.
+ 8     C8--N7      19  H11,C20,O21,C19,N18,H19,S22,O23,O24,A26,A25,A27,A30,A29,A34,A28,A33,A32,A31.
+
+
+
+Matrix of Non-Bonded Interactions:
+__________________________________
+
+Key:
+X = non-bonded interaction
+_ = 1,2 or 1,3 interaction
+
+
+Atom: ID:  1 2 3 4 5 6 7 8 910111213141516171819202122232425262728293031323334353637383940414243
+_____ ___ ______________________________________________________________________________________
+  C8   1  |_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X
+  N7   2  |_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|X|X|X|X|X|_|_|X|X|X|X|X|X|X|X|X|X|X|X
+ H11   3  |_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|X|X|X|X|X|X|X|_|X|X|X|X|X|X|X|X|X|X|X|X|X
+ C20   4  |_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|_|X|X|X|X|X|X|X|_|X|X|X|X|X|X|X|X|X|X|X|X|X
+ O21   5  |_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ C19   6  |_|_|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ N18   7  |X|_|X|_|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ H19   8  |X|X|X|_|X|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ S22   9  |X|X|X|_|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ O23  10  |X|X|X|X|X|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ O24  11  |X|X|X|X|X|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ A26  12  |X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ A25  13  |X|X|X|X|X|X|_|X|_|_|_|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ A27  14  |X|X|X|X|X|X|_|X|_|_|_|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ A30  15  |X|X|X|X|X|X|X|X|_|X|X|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ A29  16  |X|X|X|X|X|X|X|X|_|X|X|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ A34  17  |X|X|X|X|X|X|X|X|_|X|X|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ A28  18  |X|X|X|X|X|X|X|X|_|X|X|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ A33  19  |X|X|X|X|X|X|X|X|_|X|X|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ A32  20  |X|X|X|X|X|X|X|X|_|X|X|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ A31  21  |X|X|X|X|X|X|X|X|_|X|X|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+  C9  22  |_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X
+  N1  23  |_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X
+ O10  24  |_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X
+  C6  25  |_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+  C2  26  |_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+  C5  27  |_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+  C4  28  |_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+  C3  29  |_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X
+ C11  30  |_|_|_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ A12  31  |_|_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ A14  32  |_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ A13  33  |_|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ A16  34  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ A17  35  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ A15  36  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ C35  37  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ N36  38  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ N37  39  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ H29  40  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ H30  41  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ H31  42  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+ H32  43  |X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|X|_|_|_|_|_|_|_|_|_|_|_|_|_|_
+
+
+
+List of Internal Non-Bonded Interactions:
+_________________________________________
+
+First Second Non-Bonded
+Atom  Atom(s)
+_____ ___________________________________________________
+  C8: N18, H19, S22, O23, O24, A26, A25, A27, A30, 
+      A29, A34, A28, A33, A32, A31, A16, A17, A15, C35, 
+      N36, N37, H29, H30, H31, H32.
+
+  N7: H19, S22, O23, O24, A26, A25, A27, A30, A29, 
+      A34, A28, A33, A32, A31, C6, C2, C5, C4, C3, 
+      A14, A13, A16, A17, A15, C35, N36, N37, H29, H30, 
+      H31, H32.
+
+ H11: N18, H19, S22, O23, O24, A26, A25, A27, A30, 
+      A29, A34, A28, A33, A32, A31, N1, O10, C6, C2, 
+      C5, C4, C3, A12, A14, A13, A16, A17, A15, C35, 
+      N36, N37, H29, H30, H31, H32.
+
+ C20: O23, O24, A26, A25, A27, A30, A29, A34, A28, 
+      A33, A32, A31, N1, O10, C6, C2, C5, C4, C3, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ O21: H19, S22, O23, O24, A26, A25, A27, A30, A29, 
+      A34, A28, A33, A32, A31, C9, N1, O10, C6, C2, 
+      C5, C4, C3, C11, A12, A14, A13, A16, A17, A15, 
+      C35, N36, N37, H29, H30, H31, H32.
+
+ C19: A25, A27, A30, A29, A34, A28, A33, A32, A31, 
+      C9, N1, O10, C6, C2, C5, C4, C3, C11, A12, 
+      A14, A13, A16, A17, A15, C35, N36, N37, H29, H30, 
+      H31, H32.
+
+ N18: A30, A29, A34, A28, A33, A32, A31, C9, N1, 
+      O10, C6, C2, C5, C4, C3, C11, A12, A14, A13, 
+      A16, A17, A15, C35, N36, N37, H29, H30, H31, H32.
+
+ H19: A25, A27, A30, A29, A34, A28, A33, A32, A31, 
+      C9, N1, O10, C6, C2, C5, C4, C3, C11, A12, 
+      A14, A13, A16, A17, A15, C35, N36, N37, H29, H30, 
+      H31, H32.
+
+ S22: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ O23: A30, A29, A34, A28, A33, A32, A31, C9, N1, 
+      O10, C6, C2, C5, C4, C3, C11, A12, A14, A13, 
+      A16, A17, A15, C35, N36, N37, H29, H30, H31, H32.
+
+ O24: A30, A29, A34, A28, A33, A32, A31, C9, N1, 
+      O10, C6, C2, C5, C4, C3, C11, A12, A14, A13, 
+      A16, A17, A15, C35, N36, N37, H29, H30, H31, H32.
+
+ A26: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ A25: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ A27: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ A30: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ A29: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ A34: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ A28: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ A33: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ A32: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+ A31: C9, N1, O10, C6, C2, C5, C4, C3, C11, 
+      A12, A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+  C9: A14, A13, A16, A17, A15, C35, N36, N37, H29, 
+      H30, H31, H32.
+
+  N1: A12, A14, A13, A16, A17, A15, C35, N36, N37, 
+      H29, H30, H31, H32.
+
+ O10: A12, A14, A13, A16, A17, A15, C35, N36, N37, 
+      H29, H30, H31, H32.
+
+  C6: C11, A12, A14, A13, A16, A17, A15, C35, N36, 
+      N37, H29, H30, H31, H32.
+
+  C2: C11, A12, A14, A13, A16, A17, A15, C35, N36, 
+      N37, H29, H30, H31, H32.
+
+  C5: C11, A12, A14, A13, A16, A17, A15, C35, N36, 
+      N37, H29, H30, H31, H32.
+
+  C4: C11, A12, A14, A13, A16, A17, A15, C35, N36, 
+      N37, H29, H30, H31, H32.
+
+  C3: C11, A12, A14, A13, A16, A17, A15, C35, N36, 
+      N37, H29, H30, H31, H32.
+
+
+Internal Non-bonded Interactions before,	946
+                       and after weeding =	658
+
+
+Calculating normalized torsion vectors.
+
+Number of atoms in ligand:  43
+
+Number of non-hydrogen atoms in ligand:  37
+
+Number of vibrational degrees of freedom of ligand:  123
+
+
+Number of torsional degrees of freedom = 10
+Estimated loss of torsional free energy upon binding = +2.9830 kcal/mol
+
+
+Calculating the product of the partial atomic charges, q1*q2, for all 658 non-bonded pairs...
+
+ -- Scaled q1*q2 means multiplied by both  332.1 (for conversion later on to kcal/mol)
+    and by the AD4 FF electrostatics coefficient, 0.1406
+
+Non-bonded                           Scaled
+   Pair     Atom1-Atom2    q1*q2      q1*q2
+__________  ___________  _________  _________
+      1         1-7        -0.05      -2.22
+      2         1-8         0.03       1.33
+      3         1-9         0.04       2.00
+      4         1-10       -0.03      -1.53
+      5         1-11       -0.03      -1.53
+      6         1-12        0.02       0.79
+      7         1-13        0.00       0.10
+      8         1-14        0.00       0.10
+      9         1-15        0.00       0.01
+     10         1-16        0.00       0.00
+     11         1-17        0.00       0.00
+     12         1-18        0.00       0.01
+     13         1-19        0.00       0.00
+     14         1-20        0.00       0.00
+     15         1-21        0.00       0.00
+     16         1-34        0.00       0.15
+     17         1-35        0.03       1.52
+     18         1-36        0.00       0.15
+     19         1-37        0.10       4.46
+     20         1-38       -0.04      -1.94
+     21         1-39       -0.04      -1.94
+     22         1-40        0.03       1.32
+     23         1-41        0.03       1.32
+     24         1-42        0.03       1.32
+     25         1-43        0.03       1.32
+     26         2-8        -0.06      -2.74
+     27         2-9        -0.09      -4.11
+     28         2-10        0.07       3.15
+     29         2-11        0.07       3.15
+     30         2-12       -0.03      -1.62
+     31         2-13       -0.00      -0.20
+     32         2-14       -0.00      -0.20
+     33         2-15       -0.00      -0.02
+     34         2-16       -0.00      -0.00
+     35         2-17       -0.00      -0.00
+     36         2-18       -0.00      -0.02
+     37         2-19       -0.00      -0.00
+     38         2-20       -0.00      -0.00
+     39         2-21       -0.00      -0.00
+     40         2-25       -0.04      -1.64
+     41         2-26       -0.04      -1.64
+     42         2-27       -0.01      -0.38
+     43         2-28       -0.00      -0.06
+     44         2-29       -0.01      -0.38
+     45         2-32        0.00       0.06
+     46         2-33        0.00       0.06
+     47         2-34       -0.01      -0.30
+     48         2-35       -0.07      -3.12
+     49         2-36       -0.01      -0.30
+     50         2-37       -0.20      -9.16
+     51         2-38        0.09       4.00
+     52         2-39        0.09       4.00
+     53         2-40       -0.06      -2.71
+     54         2-41       -0.06      -2.71
+     55         2-42       -0.06      -2.71
+     56         2-43       -0.06      -2.71
+     57         3-7        -0.05      -2.22
+     58         3-8         0.03       1.33
+     59         3-9         0.04       2.00
+     60         3-10       -0.03      -1.53
+     61         3-11       -0.03      -1.53
+     62         3-12        0.02       0.79
+     63         3-13        0.00       0.10
+     64         3-14        0.00       0.10
+     65         3-15        0.00       0.01
+     66         3-16        0.00       0.00
+     67         3-17        0.00       0.00
+     68         3-18        0.00       0.01
+     69         3-19        0.00       0.00
+     70         3-20        0.00       0.00
+     71         3-21        0.00       0.00
+     72         3-23       -0.05      -2.44
+     73         3-24       -0.04      -2.07
+     74         3-25        0.02       0.80
+     75         3-26        0.02       0.80
+     76         3-27        0.00       0.18
+     77         3-28        0.00       0.03
+     78         3-29        0.00       0.18
+     79         3-31       -0.00      -0.15
+     80         3-32       -0.00      -0.03
+     81         3-33       -0.00      -0.03
+     82         3-34        0.00       0.15
+     83         3-35        0.03       1.52
+     84         3-36        0.00       0.15
+     85         3-37        0.10       4.46
+     86         3-38       -0.04      -1.94
+     87         3-39       -0.04      -1.94
+     88         3-40        0.03       1.32
+     89         3-41        0.03       1.32
+     90         3-42        0.03       1.32
+     91         3-43        0.03       1.32
+     92         4-10       -0.05      -2.37
+     93         4-11       -0.05      -2.37
+     94         4-12        0.03       1.22
+     95         4-13        0.00       0.15
+     96         4-14        0.00       0.15
+     97         4-15        0.00       0.01
+     98         4-16        0.00       0.00
+     99         4-17        0.00       0.00
+    100         4-18        0.00       0.01
+    101         4-19        0.00       0.00
+    102         4-20        0.00       0.00
+    103         4-21        0.00       0.00
+    104         4-23       -0.08      -3.78
+    105         4-24       -0.07      -3.20
+    106         4-25        0.03       1.23
+    107         4-26        0.03       1.23
+    108         4-27        0.01       0.28
+    109         4-28        0.00       0.05
+    110         4-29        0.01       0.28
+    111         4-31       -0.01      -0.24
+    112         4-32       -0.00      -0.05
+    113         4-33       -0.00      -0.05
+    114         4-34        0.00       0.23
+    115         4-35        0.05       2.35
+    116         4-36        0.00       0.23
+    117         4-37        0.15       6.90
+    118         4-38       -0.06      -3.01
+    119         4-39       -0.06      -3.01
+    120         4-40        0.04       2.04
+    121         4-41        0.04       2.04
+    122         4-42        0.04       2.04
+    123         4-43        0.04       2.04
+    124         5-8        -0.05      -2.19
+    125         5-9        -0.07      -3.29
+    126         5-10        0.05       2.52
+    127         5-11        0.05       2.52
+    128         5-12       -0.03      -1.30
+    129         5-13       -0.00      -0.16
+    130         5-14       -0.00      -0.16
+    131         5-15       -0.00      -0.01
+    132         5-16       -0.00      -0.00
+    133         5-17       -0.00      -0.00
+    134         5-18       -0.00      -0.01
+    135         5-19       -0.00      -0.00
+    136         5-20       -0.00      -0.00
+    137         5-21       -0.00      -0.00
+    138         5-22       -0.07      -3.20
+    139         5-23        0.09       4.02
+    140         5-24        0.07       3.40
+    141         5-25       -0.03      -1.31
+    142         5-26       -0.03      -1.31
+    143         5-27       -0.01      -0.30
+    144         5-28       -0.00      -0.05
+    145         5-29       -0.01      -0.30
+    146         5-30       -0.02      -0.73
+    147         5-31        0.01       0.25
+    148         5-32        0.00       0.05
+    149         5-33        0.00       0.05
+    150         5-34       -0.01      -0.24
+    151         5-35       -0.05      -2.50
+    152         5-36       -0.01      -0.24
+    153         5-37       -0.16      -7.34
+    154         5-38        0.07       3.20
+    155         5-39        0.07       3.20
+    156         5-40       -0.05      -2.17
+    157         5-41       -0.05      -2.17
+    158         5-42       -0.05      -2.17
+    159         5-43       -0.05      -2.17
+    160         6-13        0.00       0.12
+    161         6-14        0.00       0.12
+    162         6-15        0.00       0.01
+    163         6-16        0.00       0.00
+    164         6-17        0.00       0.00
+    165         6-18        0.00       0.01
+    166         6-19        0.00       0.00
+    167         6-20        0.00       0.00
+    168         6-21        0.00       0.00
+    169         6-22        0.05       2.32
+    170         6-23       -0.06      -2.92
+    171         6-24       -0.05      -2.47
+    172         6-25        0.02       0.95
+    173         6-26        0.02       0.95
+    174         6-27        0.00       0.22
+    175         6-28        0.00       0.04
+    176         6-29        0.00       0.22
+    177         6-30        0.01       0.53
+    178         6-31       -0.00      -0.18
+    179         6-32       -0.00      -0.04
+    180         6-33       -0.00      -0.04
+    181         6-34        0.00       0.17
+    182         6-35        0.04       1.81
+    183         6-36        0.00       0.17
+    184         6-37        0.11       5.33
+    185         6-38       -0.05      -2.32
+    186         6-39       -0.05      -2.32
+    187         6-40        0.03       1.57
+    188         6-41        0.03       1.57
+    189         6-42        0.03       1.57
+    190         6-43        0.03       1.57
+    191         7-15       -0.00      -0.01
+    192         7-16       -0.00      -0.00
+    193         7-17       -0.00      -0.00
+    194         7-18       -0.00      -0.01
+    195         7-19       -0.00      -0.00
+    196         7-20       -0.00      -0.00
+    197         7-21       -0.00      -0.00
+    198         7-22       -0.07      -3.44
+    199         7-23        0.09       4.32
+    200         7-24        0.08       3.66
+    201         7-25       -0.03      -1.41
+    202         7-26       -0.03      -1.41
+    203         7-27       -0.01      -0.32
+    204         7-28       -0.00      -0.05
+    205         7-29       -0.01      -0.32
+    206         7-30       -0.02      -0.79
+    207         7-31        0.01       0.27
+    208         7-32        0.00       0.05
+    209         7-33        0.00       0.05
+    210         7-34       -0.01      -0.26
+    211         7-35       -0.06      -2.68
+    212         7-36       -0.01      -0.26
+    213         7-37       -0.17      -7.88
+    214         7-38        0.07       3.44
+    215         7-39        0.07       3.44
+    216         7-40       -0.05      -2.33
+    217         7-41       -0.05      -2.33
+    218         7-42       -0.05      -2.33
+    219         7-43       -0.05      -2.33
+    220         8-13        0.00       0.11
+    221         8-14        0.00       0.11
+    222         8-15        0.00       0.01
+    223         8-16        0.00       0.00
+    224         8-17        0.00       0.00
+    225         8-18        0.00       0.01
+    226         8-19        0.00       0.00
+    227         8-20        0.00       0.00
+    228         8-21        0.00       0.00
+    229         8-22        0.04       2.06
+    230         8-23       -0.06      -2.59
+    231         8-24       -0.05      -2.19
+    232         8-25        0.02       0.84
+    233         8-26        0.02       0.84
+    234         8-27        0.00       0.19
+    235         8-28        0.00       0.03
+    236         8-29        0.00       0.19
+    237         8-30        0.01       0.47
+    238         8-31       -0.00      -0.16
+    239         8-32       -0.00      -0.03
+    240         8-33       -0.00      -0.03
+    241         8-34        0.00       0.15
+    242         8-35        0.03       1.61
+    243         8-36        0.00       0.15
+    244         8-37        0.10       4.73
+    245         8-38       -0.04      -2.06
+    246         8-39       -0.04      -2.06
+    247         8-40        0.03       1.40
+    248         8-41        0.03       1.40
+    249         8-42        0.03       1.40
+    250         8-43        0.03       1.40
+    251         9-22        0.07       3.10
+    252         9-23       -0.08      -3.89
+    253         9-24       -0.07      -3.29
+    254         9-25        0.03       1.27
+    255         9-26        0.03       1.27
+    256         9-27        0.01       0.29
+    257         9-28        0.00       0.05
+    258         9-29        0.01       0.29
+    259         9-30        0.02       0.71
+    260         9-31       -0.01      -0.24
+    261         9-32       -0.00      -0.05
+    262         9-33       -0.00      -0.05
+    263         9-34        0.00       0.23
+    264         9-35        0.05       2.41
+    265         9-36        0.00       0.23
+    266         9-37        0.15       7.09
+    267         9-38       -0.07      -3.10
+    268         9-39       -0.07      -3.10
+    269         9-40        0.04       2.10
+    270         9-41        0.04       2.10
+    271         9-42        0.04       2.10
+    272         9-43        0.04       2.10
+    273        10-15       -0.00      -0.01
+    274        10-16       -0.00      -0.00
+    275        10-17       -0.00      -0.00
+    276        10-18       -0.00      -0.01
+    277        10-19       -0.00      -0.00
+    278        10-20       -0.00      -0.00
+    279        10-21       -0.00      -0.00
+    280        10-22       -0.05      -2.37
+    281        10-23        0.06       2.98
+    282        10-24        0.05       2.52
+    283        10-25       -0.02      -0.97
+    284        10-26       -0.02      -0.97
+    285        10-27       -0.00      -0.22
+    286        10-28       -0.00      -0.04
+    287        10-29       -0.00      -0.22
+    288        10-30       -0.01      -0.54
+    289        10-31        0.00       0.19
+    290        10-32        0.00       0.04
+    291        10-33        0.00       0.04
+    292        10-34       -0.00      -0.18
+    293        10-35       -0.04      -1.85
+    294        10-36       -0.00      -0.18
+    295        10-37       -0.12      -5.43
+    296        10-38        0.05       2.37
+    297        10-39        0.05       2.37
+    298        10-40       -0.03      -1.61
+    299        10-41       -0.03      -1.61
+    300        10-42       -0.03      -1.61
+    301        10-43       -0.03      -1.61
+    302        11-15       -0.00      -0.01
+    303        11-16       -0.00      -0.00
+    304        11-17       -0.00      -0.00
+    305        11-18       -0.00      -0.01
+    306        11-19       -0.00      -0.00
+    307        11-20       -0.00      -0.00
+    308        11-21       -0.00      -0.00
+    309        11-22       -0.05      -2.37
+    310        11-23        0.06       2.98
+    311        11-24        0.05       2.52
+    312        11-25       -0.02      -0.97
+    313        11-26       -0.02      -0.97
+    314        11-27       -0.00      -0.22
+    315        11-28       -0.00      -0.04
+    316        11-29       -0.00      -0.22
+    317        11-30       -0.01      -0.54
+    318        11-31        0.00       0.19
+    319        11-32        0.00       0.04
+    320        11-33        0.00       0.04
+    321        11-34       -0.00      -0.18
+    322        11-35       -0.04      -1.85
+    323        11-36       -0.00      -0.18
+    324        11-37       -0.12      -5.43
+    325        11-38        0.05       2.37
+    326        11-39        0.05       2.37
+    327        11-40       -0.03      -1.61
+    328        11-41       -0.03      -1.61
+    329        11-42       -0.03      -1.61
+    330        11-43       -0.03      -1.61
+    331        12-22        0.03       1.22
+    332        12-23       -0.03      -1.53
+    333        12-24       -0.03      -1.30
+    334        12-25        0.01       0.50
+    335        12-26        0.01       0.50
+    336        12-27        0.00       0.12
+    337        12-28        0.00       0.02
+    338        12-29        0.00       0.12
+    339        12-30        0.01       0.28
+    340        12-31       -0.00      -0.10
+    341        12-32       -0.00      -0.02
+    342        12-33       -0.00      -0.02
+    343        12-34        0.00       0.09
+    344        12-35        0.02       0.95
+    345        12-36        0.00       0.09
+    346        12-37        0.06       2.80
+    347        12-38       -0.03      -1.22
+    348        12-39       -0.03      -1.22
+    349        12-40        0.02       0.83
+    350        12-41        0.02       0.83
+    351        12-42        0.02       0.83
+    352        12-43        0.02       0.83
+    353        13-22        0.00       0.15
+    354        13-23       -0.00      -0.19
+    355        13-24       -0.00      -0.16
+    356        13-25        0.00       0.06
+    357        13-26        0.00       0.06
+    358        13-27        0.00       0.01
+    359        13-28        0.00       0.00
+    360        13-29        0.00       0.01
+    361        13-30        0.00       0.04
+    362        13-31       -0.00      -0.01
+    363        13-32       -0.00      -0.00
+    364        13-33       -0.00      -0.00
+    365        13-34        0.00       0.01
+    366        13-35        0.00       0.12
+    367        13-36        0.00       0.01
+    368        13-37        0.01       0.35
+    369        13-38       -0.00      -0.15
+    370        13-39       -0.00      -0.15
+    371        13-40        0.00       0.10
+    372        13-41        0.00       0.10
+    373        13-42        0.00       0.10
+    374        13-43        0.00       0.10
+    375        14-22        0.00       0.15
+    376        14-23       -0.00      -0.19
+    377        14-24       -0.00      -0.16
+    378        14-25        0.00       0.06
+    379        14-26        0.00       0.06
+    380        14-27        0.00       0.01
+    381        14-28        0.00       0.00
+    382        14-29        0.00       0.01
+    383        14-30        0.00       0.04
+    384        14-31       -0.00      -0.01
+    385        14-32       -0.00      -0.00
+    386        14-33       -0.00      -0.00
+    387        14-34        0.00       0.01
+    388        14-35        0.00       0.12
+    389        14-36        0.00       0.01
+    390        14-37        0.01       0.35
+    391        14-38       -0.00      -0.15
+    392        14-39       -0.00      -0.15
+    393        14-40        0.00       0.10
+    394        14-41        0.00       0.10
+    395        14-42        0.00       0.10
+    396        14-43        0.00       0.10
+    397        15-22        0.00       0.01
+    398        15-23       -0.00      -0.01
+    399        15-24       -0.00      -0.01
+    400        15-25        0.00       0.00
+    401        15-26        0.00       0.00
+    402        15-27        0.00       0.00
+    403        15-28        0.00       0.00
+    404        15-29        0.00       0.00
+    405        15-30        0.00       0.00
+    406        15-31       -0.00      -0.00
+    407        15-32       -0.00      -0.00
+    408        15-33       -0.00      -0.00
+    409        15-34        0.00       0.00
+    410        15-35        0.00       0.01
+    411        15-36        0.00       0.00
+    412        15-37        0.00       0.03
+    413        15-38       -0.00      -0.01
+    414        15-39       -0.00      -0.01
+    415        15-40        0.00       0.01
+    416        15-41        0.00       0.01
+    417        15-42        0.00       0.01
+    418        15-43        0.00       0.01
+    419        16-22        0.00       0.00
+    420        16-23       -0.00      -0.00
+    421        16-24       -0.00      -0.00
+    422        16-25        0.00       0.00
+    423        16-26        0.00       0.00
+    424        16-27        0.00       0.00
+    425        16-28        0.00       0.00
+    426        16-29        0.00       0.00
+    427        16-30        0.00       0.00
+    428        16-31       -0.00      -0.00
+    429        16-32       -0.00      -0.00
+    430        16-33       -0.00      -0.00
+    431        16-34        0.00       0.00
+    432        16-35        0.00       0.00
+    433        16-36        0.00       0.00
+    434        16-37        0.00       0.00
+    435        16-38       -0.00      -0.00
+    436        16-39       -0.00      -0.00
+    437        16-40        0.00       0.00
+    438        16-41        0.00       0.00
+    439        16-42        0.00       0.00
+    440        16-43        0.00       0.00
+    441        17-22        0.00       0.00
+    442        17-23       -0.00      -0.00
+    443        17-24       -0.00      -0.00
+    444        17-25        0.00       0.00
+    445        17-26        0.00       0.00
+    446        17-27        0.00       0.00
+    447        17-28        0.00       0.00
+    448        17-29        0.00       0.00
+    449        17-30        0.00       0.00
+    450        17-31       -0.00      -0.00
+    451        17-32       -0.00      -0.00
+    452        17-33       -0.00      -0.00
+    453        17-34        0.00       0.00
+    454        17-35        0.00       0.00
+    455        17-36        0.00       0.00
+    456        17-37        0.00       0.00
+    457        17-38       -0.00      -0.00
+    458        17-39       -0.00      -0.00
+    459        17-40        0.00       0.00
+    460        17-41        0.00       0.00
+    461        17-42        0.00       0.00
+    462        17-43        0.00       0.00
+    463        18-22        0.00       0.01
+    464        18-23       -0.00      -0.01
+    465        18-24       -0.00      -0.01
+    466        18-25        0.00       0.00
+    467        18-26        0.00       0.00
+    468        18-27        0.00       0.00
+    469        18-28        0.00       0.00
+    470        18-29        0.00       0.00
+    471        18-30        0.00       0.00
+    472        18-31       -0.00      -0.00
+    473        18-32       -0.00      -0.00
+    474        18-33       -0.00      -0.00
+    475        18-34        0.00       0.00
+    476        18-35        0.00       0.01
+    477        18-36        0.00       0.00
+    478        18-37        0.00       0.03
+    479        18-38       -0.00      -0.01
+    480        18-39       -0.00      -0.01
+    481        18-40        0.00       0.01
+    482        18-41        0.00       0.01
+    483        18-42        0.00       0.01
+    484        18-43        0.00       0.01
+    485        19-22        0.00       0.00
+    486        19-23       -0.00      -0.00
+    487        19-24       -0.00      -0.00
+    488        19-25        0.00       0.00
+    489        19-26        0.00       0.00
+    490        19-27        0.00       0.00
+    491        19-28        0.00       0.00
+    492        19-29        0.00       0.00
+    493        19-30        0.00       0.00
+    494        19-31       -0.00      -0.00
+    495        19-32       -0.00      -0.00
+    496        19-33       -0.00      -0.00
+    497        19-34        0.00       0.00
+    498        19-35        0.00       0.00
+    499        19-36        0.00       0.00
+    500        19-37        0.00       0.00
+    501        19-38       -0.00      -0.00
+    502        19-39       -0.00      -0.00
+    503        19-40        0.00       0.00
+    504        19-41        0.00       0.00
+    505        19-42        0.00       0.00
+    506        19-43        0.00       0.00
+    507        20-22        0.00       0.00
+    508        20-23       -0.00      -0.00
+    509        20-24       -0.00      -0.00
+    510        20-25        0.00       0.00
+    511        20-26        0.00       0.00
+    512        20-27        0.00       0.00
+    513        20-28        0.00       0.00
+    514        20-29        0.00       0.00
+    515        20-30        0.00       0.00
+    516        20-31       -0.00      -0.00
+    517        20-32       -0.00      -0.00
+    518        20-33       -0.00      -0.00
+    519        20-34        0.00       0.00
+    520        20-35        0.00       0.00
+    521        20-36        0.00       0.00
+    522        20-37        0.00       0.00
+    523        20-38       -0.00      -0.00
+    524        20-39       -0.00      -0.00
+    525        20-40        0.00       0.00
+    526        20-41        0.00       0.00
+    527        20-42        0.00       0.00
+    528        20-43        0.00       0.00
+    529        21-22        0.00       0.00
+    530        21-23       -0.00      -0.00
+    531        21-24       -0.00      -0.00
+    532        21-25        0.00       0.00
+    533        21-26        0.00       0.00
+    534        21-27        0.00       0.00
+    535        21-28        0.00       0.00
+    536        21-29        0.00       0.00
+    537        21-30        0.00       0.00
+    538        21-31       -0.00      -0.00
+    539        21-32       -0.00      -0.00
+    540        21-33       -0.00      -0.00
+    541        21-34        0.00       0.00
+    542        21-35        0.00       0.00
+    543        21-36        0.00       0.00
+    544        21-37        0.00       0.00
+    545        21-38       -0.00      -0.00
+    546        21-39       -0.00      -0.00
+    547        21-40        0.00       0.00
+    548        21-41        0.00       0.00
+    549        21-42        0.00       0.00
+    550        21-43        0.00       0.00
+    551        22-32       -0.00      -0.05
+    552        22-33       -0.00      -0.05
+    553        22-34        0.00       0.23
+    554        22-35        0.05       2.35
+    555        22-36        0.00       0.23
+    556        22-37        0.15       6.90
+    557        22-38       -0.06      -3.01
+    558        22-39       -0.06      -3.01
+    559        22-40        0.04       2.04
+    560        22-41        0.04       2.04
+    561        22-42        0.04       2.04
+    562        22-43        0.04       2.04
+    563        23-31        0.01       0.30
+    564        23-32        0.00       0.06
+    565        23-33        0.00       0.06
+    566        23-34       -0.01      -0.28
+    567        23-35       -0.06      -2.95
+    568        23-36       -0.01      -0.28
+    569        23-37       -0.19      -8.67
+    570        23-38        0.08       3.78
+    571        23-39        0.08       3.78
+    572        23-40       -0.05      -2.56
+    573        23-41       -0.05      -2.56
+    574        23-42       -0.05      -2.56
+    575        23-43       -0.05      -2.56
+    576        24-31        0.01       0.25
+    577        24-32        0.00       0.05
+    578        24-33        0.00       0.05
+    579        24-34       -0.01      -0.24
+    580        24-35       -0.05      -2.50
+    581        24-36       -0.01      -0.24
+    582        24-37       -0.16      -7.34
+    583        24-38        0.07       3.20
+    584        24-39        0.07       3.20
+    585        24-40       -0.05      -2.17
+    586        24-41       -0.05      -2.17
+    587        24-42       -0.05      -2.17
+    588        24-43       -0.05      -2.17
+    589        25-30        0.01       0.28
+    590        25-31       -0.00      -0.10
+    591        25-32       -0.00      -0.02
+    592        25-33       -0.00      -0.02
+    593        25-34        0.00       0.09
+    594        25-35        0.02       0.96
+    595        25-36        0.00       0.09
+    596        25-37        0.06       2.83
+    597        25-38       -0.03      -1.23
+    598        25-39       -0.03      -1.23
+    599        25-40        0.02       0.84
+    600        25-41        0.02       0.84
+    601        25-42        0.02       0.84
+    602        25-43        0.02       0.84
+    603        26-30        0.01       0.28
+    604        26-31       -0.00      -0.10
+    605        26-32       -0.00      -0.02
+    606        26-33       -0.00      -0.02
+    607        26-34        0.00       0.09
+    608        26-35        0.02       0.96
+    609        26-36        0.00       0.09
+    610        26-37        0.06       2.83
+    611        26-38       -0.03      -1.23
+    612        26-39       -0.03      -1.23
+    613        26-40        0.02       0.84
+    614        26-41        0.02       0.84
+    615        26-42        0.02       0.84
+    616        26-43        0.02       0.84
+    617        27-30        0.00       0.06
+    618        27-31       -0.00      -0.02
+    619        27-32       -0.00      -0.00
+    620        27-33       -0.00      -0.00
+    621        27-34        0.00       0.02
+    622        27-35        0.00       0.22
+    623        27-36        0.00       0.02
+    624        27-37        0.01       0.65
+    625        27-38       -0.01      -0.28
+    626        27-39       -0.01      -0.28
+    627        27-40        0.00       0.19
+    628        27-41        0.00       0.19
+    629        27-42        0.00       0.19
+    630        27-43        0.00       0.19
+    631        28-30        0.00       0.01
+    632        28-31       -0.00      -0.00
+    633        28-32       -0.00      -0.00
+    634        28-33       -0.00      -0.00
+    635        28-34        0.00       0.00
+    636        28-35        0.00       0.04
+    637        28-36        0.00       0.00
+    638        28-37        0.00       0.11
+    639        28-38       -0.00      -0.05
+    640        28-39       -0.00      -0.05
+    641        28-40        0.00       0.03
+    642        28-41        0.00       0.03
+    643        28-42        0.00       0.03
+    644        28-43        0.00       0.03
+    645        29-30        0.00       0.06
+    646        29-31       -0.00      -0.02
+    647        29-32       -0.00      -0.00
+    648        29-33       -0.00      -0.00
+    649        29-34        0.00       0.02
+    650        29-35        0.00       0.22
+    651        29-36        0.00       0.02
+    652        29-37        0.01       0.65
+    653        29-38       -0.01      -0.28
+    654        29-39       -0.01      -0.28
+    655        29-40        0.00       0.19
+    656        29-41        0.00       0.19
+    657        29-42        0.00       0.19
+    658        29-43        0.00       0.19
+
+
+
+DPF> about  32.34 14.05 24.92             # small molecule center
+
+Small molecule center of rotation =	(+32.340, +14.050, +24.920)
+
+Translating small molecule by:	(-32.340, -14.050, -24.920)
+
+Furthest ligand atom from "about" center is 7.582 Angstroms (maxrad).
+
+
+
+DPF> epdb                                 # small molecule to be evaluated
+
+WARNING This command, "epdb", currently computes the energy of the ligand specified by the "move lig.pdbqt" command.
+Number of "true" ligand atoms:  43
+
+
+
+		Ligand Intramolecular Energy Analysis
+		=====================================
+
+Non-bond  Atom1-Atom2  Distance   Total     Elec      vdW+Hb    Desolv     Sol_fn   Type Dielectric
+________  ___________  ________   ______  ________  ________  ________   ________   ____ __________
+      1       1-7         4.81    -0.027    -0.020    -0.010    +0.003     +0.054   1    23.575
+      2       1-8         4.84    +0.015    +0.012    -0.001    +0.004     +0.054   1    23.741
+      3       1-9         6.01    +0.007    +0.011    -0.005    +0.001     +0.033   1    31.546
+      4       1-10        6.09    -0.010    -0.008    -0.002    -0.000     +0.032   1    32.092
+      5       1-11        7.24    -0.006    -0.005    -0.001    -0.000     +0.018   1    39.894
+      6       1-12        6.05    +0.001    +0.004    -0.004    +0.001     +0.032   1    31.776
+      7       1-13        6.37    -0.003    +0.000    -0.003    -0.000     +0.028   1    33.996
+      8       1-14        6.23    -0.003    +0.000    -0.003    -0.000     +0.030   1    33.028
+      9       1-15        6.87    -0.002    +0.000    -0.002    -0.000     +0.021   1    37.423
+     10       1-16        7.08    -0.002    +0.000    -0.002    -0.000     +0.019   1    38.843
+     11       1-17        7.94    -0.001    +0.000    -0.001    -0.000     +0.012   1    44.555
+     12       1-18        6.73    -0.002    +0.000    -0.002    -0.000     +0.023   1    36.432
+     13       1-19        8.40    +0.000    +0.000    +0.000    +0.000     +0.011   1    47.544
+     14       1-20        8.11    +0.000    +0.000    +0.000    +0.000     +0.011   1    45.654
+     15       1-21        7.30    -0.001    +0.000    -0.001    -0.000     +0.017   1    40.316
+     16       1-34        4.46    -0.018    +0.002    -0.019    +0.000     +0.061   1    21.348
+     17       1-35        4.94    +0.004    +0.013    -0.012    +0.003     +0.051   1    24.418
+     18       1-36        4.43    -0.018    +0.002    -0.020    +0.000     +0.062   1    21.153
+     19       1-37        6.36    +0.023    +0.021    -0.003    +0.005     +0.028   1    33.912
+     20       1-38        7.15    -0.007    -0.007    -0.001    +0.001     +0.018   1    39.320
+     21       1-39        7.19    -0.007    -0.007    -0.001    +0.001     +0.018   1    39.557
+     22       1-40        8.11    +0.004    +0.004    +0.000    +0.000     +0.011   1    45.678
+     23       1-41        6.95    +0.007    +0.005    -0.000    +0.002     +0.021   1    37.932
+     24       1-42        8.16    +0.004    +0.004    -0.000    +0.000     +0.011   1    45.987
+     25       1-43        6.99    +0.006    +0.005    -0.000    +0.002     +0.020   1    38.192
+     26       2-8         3.78    -0.040    -0.042    -0.003    +0.004     +0.076   1    17.298
+     27       2-9         4.76    -0.045    -0.037    -0.013    +0.005     +0.055   1    23.221
+     28       2-10        4.77    +0.023    +0.028    -0.007    +0.002     +0.055   1    23.263
+     29       2-11        5.99    +0.016    +0.017    -0.002    +0.001     +0.033   1    31.369
+     30       2-12        5.08    -0.016    -0.013    -0.008    +0.004     +0.049   1    25.329
+     31       2-13        5.48    -0.004    -0.001    -0.005    +0.003     +0.041   1    27.966
+     32       2-14        5.48    -0.004    -0.001    -0.005    +0.003     +0.042   1    27.927
+     33       2-15        6.23    -0.001    -0.000    -0.002    +0.002     +0.030   1    33.011
+     34       2-16        6.61    -0.000    -0.000    -0.002    +0.001     +0.025   1    35.597
+     35       2-17        7.66    +0.000    -0.000    -0.001    +0.001     +0.014   1    42.723
+     36       2-18        6.22    -0.001    -0.000    -0.002    +0.002     +0.030   1    32.959
+     37       2-19        8.27    -0.000    -0.000    +0.000    +0.000     +0.011   1    46.679
+     38       2-20        7.96    +0.000    -0.000    -0.001    +0.001     +0.011   1    44.696
+     39       2-21        6.99    -0.000    -0.000    -0.001    +0.001     +0.020   1    38.192
+     40       2-25        3.28    -0.015    -0.034    +0.014    +0.006     +0.087   1    14.526
+     41       2-26        4.39    -0.030    -0.018    -0.016    +0.004     +0.063   1    20.935
+     42       2-27        3.97    -0.026    -0.005    -0.024    +0.003     +0.072   1    18.420
+     43       2-28        5.10    -0.006    -0.000    -0.008    +0.002     +0.049   1    25.409
+     44       2-29        4.90    -0.010    -0.003    -0.009    +0.002     +0.052   1    24.111
+     45       2-32        3.16    +0.065    +0.001    +0.058    +0.005     +0.090   1    13.883
+     46       2-33        3.97    -0.019    +0.001    -0.024    +0.004     +0.072   1    18.397
+     47       2-34        4.31    -0.017    -0.003    -0.018    +0.004     +0.065   1    20.429
+     48       2-35        5.08    -0.027    -0.024    -0.008    +0.005     +0.049   1    25.288
+     49       2-36        4.94    -0.008    -0.002    -0.009    +0.003     +0.052   1    24.398
+     50       2-37        6.40    -0.039    -0.042    -0.002    +0.005     +0.027   1    34.180
+     51       2-38        6.96    +0.016    +0.015    -0.001    +0.001     +0.020   1    37.994
+     52       2-39        7.42    +0.014    +0.013    -0.001    +0.001     +0.016   1    41.117
+     53       2-40        7.91    -0.007    -0.008    -0.000    +0.001     +0.012   1    44.375
+     54       2-41        6.57    -0.010    -0.012    -0.000    +0.001     +0.025   1    35.337
+     55       2-42        8.33    -0.007    -0.007    -0.000    +0.000     +0.011   1    47.073
+     56       2-43        7.40    -0.008    -0.009    -0.000    +0.001     +0.016   1    40.989
+     57       3-7         3.82    -0.032    -0.033    -0.002    +0.004     +0.075   1    17.510
+     58       3-8         4.25    +0.016    +0.016    -0.000    +0.000     +0.066   1    20.074
+     59       3-9         4.90    +0.020    +0.017    -0.001    +0.004     +0.052   1    24.153
+     60       3-10        4.65    -0.013    -0.015    -0.000    +0.002     +0.057   1    22.527
+     61       3-11        6.15    -0.006    -0.008    -0.000    +0.001     +0.031   1    32.510
+     62       3-12        5.45    +0.008    +0.005    -0.001    +0.003     +0.042   1    27.737
+     63       3-13        5.75    +0.003    +0.001    -0.000    +0.003     +0.037   1    29.724
+     64       3-14        6.04    +0.003    +0.001    -0.000    +0.003     +0.032   1    31.740
+     65       3-15        6.59    +0.002    +0.000    -0.000    +0.002     +0.025   1    35.516
+     66       3-16        7.15    +0.001    +0.000    -0.000    +0.001     +0.018   1    39.291
+     67       3-17        8.24    +0.000    +0.000    +0.000    +0.000     +0.011   1    46.511
+     68       3-18        6.86    +0.002    +0.000    -0.000    +0.002     +0.022   1    37.329
+     69       3-19        8.96    +0.000    +0.000    +0.000    +0.000     +0.011   1    50.930
+     70       3-20        8.73    +0.000    +0.000    +0.000    +0.000     +0.011   1    49.551
+     71       3-21        7.74    +0.001    +0.000    -0.000    +0.001     +0.013   1    43.260
+     72       3-23        3.58    -0.041    -0.042    -0.003    +0.004     +0.081   1    16.169
+     73       3-24        3.04    -0.070    -0.051    -0.022    +0.004     +0.093   1    13.253
+     74       3-25        4.03    +0.013    +0.011    -0.003    +0.005     +0.071   1    18.719
+     75       3-26        4.66    +0.011    +0.008    -0.001    +0.004     +0.057   1    22.612
+     76       3-27        4.60    +0.005    +0.002    -0.001    +0.005     +0.058   1    22.230
+     77       3-28        5.55    +0.003    +0.000    -0.000    +0.003     +0.040   1    28.420
+     78       3-29        5.12    +0.004    +0.001    -0.001    +0.004     +0.048   1    25.588
+     79       3-31        3.44    -0.003    -0.003    -0.006    +0.006     +0.084   1    15.381
+     80       3-32        3.40    -0.001    -0.001    -0.007    +0.007     +0.085   1    15.157
+     81       3-33        4.62    +0.003    -0.000    -0.001    +0.004     +0.058   1    22.336
+     82       3-34        4.61    +0.005    +0.001    -0.001    +0.005     +0.058   1    22.294
+     83       3-35        5.57    +0.012    +0.010    -0.000    +0.003     +0.040   1    28.552
+     84       3-36        5.58    +0.004    +0.001    -0.000    +0.003     +0.040   1    28.609
+     85       3-37        6.89    +0.019    +0.017    -0.000    +0.002     +0.021   1    37.516
+     86       3-38        7.31    -0.006    -0.007    -0.000    +0.001     +0.017   1    40.417
+     87       3-39        7.98    -0.005    -0.005    -0.000    +0.001     +0.011   1    44.837
+     88       3-40        8.28    +0.003    +0.003    +0.000    +0.000     +0.011   1    46.763
+     89       3-41        6.82    +0.005    +0.005    -0.000    +0.000     +0.022   1    37.079
+     90       3-42        8.88    +0.003    +0.003    -0.000    +0.000     +0.011   1    50.440
+     91       3-43        8.04    +0.004    +0.004    -0.000    +0.000     +0.011   1    45.204
+     92       4-10        3.96    -0.055    -0.033    -0.023    +0.001     +0.072   1    18.304
+     93       4-11        4.78    -0.030    -0.021    -0.010    +0.001     +0.055   1    23.367
+     94       4-12        3.95    -0.003    +0.017    -0.025    +0.005     +0.072   1    18.304
+     95       4-13        4.60    -0.014    +0.002    -0.017    +0.002     +0.059   1    22.208
+     96       4-14        4.26    -0.019    +0.002    -0.023    +0.002     +0.066   1    20.096
+     97       4-15        5.42    -0.006    +0.000    -0.007    +0.001     +0.043   1    27.545
+     98       4-16        5.70    -0.005    +0.000    -0.006    +0.001     +0.038   1    29.392
+     99       4-17        6.85    -0.001    +0.000    -0.002    +0.001     +0.022   1    37.283
+    100       4-18        5.13    -0.008    +0.000    -0.010    +0.001     +0.048   1    25.648
+    101       4-19        7.42    -0.001    +0.000    -0.001    +0.000     +0.016   1    41.117
+    102       4-20        6.99    -0.001    +0.000    -0.002    +0.001     +0.020   1    38.238
+    103       4-21        5.90    -0.004    +0.000    -0.005    +0.001     +0.035   1    30.761
+    104       4-23        3.77    -0.077    -0.058    -0.026    +0.007     +0.076   1    17.250
+    105       4-24        4.35    -0.049    -0.036    -0.015    +0.002     +0.064   1    20.694
+    106       4-25        3.42    +0.064    +0.024    +0.038    +0.003     +0.084   1    15.257
+    107       4-26        5.06    +0.001    +0.010    -0.011    +0.002     +0.049   1    25.148
+    108       4-27        3.75    -0.014    +0.004    -0.019    +0.000     +0.077   1    17.108
+    109       4-28        5.09    -0.010    +0.000    -0.010    -0.000     +0.049   1    25.349
+    110       4-29        5.26    -0.006    +0.002    -0.009    +0.000     +0.046   1    26.459
+    111       4-31        3.62    -0.009    -0.004    -0.007    +0.003     +0.080   1    16.363
+    112       4-32        3.60    -0.004    -0.001    -0.005    +0.002     +0.080   1    16.266
+    113       4-33        4.37    -0.019    -0.001    -0.021    +0.002     +0.063   1    20.781
+    114       4-34        4.41    -0.015    +0.002    -0.020    +0.002     +0.062   1    21.044
+    115       4-35        5.08    +0.013    +0.018    -0.010    +0.005     +0.049   1    25.308
+    116       4-36        5.07    -0.007    +0.002    -0.011    +0.002     +0.049   1    25.208
+    117       4-37        6.22    +0.037    +0.034    -0.003    +0.006     +0.030   1    32.959
+    118       4-38        6.71    -0.012    -0.012    -0.002    +0.002     +0.023   1    36.305
+    119       4-39        7.25    -0.010    -0.010    -0.001    +0.001     +0.017   1    40.011
+    120       4-40        7.59    +0.007    +0.006    -0.000    +0.001     +0.014   1    42.300
+    121       4-41        6.30    +0.012    +0.010    -0.000    +0.002     +0.029   1    33.523
+    122       4-42        8.09    +0.006    +0.006    -0.000    +0.000     +0.011   1    45.579
+    123       4-43        7.29    +0.008    +0.007    -0.000    +0.001     +0.017   1    40.229
+    124       5-8         2.30    -0.333    -0.099    -0.238    +0.004     +0.108   1     9.643
+    125       5-9         3.89    -0.074    -0.047    -0.029    +0.002     +0.074   1    17.956
+    126       5-10        4.55    +0.018    +0.025    -0.008    +0.000     +0.059   1    21.931
+    127       5-11        4.88    +0.017    +0.022    -0.005    +0.000     +0.053   1    23.988
+    128       5-12        3.83    -0.044    -0.019    -0.026    +0.002     +0.075   1    17.557
+    129       5-13        4.62    -0.013    -0.002    -0.011    +0.001     +0.058   1    22.336
+    130       5-14        3.72    -0.030    -0.003    -0.028    +0.001     +0.077   1    16.965
+    131       5-15        5.24    -0.006    -0.000    -0.006    +0.000     +0.046   1    26.380
+    132       5-16        5.21    -0.006    -0.000    -0.006    +0.000     +0.046   1    26.144
+    133       5-17        6.28    -0.002    -0.000    -0.002    +0.000     +0.029   1    33.387
+    134       5-18        4.46    -0.014    -0.000    -0.014    +0.000     +0.061   1    21.327
+    135       5-19        6.65    -0.001    -0.000    -0.001    +0.000     +0.024   1    35.920
+    136       5-20        6.08    -0.002    -0.000    -0.002    +0.000     +0.032   1    31.969
+    137       5-21        4.99    -0.007    -0.000    -0.008    +0.000     +0.051   1    24.744
+    138       5-22        3.86    -0.069    -0.047    -0.025    +0.003     +0.074   1    17.745
+    139       5-23        3.91    +0.041    +0.057    -0.019    +0.003     +0.073   1    18.049
+    140       5-24        4.96    +0.024    +0.028    -0.005    +0.001     +0.051   1    24.520
+    141       5-25        3.11    -0.001    -0.031    +0.029    +0.001     +0.091   1    13.622
+    142       5-26        5.25    -0.015    -0.009    -0.006    +0.000     +0.046   1    26.419
+    143       5-27        3.45    -0.032    -0.006    -0.026    -0.000     +0.084   1    15.456
+    144       5-28        4.95    -0.009    -0.000    -0.008    -0.000     +0.051   1    24.459
+    145       5-29        5.44    -0.007    -0.002    -0.005    -0.000     +0.042   1    27.679
+    146       5-30        3.91    -0.035    -0.010    -0.024    +0.000     +0.073   1    18.026
+    147       5-31        3.78    -0.022    +0.004    -0.027    +0.001     +0.076   1    17.274
+    148       5-32        3.96    -0.022    +0.001    -0.023    +0.001     +0.072   1    18.351
+    149       5-33        4.14    -0.018    +0.001    -0.020    +0.000     +0.068   1    19.401
+    150       5-34        4.55    -0.014    -0.002    -0.012    +0.001     +0.059   1    21.931
+    151       5-35        4.90    -0.027    -0.021    -0.008    +0.002     +0.052   1    24.111
+    152       5-36        4.71    -0.012    -0.002    -0.010    +0.001     +0.056   1    22.907
+    153       5-37        5.94    -0.039    -0.040    -0.003    +0.003     +0.034   1    31.012
+    154       5-38        6.56    +0.014    +0.014    -0.001    +0.001     +0.025   1    35.304
+    155       5-39        6.82    +0.012    +0.013    -0.001    +0.001     +0.022   1    37.079
+    156       5-40        7.39    -0.007    -0.007    -0.000    +0.001     +0.016   1    40.904
+    157       5-41        6.31    -0.009    -0.010    -0.000    +0.001     +0.029   1    33.540
+    158       5-42        7.64    -0.006    -0.007    -0.000    +0.001     +0.014   1    42.628
+    159       5-43        6.76    -0.008    -0.009    -0.000    +0.001     +0.023   1    36.639
+    160       6-13        4.23    -0.021    +0.001    -0.023    +0.001     +0.066   1    19.918
+    161       6-14        4.17    -0.021    +0.001    -0.024    +0.001     +0.068   1    19.604
+    162       6-15        5.33    -0.008    +0.000    -0.008    +0.000     +0.044   1    26.966
+    163       6-16        5.83    -0.005    +0.000    -0.005    +0.000     +0.036   1    30.272
+    164       6-17        7.13    -0.001    +0.000    -0.002    +0.000     +0.019   1    39.187
+    165       6-18        5.30    -0.008    +0.000    -0.008    +0.000     +0.045   1    26.752
+    166       6-19        7.84    -0.001    +0.000    -0.001    +0.000     +0.012   1    43.947
+    167       6-20        7.46    -0.001    +0.000    -0.001    +0.000     +0.015   1    41.371
+    168       6-21        6.26    -0.003    +0.000    -0.003    +0.000     +0.029   1    33.233
+    169       6-22        4.51    +0.010    +0.024    -0.018    +0.004     +0.060   1    21.651
+    170       6-23        4.87    -0.030    -0.025    -0.010    +0.004     +0.053   1    23.947
+    171       6-24        5.23    -0.023    -0.018    -0.006    +0.001     +0.046   1    26.262
+    172       6-25        4.62    -0.007    +0.009    -0.017    +0.001     +0.058   1    22.357
+    173       6-26        5.98    +0.001    +0.005    -0.004    +0.000     +0.033   1    31.333
+    174       6-27        4.61    -0.016    +0.002    -0.017    -0.001     +0.058   1    22.251
+    175       6-28        5.83    -0.006    +0.000    -0.005    -0.001     +0.036   1    30.272
+    176       6-29        5.93    -0.004    +0.001    -0.004    -0.001     +0.034   1    30.994
+    177       6-30        4.63    -0.012    +0.005    -0.017    -0.000     +0.058   1    22.379
+    178       6-31        4.67    -0.017    -0.002    -0.016    +0.001     +0.057   1    22.654
+    179       6-32        4.27    -0.022    -0.000    -0.022    +0.001     +0.065   1    20.208
+    180       6-33        5.55    -0.006    -0.000    -0.006    +0.000     +0.040   1    28.439
+    181       6-34        4.94    -0.010    +0.001    -0.012    +0.001     +0.052   1    24.398
+    182       6-35        5.82    +0.008    +0.010    -0.005    +0.003     +0.036   1    30.236
+    183       6-36        6.09    -0.003    +0.001    -0.004    +0.000     +0.032   1    32.092
+    184       6-37        6.81    +0.023    +0.021    -0.002    +0.004     +0.022   1    37.001
+    185       6-38        7.03    -0.009    -0.009    -0.001    +0.001     +0.020   1    38.511
+    186       6-39        7.97    -0.006    -0.007    -0.001    +0.001     +0.011   1    44.747
+    187       6-40        7.87    +0.005    +0.005    -0.000    +0.001     +0.012   1    44.155
+    188       6-41        6.45    +0.009    +0.007    -0.000    +0.002     +0.027   1    34.530
+    189       6-42        8.72    +0.004    +0.004    -0.000    +0.000     +0.011   1    49.529
+    190       6-43        8.15    +0.004    +0.004    +0.000    +0.000     +0.011   1    45.962
+    191       7-15        4.90    -0.007    -0.000    -0.009    +0.002     +0.052   1    24.111
+    192       7-16        5.23    -0.005    -0.000    -0.007    +0.002     +0.046   1    26.301
+    193       7-17        6.61    -0.001    -0.000    -0.002    +0.001     +0.025   1    35.597
+    194       7-18        4.50    -0.012    -0.000    -0.014    +0.002     +0.060   1    21.630
+    195       7-19        7.24    -0.000    -0.000    -0.001    +0.001     +0.018   1    39.924
+    196       7-20        6.72    -0.001    -0.000    -0.002    +0.001     +0.023   1    36.400
+    197       7-21        5.43    -0.004    -0.000    -0.005    +0.002     +0.043   1    27.564
+    198       7-22        5.65    -0.022    -0.021    -0.004    +0.003     +0.039   1    29.095
+    199       7-23        5.79    +0.025    +0.025    -0.003    +0.003     +0.036   1    30.017
+    200       7-24        6.50    +0.016    +0.016    -0.001    +0.001     +0.026   1    34.861
+    201       7-25        5.22    -0.015    -0.010    -0.007    +0.002     +0.046   1    26.223
+    202       7-26        6.89    -0.006    -0.005    -0.001    +0.001     +0.021   1    37.531
+    203       7-27        4.94    -0.010    -0.003    -0.009    +0.001     +0.052   1    24.398
+    204       7-28        6.24    -0.002    -0.000    -0.002    +0.001     +0.029   1    33.079
+    205       7-29        6.65    -0.002    -0.001    -0.002    +0.001     +0.024   1    35.904
+    206       7-30        5.76    -0.007    -0.005    -0.004    +0.001     +0.037   1    29.834
+    207       7-31        5.59    -0.001    +0.002    -0.005    +0.002     +0.040   1    28.646
+    208       7-32        5.15    -0.005    +0.000    -0.007    +0.002     +0.048   1    25.748
+    209       7-33        6.25    -0.001    +0.000    -0.002    +0.001     +0.029   1    33.165
+    210       7-34        5.52    -0.005    -0.002    -0.005    +0.002     +0.041   1    28.174
+    211       7-35        6.23    -0.013    -0.013    -0.002    +0.003     +0.030   1    32.994
+    212       7-36        6.57    -0.002    -0.001    -0.002    +0.001     +0.025   1    35.321
+    213       7-37        6.99    -0.027    -0.030    -0.001    +0.003     +0.020   1    38.208
+    214       7-38        7.13    +0.013    +0.012    -0.001    +0.001     +0.019   1    39.187
+    215       7-39        8.09    +0.009    +0.009    -0.000    +0.000     +0.011   1    45.579
+    216       7-40        7.86    -0.006    -0.007    -0.000    +0.001     +0.012   1    44.051
+    217       7-41        6.57    -0.009    -0.010    -0.000    +0.001     +0.025   1    35.321
+    218       7-42        8.75    -0.005    -0.005    -0.000    +0.000     +0.011   1    49.692
+    219       7-43        8.32    -0.006    -0.006    -0.000    +0.000     +0.011   1    47.014
+    220       8-13        4.11    +0.004    +0.001    -0.003    +0.006     +0.069   1    19.243
+    221       8-14        2.94    +0.002    +0.003    -0.009    +0.008     +0.095   1    12.718
+    222       8-15        5.10    +0.003    +0.000    -0.001    +0.004     +0.048   1    25.429
+    223       8-16        5.17    +0.003    +0.000    -0.001    +0.004     +0.047   1    25.867
+    224       8-17        6.49    +0.002    +0.000    -0.000    +0.002     +0.026   1    34.779
+    225       8-18        4.21    +0.003    +0.000    -0.002    +0.005     +0.067   1    19.851
+    226       8-19        6.94    +0.002    +0.000    -0.000    +0.002     +0.021   1    37.886
+    227       8-20        6.25    +0.002    +0.000    -0.000    +0.002     +0.029   1    33.165
+    228       8-21        4.92    +0.003    +0.000    -0.001    +0.004     +0.052   1    24.234
+    229       8-22        5.83    +0.014    +0.012    -0.000    +0.003     +0.036   1    30.309
+    230       8-23        5.91    -0.013    -0.014    -0.000    +0.002     +0.034   1    30.833
+    231       8-24        6.79    -0.008    -0.009    -0.000    +0.001     +0.022   1    36.860
+    232       8-25        5.14    +0.010    +0.006    -0.001    +0.004     +0.048   1    25.708
+    233       8-26        7.10    +0.004    +0.003    -0.000    +0.002     +0.019   1    38.993
+    234       8-27        4.95    +0.005    +0.002    -0.001    +0.004     +0.051   1    24.480
+    235       8-28        6.37    +0.002    +0.000    -0.000    +0.002     +0.028   1    33.979
+    236       8-29        6.95    +0.002    +0.001    -0.000    +0.002     +0.021   1    37.917
+    237       8-30        5.76    +0.005    +0.003    -0.000    +0.003     +0.037   1    29.797
+    238       8-31        5.40    +0.002    -0.001    -0.001    +0.003     +0.043   1    27.391
+    239       8-32        5.02    +0.003    -0.000    -0.001    +0.004     +0.050   1    24.926
+    240       8-33        5.86    +0.002    -0.000    -0.000    +0.003     +0.035   1    30.490
+    241       8-34        5.22    +0.004    +0.001    -0.001    +0.004     +0.046   1    26.242
+    242       8-35        5.74    +0.012    +0.009    -0.000    +0.003     +0.037   1    29.669
+    243       8-36        6.04    +0.003    +0.001    -0.000    +0.003     +0.032   1    31.705
+    244       8-37        6.40    +0.024    +0.022    -0.000    +0.002     +0.027   1    34.214
+    245       8-38        6.62    -0.008    -0.009    -0.000    +0.001     +0.024   1    35.678
+    246       8-39        7.43    -0.006    -0.007    -0.000    +0.001     +0.016   1    41.201
+    247       8-40        7.30    +0.005    +0.005    -0.000    +0.000     +0.017   1    40.316
+    248       8-41        6.15    +0.007    +0.007    -0.000    +0.000     +0.031   1    32.493
+    249       8-42        8.06    +0.004    +0.004    -0.000    +0.000     +0.011   1    45.354
+    250       8-43        7.62    +0.004    +0.004    -0.000    +0.000     +0.014   1    42.492
+    251       9-22        6.58    +0.012    +0.013    -0.003    +0.002     +0.025   1    35.386
+    252       9-23        6.48    -0.017    -0.017    -0.002    +0.002     +0.026   1    34.713
+    253       9-24        7.38    -0.011    -0.011    -0.001    +0.000     +0.016   1    40.875
+    254       9-25        5.89    +0.002    +0.007    -0.005    +0.001     +0.035   1    30.725
+    255       9-26        7.34    +0.003    +0.004    -0.001    +0.000     +0.017   1    40.575
+    256       9-27        5.19    -0.009    +0.002    -0.011    -0.001     +0.047   1    26.025
+    257       9-28        6.26    -0.004    +0.000    -0.004    -0.001     +0.029   1    33.233
+    258       9-29        6.76    -0.002    +0.001    -0.002    -0.000     +0.023   1    36.623
+    259       9-30        7.12    +0.001    +0.003    -0.002    -0.000     +0.019   1    39.127
+    260       9-31        7.12    -0.002    -0.001    -0.002    +0.000     +0.019   1    39.082
+    261       9-32        6.74    -0.002    -0.000    -0.002    +0.000     +0.023   1    36.480
+    262       9-33        7.79    -0.001    -0.000    -0.001    +0.000     +0.013   1    43.579
+    263       9-34        7.14    -0.001    +0.001    -0.002    +0.000     +0.018   1    39.276
+    264       9-35        7.85    +0.007    +0.007    -0.001    +0.001     +0.012   1    43.999
+    265       9-36        8.15    +0.001    +0.001    -0.000    +0.000     +0.011   1    45.962
+    266       9-37        8.57    +0.017    +0.017    -0.000    +0.000     +0.011   1    48.610
+    267       9-38        8.67    -0.007    -0.007    +0.000    +0.000     +0.011   1    49.201
+    268       9-39        9.66    -0.006    -0.006    +0.000    +0.000     +0.011   1    54.893
+    269       9-40        9.35    +0.004    +0.004    -0.000    +0.000     +0.011   1    53.193
+    270       9-41        8.08    +0.006    +0.006    +0.000    +0.000     +0.011   1    45.492
+    271       9-42       10.28    +0.004    +0.004    -0.000    +0.000     +0.011   1    58.105
+    272       9-43        9.87    +0.004    +0.004    -0.000    +0.000     +0.011   1    56.044
+    273      10-15        4.10    -0.022    -0.000    -0.020    -0.001     +0.069   1    19.130
+    274      10-16        5.02    -0.008    -0.000    -0.007    -0.001     +0.050   1    24.926
+    275      10-17        6.38    -0.002    -0.000    -0.002    -0.001     +0.027   1    34.063
+    276      10-18        4.90    -0.009    -0.000    -0.008    -0.001     +0.052   1    24.153
+    277      10-19        7.39    -0.001    -0.000    -0.001    -0.000     +0.016   1    40.918
+    278      10-20        7.30    -0.001    -0.000    -0.001    -0.000     +0.017   1    40.345
+    279      10-21        6.19    -0.003    -0.000    -0.002    -0.001     +0.030   1    32.770
+    280      10-22        6.40    -0.012    -0.011    -0.002    +0.000     +0.027   1    34.180
+    281      10-23        6.36    +0.013    +0.014    -0.001    +0.001     +0.028   1    33.895
+    282      10-24        7.01    +0.009    +0.009    -0.001    +0.000     +0.020   1    38.375
+    283      10-25        6.07    -0.008    -0.005    -0.002    -0.000     +0.032   1    31.952
+    284      10-26        7.03    -0.005    -0.004    -0.001    -0.000     +0.020   1    38.481
+    285      10-27        5.33    -0.008    -0.002    -0.005    -0.001     +0.044   1    26.946
+    286      10-28        6.15    -0.004    -0.000    -0.002    -0.001     +0.031   1    32.441
+    287      10-29        6.36    -0.004    -0.001    -0.002    -0.001     +0.028   1    33.878
+    288      10-30        7.20    -0.003    -0.002    -0.001    -0.000     +0.018   1    39.660
+    289      10-31        7.43    -0.000    +0.001    -0.001    -0.000     +0.016   1    41.230
+    290      10-32        7.05    -0.001    +0.000    -0.001    -0.000     +0.019   1    38.662
+    291      10-33        8.29    +0.000    +0.000    -0.000    +0.000     +0.011   1    46.823
+    292      10-34        7.66    -0.001    -0.001    -0.001    -0.000     +0.014   1    42.736
+    293      10-35        8.53    -0.004    -0.004    +0.000    +0.000     +0.011   1    48.350
+    294      10-36        8.82    -0.000    -0.000    -0.000    +0.000     +0.011   1    50.122
+    295      10-37        9.39    -0.011    -0.011    -0.000    +0.000     +0.011   1    53.409
+    296      10-38        9.47    +0.005    +0.005    +0.000    +0.000     +0.011   1    53.854
+    297      10-39       10.53    +0.004    +0.004    +0.000    +0.000     +0.011   1    59.331
+    298      10-40       10.21    -0.003    -0.003    +0.000    +0.000     +0.011   1    57.766
+    299      10-41        8.81    -0.004    -0.004    -0.000    +0.000     +0.011   1    50.037
+    300      10-42       11.21    -0.002    -0.002    -0.000    +0.000     +0.011   1    62.319
+    301      10-43       10.75    -0.002    -0.002    -0.000    +0.000     +0.011   1    60.338
+    302      11-15        4.78    -0.011    -0.000    -0.010    -0.001     +0.055   1    23.367
+    303      11-16        5.14    -0.007    -0.000    -0.006    -0.001     +0.048   1    25.668
+    304      11-17        6.52    -0.002    -0.000    -0.002    -0.001     +0.026   1    34.993
+    305      11-18        4.46    -0.015    -0.000    -0.014    -0.001     +0.061   1    21.370
+    306      11-19        7.19    -0.001    -0.000    -0.001    -0.000     +0.018   1    39.586
+    307      11-20        6.71    -0.002    -0.000    -0.001    -0.000     +0.023   1    36.337
+    308      11-21        5.43    -0.006    -0.000    -0.005    -0.001     +0.042   1    27.622
+    309      11-22        7.93    -0.007    -0.007    -0.001    +0.000     +0.012   1    44.491
+    310      11-23        7.84    +0.009    +0.009    -0.000    +0.000     +0.012   1    43.934
+    311      11-24        8.76    +0.006    +0.006    -0.000    +0.000     +0.011   1    49.736
+    312      11-25        7.15    -0.005    -0.003    -0.001    -0.000     +0.018   1    39.291
+    313      11-26        8.74    -0.002    -0.002    +0.000    +0.000     +0.011   1    49.616
+    314      11-27        6.43    -0.004    -0.001    -0.002    -0.001     +0.027   1    34.414
+    315      11-28        7.53    -0.001    -0.000    -0.001    -0.001     +0.015   1    41.887
+    316      11-29        8.14    -0.001    -0.001    -0.000    +0.000     +0.011   1    45.876
+    317      11-30        8.26    -0.001    -0.001    +0.000    +0.000     +0.011   1    46.607
+    318      11-31        8.05    +0.001    +0.001    -0.000    +0.000     +0.011   1    45.329
+    319      11-32        7.54    -0.001    +0.000    -0.001    -0.000     +0.015   1    41.942
+    320      11-33        8.63    +0.000    +0.000    +0.000    +0.000     +0.011   1    48.979
+    321      11-34        7.71    -0.001    -0.001    -0.001    -0.000     +0.013   1    43.073
+    322      11-35        8.35    -0.005    -0.005    -0.000    +0.000     +0.011   1    47.227
+    323      11-36        8.79    -0.000    -0.000    -0.000    +0.000     +0.011   1    49.951
+    324      11-37        8.85    -0.012    -0.012    -0.000    +0.000     +0.011   1    50.313
+    325      11-38        8.80    +0.005    +0.005    +0.000    +0.000     +0.011   1    49.983
+    326      11-39        9.91    +0.004    +0.004    +0.000    +0.000     +0.011   1    56.242
+    327      11-40        9.35    -0.003    -0.003    +0.000    +0.000     +0.011   1    53.222
+    328      11-41        8.19    -0.004    -0.004    -0.000    +0.000     +0.011   1    46.220
+    329      11-42       10.41    -0.003    -0.003    +0.000    +0.000     +0.011   1    58.764
+    330      11-43       10.21    -0.003    -0.003    -0.000    +0.000     +0.011   1    57.774
+    331      12-22        6.43    +0.004    +0.006    -0.003    +0.002     +0.027   1    34.414
+    332      12-23        5.97    -0.009    -0.008    -0.003    +0.003     +0.033   1    31.244
+    333      12-24        7.37    -0.005    -0.004    -0.001    +0.000     +0.016   1    40.833
+    334      12-25        5.14    -0.006    +0.004    -0.010    +0.001     +0.048   1    25.708
+    335      12-26        6.69    +0.000    +0.002    -0.002    +0.000     +0.023   1    36.193
+    336      12-27        4.13    -0.024    +0.001    -0.024    -0.001     +0.069   1    19.334
+    337      12-28        5.11    -0.011    +0.000    -0.010    -0.001     +0.048   1    25.509
+    338      12-29        5.93    -0.004    +0.001    -0.004    -0.001     +0.034   1    30.958
+    339      12-30        7.37    -0.000    +0.001    -0.001    -0.000     +0.016   1    40.833
+    340      12-31        7.49    -0.001    -0.000    -0.001    +0.000     +0.015   1    41.581
+    341      12-32        7.41    -0.001    -0.000    -0.001    +0.000     +0.016   1    41.060
+    342      12-33        7.97    -0.001    -0.000    -0.001    +0.000     +0.011   1    44.747
+    343      12-34        7.90    -0.000    +0.000    -0.001    +0.000     +0.012   1    44.298
+    344      12-35        8.39    +0.002    +0.002    +0.000    +0.000     +0.011   1    47.497
+    345      12-36        8.43    +0.000    +0.000    -0.000    +0.000     +0.011   1    47.695
+    346      12-37        9.17    +0.006    +0.006    -0.000    +0.000     +0.011   1    52.181
+    347      12-38        9.48    -0.002    -0.002    -0.000    +0.000     +0.011   1    53.954
+    348      12-39       10.11    -0.002    -0.002    -0.000    +0.000     +0.011   1    57.258
+    349      12-40       10.16    +0.001    +0.001    -0.000    +0.000     +0.011   1    57.522
+    350      12-41        9.04    +0.002    +0.002    +0.000    +0.000     +0.011   1    51.412
+    351      12-42       10.77    +0.001    +0.001    +0.000    +0.000     +0.011   1    60.403
+    352      12-43       10.16    +0.001    +0.001    -0.000    +0.000     +0.011   1    57.537
+    353      13-22        6.44    -0.001    +0.001    -0.003    +0.001     +0.027   1    34.431
+    354      13-23        5.81    -0.003    -0.001    -0.004    +0.002     +0.036   1    30.163
+    355      13-24        7.28    -0.001    -0.001    -0.001    +0.000     +0.017   1    40.156
+    356      13-25        5.15    -0.010    +0.000    -0.010    -0.001     +0.048   1    25.728
+    357      13-26        6.24    -0.004    +0.000    -0.003    -0.001     +0.029   1    33.079
+    358      13-27        3.88    -0.027    +0.000    -0.024    -0.004     +0.074   1    17.862
+    359      13-28        4.47    -0.023    +0.000    -0.019    -0.004     +0.061   1    21.392
+    360      13-29        5.22    -0.011    +0.000    -0.009    -0.002     +0.046   1    26.183
+    361      13-30        7.79    -0.001    +0.000    -0.001    -0.000     +0.013   1    43.605
+    362      13-31        8.14    -0.000    -0.000    -0.000    +0.000     +0.011   1    45.901
+    363      13-32        8.18    -0.000    -0.000    +0.000    +0.000     +0.011   1    46.134
+    364      13-33        8.70    -0.000    -0.000    +0.000    +0.000     +0.011   1    49.355
+    365      13-34        8.84    +0.000    +0.000    +0.000    +0.000     +0.011   1    50.239
+    366      13-35        9.39    +0.000    +0.000    +0.000    +0.000     +0.011   1    53.447
+    367      13-36        9.33    +0.000    +0.000    +0.000    +0.000     +0.011   1    53.070
+    368      13-37       10.29    +0.001    +0.001    -0.000    +0.000     +0.011   1    58.150
+    369      13-38       10.65    -0.000    -0.000    +0.000    +0.000     +0.011   1    59.886
+    370      13-39       11.23    -0.000    -0.000    +0.000    +0.000     +0.011   1    62.382
+    371      13-40       11.38    +0.000    +0.000    -0.000    +0.000     +0.011   1    62.999
+    372      13-41       10.20    +0.000    +0.000    -0.000    +0.000     +0.011   1    57.705
+    373      13-42       11.94    +0.000    +0.000    -0.000    +0.000     +0.011   1    65.112
+    374      13-43       11.23    +0.000    +0.000    -0.000    +0.000     +0.011   1    62.399
+    375      14-22        6.76    -0.001    +0.001    -0.002    +0.001     +0.023   1    36.639
+    376      14-23        6.20    -0.002    -0.001    -0.002    +0.002     +0.030   1    32.821
+    377      14-24        7.83    -0.001    -0.000    -0.001    +0.000     +0.012   1    43.855
+    378      14-25        5.11    -0.011    +0.000    -0.010    -0.001     +0.048   1    25.469
+    379      14-26        7.02    -0.002    +0.000    -0.002    -0.000     +0.020   1    38.420
+    380      14-27        4.17    -0.027    +0.000    -0.024    -0.003     +0.068   1    19.582
+    381      14-28        5.29    -0.011    +0.000    -0.008    -0.003     +0.045   1    26.693
+    382      14-29        6.36    -0.004    +0.000    -0.003    -0.001     +0.028   1    33.912
+    383      14-30        7.54    -0.002    +0.000    -0.001    -0.001     +0.015   1    41.928
+    384      14-31        7.49    -0.002    -0.000    -0.001    -0.000     +0.015   1    41.623
+    385      14-32        7.51    -0.002    -0.000    -0.001    -0.000     +0.015   1    41.748
+    386      14-33        7.74    -0.001    -0.000    -0.001    -0.000     +0.013   1    43.273
+    387      14-34        7.86    -0.001    +0.000    -0.001    -0.000     +0.012   1    44.038
+    388      14-35        8.14    +0.000    +0.000    +0.000    +0.000     +0.011   1    45.852
+    389      14-36        8.08    +0.000    +0.000    -0.000    +0.000     +0.011   1    45.479
+    390      14-37        8.80    +0.001    +0.001    +0.000    +0.000     +0.011   1    50.015
+    391      14-38        9.20    -0.000    -0.000    +0.000    +0.000     +0.011   1    52.377
+    392      14-39        9.61    -0.000    -0.000    -0.000    +0.000     +0.011   1    54.629
+    393      14-40        9.81    +0.000    +0.000    +0.000    +0.000     +0.011   1    55.743
+    394      14-41        8.88    +0.000    +0.000    -0.000    +0.000     +0.011   1    50.482
+    395      14-42       10.22    +0.000    +0.000    +0.000    +0.000     +0.011   1    57.842
+    396      14-43        9.60    +0.000    +0.000    -0.000    +0.000     +0.011   1    54.594
+    397      15-22        6.78    -0.001    +0.000    -0.002    +0.001     +0.022   1    36.812
+    398      15-23        5.90    -0.002    -0.000    -0.003    +0.002     +0.035   1    30.779
+    399      15-24        7.66    -0.001    -0.000    -0.001    +0.000     +0.014   1    42.750
+    400      15-25        5.13    -0.011    +0.000    -0.010    -0.001     +0.048   1    25.588
+    401      15-26        6.13    -0.005    +0.000    -0.004    -0.001     +0.031   1    32.354
+    402      15-27        3.66    -0.017    +0.000    -0.013    -0.004     +0.079   1    16.629
+    403      15-28        3.95    -0.029    +0.000    -0.025    -0.005     +0.072   1    18.281
+    404      15-29        4.96    -0.015    +0.000    -0.012    -0.003     +0.051   1    24.520
+    405      15-30        8.36    +0.000    +0.000    -0.000    +0.000     +0.011   1    47.298
+    406      15-31        8.79    -0.000    -0.000    +0.000    +0.000     +0.011   1    49.919
+    407      15-32        9.00    -0.000    -0.000    -0.000    +0.000     +0.011   1    51.208
+    408      15-33        9.21    -0.000    -0.000    -0.000    +0.000     +0.011   1    52.377
+    409      15-34        9.69    +0.000    +0.000    -0.000    +0.000     +0.011   1    55.102
+    410      15-35       10.12    +0.000    +0.000    +0.000    +0.000     +0.011   1    57.305
+    411      15-36        9.89    +0.000    +0.000    -0.000    +0.000     +0.011   1    56.118
+    412      15-37       11.03    +0.000    +0.000    +0.000    +0.000     +0.011   1    61.556
+    413      15-38       11.51    -0.000    -0.000    +0.000    +0.000     +0.011   1    63.532
+    414      15-39       11.86    -0.000    -0.000    -0.000    +0.000     +0.011   1    64.849
+    415      15-40       12.23    +0.000    +0.000    +0.000    +0.000     +0.011   1    66.113
+    416      15-41       11.14    +0.000    +0.000    +0.000    +0.000     +0.011   1    62.039
+    417      15-42       12.59    +0.000    +0.000    -0.000    +0.000     +0.011   1    67.267
+    418      15-43       11.77    +0.000    +0.000    +0.000    +0.000     +0.011   1    64.497
+    419      16-22        7.13    -0.001    +0.000    -0.002    +0.001     +0.019   1    39.201
+    420      16-23        6.17    -0.001    -0.000    -0.003    +0.002     +0.030   1    32.597
+    421      16-24        8.15    -0.000    -0.000    +0.000    +0.000     +0.011   1    45.901
+    422      16-25        5.11    -0.011    +0.000    -0.010    -0.001     +0.048   1    25.509
+    423      16-26        6.51    -0.003    +0.000    -0.003    -0.001     +0.026   1    34.960
+    424      16-27        3.72    -0.022    +0.000    -0.018    -0.004     +0.077   1    16.965
+    425      16-28        4.18    -0.028    +0.000    -0.024    -0.004     +0.067   1    19.649
+    426      16-29        5.49    -0.009    +0.000    -0.007    -0.002     +0.041   1    27.985
+    427      16-30        8.56    +0.000    +0.000    +0.000    +0.000     +0.011   1    48.520
+    428      16-31        8.84    -0.000    -0.000    +0.000    +0.000     +0.011   1    50.260
+    429      16-32        9.14    -0.000    -0.000    +0.000    +0.000     +0.011   1    52.023
+    430      16-33        9.06    -0.000    -0.000    +0.000    +0.000     +0.011   1    51.513
+    431      16-34        9.72    +0.000    +0.000    +0.000    +0.000     +0.011   1    55.215
+    432      16-35        9.95    +0.000    +0.000    +0.000    +0.000     +0.011   1    56.462
+    433      16-36        9.64    +0.000    +0.000    +0.000    +0.000     +0.011   1    54.788
+    434      16-37       10.77    +0.000    +0.000    +0.000    +0.000     +0.011   1    60.429
+    435      16-38       11.33    -0.000    -0.000    +0.000    +0.000     +0.011   1    62.822
+    436      16-39       11.48    -0.000    -0.000    +0.000    +0.000     +0.011   1    63.421
+    437      16-40       11.99    +0.000    +0.000    +0.000    +0.000     +0.011   1    65.301
+    438      16-41       11.07    +0.000    +0.000    +0.000    +0.000     +0.011   1    61.725
+    439      16-42       12.17    +0.000    +0.000    +0.000    +0.000     +0.011   1    65.920
+    440      16-43       11.32    +0.000    +0.000    +0.000    +0.000     +0.011   1    62.783
+    441      17-22        7.85    -0.001    +0.000    -0.001    +0.000     +0.012   1    43.986
+    442      17-23        6.72    -0.000    -0.000    -0.002    +0.001     +0.023   1    36.353
+    443      17-24        8.85    -0.000    -0.000    +0.000    +0.000     +0.011   1    50.281
+    444      17-25        5.65    -0.007    +0.000    -0.006    -0.001     +0.039   1    29.058
+    445      17-26        6.86    -0.003    +0.000    -0.002    -0.001     +0.022   1    37.314
+    446      17-27        4.26    -0.026    +0.000    -0.023    -0.004     +0.066   1    20.096
+    447      17-28        4.35    -0.025    +0.000    -0.021    -0.004     +0.064   1    20.672
+    448      17-29        5.78    -0.007    +0.000    -0.005    -0.002     +0.037   1    29.926
+    449      17-30        9.42    +0.000    +0.000    +0.000    +0.000     +0.011   1    53.623
+    450      17-31        9.77    -0.000    -0.000    +0.000    +0.000     +0.011   1    55.523
+    451      17-32       10.21    -0.000    -0.000    +0.000    +0.000     +0.011   1    57.774
+    452      17-33        9.87    -0.000    -0.000    +0.000    +0.000     +0.011   1    56.060
+    453      17-34       10.81    +0.000    +0.000    +0.000    +0.000     +0.011   1    60.585
+    454      17-35       10.94    +0.000    +0.000    +0.000    +0.000     +0.011   1    61.175
+    455      17-36       10.49    +0.000    +0.000    +0.000    +0.000     +0.011   1    59.127
+    456      17-37       11.77    +0.000    +0.000    +0.000    +0.000     +0.011   1    64.493
+    457      17-38       12.42    -0.000    -0.000    +0.000    +0.000     +0.011   1    66.732
+    458      17-39       12.38    -0.000    -0.000    +0.000    +0.000     +0.011   1    66.599
+    459      17-40       13.06    +0.000    +0.000    +0.000    +0.000     +0.011   1    68.639
+    460      17-41       12.22    +0.000    +0.000    +0.000    +0.000     +0.011   1    66.096
+    461      17-42       13.07    +0.000    +0.000    +0.000    +0.000     +0.011   1    68.649
+    462      17-43       12.13    +0.000    +0.000    +0.000    +0.000     +0.011   1    65.772
+    463      18-22        7.07    -0.001    +0.000    -0.002    +0.001     +0.019   1    38.783
+    464      18-23        6.26    -0.001    -0.000    -0.002    +0.002     +0.029   1    33.250
+    465      18-24        8.18    -0.000    -0.000    +0.000    +0.000     +0.011   1    46.122
+    466      18-25        5.05    -0.012    +0.000    -0.011    -0.001     +0.049   1    25.087
+    467      18-26        6.90    -0.002    +0.000    -0.002    -0.001     +0.021   1    37.609
+    468      18-27        3.93    -0.029    +0.000    -0.025    -0.004     +0.073   1    18.165
+    469      18-28        4.83    -0.017    +0.000    -0.014    -0.003     +0.054   1    23.679
+    470      18-29        6.13    -0.005    +0.000    -0.004    -0.002     +0.031   1    32.336
+    471      18-30        8.12    +0.000    +0.000    -0.000    +0.000     +0.011   1    45.728
+    472      18-31        8.18    -0.000    -0.000    -0.000    +0.000     +0.011   1    46.110
+    473      18-32        8.40    -0.000    -0.000    +0.000    +0.000     +0.011   1    47.521
+    474      18-33        8.29    -0.000    -0.000    +0.000    +0.000     +0.011   1    46.835
+    475      18-34        8.80    +0.000    +0.000    -0.000    +0.000     +0.011   1    50.015
+    476      18-35        8.95    +0.000    +0.000    -0.000    +0.000     +0.011   1    50.910
+    477      18-36        8.70    +0.000    +0.000    -0.000    +0.000     +0.011   1    49.398
+    478      18-37        9.65    +0.000    +0.000    +0.000    +0.000     +0.011   1    54.876
+    479      18-38       10.19    -0.000    -0.000    +0.000    +0.000     +0.011   1    57.660
+    480      18-39       10.33    -0.000    -0.000    -0.000    +0.000     +0.011   1    58.372
+    481      18-40       10.79    +0.000    +0.000    +0.000    +0.000     +0.011   1    60.508
+    482      18-41        9.96    +0.000    +0.000    -0.000    +0.000     +0.011   1    56.495
+    483      18-42       10.97    +0.000    +0.000    +0.000    +0.000     +0.011   1    61.293
+    484      18-43       10.20    +0.000    +0.000    -0.000    +0.000     +0.011   1    57.743
+    485      19-22        8.43    +0.000    +0.000    +0.000    +0.000     +0.011   1    47.730
+    486      19-23        7.28    -0.000    -0.000    -0.001    +0.001     +0.017   1    40.229
+    487      19-24        9.51    -0.000    -0.000    +0.000    +0.000     +0.011   1    54.073
+    488      19-25        6.06    -0.005    +0.000    -0.004    -0.001     +0.032   1    31.846
+    489      19-26        7.51    -0.002    +0.000    -0.001    -0.000     +0.015   1    41.776
+    490      19-27        4.87    -0.016    +0.000    -0.013    -0.003     +0.053   1    23.906
+    491      19-28        5.09    -0.014    +0.000    -0.010    -0.003     +0.049   1    25.349
+    492      19-29        6.61    -0.004    +0.000    -0.002    -0.001     +0.025   1    35.630
+    493      19-30        9.83    +0.000    +0.000    +0.000    +0.000     +0.011   1    55.835
+    494      19-31       10.06    -0.000    -0.000    +0.000    +0.000     +0.011   1    57.007
+    495      19-32       10.56    -0.000    -0.000    +0.000    +0.000     +0.011   1    59.449
+    496      19-33        9.97    -0.000    -0.000    +0.000    +0.000     +0.011   1    56.576
+    497      19-34       11.05    +0.000    +0.000    +0.000    +0.000     +0.011   1    61.622
+    498      19-35       11.01    +0.000    +0.000    +0.000    +0.000     +0.011   1    61.477
+    499      19-36       10.48    +0.000    +0.000    +0.000    +0.000     +0.011   1    59.099
+    500      19-37       11.74    +0.000    +0.000    +0.000    +0.000     +0.011   1    64.389
+    501      19-38       12.45    -0.000    -0.000    +0.000    +0.000     +0.011   1    66.844
+    502      19-39       12.22    -0.000    -0.000    +0.000    +0.000     +0.011   1    66.079
+    503      19-40       13.04    +0.000    +0.000    +0.000    +0.000     +0.011   1    68.563
+    504      19-41       12.36    +0.000    +0.000    +0.000    +0.000     +0.011   1    66.538
+    505      19-42       12.86    +0.000    +0.000    +0.000    +0.000     +0.011   1    68.072
+    506      19-43       11.91    +0.000    +0.000    +0.000    +0.000     +0.011   1    64.996
+    507      20-22        8.38    +0.000    +0.000    +0.000    +0.000     +0.011   1    47.404
+    508      20-23        7.37    -0.000    -0.000    -0.001    +0.001     +0.016   1    40.776
+    509      20-24        9.54    -0.000    -0.000    +0.000    +0.000     +0.011   1    54.245
+    510      20-25        6.00    -0.005    +0.000    -0.004    -0.001     +0.033   1    31.457
+    511      20-26        7.86    -0.001    +0.000    -0.001    -0.000     +0.012   1    44.038
+    512      20-27        5.02    -0.014    +0.000    -0.011    -0.003     +0.050   1    24.926
+    513      20-28        5.63    -0.008    +0.000    -0.006    -0.002     +0.039   1    28.946
+    514      20-29        7.16    -0.003    +0.000    -0.001    -0.001     +0.018   1    39.350
+    515      20-30        9.45    +0.000    +0.000    +0.000    +0.000     +0.011   1    53.762
+    516      20-31        9.47    -0.000    -0.000    +0.000    +0.000     +0.011   1    53.900
+    517      20-32        9.92    -0.000    -0.000    +0.000    +0.000     +0.011   1    56.283
+    518      20-33        9.28    -0.000    -0.000    +0.000    +0.000     +0.011   1    52.813
+    519      20-34       10.25    +0.000    +0.000    +0.000    +0.000     +0.011   1    57.963
+    520      20-35       10.11    +0.000    +0.000    +0.000    +0.000     +0.011   1    57.274
+    521      20-36        9.63    +0.000    +0.000    +0.000    +0.000     +0.011   1    54.744
+    522      20-37       10.71    +0.000    +0.000    +0.000    +0.000     +0.011   1    60.166
+    523      20-38       11.41    -0.000    -0.000    +0.000    +0.000     +0.011   1    63.147
+    524      20-39       11.14    -0.000    -0.000    +0.000    +0.000     +0.011   1    62.004
+    525      20-40       11.93    +0.000    +0.000    +0.000    +0.000     +0.011   1    65.094
+    526      20-41       11.37    +0.000    +0.000    +0.000    +0.000     +0.011   1    62.966
+    527      20-42       11.72    +0.000    +0.000    +0.000    +0.000     +0.011   1    64.320
+    528      20-43       10.84    +0.000    +0.000    +0.000    +0.000     +0.011   1    60.727
+    529      21-22        7.74    -0.001    +0.000    -0.001    +0.000     +0.013   1    43.273
+    530      21-23        6.89    -0.000    -0.000    -0.001    +0.001     +0.021   1    37.562
+    531      21-24        8.91    -0.000    -0.000    +0.000    +0.000     +0.011   1    50.671
+    532      21-25        5.53    -0.008    +0.000    -0.007    -0.001     +0.041   1    28.269
+    533      21-26        7.58    -0.001    +0.000    -0.001    -0.000     +0.014   1    42.204
+    534      21-27        4.61    -0.020    +0.000    -0.017    -0.003     +0.058   1    22.272
+    535      21-28        5.52    -0.009    +0.000    -0.007    -0.003     +0.041   1    28.231
+    536      21-29        6.95    -0.003    +0.000    -0.002    -0.001     +0.021   1    37.932
+    537      21-30        8.61    +0.000    +0.000    +0.000    +0.000     +0.011   1    48.846
+    538      21-31        8.54    -0.000    -0.000    +0.000    +0.000     +0.011   1    48.384
+    539      21-32        8.84    -0.000    -0.000    +0.000    +0.000     +0.011   1    50.260
+    540      21-33        8.43    -0.000    -0.000    +0.000    +0.000     +0.011   1    47.695
+    541      21-34        9.12    +0.000    +0.000    +0.000    +0.000     +0.011   1    51.874
+    542      21-35        9.06    +0.000    +0.000    +0.000    +0.000     +0.011   1    51.513
+    543      21-36        8.71    +0.000    +0.000    +0.000    +0.000     +0.011   1    49.453
+    544      21-37        9.63    +0.000    +0.000    +0.000    +0.000     +0.011   1    54.779
+    545      21-38       10.25    -0.000    -0.000    +0.000    +0.000     +0.011   1    57.955
+    546      21-39       10.15    -0.000    -0.000    +0.000    +0.000     +0.011   1    57.475
+    547      21-40       10.77    +0.000    +0.000    +0.000    +0.000     +0.011   1    60.429
+    548      21-41       10.14    +0.000    +0.000    +0.000    +0.000     +0.011   1    57.437
+    549      21-42       10.73    +0.000    +0.000    +0.000    +0.000     +0.011   1    60.233
+    550      21-43        9.95    +0.000    +0.000    +0.000    +0.000     +0.011   1    56.446
+    551      22-32        4.58    -0.016    -0.000    -0.017    +0.002     +0.059   1    22.080
+    552      22-33        4.46    -0.018    -0.000    -0.019    +0.002     +0.061   1    21.348
+    553      22-34        5.87    -0.002    +0.001    -0.005    +0.001     +0.035   1    30.598
+    554      22-35        6.38    +0.011    +0.011    -0.003    +0.003     +0.027   1    34.063
+    555      22-36        5.79    -0.003    +0.001    -0.005    +0.001     +0.036   1    29.999
+    556      22-37        7.82    +0.022    +0.020    -0.001    +0.003     +0.013   1    43.776
+    557      22-38        8.62    -0.007    -0.007    -0.000    +0.000     +0.011   1    48.868
+    558      22-39        8.60    -0.007    -0.007    -0.000    +0.000     +0.011   1    48.790
+    559      22-40        9.58    +0.004    +0.004    -0.000    +0.000     +0.011   1    54.478
+    560      22-41        8.39    +0.005    +0.005    -0.000    +0.000     +0.011   1    47.486
+    561      22-42        9.59    +0.004    +0.004    +0.000    +0.000     +0.011   1    54.523
+    562      22-43        8.35    +0.005    +0.005    +0.000    +0.000     +0.011   1    47.203
+    563      23-31        4.75    -0.005    +0.003    -0.011    +0.003     +0.055   1    23.179
+    564      23-32        5.64    -0.002    +0.000    -0.004    +0.002     +0.039   1    29.020
+    565      23-33        5.23    -0.004    +0.000    -0.007    +0.002     +0.046   1    26.242
+    566      23-34        6.83    -0.001    -0.001    -0.001    +0.001     +0.022   1    37.158
+    567      23-35        7.20    -0.010    -0.010    -0.001    +0.002     +0.018   1    39.660
+    568      23-36        6.50    -0.002    -0.001    -0.002    +0.001     +0.026   1    34.845
+    569      23-37        8.58    -0.021    -0.021    -0.000    +0.000     +0.011   1    48.621
+    570      23-38        9.44    +0.007    +0.007    -0.000    +0.000     +0.011   1    53.688
+    571      23-39        9.29    +0.008    +0.008    +0.000    +0.000     +0.011   1    52.842
+    572      23-40       10.36    -0.004    -0.004    +0.000    +0.000     +0.011   1    58.518
+    573      23-41        9.26    -0.005    -0.005    -0.000    +0.000     +0.011   1    52.678
+    574      23-42       10.25    -0.004    -0.004    -0.000    +0.000     +0.011   1    57.985
+    575      23-43        8.96    -0.006    -0.006    -0.000    +0.000     +0.011   1    50.920
+    576      24-31        4.25    -0.014    +0.003    -0.017    +0.001     +0.066   1    20.052
+    577      24-32        5.01    -0.007    +0.000    -0.007    +0.000     +0.050   1    24.825
+    578      24-33        5.11    -0.006    +0.000    -0.007    +0.000     +0.048   1    25.489
+    579      24-34        6.38    -0.003    -0.001    -0.002    +0.000     +0.027   1    34.063
+    580      24-35        7.01    -0.009    -0.009    -0.001    +0.001     +0.020   1    38.329
+    581      24-36        6.47    -0.002    -0.001    -0.002    +0.000     +0.026   1    34.647
+    582      24-37        8.47    -0.018    -0.018    +0.000    +0.000     +0.011   1    47.950
+    583      24-38        9.21    +0.007    +0.007    -0.000    +0.000     +0.011   1    52.407
+    584      24-39        9.28    +0.007    +0.007    -0.000    +0.000     +0.011   1    52.794
+    585      24-40       10.20    -0.004    -0.004    +0.000    +0.000     +0.011   1    57.698
+    586      24-41        8.95    -0.005    -0.005    +0.000    +0.000     +0.011   1    50.879
+    587      24-42       10.27    -0.004    -0.004    -0.000    +0.000     +0.011   1    58.053
+    588      24-43        9.05    -0.005    -0.005    +0.000    +0.000     +0.011   1    51.483
+    589      25-30        4.11    -0.023    +0.004    -0.024    -0.003     +0.069   1    19.220
+    590      25-31        4.83    -0.015    -0.001    -0.014    -0.001     +0.054   1    23.679
+    591      25-32        5.70    -0.007    -0.000    -0.006    -0.001     +0.038   1    29.392
+    592      25-33        5.05    -0.012    -0.000    -0.011    -0.001     +0.049   1    25.087
+    593      25-34        6.69    -0.002    +0.000    -0.002    -0.000     +0.024   1    36.145
+    594      25-35        6.88    +0.003    +0.004    -0.002    +0.001     +0.021   1    37.469
+    595      25-36        6.14    -0.004    +0.000    -0.004    -0.001     +0.031   1    32.406
+    596      25-37        8.13    +0.008    +0.008    +0.000    +0.000     +0.011   1    45.827
+    597      25-38        9.03    -0.003    -0.003    -0.000    +0.000     +0.011   1    51.371
+    598      25-39        8.78    -0.003    -0.003    -0.000    +0.000     +0.011   1    49.843
+    599      25-40        9.90    +0.002    +0.002    +0.000    +0.000     +0.011   1    56.176
+    600      25-41        8.91    +0.002    +0.002    +0.000    +0.000     +0.011   1    50.671
+    601      25-42        9.70    +0.002    +0.002    -0.000    +0.000     +0.011   1    55.128
+    602      25-43        8.42    +0.002    +0.002    +0.000    +0.000     +0.011   1    47.626
+    603      26-30        4.88    -0.012    +0.002    -0.013    -0.002     +0.053   1    23.968
+    604      26-31        6.10    -0.005    -0.000    -0.004    -0.001     +0.031   1    32.144
+    605      26-32        7.00    -0.002    -0.000    -0.002    -0.001     +0.020   1    38.269
+    606      26-33        6.58    -0.003    -0.000    -0.002    -0.001     +0.025   1    35.435
+    607      26-34        8.24    +0.000    +0.000    +0.000    +0.000     +0.011   1    46.499
+    608      26-35        8.63    +0.002    +0.002    -0.000    +0.000     +0.011   1    48.946
+    609      26-36        7.89    -0.001    +0.000    -0.001    -0.000     +0.012   1    44.259
+    610      26-37       10.02    +0.005    +0.005    -0.000    +0.000     +0.011   1    56.792
+    611      26-38       10.88    -0.002    -0.002    -0.000    +0.000     +0.011   1    60.905
+    612      26-39       10.71    -0.002    -0.002    -0.000    +0.000     +0.011   1    60.133
+    613      26-40       11.81    +0.001    +0.001    -0.000    +0.000     +0.011   1    64.658
+    614      26-41       10.69    +0.001    +0.001    +0.000    +0.000     +0.011   1    60.040
+    615      26-42       11.68    +0.001    +0.001    +0.000    +0.000     +0.011   1    64.170
+    616      26-43       10.35    +0.001    +0.001    -0.000    +0.000     +0.011   1    58.430
+    617      27-30        5.40    -0.010    +0.000    -0.008    -0.003     +0.043   1    27.391
+    618      27-31        6.06    -0.006    -0.000    -0.004    -0.002     +0.032   1    31.881
+    619      27-32        6.73    -0.003    -0.000    -0.002    -0.001     +0.023   1    36.448
+    620      27-33        6.35    -0.005    -0.000    -0.003    -0.002     +0.028   1    33.878
+    621      27-34        7.66    -0.002    +0.000    -0.001    -0.001     +0.014   1    42.709
+    622      27-35        7.93    +0.000    +0.001    -0.001    +0.000     +0.012   1    44.491
+    623      27-36        7.33    -0.002    +0.000    -0.001    -0.001     +0.017   1    40.532
+    624      27-37        9.09    +0.001    +0.001    +0.000    +0.000     +0.011   1    51.735
+    625      27-38        9.89    -0.001    -0.001    -0.000    +0.000     +0.011   1    56.135
+    626      27-39        9.80    -0.001    -0.001    -0.000    +0.000     +0.011   1    55.659
+    627      27-40       10.72    +0.000    +0.000    -0.000    +0.000     +0.011   1    60.200
+    628      27-41        9.69    +0.000    +0.000    -0.000    +0.000     +0.011   1    55.094
+    629      27-42       10.67    +0.000    +0.000    -0.000    +0.000     +0.011   1    59.980
+    630      27-43        9.50    +0.000    +0.000    -0.000    +0.000     +0.011   1    54.064
+    631      28-30        6.35    -0.005    +0.000    -0.003    -0.002     +0.028   1    33.878
+    632      28-31        7.24    -0.002    -0.000    -0.001    -0.001     +0.018   1    39.894
+    633      28-32        7.98    -0.001    -0.000    -0.001    -0.001     +0.011   1    44.811
+    634      28-33        7.57    -0.002    -0.000    -0.001    -0.001     +0.015   1    42.108
+    635      28-34        9.01    +0.000    +0.000    -0.000    +0.000     +0.011   1    51.229
+    636      28-35        9.31    +0.000    +0.000    +0.000    +0.000     +0.011   1    52.985
+    637      28-36        8.65    +0.000    +0.000    -0.000    +0.000     +0.011   1    49.057
+    638      28-37       10.53    +0.000    +0.000    +0.000    +0.000     +0.011   1    59.324
+    639      28-38       11.35    -0.000    -0.000    +0.000    +0.000     +0.011   1    62.883
+    640      28-39       11.22    -0.000    -0.000    -0.000    +0.000     +0.011   1    62.347
+    641      28-40       12.20    +0.000    +0.000    +0.000    +0.000     +0.011   1    66.023
+    642      28-41       11.15    +0.000    +0.000    -0.000    +0.000     +0.011   1    62.045
+    643      28-42       12.11    +0.000    +0.000    -0.000    +0.000     +0.011   1    65.723
+    644      28-43       10.88    +0.000    +0.000    +0.000    +0.000     +0.011   1    60.899
+    645      29-30        5.98    -0.006    +0.000    -0.004    -0.002     +0.033   1    31.298
+    646      29-31        7.10    -0.003    -0.000    -0.002    -0.001     +0.019   1    38.963
+    647      29-32        7.84    -0.002    -0.000    -0.001    -0.001     +0.012   1    43.907
+    648      29-33        7.62    -0.002    -0.000    -0.001    -0.001     +0.014   1    42.492
+    649      29-34        9.02    +0.000    +0.000    -0.000    +0.000     +0.011   1    51.320
+    650      29-35        9.47    +0.000    +0.000    -0.000    +0.000     +0.011   1    53.900
+    651      29-36        8.84    +0.000    +0.000    -0.000    +0.000     +0.011   1    50.239
+    652      29-37       10.80    +0.001    +0.001    +0.000    +0.000     +0.011   1    60.566
+    653      29-38       11.59    -0.000    -0.000    -0.000    +0.000     +0.011   1    63.819
+    654      29-39       11.56    -0.000    -0.000    -0.000    +0.000     +0.011   1    63.700
+    655      29-40       12.50    +0.000    +0.000    -0.000    +0.000     +0.011   1    66.989
+    656      29-41       11.33    +0.000    +0.000    -0.000    +0.000     +0.011   1    62.800
+    657      29-42       12.50    +0.000    +0.000    -0.000    +0.000     +0.011   1    66.982
+    658      29-43       11.25    +0.000    +0.000    +0.000    +0.000     +0.011   1    62.473
+                                ________  ________  ________  ________
+Total                             -2.432    -0.413    -2.359    +0.341
+                                ________  ________  ________  ________
+                                   Total      Elec    vdW+Hb    Desolv
+
+Total Intramolecular Interaction Energy   = -2.432 kcal/mol
+Unbound model to be used is 'same as bound' [AutoDock 4.2 default].
+
+
+		Intermolecular Energy Analysis
+		==============================
+
+Atom  vdW+Hb+Elec  vdW+Hbond  Electrosta  Partial          Coordinates         
+Type    Energy      Energy    tic Energy  Charge      x         y         z    
+____  __________  __________  __________  _______  ________  ________  ________
+   2       -0.27       -0.23       -0.04    0.164   32.7100   14.3420   22.3270
+   4        0.04       -0.03        0.07   -0.337   31.4320   14.0760   23.0070
+   3        0.03        0.07       -0.04    0.164   30.5930   13.9970   22.4700
+   2       -0.22       -0.17       -0.05    0.254   31.3570   13.8780   24.3460
+   5       -0.71       -0.72        0.01   -0.270   32.3430   13.9570   25.0880
+   2       -0.18       -0.13       -0.05    0.196   29.9990   13.6080   24.7850
+   4        0.05       -0.04        0.09   -0.290   30.0020   13.4240   26.1980
+   3       -0.46       -0.37       -0.09    0.174   30.7290   13.8770   26.7180
+   6       -0.17       -0.13       -0.04    0.261   29.4370   12.0140   26.8020
+   5       -0.02       -0.04        0.02   -0.200   28.6740   11.3470   25.7740
+   5       -0.12       -0.14        0.02   -0.200   28.9280   12.2710   28.1380
+   1       -0.13       -0.12       -0.01    0.103   30.8560   11.0060   27.0180
+   1       -0.12       -0.12       -0.00    0.013   30.8410    9.7790   26.3640
+   1       -0.31       -0.30       -0.00    0.013   31.9200   11.4080   27.7670
+   1       -0.19       -0.19       -0.00    0.001   31.8980    8.9170   26.4670
+   1       -0.27       -0.27       -0.00    0.000   33.0000    9.2660   27.2560
+   1       -0.42       -0.42       -0.00    0.000   34.0900    8.3670   27.3650
+   1       -0.35       -0.35       -0.00    0.001   33.0340   10.5430   27.8690
+   1       -0.51       -0.51       -0.00    0.000   35.1920    8.7390   28.0760
+   1       -0.63       -0.63       -0.00    0.000   35.2290   10.0200   28.7050
+   1       -0.48       -0.48       -0.00    0.000   34.1670   10.9130   28.6030
+   2       -0.21       -0.19       -0.02    0.254   32.8760   13.2420   21.3340
+   4       -0.13       -0.16        0.03   -0.319   33.6070   12.1670   21.8470
+   5       -0.19       -0.18       -0.01   -0.270   32.4430   13.2560   20.1770
+   2       -0.41       -0.39       -0.02    0.104   34.1210   12.2100   23.2290
+   2       -0.29       -0.31        0.02    0.104   33.8470   10.9820   21.0310
+   2       -0.34       -0.33       -0.00    0.024   33.6930   10.9670   24.0180
+   2       -0.54       -0.54       -0.00    0.004   34.0120    9.6860   23.2190
+   2       -0.58       -0.58        0.00    0.024   33.3690    9.7420   21.8010
+   2       -0.34       -0.32       -0.02    0.058   32.6320   15.6710   21.5900
+   1       -0.36       -0.37        0.01   -0.020   32.6360   16.7600   22.5720
+   1       -0.35       -0.36        0.00   -0.004   31.4430   17.2350   23.0500
+   1       -0.48       -0.49        0.00   -0.004   33.8210   17.2470   23.0540
+   1       -0.47       -0.46       -0.01    0.019   31.4090   18.2750   23.9830
+   1       -0.44       -0.33       -0.11    0.198   32.5970   18.8060   24.4490
+   1       -0.50       -0.50       -0.01    0.019   33.8100   18.2960   23.9920
+   2       -0.65       -0.12       -0.54    0.582   32.5760   19.8780   25.4540
+   4        0.07       -0.33        0.40   -0.254   31.4190   20.4060   25.8930
+   4       -0.12       -0.38        0.26   -0.254   33.6650   20.6230   25.6840
+   3       -0.83       -0.30       -0.53    0.172   31.4570   21.1380   26.5690
+   3       -0.66       -0.40       -0.25    0.172   30.5320   19.9560   25.7940
+   3       -0.41       -0.11       -0.29    0.172   33.6320   21.3860   26.3350
+   3        0.05        0.16       -0.11    0.172   34.5790   20.3260   25.4100
+      __________  __________  __________  _______
+Total     -13.62      -12.31       -1.31    1.000
+      __________  __________  __________  _______
+      vdW+Hb+Elec  vdW+Hbond  Electrosta  Partial
+        Energy      Energy    tic Energy  Charge
+
+Total Intermolecular Interaction Energy   = -16.049 kcal/mol
+Total Intermolecular vdW + Hbond Energy   = -12.306 kcal/mol
+Total Intermolecular Electrostatic Energy = -1.311 kcal/mol
+
+
+epdb: USER    Estimated Free Energy of Binding    =  -10.63 kcal/mol  [=(1)+(2)+(3)-(4)]
+epdb: USER    Estimated Inhibition Constant, Ki   =   16.04 nM (nanomolar)  [Temperature = 298.15 K]
+epdb: USER    
+epdb: USER    (1) Final Intermolecular Energy     =  -13.62 kcal/mol
+epdb: USER        vdW + Hbond + desolv Energy     =  -12.31 kcal/mol
+epdb: USER        Electrostatic Energy            =   -1.31 kcal/mol
+epdb: USER    (2) Final Total Internal Energy     =   -2.43 kcal/mol
+epdb: USER    (3) Torsional Free Energy           =   +2.98 kcal/mol
+epdb: USER    (4) Unbound System's Energy  [=(2)] =   -2.43 kcal/mol
+epdb: USER    
+epdb: USER    
+
+>>> Closing the docking parameter file (DPF)...
+
+This docking finished at:			1:31 41" p.m., 03/17/2010
+
+
+
+
+________________________________________________________________________________
+
+../../latest_autodock4: Successful Completion on "saul"
+
+Real= 1.91s,  CPU= 1.30s,  System= 0.11s
+________________________________________________________________________________
+

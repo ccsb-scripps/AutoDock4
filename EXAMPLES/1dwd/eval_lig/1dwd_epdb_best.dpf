@@ -1,0 +1,16 @@
+autodock_parameter_version 4.2       # used by autodock to validate parameter set
+outlev 1                             # diagnostic output level
+intelec                              # calculate internal electrostatics
+ligand_types A C HD N OA S           # atoms types in ligand
+fld 1dwd_rec.maps.fld                # grid_data_file
+map 1dwd_rec.A.map                   # atom-specific affinity map
+map 1dwd_rec.C.map                   # atom-specific affinity map
+map 1dwd_rec.HD.map                  # atom-specific affinity map
+map 1dwd_rec.N.map                   # atom-specific affinity map
+map 1dwd_rec.OA.map                  # atom-specific affinity map
+map 1dwd_rec.S.map                   # atom-specific affinity map
+elecmap 1dwd_rec.e.map               # electrostatics map
+desolvmap 1dwd_rec.d.map             # desolvation map
+move best.pdbqt                      # small molecule
+about  32.39 13.93 25.01             # small molecule center
+epdb                                 # small molecule to be evaluated
