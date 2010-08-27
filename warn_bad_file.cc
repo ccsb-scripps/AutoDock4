@@ -1,6 +1,6 @@
 /*
 
- $Id: warn_bad_file.cc,v 1.6 2009/05/08 23:02:19 rhuey Exp $
+ $Id: warn_bad_file.cc,v 1.7 2010/08/27 00:05:09 mp Exp $
 
  AutoDock 
 
@@ -37,8 +37,8 @@ extern FILE *logFile;
 
 /*----------------------------------------------------------------------------*/
 
-void warn_bad_file( char *filename,
-		    char message[LINE_LEN] )
+void warn_bad_file( const char *const filename,
+		    const char message[LINE_LEN] )
 
 /*----------------------------------------------------------------------------*/
 {

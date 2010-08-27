@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_param_line.h,v 1.3 2009/05/08 23:02:15 rhuey Exp $
+ $Id: parse_param_line.h,v 1.4 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -28,6 +28,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define PARSE_PAR_LINE
 
 #include "constants.h"
-int  parse_param_line( char  line[LINE_LEN] );
+int  parse_param_line( const char  *const line);
 
 #endif

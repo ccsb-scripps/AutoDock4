@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.26 2010/04/15 19:30:44 mp Exp $
+ $Id: getInitialState.cc,v 1.27 2010/08/27 00:05:07 mp Exp $
 
  AutoDock  
 
@@ -46,46 +46,46 @@ extern char *programname;
 
 void getInitialState(
 
-            Real *Addr_e0total,
-            Real e0max,
+            /* not const */ Real *const Addr_e0total,
+            const Real e0max,
 
-            State *sInit, /* was qtn0[QUAT] and tor0[MAX_TORS] */
-            State *sMinm, /* was qtnMin[QUAT] and torMin[MAX_TORS] */
-            State *sLast, /* was qtnLast[QUAT] and torLast[MAX_TORS] */
+            /* not const */ State *const sInit, /* was qtn0[QUAT] and tor0[MAX_TORS] */
+            /* not const */ State *const sMinm, /* was qtnMin[QUAT] and torMin[MAX_TORS] */
+            /* not const */ State *const sLast, /* was qtnLast[QUAT] and torLast[MAX_TORS] */
 
-            Boole B_RandomTran0,
-            Boole B_RandomQuat0,
-            Boole B_RandomDihe0,
+            const Boole B_RandomTran0,
+            const Boole B_RandomQuat0,
+            const Boole B_RandomDihe0,
 
-            Real charge[MAX_ATOMS],
-            Real abs_charge[MAX_ATOMS],
-            Real qsp_abs_charge[MAX_ATOMS],
-            Real crd[MAX_ATOMS][SPACE],
-            Real crdpdb[MAX_ATOMS][SPACE],
-            char  atomstuff[MAX_ATOMS][MAX_CHARS],
-            Real elec[MAX_ATOMS],
-            Real emap[MAX_ATOMS],
+            const Real charge[MAX_ATOMS],
+            const Real abs_charge[MAX_ATOMS],
+            const Real qsp_abs_charge[MAX_ATOMS],
+            /* not const */ Real crd[MAX_ATOMS][SPACE],
+            const Real crdpdb[MAX_ATOMS][SPACE],
+            const char  atomstuff[MAX_ATOMS][MAX_CHARS],
+            /* not const */ Real elec[MAX_ATOMS],
+            /* not const */ Real emap[MAX_ATOMS],
 
-            EnergyTables *ptr_ad_energy_tables,
+            const EnergyTables *const ptr_ad_energy_tables,
 
-            Boole B_calcIntElec,
+            const Boole B_calcIntElec,
                 #include "map_declare.h"
-            int   natom,
-            int   Nnb,
-            NonbondParam *nonbondlist,
-            int   ntor,
-            int   tlist[MAX_TORS][MAX_ATOMS],
-            int   type[MAX_ATOMS],
-            Real vt[MAX_TORS][SPACE],
-            int   irun1,
-            int   outlev,
-            int   MaxRetries,
+            const int   natom,
+            const int   Nnb,
+            const NonbondParam *const nonbondlist,
+            const int   ntor,
+            const int   tlist[MAX_TORS][MAX_ATOMS],
+            const int   type[MAX_ATOMS],
+            const Real vt[MAX_TORS][SPACE],
+            const int   irun1,
+            const int   outlev,
+            const int   MaxRetries,
 
-            Real torsFreeEnergy,
+            const Real torsFreeEnergy,
 
-            int   ligand_is_inhibitor,
+            const int   ligand_is_inhibitor,
 
-            int   ignore_inter[MAX_ATOMS],
+            const int   ignore_inter[MAX_ATOMS],
 
             const Boole         B_include_1_4_interactions,
             const Real scale_1_4,
@@ -94,10 +94,10 @@ void getInitialState(
 
             const Real unbound_internal_FE,
 
-            GridMapSetInfo *info,
-            Boole B_use_non_bond_cutoff,
-            Boole B_have_flexible_residues,
-            Unbound_Model ad4_unbound_model
+            const GridMapSetInfo *const info,
+            const Boole B_use_non_bond_cutoff,
+            const Boole B_have_flexible_residues,
+            const Unbound_Model ad4_unbound_model
            )
 
 {

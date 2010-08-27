@@ -1,6 +1,6 @@
 /*
 
- $Id: swap.cc,v 1.5 2009/05/08 23:02:18 rhuey Exp $
+ $Id: swap.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -39,8 +39,8 @@ extern FILE *logFile;
 #endif /* DEBUG */
 
 void swap ( int v[],
-	    int i, 
-	    int j )
+	    const int i, 
+	    const int j )
 
 {
     int temp;

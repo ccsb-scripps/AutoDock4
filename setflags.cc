@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.20 2010/06/09 04:02:00 mp Exp $
+ $Id: setflags.cc,v 1.21 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -45,14 +45,13 @@ extern int  write_stateFile;
 extern char *programname;
 
 extern char dock_param_fn[];
-extern char AutoDockHelp[];
 extern int  debug;
 extern int  ignore_errors;
 extern int  parse_tors_mode;
 extern int  keepresnum;
 
 
-int setflags( int argc, char ** argv, const char * version_num)
+int setflags( /* not const */ int argc, const char ** /* not const */ argv, const char *const version_num)
 
 /*
 ** naming convention: 
@@ -97,11 +96,12 @@ int setflags( int argc, char ** argv, const char * version_num)
 /* Initialize                                                                 */
 /*----------------------------------------------------------------------------*/
     argindex = 1;
-    programname = argv[0];
+    if (programname) free(programname);
+    programname = strdup(argv[0]); // argv is const, only executed once
     parFile = stdin;
     logFile = stdout;
     char logFileName[PATH_MAX+2];
-    static char * p_logFileName = "stdout"; // change with -l <NAME> or defaults
+    static char * p_logFileName = strdup("stdout"); // change with -l <NAME> or defaults
      // to parFile name with last 3 chars changed from "dpf" to "dlg"
     /*
      * see autoglobal.h for initialization of debug, keepresnum and logicals...
@@ -150,7 +150,8 @@ int setflags( int argc, char ** argv, const char * version_num)
             fprintf(stderr, "\n%s: command mode is not supported in this version of autodock\n", programname );
             break;
         case 'l':
-	    p_logFileName = argv[2];
+	    if (p_logFileName) free(p_logFileName);
+	    p_logFileName = strdup(argv[2]);
             argv++;
             argc--;
             argindex++;

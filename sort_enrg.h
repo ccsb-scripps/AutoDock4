@@ -1,6 +1,6 @@
 /*
 
- $Id: sort_enrg.h,v 1.5 2009/05/08 23:02:17 rhuey Exp $
+ $Id: sort_enrg.h,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -32,7 +32,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "quicksort.h"
 
-void sort_enrg( Real econf[MAX_RUNS],
-                int   isort[MAX_RUNS],
-                int   nconf );
+void sort_enrg( const Real econf[MAX_RUNS],
+      /* not const */ int  isort[MAX_RUNS],
+                const int  nconf );
 #endif

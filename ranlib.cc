@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.6 2009/05/08 23:02:16 rhuey Exp $
+ $Id: ranlib.cc,v 1.7 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -38,12 +38,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define MIN(a,b) ((a) <= (b) ? (a) : (b))
 #define MAX(a,b) ((a) >= (b) ? (a) : (b))
 
-void ftnstop(char*);
+void ftnstop(const char *const msg);
 
 extern FILE *logFile;
 
 
-Real genbet(Real aa,Real bb)
+Real genbet(const Real aa,const Real bb)
 /*
 **********************************************************************
      Real genbet(Real aa,Real bb)
@@ -206,7 +206,7 @@ S220:
 #undef expmax
 #undef infnty
 }
-Real genchi(Real df)
+Real genchi(const Real df)
 /*
 **********************************************************************
      Real genchi(Real df)
@@ -233,7 +233,7 @@ S10:
     genchi = 2.0*gengam(1.0,df/2.0);
     return genchi;
 }
-Real genexp(Real av)
+Real genexp(const Real av)
 /*
 **********************************************************************
      Real genexp(Real av)
@@ -260,7 +260,7 @@ static Real genexp;
     genexp = sexpo()*av;
     return genexp;
 }
-Real genf(Real dfn,Real dfd)
+Real genf(const Real dfn,const Real dfd)
 /*
 **********************************************************************
      Real genf(Real dfn,Real dfd)
@@ -302,7 +302,7 @@ S20:
 S30:
     return genf;
 }
-Real gengam(Real a,Real r)
+Real gengam(const Real a,const Real r)
 /*
 **********************************************************************
      Real gengam(Real a,Real r)
@@ -339,7 +339,7 @@ static Real gengam;
     gengam /= a;
     return gengam;
 }
-void genmn(Real *parm,Real *x,Real *work)
+void genmn(const Real *const parm,/* not const */ Real *const x,/* not const */ Real *const work)
 /*
 **********************************************************************
      void genmn(Real *parm,Real *x,Real *work)
@@ -390,7 +390,7 @@ static Real ae;
         *(x+i-1) = ae+*(parm+i);
     }
 }
-void genmul(FourByteLong n,Real *p,FourByteLong ncat,FourByteLong *ix)
+void genmul(const FourByteLong n,const Real *const p,const FourByteLong ncat,/* not const */ FourByteLong *const ix)
 /*
 **********************************************************************
  
@@ -451,7 +451,7 @@ static FourByteLong i,icat,ntot;
 */
     return;
 }
-Real gennch(Real df,Real xnonc)
+Real gennch(const Real df,const Real xnonc)
 /*
 **********************************************************************
      Real gennch(Real df,Real xnonc)
@@ -482,7 +482,7 @@ S10:
     gennch = genchi(df-1.0)+pow(gennor(sqrt(xnonc),1.0),2.0);
     return gennch;
 }
-Real gennf(Real dfn,Real dfd,Real xnonc)
+Real gennf(const Real dfn,const Real dfd,const Real xnonc)
 /*
 **********************************************************************
      Real gennf(Real dfn,Real dfd,Real xnonc)
@@ -534,7 +534,7 @@ S20:
 S30:
     return gennf;
 }
-Real gennor(Real av,Real sd)
+Real gennor(const Real av,const Real sd)
 /*
 **********************************************************************
      Real gennor(Real av,Real sd)
@@ -561,7 +561,7 @@ static Real gennor;
     gennor = sd*snorm()+av;
     return gennor;
 }
-void genprm(FourByteLong *iarray,int larray)
+void genprm(/* not const */ FourByteLong *const iarray,const int larray)
 /*
 **********************************************************************
     void genprm(FourByteLong *iarray,int larray)
@@ -582,7 +582,7 @@ static FourByteLong i,itmp,iwhich,D1,D2;
         *(iarray+i-1) = itmp;
     }
 }
-Real genunf(Real low,Real high)
+Real genunf(const Real low,const Real high)
 /*
 **********************************************************************
      Real genunf(Real low,Real high)
@@ -605,7 +605,7 @@ S10:
     genunf = low+(high-low)*ranf();
     return genunf;
 }
-void gscgn(FourByteLong getset,FourByteLong *g)
+void gscgn(const FourByteLong getset,FourByteLong *const g)
 /*
 **********************************************************************
      void gscgn(FourByteLong getset,FourByteLong *g)
@@ -630,7 +630,7 @@ static FourByteLong curntg = 1;
     }
 #undef numg
 }
-void gsrgs(FourByteLong getset,FourByteLong *qvalue)
+void gsrgs(const FourByteLong getset,FourByteLong *const qvalue)
 /*
 **********************************************************************
      void gsrgs(FourByteLong getset,FourByteLong *qvalue)
@@ -647,7 +647,7 @@ static FourByteLong qinit = 0;
     if(getset == 0) *qvalue = qinit;
     else qinit = *qvalue;
 }
-void gssst(FourByteLong getset,FourByteLong *qset)
+void gssst(const FourByteLong getset,FourByteLong *const qset)
 /*
 **********************************************************************
      void gssst(FourByteLong getset,FourByteLong *qset)
@@ -663,7 +663,7 @@ static FourByteLong qstate = 0;
     if(getset != 0) qstate = 1;
     else  *qset = qstate;
 }
-FourByteLong ignbin(FourByteLong n,Real pp)
+FourByteLong ignbin(const FourByteLong n,const Real pp)
 /*
 **********************************************************************
      FourByteLong ignbin(FourByteLong n,Real pp)
@@ -920,7 +920,7 @@ S170:
     ignbin = ix;
     return ignbin;
 }
-FourByteLong ignnbn(FourByteLong n,Real p)
+FourByteLong ignnbn(const FourByteLong n,const Real p)
 /*
 **********************************************************************
  
@@ -967,7 +967,7 @@ static Real y,a,r;
     ignnbn = ignpoi(y);
     return ignnbn;
 }
-FourByteLong ignpoi(Real mu)
+FourByteLong ignpoi(const Real mu)
 /*
 **********************************************************************
      FourByteLong ignpoi(Real mu)
@@ -1206,7 +1206,7 @@ S180:
     ignpoi = k;
     return ignpoi;
 }
-FourByteLong ignuin(FourByteLong low,FourByteLong high)
+FourByteLong ignuin(const FourByteLong low,const FourByteLong high)
 /*
 **********************************************************************
      FourByteLong ignuin(FourByteLong low,FourByteLong high)
@@ -1261,7 +1261,7 @@ S50:
 #undef err1
 #undef err2
 }
-FourByteLong lennob( char *str )
+FourByteLong lennob( const char *const str )
 /* 
 Returns the length of str ignoring trailing blanks but not 
 other white space.
@@ -1273,7 +1273,7 @@ for (i=0, i_nb= -1L; *(str+i); i++)
     if ( *(str+i) != ' ' ) i_nb = i;
 return (i_nb+1);
     }
-FourByteLong mltmod(FourByteLong a,FourByteLong s,FourByteLong m)
+FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourByteLong m)
 /*
 **********************************************************************
      FourByteLong mltmod(FourByteLong a,FourByteLong s,FourByteLong m)
@@ -1367,7 +1367,7 @@ S140:
     return mltmod;
 #undef h
 }
-void phrtsd(char* phrase,FourByteLong *seed1,FourByteLong *seed2)
+void phrtsd(const char *const phrase,FourByteLong *const seed1,FourByteLong *const seed2)
 /*
 **********************************************************************
      void phrtsd(char* phrase,FourByteLong *seed1,FourByteLong *seed2)
@@ -1406,7 +1406,7 @@ static FourByteLong shift[5] = {
     1L,64L,4096L,262144L,16777216L
 };
 static FourByteLong i,ichr,j,lphr,values[5];
-extern FourByteLong lennob(char *str);
+extern FourByteLong lennob(const char *const str);
 
     *seed1 = 1234567890L;
     *seed2 = 123456789L;
@@ -1453,7 +1453,7 @@ static Real ranf;
     ranf = ignlgi()*4.656613057E-10;
     return ranf;
 }
-void setgmn(Real *meanv,Real *covm,FourByteLong p,Real *parm)
+void setgmn(const Real *const meanv,Real *const covm,const FourByteLong p,Real *const parm)
 /*
 **********************************************************************
      void setgmn(Real *meanv,Real *covm,FourByteLong p,Real *parm)
@@ -1477,7 +1477,7 @@ void setgmn(Real *meanv,Real *covm,FourByteLong p,Real *parm)
 **********************************************************************
 */
 {
-extern void spofa(Real *a,FourByteLong lda,FourByteLong n,FourByteLong *info);
+extern void spofa(/* not const */ Real *const a,const FourByteLong lda,const FourByteLong n,/* not const */ FourByteLong *const info);
 /* not used: static FourByteLong T1; */
 static FourByteLong i,icount,info,j,D2,D3,D4,D5;
     /* not used: T1 = p*(p+3)/2+1; */
@@ -1918,7 +1918,7 @@ S160:
     u = ranf();
     goto S140;
 }
-Real fsign( Real num, Real sign )
+Real fsign( Real num, Real sign ) /* MP TODO const? */
 /* Transfers sign of argument sign to argument num */
 {
 if ( ( sign>0.0f && num<0.0f ) || ( sign<0.0f && num>0.0f ) )
@@ -1929,7 +1929,7 @@ else return num;
 FTNSTOP:
 Prints msg to standard error and then exits
 ************************************************************************/
-void ftnstop(char* msg)
+void ftnstop(const char* const msg)
 /* msg - error message */
 {
   if (msg != NULL) fprintf(stderr,"%s\n",msg);

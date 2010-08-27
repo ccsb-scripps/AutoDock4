@@ -1,6 +1,6 @@
 /*
 
- $Id: success.h,v 1.3 2009/05/08 23:02:18 rhuey Exp $
+ $Id: success.h,v 1.4 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -32,7 +32,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "print_2x.h"
 #include "timesyshms.h"
 
-void  success( char  hostnm[MAX_CHARS],
-               Clock jobStart,
+void  success( const char  hostnm[MAX_CHARS],
+               const Clock jobStart,
                struct tms tms_jobStart );
 #endif

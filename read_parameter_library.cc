@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.18 2009/09/22 20:42:38 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.19 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -42,13 +42,13 @@ extern int debug;
 extern Linear_FE_Model AD4;
 
 
-Boole string_begins_with(char *a, char *b);
-Boole string_ends_with(char *a, char *b);
+Boole string_begins_with(const char *a, const char *b);
+Boole string_ends_with(const char *a, const char *b);
 static char parameter_library[MAX_CHARS];
 
 void read_parameter_library(
-        char *FN_parameter_library,
-        int outlev
+        const char *const FN_parameter_library,
+        const int outlev
         )
 {
     static ParameterEntry thisParameter;
@@ -71,7 +71,7 @@ void read_parameter_library(
     // remember this filename for report_parameter_library()
     snprintf(parameter_library, sizeof parameter_library, "from file: \"%s\"", FN_parameter_library);
     while (fgets(parameter_library_line, sizeof(parameter_library_line), parameter_library_file) != NULL) {
-        param_keyword = parse_param_line( parameter_library_line );
+        param_keyword = parse_param_line("huhu");
         if (debug > 0) {
             pr(logFile, "DEBUG: parameter_library_line = %sDEBUG: param_keyword          = %d\n", parameter_library_line, param_keyword);
         }
@@ -190,7 +190,7 @@ void read_parameter_library(
     } // while there is another line of parameters to read in
 }
 
-void setup_parameter_library( int outlev, const char * model_text, Unbound_Model unbound_model )
+void setup_parameter_library( const int outlev, const char *const model_text, const Unbound_Model unbound_model )
 {
     static ParameterEntry thisParameter;
     char parameter_library_line[LINE_LEN];
@@ -209,7 +209,7 @@ void setup_parameter_library( int outlev, const char * model_text, Unbound_Model
     // so far we have param_string_4_0 and param_string_4_1
     // remember this choice for report_parameter_library()
 
-    char ** param_string;
+    const char *const *param_string;
     //if (string_begins_with(version_num, "4.0")) param_string=param_string_4_0;
     if (unbound_model==Extended) {
         param_string=param_string_4_0;
@@ -226,7 +226,8 @@ void setup_parameter_library( int outlev, const char * model_text, Unbound_Model
 
 
     while ( param_string[counter] != NULL) {
-        param_keyword = parse_param_line( param_string[counter] );
+	const char* const s =  param_string[counter];
+        param_keyword = parse_param_line(s);
 
         (void)strcpy(parameter_library_line, param_string[counter]);
         counter++;
@@ -348,7 +349,7 @@ void setup_parameter_library( int outlev, const char * model_text, Unbound_Model
     } // while there is another line of parameters to read in
 }
 
-char * report_parameter_library(){
+char * report_parameter_library() /* MP TODO const? */  {
     return parameter_library;
 }
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: input_state.cc,v 1.7 2009/05/08 23:02:13 rhuey Exp $
+ $Id: input_state.cc,v 1.8 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -35,14 +35,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #define LINELEN 132
 
-int input_state( State *S,
-		 FILE  *fp,
-		 char  line[LINE_LEN],
-		 int   ntor,
-		 int   *p_istep,
-		 Real *p_energy,
-		 Real *p_eint,
-		 char  *p_lastmove )
+int input_state( State *const S,
+		 FILE  *const fp,
+		 const char  line[LINE_LEN],
+		 const int   ntor,
+		 int   *const p_istep,
+		 Real  *const p_energy,
+		 Real  *const p_eint,
+		 char  *const p_lastmove )
 {
     int i, istep, status;
     Real energy, eint;

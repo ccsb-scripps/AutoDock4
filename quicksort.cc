@@ -1,6 +1,6 @@
 /*
 
- $Id: quicksort.cc,v 1.5 2009/05/08 23:02:16 rhuey Exp $
+ $Id: quicksort.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -45,10 +45,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 #endif /* DEBUG */
 
-void quicksort( Real e[], 
-		int isort[],
-		int left,
-		int right )
+void quicksort( const Real e[], 
+      /* not const */ int  isort[],
+		const int  left,
+		const int  right )
 
 {
     int i, last;

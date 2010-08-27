@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.h,v 1.16 2009/05/08 23:02:12 rhuey Exp $
+ $Id: eintcal.h,v 1.17 2010/08/27 00:05:07 mp Exp $
 
  AutoDock  
 
@@ -31,7 +31,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "structs.h"
 
-Real  eintcal( NonbondParam * const nonbondlist, 
+Real  eintcal( const NonbondParam * const nonbondlist, 
                const EnergyTables  *ad_energy_tables,
                const Real tcoord[MAX_ATOMS][SPACE], 
                const int  Nnb,

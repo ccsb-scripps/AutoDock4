@@ -1,6 +1,6 @@
 /*
 
- $Id: nbe.h,v 1.6 2009/05/08 23:02:14 rhuey Exp $
+ $Id: nbe.h,v 1.7 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -30,7 +30,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "structs.h"
 
-void nbe( GridMapSetInfo *info,
-           EnergyTables *ptr_ad_energy_tables,
-           int   num_atm_maps );
+void nbe( const GridMapSetInfo *const info,
+           const EnergyTables *const ptr_ad_energy_tables,
+           const int   num_atm_maps );
 #endif

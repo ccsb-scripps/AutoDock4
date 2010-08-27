@@ -1,6 +1,6 @@
 /*
 
- $Id: usage.h,v 1.4 2009/05/08 23:02:19 rhuey Exp $
+ $Id: usage.h,v 1.5 2010/08/27 00:05:09 mp Exp $
 
  AutoDock 
 
@@ -26,5 +26,5 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #ifndef USAGE
 #define USAGE
-void  usage(FILE * file, char * programname );
+void  usage(FILE *const file, const char *const  programname );
 #endif

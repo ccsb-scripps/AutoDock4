@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.12 2009/05/08 23:02:14 rhuey Exp $
+ $Id: mkNewState.cc,v 1.13 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -33,21 +33,21 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "mkNewState.h"
 
 
-void mkNewState( State *now,
-                 State *last,        /* ...must be a normalized quaternion! */
-                 State *change,
+void mkNewState( /* not const */ State *const now,
+                 const State *const last,        /* ...must be a normalized quaternion! */
+                 /* not const */ State *const change,
 
-                Real vt[MAX_TORS][NTRN],
-                int   tlist[MAX_TORS][MAX_ATOMS],
-                int   ntor,
-                Real crd[MAX_ATOMS][NTRN],
-                Real crdpdb[MAX_ATOMS][NTRN],
-                int   natom,
-                Real trnStep,
-                Real qtwStep,
-                Real torStep,
-                Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-                int N_con[MAX_TORS])
+                const Real vt[MAX_TORS][NTRN],
+                const int   tlist[MAX_TORS][MAX_ATOMS],
+                const int   ntor,
+                /* not const */ Real crd[MAX_ATOMS][NTRN],
+                const Real crdpdb[MAX_ATOMS][NTRN],
+                const int   natom,
+                const Real trnStep,
+                const Real qtwStep,
+                const Real torStep,
+                const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                const int N_con[MAX_TORS])
     // Create a new state, based on the current state
 {
     register int i;

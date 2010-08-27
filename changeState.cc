@@ -1,6 +1,6 @@
 /*
 
- $Id: changeState.cc,v 1.6 2009/05/08 23:02:11 rhuey Exp $
+ $Id: changeState.cc,v 1.7 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -35,12 +35,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "changeState.h"
 
 
-State  changeState( State last,      /* ...must be a normalized quaternion! */
-                    Real trnStep,
-                    Real torStep,
-                    int   ntor,
-                    Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-                    int   N_con[MAX_TORS])
+State  changeState( const State last,      /* ...must be a normalized quaternion! */
+                    const Real trnStep,
+                    const Real torStep,
+                    const int   ntor,
+                    const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                    const int   N_con[MAX_TORS])
 
 {
     register int i;

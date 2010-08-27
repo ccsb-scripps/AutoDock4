@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.12 2010/06/19 02:51:24 mp Exp $
+ $Id: clmode.cc,v 1.13 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -41,18 +41,18 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 extern char *programname;
 
-void  clmode( int   num_atm_maps,
-              Real clus_rms_tol,
-              char  *hostnm,
-              Clock jobStart,
+void  clmode( const int   num_atm_maps,
+              const Real clus_rms_tol,
+              const char  *const hostnm,
+              const Clock jobStart,
               struct tms tms_jobStart,
-              Boole write_all_clusmem,
-              char  *clusFN,
-              Real crdpdb[MAX_ATOMS][SPACE],
-              Real sml_center[SPACE],
-              Boole B_symmetry_flag,
-	      Boole B_unique_pair_flag,
-              char  *rms_ref_crds )
+              const Boole write_all_clusmem,
+              const char  *const clusFN,
+              const Real crdpdb[MAX_ATOMS][SPACE],
+              const Real sml_center[SPACE],
+              const Boole B_symmetry_flag,
+	      const Boole B_unique_pair_flag,
+              const char  *const rms_ref_crds )
 
 {
     FILE *clusFile;

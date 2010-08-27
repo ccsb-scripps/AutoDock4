@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_trj_line.h,v 1.3 2009/05/08 23:02:15 rhuey Exp $
+ $Id: parse_trj_line.h,v 1.4 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -29,5 +29,5 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "strindex.h"
 
-int  parse_trj_line( char  line[LINE_LEN] );
+int  parse_trj_line( const char  line[LINE_LEN] );
 #endif

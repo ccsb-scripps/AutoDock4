@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.h,v 1.21 2010/04/09 18:49:09 mp Exp $
+ $Id: analysis.h,v 1.22 2010/08/27 00:05:07 mp Exp $
 
  AutoDock  
 
@@ -41,47 +41,47 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef ANALYSIS
 #define ANALYSIS
 
-void  analysis( int   Nnb, 
-                char  atomstuff[MAX_ATOMS][MAX_CHARS], 
-                Real charge[MAX_ATOMS], 
-                Real abs_charge[MAX_ATOMS], 
-                Real qsp_abs_charge[MAX_ATOMS], 
-                Boole B_calcIntElec,
-                Real clus_rms_tol, 
-                Real crdpdb[MAX_ATOMS][SPACE], 
+void  analysis( const int   Nnb, 
+                const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
+                const Real charge[MAX_ATOMS], 
+                const Real abs_charge[MAX_ATOMS], 
+                const Real qsp_abs_charge[MAX_ATOMS], 
+                const Boole B_calcIntElec,
+                const Real clus_rms_tol, 
+                const Real crdpdb[MAX_ATOMS][SPACE], 
                 
                 const EnergyTables *ptr_ad_energy_tables,
                 #include "map_declare.h"
-                Real econf[MAX_RUNS], 
-                int   irunmax, 
-                int   natom, 
-                NonbondParam *nonbondlist, 
-                int   nconf, 
-                int   ntor, 
-                State hist[MAX_RUNS], 
-                char  *smFileName, 
-                Real sml_center[SPACE], 
-                Boole B_symmetry_flag, 
-                Boole B_unique_pair_flag, 
-                int   tlist[MAX_TORS][MAX_ATOMS], 
-                int   type[MAX_ATOMS], 
-                Real vt[MAX_TORS][SPACE],
-                char  *rms_ref_crds,
-                Real torsFreeEnergy,
-                Boole B_write_all_clusmem,
-                int ligand_is_inhibitor,
-                int   outlev,
-                int   ignore_inter[MAX_ATOMS],
+                const Real econf[MAX_RUNS], 
+                const int   irunmax, 
+                const int   natom, 
+                const NonbondParam *nonbondlist, 
+                const int   nconf, 
+                const int   ntor, 
+                State hist[MAX_RUNS],  // modified in analysis.cc (hack)
+                const char  *smFileName, 
+                const Real sml_center[SPACE], 
+                const Boole B_symmetry_flag, 
+                const Boole B_unique_pair_flag, 
+                const int   tlist[MAX_TORS][MAX_ATOMS], 
+                const int   type[MAX_ATOMS], 
+                const Real vt[MAX_TORS][SPACE],
+                const char  *rms_ref_crds,
+                const Real torsFreeEnergy,
+                const Boole B_write_all_clusmem,
+                const int ligand_is_inhibitor,
+                const int   outlev,
+                const int   ignore_inter[MAX_ATOMS],
                 const Boole   B_include_1_4_interactions,
                 const Real scale_1_4,
 
                 const Real unbound_internal_FE,
                 
-                GridMapSetInfo *info,
-                Boole B_use_non_bond_cutoff,
-                Boole B_have_flexible_residues,
-                Boole B_rms_atoms_ligand_only,
-                Unbound_Model ad4_unbound_model
+                const GridMapSetInfo *info,
+                const Boole B_use_non_bond_cutoff,
+                const Boole B_have_flexible_residues,
+                const Boole B_rms_atoms_ligand_only,
+                const Unbound_Model ad4_unbound_model
 
                );
 #endif

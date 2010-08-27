@@ -1,6 +1,6 @@
 /*
 
- $Id: timesys.cc,v 1.7 2009/05/08 23:02:18 rhuey Exp $
+ $Id: timesys.cc,v 1.8 2010/08/27 00:05:09 mp Exp $
 
  AutoDock 
 
@@ -43,9 +43,9 @@ extern	Real	idct;
 
 /*----------------------------------------------------------------------------*/
 
-void timesys( Clock       duration,
-              struct tms  *start,
-              struct tms  *end)
+void timesys( const Clock             duration,
+              const struct tms *const start,
+              const struct tms *const end)
 
 /*----------------------------------------------------------------------------*/
 

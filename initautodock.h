@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.h,v 1.6 2009/05/08 23:02:13 rhuey Exp $
+ $Id: initautodock.h,v 1.7 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -33,14 +33,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "print_2x.h"
 
 void initautodock(
-	    char  atomstuff[MAX_ATOMS][MAX_CHARS],
-	    Real crd[MAX_ATOMS][SPACE],
-	    Real crdpdb[MAX_ATOMS][SPACE],
-	    int   natom,
-	    int   ntor,
-	    State *s0,
-	    int   tlist[MAX_TORS][MAX_ATOMS],
-	    Real vt[MAX_TORS][SPACE],
-	    int   outlev,
-            GridMapSetInfo *info );
+	    const char  atomstuff[MAX_ATOMS][MAX_CHARS],
+	    /* not const */ Real crd[MAX_ATOMS][SPACE],
+	    const Real crdpdb[MAX_ATOMS][SPACE],
+	    const int   natom,
+	    const int   ntor,
+	    /* not const */ State *const s0,
+	    const int   tlist[MAX_TORS][MAX_ATOMS],
+	    const Real vt[MAX_TORS][SPACE],
+	    const int   outlev,
+            const GridMapSetInfo *const info );
 #endif

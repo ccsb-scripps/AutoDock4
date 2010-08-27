@@ -1,6 +1,6 @@
 /*
 
- $Id: gencau.cc,v 1.8 2009/05/08 23:02:12 rhuey Exp $
+ $Id: gencau.cc,v 1.9 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -33,7 +33,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "ranlib.h"
 
 
-Real rcauchy(Real alpha, Real beta)
+Real rcauchy(const Real alpha, const Real beta)
 /*
 **********************************************************************
      Real rcauchy(Real alpha, Real beta)

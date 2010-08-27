@@ -1,6 +1,6 @@
 /*
 
- $Id: warn_bad_file.h,v 1.4 2009/05/08 23:02:19 rhuey Exp $
+ $Id: warn_bad_file.h,v 1.5 2010/08/27 00:05:09 mp Exp $
 
  AutoDock 
 
@@ -29,6 +29,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "print_2x.h"
 
-void  warn_bad_file( char  *filename,
-                     char  *message );
+void  warn_bad_file( const char  *const filename,
+                     const char  *const message );
 #endif

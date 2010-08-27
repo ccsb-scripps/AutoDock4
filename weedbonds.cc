@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.15 2009/05/08 23:02:19 rhuey Exp $
+ $Id: weedbonds.cc,v 1.16 2010/08/27 00:05:09 mp Exp $
 
  AutoDock 
 
@@ -40,16 +40,16 @@ extern int true_ligand_atoms;
 extern int Nnb_array[3];
 
 
-void weedbonds( int natom,
-                char pdbaname[MAX_ATOMS][5],
-                int rigid_piece[MAX_ATOMS],
-                int ntor,
-                int tlist[MAX_TORS][MAX_ATOMS],
-                int nbmatrix[MAX_ATOMS][MAX_ATOMS],
-                int *Addr_Nnb,
-                NonbondParam *nonbondlist,
-                int outlev,
-                int type[MAX_ATOMS] )
+void weedbonds( const int natom,
+                const char pdbaname[MAX_ATOMS][5],
+                const int rigid_piece[MAX_ATOMS],
+                const int ntor,
+                const int tlist[MAX_TORS][MAX_ATOMS],
+      /* not const */ int nbmatrix[MAX_ATOMS][MAX_ATOMS],
+      /* not const */ int *const Addr_Nnb,
+      /* not const */ NonbondParam *nonbondlist,
+                const int outlev,
+                const int type[MAX_ATOMS] )
 
 {
     int a11=0;
@@ -233,16 +233,16 @@ void weedbonds( int natom,
 
 
 void print_nonbonds(
-                int natom,
-                char pdbaname[MAX_ATOMS][5],
-                int rigid_piece[MAX_ATOMS],
-                int ntor,
-                int tlist[MAX_TORS][MAX_ATOMS],
-                int nbmatrix[MAX_ATOMS][MAX_ATOMS],
-                int Nnb,
-                NonbondParam *nonbondlist,
-                int outlev,
-                int type[MAX_ATOMS])
+                const int natom,
+                const char pdbaname[MAX_ATOMS][5],
+                const int rigid_piece[MAX_ATOMS],
+                const int ntor,
+                const int tlist[MAX_TORS][MAX_ATOMS],
+      /* not const */ int nbmatrix[MAX_ATOMS][MAX_ATOMS],
+                const int Nnb,
+                const NonbondParam *const nonbondlist,
+                const int outlev,
+                const int type[MAX_ATOMS])
 
 {
     register int i = 0;

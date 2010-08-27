@@ -1,6 +1,6 @@
 /*
 
- $Id: parsetypes.h,v 1.3 2009/05/08 23:02:15 rhuey Exp $
+ $Id: parsetypes.h,v 1.4 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -27,7 +27,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef _PARSETYPES
 #define _PARSETYPES
 
-int parsetypes(char * line, char *words[], int maxwords);
+int parsetypes(  char line[], char * words[], const int maxwords);
 
 #endif
 

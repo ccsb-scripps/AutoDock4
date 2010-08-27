@@ -1,6 +1,6 @@
 /*
 
- $Id: main.h,v 1.11 2009/05/08 23:02:14 rhuey Exp $
+ $Id: main.h,v 1.12 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -63,7 +63,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define UNBOUND 0
 #define DOCKED 1
 
-int  main( int  argc, char **argv);
+int  main( int  argc, const char **argv);
 //int main (int argc, char * const argv[], char * const envp[]);
 
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.12 2010/06/12 05:54:04 mp Exp $
+ $Id: readmap.cc,v 1.13 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -44,18 +44,16 @@ extern int ElecMap;
 extern FILE *logFile;
 extern int debug;
 
-char mapf2c(Real);
-
 Statistics readmap( char           line[LINE_LEN],
-                    int            outlev,
-                    Clock          jobStart,
+                    const int            outlev,
+                    const Clock          jobStart,
                     struct tms     tmsJobStart,
-                    Boole          B_charMap,
-                    Boole          *P_B_HaveMap, 
-                    int            num_maps, 
-                    GridMapSetInfo *info,
-                    MapType           *map,
-                    char           map_type
+                    const Boole          B_charMap,
+                    /* not const */ Boole          *const P_B_HaveMap, 
+                    const int            num_maps, 
+                    const GridMapSetInfo *const info,
+		    #include "map_declare.h"
+                    const char           map_type
                   )
 
 {
@@ -309,7 +307,7 @@ Statistics readmap( char           line[LINE_LEN],
     return map_stats;
 }
 
-Real mapc2f(char numin)
+Real mapc2f(const char numin) /* const? MP TODO */
 {
     Real numout;
     if (numin == 0) {
@@ -323,23 +321,5 @@ Real mapc2f(char numin)
 }
 
 
-/*
-    char mapf2c(Real numin)
-    {
-        char numout;
-        if (numin == 0.) {
-            numout = 0;
-        } else if ((-12.8 < numin) && (numin < 0.)) {
-            numout = numin * 10.;
-        } else if ((0. < numin) && (numin < 1280.)) {
-            numout = numin / 10.;
-        } else if (numin >= 1280.) {
-            numout = 127;
-        } else {
-            numout = -128;
-        }
-        return numout;
-    }
-*/
 
 /* EOF */

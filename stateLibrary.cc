@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.18 2010/05/14 21:25:51 mp Exp $
+ $Id: stateLibrary.cc,v 1.19 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -34,9 +34,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "qmultiply.h"
 
 extern FILE *logFile;
-static void writeStateAQ( FILE *, State, char);
+static void writeStateAQ( FILE *const fp, /* not const */ State S, const char);
 
-void initialiseState( State *S )
+void initialiseState( /* not const */ State *const S )
 {
     register int i;
     S->T.x = 0.0;
@@ -52,7 +52,7 @@ void initialiseState( State *S )
     S->Center.z = 0.0;
 }
 
-void initialiseQuat( Quat *Q )
+void initialiseQuat( /* not const */ Quat *const Q )
 {
     Q->nx = 1.0;
     Q->ny = 0.0;
@@ -65,8 +65,8 @@ void initialiseQuat( Quat *Q )
     Q->qmag = 1.0;
 }
 
-void copyState( State *D,  /* Destination -- copy to here */
-                    State  S ) /* Source      -- copy this.   */
+void copyState( /* not const */ State *const D,  /* Destination -- copy to here */
+                const State S ) /* Source      -- copy this.   */
 {
     register int i;
         
@@ -93,9 +93,9 @@ static Real RadCanonicalDeg( Real x) {
 	return WrpDeg( ModDeg( RadiansToDegrees( WrpRad( ModRad( x )))));
 }
 
-void printState( FILE *fp, 
-                 State S, 
-                 int detail )
+void printState( FILE *const fp, 
+                 /* not const */ State S, 
+                 const int detail )
 {
     register int i;
 
@@ -164,9 +164,8 @@ void printState( FILE *fp,
     }
 }
 
-static void writeStateAQ( FILE *fp, State S, char convention )
+static void writeStateAQ( FILE *const fp, /* not const */ State S, const char convention )
 {
-    register int i;
 
 
     // Write translation.
@@ -191,18 +190,18 @@ static void writeStateAQ( FILE *fp, State S, char convention )
     }
     // Write torsion angles.
     if (S.ntor > 0) {
-        for (i=0; i<S.ntor; i++) {
+        for (int i=0; i<S.ntor; i++) {
             pr( fp, " %7.2f", RadCanonicalDeg(S.tor[i]));
         }
     }
 }
-void writeState( FILE *fp, State S )
+void writeState( FILE *const fp, /* not const */ State S )
 {
 	// simple wrapper to write state with axis-angle convention
 	writeStateAQ( fp, S, 'A');
 	}
 
-int checkState( const State *D )
+int checkState( const State *const D )
 {
     register int i;
     int retval = 1;
@@ -272,7 +271,7 @@ int checkState( const State *D )
     return(retval);
 }
 
-Molecule copyStateToMolecule(State *S, Molecule *mol) /* S is the source */
+Molecule copyStateToMolecule(const State *const S, /* not const */ Molecule *const mol) /* S is the source */
 {
     register int i;
     mol->S.T = S->T;

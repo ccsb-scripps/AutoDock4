@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.127 2010/06/19 02:51:24 mp Exp $
+ $Id: main.cc,v 1.128 2010/08/27 00:05:07 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -109,7 +109,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.127 2010/06/19 02:51:24 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.128 2010/08/27 00:05:07 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -130,7 +130,7 @@ int S_factor=30; // Swarm size
 double xmin[D_max], xmax[D_max]; // Intervals defining the search space
 double Vmin[D_max], Vmax[D_max]; // Intervals defining the search space
 
-int main (int argc, char ** argv)
+int main (int argc, const char ** argv)
 
 
 {
@@ -737,7 +737,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.127 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.128 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1034,6 +1034,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         //  The array "ligand_atom_type_ptrs" is returned, having been filled with pointers
         //  to the beginning of each "atom type word" (not atom type characters);
         //  In AutoDock 4, an atom type can be either 1 or 2 characters long.
+	//  caution: "parsetypes" modifies its first (string) argument
         //
         num_atom_types = parsetypes(line, ligand_atom_type_ptrs, MAX_ATOM_TYPES);
         if (num_atom_types<0){
@@ -4508,6 +4509,8 @@ success( hostnm, jobStart, tms_jobStart );
 
 // delete arrays
 delete []nonbondlist;
+
+if (NULL != programname) free(programname); programname=(char *) NULL;
 
 
 //________________________________________________________________________________

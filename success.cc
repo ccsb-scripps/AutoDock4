@@ -1,6 +1,6 @@
 /*
 
- $Id: success.cc,v 1.5 2009/05/08 23:02:18 rhuey Exp $
+ $Id: success.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -39,9 +39,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern char *programname;
 extern FILE *logFile;
 
-void success( char *hostnm,
-		Clock jobStart,
-		struct tms tms_jobStart )
+void success( const char *const hostnm,
+	      const Clock jobStart,
+	      struct tms tms_jobStart )
 
 {
     char message[LINE_LEN];

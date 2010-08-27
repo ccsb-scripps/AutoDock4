@@ -1,6 +1,6 @@
 /*
 
- $Id: torNorVec.cc,v 1.7 2009/05/08 23:02:18 rhuey Exp $
+ $Id: torNorVec.cc,v 1.8 2010/08/27 00:05:09 mp Exp $
 
  AutoDock 
 
@@ -39,10 +39,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 
 
-void torNorVec( Real crdpdb[MAX_ATOMS][SPACE],
-		int ntor,
-		int tlist[MAX_TORS][MAX_ATOMS],
-		Real vt[MAX_TORS][SPACE] )
+void torNorVec( const Real crdpdb[MAX_ATOMS][SPACE],
+		const int ntor,
+		const int tlist[MAX_TORS][MAX_ATOMS],
+		/* not const */ Real vt[MAX_TORS][SPACE] )
 {
 
     register int xyz = 0;
@@ -95,12 +95,12 @@ void torNorVec( Real crdpdb[MAX_ATOMS][SPACE],
     return;
 }
 
-void update_torsion_vectors( Real crdpdb[MAX_ATOMS][SPACE],
-                             int ntor,
-                             int  tlist[MAX_TORS][MAX_ATOMS],
-                             Real vt[MAX_TORS][SPACE],
-                             Molecule *ligand,
-                             int debug )
+void update_torsion_vectors( const Real crdpdb[MAX_ATOMS][SPACE],
+                             const int ntor,
+                             const int  tlist[MAX_TORS][MAX_ATOMS],
+                             /* not const */ Real vt[MAX_TORS][SPACE],
+                             /* not const */ Molecule *ligand,
+                             const int debug )
 { // Update the unit vectors for the torsion rotations
     register int i=0, j=0;
     if (debug > 0) {

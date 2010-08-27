@@ -1,6 +1,6 @@
 /*
 
- $Id: print_avsfld.h,v 1.4 2009/05/08 23:02:16 rhuey Exp $
+ $Id: print_avsfld.h,v 1.5 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -29,12 +29,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "constants.h"
 
-void  print_avsfld(FILE  *logFile,
-                   int   veclen,
-                   int   natom,
-                   int   nframe,
-                   int   offset[VECLENMAX],
-                   int   stride,
-                   char  *label,
-                   char  *filename );
+void  print_avsfld(FILE  *const logFile,
+                   const int   veclen,
+                   const int   natom,
+                   const int   nframe,
+                   const int   offset[VECLENMAX],
+                   const int   stride,
+                   const char  *const label,
+                   const char  *const filename );
 #endif

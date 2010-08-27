@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.h,v 1.6 2009/05/08 23:02:14 rhuey Exp $
+ $Id: mkNewState.h,v 1.7 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -31,9 +31,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "qmultiply.h"
 #include "cnv_state_to_coords.h"
 
-void  mkNewState( State *now,
-		  State *last,
-		  State *change,
+void  mkNewState( State *const now,
+		  const State *const last,
+		  State *const change,
 		  /*
 		  ** Real qtn[NQTN],
                   ** Real tor[MAX_TORS],
@@ -42,15 +42,15 @@ void  mkNewState( State *now,
                   ** Real qtnChange[NQTN],
                   ** Real torChange[MAX_TORS],
 		  */
-                  Real vt[MAX_TORS][NTRN],
-                  int   tlist[MAX_TORS][MAX_ATOMS],
-                  int   ntor,
-                  Real crd[MAX_ATOMS][NTRN],
-                  Real crdpdb[MAX_ATOMS][NTRN],
-                  int   natom,
-                  Real trnStep,
-                  Real qtwStep,
-                  Real torStep,
-	          Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-		  int   N_con[MAX_TORS]);
+                  const Real vt[MAX_TORS][NTRN],
+                  const int   tlist[MAX_TORS][MAX_ATOMS],
+                  const int   ntor,
+                  /* not const */ Real crd[MAX_ATOMS][NTRN],
+                  const Real crdpdb[MAX_ATOMS][NTRN],
+                  const int   natom,
+                  const Real trnStep,
+                  const Real qtwStep,
+                  const Real torStep,
+	          const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		  const int   N_con[MAX_TORS]);
 #endif

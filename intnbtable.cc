@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.11 2009/05/08 23:02:13 rhuey Exp $
+ $Id: intnbtable.cc,v 1.12 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -53,18 +53,18 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 extern int debug;
 
-void intnbtable( Boole *P_B_havenbp,
-                 int a1,
-                 int a2, 
-                 GridMapSetInfo *info,
-                 Real cA, 
-                 Real cB, 
-                 int xA, 
-                 int xB,
-                 double coeff_desolv,
-                 double sigma,
-                 EnergyTables *ad_tables,
-                 Boole B_is_unbound_calculation )
+void intnbtable( Boole *const P_B_havenbp,
+                 const int a1,
+                 const int a2, 
+                 const GridMapSetInfo *const info,
+                 const Real cA, 
+                 const Real cB, 
+                 const int xA, 
+                 const int xB,
+                 const double coeff_desolv,
+                 const double sigma,
+                 /* not const */ EnergyTables *const ad_tables,
+                 const Boole B_is_unbound_calculation )
 {
     /* Local variables: */
 
@@ -160,8 +160,8 @@ void intnbtable( Boole *P_B_havenbp,
 /* end of intnbtable */
 
 
-void setup_distdepdiel( int outlev, 
-                        EnergyTables *ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables
+void setup_distdepdiel( const int outlev, 
+                        EnergyTables *const ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables
                       )
 {
     register int i=0;

@@ -1,6 +1,6 @@
 /*
 
- $Id: prTorConList.cc,v 1.6 2009/05/08 23:02:15 rhuey Exp $
+ $Id: prTorConList.cc,v 1.7 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -39,11 +39,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern FILE *logFile;
 
-void prTorConList( int ntor,
-		    Boole B_isTorConstrained[MAX_TORS],
-		    unsigned short US_torProfile[MAX_TORS][NTORDIVS],
-		    Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-		    int N_con[MAX_TORS])
+void prTorConList( const int    ntor,
+		    const Boole B_isTorConstrained[MAX_TORS],
+		    const unsigned short US_torProfile[MAX_TORS][NTORDIVS],
+		    /* not const */ Real  F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		    /* not const */ int   N_con[MAX_TORS])
 
 {
     char graph[NROWS][LINE_LEN];

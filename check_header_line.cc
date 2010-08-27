@@ -1,6 +1,6 @@
 /*
 
- $Id: check_header_line.cc,v 1.5 2009/05/08 23:02:11 rhuey Exp $
+ $Id: check_header_line.cc,v 1.6 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -37,7 +37,7 @@ extern char *programname;
 extern FILE *logFile;
 
 
-void check_header_line( char s1[], char s2[] )
+void check_header_line( const char s1[], const char s2[] )
 
 {
     if ( !equal(s1, s2, strlen(s1) ) ) {

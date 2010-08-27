@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.16 2010/05/19 19:47:13 mp Exp $
+ $Id: ls.cc,v 1.17 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -42,7 +42,7 @@ extern class Eval evaluate;
 extern FILE *logFile;
 
 //  This function adds sign * (deviates + bias) to all the reals in the representation
-Phenotype genPh(const Phenotype &original, Real sign, Real *deviates, Real *bias)
+Phenotype genPh(const Phenotype &original, const Real sign, const Real *const deviates, Real *const bias)
 {
    RepType genetype;
    register unsigned int i, index = 0;
@@ -85,7 +85,7 @@ Phenotype genPh(const Phenotype &original, Real sign, Real *deviates, Real *bias
 //  This has only one value of rho, for all genes.
 // SW mapped individual
 // SW returns TRUE if it modifies the individual
-Boole Solis_Wets::SW(Phenotype &vector)
+Boole Solis_Wets::SW(/* not const */ Phenotype &vector)
 {
    register unsigned int i, j, num_successes = 0, num_failures = 0;
    register Real temp_rho = rho;
@@ -106,10 +106,10 @@ Boole Solis_Wets::SW(Phenotype &vector)
 #ifdef DEBUG
 //convenience function for debugging
 #define traceState(msg,vector) printDState(logFile,msg,vector,i,prevxyz,startxyz,prevQuat,startQuat,num_successes,num_failures,temp_rho,bias,deviates)
-void printDState(FILE *logFile,char * msg,Phenotype &newPh, int i, Real prevxyz[3],
-                 Real startxyz[3], Quat prevQuat, Quat startQuat, 
-                 unsigned int num_successes, unsigned int num_failures,
-                 Real temp_rho, Real * bias, Real * deviates);
+void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, const int i, const Real prevxyz[3],
+                 const Real startxyz[3], const Quat prevQuat, const Quat startQuat, 
+                 const unsigned int num_successes, const unsigned int num_failures,
+                 const Real temp_rho, Real *const  bias, Real *const  deviates);
    Real xyz[3];
    Real prevxyz[3];
    Real startxyz[3];
@@ -245,7 +245,7 @@ void printDState(FILE *logFile,char * msg,Phenotype &newPh, int i, Real prevxyz[
 //  This has a different value of rho for each gene.
 // PSW mapped individual
 // PSW returns TRUE if it modifies the individual
-Boole Pseudo_Solis_Wets::SW(Phenotype &vector)
+Boole Pseudo_Solis_Wets::SW(/* not const */ Phenotype &vector)
 {
    register unsigned int i, j, num_successes = 0, num_failures = 0,  all_rho_stepsizes_too_small = 1;
     
@@ -413,7 +413,7 @@ void Pattern_Search::shuffle_indexes() {
 	}
 }
 
-int Pattern_Search::terminate(void)
+int Pattern_Search::terminate(void) const
 {
    return (0);
 }
@@ -472,9 +472,9 @@ int Pattern_Search::search(Individual &solution)
   return (0);
 }
 
-Phenotype Pattern_Search::exploratory_move(const Phenotype& base) {
+Phenotype Pattern_Search::exploratory_move(const Phenotype& base) /* not const */ {
   Phenotype newBase(base);
-	shuffle_indexes();
+	shuffle_indexes(); 
 	unsigned int current_index;
 	int direction;
 
@@ -508,14 +508,14 @@ Phenotype Pattern_Search::exploratory_move(const Phenotype& base) {
   return newBase;
 }
 
-Phenotype Pattern_Search::pattern_explore(const Phenotype& base) {
+Phenotype Pattern_Search::pattern_explore(const Phenotype& base) /* not const */ {
   Phenotype newPoint = pattern_move(base);
   reset_pattern();
   Phenotype newBase = exploratory_move(newPoint);
   return newBase;
 }
 
-Phenotype Pattern_Search::pattern_move(const Phenotype& base) {
+Phenotype Pattern_Search::pattern_move(const Phenotype& base) const {
   Phenotype newPoint(base);
   for (unsigned int i=0; i < size; i++) {
     newPoint.write(newPoint.gread(i).real + pattern[i] , i);
@@ -523,10 +523,10 @@ Phenotype Pattern_Search::pattern_move(const Phenotype& base) {
   return newPoint;
 }
 //void printDState(logFile,msg,vector,i,prevxyz,startxyz, prevQuat,startQuat,num_successes,num_failures,temp_rho,bias,deviates); 
-void printDState(FILE *logFile,char * msg,Phenotype &newPh, int i, Real prevxyz[3],
-                 Real startxyz[3], Quat prevQuat, Quat startQuat, 
-                 unsigned int num_successes, unsigned int num_failures,
-                 Real temp_rho, Real * bias, Real * deviates) 
+void printDState(FILE *logFile, const char *const msg,Phenotype &newPh, const int i, const Real prevxyz[3],
+                 const Real startxyz[3], const Quat prevQuat, const Quat startQuat, 
+                 const unsigned int num_successes, const unsigned int num_failures,
+                 const Real temp_rho, const Real *const  bias, const Real *const  deviates)
 {
 #ifdef DEBUG
    Real dt; // translation step scalar

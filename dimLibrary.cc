@@ -10,7 +10,7 @@
 extern FILE *logFile;
 
 
-void copyDimension( State *S, Position R)
+void copyDimension( /* not const */ State *const S, const Position R)
 {
         register int i, j;
         S->T.x = R.x[0];
@@ -27,7 +27,7 @@ void copyDimension( State *S, Position R)
 }
 
 
-void copyState2Dimension(Position *R , State S)
+void copyState2Dimension(Position *const R , const State S)
 {
         register int i, j;
 	R->x[0] = S.T.x;
@@ -44,7 +44,7 @@ void copyState2Dimension(Position *R , State S)
 }
 
 
-void initialiseDimension(GridMapSetInfo * info,  double *xmin, double *xmax, int D)
+void initialiseDimension(const GridMapSetInfo *const info,  /* not const */ double *const xmin, /* not const */ double *const xmax, const int D)
 {
 	int d;
 
@@ -88,7 +88,7 @@ void initialiseDimension(GridMapSetInfo * info,  double *xmin, double *xmax, int
 }
 
 
-void initialiseParticle(int s, int D, Position *Xi, Velocity *Vi, double *xmin, double *xmax, double *Vmin, double *Vmax)
+void initialiseParticle(const int s, const int D, /* not const */ Position *const Xi, /* not const */ Velocity *const Vi, const double *const xmin, const double *const xmax, double *const Vmin, double *const Vmax)
 {
         int d;
 	double temp;
@@ -125,7 +125,7 @@ void initialiseParticle(int s, int D, Position *Xi, Velocity *Vi, double *xmin, 
     //printf("end initialiseParticle: s=%d, D=%d, Xi=%f  \n",s,D,*Xi);
 }
 			
-void swarmActivity(int S, int D, Position *Xi, int nb_eval, int outlev)
+void swarmActivity(const int S, const int D, const Position *const Xi, const int nb_eval, const int outlev)
 {
 	int s, d;
 	double swarm_activity;

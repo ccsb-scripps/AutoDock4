@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.50 2010/06/12 04:22:35 mp Exp $
+ $Id: call_glss.cc,v 1.51 2010/08/27 00:05:07 mp Exp $
 
  AutoDock  
 
@@ -55,7 +55,7 @@ int global_ntor;
 
 Eval evaluate;
 
-Representation **generate_R(int num_torsions, GridMapSetInfo *info)
+Representation **generate_R(const int num_torsions, GridMapSetInfo *const info)
 {
    Representation **retval;
    Quat q;
@@ -96,7 +96,7 @@ Representation **generate_R(int num_torsions, GridMapSetInfo *info)
    return(retval);
 }
 
-Representation **generate_R_quaternion(int num_torsions, GridMapSetInfo *info)
+Representation **generate_R_quaternion(const int num_torsions, const GridMapSetInfo *const info)
 {
    Representation **retval;
    Quat q;
@@ -145,7 +145,7 @@ Representation **generate_R_quaternion(int num_torsions, GridMapSetInfo *info)
    return(retval);
 }
 
-Genotype generate_Gtype(int num_torsions, GridMapSetInfo *info)
+Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info)
 {
 #ifdef DEBUG
     // (void)fprintf(logFile,"\ncall_glss.cc/Genotype generate_Gtype() about to call Genotype temp(5, generate_R())...\n");
@@ -161,7 +161,7 @@ Genotype generate_Gtype(int num_torsions, GridMapSetInfo *info)
    return(temp);
 }
 
-Phenotype generate_Ptype(int num_torsions, GridMapSetInfo *info) 
+Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const info) 
 {
 #ifdef DEBUG
     // (void)fprintf(logFile,"\ncall_glss.cc/Genotype generate_Ptype() about to call Phenotype temp(5, generate_R())...\n");
@@ -177,7 +177,7 @@ Phenotype generate_Ptype(int num_torsions, GridMapSetInfo *info)
    return(temp);
 }
 
-Individual random_ind(int num_torsions,  GridMapSetInfo *info) 
+Individual random_ind(const int num_torsions,  const GridMapSetInfo *const info) 
 {
 
 #ifdef DEBUG
@@ -204,7 +204,7 @@ Individual random_ind(int num_torsions,  GridMapSetInfo *info)
 }
 
 #ifdef FALSE
-Individual set_ind(int num_torsions,  GridMapSetInfo *info, State state)
+Individual set_ind(const int num_torsions,  const GridMapSetInfo *const info, const State state)
 {
    Genotype temp_Gtype;
    Phenotype temp_Ptype;
@@ -249,15 +249,16 @@ Individual set_ind(int num_torsions,  GridMapSetInfo *info, State state)
 }
 #endif
 
-State call_glss(Global_Search *global_method, Local_Search *local_method, 
-                State sInit, 
-                unsigned int num_evals, unsigned int pop_size, 
-                int outlev, 
-		Output_pop_stats output_pop_stats,
-                Molecule *mol, 
-                Boole B_RandomTran0, Boole B_RandomQuat0, Boole B_RandomDihe0,
-                GridMapSetInfo *info, char *FN_pop_file,
-                int end_of_branch[MAX_TORS])
+State call_glss(/* not const */ Global_Search *global_method, 
+                /* not const */ Local_Search *local_method, 
+                const State sInit, 
+                const unsigned int num_evals, const unsigned int pop_size, 
+                const int outlev, 
+		const Output_pop_stats output_pop_stats,
+                Molecule * const mol, 
+                const Boole B_RandomTran0, const Boole B_RandomQuat0, const Boole B_RandomDihe0,
+                const GridMapSetInfo *info, const char *FN_pop_file,
+                /* not const */ int end_of_branch[MAX_TORS])
 {
     register unsigned int i;
     register int j;

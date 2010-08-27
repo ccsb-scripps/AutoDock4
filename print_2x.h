@@ -1,6 +1,6 @@
 /*
 
- $Id: print_2x.h,v 1.4 2009/06/10 00:09:09 rhuey Exp $
+ $Id: print_2x.h,v 1.5 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -29,7 +29,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "constants.h"
 
-void  print_2x( FILE  *stream1,
-                FILE  *stream2,
+void  print_2x( FILE  *const stream1,
+                FILE  *const stream2,
                 const char  *string );
 #endif

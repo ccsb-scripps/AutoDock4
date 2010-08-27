@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.29 2010/04/15 19:30:44 mp Exp $
+ $Id: eval.cc,v 1.30 2010/08/27 00:05:07 mp Exp $
 
  AutoDock  
 
@@ -65,7 +65,7 @@ extern FILE *logFile;
        tor 1, ..., tor N are the ntor torsion angles
 */
 
-void make_state_from_rep(Representation **rep, State *stateNow)
+void make_state_from_rep(const Representation *const *const rep, /* not const */ State *const stateNow) /* not a member function */
 /*
     This routine modifies the various components of stateNow to correspond
     to the chromosome.  
@@ -114,13 +114,13 @@ void make_state_from_rep(Representation **rep, State *stateNow)
    // mkUnitQuat(&(stateNow->Q));
 }
 
-double Eval::operator()(Representation **rep)
+double Eval::operator()(const Representation *const *const rep)
 {
    make_state_from_rep(rep, &stateNow);
    return eval();
 }
 
-double Eval::operator()(Representation **rep, int term)
+double Eval::operator()(const Representation *const *const rep, const int term)
 {
    make_state_from_rep(rep, &stateNow);
    return eval(term);
@@ -136,7 +136,7 @@ double Eval::eval()
 }
 
 
-double Eval::eval(int term)
+double Eval::eval(const int term)
 
 // Use this method, eval(int term), to compute just one particular term of the total energy
 //
@@ -263,7 +263,7 @@ double Eval::eval(int term)
    return(retval);
 }
 
-int Eval::write(FILE *out_file, Representation **rep)
+int Eval::write(FILE *const out_file, const Representation *const *const rep)
 {
     int i=0, retval=0;
     //char rec14[14];
@@ -283,14 +283,14 @@ int Eval::write(FILE *out_file, Representation **rep)
 }
 
 #if defined(USING_COLINY) // {
-double Eval::operator()(double* vec, int len)
+double Eval::operator()(const double* const vec, const int len)
 {
    make_state_from_rep(vec, len, &stateNow);
    return eval();
 }
 
 
-void make_state_from_rep(double *rep, int n, State *now)
+void make_state_from_rep(const double *const rep, const int n, /* not const */ State *const now)
 {
 #   ifdef DEBUG
     (void)fprintf(logFile, "eval.cc/make_state_from_rep(double *rep, int n, State *now)\n");
@@ -320,7 +320,7 @@ void make_state_from_rep(double *rep, int n, State *now)
 
 extern Eval evaluate;
 
-double ADEvalFn(double* x, int n)
+double ADEvalFn(/* not const */ double *const x, const int n)
 {
 //
 // Normalize the data
@@ -351,7 +351,7 @@ return ::evaluate(x,n);
 //
 #endif // USING_COLINY // }
 
-double Eval::evalpso(State *state)
+double Eval::evalpso(/* not const */ State *const state)
 {
     register int i;
     int   B_outside = 0;

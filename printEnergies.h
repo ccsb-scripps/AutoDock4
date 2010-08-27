@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.h,v 1.11 2009/09/16 21:57:52 rhuey Exp $
+ $Id: printEnergies.h,v 1.12 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -31,15 +31,15 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "structs.h"
 
-void printEnergies( EnergyBreakdown *eb,
+void printEnergies( const EnergyBreakdown *const eb,
                     const char  *prefixString, 
-                    int ligand_is_inhibitor,
-                    Real emap_total,
-                    Real elec_total,
-                    Boole B_have_flexible_residues,
-                    Unbound_Model ad4_unbound_model);
+                    const int ligand_is_inhibitor,
+                    const Real emap_total,
+                    const Real elec_total,
+                    const Boole B_have_flexible_residues,
+                    const Unbound_Model ad4_unbound_model);
 
-void printStateEnergies( EnergyBreakdown *eb,
-			 const char  *prefixString, 
-			 int ligand_is_inhibitor);
+void printStateEnergies( const EnergyBreakdown *eb,
+			 const char *const prefixString, 
+			 const int ligand_is_inhibitor);
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: readfield.h,v 1.6 2009/05/08 23:02:17 rhuey Exp $
+ $Id: readfield.h,v 1.7 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -52,10 +52,10 @@ void    readfield( Real *P_inv_spacing,
 		struct tms tms_jobStart );
 */
 
-void readfield( GridMapSetInfo *info, // *ptr_map_set_info
-                char line[LINE_LEN],
-                Clock jobStart,
-                struct tms tms_jobStart );
+void readfield( GridMapSetInfo *const info, // *ptr_map_set_info
+                /* not const */ char line[LINE_LEN],
+                const Clock jobStart,
+                const struct tms tms_jobStart );
 
 
 #endif

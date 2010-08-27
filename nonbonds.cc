@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.14 2010/06/19 02:51:24 mp Exp $
+ $Id: nonbonds.cc,v 1.15 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -44,12 +44,12 @@ using namespace std;
 // nonbonds - returns 0 if OK, else non-zero for error
 int
 nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
-		      int         nbmatrix[MAX_ATOMS][MAX_ATOMS],
-		      const int   natom, 
+		      /* not const */ int         nbmatrix[MAX_ATOMS][MAX_ATOMS],
+	      const int   natom, 
               const int   bond_index[MAX_ATOMS],
-              int         B_include_1_4_interactions,
-	      int	nbonds[MAX_ATOMS],
-              int         bonded[MAX_ATOMS][MAX_NBONDS])
+              const int         B_include_1_4_interactions,
+	      const int	nbonds[MAX_ATOMS],
+              const int         bonded[MAX_ATOMS][MAX_NBONDS])
 {
 	int i,j,k,l;
     int nonbond_type;
@@ -132,8 +132,8 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
               const int from_atom,
               const int to_atom,
               const int bond_index[MAX_ATOMS],
-	      int	nbonds[MAX_ATOMS],
-              int         bonded[MAX_ATOMS][MAX_NBONDS])
+	      /* not const */ int nbonds[MAX_ATOMS],
+              /* not const */ int bonded[MAX_ATOMS][MAX_NBONDS])
 {
 	int i,j;
 	double dist,dx,dy,dz;
@@ -250,7 +250,7 @@ void printbonds(const int natom, const int nbonds[MAX_ATOMS], const int bonded[M
 
 /*----------------------------------------------------------------------------*/
 
-void print_1_4_message(FILE *file, Boole B_include_1_4_interactions,  Real scale_1_4)
+void print_1_4_message(FILE *const file, const Boole B_include_1_4_interactions, const Real scale_1_4)
 {
     if (B_include_1_4_interactions == FALSE) {
         pr(file, "1,4-interactions will be _ignored_ in the non-bonded internal energy calculation.\n\n");

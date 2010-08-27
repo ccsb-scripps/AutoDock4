@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.16 2010/06/12 05:54:04 mp Exp $
+ $Id: trilinterp.cc,v 1.17 2010/08/27 00:05:09 mp Exp $
 
  AutoDock  
 
@@ -53,13 +53,13 @@ Real trilinterp(
  const Real abs_charge[MAX_ATOMS], // absolute magnitude of partial charges
  const int   type[MAX_ATOMS], // atom type of each atom
  #include "map_declare.h"
- GridMapSetInfo *info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
- int some_atoms_outside_grid, // boolean
- int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
- Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
- Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
- Real *p_elec_total, // set if not NULL - total electrostatic energy
- Real *p_emap_total // set if not NULL - total intermolecular energy
+ const GridMapSetInfo *const info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
+ const int some_atoms_outside_grid, // boolean
+ const int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
+ /* not const */ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
+ /* not const */ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
+ /* not const */ Real *p_elec_total, // set if not NULL - total electrostatic energy
+ /* not const */ Real *p_emap_total // set if not NULL - total intermolecular energy
  )
 
 /******************************************************************************/

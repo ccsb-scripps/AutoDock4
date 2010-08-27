@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.21 2009/07/14 23:42:33 rhuey Exp $
+ $Id: eintcal.cc,v 1.22 2010/08/27 00:05:07 mp Exp $
 
  AutoDock  
 
@@ -42,7 +42,7 @@ extern Real nb_group_energy[3];
 #ifndef EINTCALPRINT
 
 // Calculate internal energy
-Real eintcal( NonbondParam * const nonbondlist,
+Real eintcal( const NonbondParam * const nonbondlist,
               const EnergyTables  *ptr_ad_energy_tables,
               const Real tcoord[MAX_ATOMS][SPACE],
               const int           Nnb,
@@ -61,7 +61,7 @@ Real eintcal( NonbondParam * const nonbondlist,
 extern FILE *logFile;
 
 // Calculate internal energy and print out a detailed report
-Real eintcalPrint( NonbondParam * const nonbondlist,
+Real eintcalPrint( const NonbondParam * const nonbondlist,
                    const EnergyTables  *ptr_ad_energy_tables,
                    const Real tcoord[MAX_ATOMS][SPACE],
                    const int           Nnb,

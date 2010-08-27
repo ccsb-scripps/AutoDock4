@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.35 2010/05/14 21:25:51 mp Exp $
+ $Id: support.cc,v 1.36 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -45,7 +45,7 @@ extern class Eval evaluate;
 //  These are the member functions for the support classes.
 
 
-Population::Population(Population &original)
+Population::Population(const Population &original)
 : lhb(original.lhb), size(original.size)
 {
    register int i;
@@ -74,7 +74,7 @@ Population::Population(Population &original)
     lhb to size-1 *in reverse order*.
 */
 
-void Population::swap(Individual &individual1, Individual &individual2)
+void Population::swap(Individual &individual1, Individual &individual2) const
 {
    Individual temp;
 
@@ -92,7 +92,7 @@ void Population::swap(Individual &individual1, Individual &individual2)
     between lhb and size-1 and that the new individual is in
     position lhb-1.
 */
-void Population::SiftUp(void)
+void Population::SiftUp(void) /* not const */ 
 {
    int i, parent;
 
@@ -112,7 +112,7 @@ void Population::SiftUp(void)
 /*  This routine assumes that the heap condition is satisfied
     between lhb & size-2 initially, and that the individual at size-1
     needs to be accomodated.*/
-void Population::SiftDown(void)
+void Population::SiftDown(void) /* not const */
 {
    int i, child;
 
@@ -138,7 +138,7 @@ void Population::SiftDown(void)
    }
 }
 
-void Population::msort(int m)
+void Population::msort(const int m)
 {
    register int i;
 
@@ -193,11 +193,11 @@ void Population::msort(int m)
    //}
 //}
 
-void Population::print(FILE *output, int num) {
+void Population::print(FILE *const output, const int num) const {
    register int i;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Population::print(FILE *output, int num=%d)\n", num);
+   (void)fprintf(logFile, "support.cc/void Population::print(FILE *const output, int num=%d)\n", num);
 #endif /* DEBUG */
 
    (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
@@ -246,7 +246,7 @@ int ilow, ihigh; // indices to be weighted
   
    
 
-int Population::printPopulationStatistics(FILE *output, int level, const char suffix[]) {
+int Population::printPopulationStatistics(FILE *const output, const int level, const char suffix[]) /* not const changed in support.cc hack TODO */  {
 // write best energy, etc, depending on level, followed by suffix string
 // return 0 if OK, non-zero if error
 // Code adapted from gs.cc  - M Pique  December 2009
@@ -336,8 +336,8 @@ switch (level) {
     if(suffix!=NULL) fprintf(output, "%s", suffix);
     return returnCode;
  }
-int Population::printPopulationStatisticsVerbose(FILE * output, 
- unsigned int generations, long int nevals, int ntor, const char suffix[]){ /* print with generations & #evals */
+int Population::printPopulationStatisticsVerbose(FILE *const  output, 
+ const unsigned int generations, const long int nevals, const int ntor, const char suffix[])  /* not const changed in support.cc hack TODO */ { /* print with generations & #evals */
 int returnCode=0;
    // print "Population at Generation:" line with low/high/mean/median/stddev...
    (void) fprintf(output, "Population at Generation: %3u ", generations);
@@ -357,7 +357,7 @@ int returnCode=0;
 }
  	
 
-void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
+void Population::printPopulationAsStates(FILE *const output, const int num, const int ntor) const {
    register int i;
 #ifdef DEBUG2
    register int j;
@@ -366,7 +366,7 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    double thisValue;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsStates(FILE *output, int num=%d, int ntor=%d)\n", num, ntor);
+   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsStates(FILE *const output, int num=%d, int ntor=%d)\n", num, ntor);
 #endif /* DEBUG */
 
    // Print an XML-like tag indicating this is a population, with attribute size
@@ -396,12 +396,12 @@ void Population::printPopulationAsStates(FILE *output, int num, int ntor) {
    (void)fprintf( output, "</population>\n");
 }
 
-void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor) {
+void Population::printPopulationAsCoordsEnergies(FILE *const output, const int num, const int ntor) const {
    register int i;
    double thisValue;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsCoordsEnergies(FILE *output, int num=%d, int ntor=%d)\n", num, ntor);
+   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsCoordsEnergies(FILE *const output, int num=%d, int ntor=%d)\n", num, ntor);
 #endif // DEBUG
 
    //(void)fprintf( output, "The top %d individuals in the population:\n\n", num);
@@ -437,7 +437,7 @@ void Population::printPopulationAsCoordsEnergies(FILE *output, int num, int ntor
    (void)fprintf( output, "\n");
 }
 
-void Population::set_eob(int init_end_of_branch[MAX_TORS])
+void Population::set_eob(/* not const */ int init_end_of_branch[MAX_TORS])
 // Set the end_of_branch[MAX_TORS] array
 {
    for (register int i=0; i<MAX_TORS; i++) {
@@ -445,7 +445,7 @@ void Population::set_eob(int init_end_of_branch[MAX_TORS])
    }
 }
 
-int Population::get_eob(int init_tor)
+int Population::get_eob(const int init_tor) const
 // Get the end_of_branch[] value for the supplied torsion number, init_tor
 {
     if ((init_tor >= 0) && (init_tor < MAX_TORS)) {
@@ -457,7 +457,7 @@ int Population::get_eob(int init_tor)
 }
 
 Genotype::Genotype(unsigned int init_number_of_vectors, Representation **
-init_rep_vector)
+const init_rep_vector)
 : number_of_vectors(init_number_of_vectors), rep_vector(init_rep_vector), 
   modified(0)
 {
@@ -487,6 +487,9 @@ init_rep_vector)
    }
 }
 
+#if 0
+     # steffen thinks this is redundant with the const variant
+     # http://en.wikipedia.org/wiki/Copy_constructor
 Genotype::Genotype(Genotype &original)
 {
    register unsigned int i;
@@ -513,8 +516,9 @@ Genotype::Genotype(Genotype &original)
       lookup[i] = original.lookup[i];
    }
 }
+#endif
 
-Genotype::Genotype(Genotype const &original)
+Genotype::Genotype(const Genotype &original)
 {
    register unsigned int i;
 
@@ -604,7 +608,7 @@ Genotype &Genotype::operator=(const Genotype &original)
 }
 
 
-void Genotype::write(Element value, int gene_number)
+void Genotype::write(const Element value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -615,7 +619,7 @@ void Genotype::write(Element value, int gene_number)
    rep_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Genotype::write(unsigned char value, int gene_number)
+void Genotype::write(const unsigned char value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -626,7 +630,7 @@ void Genotype::write(unsigned char value, int gene_number)
    rep_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Genotype::write(FourByteLong value, int gene_number)
+void Genotype::write(const FourByteLong value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -637,7 +641,7 @@ void Genotype::write(FourByteLong value, int gene_number)
    rep_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Genotype::write(double value, int gene_number)
+void Genotype::write(const double value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -648,7 +652,7 @@ void Genotype::write(double value, int gene_number)
    rep_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Genotype::write(const Representation &value, int gene_number)
+void Genotype::write(const Representation &value, const int gene_number)
 {
 
 #ifdef DEBUG
@@ -660,7 +664,7 @@ void Genotype::write(const Representation &value, int gene_number)
    *(rep_vector[gene_number]) = value;
 }
 
-Quat Genotype::readQuat()
+Quat Genotype::readQuat() const
 {
     Quat q;
     q.x = gread(3).real;
@@ -671,7 +675,7 @@ Quat Genotype::readQuat()
     return q;
 }
 
-void Genotype::writeQuat( Quat q )
+void Genotype::writeQuat( const Quat q )
 {
     write( q.x, 3 );
     write( q.y, 4 );
@@ -679,7 +683,7 @@ void Genotype::writeQuat( Quat q )
     write( q.w, 6 );
 }
 
-Quat Phenotype::readQuat()
+Quat Phenotype::readQuat() const
 {
     Quat q;
     q.x = gread(3).real;
@@ -690,7 +694,7 @@ Quat Phenotype::readQuat()
     return q;
 }
 
-void Phenotype::writeQuat( Quat q )
+void Phenotype::writeQuat( const Quat q )
 {
     write( q.x, 3 );
     write( q.y, 4 );
@@ -699,7 +703,7 @@ void Phenotype::writeQuat( Quat q )
 }
 
 //  Maybe we should evaluate the Phenotype?
-Phenotype::Phenotype(unsigned int init_number_of_dimensions, Representation **init_value_vector)
+Phenotype::Phenotype(const unsigned int init_number_of_dimensions, Representation **const init_value_vector)
 : number_of_dimensions(init_number_of_dimensions), value_vector(init_value_vector), 
   value(0.0), evalflag(0)
 {
@@ -821,7 +825,7 @@ Phenotype::~Phenotype(void)
    }
 }
 
-void Phenotype::write(Element value, int gene_number)
+void Phenotype::write(const Element value, const int gene_number)
 {
 
 #ifdef DEBUG
@@ -832,7 +836,7 @@ void Phenotype::write(Element value, int gene_number)
    value_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Phenotype::write(unsigned char value, int gene_number)
+void Phenotype::write(const unsigned char value, const int gene_number)
 {
 
 #ifdef DEBUG
@@ -843,7 +847,7 @@ void Phenotype::write(unsigned char value, int gene_number)
    value_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Phenotype::write(FourByteLong value, int gene_number)
+void Phenotype::write(const FourByteLong value, const int gene_number)
 {
 
 #ifdef DEBUG
@@ -854,7 +858,7 @@ void Phenotype::write(FourByteLong value, int gene_number)
    value_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Phenotype::write(double value, int gene_number)
+void Phenotype::write(const double value, const int gene_number)
 {
 
 #ifdef DEBUG
@@ -865,7 +869,7 @@ void Phenotype::write(double value, int gene_number)
    value_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Phenotype::write(const Representation &value, int gene_number)
+void Phenotype::write(const Representation &value, const int gene_number)
 {
 
 #ifdef DEBUG
@@ -877,7 +881,7 @@ void Phenotype::write(const Representation &value, int gene_number)
    *(value_vector[gene_number]) = value;
 }
 
-double Phenotype::evaluate(EvalMode mode)
+double Phenotype::evaluate(const EvalMode mode) /* not const */
 {
 
 #ifdef DEBUG
@@ -915,7 +919,7 @@ double Phenotype::evaluate(EvalMode mode)
    return(value);
 }
 
-State Phenotype::make_state(int ntor)
+State Phenotype::make_state(const int ntor) const
 {
    State retval;
 
@@ -929,7 +933,7 @@ State Phenotype::make_state(int ntor)
    return(retval);
 }
 
-Individual &Population::operator[](int ind_num)
+Individual &Population::operator[](const int ind_num) const
 {
 
 #ifdef DEBUG
@@ -944,7 +948,7 @@ Individual &Population::operator[](int ind_num)
    }
 }
 
-State Individual::state(int ntor)
+State Individual::state(const int ntor) const
 {
 
 #ifdef DEBUG
@@ -954,7 +958,7 @@ State Individual::state(int ntor)
    return(phenotyp.make_state(ntor));
 }
 
-void Individual::getMol(Molecule *returnedMol)
+void Individual::getMol(Molecule * /* not const */ returnedMol) const		// Steffen : bug candidate here
 {
 // Converts phenotype to mol's state and returns this individual's mol data.
 
@@ -963,10 +967,10 @@ void Individual::getMol(Molecule *returnedMol)
 
     molState = phenotyp.make_state(mol->S.ntor);
     molcopy = copyStateToMolecule(&molState, mol);
-    returnedMol = &molcopy;
+    returnedMol = &molcopy;							// Steffen : or here, molcopy is not returned
 }
 
-void Individual::printIndividualsState(FILE *filePtr, int ntor, int detail) 
+void Individual::printIndividualsState(FILE *const filePtr, const int ntor, const int detail) const
 {
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/void Individual::printIndividualsState(FILE *filePtr, int ntor=%d, int detail=%d)\n", ntor, detail);
@@ -975,7 +979,7 @@ void Individual::printIndividualsState(FILE *filePtr, int ntor, int detail)
     printState( filePtr, state(ntor), detail ); 
 }
 
-void Individual::incrementAge(void)
+void Individual::incrementAge(void) /* not const */
 {
     ++age;
 }

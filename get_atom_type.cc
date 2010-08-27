@@ -1,6 +1,6 @@
 /*
 
- $Id: get_atom_type.cc,v 1.9 2010/06/19 02:51:24 mp Exp $
+ $Id: get_atom_type.cc,v 1.10 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -47,7 +47,7 @@ extern int debug;
 // As of 2010-06, no longer covers up failure to find atom type
 int get_atom_type( const char aname[] )
 {
-    ParameterEntry * found_parm;
+    const ParameterEntry * /* not const */ found_parm;
     ParameterEntry thisparm;
     int map_index = -1;
     int bond_index = -1;

@@ -1,4 +1,4 @@
-/* $Id: stack.cc,v 1.1 2008/06/10 02:18:26 garrett Exp $ */
+/* $Id: stack.cc,v 1.2 2010/08/27 00:05:08 mp Exp $ */
 
 /* tiny integer stack manager MP (Michael Pique) */
 /* note that "top" points to next free location, not last used location */
@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include "stack.h"
 
-stack stack_create(int maxsize) 
+stack stack_create(const int maxsize) 
 {
     stack s;
     s = (integer_stack_t *) malloc( sizeof(integer_stack_t) );
@@ -19,7 +19,7 @@ stack stack_create(int maxsize)
     return s;
 }
 
-int stack_pop(stack s)
+int stack_pop(/* not const */ stack s)
 {
     (s->top)--;
     if (s->top < 0) {
@@ -34,7 +34,7 @@ int stack_pop(stack s)
     return s->base[s->top];
 }
 
-void  stack_push(stack s, int i)
+void  stack_push(/* not const */ stack s, const int i)
 {
     if (s->trace != NULL) fprintf(s->trace, "Stack(%d/%d) push %d\n",
         s->top, s->size,i);
@@ -49,19 +49,20 @@ void  stack_push(stack s, int i)
     return;
 }
 
-int stack_depth(stack s)
+int stack_depth(const stack s)
 {
     if (s->trace != NULL) fprintf(s->trace, "Stack depth %d/%d\n",
         s->top, s->size);
     return s->top;
 }
 
-int stack_size(stack s)
+int stack_size(const stack s)
 {
     return s->size;
 }
 
-void stack_trace(stack s, FILE *f)
+//FIXME: s could be passed by reference
+void stack_trace(const stack s, FILE *const f)
 {
     if (f==NULL && s->trace != NULL) fprintf(s->trace, "Stack trace off\n");
     s->trace = f;

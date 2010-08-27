@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.16 2009/05/08 23:02:14 rhuey Exp $
+ $Id: mkTorTree.cc,v 1.17 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -42,24 +42,24 @@ extern FILE *logFile;
 extern char  *programname;
     
 
-void mkTorTree( int   atomnumber[ MAX_RECORDS ],
-                char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
-                int   nrecord,
+void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
+                const char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
+                const int   nrecord,
 
-                int   tlist[ MAX_TORS ][ MAX_ATOMS ],
-                int   *P_ntor,
-                int   *P_ntor_ligand,
+/* not const */ int   tlist[ MAX_TORS ][ MAX_ATOMS ],
+/* not const */ int   *const P_ntor,
+/* not const */ int   *const P_ntor_ligand,
 
-                char  *smFileName,
+          const char  *const smFileName,
 
-                char  pdbaname[ MAX_ATOMS ][ 5 ],
-                Boole *P_B_constrain,
-                int   *P_atomC1,
-                int   *P_atomC2,
-                Real  *P_sqlower,
-                Real  *P_squpper,
-                int   *P_ntorsdof,
-                int   ignore_inter[MAX_ATOMS])
+          const char  pdbaname[ MAX_ATOMS ][ 5 ],
+/* not const */ Boole *const P_B_constrain,
+/* not const */ int   *const P_atomC1,
+/* not const */ int   *const P_atomC2,
+/* not const */ Real  *const P_sqlower,
+/* not const */ Real  *const P_squpper,
+/* not const */ int   *const P_ntorsdof,
+/* not const */ int   ignore_inter[MAX_ATOMS])
 
 {
 

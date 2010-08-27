@@ -1,6 +1,6 @@
 /*
 
- $Id: output_state.h,v 1.6 2009/05/08 23:02:14 rhuey Exp $
+ $Id: output_state.h,v 1.7 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -28,16 +28,16 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef OUTPUT_STATE
 #define OUTPUT_STATE
 #include "constants.h"
-void  output_state( FILE  *fp,
-		    State S,
-                    int   ntor,
-                    int   istep,
-                    Real energy,
-                    Real eint,
-                    char  lastmove,
-                    Boole B_watch,
-                    char  *FN_watch,
-                    char  atomstuff[MAX_ATOMS][MAX_CHARS],
-                    int   natom,
-                    Real crd[MAX_ATOMS][SPACE]);
+void  output_state( FILE  *const fp,
+		    const State S,
+                    const int   ntor,
+                    const int   istep,
+                    const Real energy,
+                    const Real eint,
+                    const char  lastmove,
+                    const Boole B_watch,
+                    const char  *const FN_watch,
+                    const char  atomstuff[MAX_ATOMS][MAX_CHARS],
+                    const int   natom,
+                    const Real crd[MAX_ATOMS][SPACE]);
 #endif

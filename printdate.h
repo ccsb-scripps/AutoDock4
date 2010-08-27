@@ -1,6 +1,6 @@
 /*
 
- $Id: printdate.h,v 1.3 2009/05/08 23:02:16 rhuey Exp $
+ $Id: printdate.h,v 1.4 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -29,5 +29,5 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "autocomm.h"
 
-void  printdate( FILE  *fp, int   flag );
+void  printdate( FILE  *const fp, const int flag );
 #endif

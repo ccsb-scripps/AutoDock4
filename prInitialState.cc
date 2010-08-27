@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.12 2009/12/16 23:35:54 rhuey Exp $
+ $Id: prInitialState.cc,v 1.13 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -42,17 +42,17 @@ extern char *programname;
 
 
 void prInitialState(
-    EnergyBreakdown *p_eb,
-    int natom,
-    Real crd[MAX_ATOMS][SPACE],
-    char atomstuff[MAX_ATOMS][MAX_CHARS],
-    int type[MAX_ATOMS],
-    Real emap[MAX_ATOMS],
-    Real elec[MAX_ATOMS],
-    Real charge[MAX_ATOMS],
-    int ligand_is_inhibitor,
-    Boole B_have_flexible_residues,
-    Unbound_Model ad4_unbound_model
+    const EnergyBreakdown *p_eb,
+    const int natom,
+    const Real crd[MAX_ATOMS][SPACE],
+    const char atomstuff[MAX_ATOMS][MAX_CHARS],
+    const int type[MAX_ATOMS],
+    const Real emap[MAX_ATOMS],
+    const Real elec[MAX_ATOMS],
+    const Real charge[MAX_ATOMS],
+    const int ligand_is_inhibitor,
+    const Boole B_have_flexible_residues,
+    const Unbound_Model ad4_unbound_model
     )
 
 {

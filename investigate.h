@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.h,v 1.18 2010/04/15 19:30:44 mp Exp $
+ $Id: investigate.h,v 1.19 2010/08/27 00:05:07 mp Exp $
 
  AutoDock  
 
@@ -43,6 +43,53 @@ extern FILE *logFile;
 extern char *programname;
 
 
+void investigate( const int   Nnb,
+                    const Real charge[MAX_ATOMS],
+                    const Real abs_charge[MAX_ATOMS],
+                    const Real qsp_abs_charge[MAX_ATOMS],
+                    const Boole B_calcIntElec,
+                    /* not const */ Real crd[MAX_ATOMS][SPACE], // modified in cnv_state_to_coords
+                    const Real crdpdb[MAX_ATOMS][SPACE],
+
+                    const EnergyTables *const ptr_ad_energy_tables,
+
+                    const int   maxTests,
+                #include "map_declare.h"
+                    const int   natom,
+                    const NonbondParam *const nonbondlist,
+                    const int   ntor,
+                    const int   outlev,
+                    const int   tlist[MAX_TORS][MAX_ATOMS],
+                    const int   type[MAX_ATOMS],
+                    const Real vt[MAX_TORS][SPACE],
+                    const Boole B_isGaussTorCon,
+                    const unsigned short US_torProfile[MAX_TORS][NTORDIVS],
+                    const Boole B_isTorConstrained[MAX_TORS],
+                    const Boole B_ShowTorE,
+                    /* not const */ unsigned short US_TorE[MAX_TORS],
+                    /* not const */ Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                    /* not const */ int   N_con[MAX_TORS], // modifed in mkRandomState
+                    const Boole B_symmetry_flag,
+                    const Boole B_unique_pair_flag,
+                    const char  *const FN_rms_ref_crds,
+                    const int   OutputEveryNTests,
+                    const int   NumLocalTests,
+                    const Real trnStep,
+                    const Real torStep,
+                    
+                    const int   ignore_inter[MAX_ATOMS],
+                    
+                    const Boole         B_include_1_4_interactions,
+                    const Real scale_1_4,
+                    const Real scale_eintermol,
+
+
+                    const Real unbound_internal_FE,
+                    /* not const */ GridMapSetInfo *const info, // modified in mkRandomState
+                    const Boole B_use_non_bond_cutoff,
+                    const Boole B_have_flexible_residues);
+#endif
+#if MPIQUE
 void investigate(
                 int   Nnb,
                 Real charge[MAX_ATOMS],

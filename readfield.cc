@@ -1,6 +1,6 @@
 /*
 
- $Id: readfield.cc,v 1.6 2010/06/12 05:54:04 mp Exp $
+ $Id: readfield.cc,v 1.7 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -38,10 +38,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern FILE *logFile;
 
-void readfield( GridMapSetInfo *info,
-                char line[LINE_LEN],
-                Clock jobStart,
-                struct tms tms_jobStart )
+//FIXME: tms_jobStart could be passed by reference
+void readfield( /* not const */ GridMapSetInfo *const info,
+                /* not const */ char line[LINE_LEN],
+                const Clock jobStart,
+                const struct tms tms_jobStart )
 
 
 {

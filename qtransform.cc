@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.cc,v 1.11 2009/05/08 23:02:16 rhuey Exp $
+ $Id: qtransform.cc,v 1.12 2010/08/27 00:05:08 mp Exp $
 
  AutoDock  
 
@@ -36,7 +36,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 void qtransform( const Coord T,
                  const Quat  q,
-                 Real tcoord[MAX_ATOMS][SPACE],
+                 /* not const */ Real tcoord[MAX_ATOMS][SPACE],
                  const int   natom)
 
 /******************************************************************************/
@@ -126,19 +126,19 @@ void qtransform( const Coord T,
     }
 }
 
-void reorient( FILE *logFile, 
+void reorient( FILE *const logFile, 
                const int true_ligand_atoms, 
-               char atomstuff[MAX_ATOMS][MAX_CHARS],
-               Real crdpdb[MAX_ATOMS][SPACE],  // original PDB coordinates from input
-               Real charge[MAX_ATOMS],
-               int type[MAX_ATOMS],
-               ParameterEntry  parameterArray[MAX_ATOM_TYPES],
-               Quat q_reorient,
-               Coord origin,
+               const char atomstuff[MAX_ATOMS][MAX_CHARS],
+               /* not const */ Real crdpdb[MAX_ATOMS][SPACE],  // original PDB coordinates from input
+               const Real charge[MAX_ATOMS],
+               const int type[MAX_ATOMS],
+               const ParameterEntry  parameterArray[MAX_ATOM_TYPES],
+               const Quat q_reorient,
+               const Coord origin,
                const int ntor,
-               int tlist[MAX_TORS][MAX_ATOMS],
-               Real vt[MAX_TORS][SPACE],
-               Molecule *ptr_ligand,
+               const int tlist[MAX_TORS][MAX_ATOMS],
+               /* not const */ Real vt[MAX_TORS][SPACE],
+               /* not const */ Molecule *ptr_ligand,
                const int debug )
  {
     // Print out the un-reoriented coordinates

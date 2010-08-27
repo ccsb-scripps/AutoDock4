@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.h,v 1.11 2010/06/12 05:54:04 mp Exp $
+ $Id: readmap.h,v 1.12 2010/08/27 00:05:08 mp Exp $
 
  AutoDock  
 
@@ -37,7 +37,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "check_header_float.h"
 #include "check_header_int.h"
 #include "timesys.h"
-Real   mapc2f( char C_mapValue );
+Real   mapc2f( char C_mapValue ) ;
 #endif
 
 #ifndef READMAP
@@ -55,19 +55,19 @@ Real   mapc2f( char C_mapValue );
 #include "structs.h"
 
 Statistics readmap( char line[LINE_LEN],
-             int outlev,
+             const int outlev,
 
-             Clock jobStart,
-             struct tms tmsJobStart,
-        
-             Boole B_charMap,
+             const Clock jobStart,
+             /* not const */ struct tms tmsJobStart,
 
-             Boole *P_B_HaveMap, 
-             int num_maps, 
+             const Boole B_charMap,
+
+             Boole *const P_B_HaveMap, 
+             const int num_maps, 
              
-             GridMapSetInfo *info,
+             const GridMapSetInfo *const info,
              #include "map_declare.h"
-             char map_type
+             const char map_type
              );
 
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.17 2009/05/08 23:02:17 rhuey Exp $
+ $Id: rep.cc,v 1.18 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -70,7 +70,7 @@ Real BitVector::one_prob = 0.5;
 //
 //  This constructor is used to generate the initial (random) instances
 //  of an integer vector.
-IntVector::IntVector(int number_of_els)
+IntVector::IntVector(const int number_of_els)
 : Representation(number_of_els)
 {
    register int i;
@@ -88,7 +88,7 @@ IntVector::IntVector(int number_of_els)
 
 //______________________________________________________________________________
 //
-IntVector::IntVector(int num_els, FourByteLong init_low, FourByteLong init_high)
+IntVector::IntVector(const int num_els, const FourByteLong init_low, const FourByteLong init_high)
 : Representation(num_els)
 {
    register int i;
@@ -132,7 +132,7 @@ IntVector::IntVector(const IntVector &original)
 
 //______________________________________________________________________________
 //
-void IntVector::write(unsigned char value, int gene)
+void IntVector::write(const unsigned char value, const int gene)
 {
 
 #ifdef DEBUG
@@ -145,7 +145,7 @@ void IntVector::write(unsigned char value, int gene)
 
 //______________________________________________________________________________
 //
-void IntVector::write(FourByteLong value, int gene)
+void IntVector::write(const FourByteLong value, const int gene) /* not const */ 
 {
 
 #ifdef DEBUG
@@ -163,7 +163,7 @@ void IntVector::write(FourByteLong value, int gene)
 
 //______________________________________________________________________________
 //
-void IntVector::write(double value, int gene)
+void IntVector::write(const double value, const int gene)
 {
 
 #ifdef DEBUG
@@ -176,7 +176,7 @@ void IntVector::write(double value, int gene)
 
 //______________________________________________________________________________
 //
-void IntVector::write(const Element value, int gene)
+void IntVector::write(const Element value, const int gene) /* not const */
 {
 
 #ifdef DEBUG
@@ -197,7 +197,7 @@ void IntVector::write(const Element value, int gene)
 
 //______________________________________________________________________________
 //
-const Element IntVector::gene(unsigned int gene_number) const
+const Element IntVector::gene(const unsigned int gene_number) const
 {
    Element retval;
 
@@ -233,14 +233,13 @@ const void *IntVector::internals(void) const
 Representation &IntVector::operator=(const Representation &original)
 {
    register unsigned int i;
-   FourByteLong *array;
 
 #ifdef DEBUG
     (void)fprintf(logFile, "\nrep.cc/Representation &IntVector::operator=(const Representation &original) \n");
 #endif /* DEBUG */
 
 
-   array = (FourByteLong *)original.internals();
+   const FourByteLong *const array = (FourByteLong *)original.internals();
    if (original.type()==T_IntV) {
       number_of_pts = original.number_of_points();
       if (vector!=NULL) {
@@ -268,7 +267,7 @@ Representation &IntVector::operator=(const Representation &original)
 //  This constructor is used to initialize the starting population, 
 //  with random values between REALV_LOW and REALV_HIGH.
 //
-RealVector::RealVector(int num_els)
+RealVector::RealVector(/* not const */ int num_els)
 : Representation(num_els)
 {
 #ifdef DEBUG
@@ -292,7 +291,7 @@ RealVector::RealVector(int num_els)
 //  with elements of the vector set to random values between 
 //  the user-specified values, init_low and init_high.
 //
-RealVector::RealVector(int num_els, double init_low, double init_high)
+RealVector::RealVector(/* not const */ int num_els, const double init_low, const double init_high)
 : Representation(num_els)
 {
 #ifdef DEBUG
@@ -319,7 +318,7 @@ RealVector::RealVector(int num_els, double init_low, double init_high)
 //  but the first value in this vector is set to the value supplied as the last argument.
 //  This is useful for specifying an initial axis-angle rotation angle.
 //
-RealVector::RealVector(int num_els, double init_low, double init_high, double init_first_value)
+RealVector::RealVector(const int num_els, const double init_low, const double init_high, const double init_first_value)
 : Representation(num_els)
 {
 #ifdef DEBUG
@@ -351,7 +350,7 @@ RealVector::RealVector(int num_els, double init_low, double init_high, double in
 //  nx, ny, and nz.
 //  This is useful for specifying an initial orientation's axis components
 //
-RealVector::RealVector( int num_els, double init_low, double init_high, double nx, double ny, double nz )
+RealVector::RealVector( const int num_els, const double init_low, const double init_high, const double nx, const double ny, const double nz )
 : Representation(num_els)
 {
 #ifdef DEBUG
@@ -380,7 +379,7 @@ RealVector::RealVector( int num_els, double init_low, double init_high, double n
 //  w, x, y, z
 //  This is useful for specifying an initial quaternion rotation' unit vector.
 //
-RealVector::RealVector( int num_els,  double init_low, double init_high,  double x, double y, double z, double w)
+RealVector::RealVector( const int num_els, const double init_low, const double init_high, const double x, const double y, const double z, const double w)
 : Representation(num_els)
 {
 #ifdef DEBUG
@@ -434,7 +433,7 @@ RealVector::RealVector(const RealVector &original)
 
 //______________________________________________________________________________
 //
-void RealVector::write(unsigned char value, int gene)
+void RealVector::write(const unsigned char value, const int gene) 
 {
 
 #ifdef DEBUG
@@ -447,7 +446,7 @@ void RealVector::write(unsigned char value, int gene)
 
 //______________________________________________________________________________
 //
-void RealVector::write(FourByteLong value, int gene)
+void RealVector::write(const FourByteLong value, const int gene)
 {
 
 #ifdef DEBUG
@@ -460,7 +459,7 @@ void RealVector::write(FourByteLong value, int gene)
 
 //______________________________________________________________________________
 //
-void RealVector::write(double value, int gene)
+void RealVector::write(const double value, const int gene) /* not const */
 {
 
 #ifdef DEBUG
@@ -485,7 +484,7 @@ void RealVector::write(double value, int gene)
 
 //______________________________________________________________________________
 //
-void RealVector::write(const Element value, int gene)
+void RealVector::write(const Element value, const int gene) /* not const */
 {
 
 #ifdef DEBUG
@@ -503,7 +502,7 @@ void RealVector::write(const Element value, int gene)
 
 //______________________________________________________________________________
 //
-const Element RealVector::gene(unsigned int gene_number) const
+const Element RealVector::gene(const unsigned int gene_number) const
 {
 
 #ifdef DEBUG
@@ -579,7 +578,7 @@ Representation &RealVector::operator=(const Representation &original)
 
 //______________________________________________________________________________
 //
-ConstrainedRealVector::ConstrainedRealVector(int num_els)
+ConstrainedRealVector::ConstrainedRealVector(/* not const */ int num_els)
 :  Representation(num_els)
 {
 
@@ -599,7 +598,7 @@ ConstrainedRealVector::ConstrainedRealVector(int num_els)
 
 //______________________________________________________________________________
 //
-ConstrainedRealVector::ConstrainedRealVector(int num_els, double init_low, double init_high)
+ConstrainedRealVector::ConstrainedRealVector(/* not const */ int num_els, const double init_low, const double init_high)
 :  Representation(num_els)
 {
 
@@ -644,7 +643,7 @@ ConstrainedRealVector::ConstrainedRealVector(const ConstrainedRealVector &origin
 
 //______________________________________________________________________________
 //
-void ConstrainedRealVector::write(unsigned char value, int gene)
+void ConstrainedRealVector::write(const unsigned char value, const int gene)
 {
 
 #ifdef DEBUG
@@ -657,7 +656,7 @@ void ConstrainedRealVector::write(unsigned char value, int gene)
 
 //______________________________________________________________________________
 //
-void ConstrainedRealVector::write(FourByteLong value, int gene)
+void ConstrainedRealVector::write(const FourByteLong value, const int gene) 
 {
 
 #ifdef DEBUG
@@ -670,7 +669,7 @@ void ConstrainedRealVector::write(FourByteLong value, int gene)
 
 //______________________________________________________________________________
 //
-void ConstrainedRealVector::write(double value, int gene)
+void ConstrainedRealVector::write(const double value, const int gene) /* not const */
 {
 
 #ifdef DEBUG
@@ -722,7 +721,7 @@ void ConstrainedRealVector::write(double a, double b, double c, double d)
 }
 //______________________________________________________________________________
 //
-void ConstrainedRealVector::write(const Element value, int gene)
+void ConstrainedRealVector::write(const Element value, const int gene) /* not const */
 {
 
 #ifdef DEBUG
@@ -742,7 +741,7 @@ void ConstrainedRealVector::write(const Element value, int gene)
 
 //______________________________________________________________________________
 //
-void ConstrainedRealVector::normalize(void)
+void ConstrainedRealVector::normalize(void) /* not const */
 {
 #ifdef DEBUG
     (void)fprintf(logFile, "rep.cc/void ConstrainedRealVector::normalize(void) const \n");
@@ -772,7 +771,7 @@ void ConstrainedRealVector::normalize(void)
 
 //______________________________________________________________________________
 //
-const Element ConstrainedRealVector::gene(unsigned int gene_number) const
+const Element ConstrainedRealVector::gene(const unsigned int gene_number) const
 {
    Element retval;
 
@@ -845,7 +844,7 @@ Representation &ConstrainedRealVector::operator=(const Representation &original)
 //  This constructor is used to initialize the first
 //  generation of any particular bitvector.  Right
 //  now bits are assumed to be unsigned chars.
-BitVector::BitVector(int num_els)
+BitVector::BitVector(/* not const */ int num_els)
 : Representation(num_els)
 {
 
@@ -862,7 +861,7 @@ BitVector::BitVector(int num_els)
 
 //______________________________________________________________________________
 //
-BitVector::BitVector(int num_els, Real prob)
+BitVector::BitVector(/* not const */ int num_els, const Real prob)
 : Representation(num_els)
 {
 
@@ -903,7 +902,7 @@ BitVector::BitVector(const BitVector &original)
 
 //______________________________________________________________________________
 //
-void BitVector::write(unsigned char value, int gene)
+void BitVector::write(const unsigned char value, const int gene) /* not const */
 {
 
 #ifdef DEBUG
@@ -915,7 +914,7 @@ void BitVector::write(unsigned char value, int gene)
 
 //______________________________________________________________________________
 //
-void BitVector::write(FourByteLong value, int gene)
+void BitVector::write(const FourByteLong value, const int gene) 
 {
 
 #ifdef DEBUG
@@ -928,7 +927,7 @@ void BitVector::write(FourByteLong value, int gene)
 
 //______________________________________________________________________________
 //
-void BitVector::write(double value, int gene)
+void BitVector::write(const double value, const int gene)
 {
 
 #ifdef DEBUG
@@ -942,7 +941,7 @@ void BitVector::write(double value, int gene)
 
 //______________________________________________________________________________
 //
-void BitVector::write(const Element value, int gene)
+void BitVector::write(const Element value, const int gene) /* not const */
 {
 
 #ifdef DEBUG
@@ -955,7 +954,7 @@ void BitVector::write(const Element value, int gene)
 
 //______________________________________________________________________________
 //
-const Element BitVector::gene(unsigned int gene_number) const
+const Element BitVector::gene(const unsigned int gene_number) const
 {
    Element retval;
 

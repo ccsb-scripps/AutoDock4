@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_param_line.cc,v 1.5 2009/05/08 23:02:15 rhuey Exp $
+ $Id: parse_param_line.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -36,7 +36,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern int debug;
 extern FILE *logFile;
 
-int parse_param_line( char line[LINE_LEN] )
+int parse_param_line( const char *const line)
 
 /******************************************************************************/
 /*      Name: parse_param_line                                                */
@@ -76,7 +76,7 @@ int parse_param_line( char line[LINE_LEN] )
               }; // 7 tokens  // remember to set tokentablesize earlier
 
     c[0] = '\0';
-    for (j=0; ((line[j]!='\0')&&(line[j]!=' ')&&(line[j]!='\t')&&(line[j]!='\n')); j++) {
+    for (j=0; ((line[j]!='\0')&&(line[j]!=' ')&&(line[j]!='\t')&&(line[j]!='\n')); j++) { //FIXME: check on j<LINE_LEN missing
         /*  Ignore case */
         c[j] = (char)tolower((int)line[j]);
         if (debug > 0) {

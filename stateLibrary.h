@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.h,v 1.5 2009/05/08 23:02:17 rhuey Exp $
+ $Id: stateLibrary.h,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -30,21 +30,21 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "structs.h"
 #include "constants.h"
 
-void initialiseState( State *S );
+void initialiseState( /* not const */ State *const S );
 
-void initialiseQuat( Quat *Q );
+void initialiseQuat( /* not const */ Quat *const Q );
 
-void copyState( State *destination,
-		State  source);
+void copyState( State *const destination,
+		const State source);
 
-void printState( FILE *fp,
-		 State state, 
-		 int detail );
+void printState( FILE *const fp,
+		 /* not const */ State state, 
+		 const int detail );
 
-void writeState( FILE *fp, 
-		 State state );
+void writeState( /* not const */ FILE *const fp, 
+		 /* not const */ State state );
 
-int checkState( const State *D );
+int checkState( const State *const D );
 
-Molecule copyStateToMolecule(State *source, Molecule *mol);
+Molecule copyStateToMolecule(const State *const source, /* not const */ Molecule *const mol);
 #endif

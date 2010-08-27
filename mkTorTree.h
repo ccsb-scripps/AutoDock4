@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.h,v 1.9 2009/05/08 23:02:14 rhuey Exp $
+ $Id: mkTorTree.h,v 1.10 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -31,19 +31,19 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "parse_PDBQT_line.h"
 #include "stop.h"
 
-void  mkTorTree(int   atomnumber[MAX_RECORDS],
-                char  record[MAX_RECORDS][LINE_LEN],
-                int   nrecord,
+void  mkTorTree(const int   atomnumber[MAX_RECORDS],
+                const char  record[MAX_RECORDS][LINE_LEN],
+                const int   nrecord,
                 int   tlist[MAX_TORS][MAX_ATOMS],
-                int   *P_ntor,
-                int   *P_ntor_ligand,
-                char  *smFileName,
-                char  pdbaname[MAX_ATOMS][5],
-                Boole *P_B_constrain,
-                int   *P_atomC1,
-                int   *P_atomC2,
-                Real *P_sqlower,
-                Real *P_squpper,
-                int   *P_ntorsdof,
+                int   *const P_ntor,
+                int   *const P_ntor_ligand,
+                const char  *const smFileName,
+                const char  pdbaname[MAX_ATOMS][5],
+                Boole *const P_B_constrain,
+                int   *const P_atomC1,
+                int   *const P_atomC2,
+                Real *const P_sqlower,
+                Real *const P_squpper,
+                int   *const P_ntorsdof,
                 int   ignore_inter[MAX_ATOMS]);
 #endif

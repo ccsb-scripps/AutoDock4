@@ -1,6 +1,6 @@
 /*
 
- $Id: minmeanmax.cc,v 1.8 2009/05/08 23:02:14 rhuey Exp $
+ $Id: minmeanmax.cc,v 1.9 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -43,7 +43,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define which_bin(x, min, max, nbins)  int((nbins)*((x)-(min))/((max)-(min)))
 #define clamp_range(x, min, max) ((x) < (min)) ? (min) : ((x) > (max)) ? (max) : (x)
 
-void minmeanmax( FILE *fp, Population &pop, int num_generations, GridMapSetInfo *info )
+void minmeanmax( FILE *const fp, const Population &pop, const int num_generations, const GridMapSetInfo *const info )
 {
 #ifdef DEBUG
    fprintf( fp, "minmeanmax.cc/minmeanmax(); initialization\n" );

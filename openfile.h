@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.h,v 1.5 2009/05/08 23:02:14 rhuey Exp $
+ $Id: openfile.h,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -34,18 +34,18 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <time.h>           /*time_t time(time_t *tloc); */
 #include <sys/times.h>
 
-int  openfile( char  *filename,
-               char  mode[],
-               FILE  **fp );
+int  openfile( const char *const filename,
+               const char mode[],
+               FILE  **const fp );
 
 
-int openFile( char       *filename,
-              char       mode[],
-              FILE       **fp,
-              Clock      start,
-              struct tms tms_start,
-	      Boole	 mayExit);
+int openFile( const char *const filename,
+              const char        mode[],
+              FILE      **const fp,
+              const Clock       start,
+              const struct tms  tms_start,
+	      const Boole       mayExit);
 
-FILE *ad_fopen(const char *path, const char *mode);
+FILE *ad_fopen(const char *const path, const char *const mode);
 
 #endif

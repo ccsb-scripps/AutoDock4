@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.h,v 1.9 2010/05/19 19:47:13 mp Exp $
+ $Id: ls.h,v 1.10 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -47,7 +47,7 @@ class Local_Search
       Local_Search(void);
       virtual ~Local_Search(void);
       virtual void reset(void) = 0;
-      virtual int terminate(void) = 0;
+      virtual int terminate(void) const = 0;
       virtual int search(Individual &) = 0;
       unsigned int ls_count;//search invocation count, for run statistics
 };
@@ -65,19 +65,19 @@ class Pattern_Search : public Local_Search
 			unsigned int successes;
       //int HJ_bias; // not implemented
       //Real * step_scales; // not implemented
-			Phenotype exploratory_move(const Phenotype&);
-			Phenotype pattern_explore(const Phenotype&);
-			Phenotype pattern_move(const Phenotype&);
-			void reset_pattern(void);
-			void reset_indexes(void);
-			void shuffle_indexes(void);
+			Phenotype exploratory_move(const Phenotype&) /* not const */;
+			Phenotype pattern_explore(const Phenotype&) /* not const */;
+			Phenotype pattern_move(const Phenotype&) const;
+			void reset_pattern(void) /* not const */ ;
+			void reset_indexes(void) /* not const */ ;
+			void shuffle_indexes(void) /* not const */ ;
    public:
       Pattern_Search(void);
       Pattern_Search(unsigned int, unsigned int, Real, Real, Real, Real, Real);
       ~Pattern_Search(void);
       void reset(void);
-      int terminate(void);
-      int search(Individual &);
+      int terminate(void) const;
+      int search(/* not const */ Individual &);
 };
 
 class Solis_Wets_Base : public Local_Search
@@ -92,10 +92,10 @@ class Solis_Wets_Base : public Local_Search
       Solis_Wets_Base(void);
       Solis_Wets_Base(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real);
       virtual ~Solis_Wets_Base(void);
-      virtual double gen_deviates(Real) = 0;
-      virtual Boole SW(Phenotype &) = 0;
+      virtual double gen_deviates(const Real) const = 0;
+      virtual Boole SW(/* not const */ Phenotype &) = 0;
       virtual void reset(void);
-      virtual int terminate(void);
+      virtual int terminate(void) const;
       int search(Individual &);
 };
 
@@ -108,8 +108,8 @@ class Solis_Wets : public Solis_Wets_Base
       Solis_Wets(void);
       Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real, Real, Real);
       virtual ~Solis_Wets(void);
-      virtual double gen_deviates(Real) = 0;
-      Boole SW(Phenotype &);
+      virtual double gen_deviates(const Real) const = 0;
+      Boole SW(/* not const */ Phenotype &);
 };
 
 class Pseudo_Solis_Wets : public Solis_Wets_Base
@@ -123,7 +123,7 @@ class Pseudo_Solis_Wets : public Solis_Wets_Base
       Pseudo_Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real);
       Pseudo_Solis_Wets(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real, Real *, Real *);
       virtual ~Pseudo_Solis_Wets(void);
-      virtual double gen_deviates(Real) = 0;
+      virtual double gen_deviates(const Real) const = 0;
       Boole SW(Phenotype &);
 };
 
@@ -133,7 +133,7 @@ class Solis_Wets1 : public Solis_Wets
       Solis_Wets1(void);
       Solis_Wets1(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real, Real, Real);
       ~Solis_Wets1(void);
-      double gen_deviates(Real);
+      double gen_deviates(const Real) const;
 };
 
 class Solis_Wets2 : public Solis_Wets
@@ -142,7 +142,7 @@ class Solis_Wets2 : public Solis_Wets
       Solis_Wets2(void);
       Solis_Wets2(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real, Real, Real);
       ~Solis_Wets2(void);
-      double gen_deviates(Real);
+      double gen_deviates(const Real) const;
 };
 
 class Pseudo_Solis_Wets1 : public Pseudo_Solis_Wets
@@ -152,7 +152,7 @@ class Pseudo_Solis_Wets1 : public Pseudo_Solis_Wets
       Pseudo_Solis_Wets1(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real);
       Pseudo_Solis_Wets1(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real, Real *, Real *);
       ~Pseudo_Solis_Wets1(void);
-      double gen_deviates(Real);
+      double gen_deviates(const Real) const;
 };
 
 class Pseudo_Solis_Wets2 : public Pseudo_Solis_Wets
@@ -162,7 +162,7 @@ class Pseudo_Solis_Wets2 : public Pseudo_Solis_Wets
       Pseudo_Solis_Wets2(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real);
       Pseudo_Solis_Wets2(unsigned int, unsigned int, unsigned int, unsigned int, Real, Real, Real, Real *, Real *);
       ~Pseudo_Solis_Wets2(void);
-      double gen_deviates(Real);
+      double gen_deviates(const Real) const;
 };
 
 //  Inline Functions
@@ -208,7 +208,7 @@ inline void Solis_Wets_Base::reset(void)
    ls_count = 0; // reset Statistics
 }
 
-inline int Solis_Wets_Base::terminate(void)
+inline int Solis_Wets_Base::terminate(void) const
 {
    return(0);  //  Don't terminate
 }
@@ -288,7 +288,7 @@ inline Solis_Wets1::~Solis_Wets1(void)
 {
 }
 
-inline double Solis_Wets1::gen_deviates(Real rho)
+inline double Solis_Wets1::gen_deviates(const Real rho) const
 {
    return(gennor(0.0, rho));
 }
@@ -310,7 +310,7 @@ inline Solis_Wets2::~Solis_Wets2(void)
 {
 }
 
-inline double Solis_Wets2::gen_deviates(Real rho)
+inline double Solis_Wets2::gen_deviates(const Real rho) const
 {
    return(genunf(-rho/2.0, rho/2.0));
 }
@@ -343,7 +343,7 @@ inline Pseudo_Solis_Wets1::~Pseudo_Solis_Wets1(void)
 {
 }
 
-inline double Pseudo_Solis_Wets1::gen_deviates(Real rho)
+inline double Pseudo_Solis_Wets1::gen_deviates(const Real rho) const
 {
    return(gennor(0.0, rho));
 }
@@ -376,7 +376,7 @@ inline Pseudo_Solis_Wets2::~Pseudo_Solis_Wets2(void)
 {
 }
 
-inline double Pseudo_Solis_Wets2::gen_deviates(Real rho)
+inline double Pseudo_Solis_Wets2::gen_deviates(const Real rho) const
 {
    return(genunf(-rho/2.0, rho/2.0));
 }

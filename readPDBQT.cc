@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.30 2010/06/19 02:51:24 mp Exp $
+ $Id: readPDBQT.cc,v 1.31 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -54,51 +54,51 @@ extern int      true_ligand_atoms;
 
 /*----------------------------------------------------------------------------*/
 Molecule readPDBQT(char input_line[LINE_LEN],
-                    int num_atom_maps,
+                    const int num_atom_maps,
 
-                    int *P_natom,
+                    int *const P_natom,
                     Real crdpdb[MAX_ATOMS][NTRN],
                     Real crdreo[MAX_ATOMS][NTRN],
                     Real charge[MAX_ATOMS],
-                    Boole * P_B_haveCharges,
+                    Boole *const P_B_haveCharges,
                     int map_index[MAX_ATOMS], //was:int type[MAX_ATOMS]
                     int bond_index[MAX_ATOMS],
                     char pdbaname[MAX_ATOMS][5],
 
-                    char *FN_ligand,
-                    char *FN_flexres,
-                    Boole B_have_flexible_residues,
+                    char *const FN_ligand,
+                    char *const FN_flexres,
+                    const Boole B_have_flexible_residues,
 
                     char atomstuff[MAX_ATOMS][MAX_CHARS],
-                    int *P_n_heavy_atoms_in_ligand,
+                    int *const P_n_heavy_atoms_in_ligand,
 
-                    Boole * P_B_constrain,
-                    int *P_atomC1,
-                    int *P_atomC2,
-                    Real *P_sqlower,
-                    Real *P_squpper,
+                    Boole *const P_B_constrain,
+                    int *const P_atomC1,
+                    int *const P_atomC2,
+                    Real *const P_sqlower,
+                    Real *const P_squpper,
 
-                    int *P_ntor1,
-                    int *P_ntor,
-                    int *P_ntor_ligand,   // the number of torsions in the ligand (excluding the flexible residues in receptor)
+                    int *const P_ntor1,
+                    int *const P_ntor,
+                    int *const P_ntor_ligand,   // the number of torsions in the ligand (excluding the flexible residues in receptor)
                     int tlist[MAX_TORS][MAX_ATOMS],
                     Real vt[MAX_TORS][NTRN],
 
-                    int *P_Nnb,
-                    NonbondParam *nonbondlist,
+                    int *const P_Nnb,
+                    NonbondParam *const nonbondlist,
 
-                    Clock jobStart,
-                    struct tms tms_jobStart,
-                    char *hostnm,
-                    int *P_ntorsdof,
-                    int outlev,
+                    const Clock jobStart,
+                    const struct tms tms_jobStart,
+                    const char *const hostnm,
+                    int *const P_ntorsdof,
+                    const int outlev,
                     int ignore_inter[MAX_ATOMS],
-                    int B_include_1_4_interactions,
+                    const int B_include_1_4_interactions,
 
                     Atom atoms[MAX_ATOMS],
-                    char PDBQT_record[MAX_RECORDS][LINE_LEN],
+                    /* not const */ char PDBQT_record[MAX_RECORDS][LINE_LEN],
 
-                    int end_of_branch[MAX_TORS]
+                    /* not const */ int end_of_branch[MAX_TORS]
                     )
 
 {
@@ -661,10 +661,10 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 void
 readPDBQTLine( char line[LINE_LEN],
-               int  *ptr_serial,
+               int  *const ptr_serial,
                Real crd[SPACE],
-               Real *ptr_q,
-               ParameterEntry *this_parameter_entry )
+               Real *const ptr_q,
+               ParameterEntry *const this_parameter_entry )
 /*----------------------------------------------------------------------------*/
 {
     char char8[9];

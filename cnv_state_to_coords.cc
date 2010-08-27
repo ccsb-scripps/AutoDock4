@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.cc,v 1.9 2009/05/08 23:02:11 rhuey Exp $
+ $Id: cnv_state_to_coords.cc,v 1.10 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -45,11 +45,11 @@ extern FILE *logFile;
 extern int true_ligand_atoms;
 
 void cnv_state_to_coords( const State now,
-                          Real vt[MAX_TORS][SPACE],
-                          int tlist[MAX_TORS][MAX_ATOMS],
+                          const Real vt[MAX_TORS][SPACE],
+                          const int tlist[MAX_TORS][MAX_ATOMS],
                           const int ntor,
-                          Real crdpdb[MAX_ATOMS][SPACE],
-                          Real crd[MAX_ATOMS][SPACE],
+                          const Real crdpdb[MAX_ATOMS][SPACE],
+                          /* not const */ Real crd[MAX_ATOMS][SPACE],
                           const int natom)
 
 {
@@ -68,7 +68,7 @@ void cnv_state_to_coords( const State now,
 
     //  Apply torsions, if any
     if (ntor > 0) {
-        torsion( now, crd, vt, tlist, ntor );
+        torsion( now, crd, vt, tlist, ntor ); /* all const except for crd */
     }
 
 #ifdef LSQFIT
@@ -92,7 +92,7 @@ void cnv_state_to_coords( const State now,
 #endif
 
     //  Apply quaternion rigid-body rotation and translation...
-    qtransform( now.T, now.Q, crd, true_ligand_atoms );
+    qtransform( now.T, now.Q, crd, true_ligand_atoms ); // all const except crd
 
 #ifdef DEBUG
     } else {

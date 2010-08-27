@@ -1,6 +1,6 @@
 /*
 
- $Id: usage.cc,v 1.5 2009/05/08 23:02:19 rhuey Exp $
+ $Id: usage.cc,v 1.6 2010/08/27 00:05:09 mp Exp $
 
  AutoDock 
 
@@ -32,13 +32,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "usage.h"
 
 
-extern char    AutoDockHelp[];
-
 /*----------------------------------------------------------------------------*/
-void usage( FILE * file, char * programname )
+void usage( FILE *const file, const char *const programname )
 /*----------------------------------------------------------------------------*/
 {
-    char    AutoDockHelp[] = \
+    const char AutoDockHelp[] = \
     "\t-p parameter_filename\n" \
     "\t\t\t-l log_filename\n" \
     "\t\t\t-k (Keep original residue numbers)\n" \

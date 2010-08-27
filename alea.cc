@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <time.h>
 
-double alea( double a, double b)
+double alea( const double a, const double b)
 {
 	//random number (uniform distribution) in [a b]
 	double r ;
@@ -13,7 +13,7 @@ double alea( double a, double b)
 }
 
 
-int alea_integer(int a, int b)
+int alea_integer(const int a, const int b)
 {
 	// Integer random number in [a b]
 	int ir;

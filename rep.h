@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.h,v 1.16 2009/05/08 23:02:17 rhuey Exp $
+ $Id: rep.h,v 1.17 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -72,7 +72,7 @@ class Representation
 
    public:
       Representation(void);
-      Representation(unsigned int);
+      Representation(const unsigned int);
       virtual ~Representation(void);
       virtual Representation &operator=(const Representation &) = 0;
       unsigned int number_of_points(void) const;
@@ -80,11 +80,11 @@ class Representation
       void set_normalized_true(void);
       void set_normalized_false(void);
       virtual RepType type(void) const; 
-      virtual void write(unsigned char, int) = 0;
-      virtual void write(FourByteLong, int) = 0;
-      virtual void write(double, int) = 0;
+      virtual void write(const unsigned char, const int) = 0; /* not const, e.g. in bitvector */
+      virtual void write(const FourByteLong, const int) = 0;
+      virtual void write(const double, const int) = 0; /* not const, e.g. in RealVector */
       virtual void write(const Element, int) = 0;
-      virtual const Element gene(unsigned int) const = 0;
+      virtual const Element gene(const unsigned int) const = 0;
       virtual Representation *clone(void) const = 0;
       virtual const void *internals(void) const = 0;
 };
@@ -101,17 +101,17 @@ class IntVector : public Representation
 
    public:
       IntVector(void);
-      IntVector(int);
-      IntVector(int, FourByteLong *);
-      IntVector(int, FourByteLong, FourByteLong);
+      IntVector(const int);
+      IntVector(const int, FourByteLong *const);
+      IntVector(const int, const FourByteLong, const FourByteLong);
       IntVector(const IntVector &);
       ~IntVector(void);
-      void write(unsigned char, int);
-      void write(FourByteLong, int);
-      void write(double, int);
-      void write(const Element, int);
+      void write(const unsigned char, const int); /* not const - inherited */
+      void write(const FourByteLong, const int); /* not const */
+      void write(const double, const int);
+      void write(const Element, const int); /* not const */
       Representation &operator=(const Representation &);
-      const Element gene(unsigned int) const;
+      const Element gene(const unsigned int) const;
 };
 
 class RealVector : public Representation
@@ -133,20 +133,20 @@ class RealVector : public Representation
             mytype = T_RealV;
         }
 
-      RealVector(int);
-      RealVector(int, double *);
-      RealVector(int, double, double);
+      RealVector(/* not const */ int);
+      RealVector(const int, double *const);
+      RealVector(/* not const */ int, const double, const double);
       // Use this to set the first value in the vector--useful for random quaternions
-      RealVector(int, double, double, double); 
-      RealVector(int, double, double, double, double, double, double);  // sets a quaternion's x,y,z,w values
+      RealVector(const int, const double, const double, const double); 
+      RealVector(const int, const double, const double, const double, const double, const double, const double);  // sets a quaternion's x,y,z,w values
       // Use this to create a vector of length 3 with these values--useful for random quaternions
-      RealVector(int, double, double, double, double, double ); 
+      RealVector(const int, const double, const double, const double, const double, const double ); 
       RealVector(const RealVector &);
       ~RealVector(void);
-      void write(unsigned char, int);
-      void write(FourByteLong, int);
+      void write(const unsigned char, const int) /* not const - inherited */;
+      void write(const FourByteLong, const int); /* not const, e.g. in IntVector */
 //    void write(const void *, int);
-      void write(const Element, int);
+      void write(const Element, const int) /* not const */;
       Representation &operator=(const Representation &);
 //    const void *gene(unsigned int) const;
 #ifdef DEBUG
@@ -166,11 +166,11 @@ class RealVector : public Representation
       }
       */
       // non-inlined versions, possibly with range checking
-      void write(double, int);
-      const Element gene(unsigned int) const;
+      void write(const double, const int) /* not const */;
+      const Element gene(const unsigned int) const;
 #else
       // non-inlined versions, possibly with range checking
-      void write(double, int);
+      void write(const double, const int) /* not const */;
       const Element gene(unsigned int) const;
 #endif
 };
@@ -186,22 +186,22 @@ class ConstrainedRealVector : public Representation
 
       const void *internals(void) const;
       Representation *clone(void) const;
-      void normalize(void);
+      void normalize(void); /* not const */
 
    public:
       ConstrainedRealVector(void);
-      ConstrainedRealVector(int);
-      ConstrainedRealVector(int, double *);
-      ConstrainedRealVector(int, double, double);
+      ConstrainedRealVector(/* not const */ int);
+      ConstrainedRealVector(int, double *const);
+      ConstrainedRealVector(/* not const */ int, const double, const double);
       ConstrainedRealVector(const ConstrainedRealVector &);
       ~ConstrainedRealVector(void);
-      void write(unsigned char, int);
-      void write(FourByteLong, int);
-      void write(double, int);
-      void write(const Element, int);
+      void write(const unsigned char, const int) /* not const - inherited */;
+      void write(const FourByteLong, const int) /* not const - e.g. in IntVector */;
+      void write(const double, const int); /* not const */ 
+      void write(const Element, const int); /* not const */ 
       void write(double, double, double, double);
       Representation &operator=(const Representation &);
-      const Element gene(unsigned int) const;
+      const Element gene(const unsigned int) const;
 };
 
 class BitVector : public Representation
@@ -216,19 +216,19 @@ class BitVector : public Representation
 
    public:
       BitVector(void);
-      BitVector(int);
-      BitVector(int, unsigned char *);
-      BitVector(int, Real);
+      BitVector(/* not const */ int);
+      BitVector(int, unsigned char *const);
+      BitVector(/* not const */ int, const Real);
       BitVector(const BitVector &);
       ~BitVector(void);
-      void write(unsigned char, int);
-      void write(FourByteLong, int);
-      void write(double, int);
+      void write(const unsigned char, const int); /* not const */
+      void write(const FourByteLong, const int); /* not const - inherited */
+      void write(const double, const int); /* not const - inherited */
 //      void write(const void *, int);
-      void write(const Element, int);
+      void write(const Element, const int); /* not const */
       Representation &operator=(const Representation &);
 //      const void *gene(unsigned int) const;
-      const Element gene(unsigned int) const;
+      const Element gene(const unsigned int) const;
 };
 
 /**************************************************************************
@@ -241,7 +241,7 @@ inline Representation::Representation(void)
     mytype = T_BASE;
 }
 
-inline Representation::Representation(unsigned int pts)
+inline Representation::Representation(const unsigned int pts)
     : number_of_pts(pts) 
 {
 }
@@ -288,7 +288,7 @@ inline IntVector::IntVector(void)
 }
 
 //  This constructor does a shallow copy of the array
-inline IntVector::IntVector(int num_els, FourByteLong *array)
+inline IntVector::IntVector(const int num_els, FourByteLong *const array)
 : Representation(num_els), vector(array)
 {
     mytype = T_IntV;
@@ -308,7 +308,7 @@ inline Representation *IntVector::clone(void) const
 }
 
 //  This performs a shallow copy of the array
-inline RealVector::RealVector(int num_els, double *array)
+inline RealVector::RealVector(const int num_els, double *const array)
 : Representation(num_els), high(REALV_HIGH), low(REALV_LOW), 
         vector(array)
 {
@@ -336,7 +336,7 @@ inline ConstrainedRealVector::ConstrainedRealVector(void)
    mytype = T_CRealV;
 }
 
-inline ConstrainedRealVector::ConstrainedRealVector(int num_els, double *array)
+inline ConstrainedRealVector::ConstrainedRealVector(const int num_els, double *const array)
 :  Representation(num_els)
 {
    normalized = 0;
@@ -365,7 +365,7 @@ inline BitVector::BitVector(void)
 }
 
 //  Do a shallow copy
-inline BitVector::BitVector(int num_els, unsigned char *array)
+inline BitVector::BitVector(int num_els, unsigned char *const array)
 : Representation(num_els)
 {
    vector = array;

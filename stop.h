@@ -1,6 +1,6 @@
 /*
 
- $Id: stop.h,v 1.4 2009/06/10 00:09:09 rhuey Exp $
+ $Id: stop.h,v 1.5 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -30,5 +30,5 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "print_2x.h"
 
-void  stop(const char* reason);
+void  stop(const char *const reason);
 #endif

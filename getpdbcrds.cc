@@ -1,6 +1,6 @@
 /*
 
- $Id: getpdbcrds.cc,v 1.6 2009/05/08 23:02:12 rhuey Exp $
+ $Id: getpdbcrds.cc,v 1.7 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -40,8 +40,8 @@ extern FILE *logFile;
 extern char *programname;
 
 
-int getpdbcrds( char *rms_ref_crds_FN,
-		Real ref_crds[MAX_ATOMS][SPACE] )
+int getpdbcrds( const char *const rms_ref_crds_FN,
+		/* not const */ Real ref_crds[MAX_ATOMS][SPACE] )
 {
     int ii=0;
     int natoms=0;

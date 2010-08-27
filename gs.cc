@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.42 2010/05/14 21:25:51 mp Exp $
+ $Id: gs.cc,v 1.43 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -74,12 +74,11 @@ extern int debug;//debug
 //#define DEBUG_MUTATION
 
 
-double worst_in_window(double *window, int size)
+double worst_in_window(const double *const window, const int size) 
 {
    register int i;
-   double worst;
 
-   worst = window[0];
+   double worst = window[0];
 
 #ifdef DEBUG2
    (void)fprintf(logFile, "gs.cc/double worst_in_window(double *window, int size)_________________________\n");//debug
@@ -108,10 +107,10 @@ double worst_in_window(double *window, int size)
    return(worst);
 }
 
-double avg_in_window(double *window, int size)
+double avg_in_window(const double *const window, const int size) 
 {
    register int i;
-   double mysum = 0.0, myavg = 0.0;
+   double mysum = 0.0;
 
 #ifdef DEBUG2
    (void)fprintf(logFile, "gs.cc/avg_in_window(double *window, int size)_________________________\n");//debug
@@ -122,7 +121,7 @@ double avg_in_window(double *window, int size)
       (void)fprintf(logFile, "gs.cc/mysum= %.3f\twindow[%d]= %.3f\n",mysum, i, window[i]);//debug
 #endif
    }
-   myavg = mysum / size;
+   const double myavg = mysum / size;
 #ifdef DEBUG2
    (void)fprintf(logFile, "gs.cc/Returning: myavg= %.3f\n\n",myavg);//debug
 #endif
@@ -130,8 +129,8 @@ double avg_in_window(double *window, int size)
    return(myavg);
 }
 
-//  Also set avg
-double Genetic_Algorithm::worst_this_generation(Population &pop)
+//  Also set avg -- and because of avg this is not a const function
+double Genetic_Algorithm::worst_this_generation(const Population &pop)
 {
    register unsigned int i;
    double worstval, avgval;
@@ -170,16 +169,16 @@ double Genetic_Algorithm::worst_this_generation(Population &pop)
 
 //  This could be made inline
 
-Genetic_Algorithm::Genetic_Algorithm( EvalMode init_e_mode, 
-                                      Selection_Mode init_s_mode, 
-                                      Xover_Mode init_c_mode,
-                                      Worst_Mode init_w_mode, 
-                                      int init_elitism, 
-                                      Real init_c_rate, 
-                                      Real init_m_rate, 
-                                      int init_window_size, 
-                                      unsigned int init_max_generations,
-                                      Output_pop_stats init_output_pop_stats)
+Genetic_Algorithm::Genetic_Algorithm( const EvalMode init_e_mode, 
+                                      const Selection_Mode init_s_mode, 
+                                      const Xover_Mode init_c_mode,
+                                      const Worst_Mode init_w_mode, 
+                                      const int init_elitism, 
+                                      const Real init_c_rate, 
+                                      const Real init_m_rate, 
+                                      const int init_window_size, 
+                                      const unsigned int init_max_generations,
+                                      const Output_pop_stats init_output_pop_stats)
 
 :  e_mode(init_e_mode),
 s_mode(init_s_mode),
@@ -216,7 +215,7 @@ linear_ranking_selection_probability_ratio(2.0)
    worst_window = new double[window_size];
 }
 
-int Genetic_Algorithm::set_linear_ranking_selection_probability_ratio(Real r)
+int Genetic_Algorithm::set_linear_ranking_selection_probability_ratio(const Real r)
 {
     if (r<0.) return -1;  //ERROR!
     linear_ranking_selection_probability_ratio = r;
@@ -225,7 +224,7 @@ int Genetic_Algorithm::set_linear_ranking_selection_probability_ratio(Real r)
 
 
 
-void Genetic_Algorithm::set_worst(Population &currentPop)
+void Genetic_Algorithm::set_worst(const Population &currentPop)
 {
    double temp = 0.0;
 
@@ -264,7 +263,7 @@ void Genetic_Algorithm::set_worst(Population &currentPop)
    }
 }
 
-M_mode Genetic_Algorithm::m_type(RepType type)
+M_mode Genetic_Algorithm::m_type(const RepType type) const
 {
 
 #ifdef DEBUG
@@ -285,7 +284,7 @@ M_mode Genetic_Algorithm::m_type(RepType type)
    }
 }
 
-void Genetic_Algorithm::make_table(int size, Real prob)
+void Genetic_Algorithm::make_table(const int size, const Real prob)
 {
    register int i, j;
    double L = 0.0L;
@@ -352,7 +351,7 @@ void Genetic_Algorithm::make_table(int size, Real prob)
 #endif
 }
 
-int Genetic_Algorithm::check_table(Real prob)
+int Genetic_Algorithm::check_table(const Real prob)
 {
    int low, high;
 
@@ -394,7 +393,7 @@ int Genetic_Algorithm::check_table(Real prob)
    return(low);
 }
 
-void Genetic_Algorithm::initialize(unsigned int pop_size, unsigned int num_poss_mutations)
+void Genetic_Algorithm::initialize(const unsigned int pop_size, const unsigned int num_poss_mutations)
 {
    register unsigned int i;
 
@@ -427,7 +426,7 @@ void Genetic_Algorithm::initialize(unsigned int pop_size, unsigned int num_poss_
    make_table(pop_size*num_poss_mutations, m_rate);
 }
 
-void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number)
+void Genetic_Algorithm::mutate(Genotype &mutant, const int gene_number)
 {
    Element tempvar;
 
@@ -796,7 +795,7 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsign
 }
 
 
-void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, unsigned int num_genes)
+void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, const unsigned int num_genes)
 {
 #ifdef DEBUG
     (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_uniform(Genotype");
@@ -873,7 +872,7 @@ void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, un
     } // next i
 }
 
-void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, Real alpha)
+void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, const Real alpha)
 {
    register unsigned int i;
    Element temp_A, temp_B;

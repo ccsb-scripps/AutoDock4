@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.h,v 1.7 2009/06/10 00:09:09 rhuey Exp $
+ $Id: banner.h,v 1.8 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -27,7 +27,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef BANNER
 #define BANNER
 #include "typedefs.h"
-void banner( const char * version_num );
-void show_copyright( FILE *fp );
-void show_warranty( FILE *fp );
+void banner( const char *const version_num );
+void show_copyright( FILE *const fp );
+void show_warranty( FILE *const fp );
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.h,v 1.8 2009/09/16 21:57:52 rhuey Exp $
+ $Id: prInitialState.h,v 1.9 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -32,17 +32,17 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "printEnergies.h"
 
 void  prInitialState( 
-    EnergyBreakdown *eb,
-    int natom,
-    Real crd[MAX_ATOMS][SPACE],
-    char atomstuff[MAX_ATOMS][MAX_CHARS],
-    int type[MAX_ATOMS],
-    Real emap[MAX_ATOMS],
-    Real elec[MAX_ATOMS],
-    Real charge[MAX_ATOMS],
-    int ligand_is_inhibitor,
-    Boole B_have_flexible_residues,
-    Unbound_Model ad4_unbound_model
+    const EnergyBreakdown *eb,
+    const int natom,
+    const Real crd[MAX_ATOMS][SPACE],
+    const char atomstuff[MAX_ATOMS][MAX_CHARS],
+    const int type[MAX_ATOMS],
+    const Real emap[MAX_ATOMS],
+    const Real elec[MAX_ATOMS],
+    const Real charge[MAX_ATOMS],
+    const int ligand_is_inhibitor,
+    const Boole B_have_flexible_residues,
+    const Unbound_Model ad4_unbound_model
     );
 
 #endif

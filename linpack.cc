@@ -1,6 +1,6 @@
 /*
 
- $Id: linpack.cc,v 1.3 2006/04/25 22:32:28 garrett Exp $
+ $Id: linpack.cc,v 1.4 2010/08/27 00:05:07 mp Exp $
 
 */
 
@@ -13,7 +13,7 @@
 #include <math.h>
 #include "structs.h"
 
-Real sdot(FourByteLong n,Real *sx,FourByteLong incx,Real *sy,FourByteLong incy)
+Real sdot(const FourByteLong n,const Real *const sx,const FourByteLong incx,const Real *const sy,const FourByteLong incy)
 {
 static FourByteLong i,ix,iy,m,mp1;
 static Real sdot,stemp;
@@ -43,7 +43,7 @@ S60:
     sdot = stemp;
     return sdot;
 }
-void spofa(Real *a,FourByteLong lda,FourByteLong n,FourByteLong *info)
+void spofa(/* not const */ Real *const a,const FourByteLong lda,const FourByteLong n,/* not const */ FourByteLong *const info)
 /*
      SPOFA FACTORS A REAL SYMMETRIC POSITIVE DEFINITE MATRIX.
      SPOFA IS USUALLY CALLED BY SPOCO, BUT IT CAN BE CALLED
@@ -74,7 +74,7 @@ void spofa(Real *a,FourByteLong lda,FourByteLong n,FourByteLong *info)
      INTERNAL VARIABLES
 */
 {
-extern Real sdot(FourByteLong n,Real *sx,FourByteLong incx,Real *sy,FourByteLong incy);
+extern Real sdot(const FourByteLong n,const Real *const sx,const FourByteLong incx,const Real *const sy,const FourByteLong incy);
 static FourByteLong j,jm1,k;
 static Real t,s;
 /*

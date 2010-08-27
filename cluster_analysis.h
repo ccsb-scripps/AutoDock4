@@ -1,6 +1,6 @@
 /*
 
- $Id: cluster_analysis.h,v 1.6 2010/04/09 18:49:09 mp Exp $
+ $Id: cluster_analysis.h,v 1.7 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -30,20 +30,20 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "getrms.h"
 
 
-int  cluster_analysis( Real clus_rms_tol, 
-                       int   cluster[MAX_RUNS][MAX_RUNS], 
-                       int   num_in_clus[MAX_RUNS], 
-                       int   isort[MAX_RUNS], 
-                       int   nconf, 
-                       int   natom, 
-                       int   type[MAX_ATOMS], 
-                       Real crd[MAX_RUNS][MAX_ATOMS][SPACE], 
-                       Real crdpdb[MAX_ATOMS][SPACE], 
-                       Real sml_center[SPACE], 
-                       Real clu_rms[MAX_RUNS][MAX_RUNS], 
-                       Boole B_symmetry_flag,
-                       Boole B_unique_pair_flag,
-                       Real ref_crds[MAX_ATOMS][SPACE],
-                       int   ref_natoms,
-                       Real ref_rms[MAX_RUNS]);
+int  cluster_analysis( const Real clus_rms_tol, 
+                       /* not const */ int   cluster[MAX_RUNS][MAX_RUNS], 
+                       /* not const */ int   num_in_clus[MAX_RUNS], 
+                       const int   isort[MAX_RUNS], 
+                       const int   nconf, 
+                       const int   natom, 
+                       const int   type[MAX_ATOMS], 
+                       const Real crd[MAX_RUNS][MAX_ATOMS][SPACE], 
+                       const Real crdpdb[MAX_ATOMS][SPACE], 
+                       const Real sml_center[SPACE], 
+                       /* not const */ Real clu_rms[MAX_RUNS][MAX_RUNS], 
+                       const Boole B_symmetry_flag,
+                       const Boole B_unique_pair_flag,
+                       /* not const */ Real ref_crds[MAX_ATOMS][SPACE],
+		       const int   ref_natoms,
+                       /* not const */ Real ref_rms[MAX_RUNS]);
 #endif

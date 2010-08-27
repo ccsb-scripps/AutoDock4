@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.cc,v 1.6 2009/05/08 23:02:14 rhuey Exp $
+ $Id: openfile.cc,v 1.7 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -26,7 +26,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 
- $Id: openfile.cc,v 1.6 2009/05/08 23:02:14 rhuey Exp $
+ $Id: openfile.cc,v 1.7 2010/08/27 00:05:07 mp Exp $
 
 */
 
@@ -51,13 +51,12 @@ extern char *programname;
 extern FILE *logFile;
 /*----------------------------------------------------------------------------*/
 /* fopen rewrite to either use BOINC api or normal system call */
-FILE *ad_fopen(const char *path, const char *mode)
+FILE *ad_fopen(const char *const path, const char *const mode)
 {
   FILE *filep;
 #ifdef BOINC
-  int rc;
   char resolved_name[512];
-  rc = boinc_resolve_filename(path, resolved_name, sizeof(resolved_name));
+  const int rc = boinc_resolve_filename(path, resolved_name, sizeof(resolved_name));
   if (rc){
       fprintf(stderr, "BOINC_ERROR: cannot open filename.%s\n",path);
       boinc_finish(rc);    /* back to BOINC core */
@@ -71,9 +70,9 @@ FILE *ad_fopen(const char *path, const char *mode)
 }
 
 /*----------------------------------------------------------------------------*/
-int openfile( char *filename,
-	      char mode[],
-	      FILE **fp )
+int openfile( const char *const filename,
+	      const char mode[],
+	      FILE **const fp )
 
 {
 	if ( (*fp = ad_fopen(filename, mode)) == NULL ) {
@@ -85,12 +84,12 @@ int openfile( char *filename,
 }
 
 /*----------------------------------------------------------------------------*/
-int openFile( char       *filename,
-	      char       mode[],
-	      FILE       **fp,
-	      Clock      start,
-	      struct tms tms_start,
-	      Boole      mayExit)
+int openFile( const char *const filename,
+	      const char        mode[],
+	      FILE      **const fp,
+	      const Clock       start,
+	      const struct tms  tms_start,
+	      const Boole       mayExit)
 
 {
     Clock  jobEnd;

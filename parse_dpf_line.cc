@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.31 2010/05/27 23:19:21 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.32 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -35,7 +35,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 
 
-int parse_dpf_line( const char *line )
+int parse_dpf_line( const char line[] )
 
 /******************************************************************************/
 /*      Name: parse_dpf_line                                                  */

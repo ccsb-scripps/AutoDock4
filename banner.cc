@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.20 2010/06/09 04:02:00 mp Exp $
+ $Id: banner.cc,v 1.21 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -33,7 +33,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern FILE *logFile;
 
-void banner( const char * version_num )
+void banner( const char *const version_num )
 {
 
 /*----------------------------------------------------------------------------*/
@@ -101,7 +101,7 @@ void banner( const char * version_num )
 
 /*----------------------------------------------------------------------------*/
 
-void show_copyright( FILE *fp )
+void show_copyright( FILE *const fp )
 {
 
 // GNU BEGIN   (see maintenance script update_license_de-GNU)
@@ -365,7 +365,7 @@ void show_copyright( FILE *fp )
 
 /*----------------------------------------------------------------------------*/
 
-void show_warranty( FILE *fp )
+void show_warranty( FILE *const fp )
 {
 
     (void) fprintf( fp, "NO WARRANTY\n");

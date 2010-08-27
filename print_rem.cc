@@ -1,6 +1,6 @@
 /*
 
- $Id: print_rem.cc,v 1.5 2009/05/08 23:02:16 rhuey Exp $
+ $Id: print_rem.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -32,11 +32,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "print_rem.h"
 
 
-void print_rem( FILE *outFile,
-		int Rank,
-		int NumMem,
-		int Run,
-		Real ref_rms)
+void print_rem( FILE *const outFile,
+		const int Rank,
+		const int NumMem,
+		const int Run,
+		const Real ref_rms)
 {
     fprintf( outFile, "MODEL     %4d\n", Run );
     fprintf( outFile, "USER    Run = %d\n", Run );

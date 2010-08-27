@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.h,v 1.6 2009/05/08 23:02:16 rhuey Exp $
+ $Id: ranlib.h,v 1.7 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -31,38 +31,38 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "typedefs.h"
 
-extern void advnst(FourByteLong k);
-extern Real genbet(Real aa,Real bb);
-extern Real genchi(Real df);
-extern Real genexp(Real av);
-extern Real genf(Real dfn, Real dfd);
-extern Real gengam(Real a,Real r);
-extern void genmn(Real *parm,Real *x,Real *work);
-extern void genmul(FourByteLong n,Real *p,FourByteLong ncat,FourByteLong *ix);
-extern Real gennch(Real df,Real xnonc);
-extern Real gennf(Real dfn, Real dfd, Real xnonc);
-extern Real gennor(Real av,Real sd);
-extern void genprm(FourByteLong *iarray,int larray);
-extern Real genunf(Real low,Real high);
-extern void getsd(FourByteLong *iseed1,FourByteLong *iseed2);
-extern void gscgn(FourByteLong getset,FourByteLong *g);
-extern FourByteLong ignbin(FourByteLong n,Real pp);
-extern FourByteLong ignnbn(FourByteLong n,Real p);
+extern void advnst(const FourByteLong k);
+extern Real genbet(const Real aa,const Real bb);
+extern Real genchi(const Real df);
+extern Real genexp(const Real av);
+extern Real genf(const Real dfn, const Real dfd);
+extern Real gengam(const Real a,const Real r);
+extern void genmn(const Real *const parm, /* not const */ Real *const x, /* not const */ Real *const work);
+extern void genmul(const FourByteLong n,const Real *const p,const FourByteLong ncat,/* not const */ FourByteLong *const ix);
+extern Real gennch(const Real df,const Real xnonc);
+extern Real gennf(const Real dfn, const Real dfd, const Real xnonc);
+extern Real gennor(const Real av,const Real sd);
+extern void genprm(/* not const */FourByteLong *const iarray,const int larray);
+extern Real genunf(const Real low,const Real high);
+extern void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2);
+extern void gscgn(const FourByteLong getset,const FourByteLong *g);
+extern FourByteLong ignbin(const FourByteLong n,const Real pp);
+extern FourByteLong ignnbn(const FourByteLong n,const Real p);
 extern FourByteLong ignlgi(void);
-extern FourByteLong ignpoi(Real mu);
-extern FourByteLong ignuin(FourByteLong low,FourByteLong high);
-extern void initgn(FourByteLong isdtyp);
-extern FourByteLong mltmod(FourByteLong a,FourByteLong s,FourByteLong m);
-extern void phrtsd(char* phrase,FourByteLong* seed1,FourByteLong* seed2);
+extern FourByteLong ignpoi(const Real mu);
+extern FourByteLong ignuin(const FourByteLong low,const FourByteLong high);
+extern void initgn(const FourByteLong isdtyp);
+extern FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourByteLong m);
+extern void phrtsd(const char *const phrase,FourByteLong *const seed1,FourByteLong *const seed2);
 extern Real ranf(void);
-extern void setall(FourByteLong iseed1,FourByteLong iseed2);
-extern void setant(FourByteLong qvalue);
-extern void setgmn(Real *meanv,Real *covm,FourByteLong p,Real *parm);
-extern void setsd(FourByteLong iseed1,FourByteLong iseed2);
+extern void setall(const FourByteLong iseed1,const FourByteLong iseed2);
+extern void setant(const FourByteLong qvalue);
+extern void setgmn(const Real *const meanv,Real *const covm,const FourByteLong p,Real *const parm);
+extern void setsd(const FourByteLong iseed1,const FourByteLong iseed2);
 extern Real sexpo(void);
 extern Real sgamma(Real a);
 extern Real snorm(void);
-extern Real rcauchy(Real, Real);
+extern Real rcauchy(const Real, const Real);
 extern Real scauchy1(void);
 extern Real scauchy2(void);
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: readGridMap.cc,v 1.9 2010/06/12 05:54:04 mp Exp $
+ $Id: readGridMap.cc,v 1.10 2010/08/27 00:05:08 mp Exp $
 
  AutoDock  
 
@@ -45,6 +45,7 @@ extern int debug;
 
 char mapf2c(Real);
 
+//FIXME: well, one could pass tmsJobStart by reference
 void readmap( Boole *P_B_HaveMap, 
              int *P_imap, 
              int *num_atom_types, 
@@ -53,17 +54,17 @@ void readmap( Boole *P_B_HaveMap,
              char *ExtFldFileName,
              int ExtGridPts1[SPACE],
              int ExtGridPts[SPACE],
-             Clock jobStart,
+             const Clock jobStart,
              char line[LINE_LEN],
              char *ExtMacromolFileName,
                 #include "map_declare.h"
              Real MapCenter[SPACE],
              Real MapMax[MAX_MAPS],
              Real MapMin[MAX_MAPS],
-             struct tms tmsJobStart,
-             Boole B_charMap,
-             int outlev,
-             GridMap grid_map)
+             const struct tms tmsJobStart,
+             const Boole B_charMap,
+             int outlev, //FIXME: unused
+             GridMap grid_map) //FIXME: unused
 
 {
     FILE *mapFilePtr;

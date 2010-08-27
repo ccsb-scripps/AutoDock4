@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.h,v 1.7 2009/06/10 00:09:09 rhuey Exp $
+ $Id: setflags.h,v 1.8 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -29,8 +29,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "usage.h"
 
-int setflags( int argc, 
-              char ** argv,
-              const char * version_num);
+int setflags( /* not const */int argc, 
+              const char ** /* not const */ argv,
+              const char *const version_num);
 
 #endif

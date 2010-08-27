@@ -1,6 +1,6 @@
 /*
 
- $Id: print_avsfld.cc,v 1.6 2009/05/08 23:02:16 rhuey Exp $
+ $Id: print_avsfld.cc,v 1.7 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -33,14 +33,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "autocomm.h"
 
 
-void print_avsfld( FILE *logFile,
-		   int veclen,
-		   int natom,
-		   int nframe,
-		   int offset[VECLENMAX],
-		   int stride,
-		   char *label,
-		   char *filename )
+void print_avsfld( FILE *const logFile,
+		   const int veclen,
+		   const int natom,
+		   const int nframe,
+		   const int offset[VECLENMAX],
+		   const int stride,
+		   const char *const label,
+		   const char *const filename )
 {
     int i;
 

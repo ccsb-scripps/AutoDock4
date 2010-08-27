@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.19 2009/09/22 20:42:39 rhuey Exp $
+ $Id: printEnergies.cc,v 1.20 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -42,11 +42,11 @@ extern Real nb_group_energy[3];
 
 #define print1000(file, x) pr(file,  ((fabs((x)) >= 0.0) && ((fabs(x)) <= 1000.)) ? "%+7.2f" : "%+11.2e" , (x));
 
-void print1000_no_sign(FILE* file, double x) {
+void print1000_no_sign(FILE *const file, const double x) {
     pr(file,  ((fabs((x)) >= 0.01) && ((fabs(x)) <= 1000.)) ? "%7.2f" : "%11.2e" , (x));
 }
 
-void print_molar(FILE* file, double x) {
+void print_molar(FILE *const file, const double x) {
     // 1e-3  <= x < 1     mM millimolar
     // 1e-6  <= x < 1e-3  uM micromolar
     // 1e-9  <= x < 1e-6  nM nanomolar
@@ -77,13 +77,13 @@ void print_molar(FILE* file, double x) {
     }
 }
 
-void printEnergies( EnergyBreakdown *eb,
-                    const char *prefixString,
-                    int  ligand_is_inhibitor,
-                    Real emap_total,
-                    Real elec_total,
-                    Boole B_have_flexible_residues, 
-                    Unbound_Model ad4_unbound_model
+void printEnergies( const EnergyBreakdown *const eb,
+                    const char *const prefixString,
+                    const int  ligand_is_inhibitor,
+                    const Real emap_total,
+                    const Real elec_total,
+                    const Boole B_have_flexible_residues, 
+                    const Unbound_Model ad4_unbound_model
                    )
 
 {
@@ -172,7 +172,7 @@ void printEnergies( EnergyBreakdown *eb,
     pr( logFile, "%s\n", prefixString);
 }
 
-void printStateEnergies( EnergyBreakdown *eb, const char  *prefixString, int ligand_is_inhibitor )
+void printStateEnergies( const EnergyBreakdown *const eb, const char  *const prefixString, const int ligand_is_inhibitor )
 {
     // Real deltaG = 0.0;
     Real Ki = 1.0;

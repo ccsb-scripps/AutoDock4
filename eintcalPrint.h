@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcalPrint.h,v 1.14 2009/05/08 23:02:12 rhuey Exp $
+ $Id: eintcalPrint.h,v 1.15 2010/08/27 00:05:07 mp Exp $
 
  AutoDock  
 
@@ -27,7 +27,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef _EINTCALPRINT
 #define _EINTCALPRINT
 
-Real  eintcalPrint( NonbondParam * const nonbondlist,
+Real  eintcalPrint( const NonbondParam * const nonbondlist,
                      const EnergyTables  *ad_energy_tables,
                      const Real tcoord[MAX_ATOMS][SPACE],
                      const int   Nnb,

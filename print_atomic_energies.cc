@@ -1,6 +1,6 @@
 /*
 
- $Id: print_atomic_energies.cc,v 1.5 2009/05/08 23:02:15 rhuey Exp $
+ $Id: print_atomic_energies.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -36,12 +36,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 
 /*----------------------------------------------------------------------------*/
-void print_atomic_energies( int natom, 
-			    char atomstuff[MAX_ATOMS][MAX_CHARS],
-			    int type[MAX_ATOMS],
-			    Real emap[MAX_ATOMS],
-			    Real elec[MAX_ATOMS],
-			    Real charge[MAX_ATOMS] )
+void print_atomic_energies( const int natom, 
+			    const char atomstuff[MAX_ATOMS][MAX_CHARS],
+			    const int type[MAX_ATOMS],
+			    const Real emap[MAX_ATOMS],
+			    const Real elec[MAX_ATOMS],
+			    const Real charge[MAX_ATOMS] )
 
 /*----------------------------------------------------------------------------*/
 {

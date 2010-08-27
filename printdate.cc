@@ -1,6 +1,6 @@
 /*
 
- $Id: printdate.cc,v 1.5 2009/05/08 23:02:16 rhuey Exp $
+ $Id: printdate.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -39,7 +39,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "printdate.h"
 
-void printdate( FILE *fp, int flag )
+void printdate( FILE *const fp, const int flag )
 {
     time_t tn; /* tn = "time_now" */
     char *StringTimeDate;

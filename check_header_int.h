@@ -1,6 +1,6 @@
 /*
 
- $Id: check_header_int.h,v 1.4 2009/05/08 23:02:11 rhuey Exp $
+ $Id: check_header_int.h,v 1.5 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -31,8 +31,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "print_2x.h"
 #include "stop.h"
 
-void  check_header_int( int   i1, 
-                        int   i2, 
-                        char  axis, 
-                        char  * filename );
+void  check_header_int( const int   i1, 
+                        const int   i2, 
+                        const char  axis, 
+                        const char  *const filename );
 #endif

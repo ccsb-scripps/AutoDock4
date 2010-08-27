@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.cc,v 1.13 2010/06/19 02:51:24 mp Exp $
+ $Id: initautodock.cc,v 1.14 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -42,16 +42,16 @@ extern int   keepresnum;
 extern FILE *logFile;
 extern char  *programname;
 
-void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
-                    Real crd[MAX_ATOMS][SPACE],
-                    Real crdpdb[MAX_ATOMS][SPACE],
-                    int   natom,
-                    int   ntor,
-                    State *s0,
-                    int   tlist[MAX_TORS][MAX_ATOMS],
-                    Real vt[MAX_TORS][SPACE],
-                    int   outlev,
-                    GridMapSetInfo *info )
+void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
+                    /* not const */ Real crd[MAX_ATOMS][SPACE],
+                    const Real crdpdb[MAX_ATOMS][SPACE],
+                    const int   natom,
+                    const int   ntor,
+                    /* not const */ State *const s0,
+                    const int   tlist[MAX_TORS][MAX_ATOMS],
+                    const Real vt[MAX_TORS][SPACE],
+                    const int   outlev,
+                    const GridMapSetInfo *const info )
 
 {
     Boole B_change = FALSE;
@@ -144,7 +144,7 @@ void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
         }
 
         mkUnitQuat( &(s0->Q) );
-        cnv_state_to_coords( *s0,  vt, tlist, ntor,  crdpdb, crd, natom);
+        cnv_state_to_coords( *s0,  vt, tlist, ntor,  crdpdb, crd, natom); // all const except crd
 
         for (i = 0;  i < natom;  i++) {
             B_outside = is_out_grid_info( crd[i][X], crd[i][Y], crd[i][Z] );

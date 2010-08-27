@@ -1,6 +1,6 @@
 /*
 
- $Id: swap.h,v 1.3 2009/05/08 23:02:18 rhuey Exp $
+ $Id: swap.h,v 1.4 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -26,5 +26,5 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #ifndef SWAP
 #define SWAP
-void swap( int   v[], int i, int j );
+void swap( int   v[], const int i, const int j );
 #endif

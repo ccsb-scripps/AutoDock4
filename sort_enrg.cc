@@ -1,6 +1,6 @@
 /*
 
- $Id: sort_enrg.cc,v 1.6 2009/05/08 23:02:17 rhuey Exp $
+ $Id: sort_enrg.cc,v 1.7 2010/08/27 00:05:08 mp Exp $
 
  AutoDock 
 
@@ -32,9 +32,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern FILE *logFile;
 
-void sort_enrg( Real econf[MAX_RUNS],
-                int isort[MAX_RUNS],
-		int nconf )
+void sort_enrg( const Real econf[MAX_RUNS],
+      /* not const */ int  isort[MAX_RUNS],
+		const int  nconf )
 
 {
 /*__________________________________________________________________________

@@ -1,6 +1,6 @@
 /*
 
- $Id: check_header_float.h,v 1.5 2009/05/08 23:02:11 rhuey Exp $
+ $Id: check_header_float.h,v 1.6 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -27,8 +27,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef CHKHDFLOAT
 #define CHKHDFLOAT
 
-void  check_header_float( Real f1, 
-			  Real f2, 
-			  char  keyword[], 
-			  char  filename[] );
+void  check_header_float( const Real f1, 
+			  const Real f2, 
+			  const char  keyword[], 
+			  const char  filename[] );
 #endif

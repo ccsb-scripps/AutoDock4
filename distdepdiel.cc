@@ -1,6 +1,6 @@
 /*
 
- $Id: distdepdiel.cc,v 1.3 2009/05/08 23:02:12 rhuey Exp $
+ $Id: distdepdiel.cc,v 1.4 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -28,7 +28,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "distdepdiel.h"
 
 
-double calc_ddd_Mehler_Solmajer( double distance, double approx_zero ) {
+double calc_ddd_Mehler_Solmajer( const double distance, const double approx_zero ) {
     /*____________________________________________________________________________
      * Distance-dependent dielectric ewds: Mehler and Solmajer, Prot Eng 4, 903-910.
      *____________________________________________________________________________*/

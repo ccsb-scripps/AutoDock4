@@ -1,6 +1,6 @@
 /*
 
- $Id: parsetypes.cc,v 1.5 2009/05/08 23:02:15 rhuey Exp $
+ $Id: parsetypes.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
 
  AutoDock  
 
@@ -29,8 +29,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <ctype.h>
 #include "parsetypes.h"
 
-int parsetypes(char * line, char *words[], int maxwords)
-/*utility func for parsing types*/
+int parsetypes(char  line[], char * words[], const int maxwords)
+/*utility func for parsing types: caution: modifies "line" in place */
 {
 /******************************************************************************/
 /*      Name: parsetypes                                                      */

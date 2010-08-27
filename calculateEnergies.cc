@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.13 2010/04/15 19:30:44 mp Exp $
+ $Id: calculateEnergies.cc,v 1.14 2010/08/27 00:05:07 mp Exp $
 
  AutoDock  
 
@@ -52,11 +52,11 @@ extern Real nb_group_energy[3];
 //      B_include_1_4_interactions, scale_1_4, scale_eintermol, qsp_abs_charge,  B_use_non_bond_cutoff );
 
 EnergyBreakdown calculateEnergies(
-    int                  natom,                     // input  number of atoms
-    int                  ntor,                      // input  number of torsions
-    Real                 unbound_internal_FE,       // input  pre-calculated internal energy of unbound state
-    Real                 torsFreeEnergy,            // input  constant times number of freely-rotatable bonds
-    Boole                B_have_flexible_residues,  // input  boolean whether we have flexible residues in protein
+    const int            natom,                     // input  number of atoms
+    const int            ntor,                      // input  number of torsions
+    const Real           unbound_internal_FE,       // input  pre-calculated internal energy of unbound state
+    const Real           torsFreeEnergy,            // input  constant times number of freely-rotatable bonds
+    const Boole          B_have_flexible_residues,  // input  boolean whether we have flexible residues in protein
 
     // trilinterp
     const Real           tcoord[MAX_ATOMS][SPACE],  // input  coordinates of atoms to be trilinearly-interpolated
@@ -64,24 +64,24 @@ EnergyBreakdown calculateEnergies(
     CONST_FLOAT          abs_charge[MAX_ATOMS],     // input  absolute magnitude of partial charges
     CONST_INT            type[MAX_ATOMS],           // input  atom type of each atom
     #include "map_declare.h"
-    GridMapSetInfo       *info,                     // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
-    int                  B_outside,                 // input  boolean whether some atoms are outside grid box
-    int                  ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
+    const GridMapSetInfo *const info,               // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
+    const int            B_outside,                 // input  boolean whether some atoms are outside grid box
+    const int            ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
     Real                 elec[MAX_ATOMS],           // output if not NULL - electrostatic energies, atom by atom
     Real                 emap[MAX_ATOMS],           // output if not NULL - intermolecular energies
-    Real                 *p_elec_total,             // output if not NULL - total electrostatic energy
-    Real                 *p_emap_total,             // output if not NULL - total intermolecular energy
+    Real                 *const p_elec_total,       // output if not NULL - total electrostatic energy
+    Real                 *const p_emap_total,       // output if not NULL - total intermolecular energy
 
     // eintcal
-    NonbondParam * const         nonbondlist,       // input  list of nonbonds
-    const EnergyTables   *ptr_ad_energy_tables,     // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
+    const NonbondParam *const nonbondlist,          // input  list of nonbonds
+    const EnergyTables *const ptr_ad_energy_tables, // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
     const int            Nnb,                       // input  total number of nonbonds
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           scale_eintermol,                 // input  scaling factor for intermolecular energies
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
-    const Boole          B_use_non_bond_cutoff     // input  boolean whether to use a nonbond distance cutoff
+    const Boole          B_use_non_bond_cutoff      // input  boolean whether to use a nonbond distance cutoff
 
 )
 
@@ -123,7 +123,7 @@ EnergyBreakdown calculateEnergies(
     return eb;
 } // calculateEnergies()
 
-void update_energy_breakdown( EnergyBreakdown * eb )
+void update_energy_breakdown( /* not const */ EnergyBreakdown * eb )
 {
     // total intermolecular energy = (1) + (4)
     eb->e_inter     = eb->e_inter_moving_fixed + eb->e_inter_moving_moving;
@@ -141,9 +141,9 @@ void update_energy_breakdown( EnergyBreakdown * eb )
     eb->deltaG = eb->e_inter + eb->e_intra + eb->e_torsFreeEnergy - eb->e_unbound_internal_FE;
 }
 
-void initialise_energy_breakdown ( EnergyBreakdown * eb,
-                                   Real torsFreeEnergy, 
-                                   Real unbound_internal_FE )
+void initialise_energy_breakdown ( /* not const */ EnergyBreakdown * eb,
+                                   const Real torsFreeEnergy, 
+                                   const Real unbound_internal_FE )
 {
     eb->e_inter_moving_fixed = 0.0;      // (1)  // trilinterp( 0, true_ligand_atoms, ...)
     eb->e_intra_moving_fixed_rec = 0.0;  // (2)  // trilinterp( true_ligand_atoms, natom, ...)
@@ -167,11 +167,11 @@ void initialise_energy_breakdown ( EnergyBreakdown * eb,
 // which might create conformations with high internal energies.
 
 EnergyBreakdown calculateBindingEnergies(
-    int                  natom,                     // input  number of atoms
-    int                  ntor,                      // input  number of torsions
-    Real                 unbound_internal_FE,       // input  pre-calculated internal energy of unbound state
-    Real                 torsFreeEnergy,            // input  constant times number of freely-rotatable bonds
-    Boole                B_have_flexible_residues,  // input  boolean whether we have flexible residues in protein
+    const int            natom,                     // input  number of atoms
+    const int            ntor,                      // input  number of torsions
+    const Real           unbound_internal_FE,       // input  pre-calculated internal energy of unbound state
+    const Real           torsFreeEnergy,            // input  constant times number of freely-rotatable bonds
+    const Boole          B_have_flexible_residues,  // input  boolean whether we have flexible residues in protein
 
     // trilinterp
     const Real           tcoord[MAX_ATOMS][SPACE],  // input  coordinates of atoms to be trilinearly-interpolated
@@ -179,24 +179,24 @@ EnergyBreakdown calculateBindingEnergies(
     CONST_FLOAT          abs_charge[MAX_ATOMS],     // input  absolute magnitude of partial charges
     CONST_INT            type[MAX_ATOMS],           // input  atom type of each atom
     #include "map_declare.h"
-    GridMapSetInfo       *info,                     // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
-    int                  B_outside,                 // input  boolean whether some atoms are outside grid box
-    int                  ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
+    const GridMapSetInfo *const info,               // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
+    const int            B_outside,                 // input  boolean whether some atoms are outside grid box
+    const int            ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
     Real                 elec[MAX_ATOMS],           // output if not NULL - electrostatic energies, atom by atom
     Real                 emap[MAX_ATOMS],           // output if not NULL - intermolecular energies
-    Real                 *p_elec_total,             // output if not NULL - total electrostatic energy
-    Real                 *p_emap_total,             // output if not NULL - total intermolecular energy
+    Real                 *const p_elec_total,       // output if not NULL - total electrostatic energy
+    Real                 *const p_emap_total,       // output if not NULL - total intermolecular energy
 
     // eintcal
-    NonbondParam * const         nonbondlist,       // input  list of nonbonds
-    const EnergyTables   *ptr_ad_energy_tables,     // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
+    const NonbondParam *const nonbondlist,          // input  list of nonbonds
+    const EnergyTables *const ptr_ad_energy_tables, // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
     const int            Nnb,                       // input  total number of nonbonds
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
     const Boole          B_use_non_bond_cutoff,     // input  boolean whether to use a nonbond distance cutoff
-    Unbound_Model ad4_unbound_model
+    const Unbound_Model  ad4_unbound_model
 
 )
 
@@ -238,7 +238,7 @@ EnergyBreakdown calculateBindingEnergies(
     return eb;
 } // calculateBindingEnergies()
 
-void update_binding_energy_breakdown( EnergyBreakdown * eb, Unbound_Model ad4_unbound_model )
+void update_binding_energy_breakdown( /* not const */ EnergyBreakdown *const eb, const Unbound_Model ad4_unbound_model )
 {
     // total intermolecular energy = (1) + (4)
     eb->e_inter     = eb->e_inter_moving_fixed + eb->e_inter_moving_moving;
@@ -278,10 +278,10 @@ void update_binding_energy_breakdown( EnergyBreakdown * eb, Unbound_Model ad4_un
     eb->deltaG = eb->e_inter + eb->e_intra + eb->e_torsFreeEnergy - eb->e_unbound_internal_FE;
 }
 
-void initialise_binding_energy_breakdown( EnergyBreakdown * eb,
-                                          Real torsFreeEnergy, 
-                                          Real unbound_internal_FE ,
-                                          Unbound_Model ad4_unbound_model)
+void initialise_binding_energy_breakdown( /* not const */ EnergyBreakdown *const eb,
+                                          const Real torsFreeEnergy, 
+                                          const Real unbound_internal_FE ,
+                                          const Unbound_Model ad4_unbound_model)
         {
     eb->e_inter_moving_fixed = 0.0;      // (1)  // trilinterp( 0, true_ligand_atoms, ...)
     eb->e_intra_moving_fixed_rec = 0.0;  // (2)  // trilinterp( true_ligand_atoms, natom, ...)

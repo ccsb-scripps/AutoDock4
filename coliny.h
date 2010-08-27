@@ -1,6 +1,6 @@
 /*
 
- $Id: coliny.h,v 1.6 2009/05/08 23:02:12 rhuey Exp $
+ $Id: coliny.h,v 1.7 2010/08/27 00:05:07 mp Exp $
 
  AutoDock 
 
@@ -40,15 +40,15 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 //
 // Initialize the 'algname' coliny optimizer over 'domain'
 //
-void coliny_init(char* algname, char* domain, int num_vars);
+void coliny_init(const char *const algname, const char *const domain, const int num_vars);
 
 //
 // Perform minimization with a given seed and initial point. Return
 // summary statistics
 //
-void coliny_minimize(int seed, std::vector<double>& initpt,
-				std::vector<double>& finalpt,
-				int& neval, int& niters);
+void coliny_minimize(const int seed, const std::vector<double>& initpt,
+				/* not const */ std::vector<double>& finalpt,
+				/* unused */ const int& neval, /* unused */ const int& niters);
 
 #endif
 
