@@ -1,6 +1,6 @@
 /*
 
- $Id: check_header_float.cc,v 1.6 2010/08/27 00:05:07 mp Exp $
+ $Id: check_header_float.cc,v 1.7 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -37,7 +37,7 @@ extern char *programname;
 extern FILE *logFile;
 
 
-void check_header_float( const Real f1, const Real f2, const char keyword[], const char filename[] )
+void check_header_float( ConstReal   f1, ConstReal   f2, const char keyword[], const char filename[] )
 
 {
     if ( f1 != f2 ) { 

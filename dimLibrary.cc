@@ -10,7 +10,7 @@
 extern FILE *logFile;
 
 
-void copyDimension( /* not const */ State *const S, const Position R)
+void copyDimension( /* not const */ State *const S, const Position& R)
 {
         register int i, j;
         S->T.x = R.x[0];
@@ -27,7 +27,7 @@ void copyDimension( /* not const */ State *const S, const Position R)
 }
 
 
-void copyState2Dimension(Position *const R , const State S)
+void copyState2Dimension(Position *const R , const State& S)
 {
         register int i, j;
 	R->x[0] = S.T.x;

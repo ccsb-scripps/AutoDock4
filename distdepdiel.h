@@ -1,6 +1,6 @@
 /*
 
- $Id: distdepdiel.h,v 1.4 2010/08/27 00:05:07 mp Exp $
+ $Id: distdepdiel.h,v 1.5 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -28,6 +28,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define _DISTDEPDIEL
 
 
-double calc_ddd_Mehler_Solmajer( const double distance, const double aprrox_zero );
+double calc_ddd_Mehler_Solmajer( const double& distance, const double& aprrox_zero );
 
 #endif

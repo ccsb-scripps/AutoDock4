@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.h,v 1.7 2010/08/27 00:05:08 mp Exp $
+ $Id: ranlib.h,v 1.8 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -32,24 +32,24 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "typedefs.h"
 
 extern void advnst(const FourByteLong k);
-extern Real genbet(const Real aa,const Real bb);
-extern Real genchi(const Real df);
-extern Real genexp(const Real av);
-extern Real genf(const Real dfn, const Real dfd);
-extern Real gengam(const Real a,const Real r);
+extern Real genbet(ConstReal  aa,ConstReal  bb);
+extern Real genchi(ConstReal  df);
+extern Real genexp(ConstReal  av);
+extern Real genf(ConstReal  dfn, ConstReal  dfd);
+extern Real gengam(ConstReal  a,ConstReal  r);
 extern void genmn(const Real *const parm, /* not const */ Real *const x, /* not const */ Real *const work);
 extern void genmul(const FourByteLong n,const Real *const p,const FourByteLong ncat,/* not const */ FourByteLong *const ix);
-extern Real gennch(const Real df,const Real xnonc);
-extern Real gennf(const Real dfn, const Real dfd, const Real xnonc);
-extern Real gennor(const Real av,const Real sd);
+extern Real gennch(ConstReal  df,ConstReal  xnonc);
+extern Real gennf(ConstReal  dfn, ConstReal  dfd, ConstReal  xnonc);
+extern Real gennor(ConstReal  av,ConstReal  sd);
 extern void genprm(/* not const */FourByteLong *const iarray,const int larray);
-extern Real genunf(const Real low,const Real high);
+extern Real genunf(ConstReal  low,ConstReal  high);
 extern void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2);
 extern void gscgn(const FourByteLong getset,const FourByteLong *g);
-extern FourByteLong ignbin(const FourByteLong n,const Real pp);
-extern FourByteLong ignnbn(const FourByteLong n,const Real p);
+extern FourByteLong ignbin(const FourByteLong n,ConstReal  pp);
+extern FourByteLong ignnbn(const FourByteLong n,ConstReal  p);
 extern FourByteLong ignlgi(void);
-extern FourByteLong ignpoi(const Real mu);
+extern FourByteLong ignpoi(ConstReal  mu);
 extern FourByteLong ignuin(const FourByteLong low,const FourByteLong high);
 extern void initgn(const FourByteLong isdtyp);
 extern FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourByteLong m);
@@ -60,9 +60,9 @@ extern void setant(const FourByteLong qvalue);
 extern void setgmn(const Real *const meanv,Real *const covm,const FourByteLong p,Real *const parm);
 extern void setsd(const FourByteLong iseed1,const FourByteLong iseed2);
 extern Real sexpo(void);
-extern Real sgamma(Real a);
+extern Real sgamma(ConstReal a);
 extern Real snorm(void);
-extern Real rcauchy(const Real, const Real);
+extern Real rcauchy(ConstReal , ConstReal );
 extern Real scauchy1(void);
 extern Real scauchy2(void);
 

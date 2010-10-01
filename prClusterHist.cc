@@ -1,6 +1,6 @@
 /*
 
- $Id: prClusterHist.cc,v 1.11 2010/08/27 00:05:08 mp Exp $
+ $Id: prClusterHist.cc,v 1.12 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -38,7 +38,7 @@ extern FILE *logFile;
 
 void prClusterHist( const int ncluster,
                     const int irunmax,
-                    const Real clus_rms_tol,
+                    ConstReal clus_rms_tol,
                     const int num_in_clu[MAX_RUNS],
                     const int cluster[MAX_RUNS][MAX_RUNS],
                     const Real econf[MAX_RUNS],

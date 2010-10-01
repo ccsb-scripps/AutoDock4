@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.43 2010/08/27 00:05:07 mp Exp $
+ $Id: gs.cc,v 1.44 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -174,11 +174,11 @@ Genetic_Algorithm::Genetic_Algorithm( const EvalMode init_e_mode,
                                       const Xover_Mode init_c_mode,
                                       const Worst_Mode init_w_mode, 
                                       const int init_elitism, 
-                                      const Real init_c_rate, 
-                                      const Real init_m_rate, 
+                                      ConstReal  init_c_rate, 
+                                      ConstReal  init_m_rate, 
                                       const int init_window_size, 
                                       const unsigned int init_max_generations,
-                                      const Output_pop_stats init_output_pop_stats)
+                                      const Output_pop_stats& init_output_pop_stats)
 
 :  e_mode(init_e_mode),
 s_mode(init_s_mode),
@@ -215,7 +215,7 @@ linear_ranking_selection_probability_ratio(2.0)
    worst_window = new double[window_size];
 }
 
-int Genetic_Algorithm::set_linear_ranking_selection_probability_ratio(const Real r)
+int Genetic_Algorithm::set_linear_ranking_selection_probability_ratio(ConstReal  r)
 {
     if (r<0.) return -1;  //ERROR!
     linear_ranking_selection_probability_ratio = r;
@@ -284,7 +284,7 @@ M_mode Genetic_Algorithm::m_type(const RepType type) const
    }
 }
 
-void Genetic_Algorithm::make_table(const int size, const Real prob)
+void Genetic_Algorithm::make_table(const int size, ConstReal  prob)
 {
    register int i, j;
    double L = 0.0L;
@@ -351,7 +351,7 @@ void Genetic_Algorithm::make_table(const int size, const Real prob)
 #endif
 }
 
-int Genetic_Algorithm::check_table(const Real prob)
+int Genetic_Algorithm::check_table(ConstReal  prob)
 {
    int low, high;
 
@@ -740,7 +740,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
 }
 
 
-void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsigned int pt1, unsigned int pt2)
+void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, const unsigned int pt1, const unsigned int pt2)
 {
     // Assumes that 0<=pt1<=pt2<=number_of_pts
 
@@ -872,7 +872,7 @@ void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, co
     } // next i
 }
 
-void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, const Real alpha)
+void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, ConstReal  alpha)
 {
    register unsigned int i;
    Element temp_A, temp_B;
@@ -977,7 +977,8 @@ void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, const Rea
  *    value of zero for it's expectation.
  */
 
-void Genetic_Algorithm::selection_proportional(Population &original_population, Individual *new_pop)
+/* not static */
+void Genetic_Algorithm::selection_proportional(Population &original_population, Individual *const new_pop)
 {
    register unsigned int i=0, start_index = 0;
    int temp_ordering, temp_index;
@@ -1243,7 +1244,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
  * between the best and worst individual.  Since 2P = C,
  * P = K/(1+K).
  */
-void Genetic_Algorithm::selection_tournament(Population &original_population, Individual *new_pop)
+void Genetic_Algorithm::selection_tournament(Population &original_population, Individual *const new_pop)
 {
    register unsigned int i = 0, start_index = 0;
    int temp_ordering, temp_index;
@@ -1306,7 +1307,8 @@ void Genetic_Algorithm::selection_tournament(Population &original_population, In
    Goldberg & Deb : c1=2*(c0-1) so 2*c0 = c1+2
 
  ***/
-void Genetic_Algorithm::selection_linear_ranking(Population &original_population, Individual *new_pop)
+void Genetic_Algorithm::selection_linear_ranking(/* not const (msort) */ Population &original_population,
+						 /* not const */ Individual *const new_pop) 
 {
    register unsigned int i = 0, start_index = 0;
 //#define DEBUG

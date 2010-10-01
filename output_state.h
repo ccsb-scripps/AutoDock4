@@ -1,6 +1,6 @@
 /*
 
- $Id: output_state.h,v 1.7 2010/08/27 00:05:08 mp Exp $
+ $Id: output_state.h,v 1.8 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -29,11 +29,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define OUTPUT_STATE
 #include "constants.h"
 void  output_state( FILE  *const fp,
-		    const State S,
+		    const State& S,
                     const int   ntor,
                     const int   istep,
-                    const Real energy,
-                    const Real eint,
+                    ConstReal energy,
+                    ConstReal eint,
                     const char  lastmove,
                     const Boole B_watch,
                     const char  *const FN_watch,

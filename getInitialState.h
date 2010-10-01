@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.h,v 1.18 2010/08/27 00:05:07 mp Exp $
+ $Id: getInitialState.h,v 1.19 2010/10/01 22:51:39 mp Exp $
 
  AutoDock  
 
@@ -39,7 +39,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 void getInitialState(  
             /* not const */ Real *const Addr_e0,
-            const Real e0max,
+            ConstReal  e0max,
 
 	    /* not const */ State *const sInit,
 	    /* not const */ State *const sMin,
@@ -73,18 +73,18 @@ void getInitialState(
             const int   outlev,
 	    const int   MaxRetries,
 
-	    const Real torsFreeEnergy,
+	    ConstReal  torsFreeEnergy,
 
             const int   ligand_is_inhibitor,
 
             const int ignore_inter[MAX_ATOMS],
 
             const Boole         B_include_1_4_interactions,
-            const Real scale_1_4,
-	    const Real scale_eintermol,
+            ConstReal  scale_1_4,
+	    ConstReal  scale_eintermol,
 
 
-            const Real unbound_internal_FE,
+            ConstReal  unbound_internal_FE,
 
             const GridMapSetInfo *const info,
             const Boole B_use_non_bond_cutoff,

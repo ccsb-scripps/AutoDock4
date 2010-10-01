@@ -1,6 +1,6 @@
 /*
 
- $Id: timesyshms.h,v 1.3 2009/05/08 23:02:18 rhuey Exp $
+ $Id: timesyshms.h,v 1.4 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -34,7 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "autocomm.h"
 #include "printhms.h"
 
-void  timesyshms( Clock  duration,
-                  struct tms *start,
-                  struct tms *end );
+void  timesyshms( const Clock&  duration,
+                  const struct tms *const start,
+                  const struct tms *const end );
 #endif

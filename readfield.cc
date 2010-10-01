@@ -1,6 +1,6 @@
 /*
 
- $Id: readfield.cc,v 1.7 2010/08/27 00:05:08 mp Exp $
+ $Id: readfield.cc,v 1.8 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -41,10 +41,8 @@ extern FILE *logFile;
 //FIXME: tms_jobStart could be passed by reference
 void readfield( /* not const */ GridMapSetInfo *const info,
                 /* not const */ char line[LINE_LEN],
-                const Clock jobStart,
-                const struct tms tms_jobStart )
-
-
+                const Clock& jobStart,
+                const struct tms& tms_jobStart )
 {
     FILE *fldFile;
     char rec9[9], inputline[LINE_LEN];

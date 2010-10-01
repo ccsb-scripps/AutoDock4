@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.20 2010/08/27 00:05:08 mp Exp $
+ $Id: printEnergies.cc,v 1.21 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -40,9 +40,11 @@ extern FILE *stateFile;
 extern int write_stateFile;
 extern Real nb_group_energy[3];
 
-#define print1000(file, x) pr(file,  ((fabs((x)) >= 0.0) && ((fabs(x)) <= 1000.)) ? "%+7.2f" : "%+11.2e" , (x));
+static inline void  print1000(FILE *file, ConstReal x) {
+	pr(file,  ((fabs((x)) >= 0.0) && ((fabs(x)) <= 1000.)) ? "%+7.2f" : "%+11.2e" , (x));
+}
 
-void print1000_no_sign(FILE *const file, const double x) {
+static inline void print1000_no_sign(FILE *const file, const double x) {
     pr(file,  ((fabs((x)) >= 0.01) && ((fabs(x)) <= 1000.)) ? "%7.2f" : "%11.2e" , (x));
 }
 
@@ -80,8 +82,8 @@ void print_molar(FILE *const file, const double x) {
 void printEnergies( const EnergyBreakdown *const eb,
                     const char *const prefixString,
                     const int  ligand_is_inhibitor,
-                    const Real emap_total,
-                    const Real elec_total,
+                    ConstReal emap_total,
+                    ConstReal elec_total,
                     const Boole B_have_flexible_residues, 
                     const Unbound_Model ad4_unbound_model
                    )

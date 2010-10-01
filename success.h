@@ -1,6 +1,6 @@
 /*
 
- $Id: success.h,v 1.4 2010/08/27 00:05:08 mp Exp $
+ $Id: success.h,v 1.5 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -33,6 +33,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "timesyshms.h"
 
 void  success( const char  hostnm[MAX_CHARS],
-               const Clock jobStart,
-               struct tms tms_jobStart );
+               const Clock& jobStart,
+               const struct tms& tms_jobStart );
 #endif

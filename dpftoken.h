@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.27 2010/05/27 22:45:07 mp Exp $
+ $Id: dpftoken.h,v 1.28 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -46,137 +46,139 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef DPF_TOKENS
 #define DPF_TOKENS
 
-#define	DPF_UNKNOWN	-1
-#define	DPF_NULL	 0
-#define	DPF_COMMENT	 1
+enum DpfTokens {
+  DPF_UNKNOWN                  = -1,
+  DPF_NULL                     =  0,
+  DPF_COMMENT                  =  1,
 // 2 // (DPF_TYPES was removed, since the "types" command is no longer supported in AD4
-#define	DPF_FLD		 3
-#define	DPF_MAP		 4
-#define	DPF_MOVE	 5
-#define	DPF_ABOUT	 6
-#define	DPF_TRAN0	 7
-#define	DPF_AXISANGLE0	 8
-#define	DPF_NDIHE	 9
-#define	DPF_DIHE0	10
-#define	DPF_TSTEP	11
-#define	DPF_QSTEP	12
-#define	DPF_DSTEP	13
-#define	DPF_TRNRF	14
-#define	DPF_QUARF	15
-#define	DPF_DIHRF	16
-#define	DPF_FLEX	17
-#define	DPF_INTNBP_COEFFS	18
-#define	DPF_RT0		19
-#define	DPF_RTRF	20
-#define	DPF_RUNS	21
-#define	DPF_CYCLES	22
-#define	DPF_ACCS	23
-#define	DPF_REJS	24
-#define	DPF_SELECT	25
-#define	DPF_OUTLEV	26
-#define	DPF_RMSTOL	27
-#define	DPF_TRJFRQ	28
-#define	DPF_TRJBEG	29
-#define	DPF_TRJEND	30
-#define	DPF_TRJOUT	31
-#define	DPF_TRJSEL	32
-#define	DPF_EXTNRG	33
-#define	DPF_NEWCRD	34
-#define	DPF_CLUSTER	35
-#define	DPF_CLUSALL	36
-#define	DPF_RMSNOSYM	37
-#define	DPF_SCHEDLIN	38
-#define	DPF_RMSREF	39
-#define	DPF_INTELEC	40
-#define	DPF_SEED	41
-#define	DPF_INTNBP_REQM_EPS	42
-#define	DPF_WATCH	43
-#define	DPF_GAUSSTORCON	44
-#define	DPF_BARRIER	45
-#define	DPF_SHOWTORPEN	46
-#define	DPF_HARDTORCON	47
-#define	DPF_E0MAX	48
-#define	DPF_CHARMAP	49
-#define	DPF_RAMP_VDW_REPULSION 50
-#define	DPF_SIMANNEAL	51
-#define	DPF_GALS	52
-#define DPF_SET_GA	53
-#define DPF_SET_SW1	54
-#define DPF_SET_PSW1	55
-#define GA_pop_size	56
-#define GA_num_generations	57
-#define GA_num_evals	58
-#define GA_window_size	59
-#define GA_low		60
-#define GA_high		61
-#define GA_elitism	62
-#define GA_mutation_rate	63
-#define GA_crossover_rate	64
-#define GA_Cauchy_alpha	65
-#define GA_Cauchy_beta	66
-#define SW_max_its	67
-#define SW_max_succ	68
-#define SW_max_fail	69
-#define SW_rho		70
-#define SW_lb_rho	71
-#define LS_search_freq	72
-#define DPF_LS		73
-#define DPF_GS		74
-#define	DPF_ANALYSIS	75
-#define	DPF_TORSDOF	76
-#define	DPF_INVESTIGATE	77
-#define DPF_LIG_NOT_INHIB 78
-#define DPF_TEMPL_ENERGY 79
-#define DPF_HOLLOW_OUT 80
-#define DPF_COLINY	81
-#define DPF_INCLUDE_1_4_INTERACTIONS	82
-#define DPF_PARAMETER_LIBRARY	83
-#define DPF_RECEPTOR_TYPES	    84
-#define DPF_LIGAND_TYPES	    85
-#define DPF_UNBOUND	    86
-#define DPF_EPDB	    87
-#define DPF_TERMINATION	    88
-#define GA_CROSSOVER_MODE	    89
-#define DPF_POPFILE 90
-#define DPF_SET_PATTERN 91
-#define DPF_COMPUTE_UNBOUND_EXTENDED	    92
-#define DPF_FLEXRES 93
-#define DPF_ELECMAP 94
-#define DPF_DESOLVMAP 95
-#define	DPF_UNBOUND_INTNBP_COEFFS	96
-#define	DPF_RMSATOMS	97
-#define DPF_CONFSAMPLER	98
-#define DPF_REORIENT	99
-#define	DPF_QUATERNION0	 100
-#define DPF_COPYRIGHT 101
-#define DPF_WARRANTY 102
-#define	DPF_QUAT0	 103
-#define DPF_PARAMETER_VERSION 104
-#define DPF_UNBOUND_MODEL 105
-#define PSW_TRANS_SCALE	106
-#define PSW_ROT_SCALE	107
-#define PSW_TORS_SCALE	108
-#define GA_PROPORTIONAL_SELECTION	109
-#define GA_TOURNAMENT_SELECTION	110
-#define GA_BOLTZMAN_SELECTION	111
-#define PSO_w		112
-#define PSO_w_start	113
-#define PSO_w_end	114
-#define PSO_c1 		115
-#define PSO_c2 		116
-#define PSO_mc 		117
-#define PSO_swarm_moves	118
-#define PSO_swarm_size_factor	119
-#define PSO_n_exec	120
-#define PSO_k		121
-#define DPF_PSO_CONSTRICTION	122	
-#define DPF_PSO_STANDARD_VW	123	
-#define DPF_PSO_STANDARD_CW	124	
-#define DPF_PSO_SSM		125	
-#define DPF_PARSWARMOPT	126	
-#define GA_LINEAR_RANKING_SELECTION	127
-#define DPF_RMSMODE	128
-#define DPF_SCALE_EINTERMOL	129
-#define DPF_OUTPUT_POP_STATS	130
+  DPF_FLD                      =  3,
+  DPF_MAP                      =  4,
+  DPF_MOVE                     =  5,
+  DPF_ABOUT                    =  6,
+  DPF_TRAN0                    =  7,
+  DPF_AXISANGLE0               =  8,
+  DPF_NDIHE                    =  9,
+  DPF_DIHE0                    = 10,
+  DPF_TSTEP                    = 11,
+  DPF_QSTEP                    = 12,
+  DPF_DSTEP                    = 13,
+  DPF_TRNRF                    = 14,
+  DPF_QUARF                    = 15,
+  DPF_DIHRF                    = 16,
+  DPF_FLEX                     = 17,
+  DPF_INTNBP_COEFFS            = 18,
+  DPF_RT0	               = 19,
+  DPF_RTRF                     = 20,
+  DPF_RUNS                     = 21,
+  DPF_CYCLES                   = 22,
+  DPF_ACCS                     = 23,
+  DPF_REJS                     = 24,
+  DPF_SELECT                   = 25,
+  DPF_OUTLEV                   = 26,
+  DPF_RMSTOL                   = 27,
+  DPF_TRJFRQ                   = 28,
+  DPF_TRJBEG                   = 29,
+  DPF_TRJEND                   = 30,
+  DPF_TRJOUT                   = 31,
+  DPF_TRJSEL                   = 32,
+  DPF_EXTNRG                   = 33,
+  DPF_NEWCRD                   = 34,
+  DPF_CLUSTER                  = 35,
+  DPF_CLUSALL                  = 36,
+  DPF_RMSNOSYM                 = 37,
+  DPF_SCHEDLIN                 = 38,
+  DPF_RMSREF                   = 39,
+  DPF_INTELEC                  = 40,
+  DPF_SEED                     = 41,
+  DPF_INTNBP_REQM_EPS          = 42,
+  DPF_WATCH                    = 43,
+  DPF_GAUSSTORCON              = 44,
+  DPF_BARRIER                  = 45,
+  DPF_SHOWTORPEN               = 46,
+  DPF_HARDTORCON               = 47,
+  DPF_E0MAX                    = 48,
+  DPF_CHARMAP                  = 49,
+  DPF_RAMP_VDW_REPULSION       = 50,
+  DPF_SIMANNEAL	               = 51,
+  DPF_GALS                     = 52,
+  DPF_SET_GA                   = 53,
+  DPF_SET_SW1                  = 54,
+  DPF_SET_PSW1                 = 55,
+  GA_pop_size                  = 56,
+  GA_num_generations           = 57,
+  GA_num_evals                 = 58,
+  GA_window_size               = 59,
+  GA_low                       = 60,
+  GA_high	               = 61,
+  GA_elitism                   = 62,
+  GA_mutation_rate             = 63,
+  GA_crossover_rate            = 64,
+  GA_Cauchy_alpha              = 65,
+  GA_Cauchy_beta               = 66,
+  SW_max_its                   = 67,
+  SW_max_succ                  = 68,
+  SW_max_fail                  = 69,
+  SW_rho                       = 70,
+  SW_lb_rho                    = 71,
+  LS_search_freq               = 72,
+  DPF_LS                       = 73,
+  DPF_GS                       = 74,
+  DPF_ANALYSIS	               = 75,
+  DPF_TORSDOF	               = 76,
+  DPF_INVESTIGATE	       = 77,
+  DPF_LIG_NOT_INHIB            = 78,
+  DPF_TEMPL_ENERGY             = 79,
+  DPF_HOLLOW_OUT               = 80,
+  DPF_COLINY	               = 81,
+  DPF_INCLUDE_1_4_INTERACTIONS = 82,
+  DPF_PARAMETER_LIBRARY	       = 83,
+  DPF_RECEPTOR_TYPES	       = 84,
+  DPF_LIGAND_TYPES	       = 85,
+  DPF_UNBOUND	               = 86,
+  DPF_EPDB	               = 87,
+  DPF_TERMINATION	       = 88,
+  GA_CROSSOVER_MODE	       = 89,
+  DPF_POPFILE                  = 90,
+  DPF_SET_PATTERN              = 91,
+  DPF_COMPUTE_UNBOUND_EXTENDED = 92,
+  DPF_FLEXRES                  = 93,
+  DPF_ELECMAP                  = 94,
+  DPF_DESOLVMAP                = 95,
+  DPF_UNBOUND_INTNBP_COEFFS    = 96,
+  DPF_RMSATOMS                 = 97,
+  DPF_CONFSAMPLER              = 98,
+  DPF_REORIENT                 = 99,
+  DPF_QUATERNION0              =100,
+  DPF_COPYRIGHT                =101,
+  DPF_WARRANTY                 =102,
+  DPF_QUAT0	               =103,
+  DPF_PARAMETER_VERSION        =104,
+  DPF_UNBOUND_MODEL            =105,
+  PSW_TRANS_SCALE              =106,
+  PSW_ROT_SCALE                =107,
+  PSW_TORS_SCALE               =108,
+  GA_PROPORTIONAL_SELECTION    =109,
+  GA_TOURNAMENT_SELECTION      =110,
+  GA_BOLTZMAN_SELECTION        =111,
+  PSO_w                        =112,
+  PSO_w_start	               =113,
+  PSO_w_end	               =114,
+  PSO_c1 		       =115,
+  PSO_c2 		       =116,
+  PSO_mc 		       =117,
+  PSO_swarm_moves	       =118,
+  PSO_swarm_size_factor	       =119,
+  PSO_n_exec                   =120,
+  PSO_k                        =121,
+  DPF_PSO_CONSTRICTION	       =122,
+  DPF_PSO_STANDARD_VW	       =123,
+  DPF_PSO_STANDARD_CW	       =124,
+  DPF_PSO_SSM		       =125,
+  DPF_PARSWARMOPT              =126,
+  GA_LINEAR_RANKING_SELECTION  =127,
+  DPF_RMSMODE                  =128,
+  DPF_SCALE_EINTERMOL          =129,
+  DPF_OUTPUT_POP_STATS         =130
+};
 #endif
 /* EOF */

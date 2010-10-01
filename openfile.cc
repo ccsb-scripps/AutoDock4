@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.cc,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: openfile.cc,v 1.8 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -26,7 +26,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 
- $Id: openfile.cc,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: openfile.cc,v 1.8 2010/10/01 22:51:39 mp Exp $
 
 */
 
@@ -87,8 +87,8 @@ int openfile( const char *const filename,
 int openFile( const char *const filename,
 	      const char        mode[],
 	      FILE      **const fp,
-	      const Clock       start,
-	      const struct tms  tms_start,
+	      const Clock&      start,
+	      const struct tms& tms_start,
 	      const Boole       mayExit)
 
 {

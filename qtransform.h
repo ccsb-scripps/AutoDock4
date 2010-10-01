@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.h,v 1.9 2010/08/27 00:05:08 mp Exp $
+ $Id: qtransform.h,v 1.10 2010/10/01 22:51:39 mp Exp $
 
  AutoDock  
 
@@ -35,8 +35,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "qmultiply.h"
 #include "torNorVec.h"
 
-void qtransform( const Coord T,
-	 	 const Quat  q,
+void qtransform( const Coord& T,
+	 	 const Quat&  q,
                  /* not const */ Real tcoord[MAX_ATOMS][SPACE],
 		 const int   natom);
 
@@ -47,8 +47,8 @@ void reorient( FILE *const logFile,
                const Real charge[MAX_ATOMS],
                const int type[MAX_ATOMS],
                const ParameterEntry parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
-               const Quat q_reorient,
-               const Coord origin,
+               const Quat& q_reorient,
+               const Coord& origin,
                const int ntor,
                const int tlist[MAX_TORS][MAX_ATOMS],
                /* not const */ Real vt[MAX_TORS][SPACE],

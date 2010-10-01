@@ -1,6 +1,6 @@
 /*
 
- $Id: atom_parameter_manager.cc,v 1.4 2009/05/08 23:02:10 rhuey Exp $
+ $Id: atom_parameter_manager.cc,v 1.5 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -45,7 +45,7 @@ hash(const char key[]) {
 }
 
 void 
-apm_enter(const char key[], PE value) {
+apm_enter(const char key[], const PE& value) {
     if (dictionary[hash(key)] == NULL) {
         dictionary[hash(key)] = (PE *) calloc(1, sizeof(PE));
     }

@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.19 2010/08/27 00:05:08 mp Exp $
+ $Id: read_parameter_library.cc,v 1.20 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -42,8 +42,9 @@ extern int debug;
 extern Linear_FE_Model AD4;
 
 
-Boole string_begins_with(const char *a, const char *b);
-Boole string_ends_with(const char *a, const char *b);
+static Boole string_begins_with(const char *const a, const char *const b);
+static Boole string_ends_with(const char *const a, const char *const b);
+
 static char parameter_library[MAX_CHARS];
 
 void read_parameter_library(
@@ -349,21 +350,22 @@ void setup_parameter_library( const int outlev, const char *const model_text, co
     } // while there is another line of parameters to read in
 }
 
-char * report_parameter_library() /* MP TODO const? */  {
+const char * report_parameter_library() {
     return parameter_library;
 }
 
-Boole string_begins_with(char *a, char *b) {
+static inline Boole string_begins_with(const char *const a, const char *const b) {
     // does string a begin with b  (eg   a begins with "version 4" )
     int alen=strlen(a);
     int blen=strlen(b);
     return alen>=blen && 0==strncmp(b, a, blen) ;
-    }
-Boole string_ends_with(char *a, char *b) {
+}
+
+static inline Boole string_ends_with(const char *const a, const char *const b) {
     // does string a end with b  (eg   a ends with .pdb)
     int alen=strlen(a);
     int blen=strlen(b);
     return alen>=blen && 0==strcmp(b, a+alen-blen) ;
+}
 
-    }
 /* EOF */

@@ -1,6 +1,6 @@
 /*
 
- $Id: rep_constants.h,v 1.5 2009/05/08 23:02:17 rhuey Exp $
+ $Id: rep_constants.h,v 1.6 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -28,20 +28,26 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define _REP_CONSTANTS
 
 // Translation
-#define X_TRANSLATION_INDEX 0
-#define Y_TRANSLATION_INDEX 1
-#define Z_TRANSLATION_INDEX 2
+enum TranslationEnum {
+	X_TRANSLATION_INDEX=0,
+	Y_TRANSLATION_INDEX=1,
+	Z_TRANSLATION_INDEX=2
+};
 
 // Quaternion
-#define QX_ROTATION_INDEX 3
-#define QY_ROTATION_INDEX 4
-#define QZ_ROTATION_INDEX 5
-#define QW_ROTATION_INDEX 6
+enum QuaternionEnum {
+	QX_ROTATION_INDEX=3,
+	QY_ROTATION_INDEX=4,
+	QZ_ROTATION_INDEX=5,
+	QW_ROTATION_INDEX=6
+};
 
 // Axis-Angle
-#define X_ROTATION_INDEX 3
-#define Y_ROTATION_INDEX 4
-#define Z_ROTATION_INDEX 5
+enum AxisAngleEnum {
+	X_ROTATION_INDEX=3,
+	Y_ROTATION_INDEX=4,
+	Z_ROTATION_INDEX=5
+};
 
 #define ROTATION_ANGLE_INDEX QW_ROTATION_INDEX
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.h,v 1.19 2010/08/27 00:05:07 mp Exp $
+ $Id: investigate.h,v 1.20 2010/10/01 22:51:39 mp Exp $
 
  AutoDock  
 
@@ -74,17 +74,17 @@ void investigate( const int   Nnb,
                     const char  *const FN_rms_ref_crds,
                     const int   OutputEveryNTests,
                     const int   NumLocalTests,
-                    const Real trnStep,
-                    const Real torStep,
+                    ConstReal trnStep,
+                    ConstReal torStep,
                     
                     const int   ignore_inter[MAX_ATOMS],
                     
                     const Boole         B_include_1_4_interactions,
-                    const Real scale_1_4,
-                    const Real scale_eintermol,
+                    ConstReal scale_1_4,
+                    ConstReal scale_eintermol,
 
 
-                    const Real unbound_internal_FE,
+                    ConstReal unbound_internal_FE,
                     /* not const */ GridMapSetInfo *const info, // modified in mkRandomState
                     const Boole B_use_non_bond_cutoff,
                     const Boole B_have_flexible_residues);
@@ -122,17 +122,17 @@ void investigate(
                 char  *FN_rms_ref_crds,
                 int   OutputEveryNTests,
                 int   NumLocalTests,
-                Real trnStep,
-                Real torStep,
+                ConstReal trnStep,
+                ConstReal torStep,
                 
                 int   ignore_inter[MAX_ATOMS],
                 
                 const Boole         B_include_1_4_interactions,
-                const Real scale_1_4,
-                const Real scale_eintermol,
+                ConstReal scale_1_4,
+                ConstReal scale_eintermol,
                 
 
-                const Real unbound_internal_FE,
+                ConstReal unbound_internal_FE,
                 GridMapSetInfo *info,
                 Boole B_use_non_bond_cutoff,
                 Boole B_have_flexible_residues);

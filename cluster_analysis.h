@@ -1,6 +1,6 @@
 /*
 
- $Id: cluster_analysis.h,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: cluster_analysis.h,v 1.8 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -30,7 +30,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "getrms.h"
 
 
-int  cluster_analysis( const Real clus_rms_tol, 
+int  cluster_analysis( ConstReal   clus_rms_tol, 
                        /* not const */ int   cluster[MAX_RUNS][MAX_RUNS], 
                        /* not const */ int   num_in_clus[MAX_RUNS], 
                        const int   isort[MAX_RUNS], 

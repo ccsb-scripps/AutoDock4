@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.20 2010/08/27 00:05:08 mp Exp $
+ $Id: support.h,v 1.21 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -38,6 +38,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 ** $Log: support.h,v $
+** Revision 1.21  2010/10/01 22:51:40  mp
+** Applied patches 2010-09-29 from Steffan Moeller "patches_introducing_references"
+**
 ** Revision 1.20  2010/08/27 00:05:08  mp
 ** Integration of Steffan Möller <steffen_moeller@gmx.de> "const" contribution
 ** from his patch files 4 August 2010, as adapted slightly by Michael Pique
@@ -248,19 +251,19 @@ class Genotype
 					/* Steffen's comment - representation is apparently unused */
       ~Genotype(void); /* destructor */
       Genotype &operator=(const Genotype &);
-      unsigned int num_vectors(void); /* e.g. "real,bit,bit,int" would = 4 */
-      unsigned int num_genes(void); /* returns number_of_genes (see above) */
-      RepType gtype(int); /* returns the type (real,bit,int) for 
+      unsigned int num_vectors(void) const; /* e.g. "real,bit,bit,int" would = 4 */
+      unsigned int num_genes(void) const; /* returns number_of_genes (see above) */
+      RepType gtype(int) const; /* returns the type (real,bit,int) for 
 							    a particular gene */
       const Element gread(const int) const;
       const Representation *vread(int) const;
-      void write(const Element, const int); /* not const */
-      void write(const unsigned char, const int); /* not const */
-      void write(const FourByteLong, const int); /* not const */
-      void write(const double, const int); /* not const */
+      void write(const Element&, const int); /* not const */
+      void write(const unsigned char&, const int); /* not const */
+      void write(const FourByteLong&, const int); /* not const */
+      void write(const double&, const int); /* not const */
       void write(const Representation &, const int); /* not const */
       Quat readQuat() const;
-      void writeQuat( const Quat q );
+      void writeQuat( const Quat& q ); /* not const */
 };
 
 //  Should Phenotype automatically evaluate itself upon construction?
@@ -282,20 +285,20 @@ class Phenotype
       Phenotype(const unsigned int, Representation **const);
       ~Phenotype(void);
       Phenotype &operator=(const Phenotype &);
-      RepType gtype(int);
+      RepType gtype(int) const;
       const Element gread(const int) const;
       const Representation *vread(int) const;
-      void write(const Element, const int);
-      void write(const unsigned char, const int);
-      void write(const FourByteLong, const int);
-      void write(const double, const int);
+      void write(const Element&, const int); /* not const */
+      void write(const unsigned char&, const int); /* not const */
+      void write(const FourByteLong& value, const int gene_number); /* not const */
+      void write(const double& value, const int gene_number); /* not const */
       void write(const Representation &, const int);
-      double evaluate(const EvalMode) /* not const */ ;  //  This should return evaluation if that's the right answer, and it should evaluate otherwise.
+      double evaluate(const EvalMode&) /* not const */ ;  //  This should return evaluation if that's the right answer, and it should evaluate otherwise.
       State make_state(int) const;
       unsigned int num_dimensions(void) const; // Steffen : implementation not found
       unsigned int num_pts(void) const;
       Quat readQuat() const;
-      void writeQuat( const Quat q );
+      void writeQuat( const Quat& q ); /* not  const */
 };
 
 //  This should be an encapsulated class within Population
@@ -348,7 +351,7 @@ class Population
       Individual &operator[](const int) const;  /* for accessing a particular indiv.in pop*/
       Population &operator=(const Population &);
       unsigned int num_individuals(void) const; /* returns the size of the pop. */
-      void msort(const int); /* sorts the first m individuals using heap properties */
+      void msort(const int); /* not const */ /* sorts the first m individuals using heap properties */
       // void print(ostream &, int); /* prints top int energies */
       void print(FILE * const,  const int) const; /* like above */
       // best_e and best_i added M Pique 2010-03 strictly for statistics in log
@@ -378,17 +381,17 @@ inline Genotype::Genotype(void)
    lookup = (Lookup *)NULL;
 }
 
-inline unsigned int Genotype::num_genes(void)
+inline unsigned int Genotype::num_genes(void) const
 {
    return(number_of_genes);
 }
 
-inline unsigned int Genotype::num_vectors(void)
+inline unsigned int Genotype::num_vectors(void) const
 {
    return(number_of_vectors);
 }
 
-inline RepType Genotype::gtype(int gene_number)
+inline RepType Genotype::gtype(int gene_number) const
 {
    return(rep_vector[lookup[gene_number].vector]->type());
 }
@@ -414,7 +417,7 @@ inline Phenotype::Phenotype(void)
    evalflag = 0;
 }
 
-inline RepType Phenotype::gtype(int gene_number)
+inline RepType Phenotype::gtype(int gene_number) const
 {
    return(value_vector[lookup[gene_number].vector]->type());
 }

@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.25 2010/08/27 00:05:07 mp Exp $
+ $Id: eval.h,v 1.26 2010/10/01 22:51:39 mp Exp $
 
  AutoDock  
 
@@ -105,13 +105,13 @@ class Eval
                   /* not const */ Real  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS],
                   /* not const */ Real  init_crdpdb[MAX_ATOMS][SPACE], 
                   /* not const */ Real  init_crdreo[MAX_ATOMS][SPACE], 
-                  const State stateInit, 
-		  const Molecule molInit,
+                  const State& stateInit, 
+		  const Molecule& molInit,
                   const int            init_ignore_inter[MAX_ATOMS], // values are copied
                   const Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
-                  const Real  init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
-                  const Real  init_scale_eintermol,
-                  const Real  init_unbound_internal_FE,
+                  ConstReal   init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
+                  ConstReal   init_scale_eintermol,
+                  ConstReal   init_unbound_internal_FE,
                   const Boole  init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
                   const Boole  init_B_have_flexible_residues
                   );
@@ -161,17 +161,17 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
                         /* not const */ int init_tlist[MAX_TORS][MAX_ATOMS],
                         /* not const */ Real init_crdpdb[MAX_ATOMS][SPACE],
                         /* not const */ Real init_crdreo[MAX_ATOMS][SPACE],
-                        const State stateInit,
-                        const Molecule molInit,
+                        const State& stateInit,
+                        const Molecule& molInit,
 
                         const int init_ignore_inter[MAX_ATOMS],
 
                         const Boole init_B_include_1_4_interactions,
-                        const Real init_scale_1_4,
-                        const Real init_scale_eintermol, 
+                        ConstReal  init_scale_1_4,
+                        ConstReal  init_scale_eintermol, 
 
 
-                        const Real init_unbound_internal_FE,
+                        ConstReal  init_unbound_internal_FE,
                         const Boole init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
                         const Boole init_B_have_flexible_residues
                        )

@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.29 2010/08/27 00:05:08 mp Exp $
+ $Id: simanneal.cc,v 1.30 2010/10/01 22:51:40 mp Exp $
 
  AutoDock  
 
@@ -46,7 +46,7 @@ extern char *programname;
 
 void simanneal ( int   *const Addr_nconf,
                 const int   Nnb,
-                const Real WallEnergy,
+                ConstReal WallEnergy,
                 const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                 Real charge[MAX_ATOMS],
                 Real abs_charge[MAX_ATOMS],
@@ -64,7 +64,7 @@ void simanneal ( int   *const Addr_nconf,
                 Real emap[MAX_ATOMS],
                 const int   NcycMax,
                 const int   irunmax,
-                const Clock jobStart,
+                const Clock& jobStart,
                 #include "map_declare.h"
                 const int   naccmax,
                 const int   natom,
@@ -74,40 +74,40 @@ void simanneal ( int   *const Addr_nconf,
                 const int   ntor,
                 const int   outlev,
 
-                State sInit, /* tor0, qtn0 */
+                /* not const */ State sInit, /* tor0, qtn0 */
                 /* not const */ State sHist[MAX_RUNS], /* was qtnHist, torHist */
 
-                const Real qtwFac,
+                ConstReal qtwFac,
                 const Boole B_qtwReduc,
-                const Real qtwStep0,
+                ConstReal qtwStep0,
                 const Boole B_selectmin,
                 const char  *const FN_ligand,
                 const Real lig_center[SPACE],
-                const Real RT0,
+                ConstReal RT0,
                 const Boole B_RTChange,
-                const Real RTFac,
-                struct tms tms_jobStart,
+                ConstReal RTFac,
+                const struct tms& tms_jobStart,
                 const int   tlist[MAX_TORS][MAX_ATOMS],
-                const Real torFac,
+                ConstReal torFac,
                 const Boole B_torReduc,
-                const Real torStep0,
+                ConstReal torStep0,
                 const char  *const FN_trj,
                 const int   trj_cyc_max,
                 const int   trj_cyc_min,
                 const int   trj_freq,
-                const Real trnFac,
+                ConstReal trnFac,
                 const Boole B_trnReduc,
-                const Real trnStep0,
+                ConstReal trnStep0,
                 const int   type[MAX_ATOMS],
                 Real vt[MAX_TORS][SPACE],
                 const Boole B_writeTrj,
                 const Boole B_constrain,
                 const int   atomC1,
                 const int   atomC2,
-                const Real sqlower,
-                const Real squpper,
+                ConstReal sqlower,
+                ConstReal squpper,
                 const Boole B_linear_schedule,
-                const Real RTreduc,
+                ConstReal RTreduc,
                 /*Real maxrad,*/
                 const Boole B_watch,
                 const char  *const FN_watch,
@@ -121,9 +121,9 @@ void simanneal ( int   *const Addr_nconf,
                 const Boole B_RandomTran0,
                 const Boole B_RandomQuat0,
                 const Boole B_RandomDihe0,
-                const Real e0max,
+                ConstReal e0max,
         
-                const Real torsFreeEnergy,
+                ConstReal torsFreeEnergy,
                 
         const int   MaxRetries,
                 
@@ -132,12 +132,12 @@ void simanneal ( int   *const Addr_nconf,
         const int   ignore_inter[MAX_ATOMS],
         
         const Boole         B_include_1_4_interactions,
-        const Real scale_1_4,
-        const Real scale_eintermol,
+        ConstReal scale_1_4,
+        ConstReal scale_eintermol,
         
         const ParameterEntry parameterArray[MAX_ATOM_TYPES],
 
-        const Real unbound_internal_FE,
+        ConstReal unbound_internal_FE,
 
         GridMapSetInfo *const info,
         const Boole B_use_non_bond_cutoff,

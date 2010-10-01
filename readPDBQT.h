@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.h,v 1.15 2010/08/27 00:05:08 mp Exp $
+ $Id: readPDBQT.h,v 1.16 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -82,8 +82,8 @@ Molecule readPDBQT( char  line[LINE_LEN],
               int   *const P_Nnb,
               NonbondParam *const nonbondlist,
 
-              const Clock jobStart,
-              const struct tms tms_jobStart,
+              const Clock& jobStart,
+              const struct tms& tms_jobStart,
               const char  hostnm[MAX_CHARS],
 
               int   *const P_ntorsdof,

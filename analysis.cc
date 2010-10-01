@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.41 2010/08/27 00:05:06 mp Exp $
+ $Id: analysis.cc,v 1.42 2010/10/01 22:51:39 mp Exp $
 
  AutoDock  
 
@@ -58,12 +58,12 @@ extern int   true_ligand_atoms;
 
 void analysis( const int   Nnb, 
                const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
-               const Real charge[MAX_ATOMS], 
-               const Real abs_charge[MAX_ATOMS], 
-               const Real qsp_abs_charge[MAX_ATOMS], 
+               const Real  charge[MAX_ATOMS], 
+               const Real  abs_charge[MAX_ATOMS], 
+               const Real  qsp_abs_charge[MAX_ATOMS], 
                const Boole B_calcIntElec,
-               const Real clus_rms_tol, 
-               const Real crdpdb[MAX_ATOMS][SPACE], 
+               ConstReal   clus_rms_tol, 
+               const Real  crdpdb[MAX_ATOMS][SPACE], 
 
                const EnergyTables *ptr_ad_energy_tables,
 
@@ -84,16 +84,16 @@ void analysis( const int   Nnb,
                const int   type[MAX_ATOMS], 
                const Real  vt[MAX_TORS][SPACE],
                const char  *FN_rms_ref_crds,
-               const Real  torsFreeEnergy,
+               ConstReal    torsFreeEnergy,
                const Boole B_write_all_clusmem,
                const int   ligand_is_inhibitor,
                const int   outlev,
                const int   ignore_inter[MAX_ATOMS],
                const Boole   B_include_1_4_interactions,
-               const Real scale_1_4,
-               const Real unbound_internal_FE,
+               ConstReal   scale_1_4,
+               ConstReal   unbound_internal_FE,
 
-               const GridMapSetInfo *info,
+               const GridMapSetInfo *const info,
                const Boole B_use_non_bond_cutoff,
                const Boole B_have_flexible_residues,
                const Boole B_rms_atoms_ligand_only,

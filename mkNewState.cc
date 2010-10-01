@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.13 2010/08/27 00:05:07 mp Exp $
+ $Id: mkNewState.cc,v 1.14 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -43,9 +43,9 @@ void mkNewState( /* not const */ State *const now,
                 /* not const */ Real crd[MAX_ATOMS][NTRN],
                 const Real crdpdb[MAX_ATOMS][NTRN],
                 const int   natom,
-                const Real trnStep,
-                const Real qtwStep,
-                const Real torStep,
+                ConstReal trnStep,
+                ConstReal qtwStep,
+                ConstReal torStep,
                 const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                 const int N_con[MAX_TORS])
     // Create a new state, based on the current state

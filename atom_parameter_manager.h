@@ -1,6 +1,6 @@
 /*
 
- $Id: atom_parameter_manager.h,v 1.3 2009/05/08 23:02:10 rhuey Exp $
+ $Id: atom_parameter_manager.h,v 1.4 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -29,7 +29,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #   define _APM_PROTOTYPES
 
 #   include "structs.h"
-void apm_enter(const char key[], ParameterEntry value);
+void apm_enter(const char key[], const ParameterEntry& value);
 ParameterEntry * apm_find(const char key[]);
 
 #endif

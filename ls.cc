@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.17 2010/08/27 00:05:07 mp Exp $
+ $Id: ls.cc,v 1.18 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -42,7 +42,7 @@ extern class Eval evaluate;
 extern FILE *logFile;
 
 //  This function adds sign * (deviates + bias) to all the reals in the representation
-Phenotype genPh(const Phenotype &original, const Real sign, const Real *const deviates, Real *const bias)
+Phenotype genPh(const Phenotype &original, ConstReal sign, const Real *const deviates, Real *const bias)
 {
    RepType genetype;
    register unsigned int i, index = 0;
@@ -109,7 +109,7 @@ Boole Solis_Wets::SW(/* not const */ Phenotype &vector)
 void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, const int i, const Real prevxyz[3],
                  const Real startxyz[3], const Quat prevQuat, const Quat startQuat, 
                  const unsigned int num_successes, const unsigned int num_failures,
-                 const Real temp_rho, Real *const  bias, Real *const  deviates);
+                 ConstReal temp_rho, Real *const  bias, Real *const  deviates);
    Real xyz[3];
    Real prevxyz[3];
    Real startxyz[3];
@@ -365,14 +365,14 @@ Pattern_Search::Pattern_Search(void)
 {
 }
 
-Pattern_Search::Pattern_Search(unsigned int init_size, unsigned int init_max_success, Real init_step_size, Real init_step_threshold, Real init_expansion, Real init_contraction, Real init_search_frequency)
+Pattern_Search::Pattern_Search(const unsigned int init_size, const unsigned int init_max_success, ConstReal init_step_size, ConstReal init_step_threshold, ConstReal init_expansion, ConstReal init_contraction, ConstReal init_search_frequency)
 : size(init_size), max_success(init_max_success), step_size(init_step_size), step_threshold(init_step_threshold), expansion(init_expansion), contraction(init_contraction), search_frequency(init_search_frequency)
 {
   current_step_size = step_size;
   pattern = new Real[size];
-	index = new unsigned int[size];
+  index = new unsigned int[size];
   reset_pattern();
-	reset_indexes();
+  reset_indexes();
   successes = 0;
 }
 
@@ -386,7 +386,7 @@ void Pattern_Search::reset()
 {
   current_step_size = step_size;
   reset_pattern();
-	reset_indexes();
+  reset_indexes();
   successes = 0;
 }
 
@@ -524,9 +524,9 @@ Phenotype Pattern_Search::pattern_move(const Phenotype& base) const {
 }
 //void printDState(logFile,msg,vector,i,prevxyz,startxyz, prevQuat,startQuat,num_successes,num_failures,temp_rho,bias,deviates); 
 void printDState(FILE *logFile, const char *const msg,Phenotype &newPh, const int i, const Real prevxyz[3],
-                 const Real startxyz[3], const Quat prevQuat, const Quat startQuat, 
+                 const Real startxyz[3], const Quat& prevQuat, const Quat& startQuat, 
                  const unsigned int num_successes, const unsigned int num_failures,
-                 const Real temp_rho, const Real *const  bias, const Real *const  deviates)
+                 ConstReal temp_rho, const Real *const  bias, const Real *const  deviates)
 {
 #ifdef DEBUG
    Real dt; // translation step scalar

@@ -1,6 +1,6 @@
 /*
 
- $Id: typedefs.h,v 1.8 2009/05/08 23:02:18 rhuey Exp $
+ $Id: typedefs.h,v 1.9 2010/10/01 22:51:40 mp Exp $
 
  AutoDock  
 
@@ -63,6 +63,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define FDFMT2 FDFMT " " FDFMT
 #define FDFMT3 FDFMT " " FDFMT " " FDFMT
 
+#define ConstReal	const Real
+//#define ConstReal	const Real&
+
 typedef float MapType; //the grid map type can be changed independent of other 'Real's
 #   define MAPFMT "%f"
 
@@ -71,7 +74,7 @@ typedef float MapType; //the grid map type can be changed independent of other '
 typedef union
 {
 	vector float vec;
-	float		 elements[4];
+	float elements[4];
 } Float4;
 #endif
 

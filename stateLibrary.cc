@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.19 2010/08/27 00:05:08 mp Exp $
+ $Id: stateLibrary.cc,v 1.20 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ void initialiseQuat( /* not const */ Quat *const Q )
 }
 
 void copyState( /* not const */ State *const D,  /* Destination -- copy to here */
-                const State S ) /* Source      -- copy this.   */
+                const State& S ) /* Source      -- copy this.   */
 {
     register int i;
         

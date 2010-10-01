@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.h,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: stateLibrary.h,v 1.7 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -35,7 +35,7 @@ void initialiseState( /* not const */ State *const S );
 void initialiseQuat( /* not const */ Quat *const Q );
 
 void copyState( State *const destination,
-		const State source);
+		const State& source);
 
 void printState( FILE *const fp,
 		 /* not const */ State state, 

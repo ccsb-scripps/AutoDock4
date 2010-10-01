@@ -1,6 +1,6 @@
 /*
 
- $Id: bestpdb.cc,v 1.8 2009/12/16 23:35:54 rhuey Exp $
+ $Id: bestpdb.cc,v 1.9 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -43,15 +43,15 @@ extern FILE *logFile;
 extern int keepresnum;
 extern char dock_param_fn[];
 
-void bestpdb( int ncluster, 
-	      int num_in_clu[MAX_RUNS],
-	      int cluster[MAX_RUNS][MAX_RUNS],
-	      Real econf[MAX_RUNS],
-	      Real crd[MAX_RUNS][MAX_ATOMS][SPACE],
-	      char atomstuff[MAX_ATOMS][MAX_CHARS],
-	      int natom,
-	      Boole B_write_all_clusmem,
-	      Real ref_rms[MAX_RUNS])
+void bestpdb( const int ncluster, 
+	      const int num_in_clu[MAX_RUNS],
+	      const int cluster[MAX_RUNS][MAX_RUNS],
+	      const Real econf[MAX_RUNS],
+	      const Real crd[MAX_RUNS][MAX_ATOMS][SPACE],
+	      const char atomstuff[MAX_ATOMS][MAX_CHARS],
+	      const int natom,
+	      const Boole B_write_all_clusmem,
+	      const Real ref_rms[MAX_RUNS])
 
 {
     register int  i=0,

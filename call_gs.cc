@@ -1,6 +1,6 @@
 /*
 
- $Id: call_gs.cc,v 1.12 2010/05/14 21:25:51 mp Exp $
+ $Id: call_gs.cc,v 1.13 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -47,9 +47,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern Eval evaluate;
 
-State call_gs(Global_Search *global_method, State now, unsigned int num_evals, unsigned int pop_size,
+State call_gs(Global_Search *global_method, State& now, unsigned int num_evals, unsigned int pop_size,
               Molecule *mol,
-              Output_pop_stats  extOutput_pop_stats,
+              Output_pop_stats& extOutput_pop_stats,
               GridMapSetInfo *info,
               int end_of_branch[MAX_TORS])
 {

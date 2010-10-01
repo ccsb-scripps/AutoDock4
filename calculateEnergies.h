@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.h,v 1.10 2010/08/27 00:05:07 mp Exp $
+ $Id: calculateEnergies.h,v 1.11 2010/10/01 22:51:39 mp Exp $
 
  AutoDock  
 
@@ -34,8 +34,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 EnergyBreakdown calculateEnergies(
     const int            natom,                     // input  number of atoms
     const int            ntor,                      // input  number of torsions
-    const Real           unbound_internal_FE,       // input  pre-calculated internal energy of unbound state
-    const Real           torsFreeEnergy,            // input  constant times number of freely-rotatable bonds
+    ConstReal            unbound_internal_FE,       // input  pre-calculated internal energy of unbound state
+    ConstReal            torsFreeEnergy,            // input  constant times number of freely-rotatable bonds
     const Boole          B_have_flexible_residues,  // input  boolean whether we have flexible residues in protein
 
     // trilinterp
@@ -58,8 +58,8 @@ EnergyBreakdown calculateEnergies(
     const int            Nnb,                       // input  total number of nonbonds
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
-    const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
-    const Real           scale_eintermol,                 // input  scaling factor for intermolecular energies
+    ConstReal            scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
+    ConstReal            scale_eintermol,                 // input  scaling factor for intermolecular energies
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
     const Boole          B_use_non_bond_cutoff,     // input  boolean whether to use a nonbond distance cutoff
     const Unbound_Model ad4_unbound_model
@@ -69,14 +69,14 @@ EnergyBreakdown calculateEnergies(
 void update_energy_breakdown( /* not const */ EnergyBreakdown * eb ); //FIXME: Steffen:  this misses the extra parameter const Unbound_Model ad4_unbound_model
 
 void initialise_energy_breakdown ( /* not const */ EnergyBreakdown *const eb,
-                                   const Real torsFreeEnergy, 
-                                   const Real unbound_internal_FE );
+                                   ConstReal   torsFreeEnergy, 
+                                   ConstReal   unbound_internal_FE );
 
 EnergyBreakdown calculateBindingEnergies(
     int                  natom,                     // input  number of atoms
     int                  ntor,                      // input  number of torsions
-    Real                 unbound_internal_FE,       // input  pre-calculated internal energy of unbound state
-    Real                 torsFreeEnergy,            // input  constant times number of freely-rotatable bonds
+    ConstReal                  unbound_internal_FE,       // input  pre-calculated internal energy of unbound state
+    ConstReal                  torsFreeEnergy,            // input  constant times number of freely-rotatable bonds
     Boole                B_have_flexible_residues,  // input  boolean whether we have flexible residues in protein
 
     // trilinterp
@@ -99,18 +99,17 @@ EnergyBreakdown calculateBindingEnergies(
     const int            Nnb,                       // input  total number of nonbonds
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
-    const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
+    ConstReal            scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
     const Boole          B_use_non_bond_cutoff,     // input  boolean whether to use a nonbond distance cutoff
     const Unbound_Model  ad4_unbound_model
 
 );
 
-void update_binding_energy_breakdown( /* not const */ EnergyBreakdown * eb, const Unbound_Model ad4_unbound_model
-                 );
+void update_binding_energy_breakdown( /* not const */ EnergyBreakdown *const eb, const Unbound_Model ad4_unbound_model);
 
-void initialise_binding_energy_breakdown ( EnergyBreakdown * eb,
-                                           const Real torsFreeEnergy, 
-                                           const Real unbound_internal_FE,
+void initialise_binding_energy_breakdown ( EnergyBreakdown *const eb,
+                                           ConstReal   torsFreeEnergy, 
+                                           ConstReal   unbound_internal_FE,
                                            const Unbound_Model ad4_unbound_model);
 #endif

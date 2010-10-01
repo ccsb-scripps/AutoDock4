@@ -1,6 +1,6 @@
 /*
 
- $Id: success.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: success.cc,v 1.7 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -40,8 +40,8 @@ extern char *programname;
 extern FILE *logFile;
 
 void success( const char *const hostnm,
-	      const Clock jobStart,
-	      struct tms tms_jobStart )
+	      const Clock& jobStart,
+	      const struct tms& tms_jobStart )
 
 {
     char message[LINE_LEN];

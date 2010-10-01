@@ -1,6 +1,6 @@
 /*
 
- $Id: bestpdb.h,v 1.5 2009/05/08 23:02:10 rhuey Exp $
+ $Id: bestpdb.h,v 1.6 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -32,13 +32,13 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "strindex.h"
 #include "print_avsfld.h"
 
-void  bestpdb( int   ncluster, 
-               int   num_in_clu[MAX_RUNS], 
-               int   cluster[MAX_RUNS][MAX_RUNS], 
-               Real econf[MAX_RUNS], 
-               Real crd[MAX_RUNS][MAX_ATOMS][SPACE], 
-               char  atomstuff[MAX_ATOMS][MAX_CHARS], 
-               int   natom, 
-               Boole B_write_all_clusmem, 
-               Real ref_rms[MAX_RUNS]);
+void  bestpdb( const int   ncluster, 
+               const int   num_in_clu[MAX_RUNS], 
+               const int   cluster[MAX_RUNS][MAX_RUNS], 
+               const Real econf[MAX_RUNS], 
+               const Real crd[MAX_RUNS][MAX_ATOMS][SPACE], 
+               const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
+               const int   natom, 
+               const Boole B_write_all_clusmem, 
+               const Real ref_rms[MAX_RUNS]);
 #endif

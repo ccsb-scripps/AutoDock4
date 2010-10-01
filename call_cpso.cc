@@ -70,13 +70,13 @@ Individual cnv_state_to_ind2(const State &original, const int ntor)
 }
 
 
-State call_cpso(Local_Search * local_method, 
-                const State sInit, 
-                const int n_exec, int S, //swarm size
+State call_cpso(Local_Search *const local_method, 
+                const State& sInit, 
+                const int n_exec, const int S, //swarm size
                 const int D, //number of dimensions:7 + ntor
                 double *const xmin, double *const xmax, 
                 const unsigned int num_evals, 
-                const int K, const double c1, const double c2, 
+                const int K, const double& c1, const double& c2, 
                 const int outlev)
 {
         int nb_eval = 0;

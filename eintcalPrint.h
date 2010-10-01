@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcalPrint.h,v 1.15 2010/08/27 00:05:07 mp Exp $
+ $Id: eintcalPrint.h,v 1.16 2010/10/01 22:51:39 mp Exp $
 
  AutoDock  
 
@@ -33,7 +33,7 @@ Real  eintcalPrint( const NonbondParam * const nonbondlist,
                      const int   Nnb,
                      const Boole B_calcIntElec,
                      const Boole B_include_1_4_interactions,
-                     const Real scale_1_4,
+                     ConstReal  scale_1_4,
                      const Real qsp_abs_charge[MAX_ATOMS],
                      const Boole B_use_non_bond_cutoff,
                      const Boole B_have_flexible_residues);  // if the receptor has flexibile residues, this will be set to TRUE

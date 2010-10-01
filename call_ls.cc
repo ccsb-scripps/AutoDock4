@@ -1,6 +1,6 @@
 /*
 
- $Id: call_ls.cc,v 1.8 2009/05/08 23:02:11 rhuey Exp $
+ $Id: call_ls.cc,v 1.9 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -100,7 +100,7 @@ Individual cnv_state_to_ind(const State &original)
 
 }
 
-State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Molecule *mol) 
+State call_ls(Local_Search *const local_method, const State& now, const unsigned int pop_size, Molecule *const mol) 
 {
    register unsigned int i;
 

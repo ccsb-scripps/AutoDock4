@@ -1,6 +1,6 @@
 /*
 
- $Id: changeState.h,v 1.6 2010/08/27 00:05:07 mp Exp $
+ $Id: changeState.h,v 1.7 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -27,9 +27,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef CHANGESTATE
 #define CHANGESTATE
 
-State  changeState( const State last,      /* ...must be a normalized quaternion! */
-		    const Real trnStep,
-		    const Real torStep,
+State  changeState( const State& last,      /* ...must be a normalized quaternion! */
+		    ConstReal   trnStep,
+		    ConstReal   torStep,
 		    const int   ntor,
 		    const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		    const int   N_con[MAX_TORS]);

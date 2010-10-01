@@ -1,6 +1,6 @@
 /*
 
- $Id: autocomm.h,v 1.19 2009/05/08 23:02:10 rhuey Exp $
+ $Id: autocomm.h,v 1.20 2010/10/01 22:51:39 mp Exp $
 
  AutoDock  
 
@@ -33,6 +33,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <time.h>
 /* include stdio to pick up definition of FILENAME_MAX and possibly PATH_MAX */
 #include <stdio.h>
+#include "typedefs.h"
 
 /*******************************************************************************
 **      Name: autocomm.h                                                      **
@@ -61,9 +62,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define FALSE        0      /* Logical constant                               */
 #define TRUE         1      /* Logical constant                               */
 
-#define PI	         3.14159265358979323846   /* Mathematical constant, pi */
-#define TWOPI	     6.28318530717958647692
-#define HALF_PI      1.57079632679489661923
+const Real PI=3.14159265358979323846;   /* Mathematical constant, pi */
+const Real TWOPI=6.28318530717958647692;
+const Real HALF_PI=1.57079632679489661923;
 
 #define X            0      /* x-coordinate                                   */
 #define Y            1      /* y-coordinate                                   */
@@ -71,31 +72,31 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define XYZ          3      /* Dimensions of Cartesian Space                  */
 #define SPACE        3      /* Dimensions of Cartesian Space                  */
 
-#define APPROX_ZERO  1.0E-6 /* To avoid division-by-zero errors...            */
-#define BIG          1.0E12 /* Very large constant                            */
-#define MAX_CHARS    128    /* Number of characters in atom data & filenames  */
-#define MAX_LINES    256    /* Number of lines in parameter file              */
+const Real APPROX_ZERO=1.0E-6; /* To avoid division-by-zero errors...            */
+const Real BIG=1.0E12; /* Very large constant                            */
+const unsigned int MAX_CHARS=128;    /* Number of characters in atom data & filenames  */
+const unsigned int MAX_LINES=256;    /* Number of lines in parameter file              */
 #ifndef PATH_MAX
 #define PATH_MAX     FILENAME_MAX
 #endif
 
 #ifdef USE_XCODE
-#define LINE_LEN     140    /* Line length in characters                      */
+const /* not unsigned */ int LINE_LEN=140;    /* Line length in characters                      */
 #else
-#define LINE_LEN     256    /* Line length in characters                      */
-#endif
+const /* not unsigned */ int LINE_LEN=256;    /* Line length in characters                      */
+#endif 
 
 #if defined( USE_XCODE )
 /* The stacksize limit within Xcode forces us to use smaller grids */
-#define MAX_GRID_PTS 61     	/* Maximum number of grid points in 1 dimension */
+const /* not unsigned */ int MAX_GRID_PTS=61;   /* Maximum number of grid points in 1 dimension */
 #elif defined( __CYGWIN__ ) 
-#define MAX_GRID_PTS 64		/* Maximum number of grid points in 1 dimension */
+const /* not unsigned */ int MAX_GRID_PTS=64;   /* Maximum number of grid points in 1 dimension */
 #else
-#define MAX_GRID_PTS 128	/* Maximum number of grid points in 1 dimension */
+const /* not unsigned */ int MAX_GRID_PTS=128;	/* Maximum number of grid points in 1 dimension */
 				/* MAX_GRID_PTS 128 causes a SIGSEGV on Cygwin */
 #endif
 
-#define	EINTCLAMP    100000. /* Clamp pairwise internal energies (kcal/mol )  */
+const Real EINTCLAMP=100000.; /* Clamp pairwise internal energies (kcal/mol )  */
 
 #define MAX_MAPS_PAD 0       // Use this to pad MAX_MAPS to a power of 2, for presumably-faster memory access
 #define NUM_NON_VDW_MAPS 2   // Number of electrostatic and desolvation maps
@@ -107,18 +108,20 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define VECLENMAX    16     /* For AVS fld files...                           */
 
 // Legacy definitions:
-#define COVALENTTYPE 'Z'
-#define COVALENTTYPE2 'Y'
+const char COVALENTTYPE='Z';
+const char COVALENTTYPE2='Y';
 
-#define CARBON		0
-#define NITROGEN	1
-#define OXYGEN		2
-#define SULPHUR		3
-#define HYDROGEN	4
-#define UNKNOWN		5
-#define METAL		6
-#define COVALENT 7
-#define COVALENT2 8
+enum legacy_definitions {
+   CARBON=0,
+   NITROGEN=1,
+   OXYGEN=2,
+   SULPHUR=3,
+   HYDROGEN=4,
+   UNKNOWN=5,
+   METAL=6,
+   COVALENT=7,
+   COVALENT2=8
+};
 // end Legacy definitions
 
 
@@ -133,6 +136,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define prStr           (void) sprintf
 #define flushLog        (void) fflush(logFile)
 
+//FIXME: this should eventually become an inline function
 #define dist(x1,y1,z1,x2,y2,z2,r) _dx=((x2)-(x1)),_dy=((y2)-(y1)),_dz=((z2)-(z1)),r=sqrt(_dx*_dx + _dy*_dy + _dz*_dz)
 
 /*
@@ -193,8 +197,8 @@ typedef struct AtomDesc {
 #include <assert.h> // for assert in assertQuatOK
 #include <math.h> // for sqrt in assertQuatOK
 
-#define ONE_MINUS_EPSILON 0.999
-#define ONE_PLUS_EPSILON 1.001
+const Real ONE_MINUS_EPSILON=0.999;
+const Real  ONE_PLUS_EPSILON=1.001;
 
 /*
  * void assertQuatOK( const Quat q )

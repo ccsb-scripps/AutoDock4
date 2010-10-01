@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.18 2010/08/27 00:05:07 mp Exp $
+ $Id: gs.h,v 1.19 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -48,7 +48,7 @@ class Global_Search
       virtual int search(Population &) = 0;
       virtual int terminate(void) = 0;
       virtual void reset(void) = 0;
-      virtual void reset(Output_pop_stats) = 0;
+      virtual void reset(const Output_pop_stats&) = 0;
       // the next four are only applicable to Genetic_Algorithm
       // but I'm uncertain how best to fit statistics into the
       // existing classes so bear with me  - Mike Pique Dec 2009
@@ -90,34 +90,38 @@ class Genetic_Algorithm : public Global_Search
 
       double worst_this_generation(const Population &);
       void set_worst(const Population &);
-      void make_table(int, Real);
-      int check_table(Real);
-      M_mode m_type(RepType) const;
-      void mutate(Genotype &, int);
+      void make_table(int, ConstReal );
+      int check_table(ConstReal );
+      M_mode m_type(const RepType) const;
+      void mutate(Genotype &, const int);
       void mutation(Population &);
       void crossover(Population &);
-      void crossover_2pt(Genotype &, Genotype &, unsigned int, unsigned int);
-      void crossover_uniform(Genotype &, Genotype &, unsigned int);
-      void crossover_arithmetic(Genotype &, Genotype &, Real);
-      void selection_proportional(Population &, Individual *);
-      void selection_linear_ranking(Population &, Individual *);
-      void selection_tournament(Population &, Individual *);
+      void crossover_2pt(Genotype &, Genotype &, const unsigned int, const unsigned int);
+      void crossover_uniform(Genotype &, Genotype &, const unsigned int);
+      void crossover_arithmetic(Genotype &, Genotype &, ConstReal );
+      void selection_proportional(Population &, Individual* const);
+      void selection_linear_ranking(/* sorted */ Population &, /* not const */ Individual *const);
+      void selection_tournament(Population &, Individual* const);
       Individual *selection(Population &);
 
    public:
       Genetic_Algorithm(void);
       // Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, Real, Real, int, unsigned int); // before 2000.11.1
       //Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, Real, Real, int, unsigned int, unsigned int); // after 2000.11.1
-      Genetic_Algorithm(EvalMode, Selection_Mode, Xover_Mode, Worst_Mode, int, Real, Real, int, unsigned int, Output_pop_stats); // after 2010.05
+      Genetic_Algorithm(const EvalMode init_e_mode, const Selection_Mode init_s_mode,
+			const Xover_Mode init_c_mode, const Worst_Mode init_w_mode, const int init_elitism,
+                        ConstReal  init_c_rate, ConstReal  init_m_rate,
+                        const int init_window_size, const unsigned int init_max_generations,
+                        const Output_pop_stats&); // after 2010.05
       ~Genetic_Algorithm(void);
       void initialize(unsigned int, unsigned int);
-      void mutation_values(int, int, Real, Real,  Real, Real, Real );
-      unsigned int num_generations(void);
+      void mutation_values(int, int, ConstReal, ConstReal, ConstReal, ConstReal, ConstReal);
+      unsigned int num_generations(void) const;
       void reset(void);
-      void reset(Output_pop_stats);
+      void reset(const Output_pop_stats&);
       int terminate(void);
       int search(Population &);
-      int set_linear_ranking_selection_probability_ratio(Real);
+      int set_linear_ranking_selection_probability_ratio(ConstReal );
 };
 
 //  Inline Functions
@@ -168,9 +172,9 @@ inline Genetic_Algorithm::~Genetic_Algorithm(void)
    }
 }
 
-inline void Genetic_Algorithm::mutation_values(int init_low, int init_high, 
-        Real init_alpha, Real init_beta, 
-        Real init_tranStep, Real init_quatStep, Real init_torStep )
+inline void Genetic_Algorithm::mutation_values(const int init_low, const int init_high, 
+        ConstReal init_alpha, ConstReal  init_beta, 
+        ConstReal init_tranStep, ConstReal init_quatStep, ConstReal init_torStep )
 {
    low = init_low;
    high = init_high;
@@ -181,7 +185,7 @@ inline void Genetic_Algorithm::mutation_values(int init_low, int init_high,
    torsStep = init_torStep;
 }
 
-inline unsigned int Genetic_Algorithm::num_generations(void)
+inline unsigned int Genetic_Algorithm::num_generations(void) const
 {
    return(generations);
 }
@@ -203,7 +207,7 @@ inline void Genetic_Algorithm::reset(void)
    cg_count = ci_count = mg_count = mi_count = 0; // restart statistics
 }
 
-inline void Genetic_Algorithm::reset(Output_pop_stats extOutput_pop_stats)
+inline void Genetic_Algorithm::reset(const Output_pop_stats& extOutput_pop_stats)
 {
    output_pop_stats = extOutput_pop_stats; // gmm 2000.11.1   MPique 2010.05
    generations = 0;

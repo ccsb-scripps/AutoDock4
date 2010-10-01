@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.7 2010/08/27 00:05:08 mp Exp $
+ $Id: ranlib.cc,v 1.8 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -34,16 +34,18 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdlib.h>
 #include "structs.h"
 
-#define ABS(x) ((x) >= 0 ? (x) : -(x))
-#define MIN(a,b) ((a) <= (b) ? (a) : (b))
-#define MAX(a,b) ((a) >= (b) ? (a) : (b))
+inline Real ABS(const Real &x) { return ((x) >= 0 ? (x) : -(x)) ; }
+inline Real MIN(const Real &a,const Real &b) { return ((a) <= (b) ? (a) : (b)) ; }
+inline Real MAX(const Real &a,const Real &b) { return ((a) >= (b) ? (a) : (b)) ; }
 
 void ftnstop(const char *const msg);
 
 extern FILE *logFile;
 
+static const Real expmax=89.0;
+static const Real infnty=1.0E38;
 
-Real genbet(const Real aa,const Real bb)
+Real genbet(ConstReal  aa,ConstReal  bb)
 /*
 **********************************************************************
      Real genbet(Real aa,Real bb)
@@ -65,8 +67,7 @@ Real genbet(const Real aa,const Real bb)
 **********************************************************************
 */
 {
-#define expmax 89.0
-#define infnty 1.0E38
+
 static Real olda = -1.0;
 static Real oldb = -1.0;
 static Real genbet,a,alpha,b,beta,delta,gamma,k1,k2,r,s,t,u1,u2,v,w,y,z;
@@ -206,7 +207,7 @@ S220:
 #undef expmax
 #undef infnty
 }
-Real genchi(const Real df)
+Real genchi(ConstReal  df)
 /*
 **********************************************************************
      Real genchi(Real df)
@@ -233,7 +234,7 @@ S10:
     genchi = 2.0*gengam(1.0,df/2.0);
     return genchi;
 }
-Real genexp(const Real av)
+Real genexp(ConstReal  av)
 /*
 **********************************************************************
      Real genexp(Real av)
@@ -260,7 +261,7 @@ static Real genexp;
     genexp = sexpo()*av;
     return genexp;
 }
-Real genf(const Real dfn,const Real dfd)
+Real genf(ConstReal  dfn,ConstReal  dfd)
 /*
 **********************************************************************
      Real genf(Real dfn,Real dfd)
@@ -302,7 +303,7 @@ S20:
 S30:
     return genf;
 }
-Real gengam(const Real a,const Real r)
+Real gengam(ConstReal  a,ConstReal  r)
 /*
 **********************************************************************
      Real gengam(Real a,Real r)
@@ -451,7 +452,7 @@ static FourByteLong i,icat,ntot;
 */
     return;
 }
-Real gennch(const Real df,const Real xnonc)
+Real gennch(ConstReal  df,ConstReal  xnonc)
 /*
 **********************************************************************
      Real gennch(Real df,Real xnonc)
@@ -482,7 +483,7 @@ S10:
     gennch = genchi(df-1.0)+pow(gennor(sqrt(xnonc),1.0),2.0);
     return gennch;
 }
-Real gennf(const Real dfn,const Real dfd,const Real xnonc)
+Real gennf(ConstReal  dfn,ConstReal  dfd,ConstReal  xnonc)
 /*
 **********************************************************************
      Real gennf(Real dfn,Real dfd,Real xnonc)
@@ -534,7 +535,7 @@ S20:
 S30:
     return gennf;
 }
-Real gennor(const Real av,const Real sd)
+Real gennor(ConstReal  av,ConstReal  sd)
 /*
 **********************************************************************
      Real gennor(Real av,Real sd)
@@ -582,7 +583,7 @@ static FourByteLong i,itmp,iwhich,D1,D2;
         *(iarray+i-1) = itmp;
     }
 }
-Real genunf(const Real low,const Real high)
+Real genunf(ConstReal  low,ConstReal  high)
 /*
 **********************************************************************
      Real genunf(Real low,Real high)
@@ -663,7 +664,7 @@ static FourByteLong qstate = 0;
     if(getset != 0) qstate = 1;
     else  *qset = qstate;
 }
-FourByteLong ignbin(const FourByteLong n,const Real pp)
+FourByteLong ignbin(const FourByteLong n,ConstReal  pp)
 /*
 **********************************************************************
      FourByteLong ignbin(FourByteLong n,Real pp)
@@ -920,7 +921,7 @@ S170:
     ignbin = ix;
     return ignbin;
 }
-FourByteLong ignnbn(const FourByteLong n,const Real p)
+FourByteLong ignnbn(const FourByteLong n,ConstReal  p)
 /*
 **********************************************************************
  
@@ -967,7 +968,7 @@ static Real y,a,r;
     ignnbn = ignpoi(y);
     return ignnbn;
 }
-FourByteLong ignpoi(const Real mu)
+FourByteLong ignpoi(ConstReal  mu)
 /*
 **********************************************************************
      FourByteLong ignpoi(Real mu)
@@ -1577,7 +1578,7 @@ S70:
     sexpo = a+umin**q1;
     return sexpo;
 }
-Real sgamma(Real a)
+Real sgamma(ConstReal a)
 /*
 **********************************************************************
                                                                       

@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <time.h>
 
-double alea( const double a, const double b)
+double alea( const double& a, const double& b)
 {
 	//random number (uniform distribution) in [a b]
 	double r ;

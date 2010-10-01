@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.27 2010/08/27 00:05:07 mp Exp $
+ $Id: getInitialState.cc,v 1.28 2010/10/01 22:51:39 mp Exp $
 
  AutoDock  
 
@@ -47,7 +47,7 @@ extern char *programname;
 void getInitialState(
 
             /* not const */ Real *const Addr_e0total,
-            const Real e0max,
+            ConstReal  e0max,
 
             /* not const */ State *const sInit, /* was qtn0[QUAT] and tor0[MAX_TORS] */
             /* not const */ State *const sMinm, /* was qtnMin[QUAT] and torMin[MAX_TORS] */
@@ -81,18 +81,18 @@ void getInitialState(
             const int   outlev,
             const int   MaxRetries,
 
-            const Real torsFreeEnergy,
+            ConstReal  torsFreeEnergy,
 
             const int   ligand_is_inhibitor,
 
             const int   ignore_inter[MAX_ATOMS],
 
             const Boole         B_include_1_4_interactions,
-            const Real scale_1_4,
-	    const Real           scale_eintermol,  // input  scaling factor for intermolecular energies
+            ConstReal  scale_1_4,
+	    ConstReal            scale_eintermol,  // input  scaling factor for intermolecular energies
 
 
-            const Real unbound_internal_FE,
+            ConstReal  unbound_internal_FE,
 
             const GridMapSetInfo *const info,
             const Boole B_use_non_bond_cutoff,

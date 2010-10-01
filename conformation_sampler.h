@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.h,v 1.8 2009/05/08 23:02:12 rhuey Exp $
+ $Id: conformation_sampler.h,v 1.9 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -64,40 +64,49 @@ class ConformationSampler {
 		Real bin_max_energy[NUM_BINS];
 		Real bin_Boltzmann_sum[NUM_BINS];
 
-		ConformationSampler(State);
+		ConformationSampler(const State&);
 		~ConformationSampler(void);
 
 		void random_sample(void);
-		void random_sample(int);
-		void systematic_search(int index);
-		Real current_energy(void);
-		Real current_rmsd(void);
-		Real reference_rmsd(void);
-		Real fraction_favorable(void);
-		Real average_favorable_energy(void);
-		Real energy_volume(void);
-		Real RK_entropy(void);
-		void output_statistics(void);
-		Real partition_function(void);
-		Real partition_function(int bin);
-		Real entropy_estimate(void);
+		void random_sample(const int);
+		void systematic_search(const int index);
+		Real current_energy(void); /* not const */ 
+		Real current_rmsd(void); /* not const */ 
+		Real reference_rmsd(void) const;
+		Real fraction_favorable(void) const;
+		Real average_favorable_energy(void) const;
+		Real energy_volume(void) const;
+		Real RK_entropy(void) const;
+		void output_statistics(void) const;
+		Real partition_function(void) const;
+		Real partition_function(int bin) const;
+		Real entropy_estimate(void) const;
 	private:
-		Real normalized_volume(void);
-		Real normalized_Boltzmann(void);
-		Real configurational_integral(void);
-		void update_bounds(void);
+		Real normalized_volume(void) const;
+		Real normalized_Boltzmann(void) const;
+		Real configurational_integral(void) const;
+		void update_bounds(void); /* not const */ 
 };
 
-void systematic_conformation_sampler(State hist[MAX_RUNS], int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *init_info);
-void random_conformation_sampler(State hist[MAX_RUNS], int nconf, int num_samples, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *init_info);
-Individual set_ind(GridMapSetInfo *info, State state);
-void raaEuler(Real raa[4], Real euler[3]);
+void systematic_conformation_sampler(const State hist[MAX_RUNS],
+		const int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE],
+		int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE],
+		const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info);
+
+void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf,
+		/* const */ int num_samples, Real init_vt[MAX_TORS][SPACE],
+		Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS],
+		Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS],
+		GridMapSetInfo *const init_info);
+
+Individual set_ind(GridMapSetInfo *const info, const State state);
+void raaEuler(const Real raa[4], /* not const */ Real euler[3]);
 void testMatrix(void);
 void raaMatrix(Real raa[4], Real matrix[3][3]);
-void matrixraa(Real matrix[3][3], Real raa[4]);
+void matrixraa(const Real matrix[3][3], /* not const */ Real raa[4]);
 void multiplyraa(Real raa1[4], Real raa2[4], Real raa_result[4]);
-void matrixMultiply(Real m1[3][3], Real m2[3][3], Real result[3][3]);
-void rand_axis(Real axis[4], Real angle);
+void matrixMultiply(const Real m1[3][3], const Real m2[3][3], Real result[3][3]);
+void rand_axis(/* not const */ Real axis[4], ConstReal angle);
 void setup_reference_coordinates(void);
 
 #endif

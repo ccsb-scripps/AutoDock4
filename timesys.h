@@ -1,6 +1,6 @@
 /*
 
- $Id: timesys.h,v 1.4 2010/08/27 00:05:09 mp Exp $
+ $Id: timesys.h,v 1.5 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -33,7 +33,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <time.h>
 #include "autocomm.h"
 
-void  timesys( const Clock             duration,
+void  timesys( const Clock&            duration,
                const struct tms *const start,
                const struct tms *const end );
 #endif

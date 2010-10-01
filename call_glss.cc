@@ -1,7 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.51 2010/08/27 00:05:07 mp Exp $
-
+ $Id: call_glss.cc,v 1.52 2010/10/01 22:51:39 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -251,13 +250,13 @@ Individual set_ind(const int num_torsions,  const GridMapSetInfo *const info, co
 
 State call_glss(/* not const */ Global_Search *global_method, 
                 /* not const */ Local_Search *local_method, 
-                const State sInit, 
+                const State& sInit, 
                 const unsigned int num_evals, const unsigned int pop_size, 
                 const int outlev, 
-		const Output_pop_stats output_pop_stats,
+		const Output_pop_stats& output_pop_stats,
                 Molecule * const mol, 
                 const Boole B_RandomTran0, const Boole B_RandomQuat0, const Boole B_RandomDihe0,
-                const GridMapSetInfo *info, const char *FN_pop_file,
+                const GridMapSetInfo *info, const char *const FN_pop_file,
                 /* not const */ int end_of_branch[MAX_TORS])
 {
     register unsigned int i;

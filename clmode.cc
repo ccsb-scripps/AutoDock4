@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.13 2010/08/27 00:05:07 mp Exp $
+ $Id: clmode.cc,v 1.14 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -42,10 +42,10 @@ extern FILE *logFile;
 extern char *programname;
 
 void  clmode( const int   num_atm_maps,
-              const Real clus_rms_tol,
+              ConstReal   clus_rms_tol,
               const char  *const hostnm,
-              const Clock jobStart,
-              struct tms tms_jobStart,
+              const Clock& jobStart,
+              const struct tms& tms_jobStart,
               const Boole write_all_clusmem,
               const char  *const clusFN,
               const Real crdpdb[MAX_ATOMS][SPACE],

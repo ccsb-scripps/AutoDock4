@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.h,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: openfile.h,v 1.7 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -42,8 +42,8 @@ int  openfile( const char *const filename,
 int openFile( const char *const filename,
               const char        mode[],
               FILE      **const fp,
-              const Clock       start,
-              const struct tms  tms_start,
+              const Clock&      start,
+              const struct tms& tms_start,
 	      const Boole       mayExit);
 
 FILE *ad_fopen(const char *const path, const char *const mode);

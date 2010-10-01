@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.13 2010/08/27 00:05:08 mp Exp $
+ $Id: readmap.cc,v 1.14 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -45,15 +45,15 @@ extern FILE *logFile;
 extern int debug;
 
 Statistics readmap( char           line[LINE_LEN],
-                    const int            outlev,
-                    const Clock          jobStart,
-                    struct tms     tmsJobStart,
-                    const Boole          B_charMap,
-                    /* not const */ Boole          *const P_B_HaveMap, 
-                    const int            num_maps, 
+                    const int      outlev,
+                    const Clock&   jobStart,
+                    const struct tms& tmsJobStart,
+                    const Boole    B_charMap,
+    /* not const */ Boole *const   P_B_HaveMap, 
+                    const int      num_maps, 
                     const GridMapSetInfo *const info,
 		    #include "map_declare.h"
-                    const char           map_type
+                    const char     map_type
                   )
 
 {
@@ -307,7 +307,7 @@ Statistics readmap( char           line[LINE_LEN],
     return map_stats;
 }
 
-Real mapc2f(const char numin) /* const? MP TODO */
+Real mapc2f(const char numin)
 {
     Real numout;
     if (numin == 0) {

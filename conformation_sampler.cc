@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.11 2010/04/09 18:49:09 mp Exp $
+ $Id: conformation_sampler.cc,v 1.12 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -69,7 +69,7 @@ const Real vertices[12][3] = {{-ICO_X, 0., ICO_Y}, {ICO_X, 0., ICO_Y}, {-ICO_X, 
                               {0., ICO_Y, ICO_X}, {0., ICO_Y, -ICO_X}, {0., -ICO_Y, ICO_X}, {0., -ICO_Y, -ICO_X},
                               {ICO_Y, ICO_X, 0.}, {-ICO_Y, ICO_X, 0.}, {ICO_Y, -ICO_X, 0.}, {-ICO_Y, -ICO_X, 0.}};
 
-ConformationSampler::ConformationSampler(State init_state) {
+ConformationSampler::ConformationSampler(const State& init_state) {
 	base_state = init_state;
 	base_ind = set_ind(info, init_state);
 	base_point = base_ind.phenotyp;	
@@ -117,7 +117,7 @@ void ConformationSampler::random_sample(void) {
 	random_sample(1);
 }
 
-void ConformationSampler::random_sample(int num_samples) {
+void ConformationSampler::random_sample(const int num_samples) {
 	Real multiplier;
 	
 	for (int sample=0; sample < num_samples; sample++) {
@@ -157,7 +157,7 @@ ConformationSampler::~ConformationSampler(void) {
 
 // NOTE: currently, the torsional free energy penalty is not included.
 // Since this is an entropic term, I believe we can ignore it in this analysis.
-Real ConformationSampler::current_energy(void) {
+Real ConformationSampler::current_energy(void) /* not const */ {
 	evals++;
 	Real energy = probe_point.evaluate(Normal_Eval);
 	Real rmsd = current_rmsd();
@@ -202,7 +202,7 @@ Real ConformationSampler::current_energy(void) {
 	return energy;
 }
 
-Real ConformationSampler::current_rmsd(void) {
+Real ConformationSampler::current_rmsd(void) /* not const */ {
 	probe_ind.phenotyp = probe_point;
 	probe_ind.inverse_mapping();
 	probe_state = probe_ind.state(base_state.ntor);
@@ -210,11 +210,11 @@ Real ConformationSampler::current_rmsd(void) {
 	return getrms(crd, base_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type);
 }
 
-Real ConformationSampler::reference_rmsd(void) {
+Real ConformationSampler::reference_rmsd(void) const {
 	return getrms(base_crd, ref_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type);
 }
 
-void ConformationSampler::update_bounds(void) {
+void ConformationSampler::update_bounds(void) /* not const */ {
 	Real euler[3];
 	Real raa[4];
 	Real current_value;
@@ -248,7 +248,7 @@ void ConformationSampler::update_bounds(void) {
 	}
 }
 
-void ConformationSampler::systematic_search(int index) {
+void ConformationSampler::systematic_search(const int index) {
 	
 	// for rotation axes, rotate using the pre-defined vertices 
 	if ( is_axis_index( index ) ) {
@@ -309,20 +309,20 @@ void ConformationSampler::systematic_search(int index) {
 	}
 }
 
-Real ConformationSampler::fraction_favorable(void) {
+Real ConformationSampler::fraction_favorable(void) const {
 	return favorable_evals/evals;
 }
 
-Real ConformationSampler::average_favorable_energy(void) {
+Real ConformationSampler::average_favorable_energy(void) const {
 	if (favorable_evals == 0) return 0;
 	else return total_favorable_energy/favorable_evals;
 }
 
-Real ConformationSampler::energy_volume(void) {
+Real ConformationSampler::energy_volume(void) const { 
 	return total_favorable_energy/evals;
 }
 
-Real ConformationSampler::configurational_integral(void) {
+Real ConformationSampler::configurational_integral(void) const {
 	Real Vb = 1.0;
 	for (int i=0; i < 6; i++) {
 		Vb *= (max_values[i]-min_values[i]);
@@ -337,19 +337,19 @@ Real ConformationSampler::configurational_integral(void) {
  * return (0.0019872065)*(298)*math.log(Vb * 6.02 * 10**23 / (8*math.pi*math.pi))
  */
 
-Real ConformationSampler::RK_entropy(void) {
+Real ConformationSampler::RK_entropy(void) const {
 	return RK_CONSTANT * TEMP * log(configurational_integral() * AVOGADRO/ (8 * PI * PI));
 }
 
-Real ConformationSampler::partition_function(void) {
+Real ConformationSampler::partition_function(void) const {
 	return -RT_CONSTANT*log(Boltzmann_sum/evals);
 }
 
-Real ConformationSampler::partition_function(int bin) {
+Real ConformationSampler::partition_function(const int bin) const {
 	return -RT_CONSTANT*log(bin_Boltzmann_sum[bin]/bin_count[bin]);
 }
 
-Real ConformationSampler::normalized_volume(void) {
+Real ConformationSampler::normalized_volume(void) const {
 	Real volume = 0.0;
 	for (int i=0; i < NUM_BINS; i++) {
 		volume += bin_total_favorable_energy[i]/bin_count[i]/NUM_BINS;
@@ -357,7 +357,7 @@ Real ConformationSampler::normalized_volume(void) {
 	return volume;
 }
 
-Real ConformationSampler::normalized_Boltzmann(void) {
+Real ConformationSampler::normalized_Boltzmann(void) const {
 	Real boltzmann_sum = 0.0;
 	for (int i=0; i < NUM_BINS; i++) {
 		boltzmann_sum += partition_function(i)/NUM_BINS;
@@ -365,14 +365,14 @@ Real ConformationSampler::normalized_Boltzmann(void) {
 	return boltzmann_sum;
 }
 
-Real ConformationSampler::entropy_estimate(void) {
+Real ConformationSampler::entropy_estimate(void) const {
 	Real Vtot = AVOGADRO/(8*PI*PI);
 	Vtot *= pow(1/(2*PI), (dimensionality - BASE_DIMENSIONS));
 	//fprintf(logFile, "Vtot: %g\n", Vtot);
 	return RT_CONSTANT*log(Vtot*Vconf*Boltzmann_diff_sum);
 }
 
-void ConformationSampler::output_statistics(void) {
+void ConformationSampler::output_statistics(void) const {
 	fprintf(logFile, "Conformation starting energy: %.3f\n", base_energy);
 	fprintf(logFile, "RMSD from reference state: %.3f\n", reference_rmsd());
 	fprintf(logFile, "Fraction of favorable evaluations: %.3f\n", (Real)favorable_evals/evals);
@@ -392,7 +392,7 @@ void ConformationSampler::output_statistics(void) {
 	fprintf(logFile, "%d evaluations.\n\n", evals);
 }
 
-void systematic_conformation_sampler(State hist[MAX_RUNS], int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *init_info) {
+void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info) {
 	vt = init_vt;
 	crdpdb = init_crdpdb;
 	tlist = init_tlist;
@@ -415,7 +415,7 @@ void systematic_conformation_sampler(State hist[MAX_RUNS], int nconf, Real init_
 	fprintf(logFile,"\n\n");
 }
 
-void random_conformation_sampler(State hist[MAX_RUNS], int nconf, int num_samples, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *init_info) {
+void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /* not const */ int num_samples, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info) {
 	vt = init_vt;
 	crdpdb = init_crdpdb;
 	tlist = init_tlist;
@@ -442,7 +442,7 @@ void random_conformation_sampler(State hist[MAX_RUNS], int nconf, int num_sample
 
 
 /* copied (and slightly modified) from non-included code in call_glss.cc */
-Individual set_ind(GridMapSetInfo *info, State state)
+Individual set_ind(GridMapSetInfo *const info, const State state)
 {
    Genotype temp_Gtype;
    Phenotype temp_Ptype;
@@ -472,7 +472,7 @@ Individual set_ind(GridMapSetInfo *info, State state)
    return(temp);
 }
 
-void raaEuler(Real raa[4], Real euler[3]) {
+void raaEuler(const Real raa[4], /* not const */ Real euler[3]) {
 	Real s = sin(raa[3]);
 	Real c = cos(raa[3]);
 	Real t = 1.0 - c;
@@ -495,7 +495,7 @@ void raaEuler(Real raa[4], Real euler[3]) {
 	euler[2] = asin(raa[0]*raa[1]*t + raa[2]*s);
 }
 
-void raaMatrix(Real raa[4], Real matrix[3][3]) {
+void raaMatrix(/* not const */ Real raa[4], /* not const */ Real matrix[3][3]) {
 	Real angle_cos = cos(raa[3]);
 	Real angle_sin = sin(raa[3]);
 	Real t = 1.0 - angle_cos;
@@ -526,7 +526,7 @@ void raaMatrix(Real raa[4], Real matrix[3][3]) {
 	matrix[1][2] = tmp1 - tmp2;
 }
 
-void matrixraa(Real matrix[3][3], Real raa[4]) {
+void matrixraa(const Real matrix[3][3], /* not const */ Real raa[4]) {
 	Real length = hypotenuse(matrix[2][1] - matrix[1][2], matrix[2][0] - matrix[0][2], matrix[1][0] - matrix[0][1]);
 	
 	// need to check acos() parameter to avoid values out of range
@@ -540,7 +540,7 @@ void matrixraa(Real matrix[3][3], Real raa[4]) {
 	raa[2] = (matrix[1][0] - matrix[0][1])/length;
 }
 
-void multiplyraa(Real raa1[4], Real raa2[4], Real raa_result[4]) {
+void multiplyraa(/* not const */ Real raa1[4], /* not const */ Real raa2[4], /* not const */ Real raa_result[4]) {
 	Real matrix1[3][3];
 	Real matrix2[3][3];
 	Real result_matrix[3][3];
@@ -551,7 +551,7 @@ void multiplyraa(Real raa1[4], Real raa2[4], Real raa_result[4]) {
 	matrixraa(result_matrix, raa_result);
 }
 
-void matrixMultiply(Real m1[3][3], Real m2[3][3], Real result[3][3]) {
+void matrixMultiply(const Real m1[3][3], const Real m2[3][3], /* not const */ Real result[3][3]) {
 	result[0][0] = m1[0][0]*m2[0][0] + m1[0][1]*m2[1][0] + m1[0][2]*m2[2][0];
 	result[0][1] = m1[0][0]*m2[0][1] + m1[0][1]*m2[1][1] + m1[0][2]*m2[2][1];
 	result[0][2] = m1[0][0]*m2[0][2] + m1[0][1]*m2[1][2] + m1[0][2]*m2[2][2];
@@ -563,10 +563,10 @@ void matrixMultiply(Real m1[3][3], Real m2[3][3], Real result[3][3]) {
 	result[2][2] = m1[2][0]*m2[0][2] + m1[2][1]*m2[1][2] + m1[2][2]*m2[2][2];
 }
 
-void rand_axis(Real axis[4], Real angle) {
+void rand_axis(/* not const */ Real axis[4], ConstReal   angle) {
 	axis[2] = genunf(-1.0, 1.0);
-	Real t = genunf(0.0, 2*PI);
-	Real w = sqrt(1 - axis[2]*axis[2]);
+	const Real t = genunf(0.0, 2*PI);
+	const Real w = sqrt(1 - axis[2]*axis[2]);
 	axis[0] = w * cos(t);
 	axis[1] = w * sin(t);
 	axis[3] = angle;

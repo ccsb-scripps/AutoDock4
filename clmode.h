@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.h,v 1.9 2010/08/27 00:05:07 mp Exp $
+ $Id: clmode.h,v 1.10 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -40,10 +40,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "qmultiply.h"
 #include "openfile.h"
 void  clmode( const int   num_atm_maps, 
-              const Real clus_rms_tol, 
+              ConstReal   clus_rms_tol, 
               const char *const hostnm, 
-              const Clock jobStart,
-              struct tms tms_jobStart, 
+              const Clock& jobStart,
+              const struct tms& tms_jobStart, 
               const Boole B_write_all_clusmem, 
               const char  *const clusFN, 
               const Real crdpdb[MAX_ATOMS][SPACE], 

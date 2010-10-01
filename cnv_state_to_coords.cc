@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.cc,v 1.10 2010/08/27 00:05:07 mp Exp $
+ $Id: cnv_state_to_coords.cc,v 1.11 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -44,7 +44,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 extern int true_ligand_atoms;
 
-void cnv_state_to_coords( const State now,
+void cnv_state_to_coords( const State& now,
                           const Real vt[MAX_TORS][SPACE],
                           const int tlist[MAX_TORS][MAX_ATOMS],
                           const int ntor,

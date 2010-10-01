@@ -1,6 +1,6 @@
 /*
 
- $Id: torsion.h,v 1.7 2010/08/27 00:05:09 mp Exp $
+ $Id: torsion.h,v 1.8 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -27,7 +27,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef TORSION
 #define TORSION
 
-void  torsion( const State now,
+void  torsion( const State& now,
      /* not const */ Real crd[MAX_ATOMS][SPACE], 
                const Real vt[MAX_TORS][SPACE], 
                const int tlist[MAX_TORS][MAX_ATOMS], 

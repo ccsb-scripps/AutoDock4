@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.h,v 1.12 2010/08/27 00:05:08 mp Exp $
+ $Id: printEnergies.h,v 1.13 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -34,8 +34,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 void printEnergies( const EnergyBreakdown *const eb,
                     const char  *prefixString, 
                     const int ligand_is_inhibitor,
-                    const Real emap_total,
-                    const Real elec_total,
+                    ConstReal emap_total,
+                    ConstReal elec_total,
                     const Boole B_have_flexible_residues,
                     const Unbound_Model ad4_unbound_model);
 

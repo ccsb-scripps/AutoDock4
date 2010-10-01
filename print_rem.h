@@ -1,6 +1,6 @@
 /*
 
- $Id: print_rem.h,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: print_rem.h,v 1.7 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -33,5 +33,5 @@ void  print_rem(  FILE  *const outFile,
                   const int Rank,
                   const int NumMem,
                   const int Run,
-		  const Real ref_rms);
+		  ConstReal ref_rms);
 #endif

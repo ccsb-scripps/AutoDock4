@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.h,v 1.10 2010/08/27 00:05:08 mp Exp $
+ $Id: read_parameter_library.h,v 1.11 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -37,10 +37,11 @@ void read_parameter_library(
 void setup_parameter_library(
         int outlev,
         const char * model_text,
-        Unbound_Model unbound_model
+        const Unbound_Model unbound_model
         );
 
-char * report_parameter_library() /* MP ? TODO const*/;
+// The returned string is not supposed to be changed
+const char * report_parameter_library();
 
 void setup_distdepdiel( const int outlev, 
                         EnergyTables *const ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables

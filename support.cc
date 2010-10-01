@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.36 2010/08/27 00:05:08 mp Exp $
+ $Id: support.cc,v 1.37 2010/10/01 22:51:40 mp Exp $
 
  AutoDock 
 
@@ -138,7 +138,7 @@ void Population::SiftDown(void) /* not const */
    }
 }
 
-void Population::msort(const int m)
+void Population::msort(const int m) /* not const */
 {
    register int i;
 
@@ -207,17 +207,17 @@ void Population::print(FILE *const output, const int num) const {
 }
 
 static int
-doublecompare(const void *p1, const void *p2)
+doublecompare(const void *const p1, const void *const p2)
 {
-	double i = *((double *)p1);
-	double j = *((double *)p2);
+	const double i = *((double *)p1);
+	const double j = *((double *)p2);
 	if ( i > j ) return 1;
 	if ( i < j ) return -1;
 	return 0;
-	}
+}
+
 static double
-compute_k_quantile(const int k, const int q, 
- const double energy[], const int size)
+compute_k_quantile(const int k, const int q, const double energy[], const int size)
 {
  // return k-th (0-origin) "q"-tile of array (assumed sorted ascending)
  // example: median is k=1  q=2
@@ -229,18 +229,16 @@ compute_k_quantile(const int k, const int q,
  // M Pique December 2009 from wikipedia "Quantile" 
  //    "Estimating the quantiles of a population", "Weighted average"
  //    http://en.wikipedia.org/wiki/Quantile 
-double p = (size-1) * k / q;
-double j_double; // integer part of p
-double g; // fractional part of p
-int ilow, ihigh; // indices to be weighted
-  g = modf(p, &j_double);
-  ilow = (int) j_double;
+  const double p = (size-1) * k / q;
+  double j_double; // integer part of p
+  const double g = modf(p, &j_double); // fractional part of p
+  const int ilow = (int) j_double;
   assert(ilow>=0 && ilow<size);
   if (g == 0.0) return energy[ilow];
-  ihigh=ilow+1;
+  const int ihigh=ilow+1; // indices to be weighted
   assert(ihigh<size);
   return energy[ilow] + g*(energy[ihigh]-energy[ilow]);
-  }
+ }
 
 
   
@@ -608,7 +606,7 @@ Genotype &Genotype::operator=(const Genotype &original)
 }
 
 
-void Genotype::write(const Element value, const int gene_number) /* not const */
+void Genotype::write(const Element& value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -619,7 +617,7 @@ void Genotype::write(const Element value, const int gene_number) /* not const */
    rep_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Genotype::write(const unsigned char value, const int gene_number) /* not const */
+void Genotype::write(const unsigned char& value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -630,7 +628,7 @@ void Genotype::write(const unsigned char value, const int gene_number) /* not co
    rep_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Genotype::write(const FourByteLong value, const int gene_number) /* not const */
+void Genotype::write(const FourByteLong& value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -641,7 +639,7 @@ void Genotype::write(const FourByteLong value, const int gene_number) /* not con
    rep_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Genotype::write(const double value, const int gene_number) /* not const */
+void Genotype::write(const double& value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -675,7 +673,7 @@ Quat Genotype::readQuat() const
     return q;
 }
 
-void Genotype::writeQuat( const Quat q )
+void Genotype::writeQuat( const Quat& q ) /* not const */
 {
     write( q.x, 3 );
     write( q.y, 4 );
@@ -694,7 +692,7 @@ Quat Phenotype::readQuat() const
     return q;
 }
 
-void Phenotype::writeQuat( const Quat q )
+void Phenotype::writeQuat( const Quat& q ) /* not const */
 {
     write( q.x, 3 );
     write( q.y, 4 );
@@ -825,7 +823,7 @@ Phenotype::~Phenotype(void)
    }
 }
 
-void Phenotype::write(const Element value, const int gene_number)
+void Phenotype::write(const Element& value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -836,7 +834,7 @@ void Phenotype::write(const Element value, const int gene_number)
    value_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Phenotype::write(const unsigned char value, const int gene_number)
+void Phenotype::write(const unsigned char& value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -847,7 +845,7 @@ void Phenotype::write(const unsigned char value, const int gene_number)
    value_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Phenotype::write(const FourByteLong value, const int gene_number)
+void Phenotype::write(const FourByteLong& value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -858,7 +856,7 @@ void Phenotype::write(const FourByteLong value, const int gene_number)
    value_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Phenotype::write(const double value, const int gene_number)
+void Phenotype::write(const double& value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -869,7 +867,7 @@ void Phenotype::write(const double value, const int gene_number)
    value_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Phenotype::write(const Representation &value, const int gene_number)
+void Phenotype::write(const Representation &value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -881,7 +879,7 @@ void Phenotype::write(const Representation &value, const int gene_number)
    *(value_vector[gene_number]) = value;
 }
 
-double Phenotype::evaluate(const EvalMode mode) /* not const */
+double Phenotype::evaluate(const EvalMode& mode) /* not const */
 {
 
 #ifdef DEBUG

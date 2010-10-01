@@ -1,6 +1,6 @@
 /*
 
- $Id: hybrids.h,v 1.17 2010/08/27 00:05:07 mp Exp $
+ $Id: hybrids.h,v 1.18 2010/10/01 22:51:39 mp Exp $
 
  AutoDock 
 
@@ -45,8 +45,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define CALL_GLSS
 
 State call_glss(Global_Search *const global_method, Local_Search *const local_method, 
-		const State now, const unsigned int num_evals, const unsigned int pop_size, 
-		const int outlev, const Output_pop_stats extOutput_pop_stats, Molecule *const mol,
+		const State& now, const unsigned int num_evals, const unsigned int pop_size, 
+		const int outlev, const Output_pop_stats& extOutput_pop_stats, Molecule *const mol,
 		const Boole B_RandomTran0, const Boole B_RandomQuat0, const Boole B_RandomDihe0,
         const GridMapSetInfo *const info, const char *const FN_pop_file,
         /* not const */ int end_of_branch[MAX_TORS]);
@@ -69,8 +69,8 @@ Individual random_ind(const int num_torsions, const GridMapSetInfo *const info )
 #define CALL_GLSS_TORS
 
 State call_glss_tors(Global_Search *const global_method, Local_Search *const local_method, 
-		const State now, const unsigned int num_evals, const unsigned int pop_size, 
-		const int outlev, const Output_pop_stats extOutput_pop_stats, Molecule *const mol,
+		const State& now, const unsigned int num_evals, const unsigned int pop_size, 
+		const int outlev, const Output_pop_stats& extOutput_pop_stats, Molecule *const mol,
 		const Boole B_RandomDihe0,
         const GridMapSetInfo *const info, const char *const FN_pop_file);
 
@@ -87,7 +87,7 @@ Individual random_ind_tors(const int num_torsions, const GridMapSetInfo *const i
 #ifndef CALL_LS
 #define CALL_LS
 
-State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Molecule *mol);
+State call_ls(Local_Search *local_method, const State& now, unsigned int pop_size, Molecule *mol);
 
 #endif
 
@@ -95,9 +95,9 @@ State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Mole
 #ifndef CALL_GS
 #define CALL_GS
 
-State call_gs(Global_Search *global_method, State now, unsigned int num_evals, unsigned int pop_size,
+State call_gs(Global_Search *global_method, State& now, unsigned int num_evals, unsigned int pop_size,
               Molecule *mol,
-              Output_pop_stats extOutput_pop_stats,
+              Output_pop_stats& extOutput_pop_stats,
               GridMapSetInfo *info,
               int end_of_branch[MAX_TORS] );
 
@@ -107,8 +107,9 @@ State call_gs(Global_Search *global_method, State now, unsigned int num_evals, u
 #ifndef CALL_PSO
 #define CALL_PSO
 
-State call_cpso(Local_Search  *local_method, State sInit, int n_exec,  int S, int D, 
-                double *xmin, double * xmax, unsigned int num_evals, int K, double c1, double c2, int outlev);
+State call_cpso(Local_Search *const local_method, const State& sInit, const int n_exec, const int S, const int D, 
+                double *const xmin, double *const xmax, const unsigned int num_evals, const int K,
+		const double& c1, const double& c2, const int outlev);
 
 #endif
 
