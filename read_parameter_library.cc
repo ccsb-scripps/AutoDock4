@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.20 2010/10/01 22:51:40 mp Exp $
+ $Id: read_parameter_library.cc,v 1.21 2010/10/23 00:05:37 rhuey Exp $
 
  AutoDock 
 
@@ -329,9 +329,47 @@ void setup_parameter_library( const int outlev, const char *const model_text, co
 
                 thisParameter.epsij    *= AD4.coeff_vdW;
                 thisParameter.epsij_hb *= AD4.coeff_hbond;
+    struct xs_vdw_lookup { char name[4]; float value;};
+    static struct xs_vdw_lookup xs_vdw_lookup[] = { // adapted from AutoDock Vina atom_constants.h
+    {"C", 1.9},
+    {"A", 1.9},
+    {"N", 1.8},
+    {"NA", 1.8},
+    {"NS", 1.8},
+    {"O", 1.7},
+    {"OA", 1.7},
+    {"OS", 1.7},
+    {"S", 2.0},
+    {"SA", 2.0},
+    {"P", 2.1},
+    {"F", 1.5},
+    {"Mg", 1.2}, //?Metal Donor?
+    //{"X", 1.2}, //SER-OG, THR-OG or TYR-OH
+    //"Cl", 1.8,
+    //"Br", 2.0,
+    //"I", 2.2,
+    //"Met_D", 1.2,
+    {"", -1 }};
+#define streq(a,b) (0==strcasecmp(a,b))
+
+                {
+                int xs_vdw_i = -1;
+                for (int i = 0; xs_vdw_lookup[i].value>0;i++){
+                    if (streq(thisParameter.autogrid_type, xs_vdw_lookup[i].name)){
+                        xs_vdw_i = i;
+                        break;
+                    }
+                }
+                if (xs_vdw_i<0) {
+                    pr( logFile, "%s: WARNING: atom type %s not found in the xs_vdw_lookup table.\n\n", programname, thisParameter.autogrid_type);
+                    thisParameter.xs_radius = 1.8; // default if not found; should probably be error 
+                    }
+                else thisParameter.xs_radius = xs_vdw_lookup[xs_vdw_i].value;
+                }
 
                 apm_enter(thisParameter.autogrid_type, thisParameter);
                 pr(logFile, "Parameters for the atom type \"%s\" were initialised with the following default values:\n\n", thisParameter.autogrid_type);
+
 
                 if (outlev > 2) {
                     pr(logFile, "\tR-eqm = %5.2f Angstrom\n\tweighted epsilon = %5.3f\n\tAtomic fragmental volume = %5.3f\n\tAtomic solvation parameter = %5.3f\n\tH-bonding R-eqm = %5.3f\n\tweighted H-bonding epsilon = %5.3f\n\tH-bonding type = %d,  bond index = %d\n\n",
