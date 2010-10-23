@@ -1,6 +1,6 @@
 /*
 
- $Id: parameters.h,v 1.5 2009/05/08 23:02:14 rhuey Exp $
+ $Id: parameters.h,v 1.6 2010/10/23 00:05:02 rhuey Exp $
 
  AutoDock 
 
@@ -41,6 +41,7 @@ typedef struct parameter_entry
   char autogrid_type[MAX_LEN_AUTOGRID_TYPE + 1];	/* autogrid_type is a string based on babel_types assigned by PyBabel */
   double Rij;			/* Lennard-Jones equilibrium separation */
   double epsij;			/* Lennard-Jones energy well-depth */
+  double xs_radius;     /* AutoDock vina xs_vdw_radius */
   double vol;			/* solvation volume */
   double solpar;		/* solvation parameter */
   hbond_type hbond;		/* hbonding character: 
