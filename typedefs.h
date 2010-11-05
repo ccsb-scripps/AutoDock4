@@ -1,6 +1,6 @@
 /*
 
- $Id: typedefs.h,v 1.9 2010/10/01 22:51:40 mp Exp $
+ $Id: typedefs.h,v 1.10 2010/11/05 02:43:00 mp Exp $
 
  AutoDock  
 
@@ -63,8 +63,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define FDFMT2 FDFMT " " FDFMT
 #define FDFMT3 FDFMT " " FDFMT " " FDFMT
 
-#define ConstReal	const Real
-//#define ConstReal	const Real&
+// MP note: "const2" tests were "const Real", "const3" tests were "const Real&"
+//#define ConstReal	const Real
+#define ConstReal	const Real&
 
 typedef float MapType; //the grid map type can be changed independent of other 'Real's
 #   define MAPFMT "%f"
