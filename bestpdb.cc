@@ -1,10 +1,11 @@
 /*
 
- $Id: bestpdb.cc,v 1.9 2010/10/01 22:51:39 mp Exp $
+ $Id: bestpdb.cc,v 1.4 2007/04/27 06:01:47 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -43,15 +44,15 @@ extern FILE *logFile;
 extern int keepresnum;
 extern char dock_param_fn[];
 
-void bestpdb( const int ncluster, 
-	      const int num_in_clu[MAX_RUNS],
-	      const int cluster[MAX_RUNS][MAX_RUNS],
-	      const Real econf[MAX_RUNS],
-	      const Real crd[MAX_RUNS][MAX_ATOMS][SPACE],
-	      const char atomstuff[MAX_ATOMS][MAX_CHARS],
-	      const int natom,
-	      const Boole B_write_all_clusmem,
-	      const Real ref_rms[MAX_RUNS])
+void bestpdb( int ncluster, 
+	      int num_in_clu[MAX_RUNS],
+	      int cluster[MAX_RUNS][MAX_RUNS],
+	      Real econf[MAX_RUNS],
+	      Real crd[MAX_RUNS][MAX_ATOMS][SPACE],
+	      char atomstuff[MAX_ATOMS][MAX_CHARS],
+	      int natom,
+	      Boole B_write_all_clusmem,
+	      Real ref_rms[MAX_RUNS])
 
 {
     register int  i=0,
@@ -70,8 +71,10 @@ void bestpdb( const int ncluster,
 		  i1 = 1;
 		  
 
-    char  filnm[PATH_MAX],
-		  label[MAX_CHARS];
+    char          rec13[14],
+		  filnm[MAX_CHARS],
+		  label[MAX_CHARS],
+		  rec8[9];
 
     pr( logFile, "\n\tLOWEST ENERGY DOCKED CONFORMATION from EACH CLUSTER");
     pr( logFile, "\n\t___________________________________________________\n\n\n" );
@@ -103,20 +106,16 @@ void bestpdb( const int ncluster,
             if (keepresnum > 0) {
                 fprintf( logFile, "USER                              x       y       z   Rank Run  Energy    RMS\n");
                 for (j = 0;  j < natom;  j++) {
-                    char rec15[16];
-                    strncpy( rec15, &atomstuff[j][12], (size_t)15); //changed start index from 13->12 so increased number to copy
-                    rec15[15]='\0';
-                    #define FORMAT_PDBQ_ATOM_RANKRUN_STR      "ATOM  %5d %.15s   %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f\n"
-                    fprintf( logFile, FORMAT_PDBQ_ATOM_RANKRUN_STR, j+1, rec15, crd[c][j][X], crd[c][j][Y], crd[c][j][Z], i1, c1, econf[c], ref_rms[c] );
+                    strncpy( rec13, &atomstuff[j][13], (size_t)13);
+                    rec13[13]='\0';
+                    fprintf( logFile, FORMAT_PDBQ_ATOM_RANKRUN_STR, j+1, rec13, crd[c][j][X], crd[c][j][Y], crd[c][j][Z], i1, c1, econf[c], ref_rms[c] );
                 } /* j */
             } else {
                 fprintf( logFile, "USER                   Rank       x       y       z    Run   Energy    RMS\n");
                 for (j = 0;  j < natom;  j++) {
-                    char rec10[11];
-                    strncpy( rec10, &atomstuff[j][12], (size_t)10); //changed start index from 13->12 so increased number to copy
-                    rec10[10]='\0';
-                    #define FORMAT_PDBQ_ATOM_RUN_NUM          "ATOMk %5d %.10s%4d    %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f\n"
-                    fprintf( logFile, FORMAT_PDBQ_ATOM_RUN_NUM, j+1, rec10, i1, crd[c][j][X], crd[c][j][Y], crd[c][j][Z], c1, econf[c], ref_rms[c] );
+                    strncpy( rec8, &atomstuff[j][13], (size_t)8);
+                    rec8[8]='\0';
+                    fprintf( logFile, FORMAT_PDBQ_ATOM_RUN_NUM, j+1, rec8, i1, crd[c][j][X], crd[c][j][Y], crd[c][j][Z], c1, econf[c], ref_rms[c] );
                 } /* j */
             }
             fprintf( logFile, "TER\n" );

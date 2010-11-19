@@ -1,10 +1,11 @@
 /*
 
- $Id: rep_constants.h,v 1.6 2010/10/01 22:51:40 mp Exp $
+ $Id: rep_constants.h,v 1.2.2.1 2010/11/19 20:09:28 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -28,35 +29,25 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define _REP_CONSTANTS
 
 // Translation
-enum TranslationEnum {
-	X_TRANSLATION_INDEX=0,
-	Y_TRANSLATION_INDEX=1,
-	Z_TRANSLATION_INDEX=2
-};
+#define X_TRANSLATION_INDEX 0
+#define Z_TRANSLATION_INDEX 2
 
 // Quaternion
-enum QuaternionEnum {
-	QX_ROTATION_INDEX=3,
-	QY_ROTATION_INDEX=4,
-	QZ_ROTATION_INDEX=5,
-	QW_ROTATION_INDEX=6
-};
+#define QX_ROTATION_INDEX 3
+#define QY_ROTATION_INDEX 4
+#define QZ_ROTATION_INDEX 5
+#define QW_ROTATION_INDEX 6
 
 // Axis-Angle
-enum AxisAngleEnum {
-	X_ROTATION_INDEX=3,
-	Y_ROTATION_INDEX=4,
-	Z_ROTATION_INDEX=5
-};
+#define X_ROTATION_INDEX 3
+#define Y_ROTATION_INDEX 4
+#define Z_ROTATION_INDEX 5
 
 #define ROTATION_ANGLE_INDEX QW_ROTATION_INDEX
 
 #define is_translation_index(i) (((i) >= X_TRANSLATION_INDEX) && ((i) <= Z_TRANSLATION_INDEX))
 #define is_axis_index(i) (((i) >= X_ROTATION_INDEX) && ((i) <= Z_ROTATION_INDEX))
 #define is_angle_index(i) ((i) == ROTATION_ANGLE_INDEX)
-#define is_rotation_index(i) (((i) >= QX_ROTATION_INDEX) && ((i) <= QW_ROTATION_INDEX))
-#define is_first_rotation_index(i) (((i) == QX_ROTATION_INDEX))
-#define is_within_rotation_index(i) (((i) > QX_ROTATION_INDEX) && ((i) <= QW_ROTATION_INDEX))
-#define is_conformation_index(i) ((i) > ROTATION_ANGLE_INDEX)
+
 
 #endif

@@ -1,10 +1,11 @@
 /*
 
- $Id: weedbonds.cc,v 1.17 2010/10/01 22:51:40 mp Exp $
+ $Id: weedbonds.cc,v 1.13.2.1 2010/11/19 20:09:28 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -40,16 +41,18 @@ extern int true_ligand_atoms;
 extern int Nnb_array[3];
 
 
-void weedbonds( const int natom,
-                const char pdbaname[MAX_ATOMS][5],
-                const int rigid_piece[MAX_ATOMS],
-                const int ntor,
-                const int tlist[MAX_TORS][MAX_ATOMS],
-      /* not const */ int nbmatrix[MAX_ATOMS][MAX_ATOMS],
-      /* not const */ int *const Addr_Nnb,
-      /* not const */ NonbondParam *nonbondlist,
-                const int outlev,
-                const int type[MAX_ATOMS] )
+void weedbonds( int natom,
+                char pdbaname[MAX_ATOMS][5],
+                int rigid_piece[MAX_ATOMS],
+                int ntor,
+                int tlist[MAX_TORS][MAX_ATOMS],
+                int nbmatrix[MAX_ATOMS][MAX_ATOMS],
+                int *Addr_Nnb,
+                NonbondParam *nonbondlist,
+                int outlev,
+                int type[MAX_ATOMS],
+                int natom_in_lig[MAX_LIGANDS],
+                int nligand )
 
 {
     int a11=0;
@@ -68,7 +71,10 @@ void weedbonds( const int natom,
     register int k = 0;
 
     char error_message[LINE_LEN];
-
+	
+	int from_atom = 0;
+    int to_atom = 0;
+    int n = 0;
 
 /*___________________________________________________________________________
 |    ENDBRANCH---TORS---BRANCH---R O O T---BRANCH---ENDBRANCH                |
@@ -119,9 +125,9 @@ void weedbonds( const int natom,
 
     } // i
 
-    /* 
+    /*
     \  Weed out bonds from atoms directly connected to rigid pieces,
-     \_ we think these are 1-3 interactions mp+rh, 10-2008______________________
+     \______________________________________________________________
     */
     for (i=0; i<ntor; i++) {
 
@@ -151,15 +157,42 @@ void weedbonds( const int natom,
         } // k
     } // i
 
+    
+	// Handle each ligand separately   -Huameng  Li    09/28/2007   
+    // intramolecular non-bonds for ligands
+    from_atom = 0;
+    for (n = 0; n < nligand; n++) {
+    	// get the segment of atom numbers in each ligand.   	
+    	to_atom = from_atom + natom_in_lig[n];
+    	
+    	for ( i = from_atom;  i < (to_atom -1);  i++ ) {
+        	for ( j = i+1;  j < to_atom;  j++ ) {
+	            if ( ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1)) || ((nbmatrix[i][j] == 4) && (nbmatrix[j][i] == 4)) ) {
+	                nonbondlist[Nnb].a1 = i;
+	                nonbondlist[Nnb].a2 = j;
+	                nonbondlist[Nnb].t1 = type[i];
+	                nonbondlist[Nnb].t2 = type[j];
+	                nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
+	                ++Nnb;
+	            } else if ( (nbmatrix[i][j] != 0) && (nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] != 0) ) {
+	                pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+	            }
+        	} // j
+    	} // i  
+    	
+    	from_atom = to_atom;
+    		
+    } // k ligands
+    
     /*
-    for ( i = 0;  i < (natom-1);  i++ ) {
-        for ( j = i+1;  j < natom;  j++ ) {
+    for ( i = 0;  i < (true_ligand_atoms-1);  i++ ) {
+        for ( j = i+1;  j < true_ligand_atoms;  j++ ) {
             if ( ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1)) || ((nbmatrix[i][j] == 4) && (nbmatrix[j][i] == 4)) ) {
-                nonbondlist[Nnb][ATM1] = i;
-                nonbondlist[Nnb][ATM2] = j;
-                nonbondlist[Nnb][TYPE1] = type[i];
-                nonbondlist[Nnb][TYPE2] = type[j];
-                nonbondlist[Nnb][NBTYPE] = nbmatrix[i][j];
+                nonbondlist[Nnb].a1 = i;
+                nonbondlist[Nnb].a2 = j;
+                nonbondlist[Nnb].t1 = type[i];
+                nonbondlist[Nnb].t2 = type[j];
+                nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0) && (nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] != 0) ) {
                 pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
@@ -167,35 +200,48 @@ void weedbonds( const int natom,
         } // j
     } // i
     */
-
-    // intramolecular non-bonds for ligand
-    for ( i = 0;  i < (true_ligand_atoms-1);  i++ ) {
-        for ( j = i+1;  j < true_ligand_atoms;  j++ ) {
-            if ( (nbmatrix[i][j] == 1 && nbmatrix[j][i] == 1) || (nbmatrix[i][j] == 4 && nbmatrix[j][i] == 4) ) {
+    
+    Nnb_array[INTRA_LIGAND] = Nnb;
+    
+    // -Huameng  Li    09/28/2007
+    // intermolecular non-bonds between ligand, ligand
+    from_atom = 0;
+    to_atom = 0;
+    for (n = 0; n < nligand; n++) {   	
+    	to_atom = from_atom + natom_in_lig[n];
+    	
+    	// ligand[k] and ligand[k+1], [k+2], ...
+    	for( i = from_atom; i < to_atom; i++) {
+    		for (j = to_atom;  j < true_ligand_atoms;  j++ ) {
+    			if ( ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1)) || ((nbmatrix[i][j] == 4) && (nbmatrix[j][i] == 4)) ) {
                 nonbondlist[Nnb].a1 = i;
                 nonbondlist[Nnb].a2 = j;
                 nonbondlist[Nnb].t1 = type[i];
                 nonbondlist[Nnb].t2 = type[j];
                 nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
-            } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
+            	} else if ( (nbmatrix[i][j] != 0) && (nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] != 0) ) {
                 pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
-            }
-        } // j
-    } // i
-    Nnb_array[INTRA_LIGAND] = Nnb;
+            	}
+    		} // end j
+    	} //end i 
+    	
+    	from_atom = to_atom;
+    	  	    	
+    } //end k ligand
+    
 
     // intermolecular non-bonds for ligand,receptor
     for ( i = 0;  i < true_ligand_atoms;  i++ ) {
         for ( j = true_ligand_atoms;  j < natom;  j++ ) {
-            if ( (nbmatrix[i][j] == 1 && nbmatrix[j][i] == 1) || (nbmatrix[i][j] == 4 && nbmatrix[j][i] == 4) ) {
+            if ( ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1)) || ((nbmatrix[i][j] == 4) && (nbmatrix[j][i] == 4)) ) {
                 nonbondlist[Nnb].a1 = i;
                 nonbondlist[Nnb].a2 = j;
                 nonbondlist[Nnb].t1 = type[i];
                 nonbondlist[Nnb].t2 = type[j];
                 nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
-            } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
+            } else if ( (nbmatrix[i][j] != 0) && (nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] != 0) ) {
                 pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
             }
         } // j
@@ -205,14 +251,14 @@ void weedbonds( const int natom,
     // intramolecular non-bonds for receptor
     for ( i = true_ligand_atoms;  i < natom-1;  i++ ) {
         for ( j = i+1;  j < natom;  j++ ) {
-            if ( (nbmatrix[i][j] == 1 && nbmatrix[j][i] == 1) || (nbmatrix[i][j] == 4 && nbmatrix[j][i] == 4) ) {
+            if ( ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1)) || ((nbmatrix[i][j] == 4) && (nbmatrix[j][i] == 4)) ) {
                 nonbondlist[Nnb].a1 = i;
                 nonbondlist[Nnb].a2 = j;
                 nonbondlist[Nnb].t1 = type[i];
                 nonbondlist[Nnb].t2 = type[j];
                 nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
-            } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
+            } else if ( (nbmatrix[i][j] != 0) && (nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] != 0) ) {
                 pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
             }
         } // j
@@ -233,16 +279,16 @@ void weedbonds( const int natom,
 
 
 void print_nonbonds(
-                const int natom,
-                const char pdbaname[MAX_ATOMS][5],
-                const int rigid_piece[MAX_ATOMS],
-                const int ntor,
-                const int tlist[MAX_TORS][MAX_ATOMS],
-      /* not const */ int nbmatrix[MAX_ATOMS][MAX_ATOMS],
-                const int Nnb,
-                const NonbondParam *const nonbondlist,
-                const int outlev,
-                const int type[MAX_ATOMS])
+                int natom,
+                char pdbaname[MAX_ATOMS][5],
+                int rigid_piece[MAX_ATOMS],
+                int ntor,
+                int tlist[MAX_TORS][MAX_ATOMS],
+                int nbmatrix[MAX_ATOMS][MAX_ATOMS],
+                int Nnb,
+                NonbondParam *nonbondlist,
+                int outlev,
+                int type[MAX_ATOMS])
 
 {
     register int i = 0;

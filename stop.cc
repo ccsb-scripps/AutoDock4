@@ -1,10 +1,11 @@
 /*
 
- $Id: stop.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: stop.cc,v 1.3 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -30,19 +31,17 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
 #include "stop.h"
-
-using std::string;
 
 extern char *programname;
 extern FILE *logFile;
 
 
 /*----------------------------------------------------------------------------*/
-void stop(const char *const reason)
+void stop( char reason[LINE_LEN] )
 /*----------------------------------------------------------------------------*/
 {
+    char message[LINE_LEN];
 
     if (logFile == stdout) {
 	fprintf( logFile, "%s: ERROR: %s\n", programname, reason);
@@ -50,14 +49,12 @@ void stop(const char *const reason)
 	fprintf( logFile, "%s: Unsuccessful Completion.\n\n", programname);
 	fflush(  logFile  );
     } else {
-        string pn=programname;
-        string r=reason;
-	string message =  pn + ": ERROR: "+r+"\n";
-	print_2x( logFile, stderr, message.c_str() );
-	message = pn + ": Aborting...\n\n";
-	print_2x( logFile, stderr, message.c_str() );
-	message = pn + ": Unsuccessful Completion.\n\n";
-	print_2x( logFile, stderr, message.c_str() );
+	sprintf( message, "%s: ERROR: %s\n", programname, reason);
+	print_2x( logFile, stderr, message );
+	sprintf( message, "%s: Aborting...\n\n", programname);
+	print_2x( logFile, stderr, message );
+	sprintf( message, "%s: Unsuccessful Completion.\n\n", programname);
+	print_2x( logFile, stderr, message );
 	fflush(logFile);
 	fflush(stderr);
     }

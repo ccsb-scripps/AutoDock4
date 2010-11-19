@@ -1,10 +1,11 @@
 /*
 
- $Id: parse_param_line.h,v 1.4 2010/08/27 00:05:08 mp Exp $
+ $Id: parse_param_line.h,v 1.2 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -28,6 +29,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define PARSE_PAR_LINE
 
 #include "constants.h"
-int  parse_param_line( const char  *const line);
+int  parse_param_line( char  line[LINE_LEN] );
 
 #endif

@@ -1,31 +1,19 @@
 #ifndef COPYDIMENSION
 #define COPYDIMENSION
 
-//#include "main.h"
 #include "structs.h"
 #include "constants.h"
 #include "alea.h"
 
-//void initialiseState( State *S );
-//void copyState( State *destination, State  source);
 
-void copyDimension( /* not const */ State *const S, const Position& R);
-void copyState2Dimension( /* not const */ Position *const R, const State& S);
-
-void initialiseDimension(const GridMapSetInfo *const info, /* not const */ double *const xmin, /* not const */ double *const xmax, const int D);
-//void initialiseDimension(float xlo, float xhi, float ylo, float yhi, float zlo, float zhi, double *xmin, double *xmax, int D);
-void initialiseParticle(const int s, const int D, /* not const */ Position *const Xi, /* not const */ Velocity *const Vi, const double *const xmin, const double *const xmax, double *const Vmin, double *const Vmax);
-void swarmActivity(const int S, const int D, const Position *const Xi, const int nb_eval, const int outlev);
-
-/*void printState( FILE *fp,
-		 State state, 
-		 int detail );
-
-void writeState( FILE *fp, 
-		 State state );
-
-int checkState(State *D);
-
-Molecule copyStateToMolecule(State *source, Molecule *mol);*/
+//void copyDimension( State *S, Position R);
+//void copyState2Dimension( Position *R, State S);
+void make_state_from_position(State *S, Position P);
+void copy_state_to_position(Position *R , State S);
+void initialiseDimension(GridMapSetInfo *info, double *xmin, double *xmax, int D);
+void initializeStateDimensions(GridMapSetInfo *info, double *xmin, double *xmax, 
+				double pso_qstep, double pso_dstep, int d_freedom);
+void initialiseParticle(int s, int D, Position *Xi, Velocity *Vi, double *xmin, double *xmax, double *Vmin, double *Vmax);
+void swarmActivity(int S, int D, Position *Xi, int nb_eval, int outlev);
 
 #endif

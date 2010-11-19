@@ -1,10 +1,11 @@
 /*
 
- $Id: prInitialState.cc,v 1.13 2010/08/27 00:05:08 mp Exp $
+ $Id: prInitialState.cc,v 1.8 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -33,7 +34,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include <string.h>
 #include "prInitialState.h"
-#include "writePDBQT.h"
 
 
 extern int keepresnum;
@@ -42,20 +42,20 @@ extern char *programname;
 
 
 void prInitialState(
-    const EnergyBreakdown *p_eb,
-    const int natom,
-    const Real crd[MAX_ATOMS][SPACE],
-    const char atomstuff[MAX_ATOMS][MAX_CHARS],
-    const int type[MAX_ATOMS],
-    const Real emap[MAX_ATOMS],
-    const Real elec[MAX_ATOMS],
-    const Real charge[MAX_ATOMS],
-    const int ligand_is_inhibitor,
-    const Boole B_have_flexible_residues,
-    const Unbound_Model ad4_unbound_model
-    )
+    EnergyBreakdown *p_eb,
+    int natom,
+    Real crd[MAX_ATOMS][SPACE],
+    char atomstuff[MAX_ATOMS][MAX_CHARS],
+    int type[MAX_ATOMS],
+    Real emap[MAX_ATOMS],
+    Real elec[MAX_ATOMS],
+    Real charge[MAX_ATOMS],
+    int ligand_is_inhibitor,
+    Boole B_have_flexible_residues )
 
 {
+    char rec8[10];
+    char rec13[15];
     char descriptor[17];
     register int i = 0;
     int a = 0;
@@ -68,10 +68,16 @@ void prInitialState(
 
     pr( logFile, "%sUSER    Transformed Initial Coordinates\n", descriptor );
     for (i = 0;  i < natom;  i++) {
-        if (keepresnum > 0) print_PDBQ_atom_resstr( logFile, descriptor, i, atomstuff[i],  crd, 
-	     1.0, 0.0, charge[i], "\n");
-        else  print_PDBQ_atom_resnum( logFile, descriptor, i, atomstuff[i],  0, crd, 
-	     1.0, 0.0, charge[i], "\n");
+        pr( logFile, "%s", descriptor);
+	if (keepresnum > 0) {
+	    strncpy( rec13, &atomstuff[i][13], (size_t)13);
+	    pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, rec13,   crd[i][X], crd[i][Y], crd[i][Z], 1.0, 0.0, charge[i]);
+	    pr(logFile, "\n");
+	} else {
+	    strncpy( rec8, &atomstuff[i][13], (size_t)8);
+	    pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, "", i+1, rec8, 0, crd[i][X], crd[i][Y], crd[i][Z], 1.0, 0.0, charge[i]);
+	    pr(logFile, "\n");
+	}
     } /* i */
     pr( logFile, "%sTER\n\n\n", descriptor );
 
@@ -89,7 +95,7 @@ void prInitialState(
     }
     
 	pr( logFile, "\n\n" );
-    printEnergies( p_eb, "Initial ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model );
+    printEnergies( p_eb, "Initial ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues );
     pr( logFile, "\n\n" );
 
     flushLog;

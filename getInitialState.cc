@@ -1,10 +1,11 @@
 /*
 
- $Id: getInitialState.cc,v 1.28 2010/10/01 22:51:39 mp Exp $
+ $Id: getInitialState.cc,v 1.19.2.1 2010/11/19 20:09:28 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -46,58 +47,57 @@ extern char *programname;
 
 void getInitialState(
 
-            /* not const */ Real *const Addr_e0total,
-            ConstReal  e0max,
+            Real *Addr_e0total,
+            Real e0max,
 
-            /* not const */ State *const sInit, /* was qtn0[QUAT] and tor0[MAX_TORS] */
-            /* not const */ State *const sMinm, /* was qtnMin[QUAT] and torMin[MAX_TORS] */
-            /* not const */ State *const sLast, /* was qtnLast[QUAT] and torLast[MAX_TORS] */
+            State *sInit, /* was qtn0[QUAT] and tor0[MAX_TORS] */
+            State *sMinm, /* was qtnMin[QUAT] and torMin[MAX_TORS] */
+            State *sLast, /* was qtnLast[QUAT] and torLast[MAX_TORS] */
 
-            const Boole B_RandomTran0,
-            const Boole B_RandomQuat0,
-            const Boole B_RandomDihe0,
+            Boole B_RandomTran0,
+            Boole B_RandomQuat0,
+            Boole B_RandomDihe0,
 
-            const Real charge[MAX_ATOMS],
-            const Real abs_charge[MAX_ATOMS],
-            const Real qsp_abs_charge[MAX_ATOMS],
-            /* not const */ Real crd[MAX_ATOMS][SPACE],
-            const Real crdpdb[MAX_ATOMS][SPACE],
-            const char  atomstuff[MAX_ATOMS][MAX_CHARS],
-            /* not const */ Real elec[MAX_ATOMS],
-            /* not const */ Real emap[MAX_ATOMS],
+            Real charge[MAX_ATOMS],
+            Real abs_charge[MAX_ATOMS],
+            Real qsp_abs_charge[MAX_ATOMS],
+            Real crd[MAX_ATOMS][SPACE],
+            Real crdpdb[MAX_ATOMS][SPACE],
+            char  atomstuff[MAX_ATOMS][MAX_CHARS],
+            Real elec[MAX_ATOMS],
+            Real emap[MAX_ATOMS],
 
-            const EnergyTables *const ptr_ad_energy_tables,
+            EnergyTables *ptr_ad_energy_tables,
 
-            const Boole B_calcIntElec,
-                #include "map_declare.h"
-            const int   natom,
-            const int   Nnb,
-            const NonbondParam *const nonbondlist,
-            const int   ntor,
-            const int   tlist[MAX_TORS][MAX_ATOMS],
-            const int   type[MAX_ATOMS],
-            const Real vt[MAX_TORS][SPACE],
-            const int   irun1,
-            const int   outlev,
-            const int   MaxRetries,
+            Boole B_calcIntElec,
+            Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+            int   natom,
+            int   Nnb,
+            NonbondParam *nonbondlist,
+            int   ntor,
+            int   tlist[MAX_TORS][MAX_ATOMS],
+            int   type[MAX_ATOMS],
+            Real vt[MAX_TORS][SPACE],
+            int   irun1,
+            int   outlev,
+            int   MaxRetries,
 
-            ConstReal  torsFreeEnergy,
+            Real torsFreeEnergy,
 
-            const int   ligand_is_inhibitor,
+            int   ligand_is_inhibitor,
 
-            const int   ignore_inter[MAX_ATOMS],
+            int   ignore_inter[MAX_ATOMS],
 
             const Boole         B_include_1_4_interactions,
-            ConstReal  scale_1_4,
-	    ConstReal            scale_eintermol,  // input  scaling factor for intermolecular energies
+            const Real scale_1_4,
 
+            const ParameterEntry parameterArray[MAX_MAPS],
 
-            ConstReal  unbound_internal_FE,
+            const Real unbound_internal_FE,
 
-            const GridMapSetInfo *const info,
-            const Boole B_use_non_bond_cutoff,
-            const Boole B_have_flexible_residues,
-            const Unbound_Model ad4_unbound_model
+            GridMapSetInfo *info,
+            Boole B_use_non_bond_cutoff,
+            Boole B_have_flexible_residues
            )
 
 {
@@ -124,34 +124,37 @@ void getInitialState(
             /*
             ** while e0total, initial energy, is too high,
             */
-
-            /*
-            ** Initialize all state variables...
-            */
-            if (B_RandomTran0) {
-                sInit->T.x = random_range( info->lo[X], info->hi[X] );
-                sInit->T.y = random_range( info->lo[Y], info->hi[Y] );
-                sInit->T.z = random_range( info->lo[Z], info->hi[Z] );
-                if (outlev > 1) {
-                    pr( logFile, "Random initial translation,  tran0 %.3f %.3f %.3f\n", sInit->T.x, sInit->T.y, sInit->T.z);
-                }
-            }/*if*/
-            if (B_RandomQuat0) {
-                /*
-                sInit->Q.nx  = random_range( -1., 1. );
-                sInit->Q.ny  = random_range( -1., 1. );
-                sInit->Q.nz  = random_range( -1., 1. );
-                sInit->Q.ang = DegreesToRadians( random_range( 0., 360.) );//convert to radians
-                mkUnitQuat( &(sInit->Q) );
-                */
-                sInit->Q = uniformQuat(); // generate a uniformly-distributed quaternion
-                sInit->Q = convertQuatToRot( sInit->Q ); // convert from qx,qy,qz,qw to axis-angle (nx,ny,nz,ang)
-
-                if (outlev > 1) {
-                    pr( logFile, "Random initial axis-angle,  axisangle0 %.3f %.3f %.3f %.1f\n", sInit->Q.nx, sInit->Q.ny, sInit->Q.nz, RadiansToDegrees( sInit->Q.ang ) );
-                    pr( logFile, "Random initial quaternion,  quaternion0 %.3f %.3f %.3f %.3f\n", sInit->Q.x, sInit->Q.y, sInit->Q.z,  sInit->Q.w );
-                }
-            }/*if*/
+			// Handle multi-ligand -Huameng 11/08/2007
+    		for(i = 0; i < sInit->nlig; i++) { 
+	            /*
+	            ** Initialize all state variables...
+	            */
+	            if (B_RandomTran0) {
+	                sInit->T[i].x = random_range( info->lo[X], info->hi[X] );
+	                sInit->T[i].y = random_range( info->lo[Y], info->hi[Y] );
+	                sInit->T[i].z = random_range( info->lo[Z], info->hi[Z] );
+	                if (outlev > 1) {
+	                    pr( logFile, "Random initial translation,  tran0 %.3f %.3f %.3f\n", sInit->T[i].x, sInit->T[i].y, sInit->T[i].z);
+	                }
+	            }/*if*/
+	            if (B_RandomQuat0) {
+	                /*
+	                sInit->Q.nx  = random_range( -1., 1. );
+	                sInit->Q.ny  = random_range( -1., 1. );
+	                sInit->Q.nz  = random_range( -1., 1. );
+	                sInit->Q.ang = DegreesToRadians( random_range( 0., 360.) );//convert to radians
+	                mkUnitQuat( &(sInit->Q) );
+	                */
+	                sInit->Q[i] = uniformQuat(); // generate a uniformly-distributed quaternion
+	                sInit->Q[i] = convertQuatToRot( sInit->Q[i] ); // convert from qx,qy,qz,qw to axis-angle (nx,ny,nz,ang)
+	
+	                if (outlev > 1) {
+	                    pr( logFile, "Random initial axis-angle,  axisangle0 %.3f %.3f %.3f %.1f\n", sInit->Q[i].nx, sInit->Q[i].ny, sInit->Q[i].nz, RadiansToDegrees( sInit->Q[i].ang ) );
+	                    pr( logFile, "Random initial quaternion,  quaternion0 %.3f %.3f %.3f %.3f\n", sInit->Q[i].x, sInit->Q[i].y, sInit->Q[i].z,  sInit->Q[i].w );
+	                }
+	            }/*if*/
+    		} /* for nlig */
+            
             if ( B_RandomDihe0 && (ntor > 0) ) {
                 if (outlev > 1) {
                     pr( logFile, "Random initial torsions, ndihe = %d\ndihe0 = ", ntor);
@@ -180,13 +183,10 @@ void getInitialState(
             initautodock( atomstuff, crd, crdpdb, 
                 natom, ntor, sInit, tlist, vt, outlev, info);
             
-            e0inter = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+            e0inter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                         info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
-                        NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-            e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
-                          B_calcIntElec, B_include_1_4_interactions,
-                          scale_1_4, qsp_abs_charge,
-                          B_use_non_bond_cutoff, B_have_flexible_residues);
+                        NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL);
+            e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
             e0total = e0inter + e0intra;
 
             if (e0total < e0min) {
@@ -227,16 +227,16 @@ void getInitialState(
 
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
-    eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+    eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
          crd, charge, abs_charge, type, map, info, SOME_ATOMS_OUTSIDE_GRID, 
          ignore_inter, elec, emap, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
          nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model );
+         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
 
     copyState( sMinm, *sInit );
     copyState( sLast, *sInit );
 
-    prInitialState( &eb, natom, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor, B_have_flexible_residues, ad4_unbound_model );
+    prInitialState( &eb, natom, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor, B_have_flexible_residues );
 
     initEnd = times( &tms_initEnd );
     pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);

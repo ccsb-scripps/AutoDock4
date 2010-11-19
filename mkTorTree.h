@@ -1,10 +1,11 @@
 /*
 
- $Id: mkTorTree.h,v 1.10 2010/08/27 00:05:07 mp Exp $
+ $Id: mkTorTree.h,v 1.7 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -31,19 +32,19 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "parse_PDBQT_line.h"
 #include "stop.h"
 
-void  mkTorTree(const int   atomnumber[MAX_RECORDS],
-                const char  record[MAX_RECORDS][LINE_LEN],
-                const int   nrecord,
+void  mkTorTree(int   atomnumber[MAX_RECORDS],
+                char  record[MAX_RECORDS][LINE_LEN],
+                int   nrecord,
                 int   tlist[MAX_TORS][MAX_ATOMS],
-                int   *const P_ntor,
-                int   *const P_ntor_ligand,
-                const char  *const smFileName,
-                const char  pdbaname[MAX_ATOMS][5],
-                Boole *const P_B_constrain,
-                int   *const P_atomC1,
-                int   *const P_atomC2,
-                Real *const P_sqlower,
-                Real *const P_squpper,
-                int   *const P_ntorsdof,
+                int   *P_ntor,
+                int   *P_ntor_ligand,
+                char  smFileName[MAX_CHARS],
+                char  pdbaname[MAX_ATOMS][5],
+                Boole *P_B_constrain,
+                int   *P_atomC1,
+                int   *P_atomC2,
+                Real *P_sqlower,
+                Real *P_squpper,
+                int   *P_ntorsdof,
                 int   ignore_inter[MAX_ATOMS]);
 #endif

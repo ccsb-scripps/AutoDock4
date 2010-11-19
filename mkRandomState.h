@@ -1,10 +1,11 @@
 /*
 
- $Id: mkRandomState.h,v 1.6 2009/05/08 23:02:14 rhuey Exp $
+ $Id: mkRandomState.h,v 1.5.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -29,7 +30,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "constants.h"
 
-State mkRandomState( int   ntor,
+State mkRandomState( int nlig, 
+			 int   ntor,
 		     Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		     int   N_con[MAX_TORS],
                      GridMapSetInfo *info);

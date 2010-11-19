@@ -1,10 +1,11 @@
 /*
 
- $Id: autocomm.h,v 1.20 2010/10/01 22:51:39 mp Exp $
+ $Id: autocomm.h,v 1.14.2.1 2010/11/19 20:09:29 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -31,14 +32,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include <sys/types.h>
 #include <time.h>
-/* include stdio to pick up definition of FILENAME_MAX and possibly PATH_MAX */
-#include <stdio.h>
-#include "typedefs.h"
 
 /*******************************************************************************
 **      Name: autocomm.h                                                      **
 **  Function: Defines Constants, common to both AUTOGRID & AUTODOCK...        **
-**Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+** Copyright: (C) Garrett Matthew Morris, TSRI                                **
 **----------------------------------------------------------------------------**
 **    Author: Garrett Matthew Morris, The Scripps Research Institute          **
 **      Date: 02/28/1995                                                      **
@@ -62,9 +60,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define FALSE        0      /* Logical constant                               */
 #define TRUE         1      /* Logical constant                               */
 
-const Real PI=3.14159265358979323846;   /* Mathematical constant, pi */
-const Real TWOPI=6.28318530717958647692;
-const Real HALF_PI=1.57079632679489661923;
+#define PI	         3.14159265358979323846   /* Mathematical constant, pi */
+#define TWOPI	     6.28318530717958647692
+#define HALF_PI      1.57079632679489661923
 
 #define X            0      /* x-coordinate                                   */
 #define Y            1      /* y-coordinate                                   */
@@ -72,56 +70,58 @@ const Real HALF_PI=1.57079632679489661923;
 #define XYZ          3      /* Dimensions of Cartesian Space                  */
 #define SPACE        3      /* Dimensions of Cartesian Space                  */
 
-const Real APPROX_ZERO=1.0E-6; /* To avoid division-by-zero errors...            */
-const Real BIG=1.0E12; /* Very large constant                            */
-const unsigned int MAX_CHARS=128;    /* Number of characters in atom data & filenames  */
-const unsigned int MAX_LINES=256;    /* Number of lines in parameter file              */
-#ifndef PATH_MAX
-#define PATH_MAX     FILENAME_MAX
-#endif
+#define APPROX_ZERO  1.0E-6 /* To avoid division-by-zero errors...            */
+#define BIG          1.0E12 /* Very large constant                            */
+#define MAX_CHARS    128    /* Number of characters in atom data & filenames  */
+#define MAX_LINES    256    /* Number of lines in parameter file              */
 
 #ifdef USE_XCODE
-const /* not unsigned */ int LINE_LEN=140;    /* Line length in characters                      */
+#define LINE_LEN     265    /* Line length in characters				*/
 #else
-const /* not unsigned */ int LINE_LEN=256;    /* Line length in characters                      */
-#endif 
+#define LINE_LEN     265    /* Line length in characters                */
+#endif
 
 #if defined( USE_XCODE )
 /* The stacksize limit within Xcode forces us to use smaller grids */
-const /* not unsigned */ int MAX_GRID_PTS=61;   /* Maximum number of grid points in 1 dimension */
+#define MAX_GRID_PTS 61     	/* Maximum number of grid points in 1 dimension */
 #elif defined( __CYGWIN__ ) 
-const /* not unsigned */ int MAX_GRID_PTS=64;   /* Maximum number of grid points in 1 dimension */
+#define MAX_GRID_PTS 64		/* Maximum number of grid points in 1 dimension */
 #else
-const /* not unsigned */ int MAX_GRID_PTS=128;	/* Maximum number of grid points in 1 dimension */
+#define MAX_GRID_PTS 128	/* Maximum number of grid points in 1 dimension */
 				/* MAX_GRID_PTS 128 causes a SIGSEGV on Cygwin */
 #endif
 
-const Real EINTCLAMP=100000.; /* Clamp pairwise internal energies (kcal/mol )  */
+#define	EINTCLAMP    100000. /* Clamp pairwise internal energies (kcal/mol )  */
 
+#define MAX_ATOM_TYPES 20    /* Maximum number of atom types                  */
 #define MAX_MAPS_PAD 0       // Use this to pad MAX_MAPS to a power of 2, for presumably-faster memory access
 #define NUM_NON_VDW_MAPS 2   // Number of electrostatic and desolvation maps
-#define MAX_ATOM_TYPES (16 - NUM_NON_VDW_MAPS)    /* Maximum number of atom types set to keep MAX_MAPS a power of 2 */
 #define MAX_MAPS (MAX_ATOM_TYPES + NUM_NON_VDW_MAPS + MAX_MAPS_PAD) /* Maximum number of energy maps        */
-                            /* 0,1,2,... are for atomic interactions          */
-                            /* last two are for electrostatics and desolvation */
 
 #define VECLENMAX    16     /* For AVS fld files...                           */
 
 // Legacy definitions:
-const char COVALENTTYPE='Z';
-const char COVALENTTYPE2='Y';
+#define NATOMTYPES	    7   /* Number of atom types for atomic interactions   */
+#define MAX_TYPES       8   /* Maximum number of atom types used.             */
+#define ATOM_MAPS       6   /* Number of atomic affinity grids                */
+                            /* 0,1,2,... are for atomic interactions          */
+                            /* last is for electrostatics                     */
 
-enum legacy_definitions {
-   CARBON=0,
-   NITROGEN=1,
-   OXYGEN=2,
-   SULPHUR=3,
-   HYDROGEN=4,
-   UNKNOWN=5,
-   METAL=6,
-   COVALENT=7,
-   COVALENT2=8
-};
+#define ATOMTYPE	"CNOSHXM"
+/*                   0123456 */
+
+#define COVALENTTYPE 'Z'
+#define COVALENTTYPE2 'Y'
+
+#define CARBON		0
+#define NITROGEN	1
+#define OXYGEN		2
+#define SULPHUR		3
+#define HYDROGEN	4
+#define UNKNOWN		5
+#define METAL		6
+#define COVALENT 7
+#define COVALENT2 8
 // end Legacy definitions
 
 
@@ -136,7 +136,6 @@ enum legacy_definitions {
 #define prStr           (void) sprintf
 #define flushLog        (void) fflush(logFile)
 
-//FIXME: this should eventually become an inline function
 #define dist(x1,y1,z1,x2,y2,z2,r) _dx=((x2)-(x1)),_dy=((y2)-(y1)),_dz=((z2)-(z1)),r=sqrt(_dx*_dx + _dy*_dy + _dz*_dz)
 
 /*
@@ -190,25 +189,6 @@ typedef struct AtomDesc {
 
 
 #endif
-
-/*
- * assert that quaternions are OK
- */
-#include <assert.h> // for assert in assertQuatOK
-#include <math.h> // for sqrt in assertQuatOK
-
-const Real ONE_MINUS_EPSILON=0.999;
-const Real  ONE_PLUS_EPSILON=1.001;
-
-/*
- * void assertQuatOK( const Quat q )
- * {
- *     register double mag4 = hypotenuse4( q.x, q.y, q.z, q.w );
- *     assert((mag4 > ONE_MINUS_EPSILON) && (mag4 < ONE_PLUS_EPSILON));
- * }
- */
-#define assertQuatOK( q ) {fflush(logFile);register double aQOK_mag4 = hypotenuse4( (q).x, (q).y, (q).z, (q).w ); assert((aQOK_mag4 > ONE_MINUS_EPSILON) && (aQOK_mag4 < ONE_PLUS_EPSILON)); }
-
 
 #endif /*_AUTOCOMM*/
 

@@ -1,10 +1,11 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.20 2010/10/01 22:51:40 mp Exp $
+ $Id: read_parameter_library.cc,v 1.5 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -42,37 +43,29 @@ extern int debug;
 extern Linear_FE_Model AD4;
 
 
-static Boole string_begins_with(const char *const a, const char *const b);
-static Boole string_ends_with(const char *const a, const char *const b);
-
-static char parameter_library[MAX_CHARS];
-
 void read_parameter_library(
-        const char *const FN_parameter_library,
-        const int outlev
+        char FN_parameter_library[MAX_CHARS],
+        int outlev
         )
 {
     static ParameterEntry thisParameter;
     FILE *parameter_library_file;
-    char parameter_library_line[LINE_LEN];
+    char parameter_library_line[MAX_CHARS];
     int nfields;
     int param_keyword = -1;
     int int_hbond_type = 0;
 
-    pr(logFile, "Using read_parameter_library() to try to open and read \"%s\".\n\n", FN_parameter_library);
+    pr(logFile, "Using read_parameter_library\n");
 
     // Open and read the parameter library
     //
     if ((parameter_library_file = ad_fopen(FN_parameter_library, "r")) == NULL) {
-         fprintf(logFile,"Sorry, I can't find or open %s\n", FN_parameter_library);
          fprintf(stderr,"Sorry, I can't find or open %s\n", FN_parameter_library);
          exit(-1);
     }
 
-    // remember this filename for report_parameter_library()
-    snprintf(parameter_library, sizeof parameter_library, "from file: \"%s\"", FN_parameter_library);
     while (fgets(parameter_library_line, sizeof(parameter_library_line), parameter_library_file) != NULL) {
-        param_keyword = parse_param_line("huhu");
+        param_keyword = parse_param_line( parameter_library_line );
         if (debug > 0) {
             pr(logFile, "DEBUG: parameter_library_line = %sDEBUG: param_keyword          = %d\n", parameter_library_line, param_keyword);
         }
@@ -126,11 +119,6 @@ void read_parameter_library(
                     continue; // skip any parameter_library_line without enough info
                 }
                 pr( logFile, "Free energy coefficient for the torsional term     = \t%.4lf\n\n", AD4.coeff_tors);
-                break;
-
-            case PAR_UNBOUND:
-                pr( logFile, "%s: WARNING: the unbound model cannot be specified in the parameter library file.\n\n", programname);
-                pr( logFile, "Use the DPF parameter 'unbound_model' instead.\n");
                 break;
 
             case PAR_ATOM_PAR:
@@ -191,44 +179,24 @@ void read_parameter_library(
     } // while there is another line of parameters to read in
 }
 
-void setup_parameter_library( const int outlev, const char *const model_text, const Unbound_Model unbound_model )
+void setup_parameter_library( int outlev )
 {
     static ParameterEntry thisParameter;
-    char parameter_library_line[LINE_LEN];
+    char parameter_library_line[MAX_CHARS];
     int nfields;
     int param_keyword = -1;
     int int_hbond_type = 0;
     register int counter = 0;
 
-    pr(logFile, "Setting up parameter library with AutoDock %s values.\n\n\n", 
-                 model_text);
+    pr(logFile, "Setting up parameter library with factory default values.\n\n\n");
 
     // Default parameters
     //
     // These are set up in "default_parameters.h"
-    // and stored in the param_string_VERSION_NUM[MAX_LINES] array
-    // so far we have param_string_4_0 and param_string_4_1
-    // remember this choice for report_parameter_library()
-
-    const char *const *param_string;
-    //if (string_begins_with(version_num, "4.0")) param_string=param_string_4_0;
-    if (unbound_model==Extended) {
-        param_string=param_string_4_0;
-        strncpy(parameter_library, "'extended' [AutoDock 4.0 default]", sizeof parameter_library);
-    }
-    else if (unbound_model==Unbound_Same_As_Bound) {
-        param_string=param_string_4_1;
-        strncpy(parameter_library, "'same as bound' [AutoDock 4.2 default]", sizeof parameter_library);
-    }
-    else {
-        pr(logFile, "DEBUG: cannot determine %s parameter values \n",model_text);
-        exit(-1);
-    }
-
+    // and stored in the param_string[MAX_LINES] array
 
     while ( param_string[counter] != NULL) {
-	const char* const s =  param_string[counter];
-        param_keyword = parse_param_line(s);
+        param_keyword = parse_param_line( param_string[counter] );
 
         (void)strcpy(parameter_library_line, param_string[counter]);
         counter++;
@@ -287,11 +255,6 @@ void setup_parameter_library( const int outlev, const char *const model_text, co
                 pr( logFile, "Free energy coefficient for the torsional term     = \t%.4lf\n\n", AD4.coeff_tors);
                 break;
 
-            case PAR_UNBOUND:
-                pr( logFile, "%s: WARNING: the unbound model cannot be specified in the parameter library file.\n\n", programname);
-                pr( logFile, "Use the DPF parameter 'unbound_model' instead.\n");
-                break;
-
             case PAR_ATOM_PAR:
                 // Read in one line of atom parameters;
                 // NB: scanf doesn't try to write missing fields
@@ -348,24 +311,6 @@ void setup_parameter_library( const int outlev, const char *const model_text, co
                 break;
         } // switch
     } // while there is another line of parameters to read in
-}
-
-const char * report_parameter_library() {
-    return parameter_library;
-}
-
-static inline Boole string_begins_with(const char *const a, const char *const b) {
-    // does string a begin with b  (eg   a begins with "version 4" )
-    int alen=strlen(a);
-    int blen=strlen(b);
-    return alen>=blen && 0==strncmp(b, a, blen) ;
-}
-
-static inline Boole string_ends_with(const char *const a, const char *const b) {
-    // does string a end with b  (eg   a ends with .pdb)
-    int alen=strlen(a);
-    int blen=strlen(b);
-    return alen>=blen && 0==strcmp(b, a+alen-blen) ;
 }
 
 /* EOF */

@@ -1,10 +1,11 @@
 /*
 
- $Id: ls.cc,v 1.18 2010/10/01 22:51:39 mp Exp $
+ $Id: ls.cc,v 1.10.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Scott Halliday, Rik Belew, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -13,7 +14,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
 
- This program is distributed in the hope that it will be useful, 
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
@@ -27,8 +28,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-//#define DEBUG
-//#define DEBUG2
+
 /********************************************************************
       These are the methods of the local searchers
 
@@ -40,157 +40,199 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern class Eval evaluate;
 
 extern FILE *logFile;
+extern int nlig;		// assign value in mian.cc
+extern int ntor_lig[MAX_LIGANDS];
+extern int gene_index_lig[MAX_LIGANDS][2];  //gene num start_point & end_point of a ligand.
+extern int global_ntor; // set to current s.Init.ntor in main.cc
 
-//  This function adds sign * (deviates + bias) to all the reals in the representation
-Phenotype genPh(const Phenotype &original, ConstReal sign, const Real *const deviates, Real *const bias)
+//  This function adds sign * (array1 + array2) to all the reals in the representation
+Phenotype genPhByLigand(const Phenotype &original, 
+		Real sign, Real *array1, Real *array2, 
+		int from_gene_point, int to_gene_point, int ilig)
+{
+   RepType genetype;
+   register int i, index = 0;
+   Phenotype retval(original);
+
+#ifdef DEBUG
+   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, Real *array1, Real *array2)\n");
+   //(void)fprintf(logFile, "ls.cc/Phenotype retval.num_pts() = %d\n", retval.num_pts());
+   (void)fprintf(logFile, "ls.cc/Phenotype from_gene_point = %d, to_gene_point = %d\n", from_gene_point, to_gene_point);
+#endif // DEBUG 
+
+   // handle multi-ligand fragment  -Huameng 12/06/2007
+   //for (i=0; i < retval.num_pts(); i++) {
+   for (i = from_gene_point; i < to_gene_point; i++) {
+      //genetype = retval.gtype(i);
+      //pr( logFile, "DEBUG_genetype = %d \n", genetype);
+      //if ((genetype == T_RealV)||(genetype == T_CRealV)) {
+         retval.write(retval.gread(i).real + sign * (array1[index] + array2[index]), i);
+         index++;
+      //}
+   }
+   
+   // multiple ligand Quat  -Huameng 11/18/2007
+   if(ilig < nlig) {
+   	 Quat q;    	
+   	 q = retval.readQuat(ilig);
+#ifdef DEBUG_QUAT
+   	 pr( logFile, "DEBUG_QUAT: genPh()  q\n" );
+   	 printQuat( logFile, q );
+   	 assertQuatOK( q );
+#endif // endif DEBUG_QUAT
+   	 retval.writeQuat( normQuat( q ), ilig);
+   }
+  
+   return(retval);
+}
+
+
+//  This function adds sign * (array1 + array2) to all the reals in the representation
+Phenotype genPh(const Phenotype &original, Real sign, Real *array1, Real *array2)
 {
    RepType genetype;
    register unsigned int i, index = 0;
    Phenotype retval(original);
 
-#ifdef DEBUG2
-//   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, Real *deviates, Real *bias)\n");
-#endif /* DEBUG */
+#ifdef DEBUG
+   (void)fprintf(logFile, "ls.cc/Phenotype genPh(const Phenotype &original, Real *array1, Real *array2)\n");
+   (void)fprintf(logFile, "ls.cc/Phenotype retval.num_pts() = %d\n", retval.num_pts());
+#endif // DEBUG 
 
-   for (i=0; i < retval.num_pts(); i++) {
+   for (i=0; i < retval.num_pts(); i++) { 
       genetype = retval.gtype(i);
       if ((genetype == T_RealV)||(genetype == T_CRealV)) {
-         // 4/2009 experiment with gene-by-gene scaling,mp+rh
-         //if(index>=0 && index<=2) scale = 1;//hack translation
-         //else if(index>=3 && index<=6) scale = QSCALE;//hack quaternion
-         //else scale = 1;//hack torsion
-
-         retval.write(retval.gread(i).real + sign * (deviates[index] + bias[index]), i);
+         retval.write(retval.gread(i).real + sign * (array1[index] + array2[index]), i);
          index++;
       }
    }
-
+   // multiple ligand Quat  -Huameng 11/18/2007
    Quat q;
-   q = retval.readQuat();
-
+   for (int n = 0; n < nlig; n++) {  	
+   	q = retval.readQuat(n);
 #ifdef DEBUG_QUAT
-   pr( logFile, "DEBUG_QUAT: genPh()  q\n" );
-   printQuat( logFile, q );
-   assertQuatOK( q );
+	   pr( logFile, "DEBUG_QUAT: genPh()  q\n" );
+	   printQuat( logFile, q );
+	   assertQuatOK( q );
 #endif // endif DEBUG_QUAT
-
-   retval.writeQuat( normQuat( q ) );
-
+   	retval.writeQuat( normQuat( q ), n );
+   	
+   }
    return(retval);
 }
 
-//  What Solis & Wets does is add random deviates to every
-//  real number in the Phenotype.
-//  
-//  This has only one value of rho, for all genes.
-// SW mapped individual
-// SW returns TRUE if it modifies the individual
-Boole Solis_Wets::SW(/* not const */ Phenotype &vector)
+
+/**
+ *   
+ * What Solis & Wets does is add random deviates to every
+ *  real number in the Phenotype.
+ *   
+ *  This has only one value of rho, for all genes.
+ */
+void Solis_Wets::SWMultiLigand(Phenotype &vector, int from_gene_point, int to_gene_point, int ilig)
 {
    register unsigned int i, j, num_successes = 0, num_failures = 0;
    register Real temp_rho = rho;
    Phenotype newPh;
-   Boole modified = FALSE;
    
 #ifdef DEBUG
    (void)fprintf(logFile, "ls.cc/void Solis_Wets::SW(Phenotype &vector)\n");
-
 #endif /* DEBUG */
-
-   //  Reset bias
-   for (i=0; i < size; i++) {
+  
+   // handle multi-ligand to do separate local search -Huameng 12/01/2007    
+   unsigned int gene_size = to_gene_point - from_gene_point;
+       	   	   	    	   
+   //  Reset bias	   
+   for (i=0; i < gene_size; i++) {	  
       bias[i] = 0.0;
    }
-
+   num_successes = 0;
+   num_failures = 0;
+   temp_rho = rho;
    for (i=0; i < max_its; i++) {
-#ifdef DEBUG
-//convenience function for debugging
-#define traceState(msg,vector) printDState(logFile,msg,vector,i,prevxyz,startxyz,prevQuat,startQuat,num_successes,num_failures,temp_rho,bias,deviates)
-void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, const int i, const Real prevxyz[3],
-                 const Real startxyz[3], const Quat prevQuat, const Quat startQuat, 
-                 const unsigned int num_successes, const unsigned int num_failures,
-                 ConstReal temp_rho, Real *const  bias, Real *const  deviates);
-   Real xyz[3];
-   Real prevxyz[3];
-   Real startxyz[3];
-   static Quat thisQuat, prevQuat, startQuat;
-   //save previous values of state
-   if (i>0) {
-      prevQuat = thisQuat;
-      for ( int d=0;d<3;d++)prevxyz[d] = xyz[d];
-   }
-
-   //update current values of state
-   thisQuat = vector.readQuat();//the individual 'vector' holds where we are now
-   for ( int d=0;d<3;d++) xyz[d] = vector.gread(d).real;
-
-   // special case for first iteration
-   if (i==0) {
-      startQuat = thisQuat;
-      for ( int d=0;d<3;d++) startxyz[d] = xyz[d];
-      prevQuat = thisQuat;
-      for ( int d=0;d<3;d++) prevxyz[d] = xyz[d];
-      traceState("initial", vector);
-   } 
-   
-#endif /* DEBUG */
-#ifdef DEBUG
-#ifdef INTERNAL
-   Real dt; // translation step scalar
-   Real ct; // cumulative translation from step 0
-   static Quat thisQuat, prevQuat, startQuat;
-   dt=0;
-   for ( int d=0;d<3;d++) dt += (prevxyz[d]- xyz[d])*(prevxyz[d]- xyz[d]);
-   dt = sqrt(dt);
-   ct=0;
-   for ( int d=0;d<3;d++) ct += (startxyz[d] - xyz[d])*(startxyz[d]- xyz[d]);
-   ct = sqrt(ct);
-   (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+8.4f p=%4.2f b=(%5.2f %5.2f %5.2f) dev=(%5.2f %5.2f %5.2f)", 
-                                  i, num_successes, num_failures, vector.evaluate(Normal_Eval), temp_rho, bias[0], bias[1], bias[2], 
-                                  deviates[0], deviates[1], deviates[2]);
-   (void)fprintf(logFile, " xyz=(");
-    fprintf(logFile, "%5.2f %5.2f %5.2f", newPh.gread(0).real, newPh.gread(1).real,newPh.gread(2).real);
-   (void)fprintf(logFile, ")");
-    fprintf(logFile, "dT=%5.2f ", dt);
-    fprintf(logFile, "cT=%5.2f ", ct);
-    // assuming x,y,z,w ignoring structs.h order 
-    //fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f",
-    thisQuat.x = newPh.gread(3).real; 
-    thisQuat.y = newPh.gread(4).real;
-    thisQuat.z = newPh.gread(5).real;
-    thisQuat.w = newPh.gread(6).real;
-    
-   (void)fprintf(logFile, " quat=(");
-    fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f", newPh.gread(3).real, newPh.gread(4).real,newPh.gread(5).real,newPh.gread(6).real);
-   //?? newPh.printIndividualsState(logFile, 7, 3);
-   (void)fprintf(logFile, ")");
-   if (i>0){
-    fprintf(logFile, " dQ=%5.2f", quatDifferenceToAngleDeg(prevQuat,thisQuat)); 
-    fprintf(logFile, " cQ=%5.2f", quatDifferenceToAngleDeg(startQuat,thisQuat)); 
-   } else {
-    startQuat = thisQuat;
-   };
-   prevQuat = thisQuat;
-#endif /* INTERNAL */
-#endif /* DEBUG */
-
       // Generate deviates
-      for (j=0; j < size; j++) {
+      for (j=0; j < gene_size; j++) {
          deviates[j] = gen_deviates(temp_rho);
       }
-
+      	  	  
       // zeta = x + bias + deviates
-      newPh = genPh(vector, +1., deviates, bias); // zeta; +1 means 'forward' step
+      newPh = genPhByLigand(vector, +1., deviates, bias, from_gene_point, to_gene_point, ilig); // zeta
       // Evaluate
       if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
          num_successes++;
          num_failures = 0;
          vector = newPh;
-         modified = TRUE;
-#ifdef DEBUG
-         traceState("accept+", newPh);
-#endif /* DEBUG */
+         for (j=0; j < gene_size; j++) {
+            // bias[j] = 0.20*bias[j] + 0.40*deviates[j];  // original & questionable
+            bias[j] = 0.60*bias[j] + 0.40*deviates[j]; // strict Solis+Wets
+         }
+      } else {
+         // We need to check if the opposite move does any good (move = bias[j] + deviates[j])
+         newPh = genPhByLigand(vector, -1., deviates, bias, from_gene_point, to_gene_point, ilig); // 2x - zeta = x - move
+         if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
+            num_successes++;
+            num_failures = 0;
+            vector = newPh;
+            for (j=0; j < gene_size; j++) {
+               // bias[j] -= 0.40*deviates[j]; // incorrect
+               bias[j] = 0.60*bias[j] - 0.40*deviates[j]; // correct if deviates is not changed
+            }
+         } else {
+            num_failures++;
+            num_successes = 0;
+            // vector is unchanged  // x
+            for (j=0; j < gene_size; j++) {
+               bias[j] *= 0.50;
+            }
+         }
+      }
 
+      // Check to see if we need to expand or contract
+      if (num_successes >= max_successes) {
+         temp_rho *= expansion;
+         num_successes = num_failures = 0;
+      } else if (num_failures >= max_failures) {
+         temp_rho *= contraction;
+         num_successes = num_failures = 0;
+      }
+         
+      if (temp_rho < lower_bound_on_rho)
+         break;  // GMM - this breaks out of the i loop...
+   } // i-loop	 (i < max_its)  	  
+  
+         
+} // void Solis_Wets::SWMultiLigand(Phenotype &vector,  )
+
+
+//  What Solis & Wets does is add random deviates to every
+//  real number in the Phenotype.
+//  
+//  This has only one value of rho, for all genes.
+//
+void Solis_Wets::SW(Phenotype &vector)
+{
+   register unsigned int i, j, num_successes = 0, num_failures = 0;
+   register Real temp_rho = rho;
+   Phenotype newPh;
+   
+#ifdef DEBUG
+   (void)fprintf(logFile, "ls.cc/void Solis_Wets::SW(Phenotype &vector)\n");
+#endif /* DEBUG */
+  
+   // move all points together 
+   for (i=0; i < max_its; i++) {
+      // Generate deviates
+      for (j=0; j < size; j++) {
+         deviates[j] = gen_deviates(temp_rho);
+      }
+      	  	  
+      // zeta = x + bias + deviates
+      newPh = genPh(vector, +1., deviates, bias); // zeta
+      // Evaluate
+      if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
+         num_successes++;
+         num_failures = 0;
+         vector = newPh;
          for (j=0; j < size; j++) {
             // bias[j] = 0.20*bias[j] + 0.40*deviates[j];  // original & questionable
             bias[j] = 0.60*bias[j] + 0.40*deviates[j]; // strict Solis+Wets
@@ -202,10 +244,6 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
             num_successes++;
             num_failures = 0;
             vector = newPh;
-            modified = TRUE;
-#ifdef DEBUG
-            traceState("accept-", newPh);
-#endif /* DEBUG */
             for (j=0; j < size; j++) {
                // bias[j] -= 0.40*deviates[j]; // incorrect
                bias[j] = 0.60*bias[j] - 0.40*deviates[j]; // correct if deviates is not changed
@@ -214,9 +252,6 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
             num_failures++;
             num_successes = 0;
             // vector is unchanged  // x
-#ifdef DEBUG
-            traceState("reject ", newPh);
-#endif /* DEBUG */
             for (j=0; j < size; j++) {
                bias[j] *= 0.50;
             }
@@ -235,68 +270,155 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
       if (temp_rho < lower_bound_on_rho)
          break;  // GMM - this breaks out of the i loop...
    } // i-loop
-   return modified;
+  
+   
 } // void Solis_Wets::SW(Phenotype &vector)
+
+//  This is pseudo-Solis & Wets in that it adds random deviates to every dimension
+//  of the current solution, but the variances vary across dimensions.
+//
+//  This has a different value of rho for each gene.
+//
+void Pseudo_Solis_Wets::SWMultiLigand(Phenotype &vector, int from_gene_point, int to_gene_point, int ilig)
+{
+   register unsigned int i, j, num_successes = 0, num_failures = 0,  all_rho_stepsizes_too_small = 1;
+    
+   Phenotype newPh;
+
+#ifdef DEBUG
+   (void)fprintf(logFile, "ls.cc/void Pseudo_Solis_Wets::SW(Phenotype &vector)\n");
+#endif // DEBUG 
+
+   //  Initialize the temp_rho's
+   for (i=0; i < size; i++) {
+      temp_rho[i] = rho[i];
+   }
+   //  Reset bias
+   for (i=0; i < size; i++) {
+      bias[i] = 0.0;
+   }
+   // handle multi-ligand to do separate local search -Huameng 12/01/2007
+   unsigned int gene_size = to_gene_point - from_gene_point;
+  
+   num_successes = 0;
+   num_failures = 0;  	   
+   for (i=0; i < max_its; i++) {
+      // Generate deviates
+      for (j= from_gene_point; j < (unsigned)to_gene_point; j++) {
+         deviates[j] = gen_deviates(temp_rho[j]);
+      }
+	  // handle multi-ligands -Huameng
+      //newPh = genPh(vector, +1., deviates, bias);
+      newPh = genPhByLigand(vector, +1., deviates, bias, from_gene_point, to_gene_point, ilig);
+      // Evaluate
+      if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
+         num_successes++;
+         num_failures = 0;
+         vector = newPh;
+         for (j=0; j < gene_size; j++) {
+            // bias[j] = 0.20*bias[j] + 0.40*deviates[j];
+            bias[j] = 0.60*bias[j] + 0.40*deviates[j]; // strict Solis+Wets
+         }
+      } else  {
+         // We need to check if the opposite move does any good (move = bias[j] + deviates[j])
+         // handle multi-ligands -Huameng
+         //newPh = genPh(vector, -1., deviates, bias);
+         newPh = genPhByLigand(vector, -1., deviates, bias, from_gene_point, to_gene_point, ilig);
+         if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
+            num_successes++;
+            num_failures = 0;
+            vector = newPh;
+            for (j=0; j < gene_size; j++) {
+               // bias[j] -= 0.40*deviates[j];
+               bias[j] = 0.60*bias[j] - 0.40*deviates[j]; // correct if deviates is not changed
+            }
+         } else {
+            num_failures++;
+            num_successes = 0;
+            // vector is unchanged  // x
+            for (j=0; j < size; j++) {
+               bias[j] *= 0.50;
+            }
+         }
+      }
+
+      // Check to see if we need to expand or contract
+      if (num_successes >= max_successes) {
+         for(j=0; j < size; j++) {
+            temp_rho[j] *= expansion;
+         }
+         num_successes = num_failures = 0;
+      } else if (num_failures >= max_failures) {
+         for(j=0; j < size; j++) {
+            temp_rho[j] *= contraction;
+         }
+         num_successes = num_failures = 0;
+      }
+      
+      //  WEH - Scott's code doesn't do anything!!! no stopping based upon step scale!!!
+      //  GMM - corrected Scott's code; this does now stop correctly, based upon step scale.
+      //  GMM - This version only exits if all the step sizes are too small...
+      all_rho_stepsizes_too_small = 1;
+      for(j=0; j < gene_size; j++) {   
+         all_rho_stepsizes_too_small = all_rho_stepsizes_too_small & (temp_rho[j] < lower_bound_on_rho[j]);
+      } //  j-loop
+      if (all_rho_stepsizes_too_small) {
+         break; //  GMM - THIS breaks out of i loop, which IS what we want...
+      }
+   } //  i-loop
+	   
+} // void Pseudo_Solis_Wets::SW(Phenotype &vector)
+
 
 
 //  This is pseudo-Solis & Wets in that it adds random deviates to every dimension
 //  of the current solution, but the variances vary across dimensions.
 //
 //  This has a different value of rho for each gene.
-// PSW mapped individual
-// PSW returns TRUE if it modifies the individual
-Boole Pseudo_Solis_Wets::SW(/* not const */ Phenotype &vector)
+//
+void Pseudo_Solis_Wets::SW(Phenotype &vector)
 {
    register unsigned int i, j, num_successes = 0, num_failures = 0,  all_rho_stepsizes_too_small = 1;
     
    Phenotype newPh;
-   Boole modified = FALSE;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "ls.cc/void Pseudo_Solis_Wets::SW(Phenotype &vector)\n");
-#endif /* DEBUG */
+#endif // DEBUG 
 
    //  Initialize the temp_rho's
    for (i=0; i < size; i++) {
       temp_rho[i] = rho[i];
    }
-   //  Reset bias or 'momentum'
+   //  Reset bias
    for (i=0; i < size; i++) {
       bias[i] = 0.0;
    }
-
+   
+   num_successes = 0;
+   num_failures = 0;  	   
    for (i=0; i < max_its; i++) {
-#ifdef DEBUG
-   Real xyz[3];
-   for ( int d=0;d<3;d++) xyz[d] = vector.gread(d).real;
-   (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+6.2f p0=%f b0=%f xyz=(%.2f %.2f %.2f)", 
-                                  i, num_successes, num_failures, vector.evaluate(Normal_Eval), temp_rho[0], bias[0],
-                                  xyz[0],xyz[1],xyz[2]);
-#endif /* DEBUG */
       // Generate deviates
       for (j=0; j < size; j++) {
          deviates[j] = gen_deviates(temp_rho[j]);
-      }
-
+      }	  
       newPh = genPh(vector, +1., deviates, bias);
       // Evaluate
       if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
          num_successes++;
          num_failures = 0;
          vector = newPh;
-         modified = TRUE;
          for (j=0; j < size; j++) {
-            // bias[j] = 0.20*bias[j] + 0.40*deviates[j]; 
+            // bias[j] = 0.20*bias[j] + 0.40*deviates[j];
             bias[j] = 0.60*bias[j] + 0.40*deviates[j]; // strict Solis+Wets
          }
       } else  {
-         //  We need to check if the opposite move does any good (move = bias[j] + deviates[j])
+         //  We need to check if the opposite move does any good (move = bias[j] + deviates[j])        
          newPh = genPh(vector, -1., deviates, bias);
          if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
             num_successes++;
             num_failures = 0;
             vector = newPh;
-            modified = TRUE;
             for (j=0; j < size; j++) {
                // bias[j] -= 0.40*deviates[j];
                bias[j] = 0.60*bias[j] - 0.40*deviates[j]; // correct if deviates is not changed
@@ -311,7 +433,6 @@ Boole Pseudo_Solis_Wets::SW(/* not const */ Phenotype &vector)
          }
       }
 
-// DEBUG TRACE used to be here, mp+rh 4/09
       // Check to see if we need to expand or contract
       if (num_successes >= max_successes) {
          for(j=0; j < size; j++) {
@@ -330,49 +451,111 @@ Boole Pseudo_Solis_Wets::SW(/* not const */ Phenotype &vector)
       //  GMM - This version only exits if all the step sizes are too small...
       all_rho_stepsizes_too_small = 1;
       for(j=0; j < size; j++) {   
-         if (temp_rho[j]>= lower_bound_on_rho[j]){
-            all_rho_stepsizes_too_small = FALSE;
-            break;
-         }
+         all_rho_stepsizes_too_small = all_rho_stepsizes_too_small & (temp_rho[j] < lower_bound_on_rho[j]);
       } //  j-loop
       if (all_rho_stepsizes_too_small) {
          break; //  GMM - THIS breaks out of i loop, which IS what we want...
       }
    } //  i-loop
-   return modified;
-} // Boole Pseudo_Solis_Wets::SW(Phenotype &vector)
+	
+} // void Pseudo_Solis_Wets::SW(Phenotype &vector)
 
 
 int Solis_Wets_Base::search(Individual &solution)
 {
-
-#ifdef DEBUG2
+   int from_gene_point, to_gene_point;
+#ifdef DEBUG
    (void)fprintf(logFile, "ls.cc/int Solis_Wets_Base::search(Individual &solution)\n");
 #endif /* DEBUG */
 
    if (ranf() < search_frequency) {
-      // Do inverse mapping if SW changed phenotyp 
-      if (SW(solution.phenotyp)) {
-      solution.inverse_mapping();
-      ls_count++;      
-      }
+   	
+   	   // handle multi-ligand searching -Huameng
+   	   // search rotation & quarternion for each ligand (0, nlig -1),
+	   // at last seach rotation segment (n = nlig)
+	   for(int n = 0; n < nlig ; n++) {
+	   	  //get the segment if gene points for this ligand 	   	   
+	   	  from_gene_point = gene_index_lig[n][0];	   
+	   	  to_gene_point = gene_index_lig[n][1];  	     	   	 
+	   	  // translation and rotation   	   
+	      SWMultiLigand(solution.phenotyp, from_gene_point, to_gene_point, n);	      	      	           
+	   }
+	   
+	   // all torsion
+	   from_gene_point = nlig*7;
+	   to_gene_point = from_gene_point + global_ntor;
+	   SWMultiLigand(solution.phenotyp, from_gene_point, to_gene_point, nlig);  
+	   /*
+	   // Handle the torsion of flexible residue
+	   // need to skip this in UNBOUND STATE
+	   if(to_gene_point < (global_ntor - 7*nlig)) {	   
+		   from_gene_point = gene_index_lig[2*nlig][0];
+		   to_gene_point = gene_index_lig[2*nlig][1]; 
+		   //pr(logFile, "in side chain local search from_gene_point=%d, to_gene_point=%d\n",
+		   //   		from_gene_point, to_gene_point);
+		   if((to_gene_point - from_gene_point) > 0 ) { 	        	   
+		   	 SWMultiLigand(solution.phenotyp, from_gene_point, to_gene_point, 2*nlig);
+		   }	 
+	   }
+	   */
+	   
+	   //inverse mapping
+       solution.inverse_mapping();
    }
 
    return(0);
 }
 
+
+/******************************************************
+ * 
+ * Huameng -7/27/2008 
+ * Local search using partical swarm optimization PSO
+ * NO inverse_mapping compared to genetic algorithms
+ * 
+ ****************************************************/
+int Solis_Wets_Base::searchByPSO(Individual &solution)
+{
+#ifdef DEBUG
+   (void)fprintf(logFile, "ls.cc-> Start Solis_Wets_Base::searchByPSO(Individual &solution)\n");
+#endif /* DEBUG */
+   int from_point, to_point;
+   if (ranf() < search_frequency) {
+   	   	
+   	   for (int i = 0; i < nlig; i++) {
+   	   	from_point = gene_index_lig[i][0];
+   	   	to_point = gene_index_lig[i][1];
+   	   	// handle multi-ligand searching -Huameng  	   	   	       	   
+	   	SWMultiLigand(solution.phenotyp, from_point, to_point, i);	      	      	           
+	  	   	   	   
+#ifdef DEBUG
+	   	fprintf(logFile, "ls.cc->  End local searchByPSO(Individual &solution)\n"); 
+	   	fflush(logFile); 
+#endif /* DEBUG */
+   	   } 
+   	   
+   	   // all torsion
+	   from_point = nlig*7;
+	   to_point = from_point + global_ntor;
+	   SWMultiLigand(solution.phenotyp, from_point, to_point, nlig);  
+   }
+
+   return(0);
+}
+
+
 Pattern_Search::Pattern_Search(void)
 {
 }
 
-Pattern_Search::Pattern_Search(const unsigned int init_size, const unsigned int init_max_success, ConstReal init_step_size, ConstReal init_step_threshold, ConstReal init_expansion, ConstReal init_contraction, ConstReal init_search_frequency)
+Pattern_Search::Pattern_Search(unsigned int init_size, unsigned int init_max_success, Real init_step_size, Real init_step_threshold, Real init_expansion, Real init_contraction, Real init_search_frequency)
 : size(init_size), max_success(init_max_success), step_size(init_step_size), step_threshold(init_step_threshold), expansion(init_expansion), contraction(init_contraction), search_frequency(init_search_frequency)
 {
   current_step_size = step_size;
   pattern = new Real[size];
-  index = new unsigned int[size];
+	index = new unsigned int[size];
   reset_pattern();
-  reset_indexes();
+	reset_indexes();
   successes = 0;
 }
 
@@ -413,7 +596,7 @@ void Pattern_Search::shuffle_indexes() {
 	}
 }
 
-int Pattern_Search::terminate(void) const
+int Pattern_Search::terminate(void)
 {
    return (0);
 }
@@ -443,22 +626,19 @@ int Pattern_Search::search(Individual &solution)
       while (true) {
         newPoint = pattern_explore(base);
         if (newPoint.evaluate(Normal_Eval) < base.evaluate(Normal_Eval)) {
-					successes++;
+			successes++;
           base = newPoint;
-        }
-        else {
-					break;
-					successes = 0;
-				}
-
-				if (successes > max_success) {
-					//fprintf(stderr, "Expanding step size\n");
-					successes = 0;
-					current_step_size *= expansion;
-				}
-      }
+        } else {
+			break;
+			successes = 0;
+		}
+		if (successes > max_success) {
+			//fprintf(stderr, "Expanding step size\n");
+			successes = 0;
+			current_step_size *= expansion;
+		}
+      } //while
     }
-
     else {
       current_step_size *= contraction;
 			successes = 0;
@@ -472,9 +652,59 @@ int Pattern_Search::search(Individual &solution)
   return (0);
 }
 
-Phenotype Pattern_Search::exploratory_move(const Phenotype& base) /* not const */ {
+int Pattern_Search::searchByPSO(Individual &solution)
+{
+  // TODO: implement scaling?
+
+  if (ranf() >= search_frequency) {
+    return(0);
+  }
+
+	reset();
+  Phenotype base = solution.phenotyp;
+  Phenotype newPoint;
+  // evaluate function at base point
+  while (current_step_size > step_threshold) {
+    // do exploratory moves
+    //fprintf(stderr, "base point energy: %f\n", base.evaluate(Normal_Eval));
+    newPoint = exploratory_move(base);
+    //fprintf(stderr, "newPoint energy: %f\n", newPoint.evaluate(Normal_Eval));
+    if (newPoint.evaluate(Normal_Eval) < base.evaluate(Normal_Eval)) {
+      // new point is more favorable than base point
+      // set new point as base point
+      base = newPoint;
+
+      while (true) {
+        newPoint = pattern_explore(base);
+        if (newPoint.evaluate(Normal_Eval) < base.evaluate(Normal_Eval)) {
+			successes++;
+          base = newPoint;
+        } else {
+			break;
+			successes = 0;
+		}
+		if (successes > max_success) {
+			//fprintf(stderr, "Expanding step size\n");
+			successes = 0;
+			current_step_size *= expansion;
+		}
+      } //while
+    }
+    else {
+      current_step_size *= contraction;
+			successes = 0;
+      reset_pattern();
+      //fprintf(stderr, "Contracted to %f after %ld evaluations.\n", current_step_size, evaluate.evals());
+    }
+  }
+  
+  solution.phenotyp = base;
+  return (0);
+}
+
+Phenotype Pattern_Search::exploratory_move(const Phenotype& base) {
   Phenotype newBase(base);
-	shuffle_indexes(); 
+	shuffle_indexes();
 	unsigned int current_index;
 	int direction;
 
@@ -508,58 +738,17 @@ Phenotype Pattern_Search::exploratory_move(const Phenotype& base) /* not const *
   return newBase;
 }
 
-Phenotype Pattern_Search::pattern_explore(const Phenotype& base) /* not const */ {
+Phenotype Pattern_Search::pattern_explore(const Phenotype& base) {
   Phenotype newPoint = pattern_move(base);
   reset_pattern();
   Phenotype newBase = exploratory_move(newPoint);
   return newBase;
 }
 
-Phenotype Pattern_Search::pattern_move(const Phenotype& base) const {
+Phenotype Pattern_Search::pattern_move(const Phenotype& base) {
   Phenotype newPoint(base);
   for (unsigned int i=0; i < size; i++) {
     newPoint.write(newPoint.gread(i).real + pattern[i] , i);
   }
   return newPoint;
-}
-//void printDState(logFile,msg,vector,i,prevxyz,startxyz, prevQuat,startQuat,num_successes,num_failures,temp_rho,bias,deviates); 
-void printDState(FILE *logFile, const char *const msg,Phenotype &newPh, const int i, const Real prevxyz[3],
-                 const Real startxyz[3], const Quat& prevQuat, const Quat& startQuat, 
-                 const unsigned int num_successes, const unsigned int num_failures,
-                 ConstReal temp_rho, const Real *const  bias, const Real *const  deviates)
-{
-#ifdef DEBUG
-   Real dt; // translation step scalar
-   Real ct; // cumulative translation from step 0
-   static Quat thisQuat;
-   Real xyz[3];
-   for ( int d=0;d<3;d++) xyz[d] = newPh.gread(d).real;
-   dt=0;
-   for ( int d=0;d<3;d++) dt += (prevxyz[d]- xyz[d])*(prevxyz[d]- xyz[d]);
-   dt = sqrt(dt);
-   ct=0;
-   for ( int d=0;d<3;d++) ct += (startxyz[d] - xyz[d])*(startxyz[d]- xyz[d]);
-   ct = sqrt(ct);
-   (void)fprintf(logFile, "\nLS::    %3d %s #S=%d #F=%d %+12.4f p=%4.2f b=(%5.2f %5.2f %5.2f) dev=(%5.2f %5.2f %5.2f)", 
-                                  i, msg, num_successes, num_failures, newPh.evaluate(Normal_Eval), temp_rho, bias[0], bias[1], bias[2], 
-                                  deviates[0], deviates[1], deviates[2]);
-   (void)fprintf(logFile, " xyz=(");
-    fprintf(logFile, "%5.2f %5.2f %5.2f", xyz[0], xyz[1], xyz[2]);
-   (void)fprintf(logFile, ") ");
-    fprintf(logFile, "dT=%5.2f ", dt);
-    fprintf(logFile, "cT=%5.2f ", ct);
-    // assuming x,y,z,w ignoring structs.h order 
-    //fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f",
-    thisQuat = newPh.readQuat();
-    
-   (void)fprintf(logFile, " quat=(");
-   fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f", newPh.gread(3).real, newPh.gread(4).real,newPh.gread(5).real,newPh.gread(6).real);
-   (void)fprintf(logFile, ")");
-   //if (i>0){
-    fprintf(logFile, " dQ=%6.1f", quatDifferenceToAngleDeg(prevQuat,thisQuat)); 
-    fprintf(logFile, " cQ=%6.1f", quatDifferenceToAngleDeg(startQuat,thisQuat)); 
-    fprintf(logFile, " \n"); 
-   //}
-#endif /* DEBUG */
-
 }

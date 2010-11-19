@@ -1,10 +1,11 @@
 /*
 
- $Id: mapping.cc,v 1.5 2009/05/08 23:02:14 rhuey Exp $
+ $Id: mapping.cc,v 1.3 2007/04/27 06:01:49 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -39,32 +40,24 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 
 //  This should be made more efficient.  As it is now, we (de facto) AlwaysEval!!!!
-//Phenotype Individual::mapping(void)
-Individual &Individual::mapping(void)
+Phenotype Individual::mapping(void)
 {
 
 #ifdef DEBUG
    (void)fprintf(logFile, "mapping.cc/Phenotype Individual::mapping(void)\n");
 #endif /* DEBUG */
-   //phenotyp.write sets phenotyp.evalflag to FALSE (0)
+
    phenotyp.write(*genotyp.vread(0), 0);
    phenotyp.write(*genotyp.vread(1), 1);
    phenotyp.write(*genotyp.vread(2), 2);
    phenotyp.write(*genotyp.vread(3), 3);
    phenotyp.write(*genotyp.vread(4), 4);
-   //Possible future improvement
-   //for (int i=0;i<5;i++) {
-   //   if (*phenotyp.vread(i)!=*genotyp.vread(i)) phenotyp.write(*genotyp.vread(i), i);
-   //}
-   
    value(Normal_Eval);
 
-   return(*this);
-   //return(phenotyp);
+   return(phenotyp);
 }
 
-//Genotype Individual::inverse_mapping(void)
-Individual &Individual::inverse_mapping(void)
+Genotype Individual::inverse_mapping(void)
 {
 
 #ifdef DEBUG
@@ -77,6 +70,5 @@ Individual &Individual::inverse_mapping(void)
    genotyp.write(*phenotyp.vread(3), 3);
    genotyp.write(*phenotyp.vread(4), 4);
 
-   return(*this);
-   //return(genotyp);
+   return(genotyp);
 }

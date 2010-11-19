@@ -1,10 +1,11 @@
 /*
 
- $Id: mkTorTree.cc,v 1.17 2010/08/27 00:05:07 mp Exp $
+ $Id: mkTorTree.cc,v 1.13.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -40,26 +41,26 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern int true_ligand_atoms;
 extern FILE *logFile;
 extern char  *programname;
-    
+extern int natom_in_lig[MAX_LIGANDS];    
 
-void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
-                const char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
-                const int   nrecord,
+void mkTorTree( int   atomnumber[ MAX_RECORDS ],
+                char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
+                int   nrecord,
 
-/* not const */ int   tlist[ MAX_TORS ][ MAX_ATOMS ],
-/* not const */ int   *const P_ntor,
-/* not const */ int   *const P_ntor_ligand,
+                int   tlist[ MAX_TORS ][ MAX_ATOMS ],
+                int   *P_ntor,
+                int   *P_ntor_ligand,
 
-          const char  *const smFileName,
+                char  smFileName[ MAX_CHARS ],
 
-          const char  pdbaname[ MAX_ATOMS ][ 5 ],
-/* not const */ Boole *const P_B_constrain,
-/* not const */ int   *const P_atomC1,
-/* not const */ int   *const P_atomC2,
-/* not const */ Real  *const P_sqlower,
-/* not const */ Real  *const P_squpper,
-/* not const */ int   *const P_ntorsdof,
-/* not const */ int   ignore_inter[MAX_ATOMS])
+                char  pdbaname[ MAX_ATOMS ][ 5 ],
+                Boole *P_B_constrain,
+                int   *P_atomC1,
+                int   *P_atomC2,
+                Real  *P_sqlower,
+                Real  *P_squpper,
+                int   *P_ntorsdof,
+                int   ignore_inter[MAX_ATOMS])
 
 {
 
@@ -71,12 +72,16 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
     int   nbranches = 0;
     int   ntor=0;
     int   tlistsort[ MAX_TORS ][ MAX_ATOMS ];
+    int	  ilig = 0;
+    int   total_natom = 0;   //start atom number inf ligand
     int   found_new_res = 0;
     int   nres = 0;
     int   natoms_in_res = 0;
     int   natoms = 0;
-    int   nrestor=0;
+    int   nrestor=0;   // atom number in residue BRANCH for torsion
+    int   nligtor = 0; // atom number in ligand BRANCH for torsion
     int   found_first_res=0;
+    int   ntorsdof = 0;
 
     register int   i = 0;
     register int   j = 0;
@@ -158,11 +163,10 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
             case PDBQ_ATOM: 
             case PDBQ_HETATM:
 
-             /* This is an ATOM or HETATM. */
+             	/* This is an ATOM or HETATM. */
+             	atomlast = atomnumber[ i ];
 
-             atomlast = atomnumber[ i ];
-
-             if (found_new_res) {
+             	if (found_new_res) {
                     /* We are in a residue. */
                     if (natoms_in_res < 2) {
                         /* flag the first two atoms in each new 
@@ -173,7 +177,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                     }
                     /* Keep counting the number of atoms in the residue. */
                     natoms_in_res++;
-                } else {
+             	} else {
                     /* We are not in a residue.
                      *
                      * "found_new_res" can only be reset to FALSE 
@@ -182,42 +186,49 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                      
                     /* reset the atom counter */
                     natoms_in_res = 0;
-                }
-                /* Increment atom counter for all atoms in PDBQT file */
+            	}
+                // Increment atom counter for all atoms in PDBQT file
                 natoms++;
-
+                
 #ifdef DEBUG
                 C = 'A';
                 PrintDebugTors;
                 PrintDebugTors2;
                 pr( logFile, "]\n" );
 #endif /* DEBUG */
-
                 break;
-
+                
+    // handle multi-ligand Huameng   12/31/2007
     /*____________________________________________________________*/
             case PDBQ_BRANCH:
-                if (ntor >= MAX_TORS) {
-                    prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
-                    stop( error_message );
-                    exit( -1 );
-                }
                 if (found_first_res) {
-                    sscanf(Rec_line[ i ],"%*s %d %*d", &nrestor );
-                    tlist[ ntor ][ ATM1 ]= nrestor + true_ligand_atoms;
+                    sscanf(Rec_line[ i ],"%*s %d %*d", &nrestor );  
+                    // huameng debug                 
+                    tlist[ ntor ][ ATM1 ]= nrestor + true_ligand_atoms;                    
+                	pr(logFile, "residue nrestor=%d, tlist[%d][ATM1]=%d\n", nrestor, ntor, tlist[ntor][ATM1]);
                 } else {
-                    sscanf(Rec_line[ i ],"%*s %d %*d", &tlist[ ntor ][ ATM1 ] );
+                    //sscanf(Rec_line[i],"%*s %d %*d", &tlist[ntor][ATM1] ); 
+                    sscanf(Rec_line[i],"%*s %d %*d", &nligtor );
+                    tlist[ntor][ATM1] =  nligtor + total_natom;              
+                	pr(logFile, "ligand %d's tlist[%d][ATM1]=%d\n", ilig, ntor, tlist[ntor][ATM1]);
                 }
-                tlist[ ntor ][ ATM2 ] = atomnumber[ i+1 ];
+                tlist[ntor][ ATM2] = atomnumber[ i+1 ];
                 --tlist[ ntor ][ ATM1 ];
                 if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
                     prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
                     stop( error_message );
                     exit( -1 );
                 } /* endif */
+                
+                if(found_first_res) {
+                	pr(logFile, "residue %d, tlist[%d][ATM2]=%d\n", nrestor, ntor, tlist[ntor][ATM2]);
+                } else {
+                	pr(logFile, "ligand %d's tlist[%d][ATM2]=%d\n", ilig, ntor, tlist[ntor][ ATM2]);
+                }
                 nbranches = 0;
 
 #ifdef DEBUG
+                pr(logFile, "start top level BRANCH\n");
                 C = 'B';
                 PrintDebugTors;
                 PrintDebugTors2;
@@ -226,7 +237,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 
                 for ( j = (i+2); j < nrecord; j++) {
                     for ( ii = 0; ii < 4; ii++ ) {
-                        rec5[ii] = (char)tolower( (int)Rec_line[ j ][ ii ] );
+                        rec5[ii] = (char)toupper( (int)Rec_line[ j ][ ii ] );
                     }
                     rec5[4] = '\0';
 #ifdef DEBUG
@@ -236,17 +247,20 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                     pr( logFile, "]\n" );
 #endif /* DEBUG */
 
-                    if (equal(rec5,"endb", 4) && (nbranches == 0))  break;
-                    if (equal(rec5,"endb", 4) && (nbranches != 0))  --nbranches;
-                    if (equal(rec5,"bran", 4))                      ++nbranches;
-                    if (equal(rec5,"atom", 4) || equal(rec5,"heta", 4)) {
-                        tlist[ ntor ][ tlist[ ntor ][ NUM_ATM_MOVED ] + 3 ] = atomnumber[ j ];
-                        ++tlist[ ntor ][ NUM_ATM_MOVED ];
+                    if (equal(rec5,"ENDB", 4) && (nbranches == 0))  break;
+                    if (equal(rec5,"ENDB", 4) && (nbranches != 0))  --nbranches;
+                    if (equal(rec5,"BRAN", 4))                      ++nbranches;
+                    if (equal(rec5,"ATOM", 4) || equal(rec5,"HETA", 4)) {
+                        tlist[ ntor ][ tlist[ ntor ][ NUM_ATM_MOVED ] + 3 ] = atomnumber[j];
+                        // Huameng debug
+                        pr(logFile, "tlist[%d][%d] = atomnumber[%d] = %d\n", ntor, tlist[ntor][NUM_ATM_MOVED] + 3,  j, atomnumber[j]);
+                        ++tlist[ntor][NUM_ATM_MOVED];
                     } /* endif */
                 } /* j */
                 ++ntor;
 
 #ifdef DEBUG
+				pr(logFile, "end top level BRANCH  notr=%d\n", ntor);
                 PrintDebugTors;
                 PrintDebugTors2;
                 pr( logFile, "]\n" );
@@ -335,6 +349,15 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 *P_sqlower = lower * lower;
                 *P_squpper = upper * upper;
                 break;
+                
+	// to handle multi-ligand   -Huameng 1/26/08
+	/*____________________________________________________________*/
+            case PDBQ_END_LIG:              
+                total_natom += natom_in_lig[ilig]; // index 0 base               
+                // assume read ligand PDBQT first
+                pr(logFile, "In mkTorTree.cc Ligand %d has %d atoms.\n\n", ilig, natom_in_lig[ilig]);
+                ilig++;
+                break;
 
     /*____________________________________________________________*/
             case PDBQ_BEGIN_RES:
@@ -356,7 +379,8 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 
     /*____________________________________________________________*/
             case PDBQ_TORSDOF:
-                sscanf(Rec_line[i], "%*s %d", P_ntorsdof);
+                sscanf(Rec_line[i], "%*s %d", &ntorsdof); 
+                *P_ntorsdof +=  ntorsdof;              
                 pr( logFile, "\nTORSDOF record detected: number of torsional degress of freedom has been set to %d.\n", *P_ntorsdof );
                 break;
 
@@ -371,7 +395,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
     \   Sort Torsion list on number of atoms moved,
      \______________________________________________________________
     */
-    // Checked for above, as well as in readPDBQT, but this is extra insurance
+
     if (ntor > MAX_TORS) {
         prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
         stop( error_message );
@@ -399,7 +423,8 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
         pr( stderr, "%s: ERROR:  Torsion number %d between atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n", programname, itor+1, 1+tlist[itor][ATM1], 1+tlist[itor][ATM2], tlist[itor][NUM_ATM_MOVED] );
         exit(-1);
     }
-
+    
+	
     itor = 0;
     for (i=0;  i<MAX_ATOMS;  i++) {
         for ( j=0; j<ntor; j++ ) {
@@ -416,6 +441,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
             tlist[ i ][ j ] = tlistsort[ i ][ j ];
         }
     }
+    
     if (ntor > 0) {
         pr( logFile, "\n\nNumber of Rotatable Bonds in Small Molecule =\t%d torsions\n", ntor);
         pr( logFile, "\n\nTORSION TREE\n____________\n\nSorted in order of increasing number of atoms moved:\n\n" );

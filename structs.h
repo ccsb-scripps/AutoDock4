@@ -1,10 +1,11 @@
 /*
 
- $Id: structs.h,v 1.24 2010/05/14 21:25:51 mp Exp $
+ $Id: structs.h,v 1.18.2.1 2010/11/19 20:09:29 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -33,7 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /* *****************************************************************************
  *      Name: structs.h                                                       *
  *  Function: Defines structures used in Molecular Applications.              *
- *Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ * Copyright: (C) Garrett Matthew Morris, TSRI                                *
  *----------------------------------------------------------------------------*
  *    Author: Garrett Matthew Morris, The Scripps Research Institute          *
  *      Date: SEP/07/1995                                                     *
@@ -74,15 +75,15 @@ typedef struct coord
 
 typedef struct quat
 {
-  double x;			/* quaternion's x-component */
-  double y;			/* quaternion's y-component */
-  double z;			/* quaternion's z-component */
-  double w;			/* quaternion's w-component */
-  double qmag;			/* quaternion's 4-D magnitude */
   double nx;			/* unit vector's x-component */
   double ny;			/* unit vector's y-component */
   double nz;			/* unit vector's z-component */
   double ang;			/* angle of rotation about unit-vector */
+  double w;			/* quaternion's w-component */
+  double x;			/* quaternion's x-component */
+  double y;			/* quaternion's y-component */
+  double z;			/* quaternion's z-component */
+  double qmag;			/* quaternion's 4-D magnitude */
 } Quat;
 
 typedef struct quaternion
@@ -117,17 +118,16 @@ typedef struct energy
 } Energy;
 
 /* ____________________________________________________________________________ */
-
+// modified to handle multiple ligands  -Huameng Li 10/20/2007
 typedef struct state
 {
-  Coord T;			/* coordinates of center of molecule */
-  Quat Q;			/* rigid-body orientation */
+  Coord T[MAX_LIGANDS];			/* array of coordinates of center of moving ligands */
+  Quat Q[MAX_LIGANDS];			/* array of rigid-body orientation of ligands */
   double tor[MAX_TORS];		/* torsion angles in radians */
-  int ntor;			/* number of torsions in molecule */
+  int ntor;						/* number of torsions in molecule */
   int hasEnergy;		/* if 0, this state has an undefined energy */
   Energy e;			/* energy structure */
-  Coord Center;			/* original input ligand center (pivot point)
-     					as set by 'about' DPF keyword */
+  int nlig;			/* number of true moving ligands */
 } State;
 
 /* ____________________________________________________________________________ */
@@ -232,7 +232,7 @@ typedef struct group
   PairID nbs[MAX_NONBONDS];	/* Non-bond data */
   Boole B_constrain;		/* TRUE if any distance constraints */
   DisCon distcon;		/* Distance constraint data */
-  char pdbqfilnam[PATH_MAX];	/* PDBQ filename holding these data */
+  char pdbqfilnam[MAX_CHARS];	/* PDBQ filename holding these data */
 } Group;
 
 #include "grid.h"
@@ -263,7 +263,7 @@ typedef struct linear_FE_model
 
 typedef struct energy_tables
 {
-    Real e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES];  // vdW & Hb energies
+    Real e_vdW_Hb[NEINT][ATOM_MAPS][ATOM_MAPS];  // vdW & Hb energies
     Real sol_fn[NEINT];                            // distance-dependent desolvation function
     Real epsilon_fn[NDIEL];                        // distance-dependent dielectric function
     Real r_epsilon_fn[NDIEL];                      // r * distance-dependent dielectric function
@@ -297,17 +297,6 @@ typedef struct statistics
 } Statistics;
 
 /* ______________________________________________________________________________ */
-/* Output_pop_stats (Output Population Statistics)   added 2010-05 M Pique */
-
-typedef struct output_pop_stats
-{
-    unsigned int level;  // 0 means minimal, 1 means "basic" controlled by ngens, nevals:
-    unsigned int everyNgens;
-    unsigned int everyNevals;
-} Output_pop_stats;
-
-
-/* ______________________________________________________________________________ */
 /* EnergyBreakdown */
 
 typedef struct energy_breakdown
@@ -326,24 +315,29 @@ typedef struct energy_breakdown
     Real e_torsFreeEnergy;          // empirical torsional free energy penalty
     Real e_unbound_internal_FE;     // computed internal free energy of the unbound state
     Real deltaG;                    // estimated change in free energy upon binding
+    
+    double e_total_vdm_hb;
+    double e_total_elec;
+    double e_total_desol;
 
 } EnergyBreakdown;
 
-/*______________________________________________________________________________
-**PSO Work Structures */
 
-typedef struct velocity {
-	int size;
-	double v[D_max];
-} Velocity;
-/*______________________________________________________________________________*/
-
-typedef struct position {
-        int size;
-        double x[D_max];
-        double f;		// fitness value of particle
-        double prev_x[D_max];		// previous fitness value of particle
-} Position;
+ /*______________________________________________________________________________
+ **PSO Work Structures */
+ 
+ typedef struct velocity {
+ 	int size;
+ 	double v[D_max];
+ } Velocity;
+ /*______________________________________________________________________________*/
+ 
+ typedef struct position {
+         int size;
+         double x[D_max];
+         double f;		// fitness value of particle
+         double prev_x[D_max];		// previous fitness value of particle
+ } Position;
 
 #endif
 /* EOF */

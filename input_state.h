@@ -1,10 +1,11 @@
 /*
 
- $Id: input_state.h,v 1.6 2010/08/27 00:05:07 mp Exp $
+ $Id: input_state.h,v 1.4 2007/04/27 06:01:49 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -30,11 +31,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "qmultiply.h"
 
 int input_state( State *S,
-		 FILE  *const fp, 
-                 const char  line[LINE_LEN], 
-                 const int   ntor, 
-		 int   *const P_istep, 
-                 Real  *const P_energy, 
-		 Real  *const P_eint, 
-                 char  *const P_lastmove );
+		 FILE  *fp, 
+                 char  line[LINE_LEN], 
+                 int   ntor, 
+		 int   *P_istep, 
+                 Real *P_energy, 
+		 Real *P_eint, 
+                 char  *P_lastmove );
 #endif

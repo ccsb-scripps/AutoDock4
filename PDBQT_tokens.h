@@ -1,10 +1,11 @@
 /*
 
- $Id: PDBQT_tokens.h,v 1.3 2009/05/08 23:02:10 rhuey Exp $
+ $Id: PDBQT_tokens.h,v 1.2.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -29,7 +30,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /******************************************************************************
  *      Name: pdbqtokens.h                                                    *
  *  Function: Defines the tokens for PDBQ parsing.                            *
- *Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ * Copyright: (C) Garrett Matthew Morris, TSRI                                *
  *----------------------------------------------------------------------------*
  *    Author: Garrett Matthew Morris, The Scripps Research Institute          *
  *      Date: 02/28/1995                                                      *
@@ -41,6 +42,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  * Modification Record                                                        *
  * Date     Inits   Comments                                                  *
  * 02/28/95 GMM     This header added                                         *
+ * 09/27/07 Huameng  add token for multiple ligands							  *
  ******************************************************************************/
 
 
@@ -60,3 +62,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define PDBQ_END_RES 12     /* PDBQ-file token for "END_RES". */
 #define PDBQ_TORSDOF 14     /* PDBQ-file token for "TORSDOF" - torsional degrees of freedom. */
 #define PDBQ_CONECT  15     /* PDBQ-file token for "CONECT" - PDB connectivity record. */
+
+#define PDBQ_BEGIN_LIG 16   /* PDBQ-file token for "BEGIN_LIG (ligand)". */
+#define PDBQ_END_LIG   17   /* PDBQ-file token for "END_LIG (ligand)". */

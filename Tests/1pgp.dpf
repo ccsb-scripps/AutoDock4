@@ -1,12 +1,12 @@
-autodock_parameter_version 4.1       # used by autodock to validate parameter set
 outlev 0
-parameter_file AD4.1_bound.dat       # New parameter library
-#include_1_4_interactions 1.0        # test
+parameter_file AD4_parameters.dat    # New parameter library  >>> NEW
+#include_1_4_interactions 1.0        # test  >>> NEW
 intelec                              # calculate internal electrostatic energy
 
+# seed pid time                      # seeds for random generator
 seed 28641 1106107140                # seeds for random generator
 
-ligand_types C HD OA P               # ligand atom type names
+ligand_types C HD OA P               # ligand atom type names   >>> NEW
 fld 1pgp_rec.maps.fld                # grid_data_file
 map 1pgp_rec.C.map                   # atom-specific affinity map
 map 1pgp_rec.HD.map                  # atom-specific affinity map
@@ -15,10 +15,11 @@ map 1pgp_rec.P.map                   # atom-specific affinity map
 elecmap 1pgp_rec.e.map               # electrostatics map
 desolvmap 1pgp_rec.d.map             # desolvation map
 
-move 1pgp_lig.pdbqt                  # small molecule
+move 1pgp_lig.pdbqt                  # small molecule >>> NEW
 about 22.894 28.598 40.259           # small molecule center
 tran0 22.894 28.598 40.259           # small molecule center
 quat0 1 0 0 0                        # initial quaternion
+ndihe 11                             # number of active torsions
 dihe0 0 0 0 0 0 0 0 0 0 0 0          # initial dihedrals (relative) or random
 tstep 0.0                            # translation step/A
 qstep 0.0                            # quaternion step/deg
@@ -26,7 +27,7 @@ dstep 0.0                            # torsion step/deg
 unbound 0.0                          # free energy of the unbound state
 
 rmstol 2.0                           # cluster_tolerance/A
-epdb                                 # compute energy of PDBQT specified by 'move' 
+epdb 1pgp_lig.pdbqt                  # >>> NEW
 
 extnrg 1000.0                        # external grid energy
 e0max 0.0 10000                      # max initial ernergy; max number of retries

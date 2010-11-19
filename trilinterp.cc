@@ -1,10 +1,11 @@
 /*
 
- $Id: trilinterp.cc,v 1.17 2010/08/27 00:05:09 mp Exp $
+ $Id: trilinterp.cc,v 1.12.2.1 2010/11/19 20:09:30 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -52,21 +53,22 @@ Real trilinterp(
  const Real charge[MAX_ATOMS], // partial atomic charges
  const Real abs_charge[MAX_ATOMS], // absolute magnitude of partial charges
  const int   type[MAX_ATOMS], // atom type of each atom
- #include "map_declare.h"
- const GridMapSetInfo *const info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
- const int some_atoms_outside_grid, // boolean
- const int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
- /* not const */ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
- /* not const */ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
- /* not const */ Real *p_elec_total, // set if not NULL - total electrostatic energy
- /* not const */ Real *p_emap_total // set if not NULL - total intermolecular energy
+ const Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],    //  intermolecular interaction energies
+ GridMapSetInfo *info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
+ int some_atoms_outside_grid, // boolean
+ int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
+ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
+ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
+ Real *p_elec_total, // set if not NULL - total electrostatic energy
+ Real *p_vdm_hb_total, // set if not NULL - total intermolecular energy (Hbond + vdm)
+ double *p_desol_total  //10/09/2009 Huameng separate desolv and vdm_hb
  )
 
 /******************************************************************************/
 /*      Name: trilinterp                                                      */
 /*  Function: Trilinear interpolation of interaction energies from map[]      */
 /*            using the coordinates in tcoord[].                              */
-/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
+/* Copyright: (C) 1994, TSRI                                                  */
 /*----------------------------------------------------------------------------*/
 /*   Authors: Garrett M. Morris, TSRI, Accelerated C version 2.2              */
 /*            David Goodsell, UCLA, Original FORTRAN version 1.0              */
@@ -85,7 +87,9 @@ Real trilinterp(
 /******************************************************************************/
 
 {
-    double elec_total=0, emap_total=0;
+    double elec_total = 0.0;
+    double vdm_hb_total = 0.0;
+    double desol_total = 0.0;
     register int i;               /* i-th atom */
 
     // for (i=0; i<total_atoms; i++) {
@@ -119,7 +123,8 @@ Real trilinterp(
                 if (elec != NULL) elec[i] = epenalty;
                 if (emap != NULL) emap[i] = epenalty;
                 elec_total += epenalty;
-                emap_total += epenalty;
+                vdm_hb_total += epenalty;
+                desol_total += epenalty;
                 continue;
             }
         }
@@ -141,19 +146,12 @@ Real trilinterp(
         iy = (p0v < p1v)? v0 : v1;				    /*MINPOINT*/
         iz = (p0w < p1w)? w0 : w1;				    /*MINPOINT*/
 
-#ifdef MAPSUBSCRIPT
         e = map[iz][iy][ix][ElecMap];               /*MINPOINT*/
         m = map[iz][iy][ix][AtomType]; 	            /*MINPOINT*/
         d = map[iz][iy][ix][DesolvMap]; 	        /*MINPOINT*/
 #else
-	e = GetMap(map, info, iz, iy, ix, ElecMap); // MINPOINT
-	m = GetMap(map, info, iz, iy, ix, AtomType); // MINPOINT
-	d = GetMap(map, info, iz, iy, ix, DesolvMap); // MIDPOINT
-
-#endif
-#else
         e = m = d = 0.0L;
-#ifdef MAPSUBSCRIPT
+
         e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
         m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
         d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
@@ -185,21 +183,12 @@ Real trilinterp(
         d += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][DesolvMap];
         m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
         e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
-#else
-	// TODO study unrolling loop, caching subscripts
-	MapType pu[2] = { p1u, p0u };
-	MapType pv[2] = { p1v, p0v };
-	MapType pw[2] = { p1w, p0w };
-	for(int w=0;w<=1;w++) for(int v=0;v<=1;v++) for(int u=0;u<=1;u++) {
-	 e += pu[u]*pv[v]*pw[w]*GetMap(map,info,w0+w, v0+v, u0+u, ElecMap);
-	 m += pu[u]*pv[v]*pw[w]*GetMap(map,info,w0+w, v0+v, u0+u, AtomType);
-	 d += pu[u]*pv[v]*pw[w]*GetMap(map,info,w0+w, v0+v, u0+u, DesolvMap);
-	 }
-#endif /* not MAPSUBSCRIPT */
 #endif /* not MINPOINT */
 
         elec_total += e * charge[i];
-        emap_total += m + d * abs_charge[i]; 
+        //emap_total += m + d * abs_charge[i]; 
+        vdm_hb_total += m ; 
+        desol_total += d * abs_charge[i]; 
 
         if (elec != NULL) elec[i] = e * charge[i];
         if (emap != NULL) emap[i] = m + d * abs_charge[i];
@@ -207,9 +196,10 @@ Real trilinterp(
     } // for (i=first_atom; i<last_atom; i++)
 
     if (p_elec_total != NULL) *p_elec_total = elec_total;
-    if (p_emap_total != NULL) *p_emap_total = emap_total;
+    if (p_vdm_hb_total != NULL) *p_vdm_hb_total = vdm_hb_total;
+    if (p_desol_total != NULL) *p_desol_total = desol_total;
 
-    return( (Real)elec_total+emap_total );
+    return( (Real)elec_total+ vdm_hb_total + desol_total );
 }
 
 /*----------------------------------------------------------------------------*/

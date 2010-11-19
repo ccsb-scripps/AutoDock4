@@ -1,20 +1,7 @@
-# $Id: AD4_PARM99.dat,v 1.3 2009/01/19 19:50:56 rhuey Exp $
+# $Id: AD4_PARM99.dat,v 1.1 2005/11/04 07:41:17 garrett Exp $
 # AutoDock AMBER PARM99 Parameters - Version 1.0
 #
 # Van der Waals Radii and Epsilon Well-Depths are from AMBER PARM99
-
-
-# FE_unbound_model is used to specify how the internal energy of the
-# ligand should be treated when estimating the free energy of binding,
-# and can be set to one of the following strings:
-#   unbound_same_as_bound, extended, or compact
-# unbound_same_as_bound -- this assumes the internal energy of the ligand is the
-#                          same before and after binding.
-# extended -- this assumes the internal energy of the ligand is that of an 
-#             extended conformation when unbound.
-# compact -- this assumes the internal energy of the ligand is that of a 
-#            compact conformation when unbound.
-FE_unbound_model unbound_same_as_bound
 
 #
 # AutoDock 4 coefficient with respect to original (AD2) parameters
@@ -77,7 +64,3 @@ atom_par Rb     5.91  0.00017 108.19  -0.00110  0.0  0.0  0  -1  -1  4	# Non H-b
 atom_par RB     5.91  0.00017 108.19  -0.00110  0.0  0.0  0  -1  -1  4	# Non H-bonding
 atom_par I      4.72  0.400    54.36  -0.00110  0.0  0.0  0  -1  -1  4	# Non H-binding
 atom_par Cs     6.79  0.00008 163.91  -0.00110  0.0  0.0  0  -1  -1  4	# Non H-binding
-atom_par G      4.00  0.086    29.10  -0.00143  0.0  0.0  0  -1  -1  0	# Ring closure Glue Aliphatic Carbon  # SF
-atom_par GA     4.00  0.086    29.10  -0.00052  0.0  0.0  0  -1  -1  0	# Ring closure Glue Aromatic Carbon   # SF
-atom_par J      4.00  0.086    29.10  -0.00143  0.0  0.0  0  -1  -1  0	# Ring closure Glue Aliphatic Carbon  # SF
-atom_par Q      4.00  0.086    29.10  -0.00143  0.0  0.0  0  -1  -1  0	# Ring closure Glue Aliphatic Carbon  # SF

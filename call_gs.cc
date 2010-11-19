@@ -1,10 +1,11 @@
 /*
 
- $Id: call_gs.cc,v 1.13 2010/10/01 22:51:39 mp Exp $
+ $Id: call_gs.cc,v 1.6.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -41,35 +42,106 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "support.h"
 #include "eval.h"
 #include "hybrids.h"
+#include "pso.h"
 
-   #include "constants.h"
-   #include "structs.h"
+#include "constants.h"
+#include "structs.h"
 
 extern Eval evaluate;
-
-State call_gs(Global_Search *global_method, State& now, unsigned int num_evals, unsigned int pop_size,
+unsigned int maxEvalNum;
+State call_gs(Global_Search *global_method, State now, unsigned int num_evals, unsigned int pop_size,
               Molecule *mol,
-              Output_pop_stats& extOutput_pop_stats,
-              GridMapSetInfo *info,
-              int end_of_branch[MAX_TORS])
+              int extOutputEveryNgens,
+              GridMapSetInfo *info)
 {
    register unsigned int i;
 
    evaluate.reset();
-   global_method->reset(extOutput_pop_stats);
+   global_method->reset(extOutputEveryNgens);
 
    Population thisPop(pop_size);
-   thisPop.set_eob(end_of_branch);
 
    for (i=0; i<pop_size; i++) {
-      thisPop[i] = random_ind(now.ntor, info); //random_ind does mapping because global search no longer does 2009/04
+      thisPop[i] = random_ind(now.ntor, info);
       thisPop[i].mol = mol;
    }
 
    do {
       global_method->search(thisPop);
-   } while ((evaluate.evals() < num_evals) && (!global_method->terminate()));
+   } while (( (unsigned)evaluate.evals() < num_evals) && (!global_method->terminate()));
 
-   if (pop_size>1) thisPop.msort(1);
+   // TSRI 20101101 changed 3 to 1 in next line, added printing of final energy M Pique
+   thisPop.msort(1);
+    (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
    return( thisPop[0].state(now.ntor) );
 }
+
+
+//////////////////////////////////////////////////////////
+// Wrapper to call PSO  
+// -Huameng 07/09/2008
+//////////////////////////////////////////////////////////
+State call_pso(
+	Global_Search *global_method, 
+	State now, 
+	unsigned int num_evals, 
+	unsigned int pop_size,
+    Molecule *mol,
+    int extOutputEveryNgens,
+    GridMapSetInfo *info
+    )
+{
+	unsigned int i;
+   	int allEnergiesEqual = 1, numTries = 0;
+ 
+   	double firstEnergy = 0.0;
+   	double indvEnergy = 0.0;
+   	EvalMode localEvalMode = Normal_Eval;
+   	evaluate.reset();
+   	global_method->reset(extOutputEveryNgens);
+
+	maxEvalNum = num_evals;
+   	Population thisPop(pop_size);
+   
+   	fprintf(logFile, "start initializing %d particles\n", pop_size);
+   	do { 	  	
+   	   ++numTries;
+   	   
+	   // initialize particles in population
+	   for (i=0; i < pop_size; i++) {
+	      thisPop[i] = random_ind(now.ntor, info);	      
+	      thisPop[i].mol = mol;
+	      //fprintf(logFile, "Done initializing particle %d\n\n", i+1);
+	      //fflush(logFile);
+	   }
+	   // Now ensure that there is some variation in the energies...
+       firstEnergy = thisPop[0].value(localEvalMode);
+           
+#ifdef DEBUG
+   	(void)fprintf(logFile,"\n\ncall_pso() ensuring there is variation in the energies, firstEnergy=%lf\n\n", firstEnergy);	
+#endif
+        for (i=1; i<pop_size; i++) {       	
+			 indvEnergy = thisPop[i].value(localEvalMode);			           
+             allEnergiesEqual = allEnergiesEqual && (indvEnergy == firstEnergy);                          
+        }
+        if (allEnergiesEqual) {
+            (void)fprintf(logFile,"NOTE: All energies are equal in population; re-initializing. (Try Number %d)\n", numTries);
+        }
+   	} while (allEnergiesEqual);
+   
+   	fprintf(logFile, "Beginning PSO search... \n");
+   	fflush(logFile);
+
+   	do {
+      	global_method->search(thisPop);
+   	} while (( (unsigned)evaluate.evals() < num_evals) && (!global_method->terminate()));
+
+   	//thisPop.msort(3);
+   	//return( thisPop[0].state(now.ntor) ); 
+   // TSRI 20101101 changed 3 to 1 in next line, added printing of final energy M Pique
+   thisPop.msort(1);
+    (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
+   	return (((ParticleSwarmGS *)global_method)->getBest().state(now.ntor));
+}
+
+

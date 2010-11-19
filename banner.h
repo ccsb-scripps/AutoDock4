@@ -1,10 +1,11 @@
 /*
 
- $Id: banner.h,v 1.8 2010/08/27 00:05:07 mp Exp $
+ $Id: banner.h,v 1.4 2007/04/27 06:01:47 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -27,7 +28,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef BANNER
 #define BANNER
 #include "typedefs.h"
-void banner( const char *const version_num );
-void show_copyright( FILE *const fp );
-void show_warranty( FILE *const fp );
+void  banner( Real version_num );
+void show_copyright( FILE *fp );
+void show_warranty( FILE *fp );
 #endif

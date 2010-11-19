@@ -1,10 +1,11 @@
 /*
 
- $Id: read_parameter_library.h,v 1.11 2010/10/01 22:51:40 mp Exp $
+ $Id: read_parameter_library.h,v 1.3 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -30,21 +31,16 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "autocomm.h"
 
 void read_parameter_library(
-        const char *const FN_parameter_library,
-        const int outlev
+        char FN_parameter_library[MAX_CHARS],
+        int outlev
         );
 
 void setup_parameter_library(
-        int outlev,
-        const char * model_text,
-        const Unbound_Model unbound_model
+        int outlev
         );
 
-// The returned string is not supposed to be changed
-const char * report_parameter_library();
-
-void setup_distdepdiel( const int outlev, 
-                        EnergyTables *const ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables
+void setup_distdepdiel( int outlev, 
+                        EnergyTables *ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables
                       );
 
 

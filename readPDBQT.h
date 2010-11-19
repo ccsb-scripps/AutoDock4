@@ -1,10 +1,11 @@
 /*
 
- $Id: readPDBQT.h,v 1.16 2010/10/01 22:51:40 mp Exp $
+ $Id: readPDBQT.h,v 1.10.2.1 2010/11/19 20:09:28 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -39,63 +40,51 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "success.h"
 #include "openfile.h"
 #include "constants.h"
-#include "stack.h"
 
 void  readPDBQTLine( char line[LINE_LEN],
-                     int  *const ptr_serial,
+                     int  *ptr_serial,
                      Real crd[SPACE], 
-                     Real *const P_q,
+                     Real *P_q,
                      ParameterEntry *thisparm);
 
 Molecule readPDBQT( char  line[LINE_LEN],
-
               int   num_atm_maps,
-
-              int   *const P_natom,
+              int   *P_natom,
               Real crdpdb[MAX_ATOMS][NTRN],
               Real crdreo[MAX_ATOMS][NTRN],
               Real charge[MAX_ATOMS],
-              Boole *const P_B_haveCharges,
+              Boole *P_B_haveCharges,
               int   type[MAX_ATOMS],
               int   bondtype[MAX_ATOMS],
-              char  pdbaname[MAX_ATOMS][5],
-
-              char  *const pdbqFileName,
-              char  *const FN_flexres,
+              char  pdbaname[MAX_ATOMS][5],			  
+			  // added for multiple ligands  - Huameng 09/27/07
+			  int num_ligands,                   // number of actual ligands       
+			  int natom_in_ligand[MAX_LIGANDS],  // atom_number in each ligand
+              char FN_ligands[MAX_LIGANDS][MAX_CHARS],     // array of ligand pdbqt file names          
+              char FN_flexres[MAX_CHARS],        // flexible residue pdbqt file name
               Boole B_have_flexible_residues,
-
               char  atomstuff[MAX_ATOMS][MAX_CHARS],
-              int   *const P_n_heavy_atoms_in_ligand,
-
-              Boole *const P_B_constrain,
-              int   *const P_atomC1,
-              int   *const P_atomC2,
-              Real  *const P_sqlower,
-              Real  *const P_squpper,
-
-              int   *const P_ntor1,
-              int   *const P_ntor,
-              int   *const P_ntor_ligand,
+              int   Htype,
+              Boole *P_B_constrain,
+              int   *P_atomC1,
+              int   *P_atomC2,
+              Real *P_sqlower,
+              Real *P_squpper,
+              int   *P_ntor1,
+              int   *P_ntor,
+              int *P_ntor_ligand,
               int   tortree[MAX_TORS][MAX_ATOMS],
               Real vt[MAX_TORS][NTRN],
-
-              int   *const P_Nnb,
-              NonbondParam *const nonbondlist,
-
-              const Clock& jobStart,
-              const struct tms& tms_jobStart,
-              const char  hostnm[MAX_CHARS],
-
-              int   *const P_ntorsdof,
-              const int   outlev,
-
-              int   ignore_inter[MAX_ATOMS],
-              
-              const int   B_include_1_4_interactions,
-              
+              int   *P_Nnb,
+              NonbondParam *nonbondlist,
+              Clock jobStart,
+              struct tms tms_jobStart,
+              char  hostnm[MAX_CHARS],
+              int   *P_ntorsdof,
+              int   outlev,
+              int   ignore_inter[MAX_ATOMS],           
+              int   B_include_1_4_interactions,              
               Atom  atoms[MAX_ATOMS],
-              /* not const */ char  PDBQT_record[MAX_RECORDS][LINE_LEN],
-
-              /* not const */ int end_of_branch[MAX_TORS]
+              char  PDBQT_record[MAX_RECORDS][LINE_LEN]
               );
 #endif

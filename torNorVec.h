@@ -1,10 +1,11 @@
 /*
 
- $Id: torNorVec.h,v 1.7 2010/08/27 00:05:09 mp Exp $
+ $Id: torNorVec.h,v 1.5 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -31,16 +32,16 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "stop.h"
 #include "structs.h"
 
-void  torNorVec( const Real crdpdb[MAX_ATOMS][SPACE],
-                 const int   ntor,
-                 const int   tlist[MAX_TORS][MAX_ATOMS],
-                 /* not const */ Real vt[MAX_TORS][SPACE] );
+void  torNorVec( Real crdpdb[MAX_ATOMS][SPACE],
+                 int   ntor,
+                 int   tlist[MAX_TORS][MAX_ATOMS],
+                 Real vt[MAX_TORS][SPACE] );
 
-void update_torsion_vectors( const Real crdpdb[MAX_ATOMS][SPACE],
-                             const int ntor,
-                             const int  tlist[MAX_TORS][MAX_ATOMS],
-                             /* not const */ Real vt[MAX_TORS][SPACE],
-                             /* not const */ Molecule *ligand,
-                             const int debug );
+void update_torsion_vectors( Real crdpdb[MAX_ATOMS][SPACE],
+                             int ntor,
+                             int  tlist[MAX_TORS][MAX_ATOMS],
+                             Real vt[MAX_TORS][SPACE],
+                             Molecule *ligand,
+                             int debug );
 
 #endif

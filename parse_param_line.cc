@@ -1,10 +1,11 @@
 /*
 
- $Id: parse_param_line.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: parse_param_line.cc,v 1.3 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -36,12 +37,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern int debug;
 extern FILE *logFile;
 
-int parse_param_line( const char *const line)
+int parse_param_line( char line[LINE_LEN] )
 
 /******************************************************************************/
 /*      Name: parse_param_line                                                */
 /*  Function: Parse the docking parameter file line                           */
-/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
+/* Copyright: (C) 2005, TSRI                                                  */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Morris, The Scripps Research Institute                  */
 /*      Date: 08/03/05                                                        */
@@ -61,7 +62,7 @@ int parse_param_line( const char *const line)
 
     // tokentablesize should be set to the length of the tokentable
     // 
-    const int tokentablesize = 7;
+    const int tokentablesize = 6;
 
     const struct {
        char *lexeme;
@@ -71,12 +72,11 @@ int parse_param_line( const char *const line)
                       {"FE_coeff_estat", PAR_ESTAT}, // 3
                       {"FE_coeff_desolv", PAR_DESOLV}, // 4
                       {"FE_coeff_tors", PAR_TORS}, // 5
-                      {"FE_unbound_model", PAR_UNBOUND}, // 6
-                      {"atom_par", PAR_ATOM_PAR} // 7
-              }; // 7 tokens  // remember to set tokentablesize earlier
+                      {"atom_par", PAR_ATOM_PAR} // 6
+              }; // 6 tokens  // remember to set tokentablesize earlier
 
     c[0] = '\0';
-    for (j=0; ((line[j]!='\0')&&(line[j]!=' ')&&(line[j]!='\t')&&(line[j]!='\n')); j++) { //FIXME: check on j<LINE_LEN missing
+    for (j=0; ((line[j]!='\0')&&(line[j]!=' ')&&(line[j]!='\t')&&(line[j]!='\n')); j++) {
         /*  Ignore case */
         c[j] = (char)tolower((int)line[j]);
         if (debug > 0) {

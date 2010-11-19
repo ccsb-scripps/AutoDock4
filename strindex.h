@@ -1,10 +1,11 @@
 /*
 
- $Id: strindex.h,v 1.4 2009/06/10 00:09:09 rhuey Exp $
+ $Id: strindex.h,v 1.2 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -26,6 +27,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #ifndef STRINDEX
 #define STRINDEX
-int  strindex( const char  s[], 
-               const char  t[] );
+int  strindex( char  s[], 
+               char  t[] );
 #endif

@@ -1,10 +1,11 @@
 /*
 
- $Id: mkNewState.cc,v 1.14 2010/10/01 22:51:39 mp Exp $
+ $Id: mkNewState.cc,v 1.10.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -33,63 +34,64 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "mkNewState.h"
 
 
-void mkNewState( /* not const */ State *const now,
-                 const State *const last,        /* ...must be a normalized quaternion! */
-                 /* not const */ State *const change,
+void mkNewState( State *now,
+                 State *last,        /* ...must be a normalized quaternion! */
+                 State *change,
 
-                const Real vt[MAX_TORS][NTRN],
-                const int   tlist[MAX_TORS][MAX_ATOMS],
-                const int   ntor,
-                /* not const */ Real crd[MAX_ATOMS][NTRN],
-                const Real crdpdb[MAX_ATOMS][NTRN],
-                const int   natom,
-                ConstReal trnStep,
-                ConstReal qtwStep,
-                ConstReal torStep,
-                const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-                const int N_con[MAX_TORS])
+                Real vt[MAX_TORS][NTRN],
+                int   tlist[MAX_TORS][MAX_ATOMS],
+                int   ntor,
+                Real crd[MAX_ATOMS][NTRN],
+                Real crdpdb[MAX_ATOMS][NTRN],
+                int   natom,
+                Real trnStep,
+                Real qtwStep,
+                Real torStep,
+                Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                int N_con[MAX_TORS])
     // Create a new state, based on the current state
 {
     register int i;
     double t;
     int I_ranCon;
     Real a, b;
-
-    /*
-    ** Translation
-    */
-    now->T.x = last->T.x + (change->T.x = random_pm( trnStep ));
-    now->T.y = last->T.y + (change->T.y = random_pm( trnStep ));
-    now->T.z = last->T.z + (change->T.z = random_pm( trnStep ));
-
-    /*
-    ** Quaternion angular displacement
-    */
-    if (qtwStep > APPROX_ZERO) {
-        /*
-        // (This code probably does *not* produce a uniformly distributed quaternion)
-        change->Q.nx  = Randpm1; 
-        change->Q.ny  = Randpm1; 
-        change->Q.nz  = Randpm1; 
-        change->Q.ang = random_pm( qtwStep );
-        mkUnitQuat( &(change->Q) );
-        */
-
-        /*
-        **  This should produce a uniformly distributed quaternion, according to
-        **  Shoemake, Graphics Gems III.6, pp.124-132, "Uniform Random Rotations",
-        **  published by Academic Press, Inc., (1992)
-        */
-        change->Q = uniformQuat();
-
-        /*
-        **  Apply random change, to Last Quaternion
-        */
-        qmultiply( &(now->Q), &(last->Q), &(change->Q) );
-        // TODO 5/1/2009: should call slerp to scale down by qtwStep,mp+rh
-
-    }
-
+    
+	// Handle multi-ligand -Huameng 11/08/2007
+    for(i = 0; i < last->nlig; i++) { 
+	    /*
+	    ** Translation
+	    */
+	    now->T[i].x = last->T[i].x + (change->T[i].x = random_pm( trnStep ));
+	    now->T[i].y = last->T[i].y + (change->T[i].y = random_pm( trnStep ));
+	    now->T[i].z = last->T[i].z + (change->T[i].z = random_pm( trnStep ));
+	
+	    /*
+	    ** Quaternion angular displacement
+	    */
+	    if (qtwStep > APPROX_ZERO) {
+	        /*
+	        // (This code probably does *not* produce a uniformly distributed quaternion)
+	        change->Q.nx  = Randpm1; 
+	        change->Q.ny  = Randpm1; 
+	        change->Q.nz  = Randpm1; 
+	        change->Q.ang = random_pm( qtwStep );
+	        mkUnitQuat( &(change->Q) );
+	        */
+	
+	        /*
+	        **  This should produce a uniformly distributed quaternion, according to
+	        **  Shoemake, Graphics Gems III.6, pp.124-132, "Uniform Random Rotations",
+	        **  published by Academic Press, Inc., (1992)
+	        */
+	        change->Q[i] = uniformQuat();
+	
+	        /*
+	        **  Apply random change, to Last Quaternion
+	        */
+	        qmultiply( &(now->Q[i]), &(last->Q[i]), &(change->Q[i]) );
+	    }
+    } //end for nlig
+    
     for (i=0; i<ntor; i++) {
         if (N_con[i] > 0) {
             if (N_con[i] > 1) {

@@ -1,10 +1,11 @@
 /*
 
- $Id: atom_parameter_manager.cc,v 1.5 2010/10/01 22:51:39 mp Exp $
+ $Id: atom_parameter_manager.cc,v 1.3 2007/05/18 09:40:30 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Michael Pique, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson,  
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -45,7 +46,7 @@ hash(const char key[]) {
 }
 
 void 
-apm_enter(const char key[], const PE& value) {
+apm_enter(const char key[], PE value) {
     if (dictionary[hash(key)] == NULL) {
         dictionary[hash(key)] = (PE *) calloc(1, sizeof(PE));
     }

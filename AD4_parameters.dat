@@ -1,4 +1,4 @@
-# $Id: AD4_parameters.dat,v 1.18 2009/03/25 23:50:14 rhuey Exp $
+# $Id: AD4_parameters.dat,v 1.14 2007/04/27 06:01:47 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -23,19 +23,7 @@
 
 # AutoDock Linear Free Energy Model Coefficients and Energetic Parameters
 #                        Version 1.0
-#                     $Revision: 1.18 $
-
-# FE_unbound_model is used to specify how the internal energy of the
-# ligand should be treated when estimating the free energy of binding,
-# and can be set to one of the following strings:
-#   unbound_same_as_bound, extended, or compact
-# unbound_same_as_bound -- this assumes the internal energy of the ligand is the
-#                          same before and after binding.
-# extended -- this assumes the internal energy of the ligand is that of an 
-#             extended conformation when unbound.
-# compact -- this assumes the internal energy of the ligand is that of a 
-#            compact conformation when unbound.
-#FE_unbound_model extended
+#                     $Revision: 1.14 $
 
 # AutoDock 4 free energy coefficients with respect to original (AD2) energetic parameters
 #
@@ -111,8 +99,4 @@ atom_par ZN     1.48  0.550   1.7000  -0.00110  0.0  0.0  0  -1  -1  4	# Non H-b
 atom_par Br     4.33  0.389  42.5661  -0.00110  0.0  0.0  0  -1  -1  4	# Non H-bonding Bromine
 atom_par BR     4.33  0.389  42.5661  -0.00110  0.0  0.0  0  -1  -1  4	# Non H-bonding Bromine
 atom_par I      4.72  0.550  55.0585  -0.00110  0.0  0.0  0  -1  -1  4	# Non H-bonding Iodine
-atom_par Z      4.00  0.150  33.5103  -0.00143  0.0  0.0  0  -1  -1  0  # Non H-bonding covalent map
-atom_par G      4.00  0.150  33.5103  -0.00143  0.0  0.0  0  -1  -1  0	# Ring closure Glue Aliphatic Carbon  # SF
-atom_par GA     4.00  0.150  33.5103  -0.00052  0.0  0.0  0  -1  -1  0	# Ring closure Glue Aromatic Carbon   # SF
-atom_par J      4.00  0.150  33.5103  -0.00143  0.0  0.0  0  -1  -1  0	# Ring closure Glue Aliphatic Carbon  # SF
-atom_par Q      4.00  0.150  33.5103  -0.00143  0.0  0.0  0  -1  -1  0	# Ring closure Glue Aliphatic Carbon  # SF
+

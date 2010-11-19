@@ -1,10 +1,11 @@
 /*
 
- $Id: weedbonds.h,v 1.11 2010/08/27 00:05:09 mp Exp $
+ $Id: weedbonds.h,v 1.9.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -31,16 +32,18 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "stop.h"
 #include "structs.h"
 
-void  weedbonds( const int   natom,
-                 const char  pdbaname[MAX_ATOMS][5],
-                 const int   piece[MAX_ATOMS],
-                 const int   ntor,
-                 const int   tlist[MAX_TORS][MAX_ATOMS],
-       /* not const */ int   nbmatrix_binary[MAX_ATOMS][MAX_ATOMS],
-       /* not const */ int   *P_Nnb,
-       /* not const */ NonbondParam *const nonbondlist,
-                 const int   outlev,
-		 const int   type[MAX_ATOMS]);
+void  weedbonds( int   natom,
+                 char  pdbaname[MAX_ATOMS][5],
+                 int   piece[MAX_ATOMS],
+                 int   ntor,
+                 int   tlist[MAX_TORS][MAX_ATOMS],
+                 int   nbmatrix_binary[MAX_ATOMS][MAX_ATOMS],
+                 int   *P_Nnb,
+                 NonbondParam *nonbondlist,
+                 int   outlev,
+				 int   type[MAX_ATOMS],
+				 int   natom_in_ligand[MAX_LIGANDS],
+				 int   nligand);
 #endif
 
 
@@ -52,15 +55,15 @@ void  weedbonds( const int   natom,
 #include "structs.h"
 
 void print_nonbonds(
-                const int natom,
-                const char pdbaname[MAX_ATOMS][5],
-                const int piece[MAX_ATOMS],
-                const int ntor,
-                const int tlist[MAX_TORS][MAX_ATOMS],
-                /* not const */ int nbmatrix[MAX_ATOMS][MAX_ATOMS],
-                const int Nnb,
-                const NonbondParam *nonbondlist,
-                const int outlev,
-                const int type[MAX_ATOMS]);
+                int natom,
+                char pdbaname[MAX_ATOMS][5],
+                int piece[MAX_ATOMS],
+                int ntor,
+                int tlist[MAX_TORS][MAX_ATOMS],
+                int nbmatrix[MAX_ATOMS][MAX_ATOMS],
+                int Nnb,
+                NonbondParam *nonbondlist,
+                int outlev,
+                int type[MAX_ATOMS]);
 #endif
 

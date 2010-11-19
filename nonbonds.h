@@ -1,10 +1,11 @@
 /*
 
- $Id: nonbonds.h,v 1.11 2010/08/27 00:05:07 mp Exp $
+ $Id: nonbonds.h,v 1.7 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -27,32 +28,28 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef NONBONDS
 #define NONBONDS
 #include "constants.h"
-int
-nonbonds( const Real crdpdb[MAX_ATOMS][SPACE],  
-	/* not const */  int nbmatrix[MAX_ATOMS][MAX_ATOMS],
-	const int natom, 
-	const int bond_index[MAX_ATOMS],
-	const int B_include_1_4_interactions,
-	const int nbonds[MAX_ATOMS], // per atom
-	const int bonded[MAX_ATOMS][MAX_NBONDS]);
+void  nonbonds( const Real crdpdb[MAX_ATOMS][SPACE],  
+			    int         nbmatrix[MAX_ATOMS][MAX_ATOMS],
+			    const int   natom, 
+			    const int   bond_index[MAX_ATOMS],
+                int         B_include_1_4_interactions,
+                int         bonded[MAX_ATOMS][6]);
 #endif
 
 #ifndef GETBONDS
 #define GETBONDS
 #include "constants.h"
-int
-getbonds(const Real crdpdb[MAX_ATOMS][SPACE], 
+void getbonds(const Real crdpdb[MAX_ATOMS][SPACE], 
               const int from_atom,
               const int to_atom,
-	      const int bond_index[MAX_ATOMS],
-	      /* not const */ int nbonds[MAX_ATOMS], // per atom
-              /* not const */ int bonded[MAX_ATOMS][MAX_NBONDS]);
+			  const int bond_index[MAX_ATOMS],
+              int bonded[MAX_ATOMS][6]);
 #endif
 
 #ifndef PRINTBONDS
 #define PRINTBONDS
 #include "constants.h"
-void printbonds(const int natom, const int nbonds[MAX_ATOMS], const int bonded[MAX_ATOMS][MAX_NBONDS], const char *message, const int B_print_all_bonds);
+void printbonds(const int natom, const int bonded[MAX_ATOMS][6], const char *message, const int B_print_all_bonds);
 #endif
 
 #ifndef PRINT14

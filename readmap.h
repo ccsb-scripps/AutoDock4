@@ -1,10 +1,11 @@
 /*
 
- $Id: readmap.h,v 1.13 2010/10/01 22:51:40 mp Exp $
+ $Id: readmap.h,v 1.7 2007/04/27 06:01:51 garrett Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -37,7 +38,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "check_header_float.h"
 #include "check_header_int.h"
 #include "timesys.h"
-Real   mapc2f( const char C_mapValue ) ;
+Real   mapc2f( char C_mapValue );
 #endif
 
 #ifndef READMAP
@@ -55,19 +56,20 @@ Real   mapc2f( const char C_mapValue ) ;
 #include "structs.h"
 
 Statistics readmap( char line[LINE_LEN],
-             const int outlev,
+             int outlev,
 
-             const Clock& jobStart,
-             const struct tms& tmsJobStart,
+             Clock jobStart,
+             struct tms tmsJobStart,
+        
+             Boole B_charMap,
 
-             const Boole B_charMap,
-
-/* not const */ Boole *const P_B_HaveMap, 
-             const int num_maps, 
+             Boole *P_B_HaveMap, 
+             int num_maps, 
              
-             const GridMapSetInfo *const info,
-             #include "map_declare.h"
-             const char map_type
+             GridMapSetInfo *info,
+             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+             // double *maps 
+             char map_type
              );
 
 #endif

@@ -1,10 +1,11 @@
 /*
 
- $Id: torsion.cc,v 1.9 2010/10/01 22:51:40 mp Exp $
+ $Id: torsion.cc,v 1.6 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -34,8 +35,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "torsion.h"
 
 
-void torsion( const State& now,
-    /* not const */ Real crd[MAX_ATOMS][SPACE],
+void torsion( const State now,
+              Real crd[MAX_ATOMS][SPACE],
               const Real v[MAX_TORS][SPACE],
               const int tlist[MAX_TORS][MAX_ATOMS],
               const int ntor )
@@ -43,7 +44,7 @@ void torsion( const State& now,
 /******************************************************************************/
 /*      Name: torsion                                                         */
 /*  Function: Apply the Torsion rotation(s) to the Small Molecule.            */
-/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
+/* Copyright: (C) TSRI                                                        */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Morris, The Scripps Research Institute                  */
 /*      Date: 03/14/94                                                        */

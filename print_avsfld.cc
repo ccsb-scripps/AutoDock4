@@ -1,10 +1,11 @@
 /*
 
- $Id: print_avsfld.cc,v 1.7 2010/08/27 00:05:08 mp Exp $
+ $Id: print_avsfld.cc,v 1.4 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -33,14 +34,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "autocomm.h"
 
 
-void print_avsfld( FILE *const logFile,
-		   const int veclen,
-		   const int natom,
-		   const int nframe,
-		   const int offset[VECLENMAX],
-		   const int stride,
-		   const char *const label,
-		   const char *const filename )
+void print_avsfld( FILE *logFile,
+		   int veclen,
+		   int natom,
+		   int nframe,
+		   int offset[VECLENMAX],
+		   int stride,
+		   char label[MAX_CHARS],
+		   char filename[MAX_CHARS] )
 {
     int i;
 

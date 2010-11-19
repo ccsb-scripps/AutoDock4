@@ -1,10 +1,11 @@
 /*
 
- $Id: constants.h,v 1.29 2010/06/19 02:51:24 mp Exp $
+ $Id: constants.h,v 1.18.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -33,7 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  *      Name: constants.h                                                     *
  *  Function: Automated Docking of Small Molecule to Macromolecule            *
  *              Header file for Autodock modules.                             *
- *Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ * Copyright: (C) 1994-2004, TSRI											  *
  *----------------------------------------------------------------------------*
  *    Author: Garrett Matthew Morris*                                         *
  *                                                                            *
@@ -82,8 +83,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define LOWER 0               /* Lower limit of torsion constraint. */
 #define UPPER 1               /* Upper limit of torsion constraint. */
 
-#define NLIG         4        /* Max. num. of ligands to be docked */
+//#define NLIG       4        /* Max. num. of ligands to be docked */
+#define MAX_LIGANDS  20       /* Max. num. of ligands to be docked */
 #define NLIGTOR      32       /* Max. num. of torsions in each ligand */
+#define CONVERGY_E_DIFF_THRESHOLD 0.1 /*threshhold of energy delta for convergy */
 
 #define NRES         32       /* Max. num. of flexible residue */
 #define NRESTOR      5        /* Max. num. of torsions in a residue */
@@ -101,7 +104,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #else
 #define MAX_RUNS     256      /* Maximum number of runs. */
 #define MAX_ATOMS    2048     /* Maximum number of atoms in Small Molecule. */
-#define MAX_NBONDS    16     /* Maximum number of bonds per atom, in readPDBQT  */
 #define MAX_RECORDS  2048     /* Maximum number of PDBQ records =~1.5*MAX_ATOMS */
 #define MAX_NONBONDS 524288 /* 1048576   Maximum number of non-bonds in Small Molecule.*/
 #endif
@@ -226,10 +228,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #define NROWS 16
 
-/* Statistics output frequency in GAs */
+/* Output frequency in GAs */
  
-#define OUTLEV0_GENS 0   /* Never output based on number of generations */
-#define OUTLEV1_GENS 100 /* output every 100 generations */
+#define OUTLEV0_GENS 30000 /* output every 30,000 generations */
+#define OUTLEV1_GENS 50 /* output every 100 generations */
 #define OUTLEV2_GENS 1 /* output every generation */
 
 #endif  /* CONSTANTS */
@@ -370,7 +372,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /*
  * Uncomment next line, and re-make executable, for general debugging...
  */
-/* #define DEBUG        1         / * Switch on debugging output */
+//#define DEBUG        1    	 /* Switch on debugging output */   
 
 #ifdef DEBUG
 
@@ -428,6 +430,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  * "DOCKED: "  gives DOCKED prefix.
  * Note: no new line at end of some of these formats:
  */
+#define FORMAT_PDBQ_ATOM_RESSTR         "%sATOM  %5d  %.13s    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f"
+#define FORMAT_PDBQ_ATOM_RESNUM         "%sATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f"
+#define FORMAT_PDBQ_ATOM_RANKRUN_STR      "ATOM  %5d  %.13s    %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f\n"
+#define FORMAT_PDBQ_ATOM_RUN_NUM          "ATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f\n"
 
 /* 
  * PDBQT format
@@ -455,10 +461,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 // |     |     |   ||   ||   |   |       |       |       |     |         |      |                      
 // 65432154321 43211321 143211   876543218765432187654321654321654321    654321 21
 // ATOM     10  HO4 PGP     1      22.065  29.222  38.002  1.00  0.00     0.210 HD
-#define FORMAT_PDBQT_ATOM_RESSTR         "%sATOM  %5d %.13s     %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
-#define FORMAT_PDBQT_ATOM_RESNUM         "%sATOM  %5d %.8s%5d     %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
-#define FORMAT_PDBQT_ATOM_RANKRUN_STR      "ATOM  %5d %.13s     %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f %-2s\n"
-#define FORMAT_PDBQT_ATOM_RUN_NUM          "ATOM  %5d %.8s%5d     %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f %-2s\n"
+#define FORMAT_PDBQT_ATOM_RESSTR         "%sATOM  %5d  %.13s    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
+#define FORMAT_PDBQT_ATOM_RESNUM         "%sATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
+#define FORMAT_PDBQT_ATOM_RANKRUN_STR      "ATOM  %5d  %.13s    %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f %-2s\n"
+#define FORMAT_PDBQT_ATOM_RUN_NUM          "ATOM  %5d  %.8s%5d    %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f %-2s\n"
                                                                   
 #endif /* _PDB_FORMATS */
 
@@ -522,20 +528,11 @@ const Real TK = 298.15;      // Room temperature, in K
 #define UNBOUND_CALCULATION TRUE
 #define BOUND_CALCULATION FALSE
 
-#ifndef _UNBOUND_MODEL
-#define _UNBOUND_MODEL
 /*
- * Set the options for unbound model
- */
-enum Unbound_Model { Unbound_Default=0, Unbound_Same_As_Bound=1, Extended=2, Compact=3, User=4 };
-#endif
-
-/*
-Constants used for the PSO Work
- */
+* Constants used for the (Particle Swarms Optimization) PSO Work
+*/
 #define D_max      128   // Max number of dimensions of the search space
-#define S_max 	  1024	 // Max swarm size
-#define R_max 	  1024   // Max number of runs
+#define S_max      1024  // Max swarm size
 /*----------------------------------------------------------------------------* 
  * End of file                                                                * 
  *----------------------------------------------------------------------------*/

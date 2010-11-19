@@ -1,10 +1,10 @@
 /*
 
- $Id: support.h,v 1.21 2010/10/01 22:51:40 mp Exp $
+ $Id: support.h,v 1.10.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Scott Halliday, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, Richard Belew
  All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
@@ -38,94 +38,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 ** $Log: support.h,v $
-** Revision 1.21  2010/10/01 22:51:40  mp
-** Applied patches 2010-09-29 from Steffan Moeller "patches_introducing_references"
-**
-** Revision 1.20  2010/08/27 00:05:08  mp
-** Integration of Steffan Möller <steffen_moeller@gmx.de> "const" contribution
-** from his patch files 4 August 2010, as adapted slightly by Michael Pique
-**
-** Note: patches applied so far only to AutoDock, not AutoGrid.
-**
-**  Modified Files:
-**  	alea.cc alea.h analysis.cc analysis.h banner.cc banner.h
-**  	calculateEnergies.cc calculateEnergies.h call_cpso.cc
-**  	call_glss.cc changeState.cc changeState.h
-**  	check_header_float.cc check_header_float.h check_header_int.cc
-**  	check_header_int.h check_header_line.cc check_header_line.h
-**  	clmode.cc clmode.h cluster_analysis.cc cluster_analysis.h
-**  	cnv_state_to_coords.cc cnv_state_to_coords.h coliny.cc
-**  	coliny.h com.cc configure.ac dimLibrary.cc dimLibrary.h
-**  	distdepdiel.cc distdepdiel.h eintcal.cc eintcal.h
-**  	eintcalPrint.h eval.cc eval.h gencau.cc getInitialState.cc
-**  	getInitialState.h get_atom_type.cc getpdbcrds.cc getpdbcrds.h
-**  	getrms.cc getrms.h gs.cc gs.h hybrids.h initautodock.cc
-**  	initautodock.h input_state.cc input_state.h intnbtable.cc
-**  	intnbtable.h investigate.cc investigate.h linpack.cc ls.cc
-**  	ls.h main.cc main.h minmeanmax.cc mkNewState.cc mkNewState.h
-**  	mkTorTree.cc mkTorTree.h nbe.cc nbe.h nonbonds.cc nonbonds.h
-**  	openfile.cc openfile.h output_state.cc output_state.h
-**  	parse_PDBQT_line.cc parse_PDBQT_line.h parse_dpf_line.cc
-**  	parse_dpf_line.h parse_param_line.cc parse_param_line.h
-**  	parse_trj_line.cc parse_trj_line.h parsetypes.cc parsetypes.h
-**  	prClusterHist.cc prClusterHist.h prInitialState.cc
-**  	prInitialState.h prTorConList.cc prTorConList.h
-**  	printEnergies.cc printEnergies.h print_2x.cc print_2x.h
-**  	print_atomic_energies.cc print_atomic_energies.h
-**  	print_avsfld.cc print_avsfld.h print_rem.cc print_rem.h
-**  	printdate.cc printdate.h printhms.cc printhms.h qmultiply.cc
-**  	qmultiply.h qtransform.cc qtransform.h quicksort.cc
-**  	quicksort.h ranlib.cc ranlib.h readGridMap.cc readPDBQT.cc
-**  	readPDBQT.h read_parameter_library.cc read_parameter_library.h
-**  	readfield.cc readfield.h readmap.cc readmap.h rep.cc rep.h
-**  	setflags.cc setflags.h simanneal.cc simanneal.h sort_enrg.cc
-**  	sort_enrg.h stack.cc stack.h stateLibrary.cc stateLibrary.h
-**  	stop.cc stop.h success.cc success.h support.cc support.h
-**  	swap.cc swap.h timesys.cc timesys.h torNorVec.cc torNorVec.h
-**  	torsion.cc torsion.h trilinterp.cc trilinterp.h usage.cc
-**  	usage.h warn_bad_file.cc warn_bad_file.h weedbonds.cc
-**  	weedbonds.h writePDBQT.cc writePDBQT.h
-**  ----------------------------------------------------------------------
-**
-** Revision 1.19  2010/05/19 19:47:13  mp
-** Implemented number-of-evaluations trigger, set by "output_population_statistics"
-** DPF keyword, most of the logic is in call_glss.cc
-**  Modified Files:	call_glss.cc configure.ac ls.cc ls.h main.cc support.h
-**
-** Revision 1.18  2010/05/14 21:25:51  mp
-** Added printing of "Detailed state:" and "QState:".
-** Added DPF keyword "output_population_statistics" to control the detailed
-**   "Population at Generation:" logging, with partial implementation,
-**   triggered by number of generations only, not number of evaluations (yet).
-**  Modified Files:
-**  	call_glss.cc call_gs.cc configure.ac dpftoken.h gs.cc gs.h
-**  	hybrids.h main.cc parse_dpf_line.cc stateLibrary.cc structs.h
-**  	support.cc support.h writePDBQT.cc
-**
-** Revision 1.17  2010/03/22 20:40:56  mp
-** Added reporting state vector for best individual to "Population at Generation:"
-** line as underscore-separated string
-**  Modified Files: call_glss.cc configure.ac stateLibrary.cc support.cc support.h
-**
-** Revision 1.16  2010/01/08 20:13:47  mp
-** Extended population generations statistics, turned on if outlev>1.
-**  Modified Files: RELEASENOTES call_glss.cc support.cc support.h
-**
-** Revision 1.15  2009/12/12 18:44:20  mp
-** Added "Population at Generation:" statistics.
-**  Modified Files: call_glss.cc configure.ac gs.cc support.cc support.h
-**
-** Revision 1.14  2009/05/08 23:02:18  rhuey
-** Updated copyright notice in 188 source files
-**
-** Revision 1.13  2009/05/08 21:46:11  rhuey
-** removed debugging comments and print-out
-**
-** Revision 1.12  2009/04/28 21:12:19  rhuey
-** Changed so now Individual does mapping of its genotype into its phenotype and inverse_mapping of its phenotype into its genotype; in both cases returns a reference to itself; added a check for self-assignment
-**
-** Revision 1.11  2008/06/09 22:27:51  garrett
-** Added "end_of_branch[MAX_TORS]" to the Population class, the logic being that every Individual in the Population is the same, so rather than add the overhead to all the Individuals, we added it to the Population.  Also introducted two new methods, set_eob() and get_eob(), to set the end_of_branch[] array, and get values given a key torsion number.  These changes are to support the new "Branch Crossover mode".
+** Revision 1.10.2.1  2010/11/19 20:09:29  rhuey
+** files from Huameng Li
 **
 ** Revision 1.10  2007/04/27 06:01:51  garrett
 ** Added the files necessary for GNU Autotools and the "dot-slash-configure dance"...
@@ -240,30 +154,29 @@ class Genotype
 
    public:
       Genotype(void);
-#if 0
-	# Steffen thinks this is redundant with the const variant
-	# http://en.wikipedia.org/wiki/Copy_constructor
       Genotype(Genotype &); /* copy constructor */
-#endif
-      Genotype(const Genotype &);
-      Genotype(unsigned int, Representation **const); /* creates a genotype from the
+      Genotype(Genotype const &);
+      Genotype(unsigned int, Representation **); /* creates a genotype from the
 					     representation & total # vectors */
-					/* Steffen's comment - representation is apparently unused */
       ~Genotype(void); /* destructor */
       Genotype &operator=(const Genotype &);
-      unsigned int num_vectors(void) const; /* e.g. "real,bit,bit,int" would = 4 */
-      unsigned int num_genes(void) const; /* returns number_of_genes (see above) */
-      RepType gtype(int) const; /* returns the type (real,bit,int) for 
+      unsigned int num_vectors(void); /* e.g. "real,bit,bit,int" would = 4 */
+      unsigned int num_genes(void); /* returns number_of_genes (see above) */
+      RepType gtype(int); /* returns the type (real,bit,int) for 
 							    a particular gene */
-      const Element gread(const int) const;
-      const Representation *vread(int) const;
-      void write(const Element&, const int); /* not const */
-      void write(const unsigned char&, const int); /* not const */
-      void write(const FourByteLong&, const int); /* not const */
-      void write(const double&, const int); /* not const */
-      void write(const Representation &, const int); /* not const */
-      Quat readQuat() const;
-      void writeQuat( const Quat& q ); /* not const */
+      const Element gread(int);
+      const Representation *vread(int);
+      void write(Element, int);
+      void write(unsigned char, int);
+      void write(FourByteLong, int);
+      void write(double, int);
+      void write(const Representation &, int);
+      //handle multiple ligands -Huameng 11/18/2007 
+      //Quat readQuat();
+      //void writeQuat( Quat q );
+      Quat readQuat(int ilig);  //the Quat for ith ligand
+      void writeQuat( Quat q, int ilig );  //the Quat for ith ligand
+      
 };
 
 //  Should Phenotype automatically evaluate itself upon construction?
@@ -281,24 +194,26 @@ class Phenotype
    public:
       Phenotype(void);
       Phenotype(const Phenotype &);
-      //Phenotype(const Genotype &);//to do
-      Phenotype(const unsigned int, Representation **const);
+      Phenotype(unsigned int, Representation **);
       ~Phenotype(void);
       Phenotype &operator=(const Phenotype &);
-      RepType gtype(int) const;
-      const Element gread(const int) const;
-      const Representation *vread(int) const;
-      void write(const Element&, const int); /* not const */
-      void write(const unsigned char&, const int); /* not const */
-      void write(const FourByteLong& value, const int gene_number); /* not const */
-      void write(const double& value, const int gene_number); /* not const */
-      void write(const Representation &, const int);
-      double evaluate(const EvalMode&) /* not const */ ;  //  This should return evaluation if that's the right answer, and it should evaluate otherwise.
-      State make_state(int) const;
-      unsigned int num_dimensions(void) const; // Steffen : implementation not found
-      unsigned int num_pts(void) const;
-      Quat readQuat() const;
-      void writeQuat( const Quat& q ); /* not  const */
+      RepType gtype(int);
+      const Element gread(int);
+      const Representation *vread(int);
+      void write(Element, int);
+      void write(unsigned char, int);
+      void write(FourByteLong, int);
+      void write(double, int);
+      void write(const Representation &, int);
+      double evaluate(EvalMode);  //  This should return evaluation if that's the right answer, and it should evaluate otherwise.
+      State make_state(int);
+      unsigned int num_dimensions(void);
+      unsigned int num_pts(void);
+      // handle multiple ligands -Huameng 11/18/2007 
+      //Quat readQuat();
+      //void writeQuat( Quat q );
+      Quat readQuat(int ilig);  //the Quat for ith ligand
+      void writeQuat( Quat q, int ilig );           
 };
 
 //  This should be an encapsulated class within Population
@@ -315,18 +230,20 @@ class Individual
       Individual(Individual &); /* copy constructor */
       Individual(Individual const &);
       Individual(Genotype &, Phenotype &);
+      //added for PSO -Huameng
+      Individual(Phenotype &);
+      
       ~Individual(void); /* destructor */
       Individual &operator=(const Individual &); /* assignment function for
 						    individuals */
-      Individual &mapping(void);         //updates phenotype from current genotype values 
-      Individual &inverse_mapping(void); //updates genotype from current phenotype values 
-      //Phenotype mapping(void); /* takes the genotype and converts it into a phenotype.  */
-      //Genotype inverse_mapping(void);  // Scott should do: Also copy Phenotype's value
-      double value(EvalMode); /* not const */ /* evaluation of the individual gives its value */ /* not const */
-      State state(const int) const; /* state variables in AutoDock */
-      void  getMol(Molecule * /* not const */) const; /* converts phenotype to mol's state and returns this individual's mol data */
-      void printIndividualsState(FILE *const, const int, const int) const; /* print out the state of this individual */
-      void incrementAge(); /* not const */ /* make individual grow 1 generation older */
+      Phenotype mapping(void); /* takes the genotype and converts it into a
+				  phenotype.  */
+      Genotype inverse_mapping(void);  // Scott should do: Also copy Phenotype's value
+      double value(EvalMode); /* evaluation of the individual gives its value */
+      State state(int); /* state variables in AutoDock */
+      void  getMol(Molecule *); /* converts phenotype to mol's state and returns this individual's mol data */
+      void printIndividualsState(FILE *, int, int); /* print out the state of this individual */
+      void incrementAge(); /* make individual grow 1 generation older */
       int serial; // serial number of this individual
 };
 
@@ -337,34 +254,24 @@ class Population
       int lhb;  //  These keep track of the lower & upper heap bounds
       int size; /* the number of individuals in the population */
       Individual *heap; /* a heap of individuals -- special binary tree */
-      void swap(Individual &, Individual &) const; /* for maintaining the heap order*/
-      void SiftUp(void); /* not const */ /* for maintaining the heap order*/
-      void SiftDown(void); /* not const */ /* for maintaining the heap order*/
-      int end_of_branch[MAX_TORS]; // For Branch Crossover Mode
+      void swap(Individual &, Individual &); /* for maintaining the heap order*/
+      void SiftUp(void); /* for maintaining the heap order*/
+      void SiftDown(void); /* for maintaining the heap order*/
 
    public:
       Population(void);
       Population(int); /* create a pop. with this many individuals */
       Population(int, Individual *); /* takes an array of ind's and turns into pop. */
-      Population(const Population &); /* copy constructor */
+      Population(Population &); /* copy constructor */
       ~Population(void); /* destructor */
-      Individual &operator[](const int) const;  /* for accessing a particular indiv.in pop*/
+      Individual &operator[](int);  /* for accessing a particular indiv.in pop*/
       Population &operator=(const Population &);
-      unsigned int num_individuals(void) const; /* returns the size of the pop. */
-      void msort(const int); /* not const */ /* sorts the first m individuals using heap properties */
+      unsigned int num_individuals(void); /* returns the size of the pop. */
+      void msort(int); /* sorts the first m individuals using heap properties */
       // void print(ostream &, int); /* prints top int energies */
-      void print(FILE * const,  const int) const; /* like above */
-      // best_e and best_i added M Pique 2010-03 strictly for statistics in log
-      //  see printPopulationStatistics (TODO - put in better place)
-      double best_e; // best energy
-      int best_i; // index in heap[] of indiv with best energy
-      int printPopulationStatistics(FILE * const, const int, const char [])  /* not const changed in support.cc hack TODO */; /* prints best, worse, mean, etc energies */
-      int printPopulationStatisticsVerbose(FILE *const, const unsigned int, const long int, const int, const char [])  /* not const changed in support.cc hack TODO */; /* print with generations & #evals */
-      unsigned long nevals_last_pop_stats; // when pop stats were last printed, see call_glss.cc
-      void printPopulationAsStates(FILE *, int, int) const; /*prints energies,states of top energies */
-      void printPopulationAsCoordsEnergies(FILE *const, const int, const int) const; /*prints energies,states of top energies */
-      void set_eob(int init_end_of_branch[MAX_TORS]); // For Branch Crossover Mode
-      int get_eob(int init_tor) const; // For Branch Crossover Mode
+      void print(FILE *, int); /* like above */
+      void printPopulationAsStates(FILE *, int, int); /*prints energies,states of top energies */
+      void printPopulationAsCoordsEnergies(FILE *, int, int); /*prints energies,states of top energies */
 };
 
 /**************************************************************************
@@ -381,27 +288,27 @@ inline Genotype::Genotype(void)
    lookup = (Lookup *)NULL;
 }
 
-inline unsigned int Genotype::num_genes(void) const
+inline unsigned int Genotype::num_genes(void)
 {
    return(number_of_genes);
 }
 
-inline unsigned int Genotype::num_vectors(void) const
+inline unsigned int Genotype::num_vectors(void)
 {
    return(number_of_vectors);
 }
 
-inline RepType Genotype::gtype(int gene_number) const
+inline RepType Genotype::gtype(int gene_number)
 {
    return(rep_vector[lookup[gene_number].vector]->type());
 }
 
-inline const Element Genotype::gread(const int gene_number) const
+inline const Element Genotype::gread(int gene_number)
 {
    return(rep_vector[lookup[gene_number].vector]->gene(lookup[gene_number].index));
 }
 
-inline const Representation *Genotype::vread(int vector_number) const
+inline const Representation *Genotype::vread(int vector_number)
 {
    return(rep_vector[vector_number]);
 }
@@ -417,22 +324,27 @@ inline Phenotype::Phenotype(void)
    evalflag = 0;
 }
 
-inline RepType Phenotype::gtype(int gene_number) const
+inline RepType Phenotype::gtype(int gene_number)
 {
    return(value_vector[lookup[gene_number].vector]->type());
 }
 
-inline const Element Phenotype::gread(const int gene_number) const
+inline const Element Phenotype::gread(int gene_number)
 {
    return(value_vector[lookup[gene_number].vector]->gene(lookup[gene_number].index));
 }
 
-inline const Representation *Phenotype::vread(int vector_number) const
+inline const Representation *Phenotype::vread(int vector_number)
 {
    return(value_vector[vector_number]);
 }
 
-inline unsigned int Phenotype::num_pts(void) const
+inline unsigned int Phenotype::num_dimensions()
+{
+	return(number_of_dimensions);
+}
+
+inline unsigned int Phenotype::num_pts(void)
 {
    return(number_of_points);
 }
@@ -443,13 +355,11 @@ inline Individual::Individual(void)
    age = 0L;
 }
 
-
 inline Individual::Individual(Individual &original)
 : genotyp(original.genotyp), phenotyp(original.phenotyp)
 {
 }
 
-// caution, does not do mapping
 inline Individual::Individual(Genotype &init_genotyp, Phenotype &init_phenotyp)
 : genotyp(init_genotyp), phenotyp(init_phenotyp)
 {
@@ -459,48 +369,42 @@ inline Individual::~Individual(void)
 {
 }
 
+// for PSO docking
+inline Individual::Individual(Phenotype &init_phenotyp)
+{
+	phenotyp = init_phenotyp;
+}
+
 inline Individual &Individual::operator=(const Individual &original)
 {
-   if (this == &original) {//Prevent self assignment
-      return *this ;
-   }
    genotyp = original.genotyp;
    phenotyp = original.phenotyp;
    mol = original.mol;
    age = original.age;
+
    return(*this);
 }
 
-inline double Individual::value(EvalMode mode) /* not const */
-{ // TO DO: check if mapping from genotyp to phenotyp is up-to-date
-  // note that phenotyp.evaluate only does evaluation if evalflag is false
+inline double Individual::value(EvalMode mode)
+{
    return(phenotyp.evaluate(mode));
 }
 
 inline Population::Population(void)
 :lhb(-1), size(0), heap((Individual *)NULL)
 {
-    for (int i=0; i<MAX_TORS; i++) {
-        end_of_branch[i] = -1;
-    }
 }
 
-inline Population::Population(const int num_inds)
+inline Population::Population(int num_inds)
 : lhb(num_inds-1), size(num_inds)
 {
    heap = new Individual[num_inds];
-    for (int i=0; i<MAX_TORS; i++) {
-        end_of_branch[i] = -1;
-    }
 }
 
-inline Population::Population(const int newpopsize, Individual *const newpop)
+inline Population::Population(int newpopsize, Individual *newpop)
 : size(newpopsize), heap(newpop)
 {
    //  Do initialization stuff
-    for (int i=0; i<MAX_TORS; i++) {
-        end_of_branch[i] = -1;
-    }
 }
 
 inline Population::~Population(void)
@@ -511,7 +415,7 @@ inline Population::~Population(void)
    }
 }
 
-inline unsigned int Population::num_individuals(void) const
+inline unsigned int Population::num_individuals(void)
 {
    return(size);
 }

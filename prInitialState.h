@@ -1,10 +1,11 @@
 /*
 
- $Id: prInitialState.h,v 1.9 2010/08/27 00:05:08 mp Exp $
+ $Id: prInitialState.h,v 1.6 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -32,17 +33,15 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "printEnergies.h"
 
 void  prInitialState( 
-    const EnergyBreakdown *eb,
-    const int natom,
-    const Real crd[MAX_ATOMS][SPACE],
-    const char atomstuff[MAX_ATOMS][MAX_CHARS],
-    const int type[MAX_ATOMS],
-    const Real emap[MAX_ATOMS],
-    const Real elec[MAX_ATOMS],
-    const Real charge[MAX_ATOMS],
-    const int ligand_is_inhibitor,
-    const Boole B_have_flexible_residues,
-    const Unbound_Model ad4_unbound_model
-    );
+    EnergyBreakdown *eb,
+    int natom,
+    Real crd[MAX_ATOMS][SPACE],
+    char atomstuff[MAX_ATOMS][MAX_CHARS],
+    int type[MAX_ATOMS],
+    Real emap[MAX_ATOMS],
+    Real elec[MAX_ATOMS],
+    Real charge[MAX_ATOMS],
+    int ligand_is_inhibitor,
+    Boole B_have_flexible_residues );
 
 #endif

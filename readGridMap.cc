@@ -1,10 +1,11 @@
 /*
 
- $Id: readGridMap.cc,v 1.11 2010/10/01 22:51:40 mp Exp $
+ $Id: readGridMap.cc,v 1.4 2007/04/27 06:01:50 garrett Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -43,37 +44,37 @@ extern int ElecMap;
 extern FILE *logFile;
 extern int debug;
 
-char mapf2c(const Real);
+char mapf2c(Real);
 
 void readmap( Boole *P_B_HaveMap, 
              int *P_imap, 
              int *num_atom_types, 
              Real *P_ExtSpacing, 
              char ligand_atom_types[MAX_MAPS][3],
-             char *ExtFldFileName,
+             char ExtFldFileName[MAX_CHARS],
              int ExtGridPts1[SPACE],
              int ExtGridPts[SPACE],
-             const Clock& jobStart,
+             Clock jobStart,
              char line[LINE_LEN],
-             char *ExtMacromolFileName,
-                #include "map_declare.h"
+             char ExtMacromolFileName[MAX_CHARS],
+             Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
              Real MapCenter[SPACE],
              Real MapMax[MAX_MAPS],
              Real MapMin[MAX_MAPS],
-             const struct tms& tmsJobStart,
-             const Boole B_charMap,
-             const int outlev, //FIXME: unused
-             GridMap grid_map) //FIXME: unused
+             struct tms tmsJobStart,
+             Boole B_charMap,
+             int outlev,
+             GridMap grid_map)
 
 {
     FILE *mapFilePtr;
 
-    char FileName[PATH_MAX];
-    char FldFileName[PATH_MAX];
-    char GpfName[PATH_MAX];
-    char ExtGpfName[PATH_MAX];
+    char FileName[MAX_CHARS];
+    char FldFileName[MAX_CHARS];
+    char GpfName[MAX_CHARS];
+    char ExtGpfName[MAX_CHARS];
     char message[LINE_LEN];
-    char mmFileName[PATH_MAX];
+    char mmFileName[MAX_CHARS];
     char xyz_str[4];
     char C_mapValue;
     char mapline[LINE_LEN];
@@ -231,11 +232,8 @@ void readmap( Boole *P_B_HaveMap,
                         nv++;
                     }
                 } else {
-		    // TODO MPique - why allow only one value per line? 2010
                     if (fgets( mapline, LINE_LEN, mapFilePtr) != NULL) { /*new*/
-                        double v;
-                        if (sscanf( mapline,  "%lf",  &v ) != 1) continue;
-                        map[k][j][i][*P_imap]  = v;
+                        if (sscanf( mapline,  FDFMT,  &map[k][j][i][*P_imap] ) != 1) continue;
                         nv++;
                     }
                 }
@@ -275,7 +273,7 @@ void readmap( Boole *P_B_HaveMap,
     flushLog;
 }
 
-Real mapc2f(const char numin)
+Real mapc2f(char numin)
 {
     Real numout;
     if (numin == 0) {

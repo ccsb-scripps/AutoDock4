@@ -1,10 +1,11 @@
 /*
 
- $Id: openfile.cc,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: openfile.cc,v 1.4 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -26,7 +27,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 
- $Id: openfile.cc,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: openfile.cc,v 1.4 2007/04/27 06:01:50 garrett Exp $
 
 */
 
@@ -51,12 +52,13 @@ extern char *programname;
 extern FILE *logFile;
 /*----------------------------------------------------------------------------*/
 /* fopen rewrite to either use BOINC api or normal system call */
-FILE *ad_fopen(const char *const path, const char *const mode)
+FILE *ad_fopen(const char *path, const char *mode)
 {
   FILE *filep;
 #ifdef BOINC
+  int rc;
   char resolved_name[512];
-  const int rc = boinc_resolve_filename(path, resolved_name, sizeof(resolved_name));
+  rc = boinc_resolve_filename(path, resolved_name, sizeof(resolved_name));
   if (rc){
       fprintf(stderr, "BOINC_ERROR: cannot open filename.%s\n",path);
       boinc_finish(rc);    /* back to BOINC core */
@@ -70,9 +72,9 @@ FILE *ad_fopen(const char *const path, const char *const mode)
 }
 
 /*----------------------------------------------------------------------------*/
-int openfile( const char *const filename,
-	      const char mode[],
-	      FILE **const fp )
+int openfile( char filename[MAX_CHARS],
+	      char mode[],
+	      FILE **fp )
 
 {
 	if ( (*fp = ad_fopen(filename, mode)) == NULL ) {
@@ -84,12 +86,12 @@ int openfile( const char *const filename,
 }
 
 /*----------------------------------------------------------------------------*/
-int openFile( const char *const filename,
-	      const char        mode[],
-	      FILE      **const fp,
-	      const Clock&      start,
-	      const struct tms& tms_start,
-	      const Boole       mayExit)
+int openFile( char       filename[MAX_CHARS],
+	      char       mode[],
+	      FILE       **fp,
+	      Clock      start,
+	      struct tms tms_start,
+	      Boole      mayExit)
 
 {
     Clock  jobEnd;

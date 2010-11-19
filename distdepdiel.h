@@ -1,10 +1,11 @@
 /*
 
- $Id: distdepdiel.h,v 1.5 2010/10/01 22:51:39 mp Exp $
+ $Id: distdepdiel.h,v 1.2 2007/04/27 06:01:48 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -28,6 +29,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define _DISTDEPDIEL
 
 
-double calc_ddd_Mehler_Solmajer( const double& distance, const double& aprrox_zero );
+double calc_ddd_Mehler_Solmajer( double distance, double aprrox_zero );
 
 #endif

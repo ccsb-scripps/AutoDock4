@@ -1,10 +1,11 @@
 /*
 
- $Id: stateLibrary.h,v 1.7 2010/10/01 22:51:40 mp Exp $
+ $Id: stateLibrary.h,v 1.4 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -30,21 +31,21 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "structs.h"
 #include "constants.h"
 
-void initialiseState( /* not const */ State *const S );
+void initialiseState( State *S );
 
-void initialiseQuat( /* not const */ Quat *const Q );
+void initialiseQuat( Quat *Q );
 
-void copyState( State *const destination,
-		const State& source);
+void copyState( State *destination,
+		State  source);
 
-void printState( FILE *const fp,
-		 /* not const */ State state, 
-		 const int detail );
+void printState( FILE *fp,
+		 State state, 
+		 int detail );
 
-void writeState( /* not const */ FILE *const fp, 
-		 /* not const */ State state );
+void writeState( FILE *fp, 
+		 State state );
 
-int checkState( const State *const D );
+int checkState( const State *D );
 
-Molecule copyStateToMolecule(const State *const source, /* not const */ Molecule *const mol);
+Molecule copyStateToMolecule(State *source, Molecule *mol);
 #endif

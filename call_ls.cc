@@ -1,10 +1,11 @@
 /*
 
- $Id: call_ls.cc,v 1.9 2010/10/01 22:51:39 mp Exp $
+ $Id: call_ls.cc,v 1.7.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -48,27 +49,34 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
    #include "qmultiply.h"
 
 extern Eval evaluate;
-
+extern int nlig;
 Representation **cnv_state_to_rep(const State &state)
 {
    register int i;
    Representation **retval;
-
-   retval = new Representation *[5];
-   retval[0] = new RealVector(1);
-   retval[0]->write(state.T.x, 0);
-   retval[1] = new RealVector(1);
-   retval[1]->write(state.T.y, 0);
-   retval[2] = new RealVector(1);
-   retval[2]->write(state.T.z, 0);
-   retval[3] = new RealVector(4);
-   retval[3]->write(state.Q.x, 0);
-   retval[3]->write(state.Q.y, 1);
-   retval[3]->write(state.Q.z, 2);
-   retval[3]->write(state.Q.w, 3);
-   retval[4] = new RealVector(state.ntor);
+   // Handle multi-ligand  -Huameng 11/10/2007
+   int nlig = state.nlig;
+   //retval = new Representation *[5];
+   retval = new Representation *[nlig*4 + 1];
+   for(i = 0; i < nlig; i++) {
+	   
+	   retval[i*4 + 0] = new RealVector(1);
+	   retval[i*4 + 0]->write(state.T[i].x, 0);
+	   retval[i*4 + 1] = new RealVector(1);
+	   retval[i*4 + 1]->write(state.T[i].y, 0);
+	   retval[i*4 + 2] = new RealVector(1);
+	   retval[i*4 + 2]->write(state.T[i].z, 0);
+	   retval[i*4 + 3] = new RealVector(4);
+	   retval[i*4 + 3]->write(state.Q[i].x, 0);
+	   retval[i*4 + 3]->write(state.Q[i].y, 1);
+	   retval[i*4 + 3]->write(state.Q[i].z, 2);
+	   retval[i*4 + 3]->write(state.Q[i].w, 3);
+   }
+   //retval[4] = new RealVector(state.ntor);
+   retval[nlig*4] = new RealVector(state.ntor);  
    for(i=0; i<state.ntor; i++) {
-      retval[4]->write(state.tor[i], i);
+      //retval[4]->write(state.tor[i], i);
+      retval[nlig*4]->write(state.tor[i], i);      
    }
 
    return(retval);
@@ -89,9 +97,9 @@ Individual cnv_state_to_ind(const State &original)
 
    Genotype temp_Gtype;
    Phenotype temp_Ptype;
-
-   temp_Gtype = Genotype(5, cnv_state_to_rep(original));
-   temp_Ptype = Phenotype(5, cnv_state_to_rep(original));
+   int nlig = original.nlig;
+   temp_Gtype = Genotype(nlig*4 + 1, cnv_state_to_rep(original));
+   temp_Ptype = Phenotype(nlig*4 + 1, cnv_state_to_rep(original));
 
    Individual temp(temp_Gtype, temp_Ptype);
 
@@ -100,7 +108,7 @@ Individual cnv_state_to_ind(const State &original)
 
 }
 
-State call_ls(Local_Search *const local_method, const State& now, const unsigned int pop_size, Molecule *const mol) 
+State call_ls(Local_Search *local_method, State now, unsigned int pop_size, Molecule *mol) 
 {
    register unsigned int i;
 

@@ -1,10 +1,11 @@
 /*
 
- $Id: mkRandomState.cc,v 1.6 2009/05/08 23:02:14 rhuey Exp $
+ $Id: mkRandomState.cc,v 1.5.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -34,7 +35,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "mkRandomState.h"
 
 
-State mkRandomState( int   ntor,
+State mkRandomState( 
+			int nlig,
+			int   ntor,
 		     Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
 		     int   N_con[MAX_TORS],
                      GridMapSetInfo *info)
@@ -48,14 +51,15 @@ State mkRandomState( int   ntor,
     Real a, b;
 
     now.ntor = ntor;
-
+	// handle multi-ligand  -Huameng 11/09/2007
     /*
     ** Translation
     */
-    now.T.x = random_range( info->lo[X], info->hi[X]);
-    now.T.y = random_range( info->lo[Y], info->hi[Y]);
-    now.T.z = random_range( info->lo[Z], info->hi[Z]);
-
+    for( i = 0; i < nlig; i++) {
+    	now.T[i].x = random_range( info->lo[X], info->hi[X]);
+    	now.T[i].y = random_range( info->lo[Y], info->hi[Y]);
+    	now.T[i].z = random_range( info->lo[Z], info->hi[Z]);
+    
     /*
     ** Quaternion angular displacement
     */
@@ -64,15 +68,17 @@ State mkRandomState( int   ntor,
     **  Shoemake, Graphics Gems III.6, pp.124-132, "Uniform Random Rotations",
     **  published by Academic Press, Inc., (1992)
     */
+    
          x0 = local_random();
          r1 = random_sign * sqrt( 1 - x0 );
          t1 = TWOPI * local_random();
-    now.Q.x = sin( t1 ) * r1;
-    now.Q.y = cos( t1 ) * r1;
+   		 now.Q[i].x = sin( t1 ) * r1;
+    	 now.Q[i].y = cos( t1 ) * r1;
          r2 = random_sign * sqrt(     x0 );
          t2 = TWOPI * local_random();
-    now.Q.z = sin( t2 ) * r2;
-    now.Q.w = cos( t2 ) * r2;
+    	 now.Q[i].z = sin( t2 ) * r2;
+    	 now.Q[i].w = cos( t2 ) * r2;
+    } //nlig
 
     for (i=0; i<ntor; i++) {
 	if (N_con[i] > 0) {

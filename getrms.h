@@ -1,10 +1,11 @@
 /*
 
- $Id: getrms.h,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: getrms.h,v 1.4 2007/04/27 06:01:48 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -29,10 +30,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "constants.h"
 
-Real  getrms( const Real Crd[MAX_ATOMS][SPACE], 
-               const Real CrdRef[MAX_ATOMS][SPACE], 
-               const Boole B_symmetry_flag, 
-               const Boole B_unique_pair_flag, 
-               const int   natom, 
-               const int   type[MAX_ATOMS] );
+Real  getrms( Real Crd[MAX_ATOMS][SPACE], 
+               Real CrdRef[MAX_ATOMS][SPACE], 
+               Boole B_symmetry_flag, 
+               int   natom, 
+               int   type[MAX_ATOMS] );
 #endif

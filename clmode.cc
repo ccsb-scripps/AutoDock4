@@ -1,10 +1,11 @@
 /*
 
- $Id: clmode.cc,v 1.14 2010/10/01 22:51:39 mp Exp $
+ $Id: clmode.cc,v 1.7.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -41,18 +42,19 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 extern char *programname;
 
-void  clmode( const int   num_atm_maps,
-              ConstReal   clus_rms_tol,
-              const char  *const hostnm,
-              const Clock& jobStart,
-              const struct tms& tms_jobStart,
-              const Boole write_all_clusmem,
-              const char  *const clusFN,
-              const Real crdpdb[MAX_ATOMS][SPACE],
-              const Real sml_center[SPACE],
-              const Boole B_symmetry_flag,
-	      const Boole B_unique_pair_flag,
-              const char  *const rms_ref_crds )
+void  clmode( int   num_atm_maps,
+              Real clus_rms_tol,
+              char  hostnm[MAX_CHARS],
+              Clock jobStart,
+              struct tms tms_jobStart,
+              Boole write_all_clusmem,
+              char  clusFN[MAX_CHARS],
+              Real crdpdb[MAX_ATOMS][SPACE],
+              Real sml_centers[MAX_LIGANDS][SPACE],
+              Boole symmetry_flag,
+              char  rms_ref_crds[MAX_CHARS],
+              int nlig, 
+              int natom_in_lig[MAX_LIGANDS] )
 
 {
     FILE *clusFile;
@@ -111,14 +113,12 @@ void  clmode( const int   num_atm_maps,
      */
     while ( fgets( line, LINE_LEN, clusFile) != NULL ) {
 
-        pr( logFile, "INPUT-PDBQT: %s", line);
+        pr( logFile, "INPUT-PDBQ: %s", line);
 
         for (ii = 0; ii < 4; ii++) { rec5[ii] = tolower( (int)line[ii] ); };
 
         if (( strindex( line, "USER    Total Interaction Energy of Complex") >= 0 )
-         || ( strindex( line, "REMARK  Total Interaction Energy of Complex") >= 0 )
-         || ( strindex( line, "USER    Estimated Free Energy of Binding") >= 0 )  // Added for 4.2.x compatibility SF
-				) {
+         || ( strindex( line, "REMARK  Total Interaction Energy of Complex") >= 0 )) {
             /*
              * Read in the energy of this conformation;
              * This is preferred over "Final Docked Energy" because this is never
@@ -205,22 +205,16 @@ void  clmode( const int   num_atm_maps,
                     strncpy( atomstuff[atomCounter], line, (size_t)30 );
                     atomstuff[atomCounter][30] = '\0';
                     if ( ! haveTypes ) {
-                        //sscanf( &line[12], "%s", pdbaname[atomCounter] );
-			if(strlen(line)<77+1) {
-			    // TODO MPique 2010-06 write test for this 77+1
-                            pr( logFile, "\nNOTE: Atom number %d, line too short, cannot determine atom type\n", atomCounter+1);
-			    strcpy(pdbaname[atomCounter], "?");
-			    }
-				
-                        else sscanf( &line[77], "%s", pdbaname[atomCounter] ); //  Added for 4.2.x compatibility SF
+                        type[atomCounter] = -1;
+                        sscanf( &line[12], "%s", pdbaname[atomCounter] );
                         /*
                          * Determine this atom's atom type:
                          */
-			type[atomCounter] = get_atom_type(pdbaname[atomCounter]);
+                        type[atomCounter] = get_atom_type(pdbaname[atomCounter]);
 
                         if (type[atomCounter] == -1) {
                             pr( logFile, "\nNOTE: Atom number %d, using default atom type 1...\n\n", atomCounter+1);
-                            type[atomCounter] = 0; // internal 0-origin
+                            type[atomCounter] = 1;
                         } else {
                             pr( logFile, "\nAtom number %d, recognized atom type = %d...\n\n", atomCounter+1, type[atomCounter]+1);
                         }
@@ -307,9 +301,10 @@ void  clmode( const int   num_atm_maps,
 
         ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort, 
                                      nconf, natom, type, crdSave, crdpdb, 
-                                     sml_center, clu_rms, 
-				     B_symmetry_flag, B_unique_pair_flag,
-                                     ref_crds, ref_natoms, ref_rms);
+                                     sml_centers, clu_rms, symmetry_flag,
+                                     ref_crds, ref_natoms, ref_rms, 
+                                     nlig, 
+              						 natom_in_lig);
 
         pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
         flushLog;

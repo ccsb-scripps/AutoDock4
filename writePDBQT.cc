@@ -1,10 +1,11 @@
 /*
 
- $Id: writePDBQT.cc,v 1.27 2010/08/27 00:05:09 mp Exp $
+ $Id: writePDBQT.cc,v 1.14.2.1 2010/11/19 20:09:29 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -45,47 +46,46 @@ extern int Nnb_array[3];
 extern Real nb_group_energy[3];
 
 void
-writePDBQT(const int irun, const FourByteLong seed[2],
+writePDBQT(int irun, FourByteLong seed[2],
 
-		 const char *const smFileName,
-		 const char *const dpfFN,
-		 const Real sml_center[SPACE],
-		 /* not const */ State state,
-		 const int ntor,
-		 /* not const */ Real *const  Ptr_eintra,
-		 /* not const */ Real *const  Ptr_einter,
-		 const int natom,
-		 const char atomstuff[MAX_ATOMS][MAX_CHARS],
-		 /* not const */ Real crd[MAX_ATOMS][SPACE],
-		 /* not const */ Real emap[MAX_ATOMS],
-		 /* not const */ Real elec[MAX_ATOMS],
-		 const Real charge[MAX_ATOMS],
-		 const Real abs_charge[MAX_ATOMS],
-		 const Real qsp_abs_charge[MAX_ATOMS],
-		 const int ligand_is_inhibitor,
-		 const Real torsFreeEnergy,
-		 const Real vt[MAX_TORS][SPACE],
-		 const int tlist[MAX_TORS][MAX_ATOMS],
-		 const Real crdpdb[MAX_ATOMS][SPACE],
-		 const NonbondParam *const nonbondlist,
-         const EnergyTables *const ptr_ad_energy_tables,
-		 const int type[MAX_ATOMS],  // aka 'map_index' in 'ParameterEntry' structures
-		 const int Nnb,
-		 const Boole B_calcIntElec,
-         #include "map_declare.h"
-		 const int outlev,
-		 const int ignore_inter[MAX_ATOMS],
+		 char smFileName[MAX_LIGANDS][MAX_CHARS],
+		 char dpfFN[MAX_CHARS],
+		 Real sml_center[MAX_LIGANDS][SPACE],
+		 State state,
+		 int ntor,
+		 Real * Ptr_eintra,
+		 Real * Ptr_einter,
+		 int natom,
+		 char atomstuff[MAX_ATOMS][MAX_CHARS],
+		 Real crd[MAX_ATOMS][SPACE],
+		 Real emap[MAX_ATOMS],
+		 Real elec[MAX_ATOMS],
+		 Real charge[MAX_ATOMS],
+		 Real abs_charge[MAX_ATOMS],
+		 Real qsp_abs_charge[MAX_ATOMS],
+		 int ligand_is_inhibitor,
+		 Real torsFreeEnergy,
+		 Real vt[MAX_TORS][SPACE],
+		 int tlist[MAX_TORS][MAX_ATOMS],
+		 Real crdpdb[MAX_ATOMS][SPACE],
+		 NonbondParam *nonbondlist,
+         EnergyTables *ptr_ad_energy_tables,
+		 int type[MAX_ATOMS],  // aka 'map_index' in 'ParameterEntry' structures
+		 int Nnb,
+		 Boole B_calcIntElec,
+         Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+		 int outlev,
+		 int ignore_inter[MAX_ATOMS],
 		 const Boole B_include_1_4_interactions,
 		 const Real scale_1_4,
-         const ParameterEntry parameterArray[MAX_ATOM_TYPES],
+		 const ParameterEntry parameterArray[MAX_MAPS],
 		 const Real unbound_internal_FE,
 
-         const GridMapSetInfo *const info,
-         const int state_type,  // 0 means the state is unbound, 1 means the state is docked
-         const char PDBQT_record[MAX_RECORDS][LINE_LEN],
-         const Boole B_use_non_bond_cutoff,
-         const Boole B_have_flexible_residues,
-         const Unbound_Model ad4_unbound_model
+         GridMapSetInfo *info,
+         int state_type,  // 0 means the state is unbound, 1 means the state is docked
+         char PDBQT_record[MAX_RECORDS][LINE_LEN],
+         Boole B_use_non_bond_cutoff,
+         Boole B_have_flexible_residues
          )
 
 {
@@ -118,7 +118,8 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 	Boole B_outside = FALSE;
     Real this_emap = 0.;
     Real this_elec = 0.;
-
+	int nlig = state.nlig;
+	
     // Initialise various character strings
     if (state_type == 0) {
         strcpy(state_type_string, "UNBOUND");
@@ -129,33 +130,19 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         strcpy(state_type_prefix_string, "DOCKED: ");
         strcpy(state_type_prefix_USER_string, "DOCKED: USER    ");
     }
-	for (unsigned int i = 0; i < sizeof AtmNamResNamNum; i++) { AtmNamResNamNum[i] = '\0'; }
-	for (unsigned int i = 0; i < sizeof AtmNamResNam; i++) { AtmNamResNam[i] = '\0'; }
+	for (i = 0; i < 15; i++) { AtmNamResNamNum[i] = '\0'; }
+	for (i = 0; i < 10; i++) { AtmNamResNam[i] = '\0'; }
 
-    initialise_binding_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE, ad4_unbound_model );
+    initialise_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE );
 
     // Write out the state variables
 	if ((outlev > -1) && (outlev < 3)) {
         // "outlev" is the level of detail: 2 is high, 0 is low
-
-	// pass original center to printState - could be improved - MP 2010-05
-	state.Center.x = sml_center[X];
-	state.Center.y = sml_center[Y];
-	state.Center.z = sml_center[Z];
-	pr(logFile,"Detailed state:\t");
-	printState(logFile, state, 6); // detailed, include center, ntor
-	pr(logFile,"\n");
-
-        pr(logFile,"QState:\t");
-        printState(logFile, state, 5); // short format, as quaternion
-        pr(logFile,"\n");
-
-        pr(logFile,"State:\t"); // various possibly longer formats, as axis-angle
+        pr(logFile,"State:\t");
         printState(logFile, state, outlev);
         pr(logFile,"\n\n");
 	} else if (outlev < 0) {
 		printState(logFile, state, 0);
-        pr(logFile,"\n");
 	}
 
     // Convert state variables to x,y,z-coordinates
@@ -168,11 +155,11 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     }
 
     // Calculate the energy breakdown
-    eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+    eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
          crd, charge, abs_charge, type, map, info, B_outside, 
          ignore_inter, elec, emap, &elec_total, &emap_total,
          nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model);
+         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
 
     // Set the total intramolecular energy (sum of intramolecular energies of ligand and of protein)
     if (ntor > 0) {
@@ -205,7 +192,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         pr( logFile, "%s: USER    DPF = %s\n", state_type_string, dpfFN );
         pr( logFile, "%s: USER  \n", state_type_string );
         
-        printEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model);
+        printEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues );
 
         // Write part of the "XML" state file
 		if (write_stateFile) {
@@ -215,14 +202,17 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 			pr(stateFile, "\t\t<dpf>%s</dpf>\n", dpfFN);
             printStateEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor );
 		} // End write state file
-
-		(void) fprintf(logFile, "%s: USER    NEWDPF move %s\n", state_type_string, smFileName);
-		(void) fprintf(logFile, "%s: USER    NEWDPF about %f %f %f\n", state_type_string, sml_center[X], sml_center[Y], sml_center[Z]);
-		(void) fprintf(logFile, "%s: USER    NEWDPF tran0 %f %f %f\n", state_type_string, state.T.x, state.T.y, state.T.z);
-		(void) fprintf(logFile, "%s: USER    NEWDPF quaternion0 %f %f %f %f\n", state_type_string, state.Q.x, state.Q.y, state.Q.z, state.Q.w);
-        state.Q = convertQuatToRot( state.Q );
-		(void) fprintf(logFile, "%s: USER    NEWDPF axisangle0 %f %f %f %f\n", state_type_string, state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
-		(void) fprintf(logFile, "%s: USER    NEWDPF quat0 %f %f %f %f # deprecated\n", state_type_string, state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
+		
+		// Modify for multiple ligands -Huameng Li 10/20/2007
+		for(i = 0; i < nlig; i++ ) {
+			(void) fprintf(logFile, "%s: USER    NEWDPF move %s\n", state_type_string, smFileName[i]);
+			(void) fprintf(logFile, "%s: USER    NEWDPF about %f %f %f\n", state_type_string, sml_center[i][X], sml_center[i][Y], sml_center[i][Z]);
+			(void) fprintf(logFile, "%s: USER    NEWDPF tran0 %f %f %f\n", state_type_string, state.T[i].x, state.T[i].y, state.T[i].z);
+			(void) fprintf(logFile, "%s: USER    NEWDPF quaternion0 %f %f %f %f\n", state_type_string, state.Q[i].x, state.Q[i].y, state.Q[i].z, state.Q[i].w);
+	        state.Q[i] = convertQuatToRot( state.Q[i] );
+			(void) fprintf(logFile, "%s: USER    NEWDPF axisangle0 %f %f %f %f\n", state_type_string, state.Q[i].nx, state.Q[i].ny, state.Q[i].nz, RadiansToDegrees(WrpRad(ModRad(state.Q[i].ang))));
+			(void) fprintf(logFile, "%s: USER    NEWDPF quat0 %f %f %f %f # deprecated\n", state_type_string, state.Q[i].nx, state.Q[i].ny, state.Q[i].nz, RadiansToDegrees(WrpRad(ModRad(state.Q[i].ang))));
+		}
 		if (ntor > 0) {
             // ndihe is deprecated; uses the number of torsions in the PDBQT's torsion tree
 			// (void) fprintf(logFile, "%s: USER    NEWDPF ndihe %d\n", state_type_string, ntor);
@@ -236,14 +226,16 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         
         // Write remaining part of the "XML" state file
 		if (write_stateFile) {
-			pr(stateFile, "\t\t<move>%s</move>\n", smFileName);
-			pr(stateFile, "\t\t<about>%f %f %f</about>\n", sml_center[X], sml_center[Y], sml_center[Z]);
-
-			pr(stateFile, "\t\t<tran0>%f %f %f</tran0>\n", state.T.x, state.T.y, state.T.z);
-			pr(stateFile, "\t\t<quaternion0>%f %f %f %f</quaternion0>\n", state.Q.x, state.Q.y, state.Q.z, state.Q.w);
-            state.Q = convertQuatToRot( state.Q );
-			pr(stateFile, "\t\t<quat0>%f %f %f %f</quat0>\n", state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
-			pr(stateFile, "\t\t<axisangle0>%f %f %f %f</axisangle0>\n", state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
+			for(i = 0; i < nlig; i++ ) {
+				pr(stateFile, "\t\t<move>%s</move>\n", smFileName[i]);
+				pr(stateFile, "\t\t<about>%f %f %f</about>\n", sml_center[i][X], sml_center[i][Y], sml_center[i][Z]);
+	
+				pr(stateFile, "\t\t<tran0>%f %f %f</tran0>\n", state.T[i].x, state.T[i].y, state.T[i].z);
+				pr(stateFile, "\t\t<quaternion0>%f %f %f %f</quaternion0>\n", state.Q[i].x, state.Q[i].y, state.Q[i].z, state.Q[i].w);
+	            state.Q[i] = convertQuatToRot( state.Q[i] );
+				pr(stateFile, "\t\t<quat0>%f %f %f %f</quat0>\n", state.Q[i].nx, state.Q[i].ny, state.Q[i].nz, RadiansToDegrees(WrpRad(ModRad(state.Q[i].ang))));
+				pr(stateFile, "\t\t<axisangle0>%f %f %f %f</axisangle0>\n", state.Q[i].nx, state.Q[i].ny, state.Q[i].nz, RadiansToDegrees(WrpRad(ModRad(state.Q[i].ang))));
+			}
 			if (ntor > 0) {
 				pr(stateFile, "\t\t<ndihe>%d</ndihe>\n", ntor);
 				pr(stateFile, "\t\t<dihe0>");
@@ -291,7 +283,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
                 }
                 if (keepresnum > 0) {
                     // Retain the original Residue Numbering
-                    strncpy(AtmNamResNamNum, &atomstuff[i][12], (size_t) 13);   /*  SF &atomstuff[i][12] was increased to 12 to fix the extra space     */
+                    strncpy(AtmNamResNamNum, &atomstuff[i][12], (size_t) 14);
                     AtmNamResNamNum[14] = '\0';
                     (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESSTR, state_type_prefix_string, 
                                    i + 1, AtmNamResNamNum, crd[i][X], crd[i][Y], crd[i][Z], 
@@ -327,20 +319,19 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     } // outlev > -1
 } // writePDBQT()
 
-void print_PDBQT( FILE *const logFile, 
+void print_PDBQT( FILE *logFile, 
                   const int true_ligand_atoms,
                   const char atomstuff[MAX_ATOMS][MAX_CHARS],
                   const Real crdpdb[MAX_ATOMS][SPACE],
                   const Real charge[MAX_ATOMS],
-                  const ParameterEntry parameterArray[MAX_ATOM_TYPES],
+                  const ParameterEntry parameterArray[MAX_MAPS],
                   const int type[MAX_ATOMS],
                   const char prefix[MAX_CHARS] )
 { // Print out the coordinates
     register int i=0;
     char AtmNamResNamNum[15];
     for (i=0; i<true_ligand_atoms; i++) {
-        //strncpy( AtmNamResNamNum, &atomstuff[i][14], (size_t) 14 );
-        strncpy(AtmNamResNamNum, &atomstuff[i][12], (size_t) 13);   /*  SF &atomstuff[i][12] was increased to 12 to fix the extra space     */
+        strncpy( AtmNamResNamNum, &atomstuff[i][14], (size_t) 14 );
         AtmNamResNamNum[14] = '\0';
         (void) fprintf( logFile, FORMAT_PDBQT_ATOM_RESSTR, prefix, 
                         i + 1, AtmNamResNamNum, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z], 
@@ -350,50 +341,5 @@ void print_PDBQT( FILE *const logFile,
     }
     pr( logFile, "\n\n" );
 } // end Print out the coordinates
-
-void print_PDBQ_atom_resstr( FILE *const logFile, 
-                  const char prefix[MAX_CHARS],
-                  const int atom_num, // 0-origin 
-                  const char atomstuff[],
-                  const Real crd[MAX_ATOMS][SPACE],
-                  const Real vdW,
-                  const Real Elec,
-                  const Real charge,
-                  const char *const suffix //newline or empty
-                  )
-{
-    char  rec15[16];
-    strncpy( rec15, atomstuff+12, (size_t)15);
-    rec15[15]='\0';
-    #define FORMAT_PDBQ_ATOM_RESSTR         "%sATOM  %5d %.15s   %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f%s"
-    pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, prefix, atom_num+1, rec15, 
-       crd[atom_num][X], crd[atom_num][Y], crd[atom_num][Z], 
-       vdW, Elec,  charge, suffix);
-}
-
-void print_PDBQ_atom_resnum( FILE *const logFile, 
-                  const char prefix[MAX_CHARS],
-                  const int atom_num, // 0-origin 
-                  const char atomstuff[],
-                  const int resnum,
-                  const Real crd[MAX_ATOMS][SPACE],
-                  const Real vdW,
-                  const Real Elec,
-                  const Real charge,
-                  const char *const suffix //newline or empty
-                  )
-{
-    char  rec10[11];
-    strncpy( rec10, atomstuff+12, (size_t)10);
-    rec10[10]='\0';
-    #define FORMAT_PDBQ_ATOM_RESNUM         "%sATOM  %5d %.10s%4d    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f%s"
-    pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, prefix, atom_num+1, rec10, 
-       resnum,
-       crd[atom_num][X], crd[atom_num][Y], crd[atom_num][Z], 
-       vdW, Elec,  charge, suffix);
-}
-
-
-
 
 /* EOF */

@@ -1,10 +1,11 @@
 /*
 
- $Id: intnbtable.h,v 1.11 2010/10/01 22:51:39 mp Exp $
+ $Id: intnbtable.h,v 1.8 2007/04/27 06:01:49 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -30,16 +31,16 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "timesys.h"
 #include "structs.h"
 
-void intnbtable(/* not const */ Boole *const P_B_havenbp,
-                const int   a1,
-                const int   a2,
-                const GridMapSetInfo *const info,
-                ConstReal cA,
-                ConstReal cB,
-                const int   xA,
-                const int   xB,
-                const double& coeff_desolv,
-                const double& sigma,
-                /* not const */ EnergyTables *const ad_tables,
-                const Boole B_is_unbound_calculation );
+void intnbtable(Boole *P_B_havenbp,
+                int   a1,
+                int   a2,
+                GridMapSetInfo *info,
+                Real cA,
+                Real cB,
+                int   xA,
+                int   xB,
+                double coeff_desolv,
+                double sigma,
+                EnergyTables *ad_tables,
+                Boole B_is_unbound_calculation );
 #endif

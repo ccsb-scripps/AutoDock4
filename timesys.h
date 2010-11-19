@@ -1,10 +1,11 @@
 /*
 
- $Id: timesys.h,v 1.5 2010/10/01 22:51:40 mp Exp $
+ $Id: timesys.h,v 1.2 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -33,7 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <time.h>
 #include "autocomm.h"
 
-void  timesys( const Clock&            duration,
-               const struct tms *const start,
-               const struct tms *const end );
+void  timesys( Clock  duration,
+               struct tms *start,
+               struct tms *end );
 #endif

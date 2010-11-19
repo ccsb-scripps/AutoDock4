@@ -1,10 +1,11 @@
 /*
 
- $Id: analysis.h,v 1.23 2010/10/01 22:51:39 mp Exp $
+ $Id: analysis.h,v 1.15.2.1 2010/11/19 20:09:28 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -41,47 +42,48 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef ANALYSIS
 #define ANALYSIS
 
-void  analysis( const int   Nnb, 
-                const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
-                const Real charge[MAX_ATOMS], 
-                const Real abs_charge[MAX_ATOMS], 
-                const Real qsp_abs_charge[MAX_ATOMS], 
-                const Boole B_calcIntElec,
-                ConstReal clus_rms_tol, 
-                const Real crdpdb[MAX_ATOMS][SPACE], 
+void  analysis( int   Nnb, 
+                char  atomstuff[MAX_ATOMS][MAX_CHARS], 
+                Real charge[MAX_ATOMS], 
+                Real abs_charge[MAX_ATOMS], 
+                Real qsp_abs_charge[MAX_ATOMS], 
+                Boole B_calcIntElec,
+                Real clus_rms_tol, 
+                Real crdpdb[MAX_ATOMS][SPACE], 
                 
                 const EnergyTables *ptr_ad_energy_tables,
-                #include "map_declare.h"
-                const Real econf[MAX_RUNS], 
-                const int   irunmax, 
-                const int   natom, 
-                const NonbondParam *nonbondlist, 
-                const int   nconf, 
-                const int   ntor, 
-                State hist[MAX_RUNS],  // modified in analysis.cc (hack)
-                const char  *smFileName, 
-                const Real sml_center[SPACE], 
-                const Boole B_symmetry_flag, 
-                const Boole B_unique_pair_flag, 
-                const int   tlist[MAX_TORS][MAX_ATOMS], 
-                const int   type[MAX_ATOMS], 
-                const Real vt[MAX_TORS][SPACE],
-                const char  *rms_ref_crds,
-                ConstReal   torsFreeEnergy,
-                const Boole B_write_all_clusmem,
-                const int ligand_is_inhibitor,
-                const int   outlev,
-                const int   ignore_inter[MAX_ATOMS],
+
+                Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+                Real econf[MAX_RUNS], 
+                int   irunmax, 
+                int   natom, 
+                NonbondParam *nonbondlist, 
+                int   nconf, 
+                int   ntor, 
+                State hist[MAX_RUNS], 
+                char  smFileNames[MAX_LIGANDS][MAX_CHARS], 
+                Real sml_centers[MAX_LIGANDS][SPACE], 
+                Boole B_symmetry_flag, 
+                int   tlist[MAX_TORS][MAX_ATOMS], 
+                int   type[MAX_ATOMS], 
+                Real vt[MAX_TORS][SPACE],
+                char  rms_ref_crds[MAX_CHARS],
+                Real torsFreeEnergy,
+                Boole B_write_all_clusmem,
+                int ligand_is_inhibitor,
+                int   outlev,
+                int   ignore_inter[MAX_ATOMS],
                 const Boole   B_include_1_4_interactions,
-                ConstReal   scale_1_4,
+                const Real scale_1_4,
 
-                ConstReal   unbound_internal_FE,
+                const ParameterEntry parameterArray[MAX_MAPS],
+                const Real unbound_internal_FE,
                 
-                const GridMapSetInfo *const info,
-                const Boole B_use_non_bond_cutoff,
-                const Boole B_have_flexible_residues,
-                const Boole B_rms_atoms_ligand_only,
-                const Unbound_Model ad4_unbound_model
-
+                GridMapSetInfo *info,
+                Boole B_use_non_bond_cutoff,
+                Boole B_have_flexible_residues,
+                Boole B_rms_atoms_ligand_only,
+                int nlig,
+			    int natom_in_lig[MAX_LIGANDS] //num of atoms in each ligand
                );
 #endif

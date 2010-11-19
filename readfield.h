@@ -1,10 +1,11 @@
 /*
 
- $Id: readfield.h,v 1.8 2010/10/01 22:51:40 mp Exp $
+ $Id: readfield.h,v 1.5 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -52,10 +53,10 @@ void    readfield( Real *P_inv_spacing,
 		struct tms tms_jobStart );
 */
 
-void readfield( GridMapSetInfo *const info, // *ptr_map_set_info
-                /* not const */ char line[LINE_LEN],
-                const Clock& jobStart,
-                const struct tms& tms_jobStart );
+void readfield( GridMapSetInfo *info, // *ptr_map_set_info
+                char line[LINE_LEN],
+                Clock jobStart,
+                struct tms tms_jobStart );
 
 
 #endif

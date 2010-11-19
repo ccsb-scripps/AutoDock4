@@ -1,10 +1,11 @@
 /*
 
- $Id: nbe.h,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: nbe.h,v 1.5 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -30,7 +31,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "structs.h"
 
-void nbe( const GridMapSetInfo *const info,
-           const EnergyTables *const ptr_ad_energy_tables,
-           const int   num_atm_maps );
+void nbe( GridMapSetInfo *info,
+           EnergyTables *ptr_ad_energy_tables,
+           int   num_atm_maps );
 #endif

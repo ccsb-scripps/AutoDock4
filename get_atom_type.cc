@@ -1,10 +1,11 @@
 /*
 
- $Id: get_atom_type.cc,v 1.10 2010/08/27 00:05:07 mp Exp $
+ $Id: get_atom_type.cc,v 1.5 2007/04/27 06:01:48 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -43,24 +44,22 @@ extern FILE *logFile;
 extern int debug;
 
 
-// get_atom_type - returns integer atom type (0 or greater) or -1 for unknown
-// As of 2010-06, no longer covers up failure to find atom type
-int get_atom_type( const char aname[] )
+int get_atom_type( char aname[4] )
 {
-    const ParameterEntry * /* not const */ found_parm;
+    ParameterEntry * found_parm;
     ParameterEntry thisparm;
     int map_index = -1;
     int bond_index = -1;
-    char message[512];
+    char message[MAX_CHARS];
 
     // "map_index" is used as an index into the "map" array,
     // to look up the correct energies in the current grid cell,
     // thus:  map[][][][map_index]
 
     // AutoGrid 4 Typing
-    found_parm = apm_find(aname);
+    strcpy(thisparm.autogrid_type, aname);
+    found_parm = apm_find(thisparm.autogrid_type);
     if (found_parm != NULL) {
-	strcpy(thisparm.autogrid_type, aname);
         map_index = found_parm->map_index;
         bond_index = found_parm->bond_index;
         if (debug > 0) {
@@ -76,6 +75,11 @@ int get_atom_type( const char aname[] )
     }
     // /--AutoGrid4 
     
+    if (map_index == -1) {
+        pr( logFile, "%s: WARNING:  atom type not found, using the default, atom type = 1, instead.\n", programname);
+        map_index = 0;  // we are 0-based internally, 1-based in printed output, for human's sake
+        bond_index = 0;  // we are 0-based internally, 1-based in printed output, for human's sake
+    }
     return (map_index);
 }
 

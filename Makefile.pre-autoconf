@@ -1,4 +1,4 @@
-# $Id: Makefile.pre-autoconf,v 1.7 2008/06/27 04:11:46 garrett Exp $
+# $Id: Makefile.pre-autoconf,v 1.2 2007/05/12 04:45:38 garrett Exp $
 # 
 # AutoDock 
 # 
@@ -134,7 +134,6 @@ OBJS = \
     setflags.o \
     simanneal.o \
     sort_enrg.o \
-    stack.o \
     stop.o \
     strindex.o \
     success.o \
@@ -221,7 +220,6 @@ OBJS_LSFIT = \
     setflags.o \
     simanneal.o \
     sort_enrg.o \
-    stack.o \
     stop.o \
     strindex.o \
     success.o \
@@ -314,7 +312,6 @@ LNS = \
     setflags.ln \
     simanneal.ln \
     sort_enrg.ln \
-    stack.ln \
     stop.ln \
     strindex.ln \
     success.ln \
@@ -369,7 +366,7 @@ CSTD = $(DBUG) $(PROF) $(WARN) # SGI, Sun, Linux, MacOSX
 # CSTD = -std arm -verbose $(PROF) $(DBUG) $(WARN) # Alpha. sarah
 # CSTD = -DHPPA -D_HPUX_SOURCE -ansi $(PROF) $(DBUG) $(WARN) # HP
 
-CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX: Standard accuracy, but faster; no crossover in quaternion
+CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX: Standard accuracy, but faster; no crossover in quaternion
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOSX: Standard accuracy, but faster
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DQUATERNION_MUTATION # As above, but treat quaternion genes properly when doing mutations--note, this is slow!
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOSX: Standard accuracy, but faster; also use Double precision throughout
@@ -443,7 +440,6 @@ DBUG = # Use assert code
 # DBUG = -g3 -DDEBUG_MUTATION # dbx + optimization; Use assert code, & print out information anywhere involving mutation
 # DBUG = -g3 -DDEBUG_MUTATION -DDEBUG # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements
 # DBUG = -g3 -DDEBUG_MUTATION -DDEBUG -DDEBUG3 # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements incl. 3
-# DBUG = -DASSERTQUATOK # Uses the macro "assertQuatOK()" to ensure the magnitude is near unity
 
 PROF = # No profiling
 # PROF = -p # CC Profiling
@@ -817,12 +813,13 @@ readfield.o : readfield.cc readfield.h constants.h openfile.h stop.h
 readmap.o : readmap.cc readmap.h constants.h openfile.h warn_bad_file.h strindex.h print_2x.h check_header_line.h warn_bad_file.h check_header_float.h check_header_int.h timesys.h autocomm.h
 	$(CC) $(CFLAGS) -c readmap.cc
 
-readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_PDBQT_line.cc parse_PDBQT_line.h mdist.h atom_parameter_manager.cc atom_parameter_manager.h stack.cc stack.h
+readPDBQT.o : readPDBQT.cc  readPDBQT.h constants.h openfile.h stop.h get_atom_type.h print_2x.h mkTorTree.h nonbonds.cc nonbonds.h weedbonds.cc weedbonds.h torNorVec.cc torNorVec.h success.cc  success.h autocomm.h parse_PDBQT_line.cc parse_PDBQT_line.h mdist.h atom_parameter_manager.cc atom_parameter_manager.h 
 	$(CC) $(CFLAGS) -c readPDBQT.cc
 
-default_parameters.h : AD4.1_bound.dat paramdat2h.csh
+default_parameters.h : AD4_parameters.dat paramdat2h.csh
 	rm -f $@
-	./paramdat2h.csh AD4.1_bound.dat > $@
+	./paramdat2h.csh > tmp-paramdat
+	mv -f tmp-paramdat $@
 
 read_parameter_library.o : read_parameter_library.cc autocomm.h default_parameters.h
 	$(CC) $(CFLAGS) -c read_parameter_library.cc
@@ -844,9 +841,6 @@ simanneal.o : simanneal.cc simanneal.h constants.h autocomm.h
 
 sort_enrg.o : sort_enrg.cc sort_enrg.h constants.h
 	$(CC) $(CFLAGS) -c sort_enrg.cc
-
-stack.o : stack.cc stack.h
-	$(CC) $(CFLAGS) -c stack.cc
 
 stop.o : stop.cc stop.h constants.h
 	$(CC) $(CFLAGS) -c stop.cc
@@ -1069,9 +1063,6 @@ simanneal.ln : simanneal.cc
 	$(LINT) $(LINTFLAGS) $?
 
 sort_enrg.ln : sort_enrg.cc
-	$(LINT) $(LINTFLAGS) $?
-
-stack.ln : stack.cc
 	$(LINT) $(LINTFLAGS) $?
 
 stop.ln : stop.cc

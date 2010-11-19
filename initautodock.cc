@@ -1,10 +1,11 @@
 /*
 
- $Id: initautodock.cc,v 1.14 2010/08/27 00:05:07 mp Exp $
+ $Id: initautodock.cc,v 1.11.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -42,16 +43,16 @@ extern int   keepresnum;
 extern FILE *logFile;
 extern char  *programname;
 
-void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
-                    /* not const */ Real crd[MAX_ATOMS][SPACE],
-                    const Real crdpdb[MAX_ATOMS][SPACE],
-                    const int   natom,
-                    const int   ntor,
-                    /* not const */ State *const s0,
-                    const int   tlist[MAX_TORS][MAX_ATOMS],
-                    const Real vt[MAX_TORS][SPACE],
-                    const int   outlev,
-                    const GridMapSetInfo *const info )
+void initautodock(  char  atomstuff[MAX_ATOMS][MAX_CHARS],
+                    Real crd[MAX_ATOMS][SPACE],
+                    Real crdpdb[MAX_ATOMS][SPACE],
+                    int   natom,
+                    int   ntor,
+                    State *s0,
+                    int   tlist[MAX_TORS][MAX_ATOMS],
+                    Real vt[MAX_TORS][SPACE],
+                    int   outlev,
+                    GridMapSetInfo *info )
 
 {
     Boole B_change = FALSE;
@@ -61,7 +62,7 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
 
     char  note[LINE_LEN];
     char  rec8[10];
-    static char  axis[] = {"xyz"};
+    char  axis[5];
 
     Real delta[MAX_ATOMS][SPACE];
     Real delta_max[SPACE];
@@ -78,6 +79,8 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
 /*
 **  Initialize the automated docking simulation,
 */
+    strcpy( axis, "xyz\0" );
+
     /* Initialize the delta arrays... */
     for (xyz = 0;  xyz < SPACE;  xyz++) {
         delta_min[xyz] =  BIG;
@@ -136,15 +139,20 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                     pr( logFile," %+.1f", s0->tor[i]);
                 }
             }
-            pr( logFile, "\nApplying initial translation...\n");
-            pr( logFile, "Ligand translated to:  %+.3f  %+.3f  %+.3f\n\n", s0->T.x, s0->T.y, s0->T.z );
-            pr( logFile, "Applying initial quaternion...\n");
-            pr( logFile, "Ligand rigid-body-rotated by: %+.1f degrees,   about unit vector: %+.3f %+.3f %+.3f.\n\n", RadiansToDegrees(s0->Q.ang), s0->Q.nx, s0->Q.ny, s0->Q.nz );
-            flushLog;
+            // handle multi-ligand  -Huameng 11/09/2007
+            for(i = 0; i < s0->nlig; i++) {
+	            pr( logFile, "\nApplying initial translation...\n");
+	            pr( logFile, "Ligand translated to:  %+.3f  %+.3f  %+.3f\n\n", s0->T[i].x, s0->T[i].y, s0->T[i].z );
+	            pr( logFile, "Applying initial quaternion...\n");
+	            pr( logFile, "Ligand rigid-body-rotated by: %+.1f degrees,   about unit vector: %+.3f %+.3f %+.3f.\n\n", RadiansToDegrees(s0->Q[i].ang), s0->Q[i].nx, s0->Q[i].ny, s0->Q[i].nz );
+	            flushLog;
+            } //end nlig
         }
-
-        mkUnitQuat( &(s0->Q) );
-        cnv_state_to_coords( *s0,  vt, tlist, ntor,  crdpdb, crd, natom); // all const except crd
+		for(i = 0; i < s0->nlig; i++) {
+        	mkUnitQuat( &(s0->Q[i]) );
+		}
+		
+        cnv_state_to_coords( *s0,  vt, tlist, ntor,  crdpdb, crd, natom);
 
         for (i = 0;  i < natom;  i++) {
             B_outside = is_out_grid_info( crd[i][X], crd[i][Y], crd[i][Z] );
@@ -251,24 +259,29 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                 s0->Q.ang = DegreesToRadians( random_range( 0., 360. ) );  //radians
                 mkUnitQuat( &(s0->Q) );
                 */
-                s0->Q = uniformQuat();
-                s0->Q = convertQuatToRot( s0->Q );
+                // handle multi-ligand  -Huameng 11/09/2007
+	            for(i = 0; i < s0->nlig; i++) {
+	                s0->Q[i] = uniformQuat();
+	                s0->Q[i] = convertQuatToRot( s0->Q[i]);
+	            }
 
             }/*if (B_eq_and_opp)*/
-
-            if (outlev > 1) {
-                pr( logFile, "\n%s:\n*** Changing initial-translation (tran0 override):\n", programname );
-                pr( logFile, "from:\ttran0  %.3f %.3f %.3f \n", s0->T.x, s0->T.y, s0->T.z );
-            }
-
-            s0->T.x +=  delta[ip[X]][X];
-            s0->T.y +=  delta[ip[Y]][Y];
-            s0->T.z +=  delta[ip[Z]][Z];
-
-            if (outlev > 1) {
-                pr( logFile, "to:\ttran0  %.3f %.3f %.3f \n\n", s0->T.x, s0->T.y, s0->T.z );
-            }
-
+            
+			// handle multi-ligand  -Huameng 11/09/2007
+	        for(i = 0; i < s0->nlig; i++) {
+	            if (outlev > 1) {
+	                pr( logFile, "\n%s:\n*** Changing initial-translation (tran0 override):\n", programname );
+	                pr( logFile, "from:\ttran0  %.3f %.3f %.3f \n", s0->T[i].x, s0->T[i].y, s0->T[i].z );
+	            }
+	
+	            s0->T[i].x +=  delta[ip[X]][X];
+	            s0->T[i].y +=  delta[ip[Y]][Y];
+	            s0->T[i].z +=  delta[ip[Z]][Z];
+	
+	            if (outlev > 1) {
+	                pr( logFile, "to:\ttran0  %.3f %.3f %.3f \n\n", s0->T[i].x, s0->T[i].y, s0->T[i].z );
+	            }
+	       } // for nlig
         }/*if B_move_inside*/
 
     } while ( B_move_inside );

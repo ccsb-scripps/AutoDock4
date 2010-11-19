@@ -1,10 +1,11 @@
 /*
 
- $Id: eintcalPrint.cc,v 1.10 2009/05/08 23:02:12 rhuey Exp $
+ $Id: eintcalPrint.cc,v 1.9 2007/04/27 06:01:48 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 

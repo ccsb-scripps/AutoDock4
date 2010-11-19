@@ -1,10 +1,11 @@
 /*
 
- $Id: readfield.cc,v 1.8 2010/10/01 22:51:40 mp Exp $
+ $Id: readfield.cc,v 1.4 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -38,11 +39,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern FILE *logFile;
 
-//FIXME: tms_jobStart could be passed by reference
-void readfield( /* not const */ GridMapSetInfo *const info,
-                /* not const */ char line[LINE_LEN],
-                const Clock& jobStart,
-                const struct tms& tms_jobStart )
+void readfield( GridMapSetInfo *info,
+                char line[LINE_LEN],
+                Clock jobStart,
+                struct tms tms_jobStart )
+
+
 {
     FILE *fldFile;
     char rec9[9], inputline[LINE_LEN];
@@ -85,19 +87,21 @@ void readfield( /* not const */ GridMapSetInfo *const info,
     for (i=0; i<SPACE; i++) {
         if ( (info->num_points[i])%2 != 0 ) {
             stop("the number of user-specified grid points must be even in the \"#NELEMENTS\" line in the \".fld\" file.");
+            exit(-1);
         }
     }
 
     pr( logFile, "Even Number of User-specified Grid Points =\t%d x-points\n\t\t\t\t\t\t%d y-points\n\t\t\t\t\t\t%d z-points\n\n", info->num_points[X],info->num_points[Y],info->num_points[Z]);
     for (i = 0;  i < SPACE;  i++) {
         info->num_points1[i] = info->num_points[i] + 1;
-	info->num_alloc[i] = info->num_points1[i]; // this is an odd number
     } /* i */
     pr( logFile, "Adding the Central Grid Point makes:\t\t%d x-points\n\t\t\t\t\t\t%d y-points\n\t\t\t\t\t\t%d z-points\n\n", info->num_points1[X], info->num_points1[Y], info->num_points1[Z]);
     if ( (info->num_points[X] <= 0)||(info->num_points[Y] <= 0)||(info->num_points[Z] <= 0) ) {
         stop("insufficient grid points." );
+        exit( -1 );
     } else if ((info->num_points[X] > MAX_GRID_PTS)||(info->num_points[Y] > MAX_GRID_PTS)||(info->num_points[Z] > MAX_GRID_PTS)) {
         stop("too many grid points." );
+        exit( -1 );
     }
 
     /*

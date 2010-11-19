@@ -1,10 +1,11 @@
 /*
 
- $Id: autoglobal.h,v 1.18 2009/06/05 00:08:17 rhuey Exp $
+ $Id: autoglobal.h,v 1.12.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -36,7 +37,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /******************************************************************************/
 /*      Name: autoglobal.h                                                    */
 /*  Function: Global variables for Autodock modules.                          */
-/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
+/* Copyright: (C) TSRI                                                        */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett M. Morris                                               */
 /*                                                                            */
@@ -51,7 +52,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /*----------------------------------------------------------------------------*/
 /*    Inputs: None.                                                           */
 /*   Returns: Nothing.                                                        */
-/*   Globals: programname, AutoDockHelp, command_mode,          */
+/*   Globals: programname, AutoGridHelp, AutoDockHelp, command_mode,          */
 /*            command_in_fp, command_out_fp, GPF, logFile.                    */
 /*----------------------------------------------------------------------------*/
 /* Modification Record                                                        */
@@ -65,9 +66,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /*----------------------------------------------------------------------------*/
 
 char    *programname;
+char    AutoDockHelp[] = "           -p parameter_filename\n           -l log_filename\n           -o (Use old PDBQ format, charge q in columns 55-61)\n           -k (Keep original residue numbers)\n           -i (Ignore header-checking)\n           -t (Parse the PDBQ file to check torsions, then stop.)\n           -c < command_file (Command mode, by file)\n           -c | control_program (Command mode, by control_program)\n\n";
 
-char    dock_param_fn[PATH_MAX];
-char    grid_param_fn[PATH_MAX];
+char    AutoGridHelp[] = "-p parameter_filename\n-l log_filename\n-o (old PDBQ format)\n-d (increment debug level)\n-u (display this message)\n";
+
+char    dock_param_fn[MAX_CHARS];
+char    grid_param_fn[MAX_CHARS];
 
 int     command_mode = FALSE;
 int     debug = 0;
@@ -77,6 +81,15 @@ int     ignore_errors = FALSE;
 int     keepresnum = 1;
 int     parse_tors_mode = FALSE;
 int	    true_ligand_atoms = 0;
+// for muti-ligand docking -Huameng 11/10/2007
+int 	natom_in_lig[MAX_LIGANDS];   // number of atom in each true ligand
+int		from_atom_lig[MAX_LIGANDS];  // start atom number in ligand
+int		to_atom_lig[MAX_LIGANDS];    // end atom number in ligand
+int		ntor_lig[MAX_LIGANDS];  // number of torsion in each true ligand
+int	    ntor_res[MAX_LIGANDS];  // number of torsion in each true ligand
+int     total_ntor_res;
+int     gene_index_lig[MAX_LIGANDS][2];  //gene num start_point & end_point of a ligand. 
+int 	nlig = 0;
 int     write_stateFile = FALSE;
 // For energy breakdown of non-bonded interactions
 int     Nnb_array[3] = {0};    // number of nonbonds in the ligand, intermolecular and receptor groups
@@ -84,6 +97,10 @@ int     Nnb_array[3] = {0};    // number of nonbonds in the ligand, intermolecul
 Real	idct = 1.0;
 // For energy breakdown of non-bonded interactions
 Real    nb_group_energy[3] = {0.0};  // total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
+double  nb_elec_total = 0.0;
+double  nb_vdm_hb_total = 0.0;
+double  nb_desol_total = 0.0;
+
 
 FILE    *command_in_fp;
 FILE    *command_out_fp;
@@ -95,8 +112,6 @@ FILE    *stateFile;
 Linear_FE_Model AD3;
 Linear_FE_Model AD4_wrt_3;
 Linear_FE_Model AD4;
-
-Unbound_Model ad4_unbound_model = Unbound_Default;
 
 #endif /*_AUTOGLOBAL*/
 /* EOF */

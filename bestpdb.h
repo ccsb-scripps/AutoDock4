@@ -1,10 +1,11 @@
 /*
 
- $Id: bestpdb.h,v 1.6 2010/10/01 22:51:39 mp Exp $
+ $Id: bestpdb.h,v 1.4 2007/04/27 06:01:47 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -32,13 +33,13 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "strindex.h"
 #include "print_avsfld.h"
 
-void  bestpdb( const int   ncluster, 
-               const int   num_in_clu[MAX_RUNS], 
-               const int   cluster[MAX_RUNS][MAX_RUNS], 
-               const Real econf[MAX_RUNS], 
-               const Real crd[MAX_RUNS][MAX_ATOMS][SPACE], 
-               const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
-               const int   natom, 
-               const Boole B_write_all_clusmem, 
-               const Real ref_rms[MAX_RUNS]);
+void  bestpdb( int   ncluster, 
+               int   num_in_clu[MAX_RUNS], 
+               int   cluster[MAX_RUNS][MAX_RUNS], 
+               Real econf[MAX_RUNS], 
+               Real crd[MAX_RUNS][MAX_ATOMS][SPACE], 
+               char  atomstuff[MAX_ATOMS][MAX_CHARS], 
+               int   natom, 
+               Boole B_write_all_clusmem, 
+               Real ref_rms[MAX_RUNS]);
 #endif

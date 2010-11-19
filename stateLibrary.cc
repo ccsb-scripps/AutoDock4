@@ -1,10 +1,11 @@
 /*
 
- $Id: stateLibrary.cc,v 1.20 2010/10/01 22:51:40 mp Exp $
+ $Id: stateLibrary.cc,v 1.14.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -34,25 +35,25 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "qmultiply.h"
 
 extern FILE *logFile;
-static void writeStateAQ( FILE *const fp, /* not const */ State S, const char);
 
-void initialiseState( /* not const */ State *const S )
+void initialiseState( State *S )
 {
     register int i;
-    S->T.x = 0.0;
-    S->T.y = 0.0;
-    S->T.z = 0.0;
-    initialiseQuat( &(S->Q) );
+    for(i = 0; i < MAX_LIGANDS; i++) {
+	    S->T[i].x = 0.0;
+	    S->T[i].y = 0.0;
+	    S->T[i].z = 0.0;
+	    initialiseQuat( &(S->Q[i]) );
+    
+    }
     S->ntor = 0;
+   
     for (i = 0; i  < MAX_TORS;  i++ ) {
         S->tor[i] = 0.0;
     }
-    S->Center.x = 0.0;
-    S->Center.y = 0.0;
-    S->Center.z = 0.0;
 }
 
-void initialiseQuat( /* not const */ Quat *const Q )
+void initialiseQuat( Quat *Q )
 {
     Q->nx = 1.0;
     Q->ny = 0.0;
@@ -65,55 +66,75 @@ void initialiseQuat( /* not const */ Quat *const Q )
     Q->qmag = 1.0;
 }
 
-void copyState( /* not const */ State *const D,  /* Destination -- copy to here */
-                const State& S ) /* Source      -- copy this.   */
+void copyState( State *D,  /* Destination -- copy to here */
+                    State  S ) /* Source      -- copy this.   */
 {
     register int i;
         
-    D->T = S.T;
-    
-    D->Q = S.Q;
- 
+    /*
+    D->T.x    = S.T.x;
+    D->T.y    = S.T.y;
+    D->T.z    = S.T.z;
+    */
+    for(i=0; i < S.nlig; i++) {
+	    D->T[i] = S.T[i];
+	    
+	    /*
+	    D->Q.nx   = S.Q.nx;
+	    D->Q.ny   = S.Q.ny;
+	    D->Q.nz   = S.Q.nz;
+	    D->Q.ang  = S.Q.ang;
+	    D->Q.x    = S.Q.x;
+	    D->Q.y    = S.Q.y;
+	    D->Q.z    = S.Q.z;
+	    D->Q.w    = S.Q.w;
+	    D->Q.qmag = S.Q.qmag;
+	    */
+	    D->Q[i] = S.Q[i];
+    }
     D->ntor   = S.ntor;
- 
+ 	D->nlig   = S.nlig;
+ 	
     for ( i=0; i < S.ntor; i++ ) {
             D->tor[i] = S.tor[i];
     }
 
     D->hasEnergy = S.hasEnergy;
 
+    /*
+    D->e.total = S.e.total;
+    D->e.intra = S.e.intra;
+    D->e.inter = S.e.inter;
+    D->e.FE = S.e.FE;
+    */
     D->e = S.e;
-    D->Center = S.Center;
 }
 
-static Real RadCanonicalDeg( Real x) {
-   // convert torsion value from radians to degrees, 
-   // wrapping angles at all points.
-   // Probably could be simplified.
-	return WrpDeg( ModDeg( RadiansToDegrees( WrpRad( ModRad( x )))));
-}
-
-void printState( FILE *const fp, 
-                 /* not const */ State S, 
-                 const int detail )
+void printState( FILE *fp, 
+                 State S, 
+                 int detail )
 {
     register int i;
+    Real torDegTmp;
 
     switch( detail ) {
         case 0:
         case 1:
-            writeStateAQ(fp,S,'A'); // short format, axis-angle convention
+            writeState(fp,S);
             break;
 
         case 2:
         default:
-            (void)fprintf( fp, "\nSTATE VARIABLES:\n________________\n\n" );
-            (void)fprintf( fp, "Translation x,y,z         = %.3f %.3f %.3f\n", S.T.x, S.T.y, S.T.z );
-            (void)fprintf( fp, "Quaternion x,y,z,w        = %.6f %.6f %.6f %.6f\n", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
-            S.Q = convertQuatToRot( S.Q );
-            (void)fprintf( fp, "Axis-Angle nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, RadCanonicalDeg(S.Q.ang) );
-            //(void)fprintf( fp, "Quaternion qmag           = %.3f\n", S.Q.qmag );
-            (void)fprintf( fp, "Center x,y,z         = %.3f %.3f %.3f\n", S.Center.x, S.Center.y, S.Center.z );
+        	// Handle multi-ligand -Huameng 11/08/2007
+        	for(i = 0; i < S.nlig; i++) {
+	            (void)fprintf( fp, "\nSTATE VARIABLES: ligand %d\n________________\n\n", i+1);
+	            (void)fprintf( fp, "Translation x,y,z         = %.3f %.3f %.3f\n", S.T[i].x, S.T[i].y, S.T[i].z );
+	            (void)fprintf( fp, "Quaternion x,y,z,w        = %.3f %.3f %.3f %.3f\n", S.Q[i].x, S.Q[i].y, S.Q[i].z, S.Q[i].w );
+	            S.Q[i] = convertQuatToRot( S.Q[i] );
+	            S.Q[i].ang = WrpRad( ModRad( S.Q[i].ang ));
+	            (void)fprintf( fp, "Axis-Angle nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q[i].nx, S.Q[i].ny, S.Q[i].nz, RadiansToDegrees(S.Q[i].ang) );
+	            //(void)fprintf( fp, "Quaternion qmag           = %.3f\n", S.Q.qmag );
+        	}
             (void)fprintf( fp, "Number of Torsions        = %d\n", S.ntor );
             if (S.ntor > 0) {
                 (void)fprintf( fp, "Torsions (degrees)        =");
@@ -121,7 +142,10 @@ void printState( FILE *const fp,
                     S.tor[i] = WrpRad( ModRad( S.tor[i] ) );
                 }
                 for (i=0; i<S.ntor; i++) {
-                    pr( fp, " %.2f", RadCanonicalDeg( S.tor[i]));
+                    torDegTmp = RadiansToDegrees( S.tor[i] );
+                    torDegTmp = ModDeg( torDegTmp );
+                    torDegTmp = WrpDeg( torDegTmp );
+                    pr( fp, " %.2f", torDegTmp );
                     //if ((B_isTorConstrained[i] == 1) && B_ShowTorE) {
                         //pr( fp, ", Energetic penalty = %uhd\n", US_TorE[i]);
                     //} else {
@@ -134,148 +158,139 @@ void printState( FILE *const fp,
 
         case 3:
             // Writes only the translation component of the state
-            (void)fprintf( fp, "%.3f %.3f %.3f", S.T.x, S.T.y, S.T.z );
-            break;
-        case 4:
-	    // Writes in compact format with underscore separations, no newline
-	    // Used by PrintPopulationStatisticsVerbose (M Pique 2010-03)
-            (void)fprintf( fp, "%.3f_%.3f_%.3f", S.T.x, S.T.y, S.T.z );
-            (void)fprintf( fp, "_%.6f_%.6f_%.6f_%.6f", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
-            for (i=0; i<S.ntor; i++) {
-                    pr( fp, "_%.3f", RadCanonicalDeg(S.tor[i]) );
-            }
-            break;
-        case 5:
-            writeStateAQ(fp,S,'Q'); // short format, quaternion convention
-            break;
-        case 6:
-	    // verbose state including center and ntors
-	    //  for writing "Detailed state:" line into DLG  (M Pique 2010-05) 
-	    // Torsions are written out in degrees
-	    // Does not append newline
-            (void)fprintf( fp, " trans %.3f %.3f %.3f", S.T.x, S.T.y, S.T.z );
-            (void)fprintf( fp, " quatxyzw %.6f %.6f %.6f %.6f", 
-	      S.Q.x, S.Q.y, S.Q.z, S.Q.w );
-            (void)fprintf( fp, " center %.3f %.3f %.3f", 
-	      S.Center.x, S.Center.y, S.Center.z );
-            (void)fprintf( fp, " ntor %d", S.ntor);
-            for (i=0; i<S.ntor; i++) pr( fp, " %.4f", RadCanonicalDeg(S.tor[i]));
+            // Handle multi-ligand -Huameng 11/08/2007
+        	for(i = 0; i < S.nlig; i++) {
+            	(void)fprintf( fp, "%.3f %.3f %.3f", S.T[i].x, S.T[i].y, S.T[i].z );
+        	}
             break;
     }
 }
 
-static void writeStateAQ( FILE *const fp, /* not const */ State S, const char convention )
+void writeState( FILE *fp, State S )
 {
+    register int i;
+    Real torDegTmp;
 
-
-    // Write translation.
-    (void)fprintf( fp, "%7.3f %7.3f %7.3f  ", S.T.x, S.T.y, S.T.z );
-
-    switch (convention) {
-       case 'Q':
-       case 'q':
-	    // quaternion
-	    (void)fprintf( fp, "%.5f %.5f %.5f %.5f  ", S.Q.x, S.Q.y, S.Q.z, S.Q.w);
-	    break;
-
-       case 'A':
-       case 'a':
-       default:
-	    //  axis-angle.
-	    S.Q = convertQuatToRot( S.Q ); // quaternion to axis-angle.
-
-	    S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-	    (void)fprintf( fp, "%6.3f %6.3f %6.3f %6.3f  ", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
-	    break;
+	// Handle multi-ligand -Huameng 11/08/2007
+    for(i = 0; i < S.nlig; i++) {
+	    // Write translation.
+	    (void)fprintf( fp, "%.3f %.3f %.3f  ", S.T[i].x, S.T[i].y, S.T[i].z );
+	
+	    // Convert quaternion to axis-angle.
+	    S.Q[i] = convertQuatToRot( S.Q[i] );
+	
+	    // Write axis-angle.
+	    S.Q[i].ang = WrpRad( ModRad( S.Q[i].ang ));
+	    (void)fprintf( fp, "%.3f %.3f %.3f %.3f  ", S.Q[i].nx, S.Q[i].ny, S.Q[i].nz, RadiansToDegrees(S.Q[i].ang) );
     }
     // Write torsion angles.
     if (S.ntor > 0) {
-        for (int i=0; i<S.ntor; i++) {
-            pr( fp, " %7.2f", RadCanonicalDeg(S.tor[i]));
+        for (i=0; i<S.ntor; i++) {
+            S.tor[i] = WrpRad( ModRad( S.tor[i] ) );
+        }
+        for (i=0; i<S.ntor; i++) {
+            torDegTmp = RadiansToDegrees( S.tor[i] );
+            torDegTmp = ModDeg( torDegTmp );
+            torDegTmp = WrpDeg( torDegTmp );
+            // Commented out next line to make format more consistent, now all
+            // numbers are space-delimited.
+            //pr( fp, " %.2f%c", torDegTmp, (i==(S.ntor-1) ? '.' : ','));
+            pr( fp, " %.2f", torDegTmp );
         }
     }
+    // Leave fp on this line for energies which follow....
+    //    (void)fprintf( fp, "\n");
 }
-void writeState( FILE *const fp, /* not const */ State S )
-{
-	// simple wrapper to write state with axis-angle convention
-	writeStateAQ( fp, S, 'A');
-	}
 
-int checkState( const State *const D )
+int checkState( const State *D )
 {
     register int i;
     int retval = 1;
     double magnitude_q = 0.;
-        
-    if (ISNAN(D->T.x)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in x translation\n");
-        retval = 0;
-    }
-    if (ISNAN(D->T.y)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in y translation\n");
-        retval = 0;
-    }
-    if (ISNAN(D->T.z)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in z translation\n");
-        retval = 0;
     
-    }
-
-    if (ISNAN(D->Q.x)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in x quaternion\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.y)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in y quaternion\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.z)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in z quaternion\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.w)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in w quaternion\n");
-        retval = 0;
-    }
-    magnitude_q = hypotenuse4(D->Q.x,  D->Q.y,  D->Q.z,  D->Q.w);
-    if (ISNAN(magnitude_q)) {
-        (void)fprintf(logFile,"checkState: After computing the magnitude of quaternion, (NaN) was detected\n");
-        retval = 0;
-    }
- 
-    for ( i=0; i < D->ntor; i++ ) {
+    // Handle multi-ligand -Huameng 11/08/2007
+    for(i = 0; i < D->nlig; i++) {    
+	    if (ISNAN(D->T[i].x)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in x translation\n");
+	        retval = 0;
+	    }
+	    if (ISNAN(D->T[i].y)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in y translation\n");
+	        retval = 0;
+	    }
+	    if (ISNAN(D->T[i].z)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in z translation\n");
+	        retval = 0;   
+	    }
+	    if (ISNAN(D->Q[i].x)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in x quaternion\n");
+	        retval = 0;
+	    }
+	    if (ISNAN(D->Q[i].y)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in y quaternion\n");
+	        retval = 0;
+	    }
+	    if (ISNAN(D->Q[i].z)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in z quaternion\n");
+	        retval = 0;
+	    }
+	    if (ISNAN(D->Q[i].w)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in w quaternion\n");
+	        retval = 0;
+	    }
+	    magnitude_q = hypotenuse4(D->Q[i].x,  D->Q[i].y,  D->Q[i].z,  D->Q[i].w);
+	    if (ISNAN(magnitude_q)) {
+	        (void)fprintf(logFile,"checkState: After computing the magnitude of quaternion, (NaN) was detected\n");
+	        retval = 0;
+	    }
+	 
+	    if (ISNAN(D->Q[i].nx)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in nx component of axis-angle\n");
+	        retval = 0;
+	    }
+	    if (ISNAN(D->Q[i].ny)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in ny component of axis-angle\n");
+	        retval = 0;
+	    }
+	    if (ISNAN(D->Q[i].nz)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in nz component of axis-angle\n");
+	        retval = 0;
+	    }
+	    if (ISNAN(D->Q[i].ang)) {
+	        (void)fprintf(logFile,"checkState: (NaN) detected in ang component of axis-angle\n");
+	        retval = 0;
+	    }
+    } // for nlig
+    
+	for ( i=0; i < D->ntor; i++ ) {
             if (ISNAN(D->tor[i])) {
                 (void)fprintf(logFile,"checkState: (NaN) detected in torsion %d\n",i+1);
                 retval = 0;
             }
     }
 
-    if (ISNAN(D->Q.nx)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in nx component of axis-angle\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.ny)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in ny component of axis-angle\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.nz)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in nz component of axis-angle\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.ang)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in ang component of axis-angle\n");
-        retval = 0;
-    }
-
-
     return(retval);
 }
 
-Molecule copyStateToMolecule(const State *const S, /* not const */ Molecule *const mol) /* S is the source */
+Molecule copyStateToMolecule(State *S, Molecule *mol) /* S is the source */
 {
     register int i;
-    mol->S.T = S->T;
-    mol->S.Q = S->Q;
+    // Handle multi-ligand -Huameng 11/08/2007
+    for(i = 0; i < S->nlig; i++) {
+	    mol->S.T[i].x = S->T[i].x;
+	    mol->S.T[i].y = S->T[i].y;
+	    mol->S.T[i].z = S->T[i].z;
+	    mol->S.Q[i].nx = S->Q[i].nx;
+	    mol->S.Q[i].ny = S->Q[i].ny;
+	    mol->S.Q[i].nz = S->Q[i].nz;
+	    mol->S.Q[i].ang = S->Q[i].ang;
+	    mol->S.Q[i].x = S->Q[i].x;
+	    mol->S.Q[i].y = S->Q[i].y;
+	    mol->S.Q[i].z = S->Q[i].z;
+	    mol->S.Q[i].w = S->Q[i].w;
+	    mol->S.Q[i].qmag = S->Q[i].qmag;
+    }
+    mol->S.nlig = S->nlig;
     mol->S.ntor = S->ntor;
     for (i = 0; i  < MAX_TORS;  i++ ) {
         mol->S.tor[i] = S->tor[i];

@@ -1,5 +1,3 @@
-AutoDock README $Id: README,v 1.5 2010/01/27 00:41:28 mp Exp $
-
 
 What is AutoDock?
 
@@ -40,24 +38,5 @@ Copying AutoDock
 
 Please refer to the file "COPYING" in this directory for
 more information on copying AutoDock.
-
-From CVS
-=======================
-If you've just done a 'cvs co' then here are the commands
-necessary to make autodock:
-
- % aclocal
- % autoconf
- % automake -a
- % ./configure    (* see below)
- % make 
- % make test   ( optional, recommended, requires "python")
- % make install
- 
- This will create and install autodock4 executable.
- 
- * On Macintosh Mac OS X, use instead "./configure-universalDarwin"
-   if you wish to compile a "universal binary"
- 
 
 

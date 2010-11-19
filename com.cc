@@ -1,10 +1,11 @@
 /*
 
- $Id: com.cc,v 1.5 2010/08/27 00:05:07 mp Exp $
+ $Id: com.cc,v 1.3 2007/04/27 06:01:48 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -36,10 +37,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern FILE *logFile;
 
-void advnst(const FourByteLong k)
+void advnst(FourByteLong k)
 /*
 **********************************************************************
-     void advnst(const FourByteLong k)
+     void advnst(FourByteLong k)
                ADV-a-N-ce ST-ate
      Advances the state  of  the current  generator  by 2^K values  and
      resets the initial seed to that value.
@@ -54,7 +55,7 @@ void advnst(const FourByteLong k)
 */
 {
 #define numg 32L
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
+extern void gsrgs(FourByteLong getset,FourByteLong *qvalue);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xm1,Xm2,Xa1,Xa2,Xcg1[],Xcg2[];
 static FourByteLong g,i,ib1,ib2;
@@ -80,7 +81,7 @@ S10:
 */
 #undef numg
 }
-void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2)
+void getsd(FourByteLong *iseed1,FourByteLong *iseed2)
 /*
 **********************************************************************
      void getsd(FourByteLong *iseed1,FourByteLong *iseed2)
@@ -98,7 +99,7 @@ void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2)
 */
 {
 #define numg 32L
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
+extern void gsrgs(FourByteLong getset,FourByteLong *qvalue);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xcg1[],Xcg2[];
 static FourByteLong g;
@@ -133,9 +134,9 @@ FourByteLong ignlgi(void)
 */
 {
 #define numg 32L
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
-extern void gssst(const FourByteLong getset,FourByteLong *const qset);
-extern void gscgn(const FourByteLong getset,FourByteLong *const g);
+extern void gsrgs(FourByteLong getset,FourByteLong *qvalue);
+extern void gssst(FourByteLong getset,FourByteLong *qset);
+extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern void inrgcm(void);
 extern FourByteLong Xm1,Xm2,Xa1,Xa2,Xcg1[],Xcg2[];
 extern FourByteLong Xqanti[];
@@ -171,7 +172,7 @@ static FourByteLong qqssd,qrgnin;
     return ignlgi;
 #undef numg
 }
-void initgn(const FourByteLong isdtyp)
+void initgn(FourByteLong isdtyp)
 /*
 **********************************************************************
      void initgn(FourByteLong isdtyp)
@@ -193,7 +194,7 @@ void initgn(const FourByteLong isdtyp)
 */
 {
 #define numg 32L
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
+extern void gsrgs(FourByteLong getset,FourByteLong *qvalue);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xm1,Xm2,Xa1w,Xa2w,Xig1[],Xig2[],Xlg1[],Xlg2[],Xcg1[],Xcg2[];
 static FourByteLong g;
@@ -244,7 +245,7 @@ void inrgcm(void)
 */
 {
 #define numg 32L
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
+extern void gsrgs(FourByteLong getset,FourByteLong *qvalue);
 extern FourByteLong Xm1,Xm2,Xa1,Xa2,Xa1w,Xa2w,Xa1vw,Xa2vw;
 extern FourByteLong Xqanti[];
 static FourByteLong T1;
@@ -273,7 +274,7 @@ static FourByteLong i;
     gsrgs(1L,&T1);
 #undef numg
 }
-void setall(const FourByteLong iseed1,const FourByteLong iseed2)
+void setall(FourByteLong iseed1,FourByteLong iseed2)
 /*
 **********************************************************************
      void setall(FourByteLong iseed1,FourByteLong iseed2)
@@ -293,9 +294,9 @@ void setall(const FourByteLong iseed1,const FourByteLong iseed2)
 */
 {
 #define numg 32L
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
-extern void gssst(const FourByteLong getset,FourByteLong *const qset);
-extern void gscgn(const FourByteLong getset,FourByteLong *const g);
+extern void gsrgs(FourByteLong getset,FourByteLong *qvalue);
+extern void gssst(FourByteLong getset,FourByteLong *qset);
+extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xm1,Xm2,Xa1vw,Xa2vw,Xig1[],Xig2[];
 static FourByteLong T1;
 static FourByteLong g,ocgn;
@@ -324,7 +325,7 @@ static FourByteLong qrgnin;
     gscgn(1L,&ocgn);
 #undef numg
 }
-void setant(const FourByteLong qvalue)
+void setant(FourByteLong qvalue)
 /*
 **********************************************************************
      void setant(FourByteLong qvalue)
@@ -347,7 +348,7 @@ void setant(const FourByteLong qvalue)
 */
 {
 #define numg 32L
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
+extern void gsrgs(FourByteLong getset,FourByteLong *qvalue);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xqanti[];
 static FourByteLong g;
@@ -365,7 +366,7 @@ S10:
     Xqanti[g-1] = qvalue;
 #undef numg
 }
-void setsd(const FourByteLong iseed1,const FourByteLong iseed2)
+void setsd(FourByteLong iseed1,FourByteLong iseed2)
 /*
 **********************************************************************
      void setsd(FourByteLong iseed1,FourByteLong iseed2)
@@ -384,7 +385,7 @@ void setsd(const FourByteLong iseed1,const FourByteLong iseed2)
 */
 {
 #define numg 32L
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
+extern void gsrgs(FourByteLong getset,FourByteLong *qvalue);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xig1[],Xig2[];
 static FourByteLong g;

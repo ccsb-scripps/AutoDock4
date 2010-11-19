@@ -1,0 +1,7 @@
+README for autoreconf and compile autodock4 
+
+1. rm  old missing, config.sub, config.guess, config.status, depcomp
+
+2.  run   'autoreconf -i'   #To receate missing, config.sub, config.guess, config.status, depcomp
+3.  ./configure
+4.  Modify the created Makefile

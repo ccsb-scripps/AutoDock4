@@ -1,10 +1,11 @@
 /*
 
- $Id: parameters.h,v 1.5 2009/05/08 23:02:14 rhuey Exp $
+ $Id: parameters.h,v 1.3 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -56,8 +57,6 @@ typedef struct parameter_entry
   int map_index;		/* used to set up map atom_types */
   int bond_index;		/* used to set up bonds; corresponds to the enum in mdist.h */
 } ParameterEntry;
-
-#define is_hydrogen_type(t) ((strcmp(t,"H")==0) || (strcmp(t,"HD")==0) || (strcmp(t,"HS")==0))
 
 #endif
 /* EOF */

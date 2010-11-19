@@ -1,10 +1,11 @@
 /*
 
- $Id: input_state.cc,v 1.8 2010/08/27 00:05:07 mp Exp $
+ $Id: input_state.cc,v 1.6.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -35,16 +36,16 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #define LINELEN 132
 
-int input_state( State *const S,
-		 FILE  *const fp,
-		 const char  line[LINE_LEN],
-		 const int   ntor,
-		 int   *const p_istep,
-		 Real  *const p_energy,
-		 Real  *const p_eint,
-		 char  *const p_lastmove )
+int input_state( State *S,
+		 FILE  *fp,
+		 char  line[LINE_LEN],
+		 int   ntor,
+		 int   *p_istep,
+		 Real *p_energy,
+		 Real *p_eint,
+		 char  *p_lastmove )
 {
-    int i, istep, status;
+    int i, istep, status = 0;
     Real energy, eint;
     char lastmove;
     char myline[LINELEN];
@@ -52,24 +53,27 @@ int input_state( State *const S,
 #ifdef DEBUG
     fprintf(stderr, "line=|%s|\n", line);
 #endif /* DEBUG */
-
-    status = sscanf(line, "%*s %d %1s " FDFMT " " FDFMT " %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T.x), &(S->T.y), &(S->T.z),  &(S->Q.nx), &(S->Q.ny), &(S->Q.nz),  &(S->Q.ang) );
-
-    if (status != 0) {
-	S->Q.ang = DegreesToRadians( S->Q.ang );
-	mkUnitQuat( &(S->Q) );
-
+	// Handle multi-ligand -Huameng 11/08/2007
+    for(i = 0; i < S->nlig; i++) {  
+	    status = sscanf(line, "%*s %d %1s " FDFMT " " FDFMT " %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T[i].x), &(S->T[i].y), &(S->T[i].z),  &(S->Q[i].nx), &(S->Q[i].ny), &(S->Q[i].nz),  &(S->Q[i].ang) );	
+	    
+	    if (status != 0) {
+		S->Q[i].ang = DegreesToRadians( S->Q[i].ang );
+		mkUnitQuat( &(S->Q[i]) );
+    	}
+    } // for nlig
+    
     *p_istep = istep;
 	*p_energy = energy;
 	*p_eint = eint;
 	*p_lastmove = lastmove;
 
-        for (i=0; i<ntor; i++) {
-	    (void) fgets(myline, LINELEN, fp);
-            sscanf(myline, "%lf", &(S->tor[i]) ); /* input torsions are in degrees */
-            S->tor[i] = DegreesToRadians( S->tor[i] );    /* now in radians */
-        }
+    for (i=0; i<ntor; i++) {
+    	(void) fgets(myline, LINELEN, fp);
+        sscanf(myline, "%lf", &(S->tor[i]) ); /* input torsions are in degrees */
+        S->tor[i] = DegreesToRadians( S->tor[i] );    /* now in radians */
     }
+    
     return( status );
 }
 /* EOF */

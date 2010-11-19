@@ -1,10 +1,11 @@
 /*
 
- $Id: minmeanmax.cc,v 1.9 2010/08/27 00:05:07 mp Exp $
+ $Id: minmeanmax.cc,v 1.7 2007/04/27 06:01:49 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -43,7 +44,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define which_bin(x, min, max, nbins)  int((nbins)*((x)-(min))/((max)-(min)))
 #define clamp_range(x, min, max) ((x) < (min)) ? (min) : ((x) > (max)) ? (max) : (x)
 
-void minmeanmax( FILE *const fp, const Population &pop, const int num_generations, const GridMapSetInfo *const info )
+void minmeanmax( FILE *fp, Population &pop, int num_generations, GridMapSetInfo *info )
 {
 #ifdef DEBUG
    fprintf( fp, "minmeanmax.cc/minmeanmax(); initialization\n" );

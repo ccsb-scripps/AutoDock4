@@ -1,10 +1,11 @@
 /*
 
- $Id: clmode.h,v 1.10 2010/10/01 22:51:39 mp Exp $
+ $Id: clmode.h,v 1.5.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -39,16 +40,17 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "success.h"
 #include "qmultiply.h"
 #include "openfile.h"
-void  clmode( const int   num_atm_maps, 
-              ConstReal   clus_rms_tol, 
-              const char *const hostnm, 
-              const Clock& jobStart,
-              const struct tms& tms_jobStart, 
-              const Boole B_write_all_clusmem, 
-              const char  *const clusFN, 
-              const Real crdpdb[MAX_ATOMS][SPACE], 
-              const Real sml_center[SPACE], 
-              const Boole B_symmetry_flag,
-              const Boole B_unique_pair_flag,
-              const char  *const rms_ref_crds );
+void  clmode( int   num_atm_maps, 
+              Real clus_rms_tol, 
+              char  hostnm[MAX_CHARS], 
+              Clock jobStart,
+              struct tms tms_jobStart, 
+              Boole B_write_all_clusmem, 
+              char  clusFN[MAX_CHARS], 
+              Real crdpdb[MAX_ATOMS][SPACE], 
+              Real sml_centers[MAX_LIGANDS][SPACE], 
+              Boole B_symmetry_flag,
+              char  rms_ref_crds[MAX_CHARS],
+              int nlig, 
+              int natom_in_ligand_array[MAX_LIGANDS] );
 #endif

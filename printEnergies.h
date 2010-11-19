@@ -1,10 +1,11 @@
 /*
 
- $Id: printEnergies.h,v 1.13 2010/10/01 22:51:39 mp Exp $
+ $Id: printEnergies.h,v 1.8 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -31,15 +32,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "structs.h"
 
-void printEnergies( const EnergyBreakdown *const eb,
-                    const char  *prefixString, 
-                    const int ligand_is_inhibitor,
-                    ConstReal emap_total,
-                    ConstReal elec_total,
-                    const Boole B_have_flexible_residues,
-                    const Unbound_Model ad4_unbound_model);
+void printEnergies( EnergyBreakdown *eb,
+                    char  *prefixString, 
+                    int ligand_is_inhibitor,
+                    Real emap_total,
+                    Real elec_total,
+                    Boole B_have_flexible_residues);
 
-void printStateEnergies( const EnergyBreakdown *eb,
-			 const char *const prefixString, 
-			 const int ligand_is_inhibitor);
+void printStateEnergies( EnergyBreakdown *eb,
+			 char  *prefixString, 
+			 int ligand_is_inhibitor);
 #endif

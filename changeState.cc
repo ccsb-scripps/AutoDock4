@@ -1,10 +1,11 @@
 /*
 
- $Id: changeState.cc,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: changeState.cc,v 1.5.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -35,12 +36,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "changeState.h"
 
 
-State  changeState( const State& last,      /* ...must be a normalized quaternion! */
-                    ConstReal   trnStep,
-                    ConstReal   torStep,
-                    const int   ntor,
-                    const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-                    const int   N_con[MAX_TORS])
+State  changeState( State last,      /* ...must be a normalized quaternion! */
+                    Real trnStep,
+                    Real torStep,
+                    int   ntor,
+                    Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                    int   N_con[MAX_TORS])
 
 {
     register int i;
@@ -49,37 +50,41 @@ State  changeState( const State& last,      /* ...must be a normalized quaternio
     double x0, r1, r2, t1, t2;
     Quat changeQuat;
     State now;
-
-    /*
-    ** Translation
-    */
-    now.T.x = last.T.x + random_pm( trnStep );
-    now.T.y = last.T.y + random_pm( trnStep );
-    now.T.z = last.T.z + random_pm( trnStep );
-
-    /*
-    ** Quaternion angular displacement
-    */
-    /*
-    **  This should produce a uniformly distributed quaternion, according to
-    **  Shoemake, Graphics Gems III.6, pp.124-132, "Uniform Random Rotations",
-    **  published by Academic Press, Inc., (1992)
-    */
-              x0 = local_random();
-              r1 = random_sign * sqrt( 1 - x0 );
-              t1 = TWOPI * local_random();
-    changeQuat.x = sin( t1 ) * r1;
-    changeQuat.y = cos( t1 ) * r1;
-              r2 = random_sign * sqrt(     x0 );
-              t2 = TWOPI * local_random();
-    changeQuat.z = sin( t2 ) * r2;
-    changeQuat.w = cos( t2 ) * r2;
-
-    /*
-    **  Apply random change, to Last Quaternion
-    */
-    qmultiply( &(now.Q), &(last.Q), &(changeQuat) );
-
+    
+	// Handle multi-ligand -Huameng 11/08/2007
+    for(i = 0; i < now.nlig; i++) { 
+    	
+	    /*
+	    ** Translation
+	    */
+	    now.T[i].x = last.T[i].x + random_pm( trnStep );
+	    now.T[i].y = last.T[i].y + random_pm( trnStep );
+	    now.T[i].z = last.T[i].z + random_pm( trnStep );
+	
+	    /*
+	    ** Quaternion angular displacement
+	    */
+	    /*
+	    **  This should produce a uniformly distributed quaternion, according to
+	    **  Shoemake, Graphics Gems III.6, pp.124-132, "Uniform Random Rotations",
+	    **  published by Academic Press, Inc., (1992)
+	    */
+	              x0 = local_random();
+	              r1 = random_sign * sqrt( 1 - x0 );
+	              t1 = TWOPI * local_random();
+	    changeQuat.x = sin( t1 ) * r1;
+	    changeQuat.y = cos( t1 ) * r1;
+	              r2 = random_sign * sqrt(     x0 );
+	              t2 = TWOPI * local_random();
+	    changeQuat.z = sin( t2 ) * r2;
+	    changeQuat.w = cos( t2 ) * r2;
+	
+	    /*
+	    **  Apply random change, to Last Quaternion
+	    */    
+    	qmultiply( &(now.Q[i]), &(last.Q[i]), &(changeQuat) );
+    }  // end nlig
+    
     now.ntor = ntor;
     for (i=0; i<ntor; i++) {
         if (N_con[i] > 0) {

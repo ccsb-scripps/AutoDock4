@@ -1,10 +1,11 @@
 /*
 
- $Id: readmap.cc,v 1.14 2010/10/01 22:51:40 mp Exp $
+ $Id: readmap.cc,v 1.9 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -44,27 +45,30 @@ extern int ElecMap;
 extern FILE *logFile;
 extern int debug;
 
+char mapf2c(Real);
+
 Statistics readmap( char           line[LINE_LEN],
-                    const int      outlev,
-                    const Clock&   jobStart,
-                    const struct tms& tmsJobStart,
-                    const Boole    B_charMap,
-    /* not const */ Boole *const   P_B_HaveMap, 
-                    const int      num_maps, 
-                    const GridMapSetInfo *const info,
-		    #include "map_declare.h"
-                    const char     map_type
+                    int            outlev,
+                    Clock          jobStart,
+                    struct tms     tmsJobStart,
+                    Boole          B_charMap,
+                    Boole          *P_B_HaveMap, 
+                    int            num_maps, 
+                    GridMapSetInfo *info,
+                    Real           map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                    // double *maps 
+                    char           map_type
                   )
 
 {
     FILE *map_file;
 
-    char FileName[PATH_MAX];
-    char FldFileName[PATH_MAX];
-    char GpfName[PATH_MAX];
-    char ExtGpfName[PATH_MAX];
+    char FileName[MAX_CHARS];
+    char FldFileName[MAX_CHARS];
+    char GpfName[MAX_CHARS];
+    char ExtGpfName[MAX_CHARS];
     char message[LINE_LEN];
-    char mmFileName[PATH_MAX];
+    char mmFileName[MAX_CHARS];
     char xyz_str[4];
     char C_mapValue;
     char map_line[LINE_LEN];
@@ -228,22 +232,21 @@ Statistics readmap( char           line[LINE_LEN],
     for ( k = 0;  k < info->num_points1[Z];  k++) {
         for ( j = 0;  j < info->num_points1[Y];  j++) {
             for ( i = 0;  i < info->num_points1[X];  i++) {
-		float thisval;
                 if (B_charMap) {
                     if (fgets(map_line, LINE_LEN, map_file) != NULL) { /*new*/
                         if (sscanf( map_line,  "%c",  &C_mapValue ) != 1) continue;
-			thisval=mapc2f(C_mapValue);
+                        map[k][j][i][num_maps] = mapc2f(C_mapValue);
+                        nv++;
                     }
                 } else {
                     if (fgets( map_line, LINE_LEN, map_file) != NULL) { /*new*/
-                        if (sscanf( map_line,  "%f",  &thisval) != 1) continue;
+                        if (sscanf( map_line,  FDFMT,  &map[k][j][i][num_maps] ) != 1) continue;
+                        nv++;
                     }
                 }
-		SetMap(map,info,k,j,i,num_maps,thisval);
-		map_max = max( map_max, thisval );
-                map_min = min( map_min, thisval );
-                map_total += thisval;
-		nv++;
+                map_max = max( map_max, map[k][j][i][num_maps] );
+                map_min = min( map_min, map[k][j][i][num_maps] );
+                map_total += map[k][j][i][num_maps];
             }
         }
     }
@@ -260,11 +263,7 @@ Statistics readmap( char           line[LINE_LEN],
         for ( k = 0;  k < info->num_points1[Z];  k++) {
             for ( j = 0;  j < info->num_points1[Y];  j++) {
                 for ( i = 0;  i < info->num_points1[X];  i++) {
-#ifdef MAPSUBSCRIPT 
                     deviation = map[k][j][i][num_maps] - map_stats.mean;
-#else
-                    deviation = GetMap(map,info,k,j,i,num_maps) - map_stats.mean;
-#endif
                     sum_squares += deviation * deviation;
                 }
             }
@@ -307,7 +306,7 @@ Statistics readmap( char           line[LINE_LEN],
     return map_stats;
 }
 
-Real mapc2f(const char numin)
+Real mapc2f(char numin)
 {
     Real numout;
     if (numin == 0) {
@@ -321,5 +320,23 @@ Real mapc2f(const char numin)
 }
 
 
+/*
+    char mapf2c(Real numin)
+    {
+        char numout;
+        if (numin == 0.) {
+            numout = 0;
+        } else if ((-12.8 < numin) && (numin < 0.)) {
+            numout = numin * 10.;
+        } else if ((0. < numin) && (numin < 1280.)) {
+            numout = numin / 10.;
+        } else if (numin >= 1280.) {
+            numout = 127;
+        } else {
+            numout = -128;
+        }
+        return numout;
+    }
+*/
 
 /* EOF */

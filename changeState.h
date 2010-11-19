@@ -1,10 +1,11 @@
 /*
 
- $Id: changeState.h,v 1.7 2010/10/01 22:51:39 mp Exp $
+ $Id: changeState.h,v 1.4 2007/04/27 06:01:48 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -27,10 +28,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef CHANGESTATE
 #define CHANGESTATE
 
-State  changeState( const State& last,      /* ...must be a normalized quaternion! */
-		    ConstReal   trnStep,
-		    ConstReal   torStep,
-		    const int   ntor,
-		    const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-		    const int   N_con[MAX_TORS]);
+State  changeState( State last,      /* ...must be a normalized quaternion! */
+		    Real trnStep,
+		    Real torStep,
+		    int   ntor,
+		    Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		    int   N_con[MAX_TORS]);
 #endif

@@ -1,10 +1,11 @@
 /*
 
- $Id: print_avsfld.h,v 1.5 2010/08/27 00:05:08 mp Exp $
+ $Id: print_avsfld.h,v 1.2 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -29,12 +30,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "constants.h"
 
-void  print_avsfld(FILE  *const logFile,
-                   const int   veclen,
-                   const int   natom,
-                   const int   nframe,
-                   const int   offset[VECLENMAX],
-                   const int   stride,
-                   const char  *const label,
-                   const char  *const filename );
+void  print_avsfld(FILE  *logFile,
+                   int   veclen,
+                   int   natom,
+                   int   nframe,
+                   int   offset[VECLENMAX],
+                   int   stride,
+                   char  label[MAX_CHARS],
+                   char  filename[MAX_CHARS] );
 #endif

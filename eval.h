@@ -1,10 +1,11 @@
 /*
 
- $Id: eval.h,v 1.26 2010/10/01 22:51:39 mp Exp $
+ $Id: eval.h,v 1.18.2.1 2010/11/19 20:09:30 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Scott Halliday, Rik Belew, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -46,18 +47,18 @@ extern FILE *logFile;
 #endif
 
 #if defined(USING_COLINY)
-void make_state_from_rep(const double *const x, const int n, State *const now);
+void make_state_from_rep(double *x, int n, State *now);
 #endif
 
-void make_state_from_rep(const Representation *const *const rep, State *const stateNow);
+void make_state_from_rep(Representation **rep, State *stateNow);
 
 class Eval
 {
    private:
-      UnsignedFourByteLong num_evals;
+      //UnsignedFourByteLong num_evals;
+      long num_evals;
       int natom, Nnb;
       GridMapSetInfo *info;
-      MapType *map;
       Real eval_elec[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
       Real eval_emap[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
@@ -68,68 +69,71 @@ class Eval
       Real *charge, *abs_charge, *qsp_abs_charge;
       Real (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE], (*crdreo)[SPACE];
       EnergyTables *ptr_ad_energy_tables;
+      Real (*map)[MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS];
       Boole *B_isTorConstrained;
       Molecule mol;
       int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
       Boole         B_include_1_4_interactions; // gmm 2005-01-8, for scaling 1-4 nonbonds
       Real scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
-      Real scale_eintermol;  // for scaling intermolecular energy term
-      //ParameterEntry *parameterArray;
+      ParameterEntry *parameterArray;
       Real  unbound_internal_FE;
       Boole B_compute_intermol_energy; // use for computing unbound state
       Boole B_use_non_bond_cutoff;  // set this to FALSE if we are computing unbound extended conformations
       Boole B_have_flexible_residues;
+      Boole B_have_multiple_ligands;
 
    public:
       Eval(void);
-      void setup( /* not const */ Real init_crd[MAX_ATOMS][SPACE], // not const since pointers are copied, not contents
-                  /* not const */ Real  init_charge[MAX_ATOMS],
-                  /* not const */ Real  init_abs_charge[MAX_ATOMS],
-                  /* not const */ Real  init_qsp_abs_charge[MAX_ATOMS],
-                  /* not const */ int            init_type[MAX_ATOMS], int init_natom,
+      void setup( Real init_crd[MAX_ATOMS][SPACE],
+                  Real  init_charge[MAX_ATOMS],
+                  Real  init_abs_charge[MAX_ATOMS],
+                  Real  init_qsp_abs_charge[MAX_ATOMS],
+                  int            init_type[MAX_ATOMS], int init_natom,
+                  Real  init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+
+                  Real  init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+                  Real  init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+
+                  NonbondParam *init_nonbondlist,
+                  EnergyTables   *init_ptr_ad_energy_tables,
+                  int init_Nnb,
+                  Boole          init_B_calcIntElec,
+                  Boole          init_B_isGaussTorCon, Boole init_B_isTorConstrained[MAX_TORS],
+                  Boole          init_B_ShowTorE, unsigned short init_US_TorE[MAX_TORS],
+                  unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
+                  Real  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS],
+                  Real  init_crdpdb[MAX_ATOMS][SPACE], 
+                  Real  init_crdreo[MAX_ATOMS][SPACE], 
+                  State stateInit, Molecule molInit,
+                  int            init_ignore_inter[MAX_ATOMS],
+                  Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
+                  Real  init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
+                  ParameterEntry init_parameterArray[MAX_MAPS],
+                  Real  init_unbound_internal_FE,
                   GridMapSetInfo *init_info,
-                  MapType  *init_map,
-
-                  /* not const */ Real  init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-                  /* not const */ Real  init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-
-                  /* not const */ NonbondParam *init_nonbondlist,
-                  /* not const */ EnergyTables   *init_ptr_ad_energy_tables,
-                  const int init_Nnb,
-                  const Boole          init_B_calcIntElec,
-                  const Boole          init_B_isGaussTorCon,
-		  /* not const */ Boole init_B_isTorConstrained[MAX_TORS],
-                  const Boole          init_B_ShowTorE,
-		  /* not const */ unsigned short init_US_TorE[MAX_TORS],
-                  /* not const */ unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
-                  /* not const */ Real  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS],
-                  /* not const */ Real  init_crdpdb[MAX_ATOMS][SPACE], 
-                  /* not const */ Real  init_crdreo[MAX_ATOMS][SPACE], 
-                  const State& stateInit, 
-		  const Molecule& molInit,
-                  const int            init_ignore_inter[MAX_ATOMS], // values are copied
-                  const Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
-                  ConstReal   init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
-                  ConstReal   init_scale_eintermol,
-                  ConstReal   init_unbound_internal_FE,
-                  const Boole  init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
-                  const Boole  init_B_have_flexible_residues
+                  Boole  init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
+                  Boole  init_B_have_flexible_residues
                   );
       void update_crds( Real init_crdreo[MAX_ATOMS][SPACE], 
                         Real init_vt[MAX_TORS][SPACE] );
 
-      double operator()(const Representation *const *const );
-      double operator()(const Representation *const *const , int); // GMM - allows calculation of a particular term of the total energy
+      double operator()(Representation **);
+      double operator()(Representation **, int); // GMM - allows calculation of a particular term of the total energy
 #if defined(USING_COLINY)
       double operator()(double*, int);
 #endif
-      double eval();    // WEH - a basic change that facilitates the use of Coliny
-      double eval(const int); // GMM - allows calculation of a particular term of the total energy
-      UnsignedFourByteLong evals(void);
+      double eval();    // WEH - a basic change that facilitates the use of Coliny    
+      double eval(int); // GMM - allows calculation of a particular term of the total energy      
+      //UnsignedFourByteLong evals(void);
+      long evals(void);
       void reset(void);
-      int write(FILE *const out_file, const Representation *const *const rep);
-      double evalpso(/* not const */ State *const state);
-      void compute_intermol_energy(const Boole init_B_compute_intermol_energy); // for computing unbound state
+      int write(FILE *out_file, Representation **rep);
+      void compute_intermol_energy(Boole init_B_compute_intermol_energy); // for computing unbound state
+      void set_multiple_ligands(Boole B_multiple_ligands) ;
+      
+      double evalpso(State *stateNow);        // for PSO searching  HL 02/23/08
+      double evalpso(State *stateNow, int term);
+      
 };
 
 inline Eval::Eval(void)
@@ -137,43 +141,43 @@ inline Eval::Eval(void)
 {
 }
 
-inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not const since pointers are copied, not values
-                        /* not const */ Real init_charge[MAX_ATOMS],
-                        /* not const */ Real init_abs_charge[MAX_ATOMS],
-                        /* not const */ Real init_qsp_abs_charge[MAX_ATOMS],
-                        /* not const */ int init_type[MAX_ATOMS],
-                        const int init_natom,
-                        GridMapSetInfo *const init_info,
-                        MapType *init_map,
+inline void Eval::setup(Real init_crd[MAX_ATOMS][SPACE],
+                        Real init_charge[MAX_ATOMS],
+                        Real init_abs_charge[MAX_ATOMS],
+                        Real init_qsp_abs_charge[MAX_ATOMS],
+                        int init_type[MAX_ATOMS],
+                        int init_natom,
+                        Real init_map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
 
-                        /* not const */ Real init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-                        /* not const */ Real init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-                        /* not const */ NonbondParam *const init_nonbondlist,
-                        /* not const */ EnergyTables   *const init_ptr_ad_energy_tables,
-                        const int init_Nnb,
-                        const Boole init_B_calcIntElec, 
-                        const Boole init_B_isGaussTorCon,
-                        /* not const */ Boole init_B_isTorConstrained[MAX_TORS], // values are not copied but pointers
-                        const Boole init_B_ShowTorE,
-                        /* not const */ unsigned short init_US_TorE[MAX_TORS],
-                        /* not const */ unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
-                        /* not const */ Real init_vt[MAX_TORS][SPACE],
-                        /* not const */ int init_tlist[MAX_TORS][MAX_ATOMS],
-                        /* not const */ Real init_crdpdb[MAX_ATOMS][SPACE],
-                        /* not const */ Real init_crdreo[MAX_ATOMS][SPACE],
-                        const State& stateInit,
-                        const Molecule& molInit,
+                        Real init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+                        Real init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+                        NonbondParam *init_nonbondlist,
+                        EnergyTables   *init_ptr_ad_energy_tables,
+                        int init_Nnb,
+                        Boole init_B_calcIntElec, 
+                        Boole init_B_isGaussTorCon,
+                        Boole init_B_isTorConstrained[MAX_TORS],
+                        Boole init_B_ShowTorE,
+                        unsigned short init_US_TorE[MAX_TORS],
+                        unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
+                        Real init_vt[MAX_TORS][SPACE],
+                        int init_tlist[MAX_TORS][MAX_ATOMS],
+                        Real init_crdpdb[MAX_ATOMS][SPACE],
+                        Real init_crdreo[MAX_ATOMS][SPACE],
+                        State stateInit,
+                        Molecule molInit,
 
-                        const int init_ignore_inter[MAX_ATOMS],
+                        int init_ignore_inter[MAX_ATOMS],
 
-                        const Boole init_B_include_1_4_interactions,
-                        ConstReal  init_scale_1_4,
-                        ConstReal  init_scale_eintermol, 
+                        Boole init_B_include_1_4_interactions,
+                        Real init_scale_1_4,
 
+                        ParameterEntry init_parameterArray[MAX_MAPS],
 
-                        ConstReal  init_unbound_internal_FE,
-                        const Boole init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
-                        const Boole init_B_have_flexible_residues
+                        Real init_unbound_internal_FE,
+                        GridMapSetInfo *init_info,
+                        Boole init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
+                        Boole init_B_have_flexible_residues
                        )
 
 {
@@ -215,35 +219,41 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
 
     B_include_1_4_interactions = init_B_include_1_4_interactions;
     scale_1_4 = init_scale_1_4;
-    scale_eintermol = init_scale_eintermol;
 
-    //parameterArray = init_parameterArray;
+    parameterArray = init_parameterArray;
 
     unbound_internal_FE = init_unbound_internal_FE;
 
     info = init_info;
-    map = init_map;
     B_compute_intermol_energy = TRUE; // default is "Yes, calculate the intermolecular energy".
 
     B_use_non_bond_cutoff = init_B_use_non_bond_cutoff;  // set this to FALSE if we are computing unbound extended conformations
     B_have_flexible_residues = init_B_have_flexible_residues;
+    
 }
 
 inline void Eval::update_crds( Real init_crdreo[MAX_ATOMS][SPACE], 
-                               Real init_vt[MAX_TORS][SPACE])
+                               Real init_vt[MAX_TORS][SPACE] )
 {
     crdreo = init_crdreo;
     vt = init_vt;
 }
 
-inline void Eval::compute_intermol_energy(const Boole init_B_compute_intermol_energy)
+// set multiple ligands
+inline void Eval::set_multiple_ligands(Boole B_multiple_ligands) 
+{
+	B_have_multiple_ligands = B_multiple_ligands;
+}
+
+inline void Eval::compute_intermol_energy(Boole init_B_compute_intermol_energy)
     // For computing the conformation and the internal energy of the unbound state.
 {
     B_compute_intermol_energy = init_B_compute_intermol_energy;
 }
 
 
-inline UnsignedFourByteLong Eval::evals(void)
+//inline UnsignedFourByteLong Eval::evals(void)
+inline long Eval::evals(void)
 {
    return(num_evals);
 }

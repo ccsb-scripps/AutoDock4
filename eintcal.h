@@ -1,10 +1,11 @@
 /*
 
- $Id: eintcal.h,v 1.18 2010/10/01 22:51:39 mp Exp $
+ $Id: eintcal.h,v 1.13 2007/04/27 06:01:48 garrett Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -31,14 +32,15 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "structs.h"
 
-Real  eintcal( const NonbondParam * const nonbondlist, 
+Real  eintcal( NonbondParam * const nonbondlist, 
                const EnergyTables  *ad_energy_tables,
                const Real tcoord[MAX_ATOMS][SPACE], 
                const int  Nnb,
                const Boole B_calcIntElec,
                const Boole B_include_1_4_interactions,
-               ConstReal  scale_1_4,
+               const Real scale_1_4,
                const Real qsp_abs_charge[MAX_ATOMS],
+               const ParameterEntry parameterArray[MAX_MAPS],
                const Boole B_use_non_bond_cutoff,
                const Boole B_have_flexible_residues  );
 

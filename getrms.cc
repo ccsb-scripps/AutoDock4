@@ -1,10 +1,11 @@
 /*
 
- $Id: getrms.cc,v 1.9 2010/08/27 00:05:07 mp Exp $
+ $Id: getrms.cc,v 1.5 2007/04/27 06:01:48 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -32,38 +33,29 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "getrms.h"
 
 
-Real getrms ( const Real Crd[MAX_ATOMS][SPACE], 
-               const Real CrdRef[MAX_ATOMS][SPACE], 
-               const Boole B_symmetry_flag, 
-	       const Boole B_unique_pair_flag,
-               const int natom, 
-               const int type[MAX_ATOMS] )
+Real getrms ( Real Crd[MAX_ATOMS][SPACE], 
+               Real CrdRef[MAX_ATOMS][SPACE], 
+               Boole B_symmetry_flag, 
+               int natom, 
+               int type[MAX_ATOMS] )
 
 {
     double sqrSum, sqrMin, dc[SPACE];
-    Boole is_available[MAX_ATOMS]; // available to be chosen as atom i's symmetry mate 
     register int i, j, xyz;
 
     sqrSum = 0.;
 
     if (B_symmetry_flag) {
-        for (i = 0;  i < natom;  i++) is_available[i] = TRUE;
         for (i = 0;  i < natom;  i++) {
             sqrMin = BIG;
-	    int nearest_j_to_i=0;
             for (j = 0;  j < natom;  j++) {                
-                if (type[i] == type[j] && is_available[j]) {
+                if (type[i] == type[j]) {
                     for (xyz = 0;  xyz < SPACE;  xyz++) {
                         dc[xyz]= Crd[i][xyz] - CrdRef[j][xyz];
                     } /* xyz */
-		    double dist2= sqhypotenuse(dc[X], dc[Y], dc[Z]);
-                    if(dist2<sqrMin) {
-		    	sqrMin=dist2;
-			nearest_j_to_i = j;
-		    }
+                    sqrMin = min( sqhypotenuse(dc[X], dc[Y], dc[Z]), sqrMin );
                 }
             } /*  next j  */
-	    if(B_unique_pair_flag) is_available[nearest_j_to_i] = FALSE;
             sqrSum += sqrMin;
         } /*  next i  */
     } else {

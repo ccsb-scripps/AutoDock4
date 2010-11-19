@@ -1,10 +1,11 @@
 /*
 
- $Id: initautodock.h,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: initautodock.h,v 1.5 2007/04/27 06:01:49 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -33,14 +34,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "print_2x.h"
 
 void initautodock(
-	    const char  atomstuff[MAX_ATOMS][MAX_CHARS],
-	    /* not const */ Real crd[MAX_ATOMS][SPACE],
-	    const Real crdpdb[MAX_ATOMS][SPACE],
-	    const int   natom,
-	    const int   ntor,
-	    /* not const */ State *const s0,
-	    const int   tlist[MAX_TORS][MAX_ATOMS],
-	    const Real vt[MAX_TORS][SPACE],
-	    const int   outlev,
-            const GridMapSetInfo *const info );
+	    char  atomstuff[MAX_ATOMS][MAX_CHARS],
+	    Real crd[MAX_ATOMS][SPACE],
+	    Real crdpdb[MAX_ATOMS][SPACE],
+	    int   natom,
+	    int   ntor,
+	    State *s0,
+	    int   tlist[MAX_TORS][MAX_ATOMS],
+	    Real vt[MAX_TORS][SPACE],
+	    int   outlev,
+            GridMapSetInfo *info );
 #endif

@@ -1,10 +1,11 @@
 /*
 
- $Id: parse_PDBQT_line.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: parse_PDBQT_line.cc,v 1.4.2.1 2010/11/19 20:09:28 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -36,12 +37,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 
 
-int parse_PDBQT_line( const char line[LINE_LEN] )
+int parse_PDBQT_line( char line[LINE_LEN] )
 
 /******************************************************************************/
 /*      Name: parse_PDBQT_line                                                 */
 /*  Function: Parse the PDBQ file line.                                       */
-/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
+/* Copyright: (C) 1994, TSRI                                                  */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Morris, The Scripps Research Institute                  */
 /*      Date: 11/06/93                                                        */
@@ -93,7 +94,11 @@ int parse_PDBQT_line( const char line[LINE_LEN] )
         } else if (strncmp(c,"endb",4)==0) {
             token = PDBQ_ENDBRANCH;
         } else if (strncmp(c,"cons",4)==0) {
-            token = PDBQ_CONSTRAINT;
+            token = PDBQ_CONSTRAINT;          
+        } else if (strncmp(c,"begin_lig",9)==0) {
+            token = PDBQ_BEGIN_LIG;
+        } else if (strncmp(c,"end_lig",7)==0) {
+            token = PDBQ_END_LIG;       
         } else if (strncmp(c,"begin_res",9)==0) {
             token = PDBQ_BEGIN_RES;
         } else if (strncmp(c,"end_res",7)==0) {

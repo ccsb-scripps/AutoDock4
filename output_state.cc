@@ -1,10 +1,11 @@
 /*
 
- $Id: output_state.cc,v 1.11 2010/10/01 22:51:39 mp Exp $
+ $Id: output_state.cc,v 1.7.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -43,18 +44,18 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define PERMS 0666        /* hexadecimal permissions for watch-file */
 
 /*----------------------------------------------------------------------------*/
-void output_state( FILE *const fp,
-		   const State& S,
-                   const int ntor,
-                   const int istep,
-                   ConstReal energy,
-                   ConstReal eint,
-                   const char lastmove,
-                   const Boole B_watch,
-                   const char *const FN_watch,
-                   const char atomstuff[MAX_ATOMS][MAX_CHARS],
-                   const int natom,
-                   const Real crd[MAX_ATOMS][SPACE])
+void output_state( FILE *fp,
+		   State S,
+                   int ntor,
+                   int istep,
+                   Real energy,
+                   Real eint,
+                   char lastmove,
+                   Boole B_watch,
+                   char FN_watch[MAX_CHARS],
+                   char atomstuff[MAX_ATOMS][MAX_CHARS],
+                   int natom,
+                   Real crd[MAX_ATOMS][SPACE])
 /*----------------------------------------------------------------------------*/
 {
     int i;
@@ -67,11 +68,12 @@ void output_state( FILE *const fp,
     int FD_watch;
     FILE *FP_watch;
 #endif
-
-    fprintf(fp, "state %d %c %f %f  %lf %lf %lf  %lf %lf %lf %lf\n",
-        istep, lastmove, energy, eint, S.T.x, S.T.y, S.T.z,
-        S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees( S.Q.ang ) );
-
+	//handle multi-ligand -Huameng 11/09/2007
+	for(i = 0; i < S.nlig; i++) {
+	    fprintf(fp, "state %d %c %f %f  %lf %lf %lf  %lf %lf %lf %lf\n",
+	        istep, lastmove, energy, eint, S.T[i].x, S.T[i].y, S.T[i].z,
+	        S.Q[i].nx, S.Q[i].ny, S.Q[i].nz, RadiansToDegrees( S.Q[i].ang ) );
+	}
     for (i=0; i<ntor; i++) {
         fprintf(fp, "%f\n", RadiansToDegrees( S.tor[i]) );
     }

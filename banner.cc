@@ -1,10 +1,11 @@
 /*
 
- $Id: banner.cc,v 1.21 2010/08/27 00:05:07 mp Exp $
+ $Id: banner.cc,v 1.9.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -33,7 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern FILE *logFile;
 
-void banner( const char *const version_num )
+void banner( Real version_num )
 {
 
 /*----------------------------------------------------------------------------*/
@@ -64,47 +65,46 @@ void banner( const char *const version_num )
     (void) fprintf(logFile, "\n");
     (void) fprintf(logFile, "                  ______________________________________ \n");
     (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 |      AutoDock %-3.3s Release %-8s   |\n", version_num, version_num );
-    (void) fprintf(logFile, "                 |            (c) 1989-2009             |\n");
+    (void) fprintf(logFile, "                 |            AutoDock %3.2f             |\n", version_num );
+    (void) fprintf(logFile, "                 |                                      |\n");
+    (void) fprintf(logFile, "                 |            (c) 1991-2008             |\n");
     (void) fprintf(logFile, "                 |    The Scripps Research Institute    |\n");
     (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 |        Garrett M. Morris, TSRI       |\n");
+    (void) fprintf(logFile, "                 |       Garrett M. Morris, TSRI        |\n");
     (void) fprintf(logFile, "                 |            Ruth Huey, TSRI           |\n");
-    (void) fprintf(logFile, "                 |          Michael Pique, TSRI         |\n");
-    (void) fprintf(logFile, "                 |        William E. Hart, Sandia       |\n");
-    (void) fprintf(logFile, "                 |   R. Scott Halliday, Hewlett Packard |\n");
+    (void) fprintf(logFile, "                 |        William E. Hart, Sandia       |\n");    
     (void) fprintf(logFile, "                 |        William Lindstrom, TSRI       |\n");
-    (void) fprintf(logFile, "                 |           Max Chang, TSRI            |\n");
     (void) fprintf(logFile, "                 |        Alexander Gillet, TSRI        |\n");
-    (void) fprintf(logFile, "                 |         Stefano Forli, TSRI          |\n");
-    (void) fprintf(logFile, "                 |        Richard K. Belew, UCSD        |\n");
     (void) fprintf(logFile, "                 |       David S. Goodsell, TSRI        |\n");
     (void) fprintf(logFile, "                 |        Arthur J. Olson, TSRI         |\n");
     (void) fprintf(logFile, "                 |______________________________________|\n");
     (void) fprintf(logFile, "\n");
     (void) fprintf(logFile, "                  ______________________________________ \n");
     (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 | Automated Docking of Flexible Ligand |\n");
-    (void) fprintf(logFile, "                 |  to Flexible Macromolecular Receptor |\n");
-    (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 | For help, email %-19s |\n", PACKAGE_BUGREPORT);
+    (void) fprintf(logFile, "                 |    Automated Docking of              |\n");
+    (void) fprintf(logFile, "                 |    Mutiple Ligands to Flexible       |\n");
+    (void) fprintf(logFile, "                 |    Macromolecular Receptor           |\n");
     (void) fprintf(logFile, "                 |______________________________________|\n");
-    (void) fprintf(logFile, "\n\n");
-    (void) fprintf(logFile, "        AutoDock comes with ABSOLUTELY NO WARRANTY.\n");
-// GNU BEGIN   (see maintenance script update_license_de-GNU)
-    (void) fprintf(logFile, "        AutoDock is free software, and you are welcome\n");
-    (void) fprintf(logFile, "        to redistribute it under certain conditions;\n");
-    (void) fprintf(logFile, "        for details type 'autodock -C'\n\n");
-// GNU END   (see maintenance script update_license_de-GNU)
+    (void) fprintf(logFile, "\n");
+    (void) fprintf(logFile, "                  ______________________________________ \n");
+    (void) fprintf(logFile, "                 |                                      |\n");    
+    (void) fprintf(logFile, "                 |    Multi-Ligand Docking (MLSD)       |\n");
+    (void) fprintf(logFile, "                 |        Huameng Li, OSU               |\n");
+    (void) fprintf(logFile, "                 |        Chenglong Li, OSU             |\n");  
+    (void) fprintf(logFile, "                 |______________________________________|\n");   
+    (void) fprintf(logFile, "\n\n\n");
+    (void) fprintf(logFile, "        AutoDock comes with ABSOLUTELY NO WARRANTY; for details\n");
+    (void) fprintf(logFile, "        type 'warranty'.  This is free software, and you are welcome\n");
+    (void) fprintf(logFile, "        to redistribute it under certain conditions; type 'copyright'\n");
+    (void) fprintf(logFile, "        for details.\n\n\n");
 
 }
 
 /*----------------------------------------------------------------------------*/
 
-void show_copyright( FILE *const fp )
+void show_copyright( FILE *fp )
 {
 
-// GNU BEGIN   (see maintenance script update_license_de-GNU)
     (void) fprintf( fp, "GNU GENERAL PUBLIC LICENSE\n");
     (void) fprintf( fp, "\n");
     (void) fprintf( fp, "Version 2, June 1991\n");
@@ -358,21 +358,18 @@ void show_copyright( FILE *const fp )
     (void) fprintf( fp, "sometimes make exceptions for this. Our decision will be guided by the\n");
     (void) fprintf( fp, "two goals of preserving the free status of all derivatives of our free\n");
     (void) fprintf( fp, "software and of promoting the sharing and reuse of software generally.\n\n\n");
-// GNU END   (see maintenance script update_license_de-GNU)
 
     return;
 }
 
 /*----------------------------------------------------------------------------*/
 
-void show_warranty( FILE *const fp )
+void show_warranty( FILE *fp )
 {
 
     (void) fprintf( fp, "NO WARRANTY\n");
     (void) fprintf( fp, "\n");
-// GNU BEGIN   (see maintenance script update_license_de-GNU)
     (void) fprintf( fp, "11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY\n");
-    (void) fprintf( fp, " THERE IS NO WARRANTY\n");
     (void) fprintf( fp, "FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN\n");
     (void) fprintf( fp, "OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES\n");
     (void) fprintf( fp, "PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, EITHER\n");
@@ -392,7 +389,6 @@ void show_warranty( FILE *const fp )
     (void) fprintf( fp, "THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR\n");
     (void) fprintf( fp, "OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.\n\n\n");
 
-// GNU END   (see maintenance script update_license_de-GNU)
     return;
 }
 

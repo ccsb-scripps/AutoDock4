@@ -1,10 +1,11 @@
 /*
 
- $Id: coliny.cc,v 1.16 2010/08/27 00:05:07 mp Exp $
+ $Id: coliny.cc,v 1.12.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  William Hart, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson,
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -51,7 +52,7 @@ using namespace utilib;
 //
 // The AutoDock 'objective function' used within Coliny
 //
-double ADEvalFn(/* not const */ double *const x, const int n);
+double ADEvalFn(double* x, int n);
 
 #ifdef COLIN_3_0
 
@@ -69,7 +70,7 @@ colin::OptSolverHandle* handle = 0;
 //// Initialize the "algname" optimizer over the given domain.  An initial
 //// point is generate as the midpoint over the domain.
 ////
-void coliny_init(const char *const algname, const char *const domain, const int num_vars)
+void coliny_init(char* algname, char* domain, int num_vars)
 {
 //
 // If 'algname' equals "help", then print the list of supported
@@ -143,9 +144,9 @@ void coliny_init(const char *const algname, const char *const domain, const int 
 ////
 //// To turn on "full debugging", set the false flag to true.
 ////
-void coliny_minimize(const int seed, const std::vector<double>& initpt,
-                     /* not const */ std::vector<double>& finalpt,
-                     /* unused */ const int& neval, /* unused */ const int& niters)
+void coliny_minimize(int seed, std::vector<double>& initpt,
+                     std::vector<double>& finalpt,
+                     int& neval, int& niters)
 {
    coliny_problem->reset();
 
@@ -259,9 +260,9 @@ void coliny_init(char* algname, char* domain, int)
 ////
 //// To turn on "full debugging", set the false flag to true.
 ////
-void coliny_minimize(const int seed, const std::vector<double>& initpt,
-                     /* not const */ std::vector<double>& finalpt,
-                     /* unused */ const int& neval, /* unused */ const int& niters)
+void coliny_minimize(int seed, std::vector<double>& initpt,
+                     std::vector<double>& finalpt,
+                     int& neval, int& niters)
 {
    coliny_problem.reset_neval();
 

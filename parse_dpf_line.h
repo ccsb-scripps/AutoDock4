@@ -1,10 +1,11 @@
 /*
 
- $Id: parse_dpf_line.h,v 1.5 2010/08/27 00:05:08 mp Exp $
+ $Id: parse_dpf_line.h,v 1.2.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -28,6 +29,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define PARSE_DPF_LINE
 
 #include "constants.h"
-int  parse_dpf_line( const char  line[] );
-
+int  parse_dpf_line( char  line[LINE_LEN] );
+int parseLigandFileNames(char * line, char *ligandfiles[], int maxligands);
 #endif

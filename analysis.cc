@@ -1,10 +1,11 @@
 /*
 
- $Id: analysis.cc,v 1.42 2010/10/01 22:51:39 mp Exp $
+ $Id: analysis.cc,v 1.27.2.1 2010/11/19 20:09:29 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -32,7 +33,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <limits>
 #include "constants.h"
 #include "structs.h"
 #include "getpdbcrds.h"
@@ -55,56 +55,58 @@ extern int   keepresnum;
 extern char  dock_param_fn[];
 extern char  *programname;
 extern int   true_ligand_atoms;
-
-void analysis( const int   Nnb, 
-               const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
-               const Real  charge[MAX_ATOMS], 
-               const Real  abs_charge[MAX_ATOMS], 
-               const Real  qsp_abs_charge[MAX_ATOMS], 
-               const Boole B_calcIntElec,
-               ConstReal   clus_rms_tol, 
-               const Real  crdpdb[MAX_ATOMS][SPACE], 
+//extern int   nlig;
+void analysis( int   Nnb, 
+               char  atomstuff[MAX_ATOMS][MAX_CHARS], 
+               Real charge[MAX_ATOMS], 
+               Real abs_charge[MAX_ATOMS], 
+               Real qsp_abs_charge[MAX_ATOMS], 
+               Boole B_calcIntElec,
+               Real clus_rms_tol, 
+               Real crdpdb[MAX_ATOMS][SPACE], 
 
                const EnergyTables *ptr_ad_energy_tables,
 
-	       //const
-	       #include "map_declare.h"
-               const Real  econf[MAX_RUNS], 
-               const int   irunmax, 
-               const int   natom, 
-               const NonbondParam *nonbondlist, 
-               const int   nconf, 
-               const int   ntor, 
-               State hist[MAX_RUNS],  // modified in analysis.cc (hack)
-               const char  *smFileName, 
-               const Real  sml_center[SPACE],
-               const Boole B_symmetry_flag, 
-	       const Boole B_unique_pair_flag,
-               const int   tlist[MAX_TORS][MAX_ATOMS], 
-               const int   type[MAX_ATOMS], 
-               const Real  vt[MAX_TORS][SPACE],
-               const char  *FN_rms_ref_crds,
-               ConstReal    torsFreeEnergy,
-               const Boole B_write_all_clusmem,
-               const int   ligand_is_inhibitor,
-               const int   outlev,
-               const int   ignore_inter[MAX_ATOMS],
+               Real  map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS], 
+               Real  econf[MAX_RUNS], 
+               int   irunmax, 
+               int   natom, 
+               NonbondParam *nonbondlist, 
+               int   nconf, 
+               int   ntor, 
+               State hist[MAX_RUNS], 
+               char  smFileNames[MAX_LIGANDS][MAX_CHARS], 
+               Real  sml_centers[MAX_LIGANDS][SPACE],
+               Boole B_symmetry_flag, 
+               int   tlist[MAX_TORS][MAX_ATOMS], 
+               int   type[MAX_ATOMS], 
+               Real  vt[MAX_TORS][SPACE],
+               char  FN_rms_ref_crds[MAX_CHARS],
+               Real  torsFreeEnergy,
+               Boole B_write_all_clusmem,
+               int   ligand_is_inhibitor,
+               int   outlev,
+			   int   ignore_inter[MAX_ATOMS],
                const Boole   B_include_1_4_interactions,
-               ConstReal   scale_1_4,
-               ConstReal   unbound_internal_FE,
+               const Real scale_1_4,
 
-               const GridMapSetInfo *const info,
-               const Boole B_use_non_bond_cutoff,
-               const Boole B_have_flexible_residues,
-               const Boole B_rms_atoms_ligand_only,
-               const Unbound_Model ad4_unbound_model
+               const ParameterEntry parameterArray[MAX_MAPS],
+               const Real unbound_internal_FE,
 
+               GridMapSetInfo *info,
+               Boole B_use_non_bond_cutoff,
+               Boole B_have_flexible_residues,
+               Boole B_rms_atoms_ligand_only,
+			   int nlig,
+			   int natom_in_lig[MAX_LIGANDS]
               )
 
 {
     /* register int   imol = 0; */
-    char  filename[PATH_MAX];
+    static char  filename[MAX_CHARS];
     static char  label[MAX_CHARS];
+    static char  rec14[14];
+    static char  rec9[9];
 
     static Real clu_rms[MAX_RUNS][MAX_RUNS];
     static Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
@@ -185,10 +187,6 @@ void analysis( const int   Nnb,
 
         /* fprintf( logFile, "\n\nState hist[%d].\n", k); */
         if (outlev > -1) {
-	    // pass center to printState - could be improved MPique 2010
-	    hist[k].Center.x = sml_center[X];
-	    hist[k].Center.y = sml_center[Y];
-	    hist[k].Center.z = sml_center[Z];
             printState( logFile, hist[k], 2 );
         }
 
@@ -201,7 +199,7 @@ void analysis( const int   Nnb,
         /* fprintf( logFile, "Saving coordinates of state %d.\n", k); */
 
         /* Save coordinates in crdSave array...  */
-        (void)memcpy(crdSave[k], crd, natom*SPACE*sizeof(Real));
+        (void)memcpy(crdSave[k], crd, natom*3*sizeof(Real));
     } /*k*/
 
     flushLog;
@@ -214,8 +212,8 @@ void analysis( const int   Nnb,
         // of flexibility in the receptor sidechains...
         ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort, 
                     nconf, n_rms_atoms, type, crdSave, crdpdb, 
-                    sml_center, clu_rms, B_symmetry_flag, B_unique_pair_flag,
-                    ref_crds, ref_natoms, ref_rms);
+                    sml_centers, clu_rms, B_symmetry_flag,
+                    ref_crds, ref_natoms, ref_rms, nlig, natom_in_lig);
 
         pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
         flushLog;
@@ -236,11 +234,11 @@ void analysis( const int   Nnb,
         pr( logFile, "\nSorry!  Unable to perform cluster analysis, because not enough conformations were generated.\n\n\n" );
 
         ncluster = 1;
-        ref_rms[0] = getrms( crd, ref_crds, B_symmetry_flag, B_unique_pair_flag, n_rms_atoms, type);
+        ref_rms[0] = getrms( crd, ref_crds, B_symmetry_flag, n_rms_atoms, type);
         clu_rms[0][0] = 0.;
         num_in_clu[0] = 1;
         cluster[0][0] = 0;
-    }
+    } // nconf
     flushLog;
 
     // For each cluster, i
@@ -269,25 +267,29 @@ void analysis( const int   Nnb,
 
             EnergyBreakdown eb;
 
-            eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+            eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
                  crd, charge, abs_charge, type, map, info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID,
                  ignore_inter, elec, emap, &elec_total, &emap_total,
                  nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-                 B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model );
+                 B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff );
      
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
 
-            printEnergies( &eb, "USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model);
+            printEnergies( &eb, "USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues);
      
             pr( logFile, "USER  \n");
             pr( logFile, "USER    DPF = %s\n", dock_param_fn);
-            pr( logFile, "USER    NEWDPF move\t%s\n", smFileName );
-            pr( logFile, "USER    NEWDPF about\t%f %f %f\n", sml_center[X],sml_center[Y],sml_center[Z]);
-            pr( logFile, "USER    NEWDPF tran0\t%f %f %f\n", hist[c].T.x, hist[c].T.y, hist[c].T.z );
-            pr( logFile, "USER    NEWDPF axisangle0\t%f %f %f %f\n", hist[c].Q.nx, hist[c].Q.ny, hist[c].Q.nz, RadiansToDegrees(hist[c].Q.ang) );
-            pr( logFile, "USER    NEWDPF quaternion0\t%f %f %f %f\n", hist[c].Q.x, hist[c].Q.y, hist[c].Q.z, hist[c].Q.w );
+            
+            //handle multi-ligand -Huameng 11/09/2007
+			for(int n = 0; n < hist[c].nlig; n++) {
+	            pr( logFile, "USER    NEWDPF move\t%s\n", smFileNames[n] );
+	            pr( logFile, "USER    NEWDPF about\t%f %f %f\n", sml_centers[n][X],sml_centers[n][Y],sml_centers[n][Z]);
+	            pr( logFile, "USER    NEWDPF tran0\t%f %f %f\n", hist[c].T[n].x, hist[c].T[n].y, hist[c].T[n].z );
+	            pr( logFile, "USER    NEWDPF axisangle0\t%f %f %f %f\n", hist[c].Q[n].nx, hist[c].Q[n].ny, hist[c].Q[n].nz, RadiansToDegrees(hist[c].Q[n].ang) );
+	            pr( logFile, "USER    NEWDPF quaternion0\t%f %f %f %f\n", hist[c].Q[n].x, hist[c].Q[n].y, hist[c].Q[n].z, hist[c].Q[n].w );
+			} // for n nlig
             if (ntor > 0) {
-                // Deprecated in AutoDock 4 // pr( logFile, "USER    NEWDPF ndihe\t%d\n", hist[c].ntor );
+                pr( logFile, "USER    NEWDPF ndihe\t%d\n", hist[c].ntor );
                 pr( logFile, "USER    NEWDPF dihe0\t" );
                 flushLog;
                 for ( t = 0;  t < hist[c].ntor;  t++ ) {
@@ -306,8 +308,9 @@ void analysis( const int   Nnb,
                     pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     for (j = 0;  j < natom;  j++) {
-                        print_PDBQ_atom_resstr( logFile, "", j, atomstuff[j],  crd, 
-                          min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j],"");
+                        strncpy( rec14, &atomstuff[j][13], (size_t)13);
+                        rec14[13]='\0';
+                        pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", j+1, rec14, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
                         pr(logFile," %6.3f\n", ref_rms[c]); 
                     }
                     //]
@@ -316,8 +319,9 @@ void analysis( const int   Nnb,
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
                     for (j = 0;  j < natom;  j++) {
-                        print_PDBQ_atom_resnum( logFile, "", j, atomstuff[j],  i1, crd, 
-                          min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j],"");
+                        strncpy( rec9, &atomstuff[j][13], (size_t)8);
+                        rec9[8]='\0';
+                        pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, "", j+1, rec9, i1, crd[j][X], crd[j][Y], crd[j][Z], min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j]);
                         pr(logFile," %6.3f\n", ref_rms[c]); 
                     }/*j*/
                     //]
@@ -328,7 +332,7 @@ void analysis( const int   Nnb,
             // End of outputting coordinates of this "MODEL"...
 #ifdef EINTCALPRINT
             // Print detailed breakdown of internal energies of all non-bonds
-            (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues);
+            (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues);
 #endif
             flushLog;
         } /*k*/

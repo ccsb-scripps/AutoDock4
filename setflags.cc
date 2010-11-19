@@ -1,10 +1,11 @@
 /*
 
- $Id: setflags.cc,v 1.21 2010/08/27 00:05:08 mp Exp $
+ $Id: setflags.cc,v 1.6 2007/04/27 06:01:51 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -13,7 +14,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
 
- This program is distributed in the hope that it will be useful, 
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
@@ -34,9 +35,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "setflags.h"
 #include "openfile.h"
 #include "version.h"
-#include "banner.h"
-#include "strindex.h"
-
 
 extern FILE *parFile;
 extern FILE *logFile;
@@ -45,31 +43,33 @@ extern int  write_stateFile;
 extern char *programname;
 
 extern char dock_param_fn[];
+extern char AutoDockHelp[];
 extern int  debug;
 extern int  ignore_errors;
+extern int  command_mode;
 extern int  parse_tors_mode;
 extern int  keepresnum;
 
 
-int setflags( /* not const */ int argc, const char ** /* not const */ argv, const char *const version_num)
+int setflags( int I_argc, char * const PPC_argv[])
 
 /*
 ** naming convention: 
-** var   => var is an integer variable;
-** var => var is a pointer to a pointer to a character variable
+** I_var   => var is an integer variable;
+** PPC_var => var is a pointer to a pointer to a character variable
 */
 
 /******************************************************************************/
 /*      Name: setflags                                                        */
-/*  Function: read flags from argv; return argindex of first non arg.   */
-/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
+/*  Function: read flags from PPC_argv; return I_argindex of first non arg.   */
+/* Copyright: (C) Garrett Matthew Morris, TSRI.                               */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Matthew Morris, TSRI.                                   */
 /*            (Adapted from code supplied by Bruce Duncan, TSRI.)             */
 /*      Date: 02/02/94                                                        */
 /*----------------------------------------------------------------------------*/
-/*    Inputs: argc, argv                                                 */
-/*   Returns: argindex                                                      */
+/*    Inputs: I_argc,PPC_argv                                                 */
+/*   Returns: I_argindex                                                      */
 /*   Globals: *parFile;				                              */
 /*            *logFile;					                      */
 /*            *programname;						      */
@@ -91,47 +91,36 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
 /******************************************************************************/
 
 {
-    int argindex;
+    int I_argindex;
 /*----------------------------------------------------------------------------*/
 /* Initialize                                                                 */
 /*----------------------------------------------------------------------------*/
-    argindex = 1;
-    if (programname) free(programname);
-    programname = strdup(argv[0]); // argv is const, only executed once
+    I_argindex = 1;
+    programname = PPC_argv[0];
     parFile = stdin;
     logFile = stdout;
-    char logFileName[PATH_MAX+2];
-    static char * p_logFileName = strdup("stdout"); // change with -l <NAME> or defaults
-     // to parFile name with last 3 chars changed from "dpf" to "dlg"
     /*
      * see autoglobal.h for initialization of debug, keepresnum and logicals...
      */
-    if (argc==1) { //No arguments provided
-        usage(stdout, "AutoDock");
-        exit(0);
-    }
 /*----------------------------------------------------------------------------*/
 /* Loop over arguments                                                        */
 /*----------------------------------------------------------------------------*/
-    while((argc > 1) && (argv[1][0] == '-')){
-        if (argv[1][1] == '-') argv[1]++;
-
-        switch(argv[1][1]){
+    while((I_argc > 1) && (PPC_argv[1][0] == '-')){
+        switch(PPC_argv[1][1]){
 #ifdef FOO
         case 'n':
-            ncount = atoi(argv[2]);
-            argv++;
-            argc--;
-            argindex++;
+            ncount = atoi(PPC_argv[2]);
+            PPC_argv++;
+            I_argc--;
+            I_argindex++;
             break;
 #endif
         case 'd':
             debug++;
             break;
         case 'u':
-        case 'h':
-            usage(stdout, "AutoDock");
-            exit(0);
+            usage();
+	    exit(0);
             break;
         case 'i':
             ignore_errors = TRUE;
@@ -139,105 +128,70 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
         case 'k':
             keepresnum--;
             break;
-        case 'C':
-            //show copyright
-            show_copyright(stdout);
-            show_warranty(stdout);
-            exit(0);
-            break;
         case 'c':
-            //command_mode removed with 4.1 release spring 2009, mp + rh
-            fprintf(stderr, "\n%s: command mode is not supported in this version of autodock\n", programname );
+            command_mode = TRUE;
             break;
         case 'l':
-	    if (p_logFileName) free(p_logFileName);
-	    p_logFileName = strdup(argv[2]);
-            argv++;
-            argc--;
-            argindex++;
+            if ( (logFile = ad_fopen(PPC_argv[2], "w")) == NULL ) {
+#ifdef DEBUG
+                fprintf(stderr,"\n Log file name = %s\n",PPC_argv[2]); 
+#endif /* DEBUG */
+                fprintf(stderr, "\n%s: can't create log file %s\n", programname, PPC_argv[2]);
+                fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
+                return(-1);
+            }
+            PPC_argv++;
+            I_argc--;
+            I_argindex++;
             break;
         case 's':
-            if ( (stateFile = ad_fopen(argv[2], "w")) == NULL ) {
+            if ( (stateFile = ad_fopen(PPC_argv[2], "w")) == NULL ) {
 #ifdef DEBUG
-                fprintf(stderr, "\n State file name = %s\n", argv[2]); 
+                fprintf(stderr,"\n State file name = %s\n",PPC_argv[2]); 
 #endif /* DEBUG */
-                fprintf(stderr, "\n%s: can't create state file %s\n", programname, argv[2]);
+                fprintf(stderr, "\n%s: can't create state file %s\n", programname, PPC_argv[2]);
                 fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
                 return(-1);
             }
-            else{
-                fprintf(stateFile, "<?xml version=\"1.0\" ?>\n");
-                fprintf(stateFile, "<autodock>\n");
-                fprintf(stateFile, "\t<version>%s</version>\n", version_num);
-                fprintf(stateFile, "\t<autogrid_version>%s</autogrid_version>\n", version_num);
-                fprintf(stateFile, "\t<output_xml_version>%5.2f</output_xml_version>\n", OUTPUT_XML_VERSION);
-                write_stateFile = TRUE;
-            }
-            argv++;
-            argc--;
-            argindex++;
-            break;    
+	    else{
+	      fprintf(stateFile,"<?xml version=\"1.0\" ?>\n");
+	      fprintf(stateFile,"<autodock>\n");
+	      fprintf(stateFile,"\t<version>%s.%s</version>\n", AUTODOCK_MAJ_VERSION,AUTODOCK_MIN_VERSION);
+	      fprintf(stateFile,"\t<autogrid_version>%s.%s</autogrid_version>\n", AUTOGRID_MAJ_VERSION,AUTOGRID_MIN_VERSION);
+	      fprintf(stateFile,"\t<output_xml_version>%5.2f</output_xml_version>\n", OUTPUT_XML_VERSION);
+	      write_stateFile = TRUE;
+	    }
+            PPC_argv++;
+            I_argc--;
+            I_argindex++;
+            break;	    
         case 'p':
-            snprintf(dock_param_fn, PATH_MAX -1, "%s", argv[2] );
-            if ( strindex( dock_param_fn, ".dpf") != (int) strlen(dock_param_fn) - 4){
-                fprintf(stderr, "\n AutoDock needs the extension of the docking parameter file to be \".dpf\"");
-                fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
-                return(-1);
-            }
-
-            if ( (parFile = ad_fopen(dock_param_fn, "r")) == NULL ) {
+            strcpy(dock_param_fn, PPC_argv[2]);
+            if ( (parFile = ad_fopen(PPC_argv[2], "r")) == NULL ) {
 #ifdef DEBUG
-                fprintf(stderr, "\n Parameter file name = %s\n", dock_param_fn);
+                fprintf(stderr,"\n Parameter file name = %s\n",PPC_argv[2]);
 #endif /* DEBUG */
-                fprintf(stderr, "\n%s: can't find or open parameter file %s\n", programname, dock_param_fn);
+                fprintf(stderr, "\n%s: can't find or open parameter file %s\n", programname, PPC_argv[2]);
                 fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
                 return(-1);
             }
-            argv++;
-            argc--;
-            argindex++;
+            PPC_argv++;
+            I_argc--;
+            I_argindex++;
             break;
         case 't':
             parse_tors_mode = TRUE;
             break;
-        case 'v':
-            fprintf(stdout, "AutoDock %-8s\n", version_num);
-            fprintf(stdout, " Copyright (C) 2009 The Scripps Research Institute.\n");
-// GNU BEGIN   (see maintenance script update_license_de-GNU)
-            fprintf(stdout, " License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>\n");
-            fprintf(stdout, " This is free software: you are free to change and redistribute it.\n");
-// GNU END   (see maintenance script update_license_de-GNU)
-            fprintf(stdout, " There is NO WARRANTY, to the extent permitted by law.\n");
-            exit(0);
-            break;
         default:
-            fprintf(stderr, "%s: unknown switch \"-%c\".  \n", programname, argv[1][1]);
-            usage(stderr, programname);
+            fprintf(stderr,"%s: unknown switch \"-%c\".  Usage:\n",programname,PPC_argv[1][1]);
+            fprintf(stderr,"%s %s\n",programname,AutoDockHelp);
             return(-1);
             /* break; */
         }
-        argindex++;
-        argc--;
-        argv++;
+        I_argindex++;
+        I_argc--;
+        PPC_argv++;
     }
-    // set docking log file name from parameter file name if
-    // a "-p <DPF>" appeared but no "-l <DLG>" appeared
-    if ( parFile != stdin  && 0==strcmp(p_logFileName, "stdout")) {
-            strncpy(logFileName, dock_param_fn, strlen(dock_param_fn)-4);
-	    logFileName[strlen(dock_param_fn)] = '\0';
-            strcat(logFileName, ".dlg");
-	    }
-    else snprintf(logFileName, sizeof logFileName, "%s", p_logFileName);
-
-    if ( (logFile = ad_fopen(logFileName, "w")) == NULL ) {
-#ifdef DEBUG
-                fprintf(stderr, "\n Log file name = %s\n", logFileName); 
-#endif /* DEBUG */
-                fprintf(stderr, "\n%s: can't create log file %s\n", programname, logFileName);
-                fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
-                return(-1);
-            }
-            setlinebuf(logFile); // to ensure output even if crash
-    return(argindex);
+    return(I_argindex);
 }
 /* EOF */

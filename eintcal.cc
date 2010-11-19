@@ -1,10 +1,11 @@
 /*
 
- $Id: eintcal.cc,v 1.23 2010/10/01 22:51:39 mp Exp $
+ $Id: eintcal.cc,v 1.17.2.1 2010/11/19 20:09:29 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -38,18 +39,24 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern Linear_FE_Model AD4;
 extern int Nnb_array[3];
 extern Real nb_group_energy[3];
+extern double  nb_elec_total;
+extern double  nb_vdm_hb_total;
+extern double  nb_desol_total;
+
+extern FILE *logFile;
 
 #ifndef EINTCALPRINT
 
 // Calculate internal energy
-Real eintcal( const NonbondParam * const nonbondlist,
+Real eintcal( NonbondParam * const nonbondlist,
               const EnergyTables  *ptr_ad_energy_tables,
               const Real tcoord[MAX_ATOMS][SPACE],
               const int           Nnb,
               const Boole         B_calcIntElec,
               const Boole         B_include_1_4_interactions,
-              ConstReal  scale_1_4,
+              const Real scale_1_4,
               const Real qsp_abs_charge[MAX_ATOMS],
+              const ParameterEntry parameterArray[MAX_MAPS],
               const Boole B_use_non_bond_cutoff,
               const Boole B_have_flexible_residues  // if the receptor has flexibile residues, this will be set to TRUE
              )
@@ -58,17 +65,18 @@ Real eintcal( const NonbondParam * const nonbondlist,
 
 // eintcalPrint [
 
-extern FILE *logFile;
+//extern FILE *logFile;
 
 // Calculate internal energy and print out a detailed report
-Real eintcalPrint( const NonbondParam * const nonbondlist,
+Real eintcalPrint( NonbondParam * const nonbondlist,
                    const EnergyTables  *ptr_ad_energy_tables,
                    const Real tcoord[MAX_ATOMS][SPACE],
                    const int           Nnb,
                    const Boole         B_calcIntElec,
                    const Boole         B_include_1_4_interactions,
-                   ConstReal  scale_1_4,
+                   const Real scale_1_4,
                    const Real qsp_abs_charge[MAX_ATOMS],
+                   const ParameterEntry parameterArray[MAX_MAPS],
                    const Boole B_use_non_bond_cutoff,
                    const Boole B_have_flexible_residues  // if the receptor has flexibile residues, this will be set to TRUE
                   )
@@ -80,7 +88,7 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 /*       Name: eintcal                                                         */
 /*   Function: Calculate the Internal Energy of the Small Molecule.            */
 /*             Accelerated non-square-rooting, dx,dy,dz version.               */
-/*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
+/*  Copyright: (C) 1994-2004, TSRI                                             */
 /* ____________________________________________________________________________*/
 /*    Authors: Garrett M. Morris, TSRI                                         */
 /*             David Goodsell, UCLA                                            */
@@ -136,12 +144,12 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 
     register double e_elec=0.0L;
 
-#ifdef EINTCALPRINT
+//#ifdef EINTCALPRINT
     double total_e_elec=0.0L;
     double total_e_vdW_Hb=0.0L;
     double e_vdW_Hb=0.0L;
     double total_e_desolv=0.0L;
-#endif
+//#endif
 
     register int inb=0;
     register int a1=0, a2=0;
@@ -154,24 +162,26 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
     int inb_to=0;
     int nb_group_max = 1;  // By default, we have one nonbond group, (1) intramolecular in the ligand
 
-    if (B_have_flexible_residues) {
+    
+    if (B_have_flexible_residues ) {
         // If we have flexible residues, we need to consider three groups of nonbonds:
         // (1) intramolecular in the ligand, (2) intermolecular and (3) intramolecular in the receptor
         nb_group_max = 3;
     }
-
+		
     // Loop over the nonbonding groups --
     // Either (intramolecular ligand nonbonds)
     // or (intramolecular ligand nonbonds, intermolecular nonbonds, and intramolecular receptor nonbonds)
     for (nb_group = 0;  nb_group < nb_group_max;  nb_group++) {
 
 #ifdef EINTCALPRINT
+		pr(logFile, "Nonbond group nb_group_max= %d \n", nb_group_max);
         if (nb_group == 0) {
             pr(logFile, "\n\n\t\tLigand Intramolecular Energy Analysis\n");
             pr(logFile,     "\t\t=====================================\n\n");
         }
         if (nb_group == 1) {
-            pr(logFile, "\n\n\t\tLigand-Receptor Moving-Atom Intermolecular Energy Analysis\n");
+            pr(logFile, "\n\n\t\tLigand-Receptor and Ligand-Ligand Moving-Atom Intermolecular Energy Analysis\n");
             pr(logFile,     "\t\t==========================================================\n\n");
         }
         if (nb_group == 2) {
@@ -217,6 +227,12 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
             //| desolvation energy = sol_fn[dist] * ( rec.vol * (lig.solpar + qsolpar * |lig.charge|)
             //|                                     + lig.vol * (rec.solpar + qsolpar * |rec.charge|) );
             //|
+            //| lig.solpar = parameterArray[t1].solpar;
+            //| lig.vol    = parameterArray[t1].vol;
+            //| lig.charge = qsp_abs_charge[a1]/qsolpar;
+            //| rec.solpar = parameterArray[t2].solpar;
+            //| rec.vol    = parameterArray[t2].vol;
+            //| rec.charge = qsp_abs_charge[a2]/qsolpar;
 #ifndef NOSQRT 
             // Use square-root, slower...
 
@@ -251,26 +267,30 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
                     e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
                 }
             }
-
-
+            
+		  // 10/09/2009 -Huameng modify to get separate Energy term
+		  e_vdW_Hb = e_internal - e_desolv - e_elec;
+		  
           total_e_internal += e_internal;
+          total_e_desolv   += e_desolv;
+          total_e_elec     += e_elec;         
+          total_e_vdW_Hb   += e_vdW_Hb;
+          
 #ifdef EINTCALPRINT // eintcalPrint [
 
-          total_e_desolv   += e_desolv;
-          total_e_elec     += e_elec;
+          //total_e_desolv   += e_desolv;
+          //total_e_elec     += e_elec;
           double dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
 
           if (B_calcIntElec) {
-
-              e_vdW_Hb = e_internal - e_desolv - e_elec,
+              //e_vdW_Hb = e_internal - e_desolv - e_elec;
               pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
                     (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
                     (double)e_internal, (double)e_elec, (double)e_vdW_Hb, (double)e_desolv, 
                     (double)ptr_ad_energy_tables->sol_fn[index_lt_NEINT], (int)nonbond_type, (double)dielectric 
                  );
           } else {
-
-              e_vdW_Hb = e_internal - e_desolv,
+              //e_vdW_Hb = e_internal - e_desolv;
               pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
                     (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
                     (double)e_internal, (double)e_vdW_Hb, (double)e_desolv, 
@@ -278,12 +298,12 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
                  );
           }
 
-          total_e_vdW_Hb += e_vdW_Hb;
-
+          //total_e_vdW_Hb += e_vdW_Hb;
+          
 #endif // eintcalPrint ]
 
         } //  inb -- next non-bond interaction
-
+		
         if (nb_group == INTRA_LIGAND) { // [0]
             // Intramolecular energy of ligand
             nb_group_energy[INTRA_LIGAND] = total_e_internal;
@@ -296,7 +316,11 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
         }
 
     } // nb_group -- intra lig, inter, intra rec
-
+	
+	// assign E terms to global var
+	nb_elec_total = total_e_elec;
+	nb_vdm_hb_total = total_e_vdW_Hb ;
+	nb_desol_total = total_e_desolv ;
 
 #ifdef EINTCALPRINT
     if (B_calcIntElec) {
@@ -307,12 +331,10 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
     } else {
         pr( logFile, "                                ________  ________  ________\n");
         pr( logFile, "Total                           %+8.3lf  %+8.3lf  %+8.3lf\n", total_e_internal, total_e_vdW_Hb, total_e_desolv);
-        pr( logFile, "                                ________  ________  ________\n");
+        pr( logFile, "                                ________  ________  ________n");
         pr( logFile, "                                   Total    vdW+Hb    Desolv\n");
     }
-#endif
 
-#ifdef EINTCALPRINT
     pr( logFile, "\nTotal Intramolecular Interaction Energy   = %+.3lf kcal/mol\n", (double)total_e_internal); // eintcalPrint
 #endif
 

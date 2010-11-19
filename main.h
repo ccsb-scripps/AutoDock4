@@ -1,10 +1,11 @@
 /*
 
- $Id: main.h,v 1.12 2010/08/27 00:05:07 mp Exp $
+ $Id: main.h,v 1.8 2007/04/27 06:01:49 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -33,6 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "autoglobal.h"
 #include "banner.h"
 #include "clmode.h"
+#include "cmdmode.h"
 #include "cnv_state_to_coords.h"
 #include "constants.h"
 #include "eintcalPrint.h"
@@ -63,8 +65,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define UNBOUND 0
 #define DOCKED 1
 
-int  main( int  argc, const char **argv);
-//int main (int argc, char * const argv[], char * const envp[]);
+//int  main( int  argc, char **argv, char **envp);
+int main (int argc, char * const argv[], char * const envp[]);
 
 #endif
 

@@ -1,10 +1,11 @@
 /*
 
- $Id: eval.cc,v 1.30 2010/08/27 00:05:07 mp Exp $
+ $Id: eval.cc,v 1.22.2.1 2010/11/19 20:09:29 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Scott Halliday, Rik Belew, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -32,6 +33,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
      These are the functions associated with the evaluation object.
 
                                 rsh 9/95
+Modification: HL 11/06/2007 add state for multi-ligands 		
 ********************************************************************/
 
 
@@ -41,6 +43,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "assert.h"
 
 extern FILE *logFile;
+extern int nlig;    //global variable number of ligand set in main.cc
 
 #include <stdio.h>
 #include <string.h>
@@ -57,6 +60,12 @@ extern FILE *logFile;
 
        | x | y | z | qx | qy | qz | qw | tor1 | ... | tor N |
 
+ 	For multiple ligands:  -Huameng
+ 	The chromosome is assumed to have a layout like this -
+
+     	| x1 | y1 | z1 | qx1 | qy1 | qz1 | qw1 
+     	| x2 | y2 | z2 | qx2 | qy2 | qz2 | qw2 | ... 
+     	| tor1 | ... | tor N |
     where:
        x is the x translation
        y is the y translation
@@ -65,62 +74,73 @@ extern FILE *logFile;
        tor 1, ..., tor N are the ntor torsion angles
 */
 
-void make_state_from_rep(const Representation *const *const rep, /* not const */ State *const stateNow) /* not a member function */
+void make_state_from_rep(Representation **rep, State *stateNow)
 /*
     This routine modifies the various components of stateNow to correspond
     to the chromosome.  
 */
 {
-   register int i;
-
+   register int i = 0;
+   register int start_idx = 0;
+      
 #ifdef DEBUG
    (void)fprintf(logFile, "eval.cc/make_state_from_rep(Representation **rep, State *stateNow)\n");
+   (void)fprintf(logFile, "global nlig=%d Total torsions=%d\n", nlig, stateNow->ntor);
 #endif /* DEBUG */
-
-   //  Do the translations
-   assert( !ISNAN( rep[0]->gene(0).real ) );
-   stateNow->T.x = rep[0]->gene(0).real;
-   assert( !ISNAN( rep[1]->gene(0).real ) );
-   stateNow->T.y = rep[1]->gene(0).real;
-   assert( !ISNAN( rep[2]->gene(0).real ) );
-   stateNow->T.z = rep[2]->gene(0).real;
-
-   //  Set up the quaternion
-   assert( !ISNAN( rep[3]->gene(0).real ) );
-   stateNow->Q.x = rep[3]->gene(0).real;
-   assert( !ISNAN( rep[3]->gene(1).real ) );
-   stateNow->Q.y = rep[3]->gene(1).real;
-   assert( !ISNAN( rep[3]->gene(2).real ) );
-   stateNow->Q.z = rep[3]->gene(2).real;
-   assert( !ISNAN( rep[3]->gene(3).real ) );
-   stateNow->Q.w = rep[3]->gene(3).real;
-
-   // Generate the corresponding axis-angle ("rotation")
-   Quat q_axis_angle;
-   q_axis_angle = convertQuatToRot( stateNow->Q );
-
-   // Update the axis-angle values in stateNow
-   stateNow->Q.nx = q_axis_angle.nx;
-   stateNow->Q.ny = q_axis_angle.ny;
-   stateNow->Q.nz = q_axis_angle.nz;
-   stateNow->Q.ang = q_axis_angle.ang;
+  
+   // modify to handle multi-ligand docking -Huameng 11/08/2007 
+   stateNow->nlig = nlig;     
+   for(i = 0; i < nlig; i++) {  	
+   	   //each ligand uses 4 representation
+	   start_idx = 4*i;  
+	    	
+	   //  Do the translations
+	   assert(    !ISNAN( rep[start_idx + 0]->gene(0).real ) );
+	   stateNow->T[i].x = rep[start_idx + 0]->gene(0).real;
+	   assert(    !ISNAN( rep[start_idx + 1]->gene(0).real ) );
+	   stateNow->T[i].y = rep[start_idx + 1]->gene(0).real;
+	   assert(    !ISNAN( rep[start_idx + 2]->gene(0).real ) );
+	   stateNow->T[i].z = rep[start_idx + 2]->gene(0).real;
+	
+	   //  Set up the quaternion
+	   assert(    !ISNAN( rep[start_idx + 3]->gene(0).real ) );
+	   stateNow->Q[i].x = rep[start_idx + 3]->gene(0).real;
+	   assert(    !ISNAN( rep[start_idx + 3]->gene(1).real ) );
+	   stateNow->Q[i].y = rep[start_idx + 3]->gene(1).real;
+	   assert(    !ISNAN( rep[start_idx + 3]->gene(2).real ) );
+	   stateNow->Q[i].z = rep[start_idx + 3]->gene(2).real;
+	   assert(    !ISNAN( rep[start_idx + 3]->gene(3).real ) );
+	   stateNow->Q[i].w = rep[start_idx + 3]->gene(3).real;
+	
+	   // Generate the corresponding axis-angle ("rotation")
+	   Quat q_axis_angle;
+	   q_axis_angle = convertQuatToRot( stateNow->Q[i] );
+	
+	   // Update the axis-angle values in stateNow
+	   stateNow->Q[i].nx = q_axis_angle.nx;
+	   stateNow->Q[i].ny = q_axis_angle.ny;
+	   stateNow->Q[i].nz = q_axis_angle.nz;
+	   stateNow->Q[i].ang = q_axis_angle.ang;
    
-   //  Copy the angles
-   for (i=0; i<stateNow->ntor; i++) {
-      assert( !ISNAN( rep[4]->gene(i).real ) );
-      stateNow->tor[i] = rep[4]->gene(i).real;
+   } //nlig
+   
+   
+   // Copy the angles,  4*nlig 
+   for (i=0; i < stateNow->ntor; i++) {
+      assert( !ISNAN( rep[4*nlig]->gene(i).real ) );
+      stateNow->tor[i] = rep[4*nlig]->gene(i).real;
    }
 
    // mkUnitQuat(&(stateNow->Q));
 }
 
-double Eval::operator()(const Representation *const *const rep)
+double Eval::operator()(Representation **rep)
 {
    make_state_from_rep(rep, &stateNow);
    return eval();
 }
 
-double Eval::operator()(const Representation *const *const rep, const int term)
+double Eval::operator()(Representation **rep, int term)
 {
    make_state_from_rep(rep, &stateNow);
    return eval(term);
@@ -129,22 +149,108 @@ double Eval::operator()(const Representation *const *const rep, const int term)
 
 double Eval::eval()
 {
+   register int i;
+   int   B_outside = 0;
+   int   I_tor = 0;
+   int   indx = 0;
+   double energy = 0.0L;
+   // Real emap[MAX_ATOMS] = { 0.0L };
+   // Real elec[MAX_ATOMS] = { 0.0L };
+
 #ifdef DEBUG
-   (void) fprintf(logFile,"eval.cc eval() calling eval(3)\n");
+    (void)fprintf(logFile,"eval.cc/double Eval::eval()\n");
 #endif /* DEBUG */
-   return eval(3); // default is total energy
+
+#ifdef DEBUG
+	// multip Ligands Huameng Li 10/20/2007
+	for(i = 0; i < stateNow.nlig; i++ ) {
+	    if (is_out_grid_info(stateNow.T[i].x, stateNow.T[i].y, stateNow.T[i].z)) {
+	       (void)fprintf(logFile,"eval.cc/stateNow.T is outside grid!\n");
+	    }
+	}
+#endif /* DEBUG */
+
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/eval()  Converting state to coordinates...\n");
+    printState( logFile, stateNow, 2 );
+#endif /* DEBUG */
+
+   // Ligand could be inside or could still be outside, check all the atoms...
+   // cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdreo, crd, natom);
+   cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
+
+#ifdef DEBUG
+(void)fprintf(logFile,"eval.cc/Checking to see if all coordinates are inside grid...\n");
+#endif /* DEBUG */
+
+   //  Check to see if crd is valid
+   for (i=0; (i<natom)&&(!B_outside); i++) {
+      B_outside = is_out_grid_info(crd[i][0], crd[i][1], crd[i][2]);
+   } // i
+
+
+    if (B_compute_intermol_energy) {
+        energy = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+                             info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
+                             ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL);
+    }
+#ifdef DEBUG
+(void)fprintf(logFile,"eval.cc/double Eval::eval() after trilinterp, energy= %.5lf\n",energy);
+#endif /* DEBUG */
+    energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues ) - unbound_internal_FE;
+#ifdef DEBUG
+(void)fprintf(logFile,"eval.cc/double Eval::eval() after eintcal, energy= %.5lf\n",energy);
+#endif /* DEBUG */
+ 
+    if (B_isGaussTorCon) {
+        for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
+            if (B_isTorConstrained[I_tor] == 1) {
+                indx = RadiansToDivs( WrpModRad(stateNow.tor[I_tor]) );
+                if (B_ShowTorE) {
+                    energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
+                } else {
+                    energy += (double)US_torProfile[I_tor][indx];
+                }
+            }
+        } // I_tor
+    }/*if*/
+
+   num_evals++;
+
+   if (!finite(energy)) {
+      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is infinite!\n\n");
+      for (i=0; i<natom; i++) {
+           // (void)fprintf( logFile, "ATOM  %5d  C   INF     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]); 
+          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   INF     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
+          (void)fprintf(logFile, "\n");
+      } // i
+   }
+   if (ISNAN(energy)) {
+      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is not a number!\n\n");
+      for (i=0; i<natom; i++) {
+          // (void)fprintf( logFile, "ATOM  %5d  C   NaN     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]); 
+          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   NaN     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
+          (void)fprintf(logFile, "\n");
+      } // i
+   }
+#ifdef DEBUG
+    (void)fprintf(logFile,"eval.cc/double Eval::eval() returns energy= %.5lf\n", energy);
+#endif /*DEBUG*/
+
+   return(energy);
+   
 }
 
 
-double Eval::eval(const int term)
 
+/*
 // Use this method, eval(int term), to compute just one particular term of the total energy
 //
 // we define term=0 as total energy
 //           term=1 as total non-bonded energy, i.e. vdW+Hb+desolv
 //           term=2 as total electrostatic energy
-//           term=3 as total energy if invoked by eval()
-
+*/
+double Eval::eval(int term)
 {
    register int i;
    int   B_outside = 0;
@@ -155,6 +261,7 @@ double Eval::eval(const int term)
 
 	Real emap_total = 0.0L;
 	Real elec_total = 0.0L;
+	double desol_total = 0.0L;
 	Real emap[MAX_ATOMS] = { 0.0L };
 	Real elec[MAX_ATOMS] = { 0.0L };
 
@@ -164,9 +271,12 @@ double Eval::eval(const int term)
 #endif /* DEBUG */
 
 #ifdef DEBUG
-    if (is_out_grid_info(stateNow.T.x, stateNow.T.y, stateNow.T.z)) {
-       (void)fprintf(logFile,"eval.cc/stateNow.T is outside grid!\n");
-    }
+	// multi-Ligand Huameng Li 10/20/2007
+	for(i = 0; i < stateNow.nlig; i++) {
+	    if (is_out_grid_info(stateNow.T[i].x, stateNow.T[i].y, stateNow.T[i].z)) {
+	       (void)fprintf(logFile,"eval.cc/stateNow.T is outside grid!\n");
+	    }
+	}
 #endif /* DEBUG */
 
 #ifdef DEBUG
@@ -190,28 +300,19 @@ double Eval::eval(const int term)
    // Use standard energy function
 
 #ifdef DEBUG
-    if(B_outside) (void)fprintf(logFile,"eval.cc/Some coordinates are outside grid...\n");
-    else (void)fprintf(logFile,"eval.cc/All coordinates are inside grid...\n");
+(void)fprintf(logFile,"eval.cc/All coordinates are inside grid...\n");
 #endif /* DEBUG */
 
     if (B_compute_intermol_energy) {
-        if(term==3) // do not need energy breakdown in this eval() case
-        energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+        energy = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                              info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
-                             ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-        else
-        energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-                             info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
-                             ignore_inter, elec, emap, &elec_total, &emap_total);
+                             ignore_inter, elec, emap, &elec_total, &emap_total, &desol_total);
     }
     
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after trilinterp, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
-    energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
-                 B_calcIntElec, B_include_1_4_interactions, 
-                 scale_1_4, qsp_abs_charge,
-                 B_use_non_bond_cutoff, B_have_flexible_residues);
+    energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues ) - unbound_internal_FE;
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after eintcal, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
@@ -229,21 +330,27 @@ double Eval::eval(const int term)
         } // I_tor
     }/*if*/
 
-   // increment evaluation counter only for "total energy" case
-   if(term==3) num_evals++;
+   // num_evals++;
 
-   if ((!finite(energy)) || ISNAN(energy)) {
-      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is %s!\n\n",
-       (!finite(energy))?"infinite":"not a number");
+   if (!finite(energy)) {
+      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is infinite!\n\n");
       for (i=0; i<natom; i++) {
-            print_PDBQ_atom_resstr( logFile, "", i,   " C   INF     1 ", crd, 
-             0.0, 0.0, charge[i],"\n"); 
+           // (void)fprintf( logFile, "ATOM  %5d  C   INF     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]); 
+          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   INF     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
+          (void)fprintf(logFile, "\n");
+      } // i
+   }
+   if (ISNAN(energy)) {
+      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is not a number!\n\n");
+      for (i=0; i<natom; i++) {
+          // (void)fprintf( logFile, "ATOM  %5d  C   NaN     1    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, crd[i][X], crd[i][Y], crd[i][Z], eval_emap[i], eval_elec[i], charge[i]); 
+          (void)fprintf(logFile, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   NaN     1", crd[i][X], crd[i][Y], crd[i][Z], 0.0, 0.0, charge[i]); 
+          (void)fprintf(logFile, "\n");
       } // i
    }
     switch (term) {
     default:
     case 0:
-    case 3:
         // Return the total energy.
         retval = energy;
         break;
@@ -263,7 +370,7 @@ double Eval::eval(const int term)
    return(retval);
 }
 
-int Eval::write(FILE *const out_file, const Representation *const *const rep)
+int Eval::write(FILE *out_file, Representation **rep)
 {
     int i=0, retval=0;
     //char rec14[14];
@@ -274,44 +381,108 @@ int Eval::write(FILE *const out_file, const Representation *const *const rep)
 
     make_state_from_rep(rep, &stateNow);
     // cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdreo, crd, natom);
+       
     cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
+    
     for (i=0; i<natom; i++) {
-            print_PDBQ_atom_resstr( logFile, "", i,   " C   RES     1 ", crd, 
-             0.0, 0.0, charge[i],"\n"); 
+        // strncpy( rec14, &atomstuff[i][13], (size_t)13);
+        // rec14[13]='\0';
+        //strncpy(rec14, "C   RES     1\0", (size_t)14);
+        //retval = fprintf( out_file, "ATOM  %5d  %13s    %8.3f%8.3f%8.3f %+8.2f %+6.2f  %+6.3f\n", i+1, rec14, crd[i][X], crd[i][Y], crd[i][Z], 0., 0., charge[i]); 
+        retval = fprintf( out_file, FORMAT_PDBQ_ATOM_RESSTR, "", i+1, "C   RES     1", crd[i][X], crd[i][Y], crd[i][Z], 0., 0., charge[i]); 
+        (void)fprintf(out_file, "\n");
     } // i
     return retval;
 }
 
+
+/********************************************************
+ *  added wrapper function to compute free Energy for PSO
+ *  -Huameng 02/23/08
+ *
+ ********************************************************/ 
+
+double Eval::evalpso(State *stateObj)
+{
+   double energy = 0.0L;
+     
+   // need to conversion between x,y,z,w and nx,ny,nz,ang before calculate E.  
+   for(int i = 0; i < nlig; i++) {   		 
+   		//stateObj->Q[i] = convertQuatToRot(stateObj->Q[i]);	 
+   		stateObj->Q[i] = convertRotToQuat(stateObj->Q[i]); 
+   		stateObj->Q[i] = normQuat(stateObj->Q[i]);  		   	     	  	 
+   }
+ 
+   // need to set stateNow for Eval object
+   // use memcpy may be faster than copyState(*dest, source)   
+   //memcpy(&stateNow, stateObj, sizeof(State));
+   copyState(&stateNow, *stateObj);
+   
+   //do Energy evalulation
+   energy = eval();
+   
+   return(energy);
+}
+
+
+// we define term=0 as total energy
+//           term=1 as total non-bonded energy, i.e. vdW+Hb+desolv
+//           term=2 as total electrostatic energy
+double Eval::evalpso(State *stateObj, int term)
+{
+   double energy = 0.0L;
+   // need to conversion between x,y,z,w and nx,ny,nz,ang before calculate E.  
+   for(int i = 0; i < nlig; i++) {   		
+   		//stateObj->Q[i] = convertQuatToRot(stateObj->Q[i]);	 
+   		stateObj->Q[i] = convertRotToQuat(stateObj->Q[i]);
+   		stateObj->Q[i] = normQuat(stateObj->Q[i]);    		   	     	  	 
+   }
+   //memcpy(&stateNow, stateObj, sizeof(State));
+   copyState(&stateNow, *stateObj);
+   energy = eval(term);
+   
+   //fprintf(logFile,"eval.cc/double Eval::evalpso() returns energy= %.5lf\n", energy);
+   return(energy);
+}
+
+
+/*
+ *  code for ANT-COLINY
+ * 
+ */
 #if defined(USING_COLINY) // {
-double Eval::operator()(const double* const vec, const int len)
+double Eval::operator()(double* vec, int len)
 {
    make_state_from_rep(vec, len, &stateNow);
    return eval();
 }
 
 
-void make_state_from_rep(const double *const rep, const int n, /* not const */ State *const now)
+void make_state_from_rep(double *rep, int len, State *now)
 {
-#   ifdef DEBUG
-    (void)fprintf(logFile, "eval.cc/make_state_from_rep(double *rep, int n, State *now)\n");
-#   endif /* DEBUG */
-
-    //  Do the translations
-    now->T.x = rep[0];
-    now->T.y = rep[1];
-    now->T.z = rep[2];
-
-    //  Set up the quaternion
-    now->Q.x = rep[3];
-    now->Q.y = rep[4];
-    now->Q.z = rep[5];
-    now->Q.w = rep[6];
-
-    now->Q = convertQuatToRot( now->Q );
-
+	#ifdef DEBUG
+    	(void)fprintf(logFile, "USING_COLINY. eval.cc/make_state_from_rep(double *rep, int len, State *now)\n");
+	#endif // DEBUG
+	//  modify for multi-ligands  -Huameng 11/07/2007	
+	int i;
+	for(i = 0; i < nlig; i++) {	
+			
+	    //  Do the translations
+	    now->T[i].x = rep[7*i + 0];
+	    now->T[i].y = rep[7*i + 1];
+	    now->T[i].z = rep[7*i + 2];
+	
+	    //  Set up the quaternion
+	    now->Q[i].x = rep[7*i + 3];
+	    now->Q[i].y = rep[7*i + 4];
+	    now->Q[i].z = rep[7*i + 5];
+	    now->Q[i].w = rep[7*i + 6];
+	
+	    now->Q[i] = convertQuatToRot( now->Q[i] );
+	}
     //  Copy the angles
-    now->ntor = n - 7;
-    for (int i=0, j=7; j<n; i++, j++) {
+    now->ntor = len - 7*nlig;
+    for (i=0, j=7*nlig; j < len; i++, j++) {
       now->tor[i] = rep[j];
     }
 
@@ -320,172 +491,33 @@ void make_state_from_rep(const double *const rep, const int n, /* not const */ S
 
 extern Eval evaluate;
 
-double ADEvalFn(/* not const */ double *const x, const int n)
+double ADEvalFn(double* x, int n)
 {
-//
-// Normalize the data
-//
-//
-// Quaternion vector
-/*
-double sum=0.0;
-if (x[3] < 0.0) x[3] = 1e-16;
-if (x[4] < 0.0) x[4] = 1e-16;
-if (x[5] < 0.0) x[5] = 1e-16;
-*/
-double sum = sqrt(x[3]*x[3]+x[4]*x[4]+x[5]*x[5]);
-if (sum < 1e-8)
-   x[3]=x[4]=x[5]=1.0L/sqrt(3.0L);
-   else {
-      x[3] /= sum;
-      x[4] /= sum;
-      x[5] /= sum;
-      }
-
-// torsion angles
-for (int i=6; i<n; i++)
-  x[i] = WrpModRad(x[i]);
-
-return ::evaluate(x,n);
+	//
+	// Normalize the data
+	//
+	//
+	// Quaternion vector
+	/*
+	double sum=0.0;
+	if (x[3] < 0.0) x[3] = 1e-16;
+	if (x[4] < 0.0) x[4] = 1e-16;
+	if (x[5] < 0.0) x[5] = 1e-16;
+	*/
+	double sum = sqrt(x[3]*x[3]+x[4]*x[4]+x[5]*x[5]);
+	if (sum < 1e-8)
+	   x[3]=x[4]=x[5]=1.0L/sqrt(3.0L);
+	   else {
+	      x[3] /= sum;
+	      x[4] /= sum;
+	      x[5] /= sum;
+	      }
+	
+	// torsion angles
+	for (int i=6; i<n; i++)
+	  x[i] = WrpModRad(x[i]);
+	
+	return ::evaluate(x,n);
 }
 //
 #endif // USING_COLINY // }
-
-double Eval::evalpso(/* not const */ State *const state)
-{
-    register int i;
-    int   B_outside = 0;
-    int   I_tor = 0;
-    int   indx = 0;
-    double energy = 0.0;
-
-	//double einter = 0.0; 
-	//double eintra = 0.0; 
-    Real emap_total = 0.0L;
-    Real elec_total = 0.0L;
-    Real emap[MAX_ATOMS] = { 0.0L };
-    Real elec[MAX_ATOMS] = { 0.0L };
-
-	
-	mkUnitQuat( &(state->Q) );
-	copyState(&stateNow, *state);
-
-#ifdef DEBUG
-    if (is_out_grid_info(stateNow.T.x, stateNow.T.y, stateNow.T.z)) {
-       (void)fprintf(logFile,"eval.cc/evalpso: stateNow.T is outside grid!\n");
-    }
-    (void)fprintf(logFile,"eval.cc/evalpso: Converting state to coordinates...\n");
-#endif /* DEBUG */
- 
-   // Ligand could be inside or could still be outside, check all the atoms...
-   cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
-
-#ifdef DEBUG
-(void)fprintf(logFile,"eval.cc/Checking to see if all coordinates are inside grid...\n");
-#endif /* DEBUG */
-
-   //  Check to see if crd is valid
-   for (i=0; (i<natom)&&(!B_outside); i++) {
-      B_outside = is_out_grid_info(crd[i][0], crd[i][1], crd[i][2]);
-   } // i
-   
-   //if (!B_template){
-   // Use standard energy function
-   if (!B_outside) {
-
-#ifdef DEBUG
-(void)fprintf(logFile,"eval.cc/All coordinates are inside grid...\n");
-#endif /* DEBUG */
-
-        // formerly quicktrilinterp->last 4 arguments are NULL:
-        // use NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-        energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-                             info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
-                             ignore_inter, elec, emap, &elec_total, &emap_total);
-                             //ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-
-        energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
-                       B_calcIntElec, B_include_1_4_interactions,
-                       scale_1_4, qsp_abs_charge,
-                       B_use_non_bond_cutoff, B_have_flexible_residues);
-         
-        if (B_isGaussTorCon) {
-            for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
-                if (B_isTorConstrained[I_tor] == 1) {
-                    indx = RadiansToDivs( WrpModRad(stateNow.tor[I_tor]) );
-                    if (B_ShowTorE) {
-                        energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
-                    } else {
-                        energy += (double)US_torProfile[I_tor][indx];
-                    }
-                }
-            } // I_tor
-        }/*if isGaussTorCon*/
-    } else {  //not B_compute_intermol_energy
-        //gmm: outsidetrilinterp-> ??set SOME_ATOMS_OUTSIDE_GRID to TRUE
-        //energy = outsidetrilinterp( crd, charge, type, natom, map,
-        //                            info->inv_spacing, // eval_elec, eval_emap, 
-        //                            info->lo[0], info->lo[1], info->lo[2],
-        //                            info->hi[0], info->hi[1], info->hi[2],  
-        //                            info->cen[0], info->cen[1], info->cen[2] )
-        energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-                         info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
-                         ignore_inter, elec, emap, &elec_total, &emap_total);
-        
-        energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
-                   B_calcIntElec, B_include_1_4_interactions,
-                   scale_1_4, qsp_abs_charge,
-                   B_use_non_bond_cutoff, B_have_flexible_residues);
-
-
-                    // + eintcal( nonbondlist, e_internal, crd, type, Nnb,
-                    //            B_calcIntElec, q1q2);
-            if (B_isGaussTorCon) {
-                for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
-                    if (B_isTorConstrained[I_tor] == 1) {
-                        indx = RadiansToDivs( WrpModRad(stateNow.tor[I_tor]) );
-                        if (B_ShowTorE) {
-                            energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx
-    ]);
-                        } else {
-                            energy += (double)US_torProfile[I_tor][indx];
-                        }
-                    }
-                } // I_tor
-            }; // if
-       }; //else
-    //} else {
-    //    // Use template scoring function
-    //    if (!B_outside) {
-    //        energy = template_trilinterp( crd, charge, type, natom, map, inv_spacing,
-    //                              xlo, ylo, zlo, template_energy, template_stddev);
-    //    } else {
-    //        energy = outside_templ_trilinterp( crd, charge, type, natom, map,
-    //                                           inv_spacing, 
-    //                                           xlo, ylo, zlo,
-    //                                           xhi, yhi, zhi,  xcen, ycen, zcen,
-    //                                           template_energy, template_stddev);
-    //    }
-    //}
-
-   num_evals++;
-
-   if (!finite(energy)) {
-      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is infinite!\n\n");
-      for (i=0; i<natom; i++) {
-            print_PDBQ_atom_resstr( logFile, "", i,   " C   INF     1 ", crd, 
-             0.0, 0.0, charge[i],"\n"); 
-      } // i
-   }
-   if (ISNAN(energy)) {
-      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is not a number!\n\n");
-      for (i=0; i<natom; i++) {
-            print_PDBQ_atom_resstr( logFile, "", i,   " C   NaN     1 ", crd, 
-             0.0, 0.0, charge[i],"\n"); 
-      } // i
-   }
-
-   return(energy);
-}
-
-

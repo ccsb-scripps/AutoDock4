@@ -1,10 +1,11 @@
 /*
 
- $Id: output_state.h,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: output_state.h,v 1.4 2007/04/27 06:01:50 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -28,16 +29,16 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef OUTPUT_STATE
 #define OUTPUT_STATE
 #include "constants.h"
-void  output_state( FILE  *const fp,
-		    const State& S,
-                    const int   ntor,
-                    const int   istep,
-                    ConstReal energy,
-                    ConstReal eint,
-                    const char  lastmove,
-                    const Boole B_watch,
-                    const char  *const FN_watch,
-                    const char  atomstuff[MAX_ATOMS][MAX_CHARS],
-                    const int   natom,
-                    const Real crd[MAX_ATOMS][SPACE]);
+void  output_state( FILE  *fp,
+		    State S,
+                    int   ntor,
+                    int   istep,
+                    Real energy,
+                    Real eint,
+                    char  lastmove,
+                    Boole B_watch,
+                    char  FN_watch[MAX_CHARS],
+                    char  atomstuff[MAX_ATOMS][MAX_CHARS],
+                    int   natom,
+                    Real crd[MAX_ATOMS][SPACE]);
 #endif

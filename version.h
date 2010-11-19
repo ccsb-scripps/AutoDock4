@@ -1,10 +1,11 @@
 /*
 
- $Id: version.h,v 1.5 2009/05/08 23:02:19 rhuey Exp $
+ $Id: version.h,v 1.3 2007/05/17 21:29:24 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -24,4 +25,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  */
 
+#define AUTOGRID_MAJ_VERSION "4"
+#define AUTOGRID_MIN_VERSION "00"
+#define AUTODOCK_MAJ_VERSION "4"
+#define AUTODOCK_MIN_VERSION "01"
 #define OUTPUT_XML_VERSION 0.1

@@ -1,10 +1,11 @@
 /*
 
- $Id: warn_bad_file.cc,v 1.7 2010/08/27 00:05:09 mp Exp $
+ $Id: warn_bad_file.cc,v 1.4 2007/04/27 06:01:52 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -37,8 +38,8 @@ extern FILE *logFile;
 
 /*----------------------------------------------------------------------------*/
 
-void warn_bad_file( const char *const filename,
-		    const char message[LINE_LEN] )
+void warn_bad_file( char filename[MAX_CHARS],
+		    char message[LINE_LEN] )
 
 /*----------------------------------------------------------------------------*/
 {

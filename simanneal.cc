@@ -1,10 +1,11 @@
 /*
 
- $Id: simanneal.cc,v 1.30 2010/10/01 22:51:40 mp Exp $
+ $Id: simanneal.cc,v 1.20.2.1 2010/11/19 20:09:28 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -43,114 +44,111 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 extern char *programname;
 
-
-void simanneal ( int   *const Addr_nconf,
-                const int   Nnb,
-                ConstReal WallEnergy,
-                const char  atomstuff[MAX_ATOMS][MAX_CHARS],
+void simanneal ( int   *Addr_nconf,
+                int   Nnb,
+                Real WallEnergy,
+                char  atomstuff[MAX_ATOMS][MAX_CHARS],
                 Real charge[MAX_ATOMS],
                 Real abs_charge[MAX_ATOMS],
                 Real qsp_abs_charge[MAX_ATOMS],
-                const Boole B_calcIntElec,
+                Boole B_calcIntElec,
                 Real crd[MAX_ATOMS][SPACE],
                 Real crdpdb[MAX_ATOMS][SPACE],
-                const char  *const FN_dpf,
+                char  FN_dpf[MAX_CHARS],
         
-                EnergyTables *const ptr_ad_energy_tables,
+                EnergyTables *ptr_ad_energy_tables,
 
-                /* not const */ Real econf[MAX_RUNS],
-                const Boole B_either,
+                Real econf[MAX_RUNS],
+                Boole B_either,
                 Real elec[MAX_ATOMS],
                 Real emap[MAX_ATOMS],
-                const int   NcycMax,
-                const int   irunmax,
-                const Clock& jobStart,
-                #include "map_declare.h"
-                const int   naccmax,
-                const int   natom,
-                NonbondParam *const nonbondlist,
-                const int   nrejmax,
-                const int   ntor1,
-                const int   ntor,
-                const int   outlev,
+                int   NcycMax,
+                int   irunmax,
+                Clock jobStart,
+                Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
+                int   naccmax,
+                int   natom,
+                NonbondParam *nonbondlist,
+                int   nrejmax,
+                int   ntor1,
+                int   ntor,
+                int   outlev,
 
-                /* not const */ State sInit, /* tor0, qtn0 */
-                /* not const */ State sHist[MAX_RUNS], /* was qtnHist, torHist */
+                State sInit, /* tor0, qtn0 */
+                State sHist[MAX_RUNS], /* was qtnHist, torHist */
 
-                ConstReal qtwFac,
-                const Boole B_qtwReduc,
-                ConstReal qtwStep0,
-                const Boole B_selectmin,
-                const char  *const FN_ligand,
-                const Real lig_center[SPACE],
-                ConstReal RT0,
-                const Boole B_RTChange,
-                ConstReal RTFac,
-                const struct tms& tms_jobStart,
-                const int   tlist[MAX_TORS][MAX_ATOMS],
-                ConstReal torFac,
-                const Boole B_torReduc,
-                ConstReal torStep0,
-                const char  *const FN_trj,
-                const int   trj_cyc_max,
-                const int   trj_cyc_min,
-                const int   trj_freq,
-                ConstReal trnFac,
-                const Boole B_trnReduc,
-                ConstReal trnStep0,
-                const int   type[MAX_ATOMS],
+                Real qtwFac,
+                Boole B_qtwReduc,
+                Real qtwStep0,
+                Boole B_selectmin,
+                char  FN_ligands[MAX_LIGANDS][MAX_CHARS],
+                Real lig_centers[MAX_LIGANDS][SPACE],
+                Real RT0,
+                Boole B_RTChange,
+                Real RTFac,
+                struct tms tms_jobStart,
+                int   tlist[MAX_TORS][MAX_ATOMS],
+                Real torFac,
+                Boole B_torReduc,
+                Real torStep0,
+                char  FN_trj[MAX_CHARS],
+                int   trj_cyc_max,
+                int   trj_cyc_min,
+                int   trj_freq,
+                Real trnFac,
+                Boole B_trnReduc,
+                Real trnStep0,
+                int   type[MAX_ATOMS],
                 Real vt[MAX_TORS][SPACE],
-                const Boole B_writeTrj,
-                const Boole B_constrain,
-                const int   atomC1,
-                const int   atomC2,
-                ConstReal sqlower,
-                ConstReal squpper,
-                const Boole B_linear_schedule,
-                ConstReal RTreduc,
+                Boole B_writeTrj,
+                Boole B_constrain,
+                int   atomC1,
+                int   atomC2,
+                Real sqlower,
+                Real squpper,
+                Boole B_linear_schedule,
+                Real RTreduc,
                 /*Real maxrad,*/
-                const Boole B_watch,
-                const char  *const FN_watch,
-                const Boole B_isGaussTorCon,
-                /* not const */ unsigned short US_torProfile[MAX_TORS][NTORDIVS],
-                const Boole B_isTorConstrained[MAX_TORS],
-                const Boole B_ShowTorE,
-                /* not const */ unsigned short US_TorE[MAX_TORS],
-                const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-                const int N_con[MAX_TORS],
-                const Boole B_RandomTran0,
-                const Boole B_RandomQuat0,
-                const Boole B_RandomDihe0,
-                ConstReal e0max,
+                Boole B_watch,
+                char  FN_watch[MAX_CHARS],
+                Boole B_isGaussTorCon,
+                unsigned short US_torProfile[MAX_TORS][NTORDIVS],
+                Boole B_isTorConstrained[MAX_TORS],
+                Boole B_ShowTorE,
+                unsigned short US_TorE[MAX_TORS],
+                Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+                int N_con[MAX_TORS],
+                Boole B_RandomTran0,
+                Boole B_RandomQuat0,
+                Boole B_RandomDihe0,
+                Real e0max,
         
-                ConstReal torsFreeEnergy,
+                Real torsFreeEnergy,
                 
-        const int   MaxRetries,
+        int   MaxRetries,
                 
-        const int   ligand_is_inhibitor,
+        int   ligand_is_inhibitor,
                 
-        const int   ignore_inter[MAX_ATOMS],
+        int   ignore_inter[MAX_ATOMS],
         
         const Boole         B_include_1_4_interactions,
-        ConstReal scale_1_4,
-        ConstReal scale_eintermol,
+        const Real scale_1_4,
         
-        const ParameterEntry parameterArray[MAX_ATOM_TYPES],
+        const ParameterEntry parameterArray[MAX_MAPS],
 
-        ConstReal unbound_internal_FE,
+        const Real unbound_internal_FE,
 
-        GridMapSetInfo *const info,
-        const Boole B_use_non_bond_cutoff,
-        const Boole B_have_flexible_residues, 
-        const char PDBQT_record[MAX_RECORDS][LINE_LEN],
-        const Unbound_Model ad4_unbound_model
+        GridMapSetInfo *info,
+        Boole B_use_non_bond_cutoff,
+        Boole B_have_flexible_residues, 
+        char PDBQT_record[MAX_RECORDS][LINE_LEN]
         )
 
 {
     char message[LINE_LEN];
-
-    Real local_unbound_internal_FE = unbound_internal_FE;
-
+    // handle multi-ligand docking set nlig -Huameng  11/13/2007
+	int nlig = sInit.nlig;
+	
     FILE *FP_trj;
         FP_trj = NULL;
 
@@ -220,7 +218,10 @@ void simanneal ( int   *const Addr_nconf,
     initialiseState( &sLast );
     initialiseState( &sMin );
     initialiseState( &sSave );
-
+    
+    sNow.nlig = nlig;
+	sLast.nlig = nlig;
+	sChange.nlig = nlig;
 /* Open the trajectory file for writing, =====================================*/
 
     if ( B_writeTrj ) {
@@ -277,10 +278,10 @@ void simanneal ( int   *const Addr_nconf,
                      ntor, tlist, type, vt, irun1, outlev, MaxRetries,
                      torsFreeEnergy, ligand_is_inhibitor,
                      ignore_inter,
-                     B_include_1_4_interactions, scale_1_4, scale_eintermol,
+                     B_include_1_4_interactions, scale_1_4, 
+                     parameterArray, 
                      unbound_internal_FE, info, 
-                     B_use_non_bond_cutoff, B_have_flexible_residues,
-                     ad4_unbound_model);
+                     B_use_non_bond_cutoff, B_have_flexible_residues);
 
         /* Initialize the "annealing" temperature */
         RT = RT0;                
@@ -375,10 +376,13 @@ void simanneal ( int   *const Addr_nconf,
                             ** Subtract just the translation;
                             ** hence "doubling back" from the edge.
                             */
-                            sNow.T.x -= sChange.T.x;
-                            sNow.T.y -= sChange.T.y;
-                            sNow.T.z -= sChange.T.z;
-
+                            // handle multi-ligand -Huameng 11/09/2007
+                            for(int n = 0; n < sNow.nlig; n++) { 
+	                            sNow.T[n].x -= sChange.T[n].x;
+	                            sNow.T[n].y -= sChange.T[n].y;
+	                            sNow.T[n].z -= sChange.T[n].z;
+                            } //for nlig
+                            
                             if ( B_writeTrj && B_inRange && B_either && (++count == trj_freq)) {
                                 count = 0;
                                 e = eintra = WallEnergy;
@@ -399,14 +403,10 @@ void simanneal ( int   *const Addr_nconf,
                         /*
                         ** MORE ACCURATE METHOD, (SLOWER):
                         */
-                        e = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+                        e = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                                         info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW,
-                                        NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
-                           + (eintra = eintcal(nonbondlist, ptr_ad_energy_tables, crd, Nnb,
-                                   B_calcIntElec, B_include_1_4_interactions,
-                                   scale_1_4, qsp_abs_charge, 
-                                   B_use_non_bond_cutoff, B_have_flexible_residues)
-                               );
+                                        NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL)
+                                            + (eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE);
 
                         if (B_isGaussTorCon) {
                             /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { ***/
@@ -514,11 +514,10 @@ void simanneal ( int   *const Addr_nconf,
                          ntor, tlist, type, vt, irun1, outlev, MaxRetries,
                          torsFreeEnergy, ligand_is_inhibitor,
                          ignore_inter,
-                         B_include_1_4_interactions, scale_1_4, scale_eintermol,
-                         unbound_internal_FE,
+                         B_include_1_4_interactions, scale_1_4, 
+                         parameterArray, unbound_internal_FE,
                          info, B_use_non_bond_cutoff,
-                         B_have_flexible_residues,
-                         ad4_unbound_model);
+                         B_have_flexible_residues);
 
             } else {
 
@@ -530,12 +529,20 @@ void simanneal ( int   *const Addr_nconf,
                 */
                 if (outlev > 0) {
                     /*pr(logFile, "\n"); / *###*/
-                    pr( logFile, "%d /%d\t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", irun1, irunmax, icycle1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (Real)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
+                    
+                    // handle multi-ligand -Huameng 11/09/2007
+        			for(i = 0; i < nlig; i++) { 
+                    	pr( logFile, "%d /%d\t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", irun1, irunmax, icycle1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (Real)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T[i].x, sMin.T[i].y, sMin.T[i].z );
+        			} // for nlig
                     cycEnd = times( &tms_cycEnd );
                     timesys( cycEnd - cycStart, &tms_cycStart, &tms_cycEnd );
                     if (outlev > 1) {
-                        pr( logFile, "\tEnergy:   \tState:\n\t__________\t____________________________________________________________\nMinimum\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [x,y,z,w] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eMin, sMin.T.x, sMin.T.y, sMin.T.z, sMin.Q.x, sMin.Q.y, sMin.Q.z, sMin.Q.w );
-                        pr( logFile, "\nLast\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [x,y,z,w] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eLast, sLast.T.x, sLast.T.y, sLast.T.z, sLast.Q.x, sLast.Q.y, sLast.Q.z, sLast.Q.w );
+                    	// handle multi-ligand -Huameng 11/09/2007
+	        			for(i = 0; i < nlig; i++) { 
+	                        pr( logFile, "\tEnergy:   \tState:\n\t__________\t____________________________________________________________\nMinimum\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [x,y,z,w] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eMin, sMin.T[i].x, sMin.T[i].y, sMin.T[i].z, sMin.Q[i].x, sMin.Q[i].y, sMin.Q[i].z, sMin.Q[i].w );
+	                        pr( logFile, "\nLast\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [x,y,z,w] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eLast, sLast.T[i].x, sLast.T[i].y, sLast.T[i].z, sLast.Q[i].x, sLast.Q[i].y, sLast.Q[i].z, sLast.Q[i].w );
+	        			} // for nlig
+	        			
                         if (ntor > 0) {
                             pr( logFile, "Minimum:\t(" );
                             for (i=0; i<ntor; i++) {
@@ -587,24 +594,26 @@ void simanneal ( int   *const Addr_nconf,
         } else {
             copyState( &sSave, sLast );
         }
-
-        sSave.Q.ang = WrpRad( ModRad( sSave.Q.ang ) );
-
-        for (i=0; i<ntor; i++) {
+        
+		// handle multi-ligand -Huameng 11/09/2007
+        for(i = 0; i < nlig; i++) { 
+	        sSave.Q[i].ang = WrpRad( ModRad( sSave.Q[i].ang ) );
+	       
+	        pr( logFile, UnderLine );
+	        pr( logFile, "\n\n\t\tFINAL DOCKED STATE\n" );
+	        pr( logFile,     "\t\t__________________\n\n\n" );
+	        pr( logFile, "Run Number %d, \n\nFinal Energy = %+.2f\n", irun1, eLast);
+	
+	        pr( logFile, "Final Translation = %.2f, %.2f, %.2f\n", sSave.T[i].x, sSave.T[i].y, sSave.T[i].z );
+	        pr( logFile, "Final Quaternion = ( %+.2f, %+.2f, %+.2f, %+.2f )\n", sSave.Q[i].x, sSave.Q[i].y, sSave.Q[i].z, sSave.Q[i].w );
+	        sSave.Q[i] = convertQuatToRot( sSave.Q[i] );
+	        pr( logFile, "Final Rotation Axis = ( %+.2f, %+.2f, %+.2f )\n", sSave.Q[i].nx, sSave.Q[i].ny, sSave.Q[i].nz );
+	        pr( logFile, "Final Rotation Angle = %5.1f deg\n", RadiansToDegrees(sSave.Q[i].ang) );
+        } // for nlig
+		for (i=0; i<ntor; i++) {
             sSave.tor[i] = WrpRad( ModRad( sSave.tor[i] ) );
         }
-   
-        pr( logFile, UnderLine );
-        pr( logFile, "\n\n\t\tFINAL DOCKED STATE\n" );
-        pr( logFile,     "\t\t__________________\n\n\n" );
-        pr( logFile, "Run Number %d, \n\nFinal Energy = %+.2f\n", irun1, eLast);
-
-        pr( logFile, "Final Translation = %.2f, %.2f, %.2f\n", sSave.T.x, sSave.T.y, sSave.T.z );
-        pr( logFile, "Final Quaternion = ( %+.2f, %+.2f, %+.2f, %+.2f )\n", sSave.Q.x, sSave.Q.y, sSave.Q.z, sSave.Q.w );
-        sSave.Q = convertQuatToRot( sSave.Q );
-        pr( logFile, "Final Rotation Axis = ( %+.2f, %+.2f, %+.2f )\n", sSave.Q.nx, sSave.Q.ny, sSave.Q.nz );
-        pr( logFile, "Final Rotation Angle = %5.1f deg\n", RadiansToDegrees(sSave.Q.ang) );
-
+        
         copyState( &sHist[ *Addr_nconf ], sSave );
 
         if (ntor > 0) {
@@ -626,18 +635,15 @@ void simanneal ( int   *const Addr_nconf,
         cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
 
         if (ntor > 0) {
-            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
-               B_calcIntElec, B_include_1_4_interactions,
-               scale_1_4, qsp_abs_charge, 
-               B_use_non_bond_cutoff, B_have_flexible_residues);
+            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
         } else {
-            eintra = 0.0 ;
+            eintra = 0.0 - unbound_internal_FE;
         }
-        einter = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+        einter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                     info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
-                    NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
+                    NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL);
 
-        writePDBQT( irun, seed, FN_ligand, FN_dpf, lig_center, sSave, ntor,
+        writePDBQT( irun, seed, FN_ligands, FN_dpf, lig_centers, sSave, ntor,
                 &eintra, &einter, natom, atomstuff, crd, emap, elec, 
                 charge, abs_charge, qsp_abs_charge,
                 ligand_is_inhibitor, torsFreeEnergy, 
@@ -648,18 +654,9 @@ void simanneal ( int   *const Addr_nconf,
                 outlev, ignore_inter,
                 B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                 info, 1 /* = DOCKED */, PDBQT_record, 
-                B_use_non_bond_cutoff, B_have_flexible_residues,
-                ad4_unbound_model);
+                B_use_non_bond_cutoff, B_have_flexible_residues);
 
-        // See also "calculateEnergies.cc", switch(ad4_unbound_model)
-        if (ad4_unbound_model == Unbound_Same_As_Bound) {
-            // Update the unbound internal energy, setting it to the current internal energy
-            local_unbound_internal_FE = eintra;
-        } else {
-            local_unbound_internal_FE = unbound_internal_FE;
-        }
-        // originally: econf[(*Addr_nconf)] = eLast;
-        econf[(*Addr_nconf)] = eintra + einter + torsFreeEnergy - local_unbound_internal_FE;
+        econf[(*Addr_nconf)] = eLast;
         ++(*Addr_nconf);
 
     } /* Loop over runs ======================================================*/

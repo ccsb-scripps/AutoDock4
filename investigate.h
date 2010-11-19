@@ -1,10 +1,11 @@
 /*
 
- $Id: investigate.h,v 1.20 2010/10/01 22:51:39 mp Exp $
+ $Id: investigate.h,v 1.12.2.1 2010/11/19 20:09:28 rhuey Exp $
 
- AutoDock  
+ AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -43,54 +44,8 @@ extern FILE *logFile;
 extern char *programname;
 
 
-void investigate( const int   Nnb,
-                    const Real charge[MAX_ATOMS],
-                    const Real abs_charge[MAX_ATOMS],
-                    const Real qsp_abs_charge[MAX_ATOMS],
-                    const Boole B_calcIntElec,
-                    /* not const */ Real crd[MAX_ATOMS][SPACE], // modified in cnv_state_to_coords
-                    const Real crdpdb[MAX_ATOMS][SPACE],
-
-                    const EnergyTables *const ptr_ad_energy_tables,
-
-                    const int   maxTests,
-                #include "map_declare.h"
-                    const int   natom,
-                    const NonbondParam *const nonbondlist,
-                    const int   ntor,
-                    const int   outlev,
-                    const int   tlist[MAX_TORS][MAX_ATOMS],
-                    const int   type[MAX_ATOMS],
-                    const Real vt[MAX_TORS][SPACE],
-                    const Boole B_isGaussTorCon,
-                    const unsigned short US_torProfile[MAX_TORS][NTORDIVS],
-                    const Boole B_isTorConstrained[MAX_TORS],
-                    const Boole B_ShowTorE,
-                    /* not const */ unsigned short US_TorE[MAX_TORS],
-                    /* not const */ Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-                    /* not const */ int   N_con[MAX_TORS], // modifed in mkRandomState
-                    const Boole B_symmetry_flag,
-                    const Boole B_unique_pair_flag,
-                    const char  *const FN_rms_ref_crds,
-                    const int   OutputEveryNTests,
-                    const int   NumLocalTests,
-                    ConstReal trnStep,
-                    ConstReal torStep,
-                    
-                    const int   ignore_inter[MAX_ATOMS],
-                    
-                    const Boole         B_include_1_4_interactions,
-                    ConstReal scale_1_4,
-                    ConstReal scale_eintermol,
-
-
-                    ConstReal unbound_internal_FE,
-                    /* not const */ GridMapSetInfo *const info, // modified in mkRandomState
-                    const Boole B_use_non_bond_cutoff,
-                    const Boole B_have_flexible_residues);
-#endif
-#if MPIQUE
 void investigate(
+				int   nlig,
                 int   Nnb,
                 Real charge[MAX_ATOMS],
                 Real abs_charge[MAX_ATOMS],
@@ -102,7 +57,7 @@ void investigate(
                 EnergyTables *ptr_ad_energy_tables,
 
                 int   maxTests,
-                #include "map_declare.h"
+                Real map[MAX_GRID_PTS][MAX_GRID_PTS][MAX_GRID_PTS][MAX_MAPS],
                 int   natom,
                 NonbondParam *nonbondlist,
                 int   ntor,
@@ -118,21 +73,20 @@ void investigate(
                 Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
                 int   N_con[MAX_TORS],
                 Boole B_symmetry_flag,
-                Boole B_unique_pair_flag,
-                char  *FN_rms_ref_crds,
+                char  FN_rms_ref_crds[MAX_CHARS],
                 int   OutputEveryNTests,
                 int   NumLocalTests,
-                ConstReal trnStep,
-                ConstReal torStep,
+                Real trnStep,
+                Real torStep,
                 
                 int   ignore_inter[MAX_ATOMS],
                 
                 const Boole         B_include_1_4_interactions,
-                ConstReal scale_1_4,
-                ConstReal scale_eintermol,
+                const Real scale_1_4,
                 
+                const ParameterEntry parameterArray[MAX_MAPS],
 
-                ConstReal unbound_internal_FE,
+                const Real unbound_internal_FE,
                 GridMapSetInfo *info,
                 Boole B_use_non_bond_cutoff,
                 Boole B_have_flexible_residues);

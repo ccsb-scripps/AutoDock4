@@ -1,10 +1,11 @@
 /*
 
- $Id: globals.h,v 1.3 2009/05/08 23:02:13 rhuey Exp $
+ $Id: globals.h,v 1.2 2007/04/27 06:01:48 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -27,7 +28,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /******************************************************************************
  *      Name: globals.h                                                       *
  *  Function: <UN-USED>                                                        *
- *Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ * Copyright: (C) Garrett Matthew Morris, TSRI                                *
  *----------------------------------------------------------------------------*
  *    Author: Garrett Matthew Morris, The Scripps Research Institute          *
  *      Date: 02/28/1995                                                      *

@@ -1,10 +1,11 @@
 /*
 
- $Id: gs.cc,v 1.44 2010/10/01 22:51:39 mp Exp $
+ $Id: gs.cc,v 1.19.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -36,7 +37,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 *********************************************************************/
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <sys/types.h>      /*time_t time(time_t *tloc); */
 #include <time.h>           /*time_t time(time_t *tloc); */
 #include <sys/times.h>
@@ -60,25 +60,24 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "autocomm.h"
 #include "timesyshms.h"
 #include "writePDBQT.h"
-#include "qmultiply.h"
-
+ 
 
 extern FILE *logFile;
 extern class Eval evaluate;
 extern int sel_prop_count;//debug
-extern int global_ntor;//debug
+extern int global_ntor; // set to current s.Init.ntor in main.cc
 extern int debug;//debug
-//#define DEBUG
-//#define DEBUG2
-//#define DEBUG3
-//#define DEBUG_MUTATION
+extern int nlig;
+extern int ntor_lig[MAX_LIGANDS]; // assign value in readPDBQT.cc
+extern int gene_index_lig[MAX_LIGANDS][2];  //gene num start_point & end_point of a ligand.
+//extern int ntor_res;
 
-
-double worst_in_window(const double *const window, const int size) 
+double worst_in_window(double *window, int size)
 {
    register int i;
+   double worst;
 
-   double worst = window[0];
+   worst = window[0];
 
 #ifdef DEBUG2
    (void)fprintf(logFile, "gs.cc/double worst_in_window(double *window, int size)_________________________\n");//debug
@@ -107,10 +106,10 @@ double worst_in_window(const double *const window, const int size)
    return(worst);
 }
 
-double avg_in_window(const double *const window, const int size) 
+double avg_in_window(double *window, int size)
 {
    register int i;
-   double mysum = 0.0;
+   double mysum = 0.0, myavg = 0.0;
 
 #ifdef DEBUG2
    (void)fprintf(logFile, "gs.cc/avg_in_window(double *window, int size)_________________________\n");//debug
@@ -121,7 +120,7 @@ double avg_in_window(const double *const window, const int size)
       (void)fprintf(logFile, "gs.cc/mysum= %.3f\twindow[%d]= %.3f\n",mysum, i, window[i]);//debug
 #endif
    }
-   const double myavg = mysum / size;
+   myavg = mysum / size;
 #ifdef DEBUG2
    (void)fprintf(logFile, "gs.cc/Returning: myavg= %.3f\n\n",myavg);//debug
 #endif
@@ -129,8 +128,8 @@ double avg_in_window(const double *const window, const int size)
    return(myavg);
 }
 
-//  Also set avg -- and because of avg this is not a const function
-double Genetic_Algorithm::worst_this_generation(const Population &pop)
+//  Also set avg
+double Genetic_Algorithm::worst_this_generation(Population &pop)
 {
    register unsigned int i;
    double worstval, avgval;
@@ -169,16 +168,16 @@ double Genetic_Algorithm::worst_this_generation(const Population &pop)
 
 //  This could be made inline
 
-Genetic_Algorithm::Genetic_Algorithm( const EvalMode init_e_mode, 
-                                      const Selection_Mode init_s_mode, 
-                                      const Xover_Mode init_c_mode,
-                                      const Worst_Mode init_w_mode, 
-                                      const int init_elitism, 
-                                      ConstReal  init_c_rate, 
-                                      ConstReal  init_m_rate, 
-                                      const int init_window_size, 
-                                      const unsigned int init_max_generations,
-                                      const Output_pop_stats& init_output_pop_stats)
+Genetic_Algorithm::Genetic_Algorithm( EvalMode init_e_mode, 
+                                      Selection_Mode init_s_mode, 
+                                      Xover_Mode init_c_mode,
+                                      Worst_Mode init_w_mode, 
+                                      int init_elitism, 
+                                      Real init_c_rate, 
+                                      Real init_m_rate, 
+                                      int init_window_size, 
+                                      unsigned int init_max_generations,
+                                      unsigned int outputEveryNgens)
 
 :  e_mode(init_e_mode),
 s_mode(init_s_mode),
@@ -197,7 +196,7 @@ low(-100),
 high(100),
 generations(0),
 max_generations(init_max_generations),
-output_pop_stats(init_output_pop_stats),
+outputEveryNgens(100),
 converged(0),
 alloc(NULL),
 mutation_table(NULL),
@@ -205,8 +204,8 @@ ordering(NULL),
 m_table_size(0),
 worst(0.0L),
 avg(0.0L),
-linear_ranking_selection_probability_ratio(2.0)
-
+lowestEnergyPrevGen(0.0),
+cnt_energy_delta(0)
 {
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/Genetic_Algorithm::Genetic_Algorithm(EvalMode init_e_mode,...\n");
@@ -215,16 +214,7 @@ linear_ranking_selection_probability_ratio(2.0)
    worst_window = new double[window_size];
 }
 
-int Genetic_Algorithm::set_linear_ranking_selection_probability_ratio(ConstReal  r)
-{
-    if (r<0.) return -1;  //ERROR!
-    linear_ranking_selection_probability_ratio = r;
-    return 1;
-}
-
-
-
-void Genetic_Algorithm::set_worst(const Population &currentPop)
+void Genetic_Algorithm::set_worst(Population &currentPop)
 {
    double temp = 0.0;
 
@@ -263,7 +253,7 @@ void Genetic_Algorithm::set_worst(const Population &currentPop)
    }
 }
 
-M_mode Genetic_Algorithm::m_type(const RepType type) const
+M_mode Genetic_Algorithm::m_type(RepType type)
 {
 
 #ifdef DEBUG
@@ -284,7 +274,7 @@ M_mode Genetic_Algorithm::m_type(const RepType type) const
    }
 }
 
-void Genetic_Algorithm::make_table(const int size, ConstReal  prob)
+void Genetic_Algorithm::make_table(int size, Real prob)
 {
    register int i, j;
    double L = 0.0L;
@@ -303,10 +293,6 @@ void Genetic_Algorithm::make_table(const int size, ConstReal  prob)
    mutation_table[0] = pow(1-prob, size);
    mutation_table[size] = 1;
 
-#ifdef DEBUG_MUTATION
-   fprintf(logFile,"mutation_table[0] = %.3f\n",  mutation_table[0]);
-   fprintf(logFile,"mutation_table[%d] = %.3f\n",  size,mutation_table[size]);
-#endif
    i = 1;
    while (i<=(int)size*prob) {
       L = 0.0;
@@ -321,7 +307,6 @@ void Genetic_Algorithm::make_table(const int size, ConstReal  prob)
       fprintf(logFile,"j= %d (size+1-j)= %d log(_)= %.4f log(j)=%.4f L= %.4f\n", j, (size+1-j), log(size+1-j), log(j), L);
 #endif
 
-      assert( i > 0 && i<=size); // M Pique 2009-12 TODO - suspect problem if m_rate>1
       mutation_table[i] = mutation_table[i-1]+exp(L);
 #ifdef DEBUG_MUTATION
       fprintf(logFile,"mutation_table[%d] = %.3f\n", i, mutation_table[i]);
@@ -351,7 +336,7 @@ void Genetic_Algorithm::make_table(const int size, ConstReal  prob)
 #endif
 }
 
-int Genetic_Algorithm::check_table(ConstReal  prob)
+int Genetic_Algorithm::check_table(Real prob)
 {
    int low, high;
 
@@ -393,7 +378,7 @@ int Genetic_Algorithm::check_table(ConstReal  prob)
    return(low);
 }
 
-void Genetic_Algorithm::initialize(const unsigned int pop_size, const unsigned int num_poss_mutations)
+void Genetic_Algorithm::initialize(unsigned int pop_size, unsigned int num_poss_mutations)
 {
    register unsigned int i;
 
@@ -426,7 +411,8 @@ void Genetic_Algorithm::initialize(const unsigned int pop_size, const unsigned i
    make_table(pop_size*num_poss_mutations, m_rate);
 }
 
-void Genetic_Algorithm::mutate(Genotype &mutant, const int gene_number)
+// multi-ligand  -Huameng 11/18/2007 
+void Genetic_Algorithm::mutate(Genotype &mutant, int gene_number, int ilig)
 {
    Element tempvar;
 
@@ -441,9 +427,6 @@ void Genetic_Algorithm::mutate(Genotype &mutant, const int gene_number)
    switch(m_type(mutant.gtype(gene_number))) {
 
       case BitFlip:
-#ifdef DEBUG_MUTATION
-         fprintf( logFile, "case BitFlip:  gene_number=%d\n", gene_number );
-#endif
          //((unsigned char *)gene)[point] = 1 - ((unsigned char *)gene)[point];
          //  Read the bit
          tempvar = mutant.gread(gene_number);
@@ -454,29 +437,26 @@ void Genetic_Algorithm::mutate(Genotype &mutant, const int gene_number)
          break;
 
       case CauchyDev:
-#ifdef DEBUG_MUTATION
-         fprintf( logFile, "case CauchyDev:  gene_number=%d\n", gene_number );
-#endif
          // gene_numbers 3, 4, 5 and 6 correspond to the 
          // four components of the quaternion, (x,y,z,w)
-         if ( is_rotation_index( gene_number ) ) {
-#ifdef DEBUG_MUTATION
-            fprintf( logFile, "is_rotation_index( gene_number=%d )\n", gene_number );
-#endif
+         if ( is_rotation_index( gene_number, ilig )) {
             // Mutate all four comopnents of the quaternion, (x,y,z,w) simultaneously:
             // Generate a uniformly-distributed quaternion
+                                 	
             Quat q_change;
             q_change = uniformQuat();
+
 #ifdef DEBUG_MUTATION
-            fprintf( logFile, "q_change -- after uniformQuat\n" );
+            fprintf( logFile, "q_change -- after uniformQuat ilig=%d\n",  ilig);
             printQuat_q( logFile, q_change );
 #endif
-            Quat q_current = mutant.readQuat();
+			// multi-ligand  -Huameng 11/18/2007			
+            Quat q_current = mutant.readQuat(ilig);
 #ifdef DEBUG_MUTATION
-            fprintf( logFile, "q_current -- after mutant.readQuat()\n" );
+            fprintf( logFile, "q_current -- after reading mutant.gread\n" );
             printQuat_q( logFile, q_current );
 #endif
-            Quat q_new;
+            Quat q_new;  
 #ifdef DEBUG_MUTATION
             fprintf( logFile, "q_current -- about to call qmultiply\n" );
 #endif
@@ -508,10 +488,11 @@ void Genetic_Algorithm::mutate(Genotype &mutant, const int gene_number)
             fprintf( logFile, "q_new - after qmultiply\n" );
             printQuat_q( logFile, q_new );
 #endif
-            mutant.writeQuat( q_new );
+            mutant.writeQuat( q_new, ilig);
          } else {
              //  Read the real
              tempvar = mutant.gread(gene_number);
+            
 #ifdef DEBUG_MUTATION
              (void)fprintf(logFile, "   ---CauchyDev---\n" );
              (void)fprintf(logFile, "   Before mutating:        tempvar= %.3f\n", tempvar.real );
@@ -531,9 +512,6 @@ void Genetic_Algorithm::mutate(Genotype &mutant, const int gene_number)
          break;
 
       case IUniformSub:
-#ifdef DEBUG_MUTATION
-         fprintf( logFile, "case IUniformSub:  gene_number=%d\n", gene_number );
-#endif
          //((int *)gene)[point] = ignuin(low, high);
          //  Generate the new integer
          tempvar.integer = ignuin(low, high);
@@ -561,34 +539,43 @@ void Genetic_Algorithm::mutation(Population &pure)
 #endif /* DEBUG */
 
    num_mutations = check_table(ranf());
-#ifdef DEBUG_MUTATION
-   (void)fprintf(logFile, "num_mutations= %d\n", num_mutations );
-#endif /* DEBUG */
-
-   if(num_mutations<=0) return;
-
-   Boole individual_mutated[pure.num_individuals()]; // for statistics only
-   for(unsigned int i=0;i<pure.num_individuals();i++) individual_mutated[i]=FALSE;
 
    //  Note we don't check to see if we mutate the same gene twice.
    //  So, effectively we are lowering the mutation rate, etc...
-   //  Might want to check out Bentley's chapter on selection.
-   for (; num_mutations>0; num_mutations--) {
-      individual = ignlgi()%pure.num_individuals();
-      gene_number = ignlgi()%pure[individual].genotyp.num_genes();
-#ifdef DEBUG_MUTATION
-      (void)fprintf(logFile, "  @__@  mutate(pure[individual=%d].genotyp, gene_number=%d);\n\n", individual, gene_number );
-#endif /* DEBUG */
-      mutate(pure[individual].genotyp, gene_number);
-      pure[individual].age = 0L;
-      pure[individual].mapping();//map genotype to phenotype and evaluate
+   //  Might want to check out Bentley's chapter on selection.   
+   int start_idx = 0;  // gene_number start index for each ligand
+   int gene_points_lig = 0;
+   for (; num_mutations>0; num_mutations--) { 
+   	 	  				
+   		individual = ignlgi()%pure.num_individuals();
+   		 
+   		// handle multi-ligand  -Huameng 11/25/2007 
+   		//gene_number = ignlgi()%pure[individual].genotyp.num_genes();
+   		//mutate(pure[individual].genotyp, gene_number); 
+   		
+   		// mutate the translation & quarterion segment of gene. 		 				
+   		for(int n = 0; n < nlig; n++) {   		  		   		  		  	  		      	      
+	      start_idx = gene_index_lig[n][0];
+	      gene_points_lig = gene_index_lig[n][1] - gene_index_lig[n][0];  		              	           
+	      gene_number = start_idx + ignlgi()%(7);	 	         	      
+	      mutate(pure[individual].genotyp, gene_number, n);	      		      	          	      	      	     	           							
+   		} // nlig 
+   		 
+   		// torsion 	    
+	    if(	global_ntor > 0) {       
+	    	gene_number = nlig*7 + ignlgi()%(global_ntor);
+	    	mutate(pure[individual].genotyp, gene_number, nlig); 
+	    } 			    	     		
+   		pure[individual].age = 0L;
 
-      mg_count++; // update statistics: count of mutated genes per run
-      individual_mutated[individual] = TRUE; // for statistics only
-   }
-   // update statistics: count of mutated individuals per run
-   for(unsigned int i=0;i<pure.num_individuals();i++) \
-     if(individual_mutated[i]) mi_count++; 
+// debug info  		
+#ifdef DEBUG_MUTATION		
+	      (void)fprintf(logFile, "num_mutations= %d\n", num_mutations );
+	      (void)fprintf(logFile, "individual= %d\n", individual );
+	      (void)fprintf(logFile, "In mutation ligand=%d, gene_number=%d\n", n, gene_number );	      
+#endif // DEBUG
+   		
+   } // num_mutations
 }
 
 void Genetic_Algorithm::crossover(Population &original_population)
@@ -609,270 +596,236 @@ void Genetic_Algorithm::crossover(Population &original_population)
       temp_index = ignlgi()%original_population.num_individuals();
       ordering[i] = ordering[temp_index];
       assert(ordering[i] < original_population.num_individuals());//debug
-      assert(ordering[i] >= 0);//debug
       ordering[temp_index] = temp_ordering;
       assert(ordering[temp_index] < original_population.num_individuals());//debug
-      assert(ordering[temp_index] >= 0);//debug
    }
                                                                     
    //  How does Goldberg implement crossover?
-
+   int start_idx = 0;
+   int end_idx = 0;  
+   int n = 0;
    // Loop over individuals in population
    for (i=0; i<original_population.num_individuals()-1; i=i+2) {
       // The two individuals undergoing crossover are original_population[ordering[i]] and original_population[ordering[i+1]]
 
       if (ranf() < c_rate) {
-         // Perform crossover with a probability of c_rate
-         int fi = ordering[i]; //index of father
-         int mi = ordering[i+1]; //index of mother 
-         // Assert the quaternions of the mother and father are okay:
-         Genotype father = original_population[fi].genotyp;
-         Genotype mother = original_population[mi].genotyp;
-         Quat q_father, q_mother;
-#ifdef DEBUG_QUAT_PRINT
-         pr( logFile, "DEBUG_QUAT: crossover()  q_father (individual=%d)\n", fi );
-#endif // endif DEBUG_QUAT_PRINT
-         //  Make sure the quaternion is suitable for 3D rotation
-         q_father = father.readQuat();
-#ifdef DEBUG_QUAT_PRINT
-         printQuat( logFile, q_father );
-         (void) fflush(logFile);
-#endif // endif DEBUG_QUAT_PRINT
-         assertQuatOK( q_father );
-#ifdef DEBUG_QUAT_PRINT
-         pr( logFile, "DEBUG_QUAT: crossover()  q_mother (individual=%d)\n", mi );
-         (void) fflush(logFile);
-#endif // endif DEBUG_QUAT_PRINT
-         //  Make sure the quaternion is suitable for 3D rotation
-         q_mother = mother.readQuat();
-#ifdef DEBUG_QUAT_PRINT
-         printQuat( logFile, q_mother );
-         (void) fflush(logFile);
-#endif // endif DEBUG_QUAT_PRINT
-         assertQuatOK( q_mother );
-
-                // Pos.  Orient. Conf.
-                // 0 1 2 3 4 5 6 7 8 9
-                // X Y Z x y z w t t t
-                //                     num_genes() = 10
-         switch(c_mode) {
-            case OnePt:
-                // To guarantee 1-point always creates 2 non-empty partitions,
-                // the crossover point must lie in range from 1 to num_genes-1.
-                // Choose one random integer in this range
-                // Make sure we do not crossover inside a quaternion...
-                do {
-                    // first_point = ignlgi()%original_population[i].genotyp.num_genes();
-                    first_point = ignuin(1, original_population[i].genotyp.num_genes()-1);
-                } while ( is_within_rotation_index( first_point ) ) ;
-                //  We can accomplish one point crossover by using the 2pt crossover operator
-                crossover_2pt( original_population[fi].genotyp, 
-                               original_population[mi].genotyp,
-                               first_point, 
-                               original_population[fi].genotyp.num_genes());//either one works
-                break;
-            case TwoPt:
-                // To guarantee 2-point always creates 3 non-empty partitions,
-                // each crossover point must lie in range from 1 to num_genes-1.
-                // Choose two different random integers in this range
-                // Make sure we do not crossover inside a quaternion...
-                do {
-                    first_point = ignuin(1, original_population[i].genotyp.num_genes()-1);
-                } while ( is_within_rotation_index( first_point ) ) ;
-                do {
-                    second_point = ignuin(1, original_population[i].genotyp.num_genes()-1);
-                } while ( is_within_rotation_index( second_point ) || second_point == first_point );
-                // Do two-point crossover, with the crossed-over offspring replacing the parents in situ:
-                crossover_2pt( original_population[fi].genotyp, 
-                               original_population[mi].genotyp, 
-                               min( first_point, second_point ),
-                               max( first_point, second_point) );
-                break;
-            case Branch:
-                // New crossover mode, designed to exchange just one corresponding sub-trees (or "branch")
-                // between two individuals.
-                // If there are only position and orientation genes, there will be only
-                // 7 genes; this mode would not change anything in such rigid-body dockings.
-                if (original_population[i].genotyp.num_genes() <= 7) {
-                    // Rigid body docking, so no torsion genes to crossover.
-                    continue; //TODO raise a fatal error if branch crossover with no torsions
-                 } else {
-                    // Pick a random torsion gene
-                    first_point = ignuin(7, original_population[i].genotyp.num_genes()-1);
-                    second_point = original_population.get_eob( first_point - 7 );
-                    // Do two-point crossover, with the crossed-over offspring replacing the parents in situ:
-                    crossover_2pt( original_population[fi].genotyp, 
-                                   original_population[mi].genotyp, 
-                                   min( first_point, second_point ),
-                                   max( first_point, second_point) );
-                    break;
-                 }
-            case Uniform:
-                crossover_uniform( original_population[fi].genotyp, 
-                                   original_population[mi].genotyp,
-                                   original_population[mi].genotyp.num_genes());
-                break;
-            case Arithmetic:
-               // select the parents A and B
-               // create new offspring, a and b, where
-               // a = x*A + (1-x)*B, and b = (1-x)*A + x*B    -- note: x is alpha in the code
-               alpha = (Real) ranf();
+      	
+      	 // test different crossover methods -Huameng 11/21/2007
+         // First (n < nlig), crossover the gene bps of rotation & quarterion in each ligand,
+         // Second (n >= nlig), crossover gene bps in torsion segment.  
+         // Third (n = 2*nlig), crossover gene bps for torsion seg of residue      	          	            	
+         for(n = 0; n < nlig; n++) {         	            		           		
+            start_idx = gene_index_lig[n][0];
+            end_idx = gene_index_lig[n][1]; 
+                                    
+	         // Perform crossover with a probability of c_rate        
+	         switch(c_mode) {        	
+	            case TwoPt:                       	           		        		        		
+		            // First crossover point is a random integer from 0 to the number of genes minus 1
+#ifdef DO_NOT_CROSSOVER_IN_QUAT 				
+	                // Make sure we do not crossover inside a quaternion...
+	                do {
+	                    //first_point = ignuin(0, original_population[i].genotyp.num_genes()-1);
+	                    first_point = ignuin(start_idx, end_idx -1);
+	                } while ( is_rotation_index( first_point, n )) ;
+	                
+	                do {
+	                    //second_point = first_point+ignuin(0, original_population[i].genotyp.num_genes()-first_point-1);
+	                    second_point = first_point + ignuin(0, end_idx -first_point-1);
+	                } while ( is_rotation_index( second_point, n ));
+				           	  
+	            	//fprintf(logFile, "In DO_NOT_CROSSOVER_IN_QUAT. ligand=%d, first_point=%d  second_point=%d\n", n, first_point, second_point); 							
+#else									 
+	                //first_point = ignuin(0, original_population[i].genotyp.num_genes()-1);
+	                //second_point = first_point+ignuin(0, original_population[i].genotyp.num_genes()-first_point-1);	                	                
+	                first_point = ignuin(start_idx, end_idx -1);
+	                second_point = first_point + ignuin(0, end_idx -first_point-1);	                
+		            //fprintf(logFile, "In CROSSOVER_IN_QUAT. ligand=%d, first_point=%d  second_point=%d\n", n, first_point, second_point); 	
+#endif					
+	                // Do two-point crossover, with the crossed-over offspring replacing the parents in place:
+	                crossover_2pt( original_population[ordering[i]].genotyp, 
+	                               original_population[ordering[i+1]].genotyp, 
+	                               first_point, 
+	                               second_point, 
+	                               n);		                                                                         	                                        	          		                         	 	            	 	                	            		           	                
+	                break;
+	                
+	            case OnePt:
+	                // First crossover point is a random integer from 0 to the number of genes minus 1
+	                // Make sure we do not crossover inside a quaternion...
+	                //fprintf(logFile, "In OnePt crossover: is_rotation_index first_point=%d,  \n", first_point, nlig); 
+	                do {
+	                    first_point = ignlgi()%original_population[i].genotyp.num_genes();                   
+	                } while ( is_rotation_index( first_point, n )) ;
+	                //  We can accomplish one point crossover by using the 2pt crossover operator
+	                crossover_2pt( original_population[ordering[i]].genotyp, 
+	                               original_population[ordering[i+1]].genotyp,
+	                               first_point, 
+	                               original_population[ordering[i]].genotyp.num_genes()-1,
+	                               n );
+	                original_population[ordering[i]].age = 0L;
+	                original_population[ordering[i+1]].age = 0L;
+	                break;
+	            case Uniform:
+	                crossover_uniform( original_population[ordering[i]].genotyp, 
+	                                   original_population[ordering[i+1]].genotyp,
+	                                   original_population[ordering[i]].genotyp.num_genes() - 1);
+	
+	                break;
+	            case Arithmetic:
+	               // select the parents A and B
+	               // create new offspring, a and b, where
+	               // a = x*A + (1-x)*B, and b = (1-x)*A + x*B    -- note: x is alpha in the code
+	               alpha = (Real) ranf();
 #ifdef DEBUG
-               (void)fprintf(logFile, "gs.cc/  alpha = " FDFMT "\n", alpha);
-               (void)fprintf(logFile, "gs.cc/ About to call crossover_arithmetic with original_population[%d] & [%d]\n", fi, mi);
-#endif /* DEBUG */
-               crossover_arithmetic( original_population[fi].genotyp, 
-                                     original_population[mi].genotyp, 
-                                     alpha );
-               break;
-            default:
-                (void)fprintf(logFile,"gs.cc/ Unrecognized crossover mode!\n");
-         }
-         original_population[fi].age = 0L;
-         original_population[mi].age = 0L;
-         //map genotype to phenotype and evaluate energy
-         original_population[fi].mapping();
-         original_population[mi].mapping();
-	 // update statistics
-         ci_count++; // count of crossovers, individ-by-individ
-      }
-   }
-}
+	               (void)fprintf(logFile, "gs.cc/  alpha = " FDFMT "\n", alpha);
+	               (void)fprintf(logFile, "gs.cc/ About to call crossover_arithmetic with original_population[%d] & [%d]\n", i, i+1);
+#endif // DEBUG 
+	               crossover_arithmetic( original_population[ i ].genotyp, 
+	                                     original_population[i+1].genotyp, 
+	                                     alpha );
+	               break;
+	            default:
+	                (void)fprintf(logFile,"gs.cc/ Unrecognized crossover mode!\n");
+	         } // switch c_mode        
+      	  } // nlig 
+      	       	  
+      	 //crossover gene bps for torsions  -Huameng 1/1/2008
+	     //The last segment in gene		                      	        			     		    
+	     if(global_ntor > 0) {
+		     start_idx = 7*nlig;            	
+		     end_idx = start_idx + global_ntor; 	      			 		 
+			 first_point = ignuin(start_idx, end_idx - 1);		  
+			 second_point = first_point + ignuin(0, end_idx -first_point -1);
+			 
+			 // Do two-point crossover, with the crossed-over offspring replacing the parents in place:
+			 crossover_2pt( original_population[ordering[i]].genotyp, 
+			               original_population[ordering[i+1]].genotyp, 
+			               first_point, 
+			               second_point,
+			               nlig);
+	     }	               		 		 	
+#ifdef DEBUG            	  
+		fprintf(logFile, "After crossover the gene points of torsion. start_idx=%d  end_idx=%d global_ntor=%d \n", start_idx, end_idx, global_ntor); 
+		fflush( logFile );
+#endif
+ 		   		                     	 	                
+	      original_population[ordering[i]].age = 0L;
+		  original_population[ordering[i+1]].age = 0L;			          	      	    
+      } // ranf() < c_rate
+   } // i num_individuals
+} 
 
 
-void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, const unsigned int pt1, const unsigned int pt2)
+void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, unsigned int pt1, unsigned int pt2, int ilig)
 {
-    // Assumes that 0<=pt1<=pt2<=number_of_pts
+    /*  Assumes that 0<=pt1<pt2<=number_of_pts  
+     *  There are four cases to consider:-
+     *  (1) the copied area is contained entirely within the gene
+     *  (2) the gene is contained entirely within the copied area
+     *  (3) the copied area is partially contained within the gene
+     *  (4) there's no intersection between the copied area and the gene
+     */
+   register unsigned int i;
+   Element temp;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_2pt(Genotype");
    (void)fprintf(logFile, "&father, Genotype &mother, unsigned int pt1, unsigned int pt2)\n");
-   (void)fprintf(logFile,"gs.cc/Performing crossover from %d to %d \n", pt1,pt2);
+   (void)fprintf(logFile,"gs.cc/Performing crossover from pt1=%d to pt2=%d \n", pt1, pt2);
 #endif /* DEBUG */
 
    // loop over genes to be crossed over
-   for (unsigned int i=pt1; i<pt2; i++) {
+   for (i=pt1; i<=pt2; i++) {
 #ifdef DEBUG
       //(void)fprintf(logFile,"gs.cc/1::At pt %d   father: %.3lf   mother: %.3lf\n",
       //i, *((double *)father.gread(i)), *((double *)mother.gread(i)) );
 #endif /* DEBUG */
-      Element temp = father.gread(i);
+	  // exclude any rotation point  -Huameng
+	  if(is_rotation_index(i, ilig))
+	  	 continue;
+      temp = father.gread(i);
       father.write(mother.gread(i), i);
       mother.write(temp, i);
-      cg_count++; // count of crossovers, gene-by-gene
 #ifdef DEBUG
       //(void)fprintf(logFile,"gs.cc/1::At pt %d   father: %.3lf   mother: %.3lf\n",
       //i, *((double *)father.gread(i)), *((double *)mother.gread(i)) );
 #endif /* DEBUG */
    }
 
+
+// all the code below is for DEBUG QUAT
 #ifdef DEBUG_QUAT
    Quat q_father, q_mother;
+
 #ifdef DEBUG_QUAT_PRINT
-   pr( logFile, "DEBUG_QUAT: crossover_2pt()  q_father\n" );
-   pr( logFile, "DEBUG_QUAT: crossover_2pt()  pt1=%d, pt2=%d\n", pt1, pt2 );
+	   pr( logFile, "DEBUG_QUAT: crossover_2pt()  q_father\n" );
+	   pr( logFile, "DEBUG_QUAT: crossover_2pt()  pt1=%d, pt2=%d\n", pt1, pt2 );
 #endif // endif DEBUG_QUAT_PRINT
-   //  Make sure the quaternion is suitable for 3D rotation
-   q_father = father.readQuat();
+	
+	//  handle multi-ligand  -Huameng
+	//  Make sure the quaternion is suitable for 3D rotation
+	for(int n = 0; n < nlig; n++) {
+		q_father = father.readQuat(n);
+		
+#ifndef DO_NOT_CROSSOVER_IN_QUAT
+		   q_father = normQuat( q_father );
+		   father.writeQuat( q_father, n );
+#endif
 #ifdef DEBUG_QUAT_PRINT
-   printQuat( logFile, q_father );
-   (void) fflush(logFile);
+		   printQuat( logFile, q_father );
+		   (void) fflush(logFile);
 #endif // endif DEBUG_QUAT_PRINT
-   assertQuatOK( q_father );
+		
+		   assertQuatOK( q_father );
+		   
 #ifdef DEBUG_QUAT_PRINT
-   pr( logFile, "DEBUG_QUAT: crossover_2pt()  q_mother\n" );
-   (void) fflush(logFile);
+		   pr( logFile, "DEBUG_QUAT: crossover_2pt()  q_mother\n" );
+		   (void) fflush(logFile);
 #endif // endif DEBUG_QUAT_PRINT
-   //  Make sure the quaternion is suitable for 3D rotation
-   q_mother = mother.readQuat();
+		
+		   //  Make sure the quaternion is suitable for 3D rotation
+		   q_mother = mother.readQuat(n);
+		   
+#ifndef DO_NOT_CROSSOVER_IN_QUAT
+		   q_mother = normQuat( q_mother );
+		   mother.writeQuat( q_mother, n );
+#endif
+
 #ifdef DEBUG_QUAT_PRINT
-   printQuat( logFile, q_mother );
-   (void) fflush(logFile);
+		   printQuat( logFile, q_mother );
+		   (void) fflush(logFile);
 #endif // endif DEBUG_QUAT_PRINT
-   assertQuatOK( q_mother );
+		
+	   assertQuatOK( q_mother );
+	} // nlig
+	
 #endif // endif DEBUG_QUAT
 
 }
 
 
-void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, const unsigned int num_genes)
+void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, unsigned int num_genes)
 {
+    register unsigned int i;
+    Element temp;
+
 #ifdef DEBUG
     (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_uniform(Genotype");
     (void)fprintf(logFile, "&father, Genotype &mother, unsigned int num_genes)\n");
 #endif /* DEBUG */
 
-    for (unsigned int i=0; i<num_genes; i++) {
-        // Choose either father's or mother's gene/rotation gene set, with a 50/50 probability
-        if (ranf() > 0.5 ) continue; // 50% probability of crossing a gene or gene-set; next i
-        if ( ! is_rotation_index( i ) ) {
-            // Exchange parent's genes
-            Element temp = father.gread(i);
+    for (i=0; i<num_genes; i++) {
+        // Choose either father's or mother's gene, with a 50/50 probability
+        if (ranf() > 0.5) {
+            temp = father.gread(i);
             father.write(mother.gread(i), i);
             mother.write(temp, i);
-        } else if ( is_first_rotation_index(i) ) {
-            // don't crossover within a quaternion, only at the start; next i
-#ifdef DEBUG_QUAT
-            Quat q_father, q_mother;
-#ifdef DEBUG_QUAT_PRINT
-            pr( logFile, "DEBUG_QUAT: pre-crossover_uniform()  q_father\n" );
-#endif // endif DEBUG_QUAT_PRINT
-            //  Make sure the quaternion is suitable for 3D rotation
-            q_father = father.readQuat();
-#ifdef DEBUG_QUAT_PRINT
-            printQuat( logFile, q_father );
-            (void) fflush(logFile);
-#endif // endif DEBUG_QUAT_PRINT
-            assertQuatOK( q_father );
-#ifdef DEBUG_QUAT_PRINT
-            pr( logFile, "DEBUG_QUAT: pre-crossover_uniform()  q_mother\n" );
-            (void) fflush(logFile);
-#endif // endif DEBUG_QUAT_PRINT
-            //  Make sure the quaternion is suitable for 3D rotation
-            q_mother = mother.readQuat();
-#ifdef DEBUG_QUAT_PRINT
-            printQuat( logFile, q_mother );
-            (void) fflush(logFile);
-#endif // endif DEBUG_QUAT_PRINT
-            assertQuatOK( q_mother );
-#endif // endif DEBUG_QUAT
-            // Exchange father's or mother's set of rotation genes
-            for (unsigned int j=i; j<i+4; j++) {
-                Element temp = father.gread(j);
-                father.write(mother.gread(j), j);
-                mother.write(temp, j);
-            }
-            // Increment gene counter, i, by 3, to skip the 3 remaining rotation genes
-            i=i+3;
-#ifdef DEBUG_QUAT
-#ifdef DEBUG_QUAT_PRINT
-            pr( logFile, "DEBUG_QUAT: post-crossover_uniform()  q_father\n" );
-#endif // endif DEBUG_QUAT_PRINT
-            //  Make sure the quaternion is suitable for 3D rotation
-            q_father = father.readQuat();
-#ifdef DEBUG_QUAT_PRINT
-            printQuat( logFile, q_father );
-            (void) fflush(logFile);
-#endif // endif DEBUG_QUAT_PRINT
-            assertQuatOK( q_father );
-#ifdef DEBUG_QUAT_PRINT
-            pr( logFile, "DEBUG_QUAT: post-crossover_uniform()  q_mother\n" );
-            (void) fflush(logFile);
-#endif // endif DEBUG_QUAT_PRINT
-            //  Make sure the quaternion is suitable for 3D rotation
-            q_mother = mother.readQuat();
-#ifdef DEBUG_QUAT_PRINT
-            printQuat( logFile, q_mother );
-            (void) fflush(logFile);
-#endif // endif DEBUG_QUAT_PRINT
-            assertQuatOK( q_mother );
-#endif // endif DEBUG_QUAT
-        } // is_rotation_index( i )
-    cg_count++; // count of crossovers, gene-by-gene
-    } // next i
+        }
+    }
 }
 
-void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, ConstReal  alpha)
+void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, Real alpha)
 {
    register unsigned int i;
    Element temp_A, temp_B;
@@ -889,50 +842,28 @@ void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, ConstReal
 #endif /* DEBUG */
 
    // loop over genes to be crossed over
-   // a = alpha*A + (1-alpha)*B
-   // b = (1-alpha)*A + alpha*B
    for (i=0; i<A.num_genes(); i++) {
-       if ( is_translation_index(i) ) {
 #ifdef DEBUG
-           (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
-           (void)fprintf(logFile, "/looping over genes to be crossed over, i = %d\n", i);
-           (void)fflush(logFile);
+       (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
+       (void)fprintf(logFile, "/looping over genes to be crossed over, i = %d\n", i);
+       (void)fflush(logFile);
 #endif /* DEBUG */
-           temp_A = A.gread(i);
-           temp_B = B.gread(i);
+      temp_A = A.gread(i);
+      temp_B = B.gread(i);
 #ifdef DEBUG
-           (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
-           (void)fprintf(logFile, "/temp_A = %.3f  &  temp_B = %.3f\n", temp_A.real, temp_B.real);
-           (void)fflush(logFile);
+       (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
+       (void)fprintf(logFile, "/temp_A = %.3f  &  temp_B = %.3f\n", temp_A.real, temp_B.real);
+       (void)fflush(logFile);
 #endif
-           A.write( (one_minus_alpha * temp_A.real  +  alpha * temp_B.real), i);
-           B.write( (alpha * temp_A.real  +  one_minus_alpha * temp_B.real), i);
+      // a = alpha*A + (1-alpha)*B
+      // b = (1-alpha)*A + alpha*B
+      A.write( (alpha * temp_A.real  +  one_minus_alpha * temp_B.real), i);
+      B.write( (one_minus_alpha * temp_A.real  +  alpha * temp_B.real), i);
 #ifdef DEBUG
-           (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
-           (void)fprintf(logFile, "/A = %.3f  &  B = %.3f\n", A.gread(i).real, B.gread(i).real);
-           (void)fflush(logFile);
+       (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_arithmetic");
+       (void)fprintf(logFile, "/A = %.3f  &  B = %.3f\n", A.gread(i).real, B.gread(i).real);
+       (void)fflush(logFile);
 #endif
-       } else if ( is_rotation_index(i) ) {
-           // Interpolate the father's and mother's set of 4 quaternion genes
-           Quat q_A;
-           q_A = slerp( A.readQuat(), B.readQuat(), alpha );
-           B.writeQuat( slerp( A.readQuat(), B.readQuat(), one_minus_alpha ) );
-           A.writeQuat( q_A );
-           // Increment gene counter, i, by 3, to skip the 3 remaining quaternion genes
-           i=i+3;
-       } else if ( is_conformation_index(i) ) {
-           // Use anglular interpolation, alerp(a,b,fract), to generate properly interpolated torsion angles
-           temp_A = A.gread(i);
-           temp_B = B.gread(i);
-           A.write( alerp(temp_A.real, temp_B.real, alpha), i);
-           B.write( alerp(temp_A.real, temp_B.real, one_minus_alpha), i);
-       } else {
-           // MP: BUG CHECK!
-           (void)fprintf(logFile, "Invalid gene type at i=%d\n", i);
-           (void)fflush(logFile);
-           exit(-1);
-       }
-   cg_count++; // count of crossovers, gene-by-gene
    }
 }
 
@@ -977,17 +908,16 @@ void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, ConstReal
  *    value of zero for it's expectation.
  */
 
-/* not static */
-void Genetic_Algorithm::selection_proportional(Population &original_population, Individual *const new_pop)
+void Genetic_Algorithm::selection_proportional(Population &original_population, Individual *new_pop)
 {
    register unsigned int i=0, start_index = 0;
    int temp_ordering, temp_index;
 #ifdef DEBUG2
+   Real debug_ranf;
    int allzero = 1;//debug
    Molecule *individualMol;//debug
 #endif
 
-#undef CHECK_ISNAN
 #ifdef CHECK_ISNAN
    int allEnergiesEqual = 1;
    double diffwa = 0.0, invdiffwa = 0.0, firstEnergy = 0.0;
@@ -1053,7 +983,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
              assert(!ISNAN(alloc[i]));
           }// for i
       }// endif (ISNAN(invdiffwa))
-   } else if (original_population.num_individuals() > 1) {
+   } else {
       // diffwa = 0.0,  so worst = avg
       // This implies the population may have converged.
       converged = 1;
@@ -1116,8 +1046,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    for (i=0;  i < original_population.num_individuals();  i++)
    {
       //  In our case of function minimization, the max individual is the worst
-      if(avg==worst) alloc[i] = 1./(original_population.num_individuals()+1); // HACK TODO  investigate 2008-11
-       else alloc[i] = (worst - original_population[i].value(e_mode))/(worst - avg);
+      alloc[i] = (worst - original_population[i].value(e_mode))/(worst - avg);
    }
 
 #endif /* not CHECK_ISNAN */
@@ -1182,16 +1111,17 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    // ??? start_index = 0; // gmm, 1998-07-13 ???
 
    while (start_index < original_population.num_individuals()) {
-       Real r; // local 
 #ifdef DEBUG2
       (void)fprintf(stderr, "gs.cc:596/inside \"while(start_index(=%d) < original_population.num_individuals()(=%d)) \" loop:  count= %d\n", start_index, original_population.num_individuals(), ++count); //debug
 #endif
       assert(ordering[i] < original_population.num_individuals());//debug
-      r = ranf();
 #ifdef DEBUG2
-      (void)fprintf(stderr, "gs.cc:599/inside debug_ranf= %.3f, alloc[ordering[i]]= %.3e, ordering[i]= %d,  i= %d\n", r, alloc[ordering[i]], ordering[i], i); // debug
-#endif //  DEBUG2
-      if (r < alloc[ordering[i]]) {
+      debug_ranf = ranf();
+      (void)fprintf(stderr, "gs.cc:599/inside debug_ranf= %.3f, alloc[ordering[i]]= %.3e, ordering[i]= %d,  i= %d\n", debug_ranf, alloc[ordering[i]], ordering[i], i); // debug
+      if (debug_ranf < alloc[ordering[i]]) {
+#else
+      if (ranf() < alloc[ordering[i]]) {                        // non-debug
+#endif //  not DEBUG2
 #ifdef DEBUG2
          (void)fprintf(stderr, "gs.cc:603/inside (debug_ranf < alloc[ordering[i]]) is true!\n"); //debug
          (void)fprintf(stderr, "gs.cc:604/inside about to increment start_index in:  \"new_pop[start_index++] = original_population[ordering[i]];\"; right now, start_index= %d\n", start_index); //debug
@@ -1244,16 +1174,16 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
  * between the best and worst individual.  Since 2P = C,
  * P = K/(1+K).
  */
-void Genetic_Algorithm::selection_tournament(Population &original_population, Individual *const new_pop)
+void Genetic_Algorithm::selection_tournament(Population &original_population, Individual *new_pop)
 {
    register unsigned int i = 0, start_index = 0;
    int temp_ordering, temp_index;
-//#define DEBUG
+
 #ifdef DEBUG
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::");
    (void)fprintf(logFile, "selection_tournament(Population &original_population, Individual *new_pop)\n");
 #endif /* DEBUG */
-   Real tournament_prob =  0.; // Dummy value - this code seems unfinished M Pique Oct 2009
+
    original_population.msort(original_population.num_individuals());
    for (i=0; i<original_population.num_individuals(); i++) {
       alloc[i] = original_population.num_individuals()*(2*tournament_prob - i*(4*tournament_prob - 2));
@@ -1280,86 +1210,6 @@ void Genetic_Algorithm::selection_tournament(Population &original_population, In
       i = (i+1)%original_population.num_individuals();
    }
 }
-/* Linear Ranking Selection
- 
-  This type of selection was described in Goldberg and Deb (1991),
-  Section 4 and subsection 4.2. "Sort the population from best to
-  worst, assign the number of copies [alpha, or 'alloc[]' here] that
-  each individual should receive ..., and then perform proportionate
-  selection according to that assignment."
- 
- 
-  We can again parameterize this ranking with K, the relative probability
-  between the best and worst individual.  
-
-  M Pique: set c0 and c1 (selection coeffient for first individual, slope)
-   givens: k: ratio  k=c0/(c0-c1)   and that c1=2*(c0-1) (see text)
-  
-   k=c0/(c0-2*(c0-1))
-   c0= k*(c0-2*(c0-1))
-   c0= k*c0 -2*k*c0 +2*k
-   c0 = -k*c0 + 2*k
-   c0+(k*c0) =  2*k
-   (1+k)*c0= 2*k
-   c0 = 2*k/(1+k)
-  
-   ratio k is   c0 / (  c0 - c1), so k*c0 - k*c1 = c0, (k-1)*c0 = k*c1
-   Goldberg & Deb : c1=2*(c0-1) so 2*c0 = c1+2
-
- ***/
-void Genetic_Algorithm::selection_linear_ranking(/* not const (msort) */ Population &original_population,
-						 /* not const */ Individual *const new_pop) 
-{
-   register unsigned int i = 0, start_index = 0;
-//#define DEBUG
-#ifdef DEBUG
-   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::");
-   (void)fprintf(logFile, "selection_linear_ranking(Population &original_population, Individual *new_pop)\n");
-   (void)fprintf(logFile, "gs.cc/ linear_ranking_selection_probability_ratio=%f\n", linear_ranking_selection_probability_ratio);
-#endif /* DEBUG */
-   Real c0 =  2*linear_ranking_selection_probability_ratio/(1+linear_ranking_selection_probability_ratio); // K
-   Real c1 = 2*(c0-1);
-   unsigned int num_indiv = original_population.num_individuals(); // abbreviation
-   original_population.msort(original_population.num_individuals());
-
-   for (i=0; i<num_indiv; i++) {
-      Real x; // range 0..1 as i ranges 0..num_indiv-1
-      if(num_indiv<2) x=0;
-      else x=i/(num_indiv-1);
-      alloc[i] = (c0-c1*x); // alpha
-   }
-
-   // allocate whole number parts of alloc (alpha) distribution
-   for (i=0;  i<num_indiv && start_index<num_indiv;  i++) {
-      while (alloc[i]>=1.0 && start_index<num_indiv) {
-         new_pop[start_index++] = original_population[i];
-	 alloc[i] -= 1.0;
-      }
-   }
-
-   // allocate fractional (residual) parts of alloc distribution
-   // The method here is not completly "fair" but is quick 
-   //  choose a random indiv (without replacement) and decide selection
-   // from biased coin flip
-   // Again see Goldberg & Deb 1991    -= M Pique October 2009
-   // WHILE loop has emergency breakout for "cant happen" cases... MP
-   int emergencydoor=25+num_indiv/10; // just in case
-   unsigned int fracalloc_start = start_index; // for statistics logging
-   while ( start_index < num_indiv && --emergencydoor>0 ) {
-	i = ignlgi()%num_indiv;
-	if(alloc[i]<=0) continue;
-	if(alloc[i]>ranf()) {
-	  new_pop[start_index++] = original_population[i];
-	  }
-	  alloc[i]=0; // remove from further consideration
-   }
-   if(start_index!=num_indiv) {
-     // put in log
-   (void)fprintf(logFile, "WARNING: gs.cc: linear_ranking_selection found no indiv for %d slot%s of %d.\n", num_indiv-start_index, (num_indiv-start_index)==1?"":"s", num_indiv-fracalloc_start);
-     // just copy most fit indiv into rest of array
-   while(start_index < num_indiv) new_pop[start_index++] = original_population[0];
-   }
-}
 
 Individual *Genetic_Algorithm::selection(Population &solutions)
 {
@@ -1377,14 +1227,8 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
       case Proportional:
          selection_proportional(solutions, next_generation);
          break;
-      case LinearRanking:
-         selection_linear_ranking(solutions, next_generation);
-         break;
       case Tournament:
-         // M Pique October 2009 - does not work so disallowing for now
-	 // selection_tournament(solutions, next_generation);
-         (void)fprintf(logFile,"gs.cc/Unimplemented Selection Method - using proportional\n");
-         selection_proportional(solutions, next_generation);
+         selection_tournament(solutions, next_generation);
          break;
       case Boltzmann:
          (void)fprintf(logFile,"gs.cc/Unimplemented Selection Method - using proportional\n");
@@ -1404,13 +1248,17 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
 int Genetic_Algorithm::search(Population &solutions)
 {
    register unsigned int i;
-
+   unsigned int oldest = 0, oldestIndividual = 0, fittestIndividual = 0;
+   double fittest = BIG;
+   //double energy_diff = 0.0;
+   
    struct tms tms_genStart;
    struct tms tms_genEnd;
 
    Clock genStart;
    Clock genEnd;
-
+   
+   
 #ifdef DEBUG /* DEBUG { */
    (void)fprintf(logFile, "gs.cc/int Genetic_Algorithm::search(Population &solutions)\n");
 #endif /* } DEBUG */
@@ -1418,14 +1266,19 @@ int Genetic_Algorithm::search(Population &solutions)
    genStart = times( &tms_genStart );
 
 #ifdef DEBUG3 /* DEBUG3 { */
+   (void)fprintf(logFile,"About to perform Mapping on the solutions.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
        (void)fprintf(logFile,"%ld ", solutions[i].age);
    }
    (void)fprintf(logFile,"\n");
 #endif /* } DEBUG3 */
-
-   // search no longer doing Mapping on the incoming population
-   // assumed already mapped earlier, may 2009 mp+rh
+  
+   //
+   // Map from genotype to phenotype, also calculate energy for each individual
+   //
+   for (i=0; i<solutions.num_individuals(); i++) {
+      solutions[i].mapping();
+   }
    
 #ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform Selection on the solutions.\n");
@@ -1464,7 +1317,8 @@ int Genetic_Algorithm::search(Population &solutions)
    //
    // Perform mutation
    // 
-   mutation(newPop);
+  mutation(newPop);
+  
 
 #ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform elitism, newPop.\n");
@@ -1483,7 +1337,8 @@ int Genetic_Algorithm::search(Population &solutions)
          newPop[solutions.num_individuals()-1-i] = solutions[i];
       }
    }
-
+    
+      
 #ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to Update the Current Generation, newPop.\n");
    for (i=0; i<solutions.num_individuals(); i++) {
@@ -1509,33 +1364,82 @@ int Genetic_Algorithm::search(Population &solutions)
        solutions[i].incrementAge();
    }
 
-   genEnd = times( &tms_genEnd );
-
-   // generation is over, tabulate statistics
-
    if (debug > 0) {
-       (void)fprintf(logFile,"DEBUG:  Generation: %3u, output_pop_stats.everyNgens = %3d, generations%%output_pop_stats.everyNgens = %u\n",
-       generations, output_pop_stats.everyNgens, output_pop_stats.everyNgens>0?generations%output_pop_stats.everyNgens:0);
+       (void)fprintf(logFile,"DEBUG:  Generation: %3u, outputEveryNgens = %3u, generations%%outputEveryNgens = %u\n",
+                     generations, outputEveryNgens, generations%outputEveryNgens);
    }
-       /* Only output statistics if the output level is not 0. */
-   if (output_pop_stats.everyNgens != 0 && generations%output_pop_stats.everyNgens == 0) {
-
-
-       // print "Generation:" line (basic info, no mean/median/stddev...
-       (void)fprintf(logFile,"Generation: %3u   ", generations);
-#ifdef DEBUG3
-       // medium (with age/pop info) output level, no newline at end
-       (void) solutions.printPopulationStatistics(logFile, 2, "");
-#else
-       // lowest output level, no newline at end
-       (void) solutions.printPopulationStatistics(logFile, 1, ""); 
-#endif /* DEBUG3 */
-       (void)fprintf(logFile,"    Num.evals.: %ld   Timing: ", 
+   if (generations%outputEveryNgens == 0) {
+       oldest  = 0L;
+       fittest = BIG;
+       for (i=0; i<solutions.num_individuals(); i++) {
+          if (solutions[i].age >= oldest) {
+              oldest = solutions[i].age;
+              oldestIndividual = i;
+          }
+          if (solutions[i].value(Normal_Eval) <= fittest) {
+              fittest = solutions[i].value(Normal_Eval);
+              fittestIndividual = i;
+          }
+       }
+       
+       // -Huameng 02/18/2008
+	   // check if energe change from last generation is less than convergy E diff threshold.
+	   /*
+	   if(generations >= 500 ) {
+	   	  //fittest = solutions[i].value(Normal_Eval);
+	   	  if(fittest < lowestEnergyPrevGen)		   
+	   	  	 energy_diff = lowestEnergyPrevGen - fittest;
+	   	  else
+	   	  	 energy_diff = fittest - lowestEnergyPrevGen;
+	   	  	 
+		  if(energy_diff < CONVERGY_E_DIFF_THRESHOLD){   			   	 
+		     cnt_energy_delta++;       	  
+		  } else {
+		   	 cnt_energy_delta = 0;  	 
+		  }
+		   
+		  if(cnt_energy_delta >= 20) {
+		   	 converged = 1;
+		  }		   	   	   	   	   	
+		  if(generations%5 == 0) {		   
+	      	fprintf(logFile,"Generation: %3u    preGeneration energy: %.3f    Lowest energy: %.3f    cnt_energy_delta: %d\n", 
+	        	generations, lowestEnergyPrevGen, fittest, cnt_energy_delta);			  		   
+	      }
+	   }
+	   lowestEnergyPrevGen = fittest;
+	   */
+                                                     
+       /* Only output if the output level is not 0. */
+       if (outputEveryNgens != OUTLEV0_GENS) {
+           // (void)fprintf(logFile, "___\noutputEveryNgens = %d, OUTLEV0_GENS=%d\n___\n", outputEveryNgens, OUTLEV0_GENS);
+           if (outputEveryNgens > 1) {
+    #ifndef DEBUG3
+               (void)fprintf(logFile,"Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
+               generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), 
                evaluate.evals() );
+    #else
+               (void)fprintf(logFile,"Generation: %3u   Oldest ind.: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Num.evals.: %ld    Timing: ", 
+               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
+               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
+               solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), 
+               evaluate.evals() );
+    #endif /* DEBUG3 */
+           } else {
+    #ifndef DEBUG3
+               (void)fprintf(logFile,"Generation: %3u   Oldest's energy: %.3f    Lowest energy: %.3f    Num.evals.: %ld   Timing: ", 
+               generations, solutions[oldestIndividual].value(Normal_Eval), solutions[fittestIndividual].value(Normal_Eval), evaluate.evals() );
+    #else
+               (void)fprintf(logFile,"Generation: %3u   Oldest: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f    Num.evals.: %ld   Timing: ", 
+               generations, oldestIndividual+1, solutions.num_individuals(), solutions[oldestIndividual].age, 
+               solutions[oldestIndividual].value(Normal_Eval), fittestIndividual+1, solutions.num_individuals(), 
+               solutions[fittestIndividual].age, solutions[fittestIndividual].value(Normal_Eval), evaluate.evals() );
+    #endif /* DEBUG3 */
+           }
+       }
+       genEnd = times( &tms_genEnd );
        timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd );
-
+       genStart = times( &tms_genStart );
    }
-   genStart = times( &tms_genStart );
 
    return(0);
 }

@@ -1,10 +1,11 @@
 /*
 
- $Id: cluster_analysis.cc,v 1.9 2010/10/01 22:51:39 mp Exp $
+ $Id: cluster_analysis.cc,v 1.5.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -31,23 +32,24 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <math.h>
 #include "cluster_analysis.h"
 
-
-int cluster_analysis( ConstReal   clus_rms_tol, 
-                      /* not const */ int cluster[MAX_RUNS][MAX_RUNS], 
-                      /* not const */ int num_in_clus[MAX_RUNS], 
-                      const int isort[MAX_RUNS], 
-                      const int nconf, 
-                      const int natom, 
-                      const int type[MAX_ATOMS],
-                      const Real crd[MAX_RUNS][MAX_ATOMS][SPACE], 
-                      const Real crdpdb[MAX_ATOMS][SPACE], 
-                      const Real sml_center[SPACE], 
-                      /* not const */ Real clu_rms[MAX_RUNS][MAX_RUNS], 
-                      const Boole B_symmetry_flag,
-                      const Boole B_unique_pair_flag,
-                      /* not const */ Real ref_crds[MAX_ATOMS][SPACE],
-                      const int ref_natoms,
-                      /* not const */ Real ref_rms[MAX_RUNS])
+int cluster_analysis( Real clus_rms_tol, 
+                      int cluster[MAX_RUNS][MAX_RUNS], 
+                      int num_in_clus[MAX_RUNS], 
+                      int isort[MAX_RUNS], 
+                      int nconf, 
+                      int natom, 
+                      int type[MAX_ATOMS],
+                      Real crd[MAX_RUNS][MAX_ATOMS][SPACE], 
+                      Real crdpdb[MAX_ATOMS][SPACE], 
+                      Real sml_centers[MAX_LIGANDS][SPACE], 
+                      Real clu_rms[MAX_RUNS][MAX_RUNS], 
+                      Boole B_symmetry_flag,
+                      Real ref_crds[MAX_ATOMS][SPACE],
+                      int ref_natoms,
+                      Real ref_rms[MAX_RUNS],
+                      int nlig,
+                      int natom_in_ligand[MAX_LIGANDS]
+                      )
 {
 /* __________________________________________________________________________
   | Cluster Analysis                                                         |
@@ -64,18 +66,37 @@ int cluster_analysis( ConstReal   clus_rms_tol,
           new_conf = FALSE;
 
     Real rms = 0.;
-
+	int  from_atom = 0; 
+	int  to_atom = 0;
+	
     if (ref_natoms == -1) {
         // No reference coordinates were defined, 
         //
         // Assume the Input Ligand PDBQT file is the reference structure
         // we must un-center the original PDBQT coordinates, 
-
+		// handle multi-ligand center -Huameng 11/09/2007
+		
+		for(int k = 0; k < nlig; k++ ){	 		
+	        to_atom =  from_atom + natom_in_ligand[k];
+	        
+	        for (i = from_atom; i < to_atom; i++ ) { /*new, gmm, 6-23-1998*/
+	        	
+	                ref_crds[i][0] = sml_centers[k][0] + crdpdb[i][0];
+	                ref_crds[i][1] = sml_centers[k][1] + crdpdb[i][1];
+	                ref_crds[i][2] = sml_centers[k][2] + crdpdb[i][2];              
+	        } // i 
+	        //set next start point of from_atom 
+	        from_atom = to_atom;
+	        
+		} // k lignad centers
+        
+		/*		
         for (i = 0;  i < natom;  i++) {
                 ref_crds[i][0] = sml_center[0] + crdpdb[i][0];
                 ref_crds[i][1] = sml_center[1] + crdpdb[i][1];
                 ref_crds[i][2] = sml_center[2] + crdpdb[i][2];
-        }/*i*/
+        } 
+        */ // i
     }
 
 /* Assign the index of the lowest energy to 0,0 in "cluster" */
@@ -87,13 +108,13 @@ int cluster_analysis( ConstReal   clus_rms_tol,
 
     num_in_clus[0] = nClusters = 1;         
     clu_rms[0][0]  = getrms(crd[thisconf], ref_crds,
-                            B_symmetry_flag, B_unique_pair_flag, natom, type);
+                            B_symmetry_flag, natom, type);
 
 /* Go through *all* conformations... */
     for ( i=0; i<nconf; i++) {
 
 /* Calculate the RMSD to the reference structure: */
-        ref_rms[i] = getrms(crd[i], ref_crds, B_symmetry_flag, B_unique_pair_flag, natom, type);
+        ref_rms[i] = getrms(crd[i], ref_crds, B_symmetry_flag, natom, type);
     }
 
 /* Go through all conformations *except* 0-th... */
@@ -108,7 +129,7 @@ int cluster_analysis( ConstReal   clus_rms_tol,
         for ( compare=0; compare<nClusters; compare++ ) {
 
             rms = getrms(crd[thisconf], crd[cluster[compare][0]],
-                         B_symmetry_flag, B_unique_pair_flag, natom, type);
+                         B_symmetry_flag, natom, type);
 
 /* Check rms; if greater than tolerance, */
             if ( rms > clus_rms_tol ) {
@@ -131,7 +152,7 @@ int cluster_analysis( ConstReal   clus_rms_tol,
 /* Start a new cluster...  */
             cluster[ nClusters ][0] = thisconf;
             clu_rms[ nClusters ][0] = getrms(crd[thisconf], ref_crds,
-                                             B_symmetry_flag, B_unique_pair_flag, natom, type);
+                                             B_symmetry_flag, natom, type);
             num_in_clus[ nClusters ] = 1;
 
 /* Increment the number of clusters... */

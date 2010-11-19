@@ -1,10 +1,11 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.12 2010/10/01 22:51:39 mp Exp $
+ $Id: conformation_sampler.cc,v 1.8.2.1 2010/11/19 20:09:30 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Max Chang, Rik Belew, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -39,7 +40,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define Vconf 1.0
 
 #define RMSD_SYMMETRY TRUE
-#define RMSD_UNIQUE_PAIR TRUE
 #define TRAN_STEP 0.03 // size of translation steps (x,y,z)
 #define ROT_ANG_STEP 0.025 // size of step for rotation angle
 #define TOR_ANG_STEP 0.03 // size of step for torsion angles
@@ -54,10 +54,13 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern class Eval evaluate;
 extern FILE *logFile;
+extern int nlig;   //Number of true ligands,  assigned in main.cc
+extern int ntor_lig[MAX_LIGANDS];  // number of torsion in each true ligand
+extern int gene_index_lig[MAX_LIGANDS][2];  //gene num start_point & end_point of a ligand.
 
 Real (*vt)[SPACE], (*crdpdb)[SPACE];
 int (*tlist)[MAX_ATOMS];
-Real *lig_center;
+//Real *lig_center;
 int natom;
 int *type;
 GridMapSetInfo *info;
@@ -69,14 +72,16 @@ const Real vertices[12][3] = {{-ICO_X, 0., ICO_Y}, {ICO_X, 0., ICO_Y}, {-ICO_X, 
                               {0., ICO_Y, ICO_X}, {0., ICO_Y, -ICO_X}, {0., -ICO_Y, ICO_X}, {0., -ICO_Y, -ICO_X},
                               {ICO_Y, ICO_X, 0.}, {-ICO_Y, ICO_X, 0.}, {ICO_Y, -ICO_X, 0.}, {-ICO_Y, -ICO_X, 0.}};
 
-ConformationSampler::ConformationSampler(const State& init_state) {
+ConformationSampler::ConformationSampler(State init_state) {
 	base_state = init_state;
 	base_ind = set_ind(info, init_state);
 	base_point = base_ind.phenotyp;	
 	base_energy = base_point.evaluate(Normal_Eval);
 	cnv_state_to_coords(init_state, vt, tlist, init_state.ntor, crdpdb, base_crd, natom);
 	
-	dimensionality = BASE_DIMENSIONS + init_state.ntor;
+	// handle multi-ligand  -Huameng 11/12/2007
+	//dimensionality = BASE_DIMENSIONS + init_state.ntor;
+	dimensionality = nlig * BASE_DIMENSIONS + init_state.ntor;
 	evals = 0;
 	favorable_evals = 0;
 	total_energy = 0.0;
@@ -91,15 +96,17 @@ ConformationSampler::ConformationSampler(const State& init_state) {
 	probe_point = base_point;
 
 	// store axis/angle representation in an array
-
-    // read the quaternion
-    Quat base_q = probe_point.readQuat();
-
-	// initialize bounds
-	for (int i=0; i < 3; i++) {
-		max_values[i] = min_values[i] = base_point.gread(i).real;
-		max_values[i+3] = min_values[i+3] = 0.0; // Eulerian angles set to 0
-	}
+	// handle multi-ligands -Huameng  11/18/2007
+    // read the quaternion    
+    for(int n = 0; n < nlig; n++) {
+    	base_q[n] = probe_point.readQuat(n);
+    	// initialize bounds
+		for (int i=0; i < 3; i++) {
+			max_values[7*n + i] = min_values[7*n + i] = base_point.gread(7*n + i).real;
+			max_values[7*n + i+3] = min_values[7*n + i+3] = 0.0; // Eulerian angles set to 0
+		}
+    }
+	
 	
 	// reset bins
 	for (int i=0; i < NUM_BINS; i++) {
@@ -117,39 +124,57 @@ void ConformationSampler::random_sample(void) {
 	random_sample(1);
 }
 
-void ConformationSampler::random_sample(const int num_samples) {
+void ConformationSampler::random_sample(int num_samples) {
 	Real multiplier;
 	
+	fprintf(logFile, "ConformationSampler::random_sample: start sampling...\n\n");
+	int start_gene_point, end_gene_point;
 	for (int sample=0; sample < num_samples; sample++) {
 		probe_point = base_point;
 		//multiplier = ranf();
 		multiplier = genunf(0.0, 1.25);
-
-		// perturb translation and torsion angles randomly
-		for (unsigned int i=0; i < (unsigned int) dimensionality; i++) {
-			if (is_rotation_index(i)) continue;
-			probe_point.write(probe_point.gread(i).real + gennor(0.0, multiplier*RHO) , i);
-			//probe_point.write(probe_point.gread(i).real + genunf(-1.0 * RHO, RHO) , i);
-		}
-
+				
 		Real random_axis_angle[4];
 		Real new_axis_angle[4];
 		Real angle = gennor(0.0, PI/24.0);
-		rand_axis(random_axis_angle, angle);
-		multiplyraa(base_axis_angle, random_axis_angle, new_axis_angle);
-
-        Quat q;
-        q.nx = new_axis_angle[0];
-        q.ny = new_axis_angle[1];
-        q.nz = new_axis_angle[2];
-        q.ang = new_axis_angle[3];
-
-        q = convertRotToQuat( q );
-
-        probe_point.writeQuat( q );
-
+		
+		// handle multi-ligand -Huameng 11/12/2007
+		for(int n = 0; n < nlig; n++) {
+			
+			// perturb translation and torsion angles randomly
+			/*
+			for (unsigned int i=0; i < (unsigned int) dimensionality; i++) {
+				if (is_rotation_index(i)) continue;
+				probe_point.write(probe_point.gread(i).real + gennor(0.0, multiplier*RHO) , i);
+				//probe_point.write(probe_point.gread(i).real + genunf(-1.0 * RHO, RHO) , i);
+			}
+			*/
+			start_gene_point = gene_index_lig[n][0];
+			end_gene_point = gene_index_lig[n][1];
+			
+			for (unsigned int i= start_gene_point; i < (unsigned int) end_gene_point; i++) {
+				
+				if (is_rotation_index(i, n)) continue;
+				probe_point.write(probe_point.gread(i).real + gennor(0.0, multiplier*RHO) , i);
+				//probe_point.write(probe_point.gread(i).real + genunf(-1.0 * RHO, RHO) , i);
+			}
+			rand_axis(random_axis_angle, angle);
+			multiplyraa(base_axis_angle, random_axis_angle, new_axis_angle);
+	
+	        Quat q;
+	        q.nx = new_axis_angle[0];
+	        q.ny = new_axis_angle[1];
+	        q.nz = new_axis_angle[2];
+	        q.ang = new_axis_angle[3];
+	
+	        q = convertRotToQuat( q );
+	
+	        probe_point.writeQuat( q, n );
+			
+		} //nlig
+		
 		current_energy();
-	}
+	} // num_samples
 }
 
 ConformationSampler::~ConformationSampler(void) {
@@ -157,7 +182,7 @@ ConformationSampler::~ConformationSampler(void) {
 
 // NOTE: currently, the torsional free energy penalty is not included.
 // Since this is an entropic term, I believe we can ignore it in this analysis.
-Real ConformationSampler::current_energy(void) /* not const */ {
+Real ConformationSampler::current_energy(void) {
 	evals++;
 	Real energy = probe_point.evaluate(Normal_Eval);
 	Real rmsd = current_rmsd();
@@ -202,53 +227,59 @@ Real ConformationSampler::current_energy(void) /* not const */ {
 	return energy;
 }
 
-Real ConformationSampler::current_rmsd(void) /* not const */ {
+Real ConformationSampler::current_rmsd(void) {
 	probe_ind.phenotyp = probe_point;
 	probe_ind.inverse_mapping();
 	probe_state = probe_ind.state(base_state.ntor);
 	cnv_state_to_coords(probe_state, vt, tlist, probe_state.ntor, crdpdb, crd, natom);
-	return getrms(crd, base_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type);
+	return getrms(crd, base_crd, RMSD_SYMMETRY, natom, type);
 }
 
-Real ConformationSampler::reference_rmsd(void) const {
-	return getrms(base_crd, ref_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type);
+Real ConformationSampler::reference_rmsd(void) {
+	return getrms(base_crd, ref_crd, RMSD_SYMMETRY, natom, type);
 }
 
-void ConformationSampler::update_bounds(void) /* not const */ {
+void ConformationSampler::update_bounds(void) {
 	Real euler[3];
 	Real raa[4];
 	Real current_value;
     Quat q;
 	
-    // read the quaternion
-    q = probe_point.readQuat();
-
-    // convert to axis-angle
-    q = convertQuatToRot( q );
-
-	// set up axis-angle array
-    raa[0] = q.nx;
-    raa[1] = q.ny;
-    raa[2] = q.nz;
-    raa[3] = q.ang;
-
-	raaEuler(raa, euler);
+	// handle multi-ligand -Huameng 11/18/2007
+	for(int n = 0; n < nlig; n++) {
+	    // read the quaternion
+	    q = probe_point.readQuat(n);
 	
-	// check existing translation bounds
-	for (int i=0; i < 3; i++) {
-		current_value = probe_point.gread(i).real;
-		if (current_value < min_values[i]) min_values[i] = current_value;
-		else if (current_value > max_values[i]) max_values[i] = current_value; 
-	}
+	    // convert to axis-angle
+	    q = convertQuatToRot( q );
 	
-	// check rotation bounds
-	for (int i=0; i < 3; i++) {
-		if (euler[i] < min_values[i+3]) min_values[i+3] = euler[i];
-		else if (euler[i] > max_values[i+3]) max_values[i+3] = euler[i];
-	}
+		// set up axis-angle array
+	    raa[0] = q.nx;
+	    raa[1] = q.ny;
+	    raa[2] = q.nz;
+	    raa[3] = q.ang;
+	
+		raaEuler(raa, euler);
+		
+		// check existing translation bounds
+		for (int i=0; i < 3; i++) {
+			current_value = probe_point.gread(7*n + i).real;
+			if (current_value < min_values[7*n + i]) min_values[7*n + i] = current_value;
+			else if (current_value > max_values[7*n + i]) max_values[7*n + i] = current_value; 
+		}
+		
+		// check rotation bounds
+		for (int i=0; i < 3; i++) {
+			if (euler[i] < min_values[7*n + i+3]) min_values[7*n + i+3] = euler[i];
+			else if (euler[i] > max_values[7*n + i+3]) max_values[7*n + i+3] = euler[i];
+		}
+	} // nlig
+	
+		
+	
 }
 
-void ConformationSampler::systematic_search(const int index) {
+void ConformationSampler::systematic_search(int index) {
 	
 	// for rotation axes, rotate using the pre-defined vertices 
 	if ( is_axis_index( index ) ) {
@@ -259,8 +290,11 @@ void ConformationSampler::systematic_search(const int index) {
 			// set up rotation
             // temp_rotation_angle must have been set before doing this... Potential BUG!
             increment_q = raaToQuat( vertices[i], temp_rotation_angle );
-            qmultiply( &new_q, &base_q, &increment_q );
-			probe_point.writeQuat( new_q );
+            //handle multi-ligand -Huameng 11/18/2007
+            for (int j = 0; j < nlig; j++) {
+            	qmultiply( &new_q, &base_q[j], &increment_q );
+				probe_point.writeQuat( new_q, j );
+            } //nlig
 			systematic_search(Z_TRANSLATION_INDEX); // go to translation
 		}
 	}
@@ -297,7 +331,10 @@ void ConformationSampler::systematic_search(const int index) {
 			else {
 				// check if the rotation angle is 0, to avoid shifting axis unnecessarily
 				if ( is_angle_index( index ) && current == 2 * num_steps) {
-                    probe_point.writeQuat( base_point.readQuat() );
+					//handle multi-ligand -Huameng 11/18/2007
+            		for (int j = 0; j < nlig; j++) {
+                    	probe_point.writeQuat(base_point.readQuat(j), j );
+            		}
 					systematic_search(Z_TRANSLATION_INDEX); // skip to translation
 					//current_energy();// DEBUGGING
 				}
@@ -309,20 +346,20 @@ void ConformationSampler::systematic_search(const int index) {
 	}
 }
 
-Real ConformationSampler::fraction_favorable(void) const {
+Real ConformationSampler::fraction_favorable(void) {
 	return favorable_evals/evals;
 }
 
-Real ConformationSampler::average_favorable_energy(void) const {
+Real ConformationSampler::average_favorable_energy(void) {
 	if (favorable_evals == 0) return 0;
 	else return total_favorable_energy/favorable_evals;
 }
 
-Real ConformationSampler::energy_volume(void) const { 
+Real ConformationSampler::energy_volume(void) {
 	return total_favorable_energy/evals;
 }
 
-Real ConformationSampler::configurational_integral(void) const {
+Real ConformationSampler::configurational_integral(void) {
 	Real Vb = 1.0;
 	for (int i=0; i < 6; i++) {
 		Vb *= (max_values[i]-min_values[i]);
@@ -337,19 +374,19 @@ Real ConformationSampler::configurational_integral(void) const {
  * return (0.0019872065)*(298)*math.log(Vb * 6.02 * 10**23 / (8*math.pi*math.pi))
  */
 
-Real ConformationSampler::RK_entropy(void) const {
+Real ConformationSampler::RK_entropy(void) {
 	return RK_CONSTANT * TEMP * log(configurational_integral() * AVOGADRO/ (8 * PI * PI));
 }
 
-Real ConformationSampler::partition_function(void) const {
+Real ConformationSampler::partition_function(void) {
 	return -RT_CONSTANT*log(Boltzmann_sum/evals);
 }
 
-Real ConformationSampler::partition_function(const int bin) const {
+Real ConformationSampler::partition_function(int bin) {
 	return -RT_CONSTANT*log(bin_Boltzmann_sum[bin]/bin_count[bin]);
 }
 
-Real ConformationSampler::normalized_volume(void) const {
+Real ConformationSampler::normalized_volume(void) {
 	Real volume = 0.0;
 	for (int i=0; i < NUM_BINS; i++) {
 		volume += bin_total_favorable_energy[i]/bin_count[i]/NUM_BINS;
@@ -357,7 +394,7 @@ Real ConformationSampler::normalized_volume(void) const {
 	return volume;
 }
 
-Real ConformationSampler::normalized_Boltzmann(void) const {
+Real ConformationSampler::normalized_Boltzmann(void) {
 	Real boltzmann_sum = 0.0;
 	for (int i=0; i < NUM_BINS; i++) {
 		boltzmann_sum += partition_function(i)/NUM_BINS;
@@ -365,14 +402,14 @@ Real ConformationSampler::normalized_Boltzmann(void) const {
 	return boltzmann_sum;
 }
 
-Real ConformationSampler::entropy_estimate(void) const {
+Real ConformationSampler::entropy_estimate(void) {
 	Real Vtot = AVOGADRO/(8*PI*PI);
 	Vtot *= pow(1/(2*PI), (dimensionality - BASE_DIMENSIONS));
 	//fprintf(logFile, "Vtot: %g\n", Vtot);
 	return RT_CONSTANT*log(Vtot*Vconf*Boltzmann_diff_sum);
 }
 
-void ConformationSampler::output_statistics(void) const {
+void ConformationSampler::output_statistics(void) {
 	fprintf(logFile, "Conformation starting energy: %.3f\n", base_energy);
 	fprintf(logFile, "RMSD from reference state: %.3f\n", reference_rmsd());
 	fprintf(logFile, "Fraction of favorable evaluations: %.3f\n", (Real)favorable_evals/evals);
@@ -392,16 +429,27 @@ void ConformationSampler::output_statistics(void) const {
 	fprintf(logFile, "%d evaluations.\n\n", evals);
 }
 
-void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info) {
+void systematic_conformation_sampler(
+					State hist[MAX_RUNS], 
+					int nconf, 
+					Real init_vt[MAX_TORS][SPACE], 
+					Real init_crdpdb[MAX_ATOMS][SPACE], 
+					int init_tlist[MAX_TORS][MAX_ATOMS], 
+					Real init_lig_centers[MAX_LIGANDS][SPACE], 
+					int nlig,
+					int natom_in_ligand[MAX_LIGANDS],
+					int init_natom,
+					int init_type[MAX_ATOMS], 
+					GridMapSetInfo *init_info) {
 	vt = init_vt;
 	crdpdb = init_crdpdb;
 	tlist = init_tlist;
-	lig_center = init_lig_center;
+	//lig_center = init_lig_center;
 	natom = init_natom;
 	type = init_type;
 	info = init_info;
 	
-	setup_reference_coordinates();
+	setup_reference_coordinates(init_lig_centers, nlig, natom_in_ligand);
 	
 	fprintf(logFile, "Initiating a systematic search.\n");
 	for (int i=0; i < nconf; i++) {
@@ -415,16 +463,29 @@ void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf
 	fprintf(logFile,"\n\n");
 }
 
-void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /* not const */ int num_samples, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info) {
+void random_conformation_sampler(
+			State hist[MAX_RUNS], 
+			int nconf, 
+			int num_samples, 
+			Real init_vt[MAX_TORS][SPACE], 
+			Real init_crdpdb[MAX_ATOMS][SPACE], 
+			int init_tlist[MAX_TORS][MAX_ATOMS], 
+			Real init_lig_centers[MAX_LIGANDS][SPACE],
+			int nlig,
+			int natom_in_ligand[MAX_LIGANDS], 
+			int init_natom, 
+			int init_type[MAX_ATOMS], 
+			GridMapSetInfo *init_info) {
+				
 	vt = init_vt;
 	crdpdb = init_crdpdb;
 	tlist = init_tlist;
-	lig_center = init_lig_center;
+	//lig_center = init_lig_center;
 	natom = init_natom;
 	type = init_type;
 	info = init_info;
 	
-	setup_reference_coordinates();
+	setup_reference_coordinates(init_lig_centers, nlig, natom_in_ligand);
 	
 	if (num_samples == 0) num_samples = DEFAULT_RANDOM_SAMPLES;
 	
@@ -442,7 +503,7 @@ void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /*
 
 
 /* copied (and slightly modified) from non-included code in call_glss.cc */
-Individual set_ind(GridMapSetInfo *const info, const State state)
+Individual set_ind(GridMapSetInfo *info, State state)
 {
    Genotype temp_Gtype;
    Phenotype temp_Ptype;
@@ -450,29 +511,31 @@ Individual set_ind(GridMapSetInfo *const info, const State state)
 
    temp_Gtype = generate_Gtype(state.ntor, info);
    temp_Ptype = generate_Ptype(state.ntor, info);
-
-   // use the state to generate a Genotype
-   temp_Gtype.write( state.T.x, 0 );
-   temp_Gtype.write( state.T.y, 1 );
-   temp_Gtype.write( state.T.z, 2 );
-   temp_Gtype.write( state.Q.x, 3 );
-   temp_Gtype.write( state.Q.y, 4 );
-   temp_Gtype.write( state.Q.z, 5 );
-   temp_Gtype.write( state.Q.w, 6 );
+   // Handle multi-ligand  -Huameng 11/10/2007
+   for(i = 0; i < state.nlig; i++) {
+	   // use the state to generate a Genotype
+	   temp_Gtype.write( state.T[i].x, 7*i + 0 );
+	   temp_Gtype.write( state.T[i].y, 7*i + 1 );
+	   temp_Gtype.write( state.T[i].z, 7*i + 2 );
+	   temp_Gtype.write( state.Q[i].x, 7*i + 3 );
+	   temp_Gtype.write( state.Q[i].y, 7*i + 4 );
+	   temp_Gtype.write( state.Q[i].z, 7*i + 5 );
+	   temp_Gtype.write( state.Q[i].w, 7*i + 6 );
+   } //nlig
+   
    for (i=0;i<state.ntor; i++) {
-       temp_Gtype.write( state.tor[i], 7+i );
+       temp_Gtype.write( state.tor[i], 7*state.nlig + i );
    };
 
    Individual temp(temp_Gtype, temp_Ptype);   
 
    // use mapping to generate a Phenotype
-   //temp.phenotyp = temp.mapping();
-   temp.mapping();
+   temp.phenotyp = temp.mapping();
 
    return(temp);
 }
 
-void raaEuler(const Real raa[4], /* not const */ Real euler[3]) {
+void raaEuler(Real raa[4], Real euler[3]) {
 	Real s = sin(raa[3]);
 	Real c = cos(raa[3]);
 	Real t = 1.0 - c;
@@ -495,7 +558,7 @@ void raaEuler(const Real raa[4], /* not const */ Real euler[3]) {
 	euler[2] = asin(raa[0]*raa[1]*t + raa[2]*s);
 }
 
-void raaMatrix(/* not const */ Real raa[4], /* not const */ Real matrix[3][3]) {
+void raaMatrix(Real raa[4], Real matrix[3][3]) {
 	Real angle_cos = cos(raa[3]);
 	Real angle_sin = sin(raa[3]);
 	Real t = 1.0 - angle_cos;
@@ -526,7 +589,7 @@ void raaMatrix(/* not const */ Real raa[4], /* not const */ Real matrix[3][3]) {
 	matrix[1][2] = tmp1 - tmp2;
 }
 
-void matrixraa(const Real matrix[3][3], /* not const */ Real raa[4]) {
+void matrixraa(Real matrix[3][3], Real raa[4]) {
 	Real length = hypotenuse(matrix[2][1] - matrix[1][2], matrix[2][0] - matrix[0][2], matrix[1][0] - matrix[0][1]);
 	
 	// need to check acos() parameter to avoid values out of range
@@ -540,7 +603,7 @@ void matrixraa(const Real matrix[3][3], /* not const */ Real raa[4]) {
 	raa[2] = (matrix[1][0] - matrix[0][1])/length;
 }
 
-void multiplyraa(/* not const */ Real raa1[4], /* not const */ Real raa2[4], /* not const */ Real raa_result[4]) {
+void multiplyraa(Real raa1[4], Real raa2[4], Real raa_result[4]) {
 	Real matrix1[3][3];
 	Real matrix2[3][3];
 	Real result_matrix[3][3];
@@ -551,7 +614,7 @@ void multiplyraa(/* not const */ Real raa1[4], /* not const */ Real raa2[4], /* 
 	matrixraa(result_matrix, raa_result);
 }
 
-void matrixMultiply(const Real m1[3][3], const Real m2[3][3], /* not const */ Real result[3][3]) {
+void matrixMultiply(Real m1[3][3], Real m2[3][3], Real result[3][3]) {
 	result[0][0] = m1[0][0]*m2[0][0] + m1[0][1]*m2[1][0] + m1[0][2]*m2[2][0];
 	result[0][1] = m1[0][0]*m2[0][1] + m1[0][1]*m2[1][1] + m1[0][2]*m2[2][1];
 	result[0][2] = m1[0][0]*m2[0][2] + m1[0][1]*m2[1][2] + m1[0][2]*m2[2][2];
@@ -563,19 +626,28 @@ void matrixMultiply(const Real m1[3][3], const Real m2[3][3], /* not const */ Re
 	result[2][2] = m1[2][0]*m2[0][2] + m1[2][1]*m2[1][2] + m1[2][2]*m2[2][2];
 }
 
-void rand_axis(/* not const */ Real axis[4], ConstReal   angle) {
+void rand_axis(Real axis[4], Real angle) {
 	axis[2] = genunf(-1.0, 1.0);
-	const Real t = genunf(0.0, 2*PI);
-	const Real w = sqrt(1 - axis[2]*axis[2]);
+	Real t = genunf(0.0, 2*PI);
+	Real w = sqrt(1 - axis[2]*axis[2]);
 	axis[0] = w * cos(t);
 	axis[1] = w * sin(t);
 	axis[3] = angle;
 }
 
-void setup_reference_coordinates(void) {
-	for (int i = 0;  i < natom;  i++) {
-		ref_crd[i][0] = lig_center[0] + crdpdb[i][0];
-		ref_crd[i][1] = lig_center[1] + crdpdb[i][1];
-		ref_crd[i][2] = lig_center[2] + crdpdb[i][2];
-	}
+// handle multi-ligand -Huameng 11/11/2007
+void setup_reference_coordinates(Real lig_centers[MAX_LIGANDS][SPACE], int nlig, int natom_in_ligand[MAX_LIGANDS]) {
+	int from_atom = 0;
+	int to_atom = 0;
+	int i = 0;
+	for(int n = 0; n < nlig; n++) {	
+		to_atom = from_atom + natom_in_ligand[n];
+		for (i = from_atom;  i < to_atom;  i++) {
+			ref_crd[i][0] = lig_centers[n][0] + crdpdb[i][0];
+			ref_crd[i][1] = lig_centers[n][1] + crdpdb[i][1];
+			ref_crd[i][2] = lig_centers[n][2] + crdpdb[i][2];
+		}
+		//set next start point of from_atom 
+	    from_atom = to_atom;
+	} //nlig
 }

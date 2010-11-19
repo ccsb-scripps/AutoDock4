@@ -1,10 +1,11 @@
 /*
 
- $Id: cnv_state_to_coords.h,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: cnv_state_to_coords.h,v 1.5.2.1 2010/11/19 20:09:28 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -32,11 +33,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "qtransform.h"
 
 
-void cnv_state_to_coords( const State& now,
-                          const Real vt[MAX_TORS][SPACE],
-                          const int tlist[MAX_TORS][MAX_ATOMS],
+void cnv_state_to_coords( const State now,
+                          Real vt[MAX_TORS][SPACE],
+                          int tlist[MAX_TORS][MAX_ATOMS],
                           const int ntor,
-                          const Real crdpdb[MAX_ATOMS][SPACE],
-                          /* not const */ Real crd[MAX_ATOMS][SPACE],
-                          const int natom);
+                          Real crdpdb[MAX_ATOMS][SPACE],
+                          Real crd[MAX_ATOMS][SPACE],
+                          const int natom
+                          );
 #endif

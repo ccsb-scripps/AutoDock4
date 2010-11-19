@@ -1,10 +1,11 @@
 /*
 
- $Id: coliny.h,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: coliny.h,v 1.4.2.1 2010/11/19 20:09:29 rhuey Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  William Hart, Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -40,15 +41,15 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 //
 // Initialize the 'algname' coliny optimizer over 'domain'
 //
-void coliny_init(const char *const algname, const char *const domain, const int num_vars);
+void coliny_init(char* algname, char* domain, int num_vars);
 
 //
 // Perform minimization with a given seed and initial point. Return
 // summary statistics
 //
-void coliny_minimize(const int seed, const std::vector<double>& initpt,
-				/* not const */ std::vector<double>& finalpt,
-				/* unused */ const int& neval, /* unused */ const int& niters);
+void coliny_minimize(int seed, std::vector<double>& initpt,
+				std::vector<double>& finalpt,
+				int& neval, int& niters);
 
 #endif
 

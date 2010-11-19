@@ -1,10 +1,11 @@
 /*
 
- $Id: mkNewState.h,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: mkNewState.h,v 1.5 2007/04/27 06:01:49 garrett Exp $
 
  AutoDock 
 
-Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
+ Copyright (C) 1989-2007,  Garrett M. Morris, David S. Goodsell, Ruth Huey, Arthur J. Olson, 
+ All Rights Reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
 
@@ -31,9 +32,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "qmultiply.h"
 #include "cnv_state_to_coords.h"
 
-void  mkNewState( State *const now,
-		  const State *const last,
-		  State *const change,
+void  mkNewState( State *now,
+		  State *last,
+		  State *change,
 		  /*
 		  ** Real qtn[NQTN],
                   ** Real tor[MAX_TORS],
@@ -42,15 +43,15 @@ void  mkNewState( State *const now,
                   ** Real qtnChange[NQTN],
                   ** Real torChange[MAX_TORS],
 		  */
-                  const Real vt[MAX_TORS][NTRN],
-                  const int   tlist[MAX_TORS][MAX_ATOMS],
-                  const int   ntor,
-                  /* not const */ Real crd[MAX_ATOMS][NTRN],
-                  const Real crdpdb[MAX_ATOMS][NTRN],
-                  const int   natom,
-                  ConstReal trnStep,
-                  ConstReal qtwStep,
-                  ConstReal torStep,
-	          const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-		  const int   N_con[MAX_TORS]);
+                  Real vt[MAX_TORS][NTRN],
+                  int   tlist[MAX_TORS][MAX_ATOMS],
+                  int   ntor,
+                  Real crd[MAX_ATOMS][NTRN],
+                  Real crdpdb[MAX_ATOMS][NTRN],
+                  int   natom,
+                  Real trnStep,
+                  Real qtwStep,
+                  Real torStep,
+	          Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
+		  int   N_con[MAX_TORS]);
 #endif

@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.29 2009/10/02 22:33:47 rhuey Exp $
+# $Id: Makefile.am,v 1.9.2.1 2010/11/19 20:09:30 rhuey Exp $
 # 
-# AutoDock  
+# AutoDock 
 # 
 # Copyright (C) 1989-2007,  Garrett M. Morris,   TSRI
 # All Rights Reserved.
@@ -31,32 +31,26 @@
 
 # Autotools
 
-EXTRA_DIST = AD4_PARM99.dat AD4_parameters.dat AD4.1_bound.dat AD4.1_extended.dat AD4.1_compact.dat paramdat2h.csh Tests
+EXTRA_DIST = AD4_PARM99.dat AD4_parameters.dat paramdat2h.csh Tests
 
 dist-hook:
 	rm -rf `find $(distdir)/Tests -name CVS -o -name '*.dlg'` 
 
-bin_PROGRAMS = autodock4 
+bin_PROGRAMS = autodock4
 
 # Define the AutoDock 4 source code files:
 
 autodock4_SOURCES = \
     main.cc
 
-BUILT_SOURCES = main.cc default_parameters.h
-
-CLEANFILES = default_parameters.h
-
-noinst_LIBRARIES = libad.a 
+noinst_LIBRARIES = libad.a
 
 libad_a_SOURCES = \
-    alea.cc \
     analysis.cc \
 	atom_parameter_manager.cc \
     banner.cc \
     bestpdb.cc \
 	calculateEnergies.cc \
-    call_cpso.cc \
     call_glss.cc \
     call_gs.cc \
     call_ls.cc \
@@ -66,10 +60,10 @@ libad_a_SOURCES = \
     check_header_line.cc \
     cluster_analysis.cc \
     clmode.cc \
+    cmdmode.cc \
     cnv_state_to_coords.cc \
     com.cc \
     conformation_sampler.cc \
-    dimLibrary.cc\
 	distdepdiel.cc \
     stateLibrary.cc \
     readfield.cc \
@@ -96,6 +90,7 @@ libad_a_SOURCES = \
     nonbonds.cc \
     openfile.cc \
     output_state.cc \
+    parse_com_line.cc \
     parse_dpf_line.cc \
     parse_param_line.cc \
     parse_PDBQT_line.cc \
@@ -118,13 +113,14 @@ libad_a_SOURCES = \
     ranlib.cc \
     rep.cc \
     scauchy.cc \
+    set_cmd_io_std.cc \
     setflags.cc \
     simanneal.cc \
     sort_enrg.cc \
-    stack.cc \
     stop.cc \
     strindex.cc \
     success.cc \
+    summarizegrids.cc \
     support.cc \
     swap.cc \
     timesys.cc \
@@ -140,16 +136,18 @@ libad_a_SOURCES = \
     eintcalPrint.cc \
     intnbtable.cc \
     nbe.cc \
+    pso.cc \
+	call_cpso.cc \
+		pso.h \
+    	call_cpso.h \
 		PDBQT_tokens.h \
 		analysis.h \
 		atom_parameter_manager.h \
-		alea.h \
 		autocomm.h \
 		autoglobal.h \
 		banner.h \
 		bestpdb.h \
 		calculateEnergies.h \
-		call_cpso.h \
 		call_glss.h \
 		call_gs.h \
 		call_ls.h \
@@ -159,12 +157,13 @@ libad_a_SOURCES = \
 		check_header_line.h \
 		clmode.h \
 		cluster_analysis.h \
+		cmdmode.h \
+		cmdtokens.h \
 		cnv_state_to_coords.h \
 		coliny.h \
 		conformation_sampler.h \
 		constants.h \
 		default_parameters.h \
-		dimLibrary.h \
 		distdepdiel.h \
 		dpftoken.h \
 		eintcal.h \
@@ -197,6 +196,7 @@ libad_a_SOURCES = \
 		output_state.h \
 		parameters.h \
 		parse_PDBQT_line.h \
+		parse_com_line.h \
 		parse_dpf_line.h \
 		parse_param_line.h \
 		parse_trj_line.h \
@@ -222,15 +222,16 @@ libad_a_SOURCES = \
 		readmap.h \
 		rep.h \
 		rep_constants.h \
+		set_cmd_io_std.h \
 		setflags.h \
 		simanneal.h \
 		sort_enrg.h \
 		stateLibrary.h \
-		stack.h \
 		stop.h \
 		strindex.h \
 		structs.h \
 		success.h \
+		summarizegrids.h \
 		support.h \
 		swap.h \
 		timesys.h \
@@ -246,32 +247,26 @@ libad_a_SOURCES = \
 		weedbonds.h \
 		writePDBQT.h
 
-AM_CXXFLAGS = -O3 # Agressive optimization
 
-    # if gnu c++ compiler
-AM_CXXFLAGS += -Wall # All warnings
-AM_CXXFLAGS += -Wno-write-strings # increase compatibility with pre 4.x compilers for string handling
-
-#AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
+AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
 
 AM_CPPFLAGS = -DNOSQRT \
-              -DUSE_8A_NBCUTOFF \
+              -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
               -DWRITEPDBQSTATE \
               -I$(srcdir)/../acro/include # Standard accuracy, but faster; no crossover in quaternion
-
 
 #autodock4_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #autodock4_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
 
-#autodock4_CPPFLAGS = -DUSE_8A_NBCUTOFF \
+#autodock4_CPPFLAGS = -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT \
 #                     -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
 
 
 autodock4_LDADD = libad.a $(COLINY_LDFLAGS) -lm
 
 if WANT_BIGSTACK
-    autodock4_LDFLAGS = -Wl,--stack,8388608 # Cygwin, big stacksize
+    autodock4_LDFLAGS = -fno-stack-limit # Cygwin, 32MB stacksize
 endif
 
 #
@@ -295,7 +290,7 @@ endif
 # SGI     = Silicon Graphics Inc., sgi4D
 # Sun     = Sun Microsystems, sun4
 
-# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX: Standard accuracy, but faster; no crossover in quaternion
+# CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DDO_NOT_CROSSOVER_IN_QUAT # SGI, HP, Alpha, Sun, Convex, Cygwin, Linux, MacOSX: Standard accuracy, but faster; no crossover in quaternion
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF # SGI, HP, Alpha, Sun, Convex, Linux, MacOSX: Standard accuracy, but faster
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DQUATERNION_MUTATION # As above, but treat quaternion genes properly when doing mutations--note, this is slow!
 # CFLAGS = $(CSTD) $(OPT) -DUSE_8A_NBCUTOFF -DUSE_DOUBLE # SGI, HP, Alpha, Sun, Convex, Linux, MacOSX: Standard accuracy, but faster; also use Double precision throughout
@@ -377,7 +372,6 @@ endif
 # DBUG = -g3 -DDEBUG_MUTATION # dbx + optimization; Use assert code, & print out information anywhere involving mutation
 # DBUG = -g3 -DDEBUG_MUTATION -DDEBUG # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements
 # DBUG = -g3 -DDEBUG_MUTATION -DDEBUG -DDEBUG3 # dbx + optimization; Use assert code, & print out information anywhere involving mutation + all debug statements incl. 3
-# DBUG = -DASSERTQUATOK # Uses the macro "assertQuatOK()" to ensure the quaternion magnitude is near unity
 
 # PROF = # No profiling
 # PROF = -p # CC Profiling
@@ -425,23 +419,13 @@ autodock4.html :
 	@echo " "
 	enscript -E --color -Whtml --toc -p$@ *.h *.cc
 
-check : test
-
-test : autodock4 $(srcdir)/Tests/test_autodock4.py
+check : autodock4 $(srcdir)/Tests/test_autodock4.py
 #if HAVE_PYTHON
 	@echo " "
 	@echo "Running the Python test_autodock4.py unit-tests on autodock4"
 	@echo " "
 	outputdir=`pwd` ;\
-	umask 0 ;\
-	test -d $$outputdir/Tests || mkdir $$outputdir/Tests ;\
-    cp $(srcdir)/AD4.1_bound.dat  $$outputdir/Tests;\
-    cp $(srcdir)/AD4_parameters.dat  $$outputdir/Tests;\
-    cp $(srcdir)/Tests/*.py   $$outputdir/Tests;\
-    cp $(srcdir)/Tests/*.dpf  $$outputdir/Tests;\
-    cp $(srcdir)/Tests/*.pdbqt  $$outputdir/Tests;\
-    cp $(srcdir)/Tests/*.map*  $$outputdir/Tests;\
-	cd Tests ;  python ./test_autodock4.py -d . -e ../autodock4$(EXEEXT) -o .
+	cd $(srcdir)/Tests ; chmod u+w . ; python ./test_autodock4.py -d . -e $$outputdir/autodock4 -o $$outputdir
 #else
 #	@echo " "
 #	@echo "Python version 2.1 or higher needed for 'make check', but not found."
@@ -484,9 +468,10 @@ gs.o : gs.cc gs.h ranlib.h eval.h rep.h support.h writePDBQT.h
 # 2007-04-30 MP & GMM: this line is necessary to be able to compile read_parameter_library.o
 read_parameter_library.o : default_parameters.h
 
-default_parameters.h : AD4_parameters.dat AD4.1_bound.dat paramdat2h.csh
+default_parameters.h : AD4_parameters.dat paramdat2h.csh
 	rm -f $@
-	csh $(srcdir)/paramdat2h.csh $(srcdir)/AD4_parameters.dat $(srcdir)/AD4.1_bound.dat > $@
+	csh ./paramdat2h.csh > tmp-paramdat
+	mv -f tmp-paramdat $@
 
 #coliny.o : coliny.h
 #	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ACRO_INCLUDES) -c coliny.cc -o coliny.o
