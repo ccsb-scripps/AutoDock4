@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.27 2010/08/27 00:05:09 mp Exp $
+ $Id: writePDBQT.cc,v 1.28 2010/12/16 23:33:25 rhuey Exp $
 
  AutoDock  
 
@@ -132,7 +132,6 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 	for (unsigned int i = 0; i < sizeof AtmNamResNamNum; i++) { AtmNamResNamNum[i] = '\0'; }
 	for (unsigned int i = 0; i < sizeof AtmNamResNam; i++) { AtmNamResNam[i] = '\0'; }
 
-    initialise_binding_energy_breakdown( &eb, torsFreeEnergy, unbound_internal_FE, ad4_unbound_model );
 
     // Write out the state variables
 	if ((outlev > -1) && (outlev < 3)) {
