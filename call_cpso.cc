@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/param.h>
 #include <ctype.h> // tolower
+#include <vector>
 
 #include "call_cpso.h"
 #include "printdate.h"
@@ -17,6 +18,7 @@
 #include "ranlib.h"
 #include "support.h"
 #include "ls.h"
+
 
 extern FILE *logFile;
 extern Eval evaluate;
@@ -97,7 +99,8 @@ State call_cpso(Local_Search *const local_method,
         double Vmin[D_max], Vmax[D_max];
         //Constants for the Constriction PSO 
         double chi,phi;
-        State sbNew[S_max];
+        //State sbNew[S_max];
+        std::vector<State> sbNew(S_max, State(sInit));
         int sb = 0;
         int ntor = sInit.ntor;
         evaluate.reset();
@@ -106,7 +109,7 @@ State call_cpso(Local_Search *const local_method,
         phi = c1 + c2;
         chi = 2.0 / (2.0 - phi - sqrt( (phi * phi) - (4 * phi) ));
         chi = fabs(chi);
-        fprintf(logFile, "\nConstants used for the Constriction PSO \nc1: %lf c2: %lf phi: %lf chi: %lf\n", c1, c2, phi, chi);
+        fprintf(logFile, "\nConstants used for the Constriction PSO \nc1: %lf c2: %lf phi: %lf chi: %lf S: %d\n", c1, c2, phi, chi, S);
         // Initialization of the Particles
         for( s = 0; s < S ; s++)
         {
@@ -198,7 +201,6 @@ State call_cpso(Local_Search *const local_method,
                                 {        
                                         Vi[s].v[d] = Vmax[d]; 
                                 }
-                                //}
 
                                 Xi[s].x[d] = Xi[s].x[d] + Vi[s].v[d];
                                 // -----Constriction -PSO ------End---
@@ -245,7 +247,7 @@ State call_cpso(Local_Search *const local_method,
                                 printState(logFile, sNew[s], 0);
                         }
                         if(Xi[s].f <= Xi[sb].f) sb=s;
-                }
+                } //s
                 copyDimension(&sbNew[s], Xi[sb]);
                 //SWLocalSearch(&sbNew[s], ntor, max_its, max_succ, max_fail, 2.0, 0.5, rho, lb_rho);
                 //local_method=new Pseudo_Solis_Wets1(ntor, max_its, max_succ, max_fail, 2.0, 0.5, search_freq, rho, lb_rho);
@@ -255,6 +257,7 @@ State call_cpso(Local_Search *const local_method,
                     iTemp = cnv_state_to_ind2(sbNew[s], (D-7));
                     local_method->search(iTemp);
                     sbNew[s] = iTemp.state(ntor);
+                    //pr(logFile, "\nsbNew[%d].T.x==%f @@@\n", s, sbNew[s].T.x);
                 };
                 for (s=0; s<S; s++)
                 {
@@ -275,6 +278,7 @@ State call_cpso(Local_Search *const local_method,
                 if(pso_energy >= energy_prev) init_links = 1;
                 else init_links = 0;
                 energy_prev = pso_energy;
+                pr(logFile, "PSO- Run: %2d \tPSObest Energy@Swarm_Move: %4d \tP= %8.2lf  \t(nbeval= %d and %u )\n", n_exec+1, nb_eval+1, pso_energy, evaluations, (unsigned int) evaluate.evals());
                 if (outlev > 2) {
                       pr(logFile, "PSO- Run: %2d \tPSObest Energy@Swarm_Move: %4d \tP= %8.2lf  \t(nbeval= %d and %u )\n", n_exec+1, nb_eval+1, pso_energy, evaluations, (unsigned int) evaluate.evals());
         };
