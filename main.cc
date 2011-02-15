@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.130 2010/10/01 22:57:55 mp Exp $
+ $Id: main.cc,v 1.131 2011/02/15 19:01:02 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -109,7 +109,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.130 2010/10/01 22:57:55 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.131 2011/02/15 19:01:02 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -737,7 +737,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.130 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.131 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1448,21 +1448,25 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr(logFile,"Non-bonded                           Scaled\n");
                 pr(logFile,"   Pair     Atom1-Atom2    q1*q2      q1*q2\n");
                 pr(logFile,"__________  ___________  _________  _________\n");
-                for (i = 0;  i < Nnb;  i++) {
-                    atm1 = nonbondlist[i].a1;
-                    atm2 = nonbondlist[i].a2;
-                    int t1 = nonbondlist[i].t1;
-                    int t2 = nonbondlist[i].t2;
-                    nonbondlist[i].desolv =
-                           ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[atm1])
-                           + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[atm2]) );
-                    nonbondlist[i].q1q2 = charge[atm1] * charge[atm2];
+            } //outlev 
+            for (i = 0;  i < Nnb;  i++) {
+                atm1 = nonbondlist[i].a1;
+                atm2 = nonbondlist[i].a2;
+                int t1 = nonbondlist[i].t1;
+                int t2 = nonbondlist[i].t2;
+                nonbondlist[i].desolv =
+                       ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[atm1])
+                       + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[atm2]) );
+                nonbondlist[i].q1q2 = charge[atm1] * charge[atm2];
+                if (outlev >= 0) {
                     pr(logFile,"   %4d     %5d-%-5d    %5.2f",i+1,atm1+1,atm2+1,nonbondlist[i].q1q2);
-                    nonbondlist[i].q1q2 *= ELECSCALE * AD4.coeff_estat;
+                }//outlev
+                nonbondlist[i].q1q2 *= ELECSCALE * AD4.coeff_estat;
+                if (outlev >= 0) {
                     pr(logFile,"     %6.2f\n",nonbondlist[i].q1q2);
-                }
-                pr(logFile,"\n");
-                } // if outlev > 0
+                    pr(logFile,"\n");
+                }//outlev
+            } // for
             } // if NNb > 0
         } // else
 
