@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.14 2010/10/01 22:51:40 mp Exp $
+ $Id: readmap.cc,v 1.15 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -63,7 +63,6 @@ Statistics readmap( char           line[LINE_LEN],
     char FldFileName[PATH_MAX];
     char GpfName[PATH_MAX];
     char ExtGpfName[PATH_MAX];
-    char message[LINE_LEN];
     char mmFileName[PATH_MAX];
     char xyz_str[4];
     char C_mapValue;
@@ -291,6 +290,7 @@ Statistics readmap( char           line[LINE_LEN],
     pr( logFile, "\n" );
 
     if (nv != nvExpected ) {
+        char message[LINE_LEN];
         prStr( message, "\n%s: wrong number of values read in. Check grid map!\n\n", programname  );
         pr_2x( stderr, logFile, message );
 

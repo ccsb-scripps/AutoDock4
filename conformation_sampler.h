@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.h,v 1.9 2010/10/01 22:51:39 mp Exp $
+ $Id: conformation_sampler.h,v 1.10 2011/03/08 04:18:36 mp Exp $
 
  AutoDock 
 
@@ -51,7 +51,7 @@ class ConformationSampler {
 		Real min_energy, min_energy_rmsd;
 		Real Boltzmann_sum, Boltzmann_diff_sum;
 		int dimensionality, evals, favorable_evals;
-		Real temp_rotation_angle;
+		double temp_rotation_angle;
 
 		Real min_values[BASE_DIMENSIONS-1];
 		Real max_values[BASE_DIMENSIONS-1];
@@ -106,7 +106,7 @@ void raaMatrix(Real raa[4], Real matrix[3][3]);
 void matrixraa(const Real matrix[3][3], /* not const */ Real raa[4]);
 void multiplyraa(Real raa1[4], Real raa2[4], Real raa_result[4]);
 void matrixMultiply(const Real m1[3][3], const Real m2[3][3], Real result[3][3]);
-void rand_axis(/* not const */ Real axis[4], ConstReal angle);
+void rand_axis(/* not const */ Real axis[4], const double angle);
 void setup_reference_coordinates(void);
 
 #endif

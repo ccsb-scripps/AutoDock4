@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.29 2009/10/02 22:33:47 rhuey Exp $
+# $Id: Makefile.am,v 1.30 2011/03/08 04:18:36 mp Exp $
 # 
 # AutoDock  
 # 
@@ -43,13 +43,13 @@ bin_PROGRAMS = autodock4
 autodock4_SOURCES = \
     main.cc
 
-BUILT_SOURCES = main.cc default_parameters.h
 
 CLEANFILES = default_parameters.h
 
-noinst_LIBRARIES = libad.a 
+noinst_LIBRARIES = 
 
-libad_a_SOURCES = \
+#libad_a_SOURCES
+autodock4_SOURCES += \
     alea.cc \
     analysis.cc \
 	atom_parameter_manager.cc \
@@ -246,6 +246,8 @@ libad_a_SOURCES = \
 		weedbonds.h \
 		writePDBQT.h
 
+BUILT_SOURCES = $(autodock4_SOURCES) default_parameters.h
+
 AM_CXXFLAGS = -O3 # Agressive optimization
 
     # if gnu c++ compiler
@@ -268,7 +270,7 @@ AM_CPPFLAGS = -DNOSQRT \
 #                     -DWRITEPDBQSTATE # Standard accuracy, but faster; no crossover in quaternion
 
 
-autodock4_LDADD = libad.a $(COLINY_LDFLAGS) -lm
+autodock4_LDADD = $(COLINY_LDFLAGS) -lm
 
 if WANT_BIGSTACK
     autodock4_LDFLAGS = -Wl,--stack,8388608 # Cygwin, big stacksize

@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.18 2010/10/01 22:51:39 mp Exp $
+ $Id: ls.cc,v 1.19 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -107,7 +107,7 @@ Boole Solis_Wets::SW(/* not const */ Phenotype &vector)
 //convenience function for debugging
 #define traceState(msg,vector) printDState(logFile,msg,vector,i,prevxyz,startxyz,prevQuat,startQuat,num_successes,num_failures,temp_rho,bias,deviates)
 void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, const int i, const Real prevxyz[3],
-                 const Real startxyz[3], const Quat prevQuat, const Quat startQuat, 
+                 const Real startxyz[3], const Quat& prevQuat, const Quat& startQuat, 
                  const unsigned int num_successes, const unsigned int num_failures,
                  ConstReal temp_rho, Real *const  bias, Real *const  deviates);
    Real xyz[3];
@@ -165,8 +165,8 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
    //?? newPh.printIndividualsState(logFile, 7, 3);
    (void)fprintf(logFile, ")");
    if (i>0){
-    fprintf(logFile, " dQ=%5.2f", quatDifferenceToAngleDeg(prevQuat,thisQuat)); 
-    fprintf(logFile, " cQ=%5.2f", quatDifferenceToAngleDeg(startQuat,thisQuat)); 
+    fprintf(logFile, " dQ=%5.2lf", quatDifferenceToAngleDeg(prevQuat,thisQuat)); 
+    fprintf(logFile, " cQ=%5.2lf", quatDifferenceToAngleDeg(startQuat,thisQuat)); 
    } else {
     startQuat = thisQuat;
    };
@@ -556,8 +556,8 @@ void printDState(FILE *logFile, const char *const msg,Phenotype &newPh, const in
    fprintf(logFile, "%5.2f %5.2f %5.2f %5.2f", newPh.gread(3).real, newPh.gread(4).real,newPh.gread(5).real,newPh.gread(6).real);
    (void)fprintf(logFile, ")");
    //if (i>0){
-    fprintf(logFile, " dQ=%6.1f", quatDifferenceToAngleDeg(prevQuat,thisQuat)); 
-    fprintf(logFile, " cQ=%6.1f", quatDifferenceToAngleDeg(startQuat,thisQuat)); 
+    fprintf(logFile, " dQ=%6.1lf", quatDifferenceToAngleDeg(prevQuat,thisQuat)); 
+    fprintf(logFile, " cQ=%6.1lf", quatDifferenceToAngleDeg(startQuat,thisQuat)); 
     fprintf(logFile, " \n"); 
    //}
 #endif /* DEBUG */

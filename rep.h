@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.h,v 1.18 2010/10/01 22:51:40 mp Exp $
+ $Id: rep.h,v 1.19 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -88,7 +88,7 @@ class Representation
       virtual RepType type(void) const; 
       virtual void write(const unsigned char& value, const int) = 0; /* not const, e.g. in bitvector */
       virtual void write(const FourByteLong& value,  const int) = 0;
-      virtual void write(const double& value,        const int) = 0; /* not const, e.g. in RealVector */
+      virtual void write(ConstDouble value,          const int) = 0; /* not const, e.g. in RealVector */
       virtual void write(const Element& value,       const int) = 0;
       virtual const Element gene(const unsigned int) const = 0;
       virtual Representation *clone(void) const = 0;
@@ -114,7 +114,7 @@ class IntVector : public Representation
       ~IntVector(void);
       void write(const unsigned char& value, const int); /* not const - inherited */
       void write(const FourByteLong&  value, const int); /* not const */
-      void write(const double&        value, const int);
+      void write(ConstDouble          value, const int);
       void write(const Element&       value, const int); /* not const */
       Representation &operator=(const Representation &);
       const Element gene(const unsigned int) const;
@@ -141,12 +141,12 @@ class RealVector : public Representation
 
       RealVector(/* not const */ int);
       RealVector(const int, double *const);
-      RealVector(/* not const */ int, const double&, const double&);
+      RealVector(/* not const */ int, ConstDouble, ConstDouble);
       // Use this to set the first value in the vector--useful for random quaternions
-      RealVector(const int, const double&, const double&, const double&); 
-      RealVector(const int, const double&, const double&, const double&, const double&, const double&, const double&);  // sets a quaternion's x,y,z,w values
+      RealVector(const int, ConstDouble, ConstDouble, ConstDouble);
+      RealVector(const int, ConstDouble, ConstDouble, ConstDouble, ConstDouble, ConstDouble, ConstDouble);  // sets a quaternion's x,y,z,w values
       // Use this to create a vector of length 3 with these values--useful for random quaternions
-      RealVector(const int, const double&, const double&, const double&, const double&, const double& ); 
+      RealVector(const int, ConstDouble, ConstDouble, ConstDouble, ConstDouble, ConstDouble);
       RealVector(const RealVector &);
       ~RealVector(void);
       void write(const unsigned char&, const int) /* not const - inherited */;
@@ -172,11 +172,11 @@ class RealVector : public Representation
       }
       */
       // non-inlined versions, possibly with range checking
-      void write(const double& value, const int gene) /* not const */;
+      void write(ConstDouble value, const int gene) /* not const */;
       const Element gene(const unsigned int) const;
 #else
       // non-inlined versions, possibly with range checking
-      void write(const double& value, const int gene) /* not const */;
+      void write(ConstDouble value, const int gene) /* not const */;
       const Element gene(unsigned int) const;
 #endif
 };
@@ -198,14 +198,14 @@ class ConstrainedRealVector : public Representation
       ConstrainedRealVector(void);
       ConstrainedRealVector(/* not const */ int);
       ConstrainedRealVector(int, double *const);
-      ConstrainedRealVector(/* not const */ int, const double&, const double&);
+      ConstrainedRealVector(/* not const */ int, ConstDouble, ConstDouble);
       ConstrainedRealVector(const ConstrainedRealVector &);
       ~ConstrainedRealVector(void);
       void write(const unsigned char& value, const int gene); /* not const - inherited */
       void write(const FourByteLong& value,  const int gene); /* not const - e.g. in IntVector */
-      void write(const double& value,        const int gene); /* not const */
+      void write(ConstDouble value,          const int gene); /* not const */
       void write(const Element&,             const int gene); /* not const */
-      void write(const double& a, const double& b, const double& c, const double& d);
+      void write(ConstDouble a, ConstDouble b, ConstDouble c, ConstDouble d);
       Representation &operator=(const Representation &);
       const Element gene(const unsigned int) const;
 };
@@ -229,7 +229,7 @@ class BitVector : public Representation
       ~BitVector(void);
       void write(const unsigned char&, const int); /* not const */
       void write(const FourByteLong&, const int); /* not const - inherited */
-      void write(const double&, const int); /* not const - inherited */
+      void write(ConstDouble, const int); /* not const - inherited */
 //      void write(const void *, int);
       void write(const Element&, const int); /* not const */
       Representation &operator=(const Representation &);

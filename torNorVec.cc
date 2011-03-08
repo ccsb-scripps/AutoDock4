@@ -1,6 +1,6 @@
 /*
 
- $Id: torNorVec.cc,v 1.8 2010/08/27 00:05:09 mp Exp $
+ $Id: torNorVec.cc,v 1.9 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -52,8 +52,6 @@ void torNorVec( const Real crdpdb[MAX_ATOMS][SPACE],
     Real imagVec = 0.;
     Real v[SPACE];
 
-    char error_message[LINE_LEN];
-
     /*_____________________________________________________________
       | Calculate normal vectors of torsion bonds,                 |
       |____________________________________________________________|
@@ -79,6 +77,7 @@ void torNorVec( const Real crdpdb[MAX_ATOMS][SPACE],
 	magVec = hypotenuse( v[X], v[Y], v[Z] );  /* Magnitude of vector v[xyz] */
 
 	if (magVec == 0.) {
+	    char error_message[LINE_LEN];
 	    prStr( error_message, "Torsion %d, normal vector, magVec, is 0; imminent division by zero caught.", j );
 	    stop( error_message );
 	    exit( -1 );

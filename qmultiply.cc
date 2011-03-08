@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.17 2010/10/01 22:51:39 mp Exp $
+ $Id: qmultiply.cc,v 1.18 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -37,7 +37,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern  FILE    *logFile;
 
 
-void qmultiply( Quat *const q, //result
+void qmultiply( /* not const */  Quat *const q, //result
                 register const Quat *const ql,   //left
                 register const Quat *const qr )  //right
 
@@ -89,13 +89,15 @@ void qconjmultiply( Quat *const q,
 void mkUnitQuat( Quat *const q )
     // essentially, convertRotToQuat( Quat q )
 {	
-    const double inv_nmag = 1. / hypotenuse( q->nx, q->ny, q->nz );
+    double inv_nmag, hqang, s;
+	     
+    inv_nmag = 1. / hypotenuse( q->nx, q->ny, q->nz );
     q->nx *= inv_nmag;       /* Normalize q */
     q->ny *= inv_nmag;       /* Normalize q */
     q->nz *= inv_nmag;       /* Normalize q */
       
-    const double hqang = 0.5 * q->ang;
-    const double s = sin( hqang );
+    hqang = 0.5 * q->ang;
+    s     = sin( hqang );
     
     q->w  = cos( hqang );
     q->x  = s * q->nx;
@@ -109,38 +111,34 @@ void printQuat_q( FILE *const fp, const Quat& q )
 {
     (void) fprintf( fp, "Quat(x,y,z,w)=        %5.2f %5.2f %5.2f %5.2f\n", q.x, q.y, q.z, q.w);
     (void) fprintf( fp, "Mag(Quat(x,y,z,w))=   %5.2f\n", sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w) );
-} // printQuat_q( Quat& q )
+} // printQuat_q( Quat q )
 
-//FIXME: convertQuatToRot should accept const, and the result
-//       be assigned to new variable to be then printed
-//       The variable should then be passed by reference
-void printQuat_r( FILE *const fp, const Quat& qsave )
+void printQuat_r( FILE *const fp, const Quat& qq )
 {
-    Quat q = qsave;
+    Quat q = qq;
     q = convertQuatToRot( q );
     (void) fprintf( fp, "Axis(nx,ny,nz),Angle= %5.2f %5.2f %5.2f  %5.2f\n", q.nx, q.ny, q.nz, q.ang);
     (void) fprintf( fp, "Mag(Axis(nx,ny,nz))=  %5.2f\n", sqrt(q.nx*q.nx + q.ny*q.ny + q.nz*q.nz) );
-} // printQuat_r( Quat& q )
+} // printQuat_r( Quat q )
 
-//       The variable should then be passed by reference
 void printQuat( FILE *const fp, const Quat& q )
 {
     printQuat_q( fp, q );
     printQuat_r( fp, q );
-} // printQuat( Quat& q )
+} // printQuat( Quat q )
 
-void debugQuat( FILE *const fp, const Quat& q, const unsigned int linenumber, const char *const message )
+void debugQuat( FILE *fp, const Quat& q, const unsigned int linenumber, const char *const message )
 {
     pr( fp, "DEBUG_QUAT: %s   (line %u)\n", message,  linenumber );
     printQuat( fp, q );
 }
 
-Quat normQuat( /* not const */ Quat q )
+Quat normQuat( Quat q )
     // Normalise the 4D quaternion, x,y,z,w
 {
     register double mag4 = hypotenuse4( q.x, q.y, q.z, q.w );
     if (mag4 > APPROX_ZERO) {
-        register const double inv_mag4 = 1. / mag4;
+        register double inv_mag4 = 1. / mag4;
         q.x *= inv_mag4;
         q.y *= inv_mag4;
         q.z *= inv_mag4;
@@ -163,12 +161,12 @@ void assertQuatOK( const Quat q )
 #define assertQuatOK( q ) {register double aQOK_mag4 = hypotenuse4( (q).x, (q).y, (q).z, (q).w ); assert((aQOK_mag4 > ONE_MINUS_EPSILON) && (aQOK_mag4 < ONE_PLUS_EPSILON)); }
 */
 
-Quat normRot( /* not const */ Quat q )
+Quat normRot( Quat q )
     // Normalise the 3D rotation axis or vector nx,ny,nz
 {
-    const double mag3 = hypotenuse( q.nx, q.ny, q.nz );
+    double mag3 = hypotenuse( q.nx, q.ny, q.nz );
     if (mag3 > APPROX_ZERO) {
-        const double inv_mag3 = 1. / mag3;
+        double inv_mag3 = 1. / mag3;
         q.nx *= inv_mag3;
         q.ny *= inv_mag3;
         q.nz *= inv_mag3;
@@ -190,44 +188,44 @@ Real quatDifferenceToAngleDeg( const Quat& ql, const Quat& qr )
 }
 
 
-//FIXME: this routine does not need to change argument q, but it does
-Quat convertQuatToRot( /* not const */ Quat q )
+Quat convertQuatToRot( const Quat& q )
     // Convert the quaternion components (x,y,z,w) of the quaternion q,
     // to the corresponding rotation-about-axis components (nx,ny,nz,ang)
 {
     // TODO handle big W!  Singularities...
-    Quat retval;
+    Quat retval = q;
 #ifdef SUPER_DEBUG_MUTATION // mp
     fprintf( logFile, "convertQuatToRot:  q.w = %.3f\n", q.w );
 #endif
-    assert( fabs( q.w ) <= 1.001 );
-    if ( q.w > 1. ) q.w = 1.;
-    if ( q.w < -1. ) q.w = -1.;
+    assert( fabs( retval.w ) <= 1.001 );
+    if ( retval.w > 1. ) retval.w = 1.;
+    if ( retval.w < -1. ) retval.w = -1.;
 
-    register double angle = 2. * acos( q.w );
+    register double angle = 2. * acos( retval.w );
     register double inv_sin_half_angle = 1.;
-    if ( q.w == 1. ) {
+    if ( retval.w == 1. ) {
         retval.nx = 1.;
         retval.ny = 0.;
         retval.nz = 0.;
     } else {
         inv_sin_half_angle = 1. / sin( angle / 2. );
 
-        retval.nx = q.x * inv_sin_half_angle;
-        retval.ny = q.y * inv_sin_half_angle;
-        retval.nz = q.z * inv_sin_half_angle;
+        retval.nx = retval.x * inv_sin_half_angle;
+        retval.ny = retval.y * inv_sin_half_angle;
+        retval.nz = retval.z * inv_sin_half_angle;
 
         retval = normRot( retval );
     }
     angle = WrpModRad( angle );  // by convention, angles should be in the range -PI to +PI.
     retval.ang = angle;
 
-    //FIXME: this should move to the top of the function to stop modifying q
+/*
     // Copy the existing x,y,z,w components
     retval.x = q.x;
     retval.y = q.y;
     retval.z = q.z;
     retval.w = q.w;
+*/
 
     return retval;
 } // convertQuatToRot( Quat q )
@@ -257,7 +255,7 @@ Quat convertRotToQuat( const Quat& q )
     
     /* q.qmag = hypotenuse4( q.x,  q.y,  q.z,  q.w  ); */
     return retval;
-} // Quat convertRotToQuat( Quat& q )
+} // Quat convertRotToQuat( Quat q )
 
 Quat raaToQuat( const Real raa[3], ConstReal angle )
 {
@@ -304,7 +302,7 @@ Quat uniformQuatByAmount( ConstReal amount )
     return q;
 }
 
-void unitQuat2rotation( /* not const */ Quat *const q )
+void unitQuat2rotation( Quat *const q )
     // Convert from a unit quaternion to a rotation about an unit 3D-vector
 {
     double inv_sin_half_ang;
@@ -318,7 +316,6 @@ void unitQuat2rotation( /* not const */ Quat *const q )
     return;
 }
 
-//FIXME: q_reorient should be passed by reference
 void print_q_reorient_message( FILE *const logFile, const Quat& q_reorient )
     // Print message about q_reorient
 {
@@ -337,9 +334,10 @@ void print_q_reorient_message( FILE *const logFile, const Quat& q_reorient )
 void create_random_orientation( /* not const */ Quat *const ptr_quat ) 
 {
     // Generate a random initial orientation for the ligand
+    Quat q_random;
     // Generate a uniformly-distributed quaternion:
     // setting the x,y,z,w components
-    const Quat q_random = uniformQuat();
+    q_random = uniformQuat();
     ptr_quat->x = q_random.x;
     ptr_quat->y = q_random.y;
     ptr_quat->z = q_random.z;
@@ -377,7 +375,7 @@ Quat inverse( const Quat& q )
     return inv;
 }
 
-Quat slerp0( const Quat& q1, const Quat& q2, const double& u )
+Quat slerp0( const Quat& q1, const Quat& q2, ConstDouble u )
     // See: Shoemake, K. (1985), "Animating Rotation with Quaternion Curves", 
     //      Computer Graphics, 19 (3): 245-254
     //
@@ -402,7 +400,7 @@ Quat slerp0( const Quat& q1, const Quat& q2, const double& u )
     return slerp;
 }
 
-Quat slerp1( const Quat& qa, const Quat& qb, const double& t )
+Quat slerp1( const Quat& qa, const Quat& qb, ConstDouble t )
     // See Martin Baker's web site
     // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
 {
@@ -415,7 +413,7 @@ Quat slerp1( const Quat& qa, const Quat& qb, const double& t )
     assert( t >= 0.  &&  t <= 1. );
 
 	// Calculate angle between them.
-	const double cosHalfTheta = qa.w * qb.w + qa.x * qb.x + qa.y * qb.y + qa.z * qb.z;
+	double cosHalfTheta = qa.w * qb.w + qa.x * qb.x + qa.y * qb.y + qa.z * qb.z;
 	// if qa=qb or qa=-qb then theta = 0 and we can return qa
 	if (fabs(cosHalfTheta) >= 1.0){
 		qm.w = qa.w;qm.x = qa.x;qm.y = qa.y;qm.z = qa.z;
@@ -445,8 +443,8 @@ Quat slerp1( const Quat& qa, const Quat& qb, const double& t )
 #endif
 		return qm;
 	}
-	const double ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
-	const double ratioB = sin(t * halfTheta) / sinHalfTheta; 
+	double ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
+	double ratioB = sin(t * halfTheta) / sinHalfTheta; 
 	//calculate Quaternion.
 	qm.w = qa.w * ratioA + qb.w * ratioB;
 	qm.x = qa.x * ratioA + qb.x * ratioB;
@@ -458,7 +456,7 @@ Quat slerp1( const Quat& qa, const Quat& qb, const double& t )
 	return qm;
 }
 
-Quat slerp( const Quat& qa, const Quat& qb, const double& t )
+Quat slerp( const Quat& qa, const Quat& qb, ConstDouble t )
     // Adapted from code by John W. Ratcliff mailto:jratcliff@infiniplex.net
     // See http://codesuppository.blogspot.com/2006/03/matrix-vector-and-quaternion-library.html
 /*  
@@ -497,16 +495,16 @@ Quat slerp( const Quat& qa, const Quat& qb, const double& t )
 
     assert( t >= 0.  &&  t <= 1. );
 
-    // Calculate angle between them.
-    double cosHalfTheta = qa.w * qb.w + qa.x * qb.x + qa.y * qb.y + qa.z * qb.z;
+	// Calculate angle between them.
+	double cosHalfTheta = qa.w * qb.w + qa.x * qb.x + qa.y * qb.y + qa.z * qb.z;
     // Ensure we choose the shorter angular displacement between qa and qb:
-    if (cosHalfTheta < 0.) {
+	if (cosHalfTheta < 0.) {
         cosHalfTheta = -cosHalfTheta;
         qb_local.w = -qb.w;
         qb_local.x = -qb.x;
         qb_local.y = -qb.y;
         qb_local.z = -qb.z;
-    } else {
+	} else {
         qb_local = qb;
     }
 #ifdef ASSERTQUATOK
@@ -573,26 +571,23 @@ const Quat identityQuat()
 #define MIN_ANGLE -HALF_ROTATION // Angles that go from 0 to one-rotation // #define MIN_ANGLE 0.
 #define MAX_ANGLE HALF_ROTATION // Angles that go from 0 to one-rotation // #define MAX_ANGLE ONE_ROTATION
 
-Real a_range_reduction( Real a )
+Real a_range_reduction( ConstReal aa )
 {
-    if (a <= MIN_ANGLE) {
-        do a += ONE_ROTATION;
-        while (a <= MIN_ANGLE);
-    } else if (a >= MAX_ANGLE) {
-        do a -= ONE_ROTATION;
-        while (a >= MAX_ANGLE);
-    }
+    if (aa > MIN_ANGLE && aa<MAX_ANGLE) return aa;
+
+    Real a = aa;
+    while (a <= MIN_ANGLE) a += ONE_ROTATION;
+    while (a >= MAX_ANGLE) a -= ONE_ROTATION;
     return a;
 }
 
-Real alerp( /* not const */ Real a, /* not const */ Real b, ConstReal fract )
+Real alerp( ConstReal aa, ConstReal bb, ConstReal fract )
 {
     // if fract==0, return a
     // if fract==1, return b
-    Real delta;
-    a = a_range_reduction( a );
-    b = a_range_reduction( b );
-    delta = b - a;
+    Real a = a_range_reduction( aa );
+    Real b = a_range_reduction( bb );
+    Real delta = b - a;
     if (delta > HALF_ROTATION) {
         delta -= ONE_ROTATION;
     } else if (delta < -HALF_ROTATION) {

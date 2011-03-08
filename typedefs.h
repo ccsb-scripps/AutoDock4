@@ -1,6 +1,6 @@
 /*
 
- $Id: typedefs.h,v 1.10 2010/11/05 02:43:00 mp Exp $
+ $Id: typedefs.h,v 1.11 2011/03/08 04:18:37 mp Exp $
 
  AutoDock  
 
@@ -64,8 +64,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define FDFMT3 FDFMT " " FDFMT " " FDFMT
 
 // MP note: "const2" tests were "const Real", "const3" tests were "const Real&"
-//#define ConstReal	const Real
+// "const4" tests (early November 2010) were "const Real&"
+// MP note: this type is for scalar declarations only, use "const Real a[NN];"
+//   for array definitions.
 #define ConstReal	const Real&
+#define ConstDouble	const double&
 
 typedef float MapType; //the grid map type can be changed independent of other 'Real's
 #   define MAPFMT "%f"

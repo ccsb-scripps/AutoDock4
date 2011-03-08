@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include "typedefs.h"
 
-double alea( const double& a, const double& b);
+double alea( ConstDouble a, ConstDouble b);
 int alea_integer(const int a, const int b);
                                   
 

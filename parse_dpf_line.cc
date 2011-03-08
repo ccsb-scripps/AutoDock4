@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.32 2010/08/27 00:05:08 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.33 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -61,8 +61,8 @@ int parse_dpf_line( const char line[] )
     char c[LINE_LEN];
 
     const struct {
-       char *lexeme;
-       int tokenvalue;
+       const char *const lexeme;
+       const int tokenvalue;
     } tokentable[] = {{"ligand", DPF_MOVE},  
                       {"fld", DPF_FLD}, 
                       {"map", DPF_MAP}, 

@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.12 2010/10/01 22:51:39 mp Exp $
+ $Id: conformation_sampler.cc,v 1.13 2011/03/08 04:18:36 mp Exp $
 
  AutoDock 
 
@@ -134,7 +134,7 @@ void ConformationSampler::random_sample(const int num_samples) {
 
 		Real random_axis_angle[4];
 		Real new_axis_angle[4];
-		Real angle = gennor(0.0, PI/24.0);
+		const double angle = gennor(0.0, PI/24.0);
 		rand_axis(random_axis_angle, angle);
 		multiplyraa(base_axis_angle, random_axis_angle, new_axis_angle);
 
@@ -563,13 +563,13 @@ void matrixMultiply(const Real m1[3][3], const Real m2[3][3], /* not const */ Re
 	result[2][2] = m1[2][0]*m2[0][2] + m1[2][1]*m2[1][2] + m1[2][2]*m2[2][2];
 }
 
-void rand_axis(/* not const */ Real axis[4], ConstReal   angle) {
+void rand_axis(/* not const */ Real axis[4], const double angle) {
 	axis[2] = genunf(-1.0, 1.0);
 	const Real t = genunf(0.0, 2*PI);
 	const Real w = sqrt(1 - axis[2]*axis[2]);
 	axis[0] = w * cos(t);
 	axis[1] = w * sin(t);
-	axis[3] = angle;
+	axis[3] = (Real) angle;
 }
 
 void setup_reference_coordinates(void) {

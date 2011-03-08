@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.19 2010/10/01 22:51:40 mp Exp $
+ $Id: rep.cc,v 1.20 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -163,7 +163,7 @@ void IntVector::write(const FourByteLong& value, const int gene) /* not const */
 
 //______________________________________________________________________________
 //
-void IntVector::write(const double& value, const int gene)
+void IntVector::write(ConstDouble value, const int gene)
 {
 
 #ifdef DEBUG
@@ -291,7 +291,7 @@ RealVector::RealVector(/* not const */ int num_els)
 //  with elements of the vector set to random values between 
 //  the user-specified values, init_low and init_high.
 //
-RealVector::RealVector(/* not const */ int num_els, const double& init_low, const double& init_high)
+RealVector::RealVector(/* not const */ int num_els, ConstDouble init_low, ConstDouble init_high)
 : Representation(num_els)
 {
 #ifdef DEBUG
@@ -318,7 +318,7 @@ RealVector::RealVector(/* not const */ int num_els, const double& init_low, cons
 //  but the first value in this vector is set to the value supplied as the last argument.
 //  This is useful for specifying an initial axis-angle rotation angle.
 //
-RealVector::RealVector(const int num_els, const double& init_low, const double& init_high, const double& init_first_value)
+RealVector::RealVector(const int num_els, ConstDouble init_low, ConstDouble init_high, ConstDouble init_first_value)
 : Representation(num_els)
 {
 #ifdef DEBUG
@@ -350,7 +350,7 @@ RealVector::RealVector(const int num_els, const double& init_low, const double& 
 //  nx, ny, and nz.
 //  This is useful for specifying an initial orientation's axis components
 //
-RealVector::RealVector( const int num_els, const double& init_low, const double& init_high, const double& nx, const double& ny, const double& nz )
+RealVector::RealVector( const int num_els, ConstDouble init_low, ConstDouble init_high, ConstDouble nx, ConstDouble ny, ConstDouble nz )
 : Representation(num_els)
 {
 #ifdef DEBUG
@@ -379,7 +379,7 @@ RealVector::RealVector( const int num_els, const double& init_low, const double&
 //  w, x, y, z
 //  This is useful for specifying an initial quaternion rotation' unit vector.
 //
-RealVector::RealVector( const int num_els, const double& init_low, const double& init_high, const double& x, const double& y, const double& z, const double& w)
+RealVector::RealVector( const int num_els, ConstDouble init_low, ConstDouble init_high, ConstDouble x, ConstDouble y, ConstDouble z, ConstDouble w)
 : Representation(num_els)
 {
 #ifdef DEBUG
@@ -459,7 +459,7 @@ void RealVector::write(const FourByteLong& value, const int gene) /* not const .
 
 //______________________________________________________________________________
 //
-void RealVector::write(const double& value, const int gene) /* not const */
+void RealVector::write(ConstDouble value, const int gene) /* not const */
 {
 
 #ifdef DEBUG
@@ -598,7 +598,7 @@ ConstrainedRealVector::ConstrainedRealVector(/* not const */ int num_els)
 
 //______________________________________________________________________________
 //
-ConstrainedRealVector::ConstrainedRealVector(/* not const */ int num_els, const double& init_low, const double& init_high)
+ConstrainedRealVector::ConstrainedRealVector(/* not const */ int num_els, ConstDouble init_low, ConstDouble init_high)
 :  Representation(num_els)
 {
 
@@ -669,7 +669,7 @@ void ConstrainedRealVector::write(const FourByteLong& value, const int gene)
 
 //______________________________________________________________________________
 //
-void ConstrainedRealVector::write(const double& value, const int gene) /* not const */
+void ConstrainedRealVector::write(ConstDouble value, const int gene) /* not const */
 {
 
 #ifdef DEBUG
@@ -692,7 +692,7 @@ void ConstrainedRealVector::write(const double& value, const int gene) /* not co
 
 //______________________________________________________________________________
 //
-void ConstrainedRealVector::write(const double& a, const double& b, const double& c, const double& d)
+void ConstrainedRealVector::write(ConstDouble a, ConstDouble b, ConstDouble c, ConstDouble d)
 {
 
 #ifdef DEBUG
@@ -927,7 +927,7 @@ void BitVector::write(const FourByteLong& value, const int gene)
 
 //______________________________________________________________________________
 //
-void BitVector::write(const double& value, const int gene)
+void BitVector::write(ConstDouble value, const int gene)
 {
 
 #ifdef DEBUG

@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.8 2010/10/01 22:51:40 mp Exp $
+ $Id: ranlib.cc,v 1.9 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -34,18 +34,28 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdlib.h>
 #include "structs.h"
 
-inline Real ABS(const Real &x) { return ((x) >= 0 ? (x) : -(x)) ; }
-inline Real MIN(const Real &a,const Real &b) { return ((a) <= (b) ? (a) : (b)) ; }
-inline Real MAX(const Real &a,const Real &b) { return ((a) >= (b) ? (a) : (b)) ; }
+// C++ equivalents of Fortran functions:
+inline Real ABS(ConstReal x) { return ((x) >= 0 ? (x) : -(x)) ; }
+inline Real MIN(ConstReal a, ConstReal b) { return ((a) <= (b) ? (a) : (b)) ; }
+inline Real MAX(ConstReal a, ConstReal b) { return ((a) >= (b) ? (a) : (b)) ; }
+inline FourByteLong IABS(const FourByteLong x) { return ((x) >= 0 ? (x) : -(x)) ; } 
+inline FourByteLong IMIN(const FourByteLong a, const FourByteLong b) { return ((a) <= (b) ? (a) : (b)) ; }
+inline FourByteLong IMAX(const FourByteLong a, const FourByteLong b) { return ((a) >= (b) ? (a) : (b)) ; }
 
-void ftnstop(const char *const msg);
+static void ftnstop(const char *const msg);
+static Real sgamma(ConstReal a);
+static Real sexpo(void);
+static Real fsign(ConstReal num, ConstReal sign);
+static Real snorm(void);
+static FourByteLong ignbin(const FourByteLong n, ConstReal pp);
+static FourByteLong ignpoi(ConstReal mu);
 
 extern FILE *logFile;
 
 static const Real expmax=89.0;
 static const Real infnty=1.0E38;
 
-Real genbet(ConstReal  aa,ConstReal  bb)
+Real genbet(ConstReal aa,ConstReal bb) // not used in AutoDock code
 /*
 **********************************************************************
      Real genbet(Real aa,Real bb)
@@ -207,7 +217,46 @@ S220:
 #undef expmax
 #undef infnty
 }
-Real genchi(ConstReal  df)
+
+static Real gengam(ConstReal a, ConstReal r)
+/*
+**********************************************************************
+     Real gengam(Real a,Real r)
+           GENerates random deviates from GAMma distribution
+                              Function
+     Generates random deviates from the gamma distribution whose
+     density is
+          (A**R)/Gamma(R) * X**(R-1) * Exp(-A*X)
+                              Arguments
+     a --> Location parameter of Gamma distribution
+     r --> Shape parameter of Gamma distribution
+                              Method
+     Renames SGAMMA from TOMS as slightly modified by BWB to use RANF
+     instead of SUNIF.
+     For details see:
+               (Case R >= 1.0)
+               Ahrens, J.H. and Dieter, U.
+               Generating Gamma Variates by a
+               Modified Rejection Technique.
+               Comm. ACM, 25,1 (Jan. 1982), 47 - 54.
+     Algorithm GD
+               (Case 0.0 <= R <= 1.0)
+               Ahrens, J.H. and Dieter, U.
+               Computer Methods for Sampling from Gamma,
+               Beta, Poisson and Binomial Distributions.
+               Computing, 12 (1974), 223-246/
+     Adapted algorithm GS.
+**********************************************************************
+*/
+{
+static Real gengam;
+
+    gengam = sgamma(r);
+    gengam /= a;
+    return gengam;
+}
+
+static Real genchi(ConstReal df)
 /*
 **********************************************************************
      Real genchi(Real df)
@@ -234,7 +283,8 @@ S10:
     genchi = 2.0*gengam(1.0,df/2.0);
     return genchi;
 }
-Real genexp(ConstReal  av)
+
+Real genexp(ConstReal av) // not used in AutoDock code
 /*
 **********************************************************************
      Real genexp(Real av)
@@ -261,7 +311,8 @@ static Real genexp;
     genexp = sexpo()*av;
     return genexp;
 }
-Real genf(ConstReal  dfn,ConstReal  dfd)
+
+Real genf(ConstReal dfn, ConstReal  dfd) // not used in AutoDock code
 /*
 **********************************************************************
      Real genf(Real dfn,Real dfd)
@@ -303,44 +354,8 @@ S20:
 S30:
     return genf;
 }
-Real gengam(ConstReal  a,ConstReal  r)
-/*
-**********************************************************************
-     Real gengam(Real a,Real r)
-           GENerates random deviates from GAMma distribution
-                              Function
-     Generates random deviates from the gamma distribution whose
-     density is
-          (A**R)/Gamma(R) * X**(R-1) * Exp(-A*X)
-                              Arguments
-     a --> Location parameter of Gamma distribution
-     r --> Shape parameter of Gamma distribution
-                              Method
-     Renames SGAMMA from TOMS as slightly modified by BWB to use RANF
-     instead of SUNIF.
-     For details see:
-               (Case R >= 1.0)
-               Ahrens, J.H. and Dieter, U.
-               Generating Gamma Variates by a
-               Modified Rejection Technique.
-               Comm. ACM, 25,1 (Jan. 1982), 47 - 54.
-     Algorithm GD
-               (Case 0.0 <= R <= 1.0)
-               Ahrens, J.H. and Dieter, U.
-               Computer Methods for Sampling from Gamma,
-               Beta, Poisson and Binomial Distributions.
-               Computing, 12 (1974), 223-246/
-     Adapted algorithm GS.
-**********************************************************************
-*/
-{
-static Real gengam;
 
-    gengam = sgamma(r);
-    gengam /= a;
-    return gengam;
-}
-void genmn(const Real *const parm,/* not const */ Real *const x,/* not const */ Real *const work)
+void genmn(const Real *const parm, /* not const */ Real *const x, /* not const */ Real *const work) // not used in AutoDock code
 /*
 **********************************************************************
      void genmn(Real *parm,Real *x,Real *work)
@@ -391,7 +406,8 @@ static Real ae;
         *(x+i-1) = ae+*(parm+i);
     }
 }
-void genmul(const FourByteLong n,const Real *const p,const FourByteLong ncat,/* not const */ FourByteLong *const ix)
+
+void genmul(const FourByteLong n, const Real *const p, const FourByteLong ncat, /* not const */ FourByteLong *const ix) // not used in AutoDock code
 /*
 **********************************************************************
  
@@ -452,7 +468,8 @@ static FourByteLong i,icat,ntot;
 */
     return;
 }
-Real gennch(ConstReal  df,ConstReal  xnonc)
+
+static Real gennch(ConstReal df, ConstReal xnonc)
 /*
 **********************************************************************
      Real gennch(Real df,Real xnonc)
@@ -483,7 +500,8 @@ S10:
     gennch = genchi(df-1.0)+pow(gennor(sqrt(xnonc),1.0),2.0);
     return gennch;
 }
-Real gennf(ConstReal  dfn,ConstReal  dfd,ConstReal  xnonc)
+
+Real gennf(ConstReal dfn, ConstReal dfd, ConstReal xnonc) // not used in AutoDock code
 /*
 **********************************************************************
      Real gennf(Real dfn,Real dfd,Real xnonc)
@@ -535,7 +553,8 @@ S20:
 S30:
     return gennf;
 }
-Real gennor(ConstReal  av,ConstReal  sd)
+
+extern Real gennor(ConstReal av, ConstReal sd)
 /*
 **********************************************************************
      Real gennor(Real av,Real sd)
@@ -562,7 +581,8 @@ static Real gennor;
     gennor = sd*snorm()+av;
     return gennor;
 }
-void genprm(/* not const */ FourByteLong *const iarray,const int larray)
+
+void genprm(/* not const */ FourByteLong *const iarray, const int larray) // not used in AutoDock code
 /*
 **********************************************************************
     void genprm(FourByteLong *iarray,int larray)
@@ -583,7 +603,8 @@ static FourByteLong i,itmp,iwhich,D1,D2;
         *(iarray+i-1) = itmp;
     }
 }
-Real genunf(ConstReal  low,ConstReal  high)
+
+extern Real genunf(ConstReal low, ConstReal high)
 /*
 **********************************************************************
      Real genunf(Real low,Real high)
@@ -596,7 +617,7 @@ Real genunf(ConstReal  low,ConstReal  high)
 **********************************************************************
 */
 {
-static Real genunf;
+    static Real genunf;
 
     if(!(low > high)) goto S10;
     fprintf(stderr,"LOW > HIGH in GENUNF: LOW %16.6E HIGH: %16.6E\n",low,high);
@@ -606,7 +627,8 @@ S10:
     genunf = low+(high-low)*ranf();
     return genunf;
 }
-void gscgn(const FourByteLong getset,FourByteLong *const g)
+
+extern void gscgn(const FourByteLong getset, FourByteLong *const g)
 /*
 **********************************************************************
      void gscgn(FourByteLong getset,FourByteLong *g)
@@ -620,7 +642,7 @@ void gscgn(const FourByteLong getset,FourByteLong *const g)
 */
 {
 #define numg 32L
-static FourByteLong curntg = 1;
+    static FourByteLong curntg = 1;
     if(getset == 0) *g = curntg;
     else  {
         if(*g < 0 || *g > numg) {
@@ -631,7 +653,8 @@ static FourByteLong curntg = 1;
     }
 #undef numg
 }
-void gsrgs(const FourByteLong getset,FourByteLong *const qvalue)
+
+extern void gsrgs(const FourByteLong getset, /* not const */ FourByteLong *const qvalue)
 /*
 **********************************************************************
      void gsrgs(FourByteLong getset,FourByteLong *qvalue)
@@ -643,12 +666,12 @@ void gsrgs(const FourByteLong getset,FourByteLong *const qvalue)
 **********************************************************************
 */
 {
-static FourByteLong qinit = 0;
-
+    static FourByteLong qinit = 0;
     if(getset == 0) *qvalue = qinit;
     else qinit = *qvalue;
 }
-void gssst(const FourByteLong getset,FourByteLong *const qset)
+
+extern void gssst(const FourByteLong getset, /* not const */ FourByteLong *const qset)
 /*
 **********************************************************************
      void gssst(FourByteLong getset,FourByteLong *qset)
@@ -660,11 +683,12 @@ void gssst(const FourByteLong getset,FourByteLong *const qset)
 **********************************************************************
 */
 {
-static FourByteLong qstate = 0;
+    static FourByteLong qstate = 0;
     if(getset != 0) qstate = 1;
     else  *qset = qstate;
 }
-FourByteLong ignbin(const FourByteLong n,ConstReal  pp)
+
+static FourByteLong ignbin(const FourByteLong n, ConstReal pp)
 /*
 **********************************************************************
      FourByteLong ignbin(FourByteLong n,Real pp)
@@ -849,7 +873,7 @@ S70:
 /*
 *****DETERMINE APPROPRIATE WAY TO PERFORM ACCEPT/REJECT TEST
 */
-    k = ABS(ix-m);
+    k = IABS(ix-m);
     if(k > 20 && k < xnpq/2-1) goto S130;
 /*
      EXPLICIT EVALUATION
@@ -921,7 +945,8 @@ S170:
     ignbin = ix;
     return ignbin;
 }
-FourByteLong ignnbn(const FourByteLong n,ConstReal  p)
+
+FourByteLong ignnbn(const FourByteLong n, ConstReal p) // not used in AutoDock code
 /*
 **********************************************************************
  
@@ -968,7 +993,8 @@ static Real y,a,r;
     ignnbn = ignpoi(y);
     return ignnbn;
 }
-FourByteLong ignpoi(ConstReal  mu)
+
+static FourByteLong ignpoi(ConstReal mu)
 /*
 **********************************************************************
      FourByteLong ignpoi(Real mu)
@@ -1019,7 +1045,6 @@ FourByteLong ignpoi(ConstReal  mu)
      SEPARATION OF CASES A AND B
 */
 {
-extern Real fsign( Real num, Real sign );
 static Real a0 = -0.5;
 static Real a1 = 0.3333333;
 static Real a2 = -0.2500068;
@@ -1164,7 +1189,7 @@ S120:
     muprev = 0.0;
     if(mu == muold) goto S130;
     muold = mu;
-    m = MAX(1L,(FourByteLong) (mu));
+    m = IMAX(1L,(FourByteLong) (mu));
     l = 0;
     p = exp(-mu);
     q = p0 = p;
@@ -1182,7 +1207,7 @@ S130:
 */
     if(l == 0) goto S150;
     j = 1;
-    if(u > 0.458) j = MIN(l,m);
+    if(u > 0.458) j = IMIN(l,m);
     for (k=j; k<=l; k++) {
         if(u <= *(pp+k-1)) goto S180;
     }
@@ -1207,7 +1232,8 @@ S180:
     ignpoi = k;
     return ignpoi;
 }
-FourByteLong ignuin(const FourByteLong low,const FourByteLong high)
+
+extern FourByteLong ignuin(const FourByteLong low, const FourByteLong high)
 /*
 **********************************************************************
      FourByteLong ignuin(FourByteLong low,FourByteLong high)
@@ -1262,7 +1288,8 @@ S50:
 #undef err1
 #undef err2
 }
-FourByteLong lennob( const char *const str )
+
+FourByteLong lennob(const char *const str) // not used in AutoDock code
 /* 
 Returns the length of str ignoring trailing blanks but not 
 other white space.
@@ -1273,8 +1300,9 @@ FourByteLong i, i_nb;
 for (i=0, i_nb= -1L; *(str+i); i++)
     if ( *(str+i) != ' ' ) i_nb = i;
 return (i_nb+1);
-    }
-FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourByteLong m)
+}
+
+extern FourByteLong mltmod(const FourByteLong a, const FourByteLong s, const FourByteLong m)
 /*
 **********************************************************************
      FourByteLong mltmod(FourByteLong a,FourByteLong s,FourByteLong m)
@@ -1368,7 +1396,8 @@ S140:
     return mltmod;
 #undef h
 }
-void phrtsd(const char *const phrase,FourByteLong *const seed1,FourByteLong *const seed2)
+
+void phrtsd(const char *const phrase, FourByteLong *const seed1, FourByteLong *const seed2) // not used in AutoDock code
 /*
 **********************************************************************
      void phrtsd(char* phrase,FourByteLong *seed1,FourByteLong *seed2)
@@ -1407,7 +1436,7 @@ static FourByteLong shift[5] = {
     1L,64L,4096L,262144L,16777216L
 };
 static FourByteLong i,ichr,j,lphr,values[5];
-extern FourByteLong lennob(const char *const str);
+FourByteLong lennob(const char *const str);
 
     *seed1 = 1234567890L;
     *seed2 = 123456789L;
@@ -1430,7 +1459,8 @@ extern FourByteLong lennob(const char *const str);
     }
 #undef twop30
 }
-Real ranf(void)
+
+extern Real ranf(void)
 /*
 **********************************************************************
      Real ranf(void)
@@ -1454,7 +1484,8 @@ static Real ranf;
     ranf = ignlgi()*4.656613057E-10;
     return ranf;
 }
-void setgmn(const Real *const meanv,Real *const covm,const FourByteLong p,Real *const parm)
+
+void setgmn(const Real *const meanv, Real *const covm, const FourByteLong p, Real *const parm) // not used in AutoDock code
 /*
 **********************************************************************
      void setgmn(Real *meanv,Real *covm,FourByteLong p,Real *parm)
@@ -1519,7 +1550,8 @@ S30:
         }
     }
 }
-Real sexpo(void)
+
+static Real sexpo(void)
 /*
 **********************************************************************
                                                                       
@@ -1578,7 +1610,8 @@ S70:
     sexpo = a+umin**q1;
     return sexpo;
 }
-Real sgamma(ConstReal a)
+
+static Real sgamma(ConstReal a)
 /*
 **********************************************************************
                                                                       
@@ -1631,7 +1664,6 @@ Real sgamma(ConstReal a)
      SQRT32 IS THE SQUAREROOT OF 32 = 5.656854249492380
 */
 {
-extern Real fsign( Real num, Real sign );
 static Real q1 = 4.166669E-2;
 static Real q2 = 2.083148E-2;
 static Real q3 = 8.01191E-3;
@@ -1792,7 +1824,8 @@ S140:
     if(sexpo() < (1.0-a)*log(sgamma)) goto S130;
     return sgamma;
 }
-Real snorm(void)
+
+static Real snorm(void)
 /*
 **********************************************************************
                                                                       
@@ -1919,18 +1952,20 @@ S160:
     u = ranf();
     goto S140;
 }
-Real fsign( Real num, Real sign ) /* MP TODO const? */
+
+static inline Real fsign(ConstReal num, ConstReal sign )
 /* Transfers sign of argument sign to argument num */
 {
 if ( ( sign>0.0f && num<0.0f ) || ( sign<0.0f && num>0.0f ) )
     return -num;
 else return num;
 }
+
 /************************************************************************
 FTNSTOP:
 Prints msg to standard error and then exits
 ************************************************************************/
-void ftnstop(const char* const msg)
+static void ftnstop(const char* const msg)
 /* msg - error message */
 {
   if (msg != NULL) fprintf(stderr,"%s\n",msg);

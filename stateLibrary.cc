@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.20 2010/10/01 22:51:40 mp Exp $
+ $Id: stateLibrary.cc,v 1.21 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -86,7 +86,7 @@ void copyState( /* not const */ State *const D,  /* Destination -- copy to here 
     D->Center = S.Center;
 }
 
-static Real RadCanonicalDeg( Real x) {
+static double RadCanonicalDeg( const double x) {
    // convert torsion value from radians to degrees, 
    // wrapping angles at all points.
    // Probably could be simplified.
@@ -111,7 +111,7 @@ void printState( FILE *const fp,
             (void)fprintf( fp, "Translation x,y,z         = %.3f %.3f %.3f\n", S.T.x, S.T.y, S.T.z );
             (void)fprintf( fp, "Quaternion x,y,z,w        = %.6f %.6f %.6f %.6f\n", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
             S.Q = convertQuatToRot( S.Q );
-            (void)fprintf( fp, "Axis-Angle nx,ny,nz,angle = %.3f %.3f %.3f %.3f\n", S.Q.nx, S.Q.ny, S.Q.nz, RadCanonicalDeg(S.Q.ang) );
+            (void)fprintf( fp, "Axis-Angle nx,ny,nz,angle = %.3f %.3f %.3f %.3lf\n", S.Q.nx, S.Q.ny, S.Q.nz, RadCanonicalDeg(S.Q.ang) );
             //(void)fprintf( fp, "Quaternion qmag           = %.3f\n", S.Q.qmag );
             (void)fprintf( fp, "Center x,y,z         = %.3f %.3f %.3f\n", S.Center.x, S.Center.y, S.Center.z );
             (void)fprintf( fp, "Number of Torsions        = %d\n", S.ntor );
@@ -121,7 +121,7 @@ void printState( FILE *const fp,
                     S.tor[i] = WrpRad( ModRad( S.tor[i] ) );
                 }
                 for (i=0; i<S.ntor; i++) {
-                    pr( fp, " %.2f", RadCanonicalDeg( S.tor[i]));
+                    pr( fp, " %.2lf", RadCanonicalDeg( S.tor[i]));
                     //if ((B_isTorConstrained[i] == 1) && B_ShowTorE) {
                         //pr( fp, ", Energetic penalty = %uhd\n", US_TorE[i]);
                     //} else {
@@ -142,7 +142,7 @@ void printState( FILE *const fp,
             (void)fprintf( fp, "%.3f_%.3f_%.3f", S.T.x, S.T.y, S.T.z );
             (void)fprintf( fp, "_%.6f_%.6f_%.6f_%.6f", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
             for (i=0; i<S.ntor; i++) {
-                    pr( fp, "_%.3f", RadCanonicalDeg(S.tor[i]) );
+                    pr( fp, "_%.3lf", RadCanonicalDeg(S.tor[i]) );
             }
             break;
         case 5:
@@ -159,7 +159,7 @@ void printState( FILE *const fp,
             (void)fprintf( fp, " center %.3f %.3f %.3f", 
 	      S.Center.x, S.Center.y, S.Center.z );
             (void)fprintf( fp, " ntor %d", S.ntor);
-            for (i=0; i<S.ntor; i++) pr( fp, " %.4f", RadCanonicalDeg(S.tor[i]));
+            for (i=0; i<S.ntor; i++) pr( fp, " %.4lf", RadCanonicalDeg(S.tor[i]));
             break;
     }
 }
@@ -191,7 +191,7 @@ static void writeStateAQ( FILE *const fp, /* not const */ State S, const char co
     // Write torsion angles.
     if (S.ntor > 0) {
         for (int i=0; i<S.ntor; i++) {
-            pr( fp, " %7.2f", RadCanonicalDeg(S.tor[i]));
+            pr( fp, " %7.2lf", RadCanonicalDeg(S.tor[i]));
         }
     }
 }
@@ -199,7 +199,7 @@ void writeState( FILE *const fp, /* not const */ State S )
 {
 	// simple wrapper to write state with axis-angle convention
 	writeStateAQ( fp, S, 'A');
-	}
+}
 
 int checkState( const State *const D )
 {

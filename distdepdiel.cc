@@ -1,6 +1,6 @@
 /*
 
- $Id: distdepdiel.cc,v 1.5 2010/10/01 22:51:39 mp Exp $
+ $Id: distdepdiel.cc,v 1.6 2011/03/08 04:18:36 mp Exp $
 
  AutoDock 
 
@@ -28,25 +28,24 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "distdepdiel.h"
 
 
-double calc_ddd_Mehler_Solmajer( const double& distance, const double& approx_zero ) {
+double calc_ddd_Mehler_Solmajer( ConstDouble distance, ConstDouble approx_zero ) {
     /*____________________________________________________________________________
      * Distance-dependent dielectric ewds: Mehler and Solmajer, Prot Eng 4, 903-910.
      *____________________________________________________________________________*/
-    double epsilon = 1.0L;
-    double lambda = 0.003627L;
-    double epsilon0 = 78.4L;
-    double A = -8.5525L;
-    double B;
-    B = epsilon0 - A;
-    double rk= 7.7839L;
-    double lambda_B;
-    lambda_B = -lambda * B;
+    const double lambda = 0.003627L;
+    const double epsilon0 = 78.4L;
+    const double A = -8.5525L;
+    const double B = epsilon0 - A;
+    const double rk= 7.7839L;
+    const double lambda_B = -lambda * B;
         
-    epsilon = A + B / (1.0L + rk*exp(lambda_B * distance));
+    const double epsilon = A + B / (1.0L + rk*exp(lambda_B * distance));
     
     if (epsilon < approx_zero) {
-        epsilon = 1.0L;
+        return 1.0L;
     }
-    return epsilon;
+    else {
+        return epsilon;
+    }
 }
  /* EOF */

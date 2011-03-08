@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.30 2010/10/01 22:51:40 mp Exp $
+ $Id: simanneal.cc,v 1.31 2011/03/08 04:18:37 mp Exp $
 
  AutoDock  
 
@@ -147,8 +147,6 @@ void simanneal ( int   *const Addr_nconf,
         )
 
 {
-    char message[LINE_LEN];
-
     Real local_unbound_internal_FE = unbound_internal_FE;
 
     FILE *FP_trj;
@@ -226,6 +224,7 @@ void simanneal ( int   *const Addr_nconf,
     if ( B_writeTrj ) {
                 FP_trj = fopen(FN_trj, "w");
         if ( FP_trj == NULL ) {
+	    char message[LINE_LEN];
             prStr( message, "\n%s: can't create trajectory file %s\n", programname, FN_trj);
             pr_2x( stderr, logFile, message );
             prStr( message, "\n%s: Unsuccessful Completion.\n\n", programname);

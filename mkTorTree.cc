@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.17 2010/08/27 00:05:07 mp Exp $
+ $Id: mkTorTree.cc,v 1.18 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -82,7 +82,6 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
     register int   j = 0;
     register int   k = 0;
 
-    char  error_message[ LINE_LEN ];
     char  rec5[ 5 ];
 
     Real lower = 0.;
@@ -198,6 +197,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
     /*____________________________________________________________*/
             case PDBQ_BRANCH:
                 if (ntor >= MAX_TORS) {
+    		    char  error_message[ LINE_LEN ];
                     prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
                     stop( error_message );
                     exit( -1 );
@@ -211,6 +211,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 tlist[ ntor ][ ATM2 ] = atomnumber[ i+1 ];
                 --tlist[ ntor ][ ATM1 ];
                 if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
+                    char  error_message[ LINE_LEN ];
                     prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
                     stop( error_message );
                     exit( -1 );
@@ -260,6 +261,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 tlist[ ntor ][ ATM2 ] = atomnumber[ i+1 ];
                 tlist[ ntor ][ ATM1 ] = atomlast;
                 if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
+                    char  error_message[ LINE_LEN ];
                     prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
                     stop( error_message );
                     exit( -1 );
@@ -373,6 +375,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
     */
     // Checked for above, as well as in readPDBQT, but this is extra insurance
     if (ntor > MAX_TORS) {
+        char  error_message[ LINE_LEN ];
         prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
         stop( error_message );
         exit( -1 );

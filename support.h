@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.21 2010/10/01 22:51:40 mp Exp $
+ $Id: support.h,v 1.22 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -38,6 +38,20 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 ** $Log: support.h,v $
+** Revision 1.22  2011/03/08 04:18:37  mp
+** Incorporation of Steffan Moeller patch set 20101104 and 2010114.
+** Virtually all changes proposed are incorporated except for declaring "static"
+** the AutoDock-unused functions in ranlib.cc/ranlib.h.
+**
+**  Modified Files:
+** 	Makefile.am alea.cc alea.h call_cpso.cc check_header_int.cc
+** 	configure.ac conformation_sampler.cc conformation_sampler.h
+** 	distdepdiel.cc distdepdiel.h gs.cc hybrids.h intnbtable.cc
+** 	intnbtable.h ls.cc mkTorTree.cc paramdat2h.csh
+** 	parse_dpf_line.cc parse_param_line.cc qmultiply.cc qmultiply.h
+** 	ranlib.cc ranlib.h readmap.cc rep.cc rep.h simanneal.cc
+** 	stateLibrary.cc support.cc support.h torNorVec.cc typedefs.h
+**
 ** Revision 1.21  2010/10/01 22:51:40  mp
 ** Applied patches 2010-09-29 from Steffan Moeller "patches_introducing_references"
 **
@@ -260,7 +274,7 @@ class Genotype
       void write(const Element&, const int); /* not const */
       void write(const unsigned char&, const int); /* not const */
       void write(const FourByteLong&, const int); /* not const */
-      void write(const double&, const int); /* not const */
+      void write(ConstDouble, const int); /* not const */
       void write(const Representation &, const int); /* not const */
       Quat readQuat() const;
       void writeQuat( const Quat& q ); /* not const */
@@ -291,7 +305,7 @@ class Phenotype
       void write(const Element&, const int); /* not const */
       void write(const unsigned char&, const int); /* not const */
       void write(const FourByteLong& value, const int gene_number); /* not const */
-      void write(const double& value, const int gene_number); /* not const */
+      void write(ConstDouble value, const int gene_number); /* not const */
       void write(const Representation &, const int);
       double evaluate(const EvalMode&) /* not const */ ;  //  This should return evaluation if that's the right answer, and it should evaluate otherwise.
       State make_state(int) const;

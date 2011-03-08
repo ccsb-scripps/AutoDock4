@@ -78,7 +78,7 @@ State call_cpso(Local_Search *const local_method,
                 const int D, //number of dimensions:7 + ntor
                 double *const xmin, double *const xmax, 
                 const unsigned int num_evals, 
-                const int K, const double& c1, const double& c2, 
+                const int K, ConstDouble c1, ConstDouble c2,
                 const int outlev)
 {
     int nb_eval = 0;

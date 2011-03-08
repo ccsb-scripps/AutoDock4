@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.h,v 1.14 2010/10/01 22:51:39 mp Exp $
+ $Id: qmultiply.h,v 1.15 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -32,24 +32,24 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "structs.h"
 
 Quat uniformQuat( void );
-Quat convertQuatToRot( /* not const */ Quat q );
+Quat convertQuatToRot( const Quat& q );
 Quat convertRotToQuat( const Quat& q );
 Quat raaToQuat( const Real raa[3], ConstReal angle );
 Quat normQuat( /* not const */ Quat q );
 Quat normRot( /* not const */ Quat q );
 Real quatDifferenceToAngle( const Quat& ql, const Quat& qr );
 Real quatDifferenceToAngleDeg( const Quat& ql, const Quat& qr );
-Quat conjugate( const Quat& q ) ;
-Quat inverse( const Quat& q ) ;
-Quat slerp(  const Quat& qa, const Quat& qb, const double& t );
-Quat slerp0( const Quat& qa, const Quat& qb, const double& t );
-Quat slerp1( const Quat& qa, const Quat& qb, const double& t );
+Quat conjugate( const Quat& q );
+Quat inverse( const Quat& q );
+Quat slerp( const Quat& qa, const Quat& qb, ConstDouble t );
+Quat slerp0( const Quat& qa, const Quat& qb, ConstDouble t );
+Quat slerp1( const Quat& qa, const Quat& qb, ConstDouble t );
 Quat axisRadianToQuat( ConstReal ax, ConstReal ay, ConstReal az, ConstReal angle );
 Quat axisDegreeToQuat( ConstReal ax, ConstReal ay, ConstReal az, ConstReal angle );
 Quat quatComponentsToQuat( ConstReal qx, ConstReal qy, ConstReal qz, ConstReal qw );
 
 void qmultiply( Quat *const q, register const Quat *const ql, register const Quat *const qr );
-void qconjmultiply( Quat *const q, register const Quat *const ql, register const Quat *const  qr );
+void qconjmultiply( Quat *const q, register const Quat *const ql, register const Quat *const qr );
 void mkUnitQuat( Quat *const q );
 void printQuat_q( FILE *const fp, const Quat& q );
 void printQuat_r( FILE *const fp, const Quat& q );
@@ -60,7 +60,7 @@ void unitQuat2rotation( /* not const */ Quat *q );
 void print_q_reorient_message( FILE *const logFile, const Quat& q_reorient );
 void create_random_orientation( /* not const */ Quat *const ptr_quat );
 //void assertQuatOK( const Quat q );
-const Quat identityQuat() ;
-Real a_range_reduction( /* not const */ Real a ) ;
-Real alerp( /* not const */ Real a, /* not const */ Real b, ConstReal fract ) ;
+const Quat identityQuat();
+Real a_range_reduction( ConstReal a );
+Real alerp( ConstReal a, ConstReal b, ConstReal fract );
 #endif

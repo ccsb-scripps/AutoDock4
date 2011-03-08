@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_param_line.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: parse_param_line.cc,v 1.7 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -64,8 +64,8 @@ int parse_param_line( const char *const line)
     const int tokentablesize = 7;
 
     const struct {
-       char *lexeme;
-       int tokenvalue;
+       const char *const lexeme;
+       const int tokenvalue;
     } tokentable[] = {{"FE_coeff_vdW", PAR_VDW}, // 1
                       {"FE_coeff_hbond", PAR_HBOND}, // 2
                       {"FE_coeff_estat", PAR_ESTAT}, // 3

@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.44 2010/10/01 22:51:39 mp Exp $
+ $Id: gs.cc,v 1.45 2011/03/08 04:18:36 mp Exp $
 
  AutoDock 
 
@@ -567,7 +567,7 @@ void Genetic_Algorithm::mutation(Population &pure)
 
    if(num_mutations<=0) return;
 
-   Boole individual_mutated[pure.num_individuals()]; // for statistics only
+   Boole *individual_mutated = new Boole[pure.num_individuals()]; // for statistics only
    for(unsigned int i=0;i<pure.num_individuals();i++) individual_mutated[i]=FALSE;
 
    //  Note we don't check to see if we mutate the same gene twice.
@@ -589,6 +589,7 @@ void Genetic_Algorithm::mutation(Population &pure)
    // update statistics: count of mutated individuals per run
    for(unsigned int i=0;i<pure.num_individuals();i++) \
      if(individual_mutated[i]) mi_count++; 
+   delete [] individual_mutated;
 }
 
 void Genetic_Algorithm::crossover(Population &original_population)

@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.13 2010/10/01 22:51:39 mp Exp $
+ $Id: intnbtable.cc,v 1.14 2011/03/08 04:18:36 mp Exp $
 
  AutoDock 
 
@@ -61,8 +61,8 @@ void intnbtable( Boole *const P_B_havenbp,
                  ConstReal cB, 
                  const int xA, 
                  const int xB,
-                 const double& coeff_desolv,
-                 const double& sigma,
+                 ConstDouble coeff_desolv,
+                 ConstDouble sigma,
                  /* not const */ EnergyTables *const ad_tables,
                  const Boole B_is_unbound_calculation )
 {

@@ -1,6 +1,6 @@
 /*
 
- $Id: check_header_int.cc,v 1.6 2010/08/27 00:05:07 mp Exp $
+ $Id: check_header_int.cc,v 1.7 2011/03/08 04:18:36 mp Exp $
 
  AutoDock 
 
@@ -42,9 +42,8 @@ void check_header_int( const int i1,
 		       const char *const filename )
 
 {
-    char message[LINE_LEN];
-
     if ( i1 != i2 ) { 
+        char message[LINE_LEN];
 
 	sprintf( message, "%s: Wrong number of %c grid-points in grid-map file \"%s\".\n", programname, (char)axis, filename );
 

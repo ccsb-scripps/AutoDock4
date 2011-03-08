@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.37 2010/10/01 22:51:40 mp Exp $
+ $Id: support.cc,v 1.38 2011/03/08 04:18:37 mp Exp $
 
  AutoDock 
 
@@ -274,7 +274,7 @@ int oldestIndividual;
    // level == 2 - add age info (supporting DEBUG3 option in gs.cc)
    // level == 3 - no age info, but add worst, mean, median, quartiles, 
    //    standard deviation to (1) in simpler format
-switch (level) {
+    switch (level) {
     case 1:
 	    (void)fprintf(output, " Oldest's energy: %.3f    Lowest energy: %.3f", 
                heap[oldestIndividual].value(Normal_Eval), best_e);
@@ -289,11 +289,11 @@ switch (level) {
 	       break;
     default:
 	{
-	double mean, sum_squares, median, stddev;
+	double sum_squares, median, stddev;
 	//double q14, q34; // 1st and 3rd quartiles
 	//double q15, q45; // 1st and 4th quintiles
-	double energy[size]; // array for sorting
-	mean = sum/size;
+	double *energy= new double[size]; // array for sorting
+	const double mean = sum/size;
 	sum_squares=0;
 	for (int i=0; i<size; i++) energy[i] = heap[i].value(Normal_Eval);
 	for (int i=0; i<size; i++) sum_squares += (energy[i]-mean)*(energy[i]-mean);
@@ -327,13 +327,15 @@ switch (level) {
 
 #undef quantile
 	  // debug print every energy:
-	  if(level>3) for(int i=0; i<size; i++) fprintf(output, " %.3f", energy[i]);
-	  }
-	break;
+	if(level>3) for(int i=0; i<size; i++) fprintf(output, " %.3f", energy[i]);
+	delete [] energy;
 	}
+	break;
+    }
     if(suffix!=NULL) fprintf(output, "%s", suffix);
     return returnCode;
- }
+}
+
 int Population::printPopulationStatisticsVerbose(FILE *const  output, 
  const unsigned int generations, const long int nevals, const int ntor, const char suffix[])  /* not const changed in support.cc hack TODO */ { /* print with generations & #evals */
 int returnCode=0;
@@ -639,7 +641,7 @@ void Genotype::write(const FourByteLong& value, const int gene_number) /* not co
    rep_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Genotype::write(const double& value, const int gene_number) /* not const */
+void Genotype::write(ConstDouble value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
@@ -856,7 +858,7 @@ void Phenotype::write(const FourByteLong& value, const int gene_number) /* not c
    value_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Phenotype::write(const double& value, const int gene_number) /* not const */
+void Phenotype::write(ConstDouble value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
