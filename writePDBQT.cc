@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.28 2010/12/16 23:33:25 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.29 2011/03/09 01:35:05 mp Exp $
 
  AutoDock  
 
@@ -115,7 +115,6 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     char state_type_string[MAX_CHARS];
     char state_type_prefix_string[MAX_CHARS];
     char state_type_prefix_USER_string[MAX_CHARS];
-	Boole B_outside = FALSE;
     Real this_emap = 0.;
     Real this_elec = 0.;
 
@@ -160,15 +159,9 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     // Convert state variables to x,y,z-coordinates
 	cnv_state_to_coords( state, vt, tlist, ntor, crdpdb, crd, natom );
 
-    // Check if any atoms are outside the grid box
-    B_outside = FALSE;
-    for (i = 0; (i < natom) && (!B_outside); i++) {
-        B_outside = is_out_grid_info(crd[i][0], crd[i][1], crd[i][2]);
-    }
-
     // Calculate the energy breakdown
     eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
-         crd, charge, abs_charge, type, map, info, B_outside, 
+         crd, charge, abs_charge, type, map, info,
          ignore_inter, elec, emap, &elec_total, &emap_total,
          nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
          B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model);

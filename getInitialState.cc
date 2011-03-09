@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.28 2010/10/01 22:51:39 mp Exp $
+ $Id: getInitialState.cc,v 1.29 2011/03/09 01:35:05 mp Exp $
 
  AutoDock  
 
@@ -181,7 +181,7 @@ void getInitialState(
                 natom, ntor, sInit, tlist, vt, outlev, info);
             
             e0inter = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-                        info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
+                        info, ignore_inter, elec, emap,
                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
             e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
                           B_calcIntElec, B_include_1_4_interactions,
@@ -228,7 +228,7 @@ void getInitialState(
     cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
 
     eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
-         crd, charge, abs_charge, type, map, info, SOME_ATOMS_OUTSIDE_GRID, 
+         crd, charge, abs_charge, type, map, info,
          ignore_inter, elec, emap, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
          nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
          B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model );

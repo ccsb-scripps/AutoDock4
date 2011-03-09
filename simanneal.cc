@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.31 2011/03/08 04:18:37 mp Exp $
+ $Id: simanneal.cc,v 1.32 2011/03/09 01:35:05 mp Exp $
 
  AutoDock  
 
@@ -399,7 +399,7 @@ void simanneal ( int   *const Addr_nconf,
                         ** MORE ACCURATE METHOD, (SLOWER):
                         */
                         e = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-                                        info, ALL_ATOMS_INSIDE_GRID, ignore_inter, NULL_ELEC, NULL_EVDW,
+                                        info, ignore_inter, NULL_ELEC, NULL_EVDW,
                                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
                            + (eintra = eintcal(nonbondlist, ptr_ad_energy_tables, crd, Nnb,
                                    B_calcIntElec, B_include_1_4_interactions,
@@ -633,7 +633,7 @@ void simanneal ( int   *const Addr_nconf,
             eintra = 0.0 ;
         }
         einter = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-                    info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
+                    info, ignore_inter, elec, emap,
                     NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
 
         writePDBQT( irun, seed, FN_ligand, FN_dpf, lig_center, sSave, ntor,

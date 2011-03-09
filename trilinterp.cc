@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.17 2010/08/27 00:05:09 mp Exp $
+ $Id: trilinterp.cc,v 1.18 2011/03/09 01:35:05 mp Exp $
 
  AutoDock  
 
@@ -54,7 +54,6 @@ Real trilinterp(
  const int   type[MAX_ATOMS], // atom type of each atom
  #include "map_declare.h"
  const GridMapSetInfo *const info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
- const int some_atoms_outside_grid, // boolean
  const int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
  /* not const */ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
  /* not const */ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
@@ -88,7 +87,6 @@ Real trilinterp(
     double elec_total=0, emap_total=0;
     register int i;               /* i-th atom */
 
-    // for (i=0; i<total_atoms; i++) {
     for (i=first_atom; i<last_atom; i++) {
         register double e, m, d; 
         register double u,   v,   w;
@@ -97,6 +95,7 @@ Real trilinterp(
         register int AtomType;        /* atom type */
         register int u0,  v0,  w0;
         register int u1,  v1,  w1;
+	register double x,y,z;
 
         if (ignore_inter[i]) {
             if (elec != NULL) elec[i] = 0;
@@ -104,13 +103,11 @@ Real trilinterp(
             continue;
         }
 
-        if (some_atoms_outside_grid) {
-            register double x,y,z;
-            x = tcoord[i][X];
-            y = tcoord[i][Y];
-            z = tcoord[i][Z];
-            if (is_out_grid_info(x,y,z)) {
-                register double epenalty;
+	x = tcoord[i][X];
+	y = tcoord[i][Y];
+	z = tcoord[i][Z];
+	if (is_out_grid_info(x,y,z)) {
+                double epenalty;
                 x -= info->center[X];
                 y -= info->center[Y];
                 z -= info->center[Z];
@@ -121,7 +118,6 @@ Real trilinterp(
                 elec_total += epenalty;
                 emap_total += epenalty;
                 continue;
-            }
         }
 
         AtomType = type[i];

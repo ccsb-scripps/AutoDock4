@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.16 2010/12/16 23:37:43 rhuey Exp $
+ $Id: calculateEnergies.cc,v 1.17 2011/03/09 01:35:05 mp Exp $
 
  AutoDock  
 
@@ -46,7 +46,7 @@ extern Real nb_group_energy[3];
 
 // EnergyBreakdown eb;
 // eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
-//      tcoord, charge, abs_charge, type, map, ptr_info, B_outside, 
+//      tcoord, charge, abs_charge, type, map, ptr_info,
 //      ignore_inter, elec, emap, p_elec_total, p_emap_total,
 //      nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, 
 //      B_include_1_4_interactions, scale_1_4, scale_eintermol, qsp_abs_charge,  B_use_non_bond_cutoff );
@@ -65,7 +65,6 @@ EnergyBreakdown calculateEnergies(
     CONST_INT            type[MAX_ATOMS],           // input  atom type of each atom
     #include "map_declare.h"
     const GridMapSetInfo *const info,               // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
-    const int            B_outside,                 // input  boolean whether some atoms are outside grid box
     const int            ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
     Real                 elec[MAX_ATOMS],           // output if not NULL - electrostatic energies, atom by atom
     Real                 emap[MAX_ATOMS],           // output if not NULL - intermolecular energies
@@ -93,18 +92,14 @@ EnergyBreakdown calculateEnergies(
     // computing trilinear-interpolated energies from atom = 0 to atom < true_ligand_atoms
     // gives the intermolecular energy between the ligand and the protein
     eb.e_inter_moving_fixed = scale_eintermol * trilinterp( 0, true_ligand_atoms, tcoord, charge, abs_charge, type, map, 
-                         info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
-                         ignore_inter, elec, emap,
-                         p_elec_total, p_emap_total);
+	 info, ignore_inter, elec, emap, p_elec_total, p_emap_total);
 
     if (B_have_flexible_residues) {
         // computing trilinear-interpolated energies from atom = true_ligand_atoms to atom < true_ligand_atoms
         // gives the intramolecular energy within the protein
         // we can ignore the elec_total and emap_total breakdown here
         eb.e_intra_moving_fixed_rec = trilinterp( true_ligand_atoms, natom, tcoord, charge, abs_charge, type, map, 
-                             info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
-                             ignore_inter, elec, emap,
-                             NULL, NULL);
+	     info, ignore_inter, elec, emap, NULL, NULL);
     }
 
     if (ntor > 0) {
@@ -180,7 +175,6 @@ EnergyBreakdown calculateBindingEnergies(
     CONST_INT            type[MAX_ATOMS],           // input  atom type of each atom
     #include "map_declare.h"
     const GridMapSetInfo *const info,               // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
-    const int            B_outside,                 // input  boolean whether some atoms are outside grid box
     const int            ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
     Real                 elec[MAX_ATOMS],           // output if not NULL - electrostatic energies, atom by atom
     Real                 emap[MAX_ATOMS],           // output if not NULL - intermolecular energies
@@ -208,18 +202,14 @@ EnergyBreakdown calculateBindingEnergies(
     // computing trilinear-interpolated energies from atom = 0 to atom < true_ligand_atoms
     // gives the intermolecular energy between the ligand and the protein
     eb.e_inter_moving_fixed = trilinterp( 0, true_ligand_atoms, tcoord, charge, abs_charge, type, map, 
-                         info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
-                         ignore_inter, elec, emap,
-                         p_elec_total, p_emap_total);
+	 info, ignore_inter, elec, emap, p_elec_total, p_emap_total);
 
     if (B_have_flexible_residues) {
         // computing trilinear-interpolated energies from atom = true_ligand_atoms to atom < true_ligand_atoms
         // gives the intramolecular energy within the protein
         // we can ignore the elec_total and emap_total breakdown here
         eb.e_intra_moving_fixed_rec = trilinterp( true_ligand_atoms, natom, tcoord, charge, abs_charge, type, map, 
-                             info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID, 
-                             ignore_inter, elec, emap,
-                             NULL, NULL);
+	     info, ignore_inter, elec, emap, NULL, NULL);
     }
 
     if (ntor > 0) {

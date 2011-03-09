@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.h,v 1.11 2010/10/01 22:51:39 mp Exp $
+ $Id: calculateEnergies.h,v 1.12 2011/03/09 01:35:05 mp Exp $
 
  AutoDock  
 
@@ -45,7 +45,6 @@ EnergyBreakdown calculateEnergies(
     CONST_INT            type[MAX_ATOMS],           // input  atom type of each atom
     #include "map_declare.h"
     GridMapSetInfo       *info,                     // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
-    const int                  B_outside,                 // input  boolean whether some atoms are outside grid box
     const int                  ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
     Real                 elec[MAX_ATOMS],           // output if not NULL - electrostatic energies, atom by atom
     Real                 emap[MAX_ATOMS],           // output if not NULL - intermolecular energies
@@ -86,7 +85,6 @@ EnergyBreakdown calculateBindingEnergies(
     CONST_INT            type[MAX_ATOMS],           // input  atom type of each atom
     #include "map_declare.h"
     const GridMapSetInfo *const info,               // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
-    const int            B_outside,                 // input  boolean whether some atoms are outside grid box
     const int            ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
     /* not const */ Real elec[MAX_ATOMS],           // output if not NULL - electrostatic energies, atom by atom
     /* not const */ Real emap[MAX_ATOMS],           // output if not NULL - intermolecular energies

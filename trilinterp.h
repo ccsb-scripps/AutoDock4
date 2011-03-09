@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.h,v 1.13 2010/08/27 00:05:09 mp Exp $
+ $Id: trilinterp.h,v 1.14 2011/03/09 01:35:05 mp Exp $
 
  AutoDock  
 
@@ -31,9 +31,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 				   from centre of grid, to penalize atoms
 				   outside grid */
 
-#define ALL_ATOMS_INSIDE_GRID 0
-#define SOME_ATOMS_OUTSIDE_GRID 1
-
 #define NULL_EVDW ((Real *)NULL)
 #define NULL_ELEC ((Real *)NULL)
 #define NULL_EVDW_TOTAL ((Real *)NULL)
@@ -51,7 +48,6 @@ Real  trilinterp( CONST_INT first_atom,
  CONST_INT   type[MAX_ATOMS], // atom type of each atom
  #include "map_declare.h"
  const GridMapSetInfo *const info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
- const int some_atoms_outside_grid, // boolean
  const int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
  /* not const */ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
  /* not const */ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies

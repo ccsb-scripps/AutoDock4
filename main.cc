@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.132 2011/03/04 21:19:43 mp Exp $
+ $Id: main.cc,v 1.133 2011/03/09 01:35:05 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -109,7 +109,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.132 2011/03/04 21:19:43 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.133 2011/03/09 01:35:05 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -366,7 +366,6 @@ Boole B_use_non_bond_cutoff = TRUE;
 Boole B_have_flexible_residues = FALSE;  // if the receptor has flexible residues, this will be set to TRUE
 Boole B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
 Boole B_reorient_random = FALSE; // if true, create a new random orientation before docking
-Boole B_outside;
 int atm1=0;
 int atm2=0;
 int a1=0;
@@ -736,7 +735,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.132 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.133 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -4211,13 +4210,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 crdpdb[i][xyz] += lig_center[xyz];
             }
         }
-        // determine if any atoms are outside the grid box
-        B_outside = FALSE;
+        // warn if any atoms are outside the grid box
         for (i=0; i<natom; i++) {
 	    Boole this_atom_outside;
 	    this_atom_outside  = is_out_grid_info(crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z]);
             if (this_atom_outside) {
-                B_outside = TRUE;
                 (void) sprintf( message, "%s: WARNING: Atom %d (%.3f, %.3f, %.3f) is outside the grid!\n", programname, i+1, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z] );
                 print_2x( logFile, stderr, message );
             }
@@ -4259,7 +4256,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
         // calculate the energy breakdown for the input coordinates, "crdpdb"
         eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
-                                crdpdb, charge, abs_charge, type, map, info, B_outside,
+                                crdpdb, charge, abs_charge, type, map, info,
                                 ignore_inter, elec, emap, &elec_total, &emap_total,
                                 nonbondlist, ad_energy_tables, Nnb, B_calcIntElec,
                                 B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 

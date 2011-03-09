@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.42 2010/10/01 22:51:39 mp Exp $
+ $Id: analysis.cc,v 1.43 2011/03/09 01:35:04 mp Exp $
 
  AutoDock  
 
@@ -261,16 +261,10 @@ void analysis( const int   Nnb,
 
             (void)memcpy(crd, crdSave[c], natom*3*sizeof(Real));
 
-            Boole B_outside=FALSE;
-            register int ia=0;
-            for (ia=0; (ia<natom)&&(!B_outside); ia++) {
-                B_outside = is_out_grid_info(crd[ia][0], crd[ia][1], crd[ia][2]);
-            }
-
             EnergyBreakdown eb;
 
             eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
-                 crd, charge, abs_charge, type, map, info, B_outside?SOME_ATOMS_OUTSIDE_GRID:ALL_ATOMS_INSIDE_GRID,
+                 crd, charge, abs_charge, type, map, info,
                  ignore_inter, elec, emap, &elec_total, &emap_total,
                  nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
                  B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model );
