@@ -1,6 +1,6 @@
 /*
 
- $Id: success.cc,v 1.7 2010/10/01 22:51:40 mp Exp $
+ $Id: success.cc,v 1.8 2011/04/28 23:25:27 rhuey Exp $
 
  AutoDock 
 
@@ -48,15 +48,15 @@ void success( const char *const hostnm,
     Clock jobEnd;
     struct tms tms_jobEnd;
 
-    pr_2x( logFile, stderr, "\n" );
-    pr_2x( logFile, stderr, UnderLine );
+    pr( logFile, "\n" );
+    pr( logFile, UnderLine );
     prStr( message, "%s: Successful Completion on \"%s\"\n\n", programname, hostnm );
-    pr_2x( logFile, stderr, message );
+    pr( logFile, message );
 
     jobEnd = times( &tms_jobEnd );
 
     timesyshms( jobEnd - jobStart, &tms_jobStart, &tms_jobEnd );
 
-    pr_2x( logFile, stderr, UnderLine );
+    pr( logFile, UnderLine );
 }
 /* EOF */
