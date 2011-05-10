@@ -1,6 +1,6 @@
 /*
 
- $Id: coliny.cc,v 1.16 2010/08/27 00:05:07 mp Exp $
+ $Id: coliny.cc,v 1.17 2011/05/10 23:21:51 rhuey Exp $
 
  AutoDock
 
@@ -51,6 +51,8 @@ using namespace utilib;
 //
 // The AutoDock 'objective function' used within Coliny
 //
+//WARNING: obsolete- uses axis-angle but thinks it's quaternion
+//         see eval.cc 2011 MP+RH
 double ADEvalFn(/* not const */ double *const x, const int n);
 
 #ifdef COLIN_3_0
