@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.17 2010/10/01 22:51:40 mp Exp $
+ $Id: weedbonds.cc,v 1.18 2011/05/12 21:10:15 mp Exp $
 
  AutoDock 
 
@@ -161,7 +161,7 @@ void weedbonds( const int natom,
                 nonbondlist[Nnb][TYPE2] = type[j];
                 nonbondlist[Nnb][NBTYPE] = nbmatrix[i][j];
                 ++Nnb;
-            } else if ( (nbmatrix[i][j] != 0) && (nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0) && (nbmatrix[j][i] != 0) ) {
+            } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
                 pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
             }
         } // j
