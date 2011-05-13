@@ -105,8 +105,13 @@ State call_cpso(Local_Search *const local_method,
     int ntor = sInit.ntor;
     evaluate.reset();
 
+
     // Calculating chi for CPSO
     phi = c1 + c2;
+
+    //Use formula from Clerc, M. Kennedy, J., Evolutionary
+    //Computation, IEEE Transactions on , vol. 6, no. 1, 58-73 (2002).
+    //TODO: check reference
     chi = 2.0 / (2.0 - phi - sqrt( (phi * phi) - (4 * phi) ));
     chi = fabs(chi);
     fprintf(logFile, "\nConstants used for the Constriction PSO \nc1: %lf c2: %lf phi: %lf chi: %lf S: %d\n", c1, c2, phi, chi, S);

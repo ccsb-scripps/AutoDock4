@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.28 2010/10/01 22:51:39 mp Exp $
+ $Id: dpftoken.h,v 1.29 2011/05/13 23:55:31 rhuey Exp $
 
  AutoDock 
 
@@ -151,7 +151,7 @@ enum DpfTokens {
   DPF_QUATERNION0              =100,
   DPF_COPYRIGHT                =101,
   DPF_WARRANTY                 =102,
-  DPF_QUAT0	               =103,
+  DPF_QUAT0	                   =103,
   DPF_PARAMETER_VERSION        =104,
   DPF_UNBOUND_MODEL            =105,
   PSW_TRANS_SCALE              =106,
@@ -160,20 +160,21 @@ enum DpfTokens {
   GA_PROPORTIONAL_SELECTION    =109,
   GA_TOURNAMENT_SELECTION      =110,
   GA_BOLTZMAN_SELECTION        =111,
-  PSO_w                        =112,
-  PSO_w_start	               =113,
-  PSO_w_end	               =114,
-  PSO_c1 		       =115,
-  PSO_c2 		       =116,
-  PSO_mc 		       =117,
-  PSO_swarm_moves	       =118,
-  PSO_swarm_size_factor	       =119,
-  PSO_n_exec                   =120,
-  PSO_k                        =121,
-  DPF_PSO_CONSTRICTION	       =122,
+  PSO_WMAX	                   =112,
+  PSO_WMIN	                   =113,
+  PSO_TVMAX                    =114,
+  PSO_QVMAX                    =115,
+  PSO_RVMAX                    =116,
+  PSO_C1 		               =117,
+  PSO_C2 		               =118,
+  //PSO_swarm_moves	       =118,
+  PSO_swarm_size_factor	       =120,
+  //PSO_n_exec                   =120,
+  PSO_K                        =121,
+  DPF_PSO_CONSTRICTION	       =122, //this is the only PSO implemented in autodock so far (5/2011)
   DPF_PSO_STANDARD_VW	       =123,
   DPF_PSO_STANDARD_CW	       =124,
-  DPF_PSO_SSM		       =125,
+  DPF_PSO_SSM		           =125,
   DPF_PARSWARMOPT              =126,
   GA_LINEAR_RANKING_SELECTION  =127,
   DPF_RMSMODE                  =128,

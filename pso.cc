@@ -4,11 +4,6 @@
 
 extern FILE *logFile;
 extern Eval evaluate;
-extern int nlig;		// assign value in mian.cc
-extern int ntor_lig[MAX_LIGANDS];
-extern int gene_index_lig[MAX_LIGANDS][2];  //gene num start_point & end_point of a ligand.
-extern int global_ntor; // set to current s.Init.ntor in main.cc
-extern unsigned int maxEvalNum; //defined and assigned in call_gs.cc
 
 
 inline float Norm(float *x, int n)
@@ -44,7 +39,7 @@ int ParticleSwarmGS::search(Population &Pop)
 	// initialize velocity		
 	if(_Pi == NULL) {
 		
-		pr(logFile, "maxEvalNum = %u\n", maxEvalNum);
+		pr(logFile, "maxEvalNum = %u\n", num_evals);
 				
 		fprintf(logFile, "Allocate initial velocity of particles...\n");
 		_Pi = new Population(Pop);
@@ -146,10 +141,8 @@ int ParticleSwarmGS::search(Population &Pop)
 		}
 		// need to normalize Quarternion
 		Quat q;
-		for(int n = 0; n < nlig; n++) {
-			q = Pop[i].phenotyp.readQuat(n);
-			Pop[i].phenotyp.writeQuat( normQuat( q ), n);
-		}										
+		q = Pop[i].phenotyp.readQuat();
+		Pop[i].phenotyp.writeQuat( normQuat( q ));
 		
 		//evaluate new solution
 		//this will be done in step: 'Find the best in Pop'						
@@ -177,15 +170,15 @@ int ParticleSwarmGS::search(Population &Pop)
 	// Local Search
 	////////////////////////////////////////////////////////
 	// If local seach method is defined, apply local search			
-	if(LocalSearchMethod) {							
-		LocalSearchMethod->searchByPSO(Pop[best]);
+//	if(LocalSearchMethod) {							
+//		LocalSearchMethod->search(Pop[best]);
 					
-		if( Pop[best].value(Normal_Eval) < Pi[best].value(Normal_Eval) ) {
-			Pi[best] = Pop[best];			
-		}					
+//		if( Pop[best].value(Normal_Eval) < Pi[best].value(Normal_Eval) ) {
+//			Pi[best] = Pop[best];			
+//		}					
 		//pr(logFile, "NumEvals=%d\tX_best before LS=%.2f\tX_best after LS=%.2f\n",	
 		//			evaluate.evals(), X_best_value, Pop[best].value(Normal_Eval));		
-	}		
+//	}		
 	
 	
 	// Update Pi, personal Best in history
@@ -238,9 +231,20 @@ int ParticleSwarmGS::search(Population &Pop)
 	****************************************************************/
 	
 	// Output Information
-	if(outputEveryNgens > 0 && generations % outputEveryNgens == 0) {
+	//ORIG201011 if(outputEveryNgens > 0 && generations % outputEveryNgens == 0) {
+	if(outputEveryNgens > 0 && 
+	  (generations % outputEveryNgens == 0||generations==1||evaluate.evals()>=num_evals)) {
 		//pr(logFile, "%d %8d %10.2f %10.2f %10.2f %6.2f %8.2f\n", generations, evaluate.evals(), Pg.value(Normal_Eval), Pop_avg, Pi_avg, w, v_avg);
-		pr(logFile, "%8d %10ld %10.2f  \n", generations, evaluate.evals(), Pg.value(Normal_Eval));		
+		//ORIG pr(logFile, "%8d %10ld %10.2f  \n", generations, evaluate.evals(), Pg.value(Normal_Eval));		
+	       // TSRI MP 201011 - adding basic per-100 generation statistics
+	       // print "Generation:" line (basic info, no mean/median/stddev...
+		(void)fprintf(logFile,"Generation: %3u   ", generations);
+		(void)fprintf(logFile, " Oldest's energy: %.3f    Lowest energy: %.3f",
+				0.0 /* dummy */, Pg.value(Normal_Eval) );
+	       (void)fprintf(logFile,"    Num.evals.: %ld\n", evaluate.evals() );
+	       // END TSRI MP 201011
+
+
 		fflush(logFile);
 	}
 	//pr(logFile, "%8d\t%6d\t%6.3f\t%6.3f\t%6.3f\n", generations, evaluate.evals(), X_best_value, Pg.value(Normal_Eval), dist);	

@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.30 2011/03/08 04:18:36 mp Exp $
+# $Id: Makefile.am,v 1.31 2011/05/13 23:55:31 rhuey Exp $
 # 
 # AutoDock  
 # 
@@ -112,6 +112,7 @@ autodock4_SOURCES += \
     prClusterHist.cc \
     prInitialState.cc \
     prTorConList.cc \
+    pso.cc \
     qmultiply.cc \
     qtransform.cc \
     quicksort.cc \
@@ -212,6 +213,7 @@ autodock4_SOURCES += \
 		print_rem.h \
 		printdate.h \
 		printhms.h \
+        pso.h \
 		qmultiply.h \
 		qtransform.h \
 		quicksort.h \

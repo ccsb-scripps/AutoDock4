@@ -3,6 +3,7 @@
 
 #include "gs.h"
 #include "ls.h"
+#include "structs.h"
 
 extern FILE *logFile;
 
@@ -27,13 +28,13 @@ class ParticleSwarmGS : public Global_Search
 		int generations;
 		int num_evals;
 		int outputEveryNgens;
+        Output_pop_stats output_pop_stats;
 	
 		Local_Search *LocalSearchMethod;
 	
 	public:	
 		~ParticleSwarmGS();
 		ParticleSwarmGS(
-			int init_size, 
 			float *init_vmax, 
 			float *init_vmin, 
 			float init_wmax, 
@@ -43,18 +44,20 @@ class ParticleSwarmGS : public Global_Search
 			float pso_c1,
 			float pso_c2,
 			int pso_k, 
-			int init_ouput_gens); 			
+			Output_pop_stats output_pop_stats); 			
 		
 		Individual& getBest();	
+
+      void initialize(const unsigned int, const unsigned int);
+      unsigned int num_generations(void) const;
 		
 		// The following part are derived virtual functions
 		void reset(void);
-        void reset(unsigned int);
+        void reset(const Output_pop_stats&);
         int terminate(void);
         int search(Population &);  			
 };
 
-			
 inline ParticleSwarmGS::~ParticleSwarmGS()
 {
 	if(_Pi)
@@ -69,7 +72,6 @@ inline ParticleSwarmGS::~ParticleSwarmGS()
 }
 
 inline ParticleSwarmGS::ParticleSwarmGS(
-			int init_size, 
 			float *init_vmax, 
 			float *init_vmin, 
 			float init_wmax, 
@@ -79,16 +81,15 @@ inline ParticleSwarmGS::ParticleSwarmGS(
 			float pso_c1,
 			float pso_c2,
 			int pso_k,
-			int init_ouput_gens)			
+			Output_pop_stats init_output_pop_stats)
 {
-	size = init_size;
 	vmax = init_vmax; 
 	vmin = init_vmin;			  
 	wmax = init_wmax; 
 	wmin = init_wmin;
 	LocalSearchMethod = init_LS;
 	num_evals = init_num_evals; 
-	outputEveryNgens = init_ouput_gens;
+	output_pop_stats = init_output_pop_stats;
 	_Pi =NULL; 
 	_Pg = NULL ;
 	 v = NULL; 
@@ -102,6 +103,13 @@ inline Individual& ParticleSwarmGS:: getBest()
 {
 	return *_Pg;
 }
+inline void ParticleSwarmGS::initialize(const unsigned int init_pop_size, const unsigned int ndims)
+{
+
+    pop_size = init_pop_size;
+    size = ndims;
+}
+
 
 // The following part are derived virtual functions
 //int search(Population &);
@@ -129,8 +137,9 @@ inline void ParticleSwarmGS::reset(void)
 	v = NULL;
 }
 	
-inline void ParticleSwarmGS::reset(unsigned int extOutputEveryNgens)
+inline void ParticleSwarmGS::reset(const Output_pop_stats &init_output_pop_stats)
 {
+    output_pop_stats = init_output_pop_stats; 
 	reset();
 }
 	

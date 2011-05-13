@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.33 2011/03/08 04:18:37 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.34 2011/05/13 23:55:32 rhuey Exp $
 
  AutoDock 
 
@@ -189,16 +189,17 @@ int parse_dpf_line( const char line[] )
               , {"ga_linear_ranking_selection", GA_LINEAR_RANKING_SELECTION}      
               , {"ga_tournament_selection", GA_TOURNAMENT_SELECTION}      
               , {"ga_boltzman_selection", GA_BOLTZMAN_SELECTION}
-              , {"pso_c1", PSO_c1}
-              , {"pso_c2", PSO_c2}
-              , {"pso_w", PSO_w}
-              , {"pso_w_start", PSO_w_start}
-              , {"pso_w_end", PSO_w_end}
-              , {"pso_mc", PSO_mc}
-              , {"pso_k", PSO_k}
-              , {"pso_swarm_moves", PSO_swarm_moves}
+              , {"pso_c1", PSO_C1}
+              , {"pso_c2", PSO_C2}
+              , {"pso_k", PSO_K}
+              , {"pso_w_start", PSO_WMAX}
+              , {"pso_w_end", PSO_WMIN}
+              , {"pso_tvmax", PSO_TVMAX}
+              , {"pso_qvmax", PSO_QVMAX}
+              , {"pso_rvmax", PSO_RVMAX}
+              //, {"pso_swarm_moves", PSO_swarm_moves}
               , {"pso_ss_factor", PSO_swarm_size_factor}
-              , {"pso_n_exec", PSO_n_exec}
+              //, {"pso_n_exec", PSO_n_exec}
               , {"do_cpso", DPF_PSO_CONSTRICTION}
               , {"do_spso_vw", DPF_PSO_STANDARD_VW}
               , {"do_spso_cw", DPF_PSO_STANDARD_CW}

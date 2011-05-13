@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.133 2011/03/09 01:35:05 mp Exp $
+ $Id: main.cc,v 1.134 2011/05/13 23:55:31 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -97,9 +97,10 @@ using std::string;
 #include "conformation_sampler.h"
 #include "main.h"
 #include "alea.h"
+// PSO
 #include "call_cpso.h"
-#include "dimLibrary.h"
-
+#include "pso.h"
+#include "call_gs.h"
 
 extern int debug;
 extern int keepresnum;
@@ -109,7 +110,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.133 2011/03/09 01:35:05 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.134 2011/05/13 23:55:31 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -122,13 +123,11 @@ static void exit_if_missing_elecmap_desolvmap_about(string  keyword); // see bot
 
 // State Structure Variable DECLARATION
 State sNew[S_max];
-int D; //search space dimension 
 int nb_eval; // Current number of Swarm evaluations
 int eval_max = 0; //Max number of Swarm iterations
 int S ; // Swarm size
-int S_factor=30; // Swarm size
 double xmin[D_max], xmax[D_max]; // Intervals defining the search space
-double Vmin[D_max], Vmax[D_max]; // Intervals defining the search space
+//double Vmin[D_max], Vmax[D_max]; // Intervals defining the search space
 
 int main (int argc, const char ** argv)
 
@@ -431,7 +430,6 @@ register int j = 0;
 register int k = 0;
 //register int m = 0;
 register int xyz = 0;
-int j1 = 1;
 
 State sInit;            /* Real qtn0[QUAT], tor0[MAX_TORS]; */
 
@@ -455,8 +453,6 @@ static string version_num = VERSION;
 struct tms tms_jobStart;
 struct tms tms_gaStart;
 struct tms tms_gaEnd;
-struct tms tms_psoStartClock;
-struct tms tms_psoEndClock;
 
 Clock  jobStart;
 Clock  gaStart;
@@ -495,25 +491,17 @@ Global_Search *GlobalSearchMethod = NULL;
 Local_Search *LocalSearchMethod = NULL;
 //// Local_Search *UnboundLocalSearchMethod = NULL;
 
-//---------PSO Variable Declaration 
-// Local Variables 
-//
-
-// Confidence Coefficients
-//double w = 0 ; // First confidence coefficient
-//double w_start = 0.9 ; // First confidence coefficient-Start
-//double w_end = 0.4 ; // First confidence coefficient-End
-double c1 = 0; // second confidence coefficient
-double c2 = 0; // second confidence coefficient
-int K ; // Max number of particles informed by a given one 
-int n_exec, n_exec_max; //Nbs of executions 
-
-//Boole B_notinbox; //For checking in Grid Box
-// SSM-PSO
-//double mc = 0.3; // momentum constant for SSM-PSO
-
-Clock  psoStartClock;
-Clock  psoEndClock;
+//Declaration of Variables for particle swarm optimization (PSO) 
+double c1 = 2.05; 		// coefficient
+double c2 = 2.05; 		// coefficient
+int K = 4; 				// Max number of particles informed by a given one 
+int eval_max = 250000; //  max number of evalulations 
+//PSO in SODOCK
+float pso_wmax = 0.9;
+float pso_wmin = 0.4;
+float pso_tvmax = 2.0;
+float pso_qvmax = 0.5;
+float pso_rvmax = DegreesToRadians(50.0);
 
 
 info = (GridMapSetInfo *) calloc(1, sizeof(GridMapSetInfo) );
@@ -735,7 +723,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.133 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.134 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1598,6 +1586,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                   coliny_minimize( coliny_seed, initvec, finalpt, neval, niters );
                   //fstr.flush();
 
+				  // get state after this coliny_minimize run 
                   make_state_from_rep( (double *)&(finalpt[0]), int(finalpt.size()), &sHist[nconf]);
 
                   pr(logFile, "\nTotal Num Evals: %d\n", neval);
@@ -3059,11 +3048,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               fprintf(stateFile,"\t<runs>\n");
             }
             for (j=0; j<nruns; j++) {
-                j1=j+1;
 
                 (void) fprintf( logFile, "\n\n\tBEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING\n");
                 (void) fflush( logFile );
-                pr( logFile, "\nRun:\t%d / %d\n", j1, nruns );
+                pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
 
                 pr(logFile, "Date:\t");
                 printdate( logFile, 2 );
@@ -3097,6 +3085,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                           info, FN_pop_file, end_of_branch );
                 // State of best individual at end of GA-LS run is returned.
                 // Finished Lamarckian GA run
+                
+				// Huameng debug evaluate.evalpso() for constriction PSO @@MP+RH TODO 
+				pr (logFile, "after LGA, E from evalpso = %.3lf\n", evaluate.evalpso(&sHist[nconf]));
 
                 gaEnd = times( &tms_gaEnd );
                 pr( logFile, "\nRun completed;  time taken for this run:\n");
@@ -3494,48 +3485,282 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
    
-   case PSO_c1:
+   case PSO_C1:
         get1arg(line, "%*s %lf", &c1, "PSO_C1");
         pr(logFile, "PSO will be performed with the First Confidence Coefficient  (C1) %lf.\n", c1);
         break;
 
 //______________________________________________________________________________
 
-   case PSO_c2:
+   case PSO_C2:
         get1arg(line, "%*s %lf", &c2, "PSO_C2");
         pr(logFile, "PSO will be performed with the Second Confidence Coefficient (C2) %lf.\n", c2);
         break;
 
 //______________________________________________________________________________
 
-   case PSO_k:
+   case PSO_K:
         get1arg(line, "%*s %d", &K, "PSO_K");
         pr(logFile, "Max number of particles informed by a given one = %d.\n", K);
         break;
 
 //______________________________________________________________________________
-
-   case PSO_swarm_moves:
-        get1arg(line, "%*s %d", &eval_max, "PSO_SWARM_MOVES");
-        pr(logFile, "There will be %d swarm Moves.\n", eval_max);
-        break;
-
+//
+//   case PSO_swarm_moves:
+//        get1arg(line, "%*s %d", &eval_max, "PSO_SWARM_MOVES");
+//        pr(logFile, "There will be %d swarm Moves.\n", eval_max);
+//        break;
+//
 //______________________________________________________________________________
 
-   case PSO_swarm_size_factor:
-        get1arg(line, "%*s %d", &S_factor, "PSO_SS_FACTOR");
-        pr(logFile, "There will be %d Swarm Size Factor.\n", S_factor);
-        break;
-
+//   case PSO_swarm_size_factor:
+//        get1arg(line, "%*s %d", &S_factor, "PSO_SS_FACTOR");
+//        pr(logFile, "There will be %d Swarm Size Factor.\n", S_factor);
+//        break;
 //______________________________________________________________________________
 
-   case PSO_n_exec:
-        get1arg(line, "%*s %d", &n_exec_max, "PSO_N_EXEC");
-        pr(logFile, "Number of requested PSO runs = %d.\n", n_exec_max);
-        break;
+//   case PSO_n_exec:
+//        get1arg(line, "%*s %d", &n_exec_max, "PSO_N_EXEC");
+//        pr(logFile, "Number of requested PSO runs = %d.\n", n_exec_max);
+//        break;
 
 //______________________________________________________________________________
+        
+ 	case PSO_WMAX:
+	    (void) sscanf( line, "%*s %f", &pso_wmax);
+		break;
+//______________________________________________________________________________
+ 
+	case PSO_WMIN:
+	    (void) sscanf( line, "%*s %f", &pso_wmin);
+		break;
+//______________________________________________________________________________
+// 	
+//	case PSO_OUTPUT_GENS:
+//	    (void) sscanf( line, "%*s %d", &pso_output_gens);	    
+//		break;
+//_______________________________________________________________________________________
+// parameters for pso vmax. vmin = -vmax
+//_______________________________________________________________________________________	    
+	case PSO_TVMAX:
+	    (void) sscanf( line, "%*s %f", &pso_tvmax);
+		break;
+//_______________________________________________________________________________________	    
+	case PSO_QVMAX:
+	    (void) sscanf( line, "%*s %f", &pso_qvmax);
+		break;
+//_______________________________________________________________________________________	    
+	case PSO_RVMAX:
+	    (void) sscanf( line, "%*s %f", &pso_rvmax);
+		pso_rvmax = DegreesToRadians(pso_rvmax);
+		break;	    
+//_______________________________________________________________________________________	    
+// 201105050 START
+//______________________________________________________
+////////////////////////////////////////////////////////////////////////////////
+ // Entry point to call constriction CPSO
+ ////////////////////////////////////////////////////////////////////////////////
+    case DPF_PARSWARMOPT:
+        int D; //search space dimension 
+    	(void) sscanf( line, "%*s %d", &nruns );	
+        
+      //set GlobalSearchMethod to ParticleSwarmGS
+	  if (GlobalSearchMethod != NULL) {
+	 	pr(logFile, "Deleting the previous settings for the PSO.\n");	          
+	    delete GlobalSearchMethod;
+	    GlobalSearchMethod = NULL;
+	  }
 
+	 	pr( logFile, "\nTotal number of torsions in system = %d \n", sInit.ntor);
+	 	D = 7 + ntor; //Dimension D of degree of freedom for a ligand
+	 	pr(logFile, "\nTotal number of dimension is equal to the number of Degrees of Freedom = %d\n", D);	 
+	    pr( logFile, "Number of requested PSO dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
+	 		 
+	 	//No. of Particles, size of the Swarm 
+	 	S = pop_size; //S - Swarm Size
+	 	pr( logFile, "\nTotal number of particles in swarm = %d\n", S);	          	
+	 	fflush(logFile);  
+
+        
+	    if (outlev > 3) {
+            pr( logFile, "\ncalling initialiseDimension: info->lo=%f %f %f , info->hi=%f %f %f,  \n", info->lo[0], info->lo[1], info->lo[2], info->hi[0], info->hi[1], info->hi[1]);
+	    };
+
+	  
+	  float pso_vmax [100]; // TODO = float [7 + sInit.ntor];
+	  float pso_vmin [100]; // TODO = float [7 + sInit.ntor];
+	  //pso_vmin = float [7 + sInit.ntor];
+	  //pso_vmin = float [7 + sInit.ntor];
+	  //translation, Quarternion, torsion
+	  	//translation x, y, z
+	  	for(j= 0; j < 3; j++) {
+			pso_vmax[j] = pso_tvmax;
+		  	pso_vmin[j] = -pso_tvmax;
+		}
+		// quaternion components
+		for(j=3; j < 7; j++) {		
+			pso_vmax[j] = pso_qvmax;	
+			pso_vmin[j] = -pso_qvmax;			
+		}						 			 	
+	  // torsion part	  
+	  for( j=7; j < 7+ sInit.ntor; j++) {
+	  	pso_vmax[j] = pso_rvmax;	
+		pso_vmin[j] = -pso_rvmax;		
+        }
+      
+	   //Initialise the State's dimension xmax, xmin using gridMapInf	  rho_ptr = new float [7*nlig + sInit.ntor];
+	   initialiseDimension(info, xmin, xmax, D);
+	  
+
+	  GlobalSearchMethod = new ParticleSwarmGS(
+                        pso_vmax,
+                        pso_vmin,
+	  					pso_wmax, 
+	  					pso_wmin, 
+	  					LocalSearchMethod, 
+	  					eval_max, 
+	  					c1,
+	  					c2,
+	  					K,
+	  					output_pop_stats);  
+        ((ParticleSwarmGS*)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
+	  					   
+      pr(logFile, "GlobalSearchMethod is set to PSO.\n\n");     
+      fflush(logFile);      
+   	 
+
+	   evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
+                        info, map, elec, emap, nonbondlist, ad_energy_tables, Nnb,
+                        B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
+                        B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                        ignore_inter, B_include_1_4_interactions, scale_1_4, scale_eintermol,
+                        unbound_internal_FE, B_use_non_bond_cutoff, B_have_flexible_residues);
+	 		 		 	
+        evaluate.compute_intermol_energy(TRUE);
+   
+	   //BEGINNING PARTICLE SWARM OPTIMIZATION run
+	   for (j = 0; j < nruns; j++)
+	   {	 
+	 		(void) fprintf( logFile, "\n\n\tBEGINNING PARTICLE SWARM OPTIMIZATION (constrict PSO) \n");
+	 		(void) fflush( logFile );
+
+	 		pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
+	 		pr(logFile, "Date:\t");
+	        printdate(logFile, 2 );
+	 		(void)fflush(logFile);
+		 										
+	 		gaStart = times(&tms_gaStart); //using ga to mean global search: ie. pso here
+	 		//pr( logFile, "\nTotal number of torsions in system = %d \n", sInit.ntor);
+	 		//Start Particle Swarm Optimization Run	               	 		
+#ifdef chenglong
+	 		sHist[nconf] = call_cpso(j, 
+	 						sInit, 
+	 						S, 
+	 						D, 
+	 						xmin, 
+	 						xmax, 
+	 						eval_max, 
+	 						K, 
+	 						c1, 
+	 						c2, 
+	 						outlev,	 					
+	 						max_its, 
+	 						max_succ, 
+	 						max_fail, 
+	 						2.0, 
+	 						0.5, 
+	 						search_freq, 
+	 						rho_ptr, 
+	 						lb_rho_ptr,
+	 						rho,
+	 						lb_rho);	
+	 						
+#endif
+            //sHist[j] = call_cpso(GlobalSearchMethod, sInit, j, S, D, xmin, xmax, eval_max, K, c1, c2, outlev);
+            sHist[j] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size,
+                                      &ligand, output_pop_stats, info, end_of_branch);
+	 		//Finished Particle Swarm Optimization Run	 	 		
+	 		gaEnd = times(&tms_gaEnd);
+            pr(logFile, "Time taken for this PSO run:\n");
+            timesyshms(gaEnd-gaStart, &tms_gaStart, &tms_gaEnd);
+            pr(logFile, "\n");
+            (void) fflush(logFile);
+	 				
+	 				        
+	        pr(logFile, "Total number of Energy Evaluations: %ld\n", evaluate.evals());	        	        
+            pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations()); // TSRI 20101101 added by M Pique
+	 							 		
+	 		pr( logFile, "\n\n\tFINAL CPSO DOCKED STATE\n" );
+	 		pr( logFile, "\t____________________________________________________________\n\n\n" );
+	 		
+	 		//Printing the Run in PDBQ Format 
+	 		/*
+	 		writeStateOfPDBQ(j , FN_ligand, dock_param_fn, lig_center, 
+	         	            &(sHist[j]), ntor, &eintra, &einter, natom, atomstuff, 
+	                 	    crd, emap, elec, charge, 
+	 	                    ligand_is_inhibitor,
+	         	            torsFreeEnergy,
+	                 	    vt, tlist, crdpdb, nonbondlist, e_internal,
+	 	                    type, Nnb, B_calcIntElec, q1q2,
+	         	            map, inv_spacing, xlo, ylo, zlo, xhi, yhi, zhi,
+	                 	    B_template, template_energy, template_stddev,
+	 	                    outlev);
+	 	
+	        econf[nconf] = eintra + einter; // new2
+	         
+	        for (i=0; i<ntor; i++) {
+            	sHist[nconf].tor[i] = WrpRad( ModRad( sHist[nconf].tor[i] ) );
+        	}
+	        cnv_state_to_coords( sHist[nconf], vt, tlist, ntor, crdpdb, crd, natom );
+	      
+
+        	if (ntor > 0) {
+            	eintra = eintcal( nonbondlist, ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, parameterArray, B_use_non_bond_cutoff, B_have_flexible_residues) - unbound_internal_FE;
+        	} else {
+            	eintra = 0.0 - unbound_internal_FE;
+        	}	
+        	
+        	einter = trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
+                    info, ALL_ATOMS_INSIDE_GRID, ignore_inter, elec, emap,
+                    NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL);
+                    
+        	pr(logFile, "\n\nFinal State:  eintra=%.3lf  einter=%.3lf\n", eintra, einter);
+        	*/
+        	//double evalpsoE = evaluate.evalpso(&sHist[nconf]);
+        	//pr(logFile, "\n\nFinal State:  E from evalpso() =%.3lf\n", evalpsoE);
+        	//fflush(logFile);
+             writePDBQT( j, seed,  FN_ligand, dock_param_fn, lig_center,
+                       sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
+                       crd, emap, elec, charge, 
+                       abs_charge, qsp_abs_charge,
+                       ligand_is_inhibitor,
+                       torsFreeEnergy,
+                       vt, tlist, crdpdb, nonbondlist,
+                       ad_energy_tables,
+                       type, Nnb, B_calcIntElec, map,
+                       outlev, ignore_inter, B_include_1_4_interactions, 
+                       scale_1_4, parameterArray, unbound_internal_FE,
+                       info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, //info
+                       B_have_flexible_residues, ad4_unbound_model);
+       	
+
+            econf[nconf] = eintra + einter; //
+	 		++nconf;	 
+	 		pr( logFile, UnderLine );	
+	 		 			 			 				
+	 	} // next CPSO run j
+	 	
+	 	if(write_stateFile){
+           fprintf(stateFile,"\t</runs>\n");
+           (void) fflush(stateFile);
+        }
+        (void) fflush(logFile);          	 	 
+	    break;
+	    // end  DPF_CPSO_RUN
+//________________________________________________________________________
+// 20110505 END 
+//________________________________________________________________________
+#ifdef pre_2011_pso
    case DPF_PSO_CONSTRICTION:
 
 	/* 
@@ -3592,10 +3817,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         for (n_exec = 0; n_exec < n_exec_max; n_exec++)
         {
-            j1 = n_exec + 1;
             (void) fprintf( logFile, "\n\n\tBEGINNING PARTICLE SWARM OPTIMIZATION\n");
             (void) fflush( logFile );
-            pr(logFile, "\nRun:\t%d / %d\n", j1, n_exec_max );
+            pr(logFile, "\nRun:\t%d / %d\n", n_exec+1, n_exec_max );
             pr(logFile, "\nWorking with Constriction PSO\n");
             pr(logFile, "Date:\t");
             printdate( logFile, 2 );
@@ -3652,7 +3876,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         /* PSO Work*/
         break;
-
+#endif
+//______________________________________________________________________________
+// 20110505
 //______________________________________________________________________________
 
     case DPF_ANALYSIS:
