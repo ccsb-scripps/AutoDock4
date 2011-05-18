@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.29 2010/06/19 02:51:24 mp Exp $
+ $Id: constants.h,v 1.30 2011/05/18 16:44:50 rhuey Exp $
 
  AutoDock 
 
@@ -455,10 +455,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 // |     |     |   ||   ||   |   |       |       |       |     |         |      |                      
 // 65432154321 43211321 143211   876543218765432187654321654321654321    654321 21
 // ATOM     10  HO4 PGP     1      22.065  29.222  38.002  1.00  0.00     0.210 HD
-#define FORMAT_PDBQT_ATOM_RESSTR         "%sATOM  %5d %.13s     %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
-#define FORMAT_PDBQT_ATOM_RESNUM         "%sATOM  %5d %.8s%5d     %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
-#define FORMAT_PDBQT_ATOM_RANKRUN_STR      "ATOM  %5d %.13s     %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f %-2s\n"
-#define FORMAT_PDBQT_ATOM_RUN_NUM          "ATOM  %5d %.8s%5d     %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f %-2s\n"
+#define FORMAT_PDBQT_ATOM_RESSTR         "%sATOM  %5d%-19.19s%8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s%s" // prefix + 79 chars + suffix
+
+// #define FORMAT_PDBQT_ATOM_RESNUM         "%sATOM  %5d %.8s%5d     %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f %-2s"
+// #define FORMAT_PDBQT_ATOM_RANKRUN_STR      "ATOM  %5d %.13s     %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f %-2s\n"
+// #define FORMAT_PDBQT_ATOM_RUN_NUM          "ATOM  %5d %.8s%5d     %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f %-2s\n"
                                                                   
 #endif /* _PDB_FORMATS */
 
