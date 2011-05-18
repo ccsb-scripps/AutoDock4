@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.h,v 1.13 2010/08/27 00:05:09 mp Exp $
+ $Id: writePDBQT.h,v 1.14 2011/05/18 16:46:05 rhuey Exp $
 
  AutoDock  
 
@@ -76,38 +76,45 @@ void writePDBQT(const int irun, const FourByteLong seed[2],
                     );
 
 void print_PDBQT( FILE *const logFile, 
+                  const char *const prefix,
                   const int true_ligand_atoms,
                   const char atomstuff[MAX_ATOMS][MAX_CHARS],
                   const Real crdpdb[MAX_ATOMS][SPACE],
                   const Real charge[MAX_ATOMS],
                   const ParameterEntry parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
                   const int type[MAX_ATOMS],
-                  const char prefix[MAX_CHARS] );
+                  const char *const suffix // newline or empty
+        );
 
 
 
-void print_PDBQ_atom_resstr( FILE *const logFile, 
-                  const char prefix[MAX_CHARS],
-                  int atom_num, // 0-origin 
-                  const char atomstuff[],
-                  const Real crdpdb[MAX_ATOMS][SPACE],
-                  const Real vdW,
-                  const Real Elec,
-                  const Real charge,
-                  const char *const suffix //newline or empty
-                  );
-        
-
-void print_PDBQ_atom_resnum( FILE *const logFile, 
-                  const char prefix[MAX_CHARS],
+void print_PDBQT_atom_resstr( FILE *const logFile, 
+                  const char *const prefix,
                   const int atom_num, // 0-origin 
-                  const char atomstuff[],
-                  const int resnum,
-                  const Real crdpdb[MAX_ATOMS][SPACE],
+                  const char *const atomstuff,
+                  const Real crd[MAX_ATOMS][SPACE],
                   const Real vdW,
                   const Real Elec,
                   const Real charge,
+                  const char *const element, // 2-char AD type really eg HD, OA, Mg, Cl, Br ...
                   const char *const suffix //newline or empty
                   );
-        
+
+
+
+void print_PDBQT_atom_resnum( FILE *const logFile,
+                  const char *const prefix,
+                  const int atom_num, // 0-origin 
+                  const char *const atomstuff,
+                  const int resnum,
+                  const Real crd[MAX_ATOMS][SPACE],
+                  const Real vdW,
+                  const Real Elec,
+                  const Real charge,
+                  const char *const element,
+                  const char *const suffix //newline or empty
+                  );
+
+
+
 #endif

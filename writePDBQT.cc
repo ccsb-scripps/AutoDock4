@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.29 2011/03/09 01:35:05 mp Exp $
+ $Id: writePDBQT.cc,v 1.30 2011/05/18 16:46:05 rhuey Exp $
 
  AutoDock  
 
@@ -13,7 +13,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful, 
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
@@ -45,46 +45,46 @@ extern int Nnb_array[3];
 extern Real nb_group_energy[3];
 
 void
-writePDBQT(const int irun, const FourByteLong seed[2],
+writePDBQT(const int irun, const FourByteLong seed[2], 
 
-		 const char *const smFileName,
-		 const char *const dpfFN,
-		 const Real sml_center[SPACE],
-		 /* not const */ State state,
-		 const int ntor,
-		 /* not const */ Real *const  Ptr_eintra,
-		 /* not const */ Real *const  Ptr_einter,
-		 const int natom,
-		 const char atomstuff[MAX_ATOMS][MAX_CHARS],
-		 /* not const */ Real crd[MAX_ATOMS][SPACE],
-		 /* not const */ Real emap[MAX_ATOMS],
-		 /* not const */ Real elec[MAX_ATOMS],
-		 const Real charge[MAX_ATOMS],
-		 const Real abs_charge[MAX_ATOMS],
-		 const Real qsp_abs_charge[MAX_ATOMS],
-		 const int ligand_is_inhibitor,
-		 const Real torsFreeEnergy,
-		 const Real vt[MAX_TORS][SPACE],
-		 const int tlist[MAX_TORS][MAX_ATOMS],
-		 const Real crdpdb[MAX_ATOMS][SPACE],
-		 const NonbondParam *const nonbondlist,
-         const EnergyTables *const ptr_ad_energy_tables,
+		 const char *const smFileName, 
+		 const char *const dpfFN, 
+		 const Real sml_center[SPACE], 
+		 /* not const */ State state, 
+		 const int ntor, 
+		 /* not const */ Real *const  Ptr_eintra, 
+		 /* not const */ Real *const  Ptr_einter, 
+		 const int natom, 
+		 const char atomstuff[MAX_ATOMS][MAX_CHARS], 
+		 /* not const */ Real crd[MAX_ATOMS][SPACE], 
+		 /* not const */ Real emap[MAX_ATOMS], 
+		 /* not const */ Real elec[MAX_ATOMS], 
+		 const Real charge[MAX_ATOMS], 
+		 const Real abs_charge[MAX_ATOMS], 
+		 const Real qsp_abs_charge[MAX_ATOMS], 
+		 const int ligand_is_inhibitor, 
+		 const Real torsFreeEnergy, 
+		 const Real vt[MAX_TORS][SPACE], 
+		 const int tlist[MAX_TORS][MAX_ATOMS], 
+		 const Real crdpdb[MAX_ATOMS][SPACE], 
+		 const NonbondParam *const nonbondlist, 
+         const EnergyTables *const ptr_ad_energy_tables, 
 		 const int type[MAX_ATOMS],  // aka 'map_index' in 'ParameterEntry' structures
-		 const int Nnb,
-		 const Boole B_calcIntElec,
+		 const int Nnb, 
+		 const Boole B_calcIntElec, 
          #include "map_declare.h"
-		 const int outlev,
-		 const int ignore_inter[MAX_ATOMS],
-		 const Boole B_include_1_4_interactions,
-		 const Real scale_1_4,
-         const ParameterEntry parameterArray[MAX_ATOM_TYPES],
-		 const Real unbound_internal_FE,
+		 const int outlev, 
+		 const int ignore_inter[MAX_ATOMS], 
+		 const Boole B_include_1_4_interactions, 
+		 const Real scale_1_4, 
+         const ParameterEntry parameterArray[MAX_ATOM_TYPES], 
+		 const Real unbound_internal_FE, 
 
-         const GridMapSetInfo *const info,
+         const GridMapSetInfo *const info, 
          const int state_type,  // 0 means the state is unbound, 1 means the state is docked
-         const char PDBQT_record[MAX_RECORDS][LINE_LEN],
-         const Boole B_use_non_bond_cutoff,
-         const Boole B_have_flexible_residues,
+         const char PDBQT_record[MAX_RECORDS][LINE_LEN], 
+         const Boole B_use_non_bond_cutoff, 
+         const Boole B_have_flexible_residues, 
          const Unbound_Model ad4_unbound_model
          )
 
@@ -111,7 +111,6 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     e_intra_lig = e_intra_moving_moving_lig;                             // ligand   intramolecular energy = (3)
     e_intra_rec = e_intra_moving_fixed_rec + e_intra_moving_moving_rec;  // receptor intramolecular energy = (2) + (5)
 
-	char AtmNamResNamNum[15], AtmNamResNam[10];
     char state_type_string[MAX_CHARS];
     char state_type_prefix_string[MAX_CHARS];
     char state_type_prefix_USER_string[MAX_CHARS];
@@ -128,9 +127,6 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         strcpy(state_type_prefix_string, "DOCKED: ");
         strcpy(state_type_prefix_USER_string, "DOCKED: USER    ");
     }
-	for (unsigned int i = 0; i < sizeof AtmNamResNamNum; i++) { AtmNamResNamNum[i] = '\0'; }
-	for (unsigned int i = 0; i < sizeof AtmNamResNam; i++) { AtmNamResNam[i] = '\0'; }
-
 
     // Write out the state variables
 	if ((outlev > -1) && (outlev < 3)) {
@@ -140,30 +136,30 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 	state.Center.x = sml_center[X];
 	state.Center.y = sml_center[Y];
 	state.Center.z = sml_center[Z];
-	pr(logFile,"Detailed state:\t");
+	pr(logFile, "Detailed state:\t");
 	printState(logFile, state, 6); // detailed, include center, ntor
-	pr(logFile,"\n");
+	pr(logFile, "\n");
 
-        pr(logFile,"QState:\t");
+        pr(logFile, "QState:\t");
         printState(logFile, state, 5); // short format, as quaternion
-        pr(logFile,"\n");
+        pr(logFile, "\n");
 
-        pr(logFile,"State:\t"); // various possibly longer formats, as axis-angle
+        pr(logFile, "State:\t"); // various possibly longer formats, as axis-angle
         printState(logFile, state, outlev);
-        pr(logFile,"\n\n");
+        pr(logFile, "\n\n");
 	} else if (outlev < 0) {
 		printState(logFile, state, 0);
-        pr(logFile,"\n");
+        pr(logFile, "\n");
 	}
 
-    // Convert state variables to x,y,z-coordinates
+    // Convert state variables to x, y, z-coordinates
 	cnv_state_to_coords( state, vt, tlist, ntor, crdpdb, crd, natom );
 
     // Calculate the energy breakdown
-    eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
-         crd, charge, abs_charge, type, map, info,
-         ignore_inter, elec, emap, &elec_total, &emap_total,
-         nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
+    eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues, 
+         crd, charge, abs_charge, type, map, info, 
+         ignore_inter, elec, emap, &elec_total, &emap_total, 
+         nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, 
          B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model);
 
     // Set the total intramolecular energy (sum of intramolecular energies of ligand and of protein)
@@ -248,6 +244,8 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 			pr(stateFile, "\t</run>\n");
 		} // End write state file
 
+
+        (void) fprintf(logFile, "%s: USER  keepresnum = %d \n", state_type_string, keepresnum);
         (void) fprintf(logFile, "%s: USER  \n", state_type_string);
 
         // Count the number of non-NULL records in the PDBQT file
@@ -258,10 +256,12 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 
         int keyword_id = -1;
         int print_header = FALSE;
-        // Zero the atom counter,
+
+        //fprintf(stdout, "writePDBQT\n"); // DEBUG @@
+        // Zero the atom counter, 
         i = 0;
         for (r = 0; r < nrecord; r++) {
-            // If this record is neither an ATOM nor a HETATM then print it,
+            // If this record is neither an ATOM nor a HETATM then print it, 
             // else print the new coordinates of this atom.
             keyword_id = parse_PDBQT_line(PDBQT_record[r]);
             if (keyword_id == PDBQ_ROOT) {
@@ -281,24 +281,22 @@ writePDBQT(const int irun, const FourByteLong seed[2],
                     this_emap = 0.;
                     this_elec = 0.;
                 }
+                    //(void) fprintf(logFile, "USER     atomstuff[%4d]= \"%s\" len=%d\n",
+                    //i, atomstuff[i], strlen(atomstuff[i])); // DEBUG @@
                 if (keepresnum > 0) {
-                    // Retain the original Residue Numbering
-                    strncpy(AtmNamResNamNum, &atomstuff[i][12], (size_t) 13);   /*  SF &atomstuff[i][12] was increased to 12 to fix the extra space     */
-                    AtmNamResNamNum[14] = '\0';
-                    (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESSTR, state_type_prefix_string, 
-                                   i + 1, AtmNamResNamNum, crd[i][X], crd[i][Y], crd[i][Z], 
-                                   this_emap, this_elec,
-                                   charge[i], parameterArray[type[i]].autogrid_type );
+                    // Retain the original Residue Numbering (held in atomstuff)
+                    print_PDBQT_atom_resstr(logFile, state_type_prefix_string, 
+                                   i + 1, atomstuff[i], crd,
+                                   this_emap, this_elec, 
+                                   charge[i], parameterArray[type[i]].autogrid_type, "\n" );
                 } else {
-                    // Change the residue number to the run number
-                    strncpy(AtmNamResNam, &atomstuff[i][12], (size_t) 9);
-                    AtmNamResNam[9] = '\0';
-                    (void) fprintf(logFile, FORMAT_PDBQT_ATOM_RESNUM, state_type_prefix_string, 
-                                   i + 1, AtmNamResNam, irun + 1, crd[i][X], crd[i][Y], crd[i][Z], 
-                                   this_emap, this_elec,
-                                   charge[i], parameterArray[type[i]].autogrid_type);
+                    // Change the residue number to the run number 
+                    print_PDBQT_atom_resnum(logFile, state_type_prefix_string, 
+                                   i + 1, atomstuff[i], irun+1, crd,
+                                   this_emap, this_elec, 
+                                   charge[i], parameterArray[type[i]].autogrid_type, "\n" );
+
                 }
-                (void) fprintf(logFile, "\n");
                 // Increment the atom counter
                 i++;
             } else {
@@ -320,69 +318,63 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 } // writePDBQT()
 
 void print_PDBQT( FILE *const logFile, 
-                  const int true_ligand_atoms,
-                  const char atomstuff[MAX_ATOMS][MAX_CHARS],
-                  const Real crdpdb[MAX_ATOMS][SPACE],
-                  const Real charge[MAX_ATOMS],
-                  const ParameterEntry parameterArray[MAX_ATOM_TYPES],
-                  const int type[MAX_ATOMS],
-                  const char prefix[MAX_CHARS] )
+                  const char *const prefix,
+                  const int true_ligand_atoms,  // not necessarily 
+                  const char atomstuff[MAX_ATOMS][MAX_CHARS], 
+                  const Real crd[MAX_ATOMS][SPACE], 
+                  const Real charge[MAX_ATOMS], 
+                  const ParameterEntry parameterArray[MAX_ATOM_TYPES], 
+                  const int type[MAX_ATOMS], 
+                  const char *const suffix)
 { // Print out the coordinates
-    register int i=0;
-    char AtmNamResNamNum[15];
-    for (i=0; i<true_ligand_atoms; i++) {
-        //strncpy( AtmNamResNamNum, &atomstuff[i][14], (size_t) 14 );
-        strncpy(AtmNamResNamNum, &atomstuff[i][12], (size_t) 13);   /*  SF &atomstuff[i][12] was increased to 12 to fix the extra space     */
-        AtmNamResNamNum[14] = '\0';
-        (void) fprintf( logFile, FORMAT_PDBQT_ATOM_RESSTR, prefix, 
-                        i + 1, AtmNamResNamNum, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z], 
-                        1., 0.,
-                        charge[i], parameterArray[type[i]].autogrid_type );
-        (void) fprintf( logFile, "\n" ); 
+    for (int i=0; i<true_ligand_atoms; i++) {
+        print_PDBQT_atom_resstr(logFile, prefix,
+       i + 1, atomstuff[i], crd,
+        1., 0., 
+       charge[i], parameterArray[type[i]].autogrid_type, suffix );
     }
     pr( logFile, "\n\n" );
 } // end Print out the coordinates
 
-void print_PDBQ_atom_resstr( FILE *const logFile, 
-                  const char prefix[MAX_CHARS],
+void print_PDBQT_atom_resstr( FILE *const logFile, 
+                  const char *const prefix, 
                   const int atom_num, // 0-origin 
-                  const char atomstuff[],
-                  const Real crd[MAX_ATOMS][SPACE],
-                  const Real vdW,
-                  const Real Elec,
-                  const Real charge,
+                  const char *const atomstuff, 
+                  const Real crd[MAX_ATOMS][SPACE], 
+                  const Real vdW, 
+                  const Real Elec, 
+                  const Real charge, 
+                  const char *const element, // 2-char AD type really eg HD, OA, Mg, Cl, Br ...
                   const char *const suffix //newline or empty
                   )
 {
-    char  rec15[16];
-    strncpy( rec15, atomstuff+12, (size_t)15);
-    rec15[15]='\0';
-    #define FORMAT_PDBQ_ATOM_RESSTR         "%sATOM  %5d %.15s   %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f%s"
-    pr(logFile, FORMAT_PDBQ_ATOM_RESSTR, prefix, atom_num+1, rec15, 
+	char AtmNamResNamNumInsCode[20]; /* PDB record 0-origin indices 11-29 (from blank after serial_number to just before xcrd */
+    sprintf(AtmNamResNamNumInsCode, "%-19.19s", &atomstuff[11]);
+    // see constants.h for FORMAT_PDBQT_ATOM_RESSTR        
+    pr(logFile, FORMAT_PDBQT_ATOM_RESSTR, prefix, atom_num+1, AtmNamResNamNumInsCode, 
        crd[atom_num][X], crd[atom_num][Y], crd[atom_num][Z], 
-       vdW, Elec,  charge, suffix);
+       vdW, Elec,  charge, element, suffix);
 }
 
-void print_PDBQ_atom_resnum( FILE *const logFile, 
-                  const char prefix[MAX_CHARS],
+void print_PDBQT_atom_resnum( FILE *const logFile, 
+                  const char *const prefix, 
                   const int atom_num, // 0-origin 
-                  const char atomstuff[],
-                  const int resnum,
-                  const Real crd[MAX_ATOMS][SPACE],
-                  const Real vdW,
-                  const Real Elec,
-                  const Real charge,
+                  const char *const atomstuff, 
+                  const int resnum, 
+                  const Real crd[MAX_ATOMS][SPACE], 
+                  const Real vdW, 
+                  const Real Elec, 
+                  const Real charge, 
+                  const char *const element, 
                   const char *const suffix //newline or empty
                   )
 {
-    char  rec10[11];
-    strncpy( rec10, atomstuff+12, (size_t)10);
-    rec10[10]='\0';
-    #define FORMAT_PDBQ_ATOM_RESNUM         "%sATOM  %5d %.10s%4d    %8.3f%8.3f%8.3f%+6.2f%+6.2f    %+6.3f%s"
-    pr(logFile, FORMAT_PDBQ_ATOM_RESNUM, prefix, atom_num+1, rec10, 
-       resnum,
+	char AtmNamResNamNumInsCode[20]; /* PDB record 0-origin indices 11-29 (from blank after serial_number to just before xcrd */
+    sprintf(AtmNamResNamNumInsCode, "%11.11s%4d%4.4s", &atomstuff[11], 
+       resnum, &atomstuff[26]);
+    pr(logFile, FORMAT_PDBQT_ATOM_RESSTR, prefix, atom_num+1, AtmNamResNamNumInsCode, 
        crd[atom_num][X], crd[atom_num][Y], crd[atom_num][Z], 
-       vdW, Elec,  charge, suffix);
+       vdW, Elec,  charge, element, suffix);
 }
 
 
