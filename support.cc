@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.38 2011/03/08 04:18:37 mp Exp $
+ $Id: support.cc,v 1.39 2011/05/18 16:43:16 rhuey Exp $
 
  AutoDock 
 
@@ -385,8 +385,8 @@ void Population::printPopulationAsStates(FILE *const output, const int num, cons
       cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);//debug
       (void)fprintf(logFile, "MODEL     %4d\n", i+1);
       for (j=0; j<heap[i].mol->natom; j++) {//debug
-            print_PDBQ_atom_resnum( logFile, "", j, " C   RES  ",   1,  // replace 1 with i+1 for incrementing residue numbers.
-            heap[i].mol->crd, 0.0, 0.0, 0.0, "\n"); //debug
+            print_PDBQT_atom_resnum( logFile, "", j, DUMMYATOMSTUFFINF,   1,  // replace 1 with i+1 for incrementing residue numbers.
+            heap[i].mol->crd, 0.0, 0.0, 0.0, "", "\n"); //debug
       }/*j*///debug
       (void)fprintf(logFile, "ENDMDL\n");
       // to print only infinite or NaN structures // }// thisValue is either infinite or not-a-number.//debug

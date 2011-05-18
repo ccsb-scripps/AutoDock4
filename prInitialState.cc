@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.13 2010/08/27 00:05:08 mp Exp $
+ $Id: prInitialState.cc,v 1.14 2011/05/18 16:43:16 rhuey Exp $
 
  AutoDock 
 
@@ -68,10 +68,10 @@ void prInitialState(
 
     pr( logFile, "%sUSER    Transformed Initial Coordinates\n", descriptor );
     for (i = 0;  i < natom;  i++) {
-        if (keepresnum > 0) print_PDBQ_atom_resstr( logFile, descriptor, i, atomstuff[i],  crd, 
-	     1.0, 0.0, charge[i], "\n");
-        else  print_PDBQ_atom_resnum( logFile, descriptor, i, atomstuff[i],  0, crd, 
-	     1.0, 0.0, charge[i], "\n");
+        if (keepresnum > 0) print_PDBQT_atom_resstr( logFile, descriptor, i, atomstuff[i],  crd, 
+	     1.0, 0.0, charge[i], "", "\n");
+        else  print_PDBQT_atom_resnum( logFile, descriptor, i, atomstuff[i],  0, crd, 
+	     1.0, 0.0, charge[i], "", "\n");
     } /* i */
     pr( logFile, "%sTER\n\n\n", descriptor );
 

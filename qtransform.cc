@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.cc,v 1.13 2010/10/01 22:51:39 mp Exp $
+ $Id: qtransform.cc,v 1.14 2011/05/18 16:43:16 rhuey Exp $
 
  AutoDock  
 
@@ -144,7 +144,7 @@ void reorient( FILE *const logFile,
     // Print out the un-reoriented coordinates
     pr( logFile, "\nUn-reoriented ligand's coordinates:\n" );
     pr( logFile, "-----------------------------------\n\n" );
-    print_PDBQT( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, parameterArray, type, "UN-REORIENTED:  " );
+    print_PDBQT( logFile, "UN-REORIENTED: ", true_ligand_atoms, atomstuff, crdpdb, charge, parameterArray, type, "\n" );
 
     // Print message about q_reorient
     print_q_reorient_message( logFile, q_reorient );
@@ -158,6 +158,6 @@ void reorient( FILE *const logFile,
     // Print out the re-oriented coordinates
     pr( logFile, "Reoriented ligand's coordinates:\n" );
     pr( logFile, "--------------------------------\n\n" );
-    print_PDBQT( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, parameterArray, type, "REORIENTED:  " );
+    print_PDBQT( logFile, "REORIENTED:  ", true_ligand_atoms, atomstuff, crdpdb, charge, parameterArray, type, "\n" );
 }
 /* EOF */

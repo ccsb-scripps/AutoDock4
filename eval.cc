@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.31 2011/03/09 01:35:05 mp Exp $
+ $Id: eval.cc,v 1.32 2011/05/18 16:43:16 rhuey Exp $
 
  AutoDock  
 
@@ -233,9 +233,11 @@ double Eval::eval(const int term)
    if ((!finite(energy)) || ISNAN(energy)) {
       (void)fprintf( logFile, "eval.cc:  ERROR!  energy is %s!\n\n",
        (!finite(energy))?"infinite":"not a number");
+#define DUMMYATOMSTUFFINF "ATOM  #####  C   INF X   1    "
+#define DUMMYATOMSTUFFNAN "ATOM  #####  C   NAN X   1    "
       for (i=0; i<natom; i++) {
-            print_PDBQ_atom_resstr( logFile, "", i,   " C   INF     1 ", crd, 
-             0.0, 0.0, charge[i],"\n"); 
+            print_PDBQT_atom_resstr( logFile, "", i,   DUMMYATOMSTUFFINF, crd, 
+             0.0, 0.0, charge[i],"", "\n"); 
       } // i
    }
     switch (term) {
@@ -274,8 +276,8 @@ int Eval::write(FILE *const out_file, const Representation *const *const rep)
     // cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdreo, crd, natom);
     cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
     for (i=0; i<natom; i++) {
-            print_PDBQ_atom_resstr( logFile, "", i,   " C   RES     1 ", crd, 
-             0.0, 0.0, charge[i],"\n"); 
+            print_PDBQT_atom_resstr( logFile, "", i,   " C   RES     1 ", crd, 
+             0.0, 0.0, charge[i],"", "\n"); 
     } // i
     return retval;
 }
@@ -425,15 +427,15 @@ double Eval::evalpso(/* not const */ State *const state)
    if (!finite(energy)) {
       (void)fprintf( logFile, "eval.cc:  ERROR!  energy is infinite!\n\n");
       for (i=0; i<natom; i++) {
-            print_PDBQ_atom_resstr( logFile, "", i,   " C   INF     1 ", crd, 
-             0.0, 0.0, charge[i],"\n"); 
+            print_PDBQT_atom_resstr( logFile, "", i,   DUMMYATOMSTUFFINF, crd, 
+             0.0, 0.0, charge[i],"", "\n"); 
       } // i
    }
    if (ISNAN(energy)) {
       (void)fprintf( logFile, "eval.cc:  ERROR!  energy is not a number!\n\n");
       for (i=0; i<natom; i++) {
-            print_PDBQ_atom_resstr( logFile, "", i,   " C   NaN     1 ", crd, 
-             0.0, 0.0, charge[i],"\n"); 
+            print_PDBQT_atom_resstr( logFile, "", i,   DUMMYATOMSTUFFNAN, crd, 
+             0.0, 0.0, charge[i],"", "\n"); 
       } // i
    }
 

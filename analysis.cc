@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.43 2011/03/09 01:35:04 mp Exp $
+ $Id: analysis.cc,v 1.44 2011/05/18 16:43:16 rhuey Exp $
 
  AutoDock  
 
@@ -300,8 +300,8 @@ void analysis( const int   Nnb,
                     pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     for (j = 0;  j < natom;  j++) {
-                        print_PDBQ_atom_resstr( logFile, "", j, atomstuff[j],  crd, 
-                          min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j],"");
+                        print_PDBQT_atom_resstr( logFile, "", j, atomstuff[j],  crd, 
+                          min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j],"", "");
                         pr(logFile," %6.3f\n", ref_rms[c]); 
                     }
                     //]
@@ -310,8 +310,8 @@ void analysis( const int   Nnb,
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
                     for (j = 0;  j < natom;  j++) {
-                        print_PDBQ_atom_resnum( logFile, "", j, atomstuff[j],  i1, crd, 
-                          min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j],"");
+                        print_PDBQT_atom_resnum( logFile, "", j, atomstuff[j],  i1, crd, 
+                          min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j],"", "");
                         pr(logFile," %6.3f\n", ref_rms[c]); 
                     }/*j*/
                     //]
