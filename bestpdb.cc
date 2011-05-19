@@ -1,6 +1,6 @@
 /*
 
- $Id: bestpdb.cc,v 1.9 2010/10/01 22:51:39 mp Exp $
+ $Id: bestpdb.cc,v 1.10 2011/05/19 22:03:12 rhuey Exp $
 
  AutoDock 
 
@@ -72,6 +72,7 @@ void bestpdb( const int ncluster,
 
     char  filnm[PATH_MAX],
 		  label[MAX_CHARS];
+    char AtmNamResNamNumInsCode[20]; /* PDB record 0-origin indices 11-29 (from blank after serial_number to just before xcrd */
 
     pr( logFile, "\n\tLOWEST ENERGY DOCKED CONFORMATION from EACH CLUSTER");
     pr( logFile, "\n\t___________________________________________________\n\n\n" );
@@ -100,23 +101,33 @@ void bestpdb( const int ncluster,
 
             print_rem(logFile, i1, num_in_clu[i], c1, ref_rms[c]);
 
+
             if (keepresnum > 0) {
                 fprintf( logFile, "USER                              x       y       z   Rank Run  Energy    RMS\n");
                 for (j = 0;  j < natom;  j++) {
-                    char rec15[16];
-                    strncpy( rec15, &atomstuff[j][12], (size_t)15); //changed start index from 13->12 so increased number to copy
-                    rec15[15]='\0';
-                    #define FORMAT_PDBQ_ATOM_RANKRUN_STR      "ATOM  %5d %.15s   %8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f\n"
-                    fprintf( logFile, FORMAT_PDBQ_ATOM_RANKRUN_STR, j+1, rec15, crd[c][j][X], crd[c][j][Y], crd[c][j][Z], i1, c1, econf[c], ref_rms[c] );
+                    sprintf(AtmNamResNamNumInsCode, "%-19.19s", &atomstuff[j][11]);
+                    // retain original residue number (in fact, all fields
+                    // from blank after atom serial number to start of coords)
+                    // replace occupancy by cluster index, 
+                    // tempfactor by conformation index within cluster,
+                    // add two non-standard fields with energy and RMSD from reference
+                    #define FORMAT_PDBQT_ATOM_RANKRUN_STR     "ATOM  %5d%-19.19s%8.3f%8.3f%8.3f%6d%6d    %+6.2f %8.3f\n"
+                    fprintf(logFile, FORMAT_PDBQT_ATOM_RANKRUN_STR, j+1, AtmNamResNamNumInsCode, 
+                           crd[c][j][X], crd[c][j][Y], crd[c][j][Z],  i1, c1, econf[c], ref_rms[c] );
+
                 } /* j */
             } else {
                 fprintf( logFile, "USER                   Rank       x       y       z    Run   Energy    RMS\n");
                 for (j = 0;  j < natom;  j++) {
-                    char rec10[11];
-                    strncpy( rec10, &atomstuff[j][12], (size_t)10); //changed start index from 13->12 so increased number to copy
-                    rec10[10]='\0';
-                    #define FORMAT_PDBQ_ATOM_RUN_NUM          "ATOMk %5d %.10s%4d    %8.3f%8.3f%8.3f%6d%+6.2f    %6.3f\n"
-                    fprintf( logFile, FORMAT_PDBQ_ATOM_RUN_NUM, j+1, rec10, i1, crd[c][j][X], crd[c][j][Y], crd[c][j][Z], c1, econf[c], ref_rms[c] );
+                    sprintf(AtmNamResNamNumInsCode, "%-11.11s%4d%-4.4s", &atomstuff[j][11], 
+                           i1, &atomstuff[j][26]);
+                    // replace original residue number by cluster index
+                    // replace occupancy by conformation index within cluster
+                    // tempfactor by energy
+                    // add one non-standard field with RMSD from reference
+                    #define FORMAT_PDBQT_ATOM_RANKRUN_NUM          "ATOM  %5d%-19.19s%8.3f%8.3f%8.3f%6d%+6.2f    %6.3f\n"
+                    fprintf(logFile, FORMAT_PDBQT_ATOM_RANKRUN_NUM, j+1, AtmNamResNamNumInsCode, 
+                           crd[c][j][X], crd[c][j][Y], crd[c][j][Z],  c1, econf[c], ref_rms[c] );
                 } /* j */
             }
             fprintf( logFile, "TER\n" );

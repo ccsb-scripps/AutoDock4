@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.29 2011/05/13 23:55:31 rhuey Exp $
+ $Id: dpftoken.h,v 1.30 2011/05/19 22:03:12 rhuey Exp $
 
  AutoDock 
 
@@ -179,7 +179,8 @@ enum DpfTokens {
   GA_LINEAR_RANKING_SELECTION  =127,
   DPF_RMSMODE                  =128,
   DPF_SCALE_EINTERMOL          =129,
-  DPF_OUTPUT_POP_STATS         =130
+  DPF_OUTPUT_POP_STATS         =130,
+  DPF_OUTPUT_RESNUM_AS         =131,
 };
 #endif
 /* EOF */

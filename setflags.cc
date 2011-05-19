@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.21 2010/08/27 00:05:08 mp Exp $
+ $Id: setflags.cc,v 1.22 2011/05/19 22:03:13 rhuey Exp $
 
  AutoDock 
 
@@ -137,7 +137,9 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             ignore_errors = TRUE;
             break;
         case 'k':
-            keepresnum--;
+            // does the same as 'output_resnum_as runnum' in dpf
+            // default set in globals.h is 'output_resnum_as resnum' 
+            keepresnum = FALSE;
             break;
         case 'C':
             //show copyright

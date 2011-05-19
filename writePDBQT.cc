@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.30 2011/05/18 16:46:05 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.31 2011/05/19 22:03:13 rhuey Exp $
 
  AutoDock  
 
@@ -257,7 +257,6 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         int keyword_id = -1;
         int print_header = FALSE;
 
-        //fprintf(stdout, "writePDBQT\n"); // DEBUG @@
         // Zero the atom counter, 
         i = 0;
         for (r = 0; r < nrecord; r++) {
@@ -281,8 +280,6 @@ writePDBQT(const int irun, const FourByteLong seed[2],
                     this_emap = 0.;
                     this_elec = 0.;
                 }
-                    //(void) fprintf(logFile, "USER     atomstuff[%4d]= \"%s\" len=%d\n",
-                    //i, atomstuff[i], strlen(atomstuff[i])); // DEBUG @@
                 if (keepresnum > 0) {
                     // Retain the original Residue Numbering (held in atomstuff)
                     print_PDBQT_atom_resstr(logFile, state_type_prefix_string, 

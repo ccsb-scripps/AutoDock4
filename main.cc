@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.134 2011/05/13 23:55:31 rhuey Exp $
+ $Id: main.cc,v 1.135 2011/05/19 22:03:12 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -110,7 +110,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.134 2011/05/13 23:55:31 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.135 2011/05/19 22:03:12 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -723,7 +723,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.134 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.135 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -848,6 +848,24 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	    }
 	    // nothing besides "basic (int) (int)" is supported yet
         else stop("unsupported option in \"output_population_statistics\" line.\n");
+	break;
+/*____________________________________________________________________________*/
+
+    case DPF_OUTPUT_RESNUM_AS:
+        /*
+        ** pdbqt format for residues in dlgs
+        *  default is to keep the residue number string from input
+        *  possible values: 'resnum' and 'runnum'
+        *  intended to replace '-k' option in setflags.cc
+        */
+        nfields = sscanf( line, "%*s %s", c_mode_str );
+        if (nfields==1 && streq(c_mode_str, "resnum")) {
+	    keepresnum = TRUE; // default
+	    }
+        else if (nfields==1 && streq(c_mode_str, "runnum")) {
+	    keepresnum = FALSE; // old -k option
+	    }
+        else stop("unsupported option in \"output_resnum_as\" line.\n");
 	break;
 /*____________________________________________________________________________*/
 
@@ -3652,6 +3670,23 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	 		gaStart = times(&tms_gaStart); //using ga to mean global search: ie. pso here
 	 		//pr( logFile, "\nTotal number of torsions in system = %d \n", sInit.ntor);
 	 		//Start Particle Swarm Optimization Run	               	 		
+            //@@ sHist[nconf] = call_glss( GlobalSearchMethod, LocalSearchMethod, 
+                              //sInit,
+                              //num_evals, pop_size,
+                              //outlev,
+                              //output_pop_stats, &ligand,
+                              //B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
+                              //info, FN_pop_file, end_of_branch ); starts ~line 3079
+                           // #------------------------------------------------------------------
+                              //call_cpso(Local_Search *const local_method, 
+                                //const State& sInit, 
+                                //const int n_exec, const int S, //swarm size
+                                //const int D, //number of dimensions:7 + ntor
+                                //double *const xmin, double *const xmax, 
+                                //const unsigned int num_evals, 
+                                //const int K, ConstDouble c1, ConstDouble c2,
+                                //const int outlev)
+
 #ifdef chenglong
 	 		sHist[nconf] = call_cpso(j, 
 	 						sInit, 

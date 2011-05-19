@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.34 2011/05/13 23:55:32 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.35 2011/05/19 22:03:13 rhuey Exp $
 
  AutoDock 
 
@@ -167,6 +167,7 @@ int parse_dpf_line( const char line[] )
               , {"ga_crossover_mode", GA_CROSSOVER_MODE}      
               , {"output_pop_file", DPF_POPFILE}      
               , {"output_population_statistics", DPF_OUTPUT_POP_STATS}      
+              , {"output_resnum_as", DPF_OUTPUT_RESNUM_AS}      
               , {"set_pattern", DPF_SET_PATTERN}      
               , {"compute_unbound_extended", DPF_COMPUTE_UNBOUND_EXTENDED} 
               , {"set_unbound_energy", DPF_UNBOUND}      

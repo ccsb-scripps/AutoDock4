@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.14 2010/10/01 22:51:39 mp Exp $
+ $Id: clmode.cc,v 1.15 2011/05/19 22:03:12 rhuey Exp $
 
  AutoDock 
 
@@ -219,10 +219,8 @@ void  clmode( const int   num_atm_maps,
 			type[atomCounter] = get_atom_type(pdbaname[atomCounter]);
 
                         if (type[atomCounter] == -1) {
-                            pr( logFile, "\nNOTE: Atom number %d, using default atom type 1...\n\n", atomCounter+1);
-                            type[atomCounter] = 0; // internal 0-origin
-                        } else {
-                            pr( logFile, "\nAtom number %d, recognized atom type = %d...\n\n", atomCounter+1, type[atomCounter]+1);
+                            pr( logFile, "\nNOTE: Atom number %d, unknown atom type \n\n", atomCounter+1);
+                            stop("Unknown atom type");
                         }
                         /* 
                          * Increment the number of atoms with this atom type:
