@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.30 2011/05/19 22:03:12 rhuey Exp $
+ $Id: dpftoken.h,v 1.31 2011/05/20 23:55:46 rhuey Exp $
 
  AutoDock 
 
@@ -50,6 +50,7 @@ enum DpfTokens {
   DPF_UNKNOWN                  = -1,
   DPF_NULL                     =  0,
   DPF_COMMENT                  =  1,
+  DPF_BLANK_LINE               =  2,
 // 2 // (DPF_TYPES was removed, since the "types" command is no longer supported in AD4
   DPF_FLD                      =  3,
   DPF_MAP                      =  4,
