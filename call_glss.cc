@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.52 2010/10/01 22:51:39 mp Exp $ 
+ $Id: call_glss.cc,v 1.53 2011/05/20 23:56:27 rhuey Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -269,7 +269,7 @@ State call_glss(/* not const */ Global_Search *global_method,
     FILE *pop_fileptr;
 
     global_method->reset(output_pop_stats);
-    local_method->reset();
+    if (local_method) local_method->reset();
     evaluate.reset();
 
     (void)fprintf( logFile, "\nCreating an initial population of %u individuals.\n", pop_size);
@@ -431,7 +431,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 	 fprintf(logFile, " ci_count: %u", global_method->ci_count);
 	 fprintf(logFile, " mg_count: %u", global_method->mg_count);
 	 fprintf(logFile, " mi_count: %u", global_method->mi_count);
-	 fprintf(logFile, " ls_count: %u", local_method->ls_count);
+     if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
 	 fprintf(logFile, "\n");
 	 }
      }
@@ -461,7 +461,7 @@ State call_glss(/* not const */ Global_Search *global_method,
                 (void)fprintf( logFile, " %d",i+1); 
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
             }
-            local_method->search(thisPop[i]);
+            if (local_method) local_method->search(thisPop[i]);
             if (outlev > 1) {
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
                 (void)fprintf( logFile, " \n"); 
@@ -506,7 +506,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 		 fprintf(logFile, " ci_count: %u", global_method->ci_count);
 		 fprintf(logFile, " mg_count: %u", global_method->mg_count);
 		 fprintf(logFile, " mi_count: %u", global_method->mi_count);
-		 fprintf(logFile, " ls_count: %u", local_method->ls_count);
+         if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
 		 fprintf(logFile, "\n");
 		 thisPop.nevals_last_pop_stats = evaluate.evals();
 		 }
@@ -537,7 +537,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 	 fprintf(logFile, " ci_count: %u", global_method->ci_count);
 	 fprintf(logFile, " mg_count: %u", global_method->mg_count);
 	 fprintf(logFile, " mi_count: %u", global_method->mi_count);
-	 fprintf(logFile, " ls_count: %u", local_method->ls_count);
+	 if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
 	 fprintf(logFile, "\n");
 	 }
 
