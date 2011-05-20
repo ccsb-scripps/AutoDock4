@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.19 2010/10/01 22:51:39 mp Exp $
+ $Id: gs.h,v 1.20 2011/05/20 23:55:16 rhuey Exp $
 
  AutoDock 
 
@@ -49,6 +49,8 @@ class Global_Search
       virtual int terminate(void) = 0;
       virtual void reset(void) = 0;
       virtual void reset(const Output_pop_stats&) = 0;
+      virtual char * shortname(void) = 0;
+      virtual char * longname(void) = 0;
       // the next four are only applicable to Genetic_Algorithm
       // but I'm uncertain how best to fit statistics into the
       // existing classes so bear with me  - Mike Pique Dec 2009
@@ -119,9 +121,12 @@ class Genetic_Algorithm : public Global_Search
       unsigned int num_generations(void) const;
       void reset(void);
       void reset(const Output_pop_stats&);
+      char * shortname(void);
+      char * longname(void);
       int terminate(void);
       int search(Population &);
       int set_linear_ranking_selection_probability_ratio(ConstReal );
+      
 };
 
 //  Inline Functions
@@ -185,6 +190,15 @@ inline void Genetic_Algorithm::mutation_values(const int init_low, const int ini
    torsStep = init_torStep;
 }
 
+inline char * Genetic_Algorithm::shortname(void)
+{
+        return "GA";
+}
+
+inline char * Genetic_Algorithm::longname(void)
+{
+        return "LAMARCKIAN GENETIC ALGORITHM";
+}
 inline unsigned int Genetic_Algorithm::num_generations(void) const
 {
    return(generations);
