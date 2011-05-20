@@ -52,11 +52,23 @@ class ParticleSwarmGS : public Global_Search
       unsigned int num_generations(void) const;
 		
 		// The following part are derived virtual functions
+        char *shortname(void);
+        char *longname(void);
 		void reset(void);
         void reset(const Output_pop_stats&);
         int terminate(void);
         int search(Population &);  			
 };
+
+inline char * ParticleSwarmGS::shortname(void)
+{
+        return "PSO";
+}
+
+inline char * ParticleSwarmGS::longname(void)
+{
+        return "PARTICLE SWARM OPTIMIZATION";
+}
 
 inline ParticleSwarmGS::~ParticleSwarmGS()
 {
