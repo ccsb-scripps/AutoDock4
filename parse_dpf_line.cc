@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.35 2011/05/19 22:03:13 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.36 2011/05/20 23:54:54 rhuey Exp $
 
  AutoDock 
 
@@ -223,7 +223,7 @@ int parse_dpf_line( const char line[] )
     /*  Recognize one character tokens  */
 
     if ((c[0]=='\n') || (c[0]=='\0')) {
-        token = DPF_NULL;
+        token = DPF_BLANK_LINE;
     } else if (c[0]=='#') {
         token = DPF_COMMENT;
     } else for (i=0;  i<(int)(sizeof(tokentable)/sizeof(*tokentable)); i++) {
