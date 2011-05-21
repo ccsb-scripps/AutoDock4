@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.53 2011/05/20 23:56:27 rhuey Exp $ 
+ $Id: call_glss.cc,v 1.54 2011/05/21 05:21:26 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -268,6 +268,11 @@ State call_glss(/* not const */ Global_Search *global_method,
     EvalMode localEvalMode = Normal_Eval;
     FILE *pop_fileptr;
 
+    // DEBUG MP 201105
+    (void)fprintf(logFile, "call_glss  global_method %s   local_method %s\n",
+      global_method?global_method->shortname():"NULL",
+      local_method?"Non-NULL":"NULL");
+
     global_method->reset(output_pop_stats);
     if (local_method) local_method->reset();
     evaluate.reset();
@@ -279,6 +284,7 @@ State call_glss(/* not const */ Global_Search *global_method,
     thisPop.nevals_last_pop_stats = 0;  // reset last time stats were printed
 
     if (sInit.ntor > 0) {
+	// TODO @@ MP this next is misleading as depends on B_RandomTran0 etc
         (void)fprintf( logFile, "\nAssigning a random translation, a random orientation and %d random torsions to each of the %u individuals.\n\n", sInit.ntor, pop_size);
     } else {
         (void)fprintf( logFile, "\nAssigning a random translation and a random orientation to each of the %u individuals.\n\n", pop_size);
@@ -436,7 +442,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 	 }
      }
 
-    do {
+     while ((evaluate.evals() < num_evals) && (!global_method->terminate())) {
         ++num_generations;
 
         if (outlev > 1) { (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", num_generations); }
@@ -453,26 +459,28 @@ State call_glss(/* not const */ Global_Search *global_method,
 
         if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
 
-        if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
+	if(local_method != NULL) {
+	   if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
 
-        for (i=0; i<pop_size; i++) {
+           for (i=0; i<pop_size; i++) {
             if (outlev > 1) {
                 (void)fprintf( logFile, "LS: %d",num_generations); 
                 (void)fprintf( logFile, " %d",i+1); 
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
-            }
-            if (local_method) local_method->search(thisPop[i]);
-            if (outlev > 1) {
+           }
+           local_method->search(thisPop[i]);
+           if (outlev > 1) {
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
                 (void)fprintf( logFile, " \n"); 
             }
-        }
+          }
 
-        if (outlev > 2) {
+          if (outlev > 2) {
             (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"local search\">\n", num_generations);
             thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
             (void)fprintf( logFile, "</generation>\n\n\n");
-        }
+          }
+	} // if a local_method is active
 
        // Print extended generational statistics 
        //  every generation 1 to 20
@@ -506,7 +514,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 		 fprintf(logFile, " ci_count: %u", global_method->ci_count);
 		 fprintf(logFile, " mg_count: %u", global_method->mg_count);
 		 fprintf(logFile, " mi_count: %u", global_method->mi_count);
-         if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
+		 if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
 		 fprintf(logFile, "\n");
 		 thisPop.nevals_last_pop_stats = evaluate.evals();
 		 }
@@ -522,9 +530,9 @@ State call_glss(/* not const */ Global_Search *global_method,
         }
 
         (void)fflush(logFile);
-    } while ((evaluate.evals() < num_evals) && (!global_method->terminate()));
+    }
 
-    thisPop.msort(1);
+    if (pop_size>1) thisPop.msort(1);
     (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
 
     // print "Population at Generation:" line one last time (if needed)
