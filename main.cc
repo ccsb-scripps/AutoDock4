@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.135 2011/05/19 22:03:12 rhuey Exp $
+ $Id: main.cc,v 1.136 2011/05/21 00:01:27 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -110,7 +110,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.135 2011/05/19 22:03:12 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.136 2011/05/21 00:01:27 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -723,7 +723,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.135 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.136 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -795,7 +795,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
             break;
 
-        case DPF_NULL:
+        case DPF_BLANK_LINE:
         case DPF_COMMENT:
             pr( logFile, "DPF> %s", line );
             break;
@@ -813,7 +813,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
-    case DPF_NULL:
+    case DPF_BLANK_LINE:
     case DPF_COMMENT:
         break;
 
@@ -3027,6 +3027,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
+    //case DPF_GS:
     case DPF_GALS:
         (void) fflush( logFile );
         /*
@@ -3036,12 +3037,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             if ( nruns > MAX_RUNS ) {
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
-            } else if ((GlobalSearchMethod==NULL)||(LocalSearchMethod==NULL)) {
-                prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n", programname);
-                stop(error_message);
-            }
+            } // else if ((GlobalSearchMethod==NULL)||(LocalSearchMethod==NULL)) {
+               //  prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n", programname);
+               //  stop(error_message);
+             //}
             exit_if_missing_elecmap_desolvmap_about("gals");
-            pr( logFile, "Number of requested LGA dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
+            pr( logFile, "Number of requested %s dockings = %d run%c\n", GlobalSearchMethod->shortname(), nruns, (nruns > 1)?'s':' ');
             if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
             pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
 
@@ -3067,7 +3068,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
             for (j=0; j<nruns; j++) {
 
-                (void) fprintf( logFile, "\n\n\tBEGINNING LAMARCKIAN GENETIC ALGORITHM DOCKING\n");
+                (void) fprintf( logFile, "\n\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
                 (void) fflush( logFile );
                 pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
 
@@ -3247,6 +3248,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
+    //case DPF_NULL:
     case DPF_GS:
       get1arg(line, "%*s %d", &nruns, "GA_ONLY_RUN or DO_GLOBAL_ONLY");
 
@@ -3659,7 +3661,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	   //BEGINNING PARTICLE SWARM OPTIMIZATION run
 	   for (j = 0; j < nruns; j++)
 	   {	 
-	 		(void) fprintf( logFile, "\n\n\tBEGINNING PARTICLE SWARM OPTIMIZATION (constrict PSO) \n");
+	 		//(void) fprintf( logFile, "\n\n\tBEGINNING PARTICLE SWARM OPTIMIZATION (constrict PSO) \n");
+            (void) fprintf( logFile, "\n\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
 	 		(void) fflush( logFile );
 
 	 		pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
