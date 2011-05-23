@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.31 2011/05/21 00:02:22 rhuey Exp $
+# $Id: test_autodock4.py,v 1.32 2011/05/23 23:45:54 rhuey Exp $
 #
 
 """
@@ -304,11 +304,24 @@ class AutoDock4_1pgp_ga_select_linear_ranking_test( AutoDock_simple_test ):
 
 #______________________________________________________________________________
 
+#print "docked[binding_energy]=", docked['binding_energy']
+class AutoDock4_1pgp_ligrand_ga_only_test( AutoDock_simple_test ):
+    """Test that autodock 4.2 works when ligand is randomized within autodock as set in the DPF."""
+    dpf_stem = "1pgp_ligrand_ga_only"
+    #print "in new ligrand_ga_only test"
+        #expected_binding_energy = +843.59     -5.89
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -1.80
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+
 class AutoDock4_1pgp_ga_only_test( AutoDock_simple_test ):
     """Test that autodock 4.2 works when ga_only is set in the DPF."""
     dpf_stem = "1pgp_ga_only"
-    print "in new ga_only test"
-        #expected_free_energy = +843.59     -5.89
+    #print "in new ga_only test"
+        #expected_binding_energy = +843.59     -5.89
         #expected_intermol_energy = +21.00  -6.17
         #expected_internal_energy = +820.50 -1.80
     expected_outcome = True # True means Successful Completion!
@@ -354,6 +367,29 @@ class AutoDock4_1pgp_no_parameter_file_test( AutoDock_test ):
     dpf_stem = "1pgp_no_parameter_file"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
+
+class AutoDock4_energy_test( AutoDock_base_test ):
+    """Class for AutoDock testing free energy."""
+    expected_binding_energy = None
+
+    def test_dlg_exists_and_test_energy( self):
+        """Check that run finished and a new DLG has been computed.
+        Also check the final energy is the expected value."""
+        # Check that run finished and a new DLG has been computed.
+        if (self.expected_outcome == True ):
+            print "Testing that DLG exists and AutoDock successfully completed."
+        else:
+            print "Testing that DLG exists and AutoDock did not complete."
+        self.assertEqual( self.computed, self.expected_outcome )
+        # Check the final energy is expected value.
+        #expected_unbound_energy = -1.80
+        #expected_binding_energy = +843.59     -5.89
+        (binding_energy) = parse_energy_from_DLG( self.dlg_filename, ['binding_energy'])[0]
+        print "Testing that binding energy = %.2f kcal/mol." % (self.expected_binding_energy,)
+        print "binding_energy=", binding_energy
+        self.assertEqual( round(binding_energy,6), round(self.expected_binding_energy,6))
+#______________________________________________________________________________
+
 
 class AutoDock4_unbound_test( AutoDock_base_test ):
     """Class for AutoDock testing unbound energy."""
@@ -434,6 +470,34 @@ class AutoDock4_1pgp_unbound_set10_test( AutoDock4_unbound_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+#print "docked[binding_energy]=", docked['binding_energy']
+class AutoDock4_1pgp_ligrand_ga_only_energy_test( AutoDock4_energy_test ):
+    """Test that autodock 4.2 works when ligand is randomized within autodock as set in the DPF.
+                 and that expected energy is found"""
+    dpf_stem = "1pgp_ligrand_ga_only"
+    #print "in new ligrand_ga_only test"
+        #expected_binding_energy = +843.59     -5.89
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -1.80
+    expected_binding_energy = 11.51
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+
+class AutoDock4_1pgp_ga_only_energy_test( AutoDock4_energy_test ):
+    """Test that autodock 4.2 works when ga_only is set in the DPF."""
+    dpf_stem = "1pgp_ga_only"
+    #print "in new ga_only test"
+        #expected_binding_energy = +843.59     -5.89
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -1.80
+    expected_binding_energy = -4.08
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+
 if __name__ == '__main__':
     #  This syntax lets us run all the tests,
     #  or conveniently comment out tests we're not interested in.
@@ -458,6 +522,8 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_unbound_model_illegal_test', #1
         'AutoDock4_1pgp_ga_select_tournament_test',
         'AutoDock4_1pgp_ga_select_linear_ranking_test',
+        #next dpf sets tran0,quaternion0,dihe0 to random
+        'AutoDock4_1pgp_ligrand_ga_only_test', 
         'AutoDock4_1pgp_ga_only_test',
         ## tests which check for specific value
         'AutoDock4_1pgp_test',
@@ -474,6 +540,9 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_unbound_model_extended',
         'AutoDock4_1pgp_unbound_compute_unbound_extended',
         'AutoDock4_1pgp_unbound_model_value',
+        # tests for ga_only and energy
+        'AutoDock4_1pgp_ligrand_ga_only_energy_test',
+        'AutoDock4_1pgp_ga_only_energy_test',
     ]
     unittest.main( argv=( [__name__ ,] + test_cases ) )
     #  The call "unittest.main()" automatically runs all the TestCase classes in
