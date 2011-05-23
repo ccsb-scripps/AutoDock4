@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.136 2011/05/21 00:01:27 rhuey Exp $
+ $Id: main.cc,v 1.137 2011/05/23 23:49:52 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -110,7 +110,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.136 2011/05/21 00:01:27 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.137 2011/05/23 23:49:52 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -350,9 +350,9 @@ Boole B_torReduc = FALSE;
 Boole B_trnReduc = FALSE;
 Boole B_write_all_clusmem = FALSE;
 Boole B_ShowTorE = FALSE;
-Boole B_RandomTran0 = FALSE;
-Boole B_RandomQuat0 = FALSE;
-Boole B_RandomDihe0 = FALSE;
+Boole B_RandomTran0 = TRUE;
+Boole B_RandomQuat0 = TRUE;
+Boole B_RandomDihe0 = TRUE;
 Boole B_CalcTrnRF = FALSE;
 Boole B_CalcQtwRF = FALSE;
 Boole B_CalcTorRF = FALSE;
@@ -723,7 +723,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.136 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.137 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3027,7 +3027,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
-    //case DPF_GS:
+    case DPF_GS:
     case DPF_GALS:
         (void) fflush( logFile );
         /*
@@ -3248,8 +3248,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
-    //case DPF_NULL:
-    case DPF_GS:
+    case DPF_NULL:
+    //case DPF_GS:
       get1arg(line, "%*s %d", &nruns, "GA_ONLY_RUN or DO_GLOBAL_ONLY");
 
           if (nruns>MAX_RUNS) {
