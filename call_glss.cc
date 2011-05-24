@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.55 2011/05/24 23:43:48 rhuey Exp $ 
+ $Id: call_glss.cc,v 1.56 2011/05/24 23:50:57 rhuey Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -384,8 +384,8 @@ State call_glss(/* not const */ Global_Search *global_method,
 //We now have a mapped and evaluated population suitable for global search
 
     //(void)fprintf( logFile, "Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of %u\nenergy evaluations.\n\n", num_evals);
-    (void)fprintf( logFile, "Beginning %s %s (%s%s), with a maximum of %u\nenergy evaluations.\n\n", 
-        local_method?"Lamarckian ":"",
+    (void)fprintf( logFile, "Beginning %s%s (%s%s), with a maximum of %u energy evaluations.\n\n", 
+        local_method?"LAMARCKIAN ":"",
       global_method?global_method->longname():"NULL",
         local_method?"L":"",
       global_method?global_method->shortname():"NULL",
