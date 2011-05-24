@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.32 2011/05/23 23:45:54 rhuey Exp $
+# $Id: test_autodock4.py,v 1.33 2011/05/24 17:06:04 rhuey Exp $
 #
 
 """
@@ -313,9 +313,7 @@ class AutoDock4_1pgp_ligrand_ga_only_test( AutoDock_simple_test ):
         #expected_intermol_energy = +21.00  -6.17
         #expected_internal_energy = +820.50 -1.80
     expected_outcome = True # True means Successful Completion!
-
 #______________________________________________________________________________
-
 
 class AutoDock4_1pgp_ga_only_test( AutoDock_simple_test ):
     """Test that autodock 4.2 works when ga_only is set in the DPF."""
@@ -327,6 +325,19 @@ class AutoDock4_1pgp_ga_only_test( AutoDock_simple_test ):
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
+
+
+class AutoDock4_1pgp_flexres_test( AutoDock_simple_test ):
+    """Test that autodock 4.2 works when flexres is set in the DPF."""
+    dpf_stem = "1pgp_flexres"
+    #print "in new flexres test"
+        #expected_binding_energy =  -4.22
+        #expected_intermol_energy = -5.93
+        #expected_internal_energy = -2.18
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
 
 class AutoDock_test( AutoDock_base_test ):
     """Class for AutoDock testing."""
@@ -498,6 +509,20 @@ class AutoDock4_1pgp_ga_only_energy_test( AutoDock4_energy_test ):
 #______________________________________________________________________________
 
 
+class AutoDock4_1pgp_flexres_energy_test( AutoDock4_energy_test ):
+    """Test that autodock 4.2 works when flexres is set in the DPF."""
+    dpf_stem = "1pgp_flexres"
+    #print "in new flexres test"
+        #expected_binding_energy =  -4.22
+        #expected_intermol_energy = -5.93
+        #expected_internal_energy = -2.18
+    expected_binding_energy = -4.22
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+
+
 if __name__ == '__main__':
     #  This syntax lets us run all the tests,
     #  or conveniently comment out tests we're not interested in.
@@ -525,6 +550,8 @@ if __name__ == '__main__':
         #next dpf sets tran0,quaternion0,dihe0 to random
         'AutoDock4_1pgp_ligrand_ga_only_test', 
         'AutoDock4_1pgp_ga_only_test',
+        # tests using flexible residues 
+        'AutoDock4_1pgp_flexres_test',
         ## tests which check for specific value
         'AutoDock4_1pgp_test',
         'AutoDock4_1pgp_smaller_test',
@@ -543,6 +570,8 @@ if __name__ == '__main__':
         # tests for ga_only and energy
         'AutoDock4_1pgp_ligrand_ga_only_energy_test',
         'AutoDock4_1pgp_ga_only_energy_test',
+        # tests for energy with flexible residues 
+        'AutoDock4_1pgp_flexres_energy_test',
     ]
     unittest.main( argv=( [__name__ ,] + test_cases ) )
     #  The call "unittest.main()" automatically runs all the TestCase classes in
