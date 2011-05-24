@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.20 2011/05/20 23:55:16 rhuey Exp $
+ $Id: gs.h,v 1.21 2011/05/24 23:43:48 rhuey Exp $
 
  AutoDock 
 
@@ -197,7 +197,7 @@ inline char * Genetic_Algorithm::shortname(void)
 
 inline char * Genetic_Algorithm::longname(void)
 {
-        return "LAMARCKIAN GENETIC ALGORITHM";
+        return "GENETIC ALGORITHM";
 }
 inline unsigned int Genetic_Algorithm::num_generations(void) const
 {

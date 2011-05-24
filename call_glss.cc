@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.54 2011/05/21 05:21:26 mp Exp $ 
+ $Id: call_glss.cc,v 1.55 2011/05/24 23:43:48 rhuey Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -273,7 +273,7 @@ State call_glss(/* not const */ Global_Search *global_method,
       global_method?global_method->shortname():"NULL",
       local_method?"Non-NULL":"NULL");
 
-    global_method->reset(output_pop_stats);
+    if (global_method) global_method->reset(output_pop_stats);
     if (local_method) local_method->reset();
     evaluate.reset();
 
@@ -383,8 +383,13 @@ State call_glss(/* not const */ Global_Search *global_method,
 
 //We now have a mapped and evaluated population suitable for global search
 
-    (void)fprintf( logFile, "Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of %u\nenergy evaluations.\n\n", num_evals);
-
+    //(void)fprintf( logFile, "Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of %u\nenergy evaluations.\n\n", num_evals);
+    (void)fprintf( logFile, "Beginning %s %s (%s%s), with a maximum of %u\nenergy evaluations.\n\n", 
+        local_method?"Lamarckian ":"",
+      global_method?global_method->longname():"NULL",
+        local_method?"L":"",
+      global_method?global_method->shortname():"NULL",
+    num_evals);
  // M Pique 28 Oct 2009 - adding a (harmless...) thisPop.msort(1) here
  // broke the unbound-extended test. Investigating why
  // Conclusion: the test is sensitive to population order since it does
@@ -433,13 +438,15 @@ State call_glss(/* not const */ Global_Search *global_method,
        if(outlev>0 && output_pop_stats.level==1) { // "basic"
          (void) thisPop.printPopulationStatisticsVerbose(logFile, 
          num_generations, evaluate.evals(), sInit.ntor, "");
-	 fprintf(logFile, " cg_count: %u", global_method->cg_count);
-	 fprintf(logFile, " ci_count: %u", global_method->ci_count);
-	 fprintf(logFile, " mg_count: %u", global_method->mg_count);
-	 fprintf(logFile, " mi_count: %u", global_method->mi_count);
-     if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
-	 fprintf(logFile, "\n");
-	 }
+         if (global_method) {
+             fprintf(logFile, " cg_count: %u", global_method->cg_count);
+             fprintf(logFile, " ci_count: %u", global_method->ci_count);
+             fprintf(logFile, " mg_count: %u", global_method->mg_count);
+             fprintf(logFile, " mi_count: %u", global_method->mi_count);
+            }
+         if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
+         fprintf(logFile, "\n");
+	    }
      }
 
      while ((evaluate.evals() < num_evals) && (!global_method->terminate())) {
