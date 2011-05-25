@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.138 2011/05/24 23:43:48 rhuey Exp $
+ $Id: main.cc,v 1.139 2011/05/25 22:58:16 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -98,7 +98,8 @@ using std::string;
 #include "main.h"
 #include "alea.h"
 // PSO
-#include "call_cpso.h"
+//#include "call_cpso.h"
+#include "dimLibrary.h"
 #include "pso.h"
 #include "call_gs.h"
 
@@ -110,7 +111,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.138 2011/05/24 23:43:48 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.139 2011/05/25 22:58:16 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -124,7 +125,7 @@ static void exit_if_missing_elecmap_desolvmap_about(string  keyword); // see bot
 // State Structure Variable DECLARATION
 State sNew[S_max];
 int nb_eval; // Current number of Swarm evaluations
-int eval_max = 0; //Max number of Swarm iterations
+//int eval_max = 0; //Max number of Swarm iterations
 int S ; // Swarm size
 double xmin[D_max], xmax[D_max]; // Intervals defining the search space
 //double Vmin[D_max], Vmax[D_max]; // Intervals defining the search space
@@ -495,7 +496,7 @@ Local_Search *LocalSearchMethod = NULL;
 double c1 = 2.05; 		// coefficient
 double c2 = 2.05; 		// coefficient
 int K = 4; 				// Max number of particles informed by a given one 
-int eval_max = 250000; //  max number of evalulations 
+//int eval_max = 250000; //  max number of evalulations 
 //PSO in SODOCK
 float pso_wmax = 0.9;
 float pso_wmin = 0.4;
@@ -723,7 +724,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.138 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.139 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3638,10 +3639,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	  					pso_wmax, 
 	  					pso_wmin, 
 	  					LocalSearchMethod, 
-	  					eval_max, 
 	  					c1,
 	  					c2,
 	  					K,
+	  					num_generations, 
 	  					output_pop_stats);  
         ((ParticleSwarmGS*)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
 	  					   
@@ -3715,8 +3716,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	 						
 #endif
             //sHist[j] = call_cpso(GlobalSearchMethod, sInit, j, S, D, xmin, xmax, eval_max, K, c1, c2, outlev);
-            sHist[j] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size,
-                                      &ligand, output_pop_stats, info, end_of_branch);
+            //sHist[j] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size,
+            //                          &ligand, output_pop_stats, info, end_of_branch);
+                sHist[j] = call_glss( GlobalSearchMethod, LocalSearchMethod,
+                                          sInit,
+                                          num_evals, pop_size,
+                                          outlev,
+                                          output_pop_stats, &ligand,
+                                          B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
+                                          info, FN_pop_file, end_of_branch );
 	 		//Finished Particle Swarm Optimization Run	 	 		
 	 		gaEnd = times(&tms_gaEnd);
             pr(logFile, "Time taken for this PSO run:\n");

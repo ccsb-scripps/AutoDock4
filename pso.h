@@ -26,6 +26,7 @@ class ParticleSwarmGS : public Global_Search
 	    float c;    // constriction factor for cPSO
 	    
 		int generations;
+		unsigned int max_generations;
 		int num_evals;
 		int outputEveryNgens;
         Output_pop_stats output_pop_stats;
@@ -40,10 +41,10 @@ class ParticleSwarmGS : public Global_Search
 			float init_wmax, 
 			float init_wmin,
 			Local_Search *init_LS, 
-			int init_num_evals,
 			float pso_c1,
 			float pso_c2,
 			int pso_k, 
+			unsigned int max_generations,
 			Output_pop_stats output_pop_stats); 			
 		
 		Individual& getBest();	
@@ -89,10 +90,10 @@ inline ParticleSwarmGS::ParticleSwarmGS(
 			float init_wmax, 
 			float init_wmin,
 			Local_Search *init_LS, 
-			int init_num_evals, 
 			float pso_c1,
 			float pso_c2,
 			int pso_k,
+			const unsigned int init_max_generations, 
 			Output_pop_stats init_output_pop_stats)
 {
 	vmax = init_vmax; 
@@ -100,7 +101,8 @@ inline ParticleSwarmGS::ParticleSwarmGS(
 	wmax = init_wmax; 
 	wmin = init_wmin;
 	LocalSearchMethod = init_LS;
-	num_evals = init_num_evals; 
+    generations = 0;
+    max_generations = init_max_generations;
 	output_pop_stats = init_output_pop_stats;
 	_Pi =NULL; 
 	_Pg = NULL ;
@@ -125,10 +127,16 @@ inline void ParticleSwarmGS::initialize(const unsigned int init_pop_size, const 
 
 // The following part are derived virtual functions
 //int search(Population &);
+
 inline int ParticleSwarmGS::terminate(void)
 {
-	return 0;
+   if (max_generations>0) {
+      return(generations>=max_generations); 
+   } else {
+      return(0);  //  Don't terminate
+   }
 }
+
 	
 inline void ParticleSwarmGS::reset(void)
 {

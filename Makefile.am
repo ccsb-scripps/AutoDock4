@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.31 2011/05/13 23:55:31 rhuey Exp $
+# $Id: Makefile.am,v 1.32 2011/05/25 22:58:16 rhuey Exp $
 # 
 # AutoDock  
 # 
@@ -56,7 +56,6 @@ autodock4_SOURCES += \
     banner.cc \
     bestpdb.cc \
 	calculateEnergies.cc \
-    call_cpso.cc \
     call_glss.cc \
     call_gs.cc \
     call_ls.cc \
@@ -150,7 +149,6 @@ autodock4_SOURCES += \
 		banner.h \
 		bestpdb.h \
 		calculateEnergies.h \
-		call_cpso.h \
 		call_glss.h \
 		call_gs.h \
 		call_ls.h \

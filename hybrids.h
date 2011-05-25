@@ -1,6 +1,6 @@
 /*
 
- $Id: hybrids.h,v 1.19 2011/03/08 04:18:36 mp Exp $
+ $Id: hybrids.h,v 1.20 2011/05/25 22:58:16 rhuey Exp $
 
  AutoDock 
 
@@ -107,9 +107,9 @@ State call_gs(Global_Search *global_method, State& now, unsigned int num_evals, 
 #ifndef CALL_PSO
 #define CALL_PSO
 
-State call_cpso(Local_Search *const local_method, const State& sInit, const int n_exec, const int S, const int D, 
-                double *const xmin, double *const xmax, const unsigned int num_evals, const int K,
-		ConstDouble c1, ConstDouble c2, const int outlev);
+//State call_cpso(Local_Search *const local_method, const State& sInit, const int n_exec, const int S, const int D, 
+//                double *const xmin, double *const xmax, const unsigned int num_evals, const int K,
+//		ConstDouble c1, ConstDouble c2, const int outlev);
 
 #endif
 
