@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.56 2011/05/24 23:50:57 rhuey Exp $ 
+ $Id: call_glss.cc,v 1.57 2011/05/25 04:29:52 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -30,7 +30,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #endif
 
 /********************************************************************
-     Call_glss:  Invokes a GA-LS hybrid to try and solve the
+     Call_glss:  Invokes either GA-only or a GA-LS hybrid to try and solve the
                  docking problem.
 
                                 rsh 9/95
@@ -261,7 +261,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 {
     register unsigned int i;
     register int j;
-    int num_generations = 0, allEnergiesEqual = 1, numTries = 0;
+    int allEnergiesEqual = 1, numTries = 0;
     int indiv = 0; // Number of Individual in Population to set initial state variables for.
     int max_numTries = 1000;
     double firstEnergy = 0.0;
@@ -289,7 +289,7 @@ State call_glss(/* not const */ Global_Search *global_method,
     } else {
         (void)fprintf( logFile, "\nAssigning a random translation and a random orientation to each of the %u individuals.\n\n", pop_size);
     }
-    global_ntor = sInit.ntor; //debug
+    global_ntor = sInit.ntor; //debug (can be removed when call_gs goes away  MP)
 #ifdef DEBUG
     (void)fprintf(logFile,"\ncall_glss.cc/State call_glss():  {\n");
 #endif
@@ -375,103 +375,55 @@ State call_glss(/* not const */ Global_Search *global_method,
 
     if (outlev > 2) { 
         (void)fprintf( logFile, "The initial population consists of the following %d individuals:\n\n", pop_size);
-        (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"initialisation of population\">\n", num_generations);
+        (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"initialisation of population\">\n", 0);
         (void)fprintf( logFile, "</generation>\n\n\n");
     }
 
-    if (pop_size > 1 && outlev > 3 ) { minmeanmax( logFile, thisPop, num_generations, info ); }
 
-//We now have a mapped and evaluated population suitable for global search
+// We now have a mapped and evaluated population suitable for search
 
-    //(void)fprintf( logFile, "Beginning Lamarckian Genetic Algorithm (LGA), with a maximum of %u\nenergy evaluations.\n\n", num_evals);
+    // next line will resemble "Beginning LAMARCKIAN GENETIC ALGORITHM (LGA), with .."
     (void)fprintf( logFile, "Beginning %s%s (%s%s), with a maximum of %u energy evaluations.\n\n", 
         local_method?"LAMARCKIAN ":"",
       global_method?global_method->longname():"NULL",
         local_method?"L":"",
       global_method?global_method->shortname():"NULL",
     num_evals);
- // M Pique 28 Oct 2009 - adding a (harmless...) thisPop.msort(1) here
- // broke the unbound-extended test. Investigating why
- // Conclusion: the test is sensitive to population order since it does
- // only one generation of glss.  So I'm removing the msort(1) and doing
- // the search for lowest-energy individual by hand.
-#ifdef DEBUGMSORT
-     double *beforesort = new double[pop_size];
-     double *aftersort = new double[pop_size];
-     int *beforeorder = new int[pop_size];
-     int *afterorder = new int[pop_size];
 
-    (void)fprintf(logFile,"#evals before msort %-6u  DEBUGMSORT call_glss.cc\n", evaluate.evals());
-     for (i=0; i<pop_size; i++) beforesort[i] = thisPop[i].value(Normal_Eval);
-     //thisPop.msort(1);
-     for (i=0; i<pop_size; i++) aftersort[i] = thisPop[i].value(Normal_Eval);
 
-     // set beforeorder[i] to location j of each aftersort value
-     for (i=0; i<pop_size; i++) beforeorder[i] = -1 ; // flag unset values
-     for (i=0; i<pop_size; i++) \
-     for (j=0;j<pop_size && aftersort[i]!=beforesort[beforeorder[i]=j];j++) ;
-     // set afterorder[i] to location j of each beforesort value
-     for (i=0; i<pop_size; i++) afterorder[i] = -1 ; // flag unset values
-     for (i=0; i<pop_size; i++) \
-     for (j=0;j<pop_size && beforesort[i]!=aftersort[afterorder[i]=j];j++) ;
-     // report 
-    (void)fprintf(logFile,"#evals after msort %-6u  DEBUGMSORT call_glss.cc\n", evaluate.evals());
-    (void)fprintf(logFile,"pop before     after sort   locn   DEBUGMSORT call_glss.cc\n");
-     for (i=0; i<pop_size; i++) 
-       (void)fprintf(logFile,"%3d %9.2f %3d   %9.2f %3d\n", 
-         i, beforesort[i], afterorder[i], aftersort[i], beforeorder[i]);
+     // major loop over generations - terminated by logic within
+     // generation 0 is searchless and is used to print initial population statistics
+     //
+     // skeleton is:
+     //   while ( ! terminate ) increment generation 0 to ...
+     //      if ( generation > 0 )  {  search population globally and locally }
+     //      if ( search is terminating  or   generation is "due" ) print stats
+     //      if ( search is terminating ) break
+     //      end while
 
-      delete[] beforesort;
-      delete[] aftersort;
-      delete[] beforeorder;
-      delete[] afterorder;
-#endif
-    if(pop_size>0) {
-       double bestenergy = thisPop[0].value(Normal_Eval);
-       for (i=1; i<pop_size; i++) if(bestenergy>thisPop[i].value(Normal_Eval)) \
-         bestenergy=thisPop[i].value(Normal_Eval);
-       (void)fprintf(logFile,"Initial-Value: %.3f\n", bestenergy);
+     Boole terminate = FALSE;
+     for(int generation=0; ! terminate ; generation++) {
 
-       // print "Population at Generation:" line 
-       //   with low/high/mean/median/stddev/state_of_best_indiv...
-       // and search counts (expected to be zero)
-       if(outlev>0 && output_pop_stats.level==1) { // "basic"
-         (void) thisPop.printPopulationStatisticsVerbose(logFile, 
-         num_generations, evaluate.evals(), sInit.ntor, "");
-         if (global_method) {
-             fprintf(logFile, " cg_count: %u", global_method->cg_count);
-             fprintf(logFile, " ci_count: %u", global_method->ci_count);
-             fprintf(logFile, " mg_count: %u", global_method->mg_count);
-             fprintf(logFile, " mi_count: %u", global_method->mi_count);
-            }
-         if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
-         fprintf(logFile, "\n");
-	    }
-     }
+        if (outlev > 1) { (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", generation); }
 
-     while ((evaluate.evals() < num_evals) && (!global_method->terminate())) {
-        ++num_generations;
-
-        if (outlev > 1) { (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", num_generations); }
-        
+      if(generation>0) {
         if (outlev > 1) { (void)fprintf( logFile, "Performing Global Search.\n"); }
-
         global_method->search(thisPop);
 
         if (outlev > 2) {
-            (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"global search\">\n", num_generations);
+            (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"global search\">\n", generation);
             thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
-        if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
+        if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, generation, info ); }
 
 	if(local_method != NULL) {
 	   if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
 
            for (i=0; i<pop_size; i++) {
             if (outlev > 1) {
-                (void)fprintf( logFile, "LS: %d",num_generations); 
+                (void)fprintf( logFile, "LS: %d",generation); 
                 (void)fprintf( logFile, " %d",i+1); 
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
            }
@@ -483,14 +435,40 @@ State call_glss(/* not const */ Global_Search *global_method,
           }
 
           if (outlev > 2) {
-            (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"local search\">\n", num_generations);
+            (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"local search\">\n", generation);
             thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
             (void)fprintf( logFile, "</generation>\n\n\n");
           }
 	} // if a local_method is active
 
-       // Print extended generational statistics 
-       //  every generation 1 to 20
+        if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, generation, info ); }
+	} // end if generation > 0
+
+    // note we terminate without searching if num_evals is 0
+    terminate = global_method->terminate()  || evaluate.evals() >= num_evals;
+
+
+    if(pop_size>0 && generation==0) {
+	// print initial best energy for statistics
+	// M Pique 28 Oct 2009 - adding a (harmless...) thisPop.msort(1) here
+	// broke the unbound-extended test. Investigating why
+	// Conclusion: the test is sensitive to population order since it does
+	// only one generation of glss.  So I'm removing the msort(1) and doing
+	// the search for lowest-energy individual by hand.
+       double bestenergy = thisPop[0].value(Normal_Eval);
+       for (i=1; i<pop_size; i++) if(bestenergy>thisPop[i].value(Normal_Eval)) \
+         bestenergy=thisPop[i].value(Normal_Eval);
+       (void)fprintf(logFile,"Initial-Value: %.3f\n", bestenergy);
+       }
+
+
+       // Print extended generational population statistics, when "due" :
+       //
+       //  at generation 0
+       //  or..
+       //  upon search termination
+       //  or..
+       //  every generation 0 to 20
        //  every tenth generation 20 to output_pop_stats.everyNgens (typically 100)
        //  every "output_pop_stats.everyNgens" (typically 100) if greater than that
        //
@@ -500,33 +478,39 @@ State call_glss(/* not const */ Global_Search *global_method,
        //
        // This is purely for studying population convergence and is
        // controlled by the "output_population_statistics" DPF keyword. - M Pique 2010
-       if (outlev>0 && output_pop_stats.level > 0 && 
+       if (outlev>0 && output_pop_stats.level > 0 &&  (
+	  generation==0
+	  ||
+	  terminate 
+	  ||
             (output_pop_stats.everyNgens != 0 && (
-	    (num_generations <= 20) ||
-	    (num_generations <= (int)output_pop_stats.everyNgens 
-	       && num_generations%10 == 0) ||
-            (num_generations%output_pop_stats.everyNgens == 0 ) ) )
+	    (generation <= 20) ||
+	    (generation <= (int)output_pop_stats.everyNgens 
+	       && generation%10 == 0) ||
+            (generation%output_pop_stats.everyNgens == 0 ) ) )
 	  || (output_pop_stats.everyNevals != 0 &&
 	     evaluate.evals() - thisPop.nevals_last_pop_stats 
 	       >= output_pop_stats.everyNevals)
-
+             )
 	 ) {
 	       // print "Population at Generation:" line 
 	       //   with low/high/mean/median/stddev/state_of_best_indiv...
-	       // followed by global search stats (crossover count, mutation count)
+	       // followed by GA global search stats (crossover count, mutation count)
 	       // and local search stats (invocation count)
 	       (void) thisPop.printPopulationStatisticsVerbose(logFile, 
-		 num_generations, evaluate.evals(), sInit.ntor, "");
-		 fprintf(logFile, " cg_count: %u", global_method->cg_count);
-		 fprintf(logFile, " ci_count: %u", global_method->ci_count);
-		 fprintf(logFile, " mg_count: %u", global_method->mg_count);
-		 fprintf(logFile, " mi_count: %u", global_method->mi_count);
+		 generation, evaluate.evals(), sInit.ntor, "");
+		 if (global_method) {
+		     fprintf(logFile, " cg_count: %u", global_method->cg_count);
+		     fprintf(logFile, " ci_count: %u", global_method->ci_count);
+		     fprintf(logFile, " mg_count: %u", global_method->mg_count);
+		     fprintf(logFile, " mi_count: %u", global_method->mi_count);
+		    }
 		 if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
 		 fprintf(logFile, "\n");
 		 thisPop.nevals_last_pop_stats = evaluate.evals();
 		 }
-        if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, num_generations, info ); }
 
+	// MP TODO wont this next put each generation into the same file, not append?
         if (strlen(FN_pop_file) > 0) { // YES, do print!
             if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
                 pr(logFile, "\n%s: ERROR:  I'm sorry, I cannot create\"%s\".\n\n", programname, FN_pop_file);
@@ -537,24 +521,10 @@ State call_glss(/* not const */ Global_Search *global_method,
         }
 
         (void)fflush(logFile);
-    }
+    } // end while not terminating loop over generation
 
     if (pop_size>1) thisPop.msort(1);
     (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
-
-    // print "Population at Generation:" line one last time (if needed)
-    //   with low/high/mean/median/stddev/state_of_best_indiv...
-    if(outlev>0 && output_pop_stats.level==1  // "basic"
-	     && evaluate.evals() > thisPop.nevals_last_pop_stats) {
-       (void) thisPop.printPopulationStatisticsVerbose(logFile, 
-        num_generations, evaluate.evals(), sInit.ntor, "");
-	 fprintf(logFile, " cg_count: %u", global_method->cg_count);
-	 fprintf(logFile, " ci_count: %u", global_method->ci_count);
-	 fprintf(logFile, " mg_count: %u", global_method->mg_count);
-	 fprintf(logFile, " mi_count: %u", global_method->mi_count);
-	 if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
-	 fprintf(logFile, "\n");
-	 }
 
     return( thisPop[0].state(sInit.ntor) );
 }
