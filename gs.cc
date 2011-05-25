@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.45 2011/03/08 04:18:36 mp Exp $
+ $Id: gs.cc,v 1.46 2011/05/25 05:03:57 mp Exp $
 
  AutoDock 
 
@@ -37,9 +37,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>      /*time_t time(time_t *tloc); */
-#include <time.h>           /*time_t time(time_t *tloc); */
-#include <sys/times.h>
 
 #include <math.h>
 #include "gs.h"
@@ -58,7 +55,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "constants.h"
 #include "autocomm.h"
-#include "timesyshms.h"
 #include "writePDBQT.h"
 #include "qmultiply.h"
 
@@ -1406,17 +1402,9 @@ int Genetic_Algorithm::search(Population &solutions)
 {
    register unsigned int i;
 
-   struct tms tms_genStart;
-   struct tms tms_genEnd;
-
-   Clock genStart;
-   Clock genEnd;
-
 #ifdef DEBUG /* DEBUG { */
    (void)fprintf(logFile, "gs.cc/int Genetic_Algorithm::search(Population &solutions)\n");
 #endif /* } DEBUG */
-
-   genStart = times( &tms_genStart );
 
 #ifdef DEBUG3 /* DEBUG3 { */
    for (i=0; i<solutions.num_individuals(); i++) {
@@ -1509,34 +1497,5 @@ int Genetic_Algorithm::search(Population &solutions)
    for (i=0; i<solutions.num_individuals(); i++) {
        solutions[i].incrementAge();
    }
-
-   genEnd = times( &tms_genEnd );
-
-   // generation is over, tabulate statistics
-
-   if (debug > 0) {
-       (void)fprintf(logFile,"DEBUG:  Generation: %3u, output_pop_stats.everyNgens = %3d, generations%%output_pop_stats.everyNgens = %u\n",
-       generations, output_pop_stats.everyNgens, output_pop_stats.everyNgens>0?generations%output_pop_stats.everyNgens:0);
-   }
-       /* Only output statistics if the output level is not 0. */
-   if (output_pop_stats.everyNgens != 0 && generations%output_pop_stats.everyNgens == 0) {
-
-
-       // print "Generation:" line (basic info, no mean/median/stddev...
-       (void)fprintf(logFile,"Generation: %3u   ", generations);
-#ifdef DEBUG3
-       // medium (with age/pop info) output level, no newline at end
-       (void) solutions.printPopulationStatistics(logFile, 2, "");
-#else
-       // lowest output level, no newline at end
-       (void) solutions.printPopulationStatistics(logFile, 1, ""); 
-#endif /* DEBUG3 */
-       (void)fprintf(logFile,"    Num.evals.: %ld   Timing: ", 
-               evaluate.evals() );
-       timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd );
-
-   }
-   genStart = times( &tms_genStart );
-
    return(0);
 }

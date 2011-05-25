@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.57 2011/05/25 04:29:52 mp Exp $ 
+ $Id: call_glss.cc,v 1.58 2011/05/25 05:03:57 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -47,8 +47,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "openfile.h"
 #include "qmultiply.h"
 
+#include <sys/types.h>      /*time_t time(time_t *tloc); */
+#include <time.h>           /*time_t time(time_t *tloc); */
+#include <sys/times.h>
+#include "timesyshms.h"
+
 extern FILE *logFile;
 extern char *programname;
+extern int debug;
 
 int global_ntor;
 
@@ -268,6 +274,7 @@ State call_glss(/* not const */ Global_Search *global_method,
     EvalMode localEvalMode = Normal_Eval;
     FILE *pop_fileptr;
 
+
     // DEBUG MP 201105
     (void)fprintf(logFile, "call_glss  global_method %s   local_method %s\n",
       global_method?global_method->shortname():"NULL",
@@ -404,6 +411,11 @@ State call_glss(/* not const */ Global_Search *global_method,
      Boole terminate = FALSE;
      for(int generation=0; ! terminate ; generation++) {
 
+	struct tms tms_genStart;
+	struct tms tms_genEnd;
+	Clock genEnd;
+	Clock genStart = times( &tms_genStart );
+
         if (outlev > 1) { (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", generation); }
 
       if(generation>0) {
@@ -447,6 +459,8 @@ State call_glss(/* not const */ Global_Search *global_method,
     // note we terminate without searching if num_evals is 0
     terminate = global_method->terminate()  || evaluate.evals() >= num_evals;
 
+    genEnd = times( &tms_genEnd );
+
 
     if(pop_size>0 && generation==0) {
 	// print initial best energy for statistics
@@ -461,6 +475,34 @@ State call_glss(/* not const */ Global_Search *global_method,
        (void)fprintf(logFile,"Initial-Value: %.3f\n", bestenergy);
        }
 
+
+       // Print basic generation statistics 
+       // (code moved here from gs.cc search() May 2011 MP)
+
+      if (debug > 0) {
+       (void)fprintf(logFile,
+        "DEBUG:  Generation: %3u, output_pop_stats.everyNgens = %3d, generation%%output_pop_stats.everyNgens = %u\n",
+       generation, output_pop_stats.everyNgens,
+       output_pop_stats.everyNgens>0?generation%output_pop_stats.everyNgens:0);
+     }
+       /* Only output statistics if the output level is not 0. */
+       if (output_pop_stats.everyNgens != 0 
+         && generation%output_pop_stats.everyNgens == 0) {
+
+
+         // print "Generation:" line (basic info, no mean/median/stddev...
+         (void)fprintf(logFile,"Generation: %3u   ", generation);
+#ifdef DEBUG3
+         // medium (with age/pop info) output level, no newline at end
+         (void) thisPop.printPopulationStatistics(logFile, 2, "");
+#else
+         // lowest output level, no newline at end
+         (void) thisPop.printPopulationStatistics(logFile, 1, ""); 
+#endif /* DEBUG3 */
+         (void)fprintf(logFile,"    Num.evals.: %ld   Timing: ", 
+               evaluate.evals() );
+         timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd );
+       }
 
        // Print extended generational population statistics, when "due" :
        //
@@ -510,7 +552,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 		 thisPop.nevals_last_pop_stats = evaluate.evals();
 		 }
 
-	// MP TODO wont this next put each generation into the same file, not append?
+	// MP TODO won't this put all generations into the same file, not appended?
         if (strlen(FN_pop_file) > 0) { // YES, do print!
             if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
                 pr(logFile, "\n%s: ERROR:  I'm sorry, I cannot create\"%s\".\n\n", programname, FN_pop_file);
