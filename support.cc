@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.39 2011/05/18 16:43:16 rhuey Exp $
+ $Id: support.cc,v 1.40 2011/05/26 03:39:07 mp Exp $
 
  AutoDock 
 
@@ -276,8 +276,9 @@ int oldestIndividual;
    //    standard deviation to (1) in simpler format
     switch (level) {
     case 1:
-	    (void)fprintf(output, " Oldest's energy: %.3f    Lowest energy: %.3f", 
-               heap[oldestIndividual].value(Normal_Eval), best_e);
+	    // MP debug @@ next line added [best_i]
+	    (void)fprintf(output, " Oldest's energy: %.3f    Lowest energy: %.3f [%d]", 
+               heap[oldestIndividual].value(Normal_Eval), best_e, best_i);
 	       break;
     case 2:
        (void)fprintf(output, " Oldest ind.: %u/%u, age: %lu, energy: %.3f    Lowest energy individual: %u/%u, age: %lu, energy: %.3f", 

@@ -26,8 +26,7 @@ class ParticleSwarmGS : public Global_Search
 	    float c;    // constriction factor for cPSO
 	    
 		int generations;
-		unsigned int max_generations;
-		int num_evals;
+		int max_generations;
 		int outputEveryNgens;
         Output_pop_stats output_pop_stats;
 	
@@ -44,7 +43,7 @@ class ParticleSwarmGS : public Global_Search
 			float pso_c1,
 			float pso_c2,
 			int pso_k, 
-			unsigned int max_generations,
+			int max_generations,
 			Output_pop_stats output_pop_stats); 			
 		
 		Individual& getBest();	
@@ -93,7 +92,7 @@ inline ParticleSwarmGS::ParticleSwarmGS(
 			float pso_c1,
 			float pso_c2,
 			int pso_k,
-			const unsigned int init_max_generations, 
+			const int init_max_generations, 
 			Output_pop_stats init_output_pop_stats)
 {
 	vmax = init_vmax; 

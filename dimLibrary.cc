@@ -9,6 +9,7 @@
 
 extern FILE *logFile;
 
+// Modified May 2011 MP TSRI to use quaternion fields rather than axis-angle
 
 void copyDimension( /* not const */ State *const S, const Position& R)
 {
@@ -16,10 +17,10 @@ void copyDimension( /* not const */ State *const S, const Position& R)
         S->T.x = R.x[0];
         S->T.y = R.x[1];
         S->T.z = R.x[2];
-        S->Q.nx = R.x[3];
-        S->Q.ny = R.x[4];
-        S->Q.nz = R.x[5];
-        S->Q.ang = R.x[6];
+        S->Q.x = R.x[3];
+        S->Q.y = R.x[4];
+        S->Q.z = R.x[5];
+        S->Q.w = R.x[6];
         for(j=7, i=0; i<S->ntor; i++, j++)
         {
 		S->tor[i] = R.x[j];
@@ -33,10 +34,10 @@ void copyState2Dimension(Position *const R , const State& S)
 	R->x[0] = S.T.x;
 	R->x[1] = S.T.y;
         R->x[2] = S.T.z;
-        R->x[3] = S.Q.nx;
-        R->x[4] = S.Q.ny;
-        R->x[5] = S.Q.nz;
-        R->x[6] = S.Q.ang;
+        R->x[3] = S.Q.x;
+        R->x[4] = S.Q.y;
+        R->x[5] = S.Q.z;
+        R->x[6] = S.Q.w;
         for(j=7, i=0; i<S.ntor; i++, j++)
         {
 		R->x[j] = S.tor[i];
@@ -58,24 +59,13 @@ void initialiseDimension(const GridMapSetInfo *const info,  /* not const */ doub
                 xmax[d] = info->hi[d];
 				break;
 
-			case 3: // For Quaternion angles
-				xmin[d] = 0;
+			case 3: 
+			case 4: 
+			case 5: 
+			case 6: 
+			// For Quaternion terms
+				xmin[d] = -1;
 				xmax[d] = 1;
-				break;
-				
-			case 4:
-				xmin[d] = 0;
-				xmax[d] = 1;
-				break;
-				
-			case 5:
-				xmin[d] = 0;
-				xmax[d] = 1;
-				break;
-				
-			case 6:
-				xmin[d] = -PI;
-				xmax[d] = PI;
 				break;
 				
 			default: // For Torsional Angles
@@ -98,14 +88,17 @@ void initialiseParticle(const int s, const int D, /* not const */ Position *cons
 		
 	for (d=0; d<D; d++)
 	{
+	// 0,1,2  translation
+	// 3,4,5,6 quaternion  (not axis angle)
+	//  7..   torsion/dihedral in radians
 
-		if(d > 2 && d < 6)
+		if(d > 2 && d < 7)
 		{
 			temp = xmin[d] - xmax[d];
 			Vmax[d] = fabs(temp);
 			Vmin[d] = -Vmax[d];
             //printf("1: temp = %f: Vmax[%d] = %f\n", fabs(temp), d,Vmax[d]);
-		} else if (d > 5)
+		} else if (d > 6)
 		{
 			Vmax[d] = PI;
 			Vmin[d] = -PI;

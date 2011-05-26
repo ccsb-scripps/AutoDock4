@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.58 2011/05/25 05:03:57 mp Exp $ 
+ $Id: call_glss.cc,v 1.59 2011/05/26 03:39:07 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -433,6 +433,15 @@ State call_glss(/* not const */ Global_Search *global_method,
 	if(local_method != NULL) {
 	   if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
 
+	   // MP @@ TODO hack for PSO :
+	   if(0==strcmp(global_method->shortname(),"PSO")) {
+	        (void)fprintf( logFile, "PSO LS only Pop[0] was %f\n", 
+		 thisPop[0].value(localEvalMode));
+	   	local_method->search(thisPop[0]);
+	        (void)fprintf( logFile, "PSO LS only Pop[0] now %f\n", 
+		 thisPop[0].value(localEvalMode));
+		}
+	   else // MP HACK
            for (i=0; i<pop_size; i++) {
             if (outlev > 1) {
                 (void)fprintf( logFile, "LS: %d",generation); 
@@ -457,6 +466,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 	} // end if generation > 0
 
     // note we terminate without searching if num_evals is 0
+    // current global methods' "terminate()" are generation count or convergence based
     terminate = global_method->terminate()  || evaluate.evals() >= num_evals;
 
     genEnd = times( &tms_genEnd );

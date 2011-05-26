@@ -35,16 +35,17 @@ int ParticleSwarmGS::search(Population &Pop)
 	//float phi, c;
 	float ratio = 0.0;
 	
-	
 	// initialize velocity		
 	if(_Pi == NULL) {
 		
-		pr(logFile, "maxEvalNum = %u\n", num_evals);
+		pr(logFile, "PSO max_generations = %d\n", max_generations);
+		pr(logFile, "PSO size = %d\n", size); // MP debug
 				
-		fprintf(logFile, "Allocate initial velocity of particles...\n");
+		fprintf(logFile, "PSO Allocate initial velocity of particles...\n");
 		_Pi = new Population(Pop);
 		
 		pop_size = Pop.num_individuals();
+		pr(logFile, "PSO pop_size = %d\n", pop_size); // MP debug
 						
 		best = 0;
 		for(i = 1; i < pop_size; i++)
@@ -152,8 +153,9 @@ int ParticleSwarmGS::search(Population &Pop)
 	
 	// Find the best in Pop	
 	best = 0;
-	double X_best_value = Pop[0].value(Normal_Eval);	
-	for(i = 1; i < pop_size; i++) {		
+	double X_best_value = 99999999; // MP debug Pop[0].value(Normal_Eval);	
+	for(i = 0; i < pop_size; i++) {		
+		Pop[i].inverse_mapping(); // MP@@ copy phenotype to genotype
 		piCurE = Pop[i].value(Normal_Eval);
 		if(piCurE < X_best_value) {
 			best = i;
@@ -165,7 +167,33 @@ int ParticleSwarmGS::search(Population &Pop)
 			Pi[i] = Pop[i];			
 		}										
 	}
-	
+	// MP debug - verifying msort is bringing best individual to Pop[0]
+	pr(logFile, "PSO pre-msort  best=%d Pop[%d]=%.2f X_best_value=%.2f, Pop[0,1,..] = ", 
+	  best, best, Pop[best].value(Normal_Eval), X_best_value);
+	for(i=0;i<8; i++) pr(logFile, "%8.2f ", Pop[i].value(Normal_Eval));
+	pr(logFile, "\n");
+	Pop.msort(1); // MP@@ - bring best individual to position 0 (for local search)
+	// MP debug - look again for best after msort, should be at [0]
+	// Find the best in Pop	
+	best = 0;
+	X_best_value = 99999999; // MP debug Pop[0].value(Normal_Eval);	
+	for(i = 0; i < pop_size; i++) {
+		piCurE = Pop[i].value(Normal_Eval);
+		if(piCurE < X_best_value) {
+			best = i;
+			X_best_value = piCurE;
+		}
+		
+		// Update Pi, personal Best in history				
+		if(piCurE < Pi[i].value(Normal_Eval)) {
+			Pi[i] = Pop[i];			
+		}										
+	}
+	pr(logFile, "PSO post-msort best=%d Pop[%d]=%.2f X_best_value=%.2f, Pop[0,1,..] = ", 
+	  best, best, Pop[best].value(Normal_Eval), X_best_value);
+	for(i=0;i<8; i++) pr(logFile, "%8.2f ", Pop[i].value(Normal_Eval));
+	pr(logFile, "\n");
+
 	////////////////////////////////////////////////////////
 	// Local Search
 	////////////////////////////////////////////////////////
@@ -197,7 +225,9 @@ int ParticleSwarmGS::search(Population &Pop)
 	Pg = Pi[best];
 	
 	// Update weight
-	ratio = (float)evaluate.evals() / num_evals;
+	// Huameng:  ratio = (float)evaluate.evals() / num_evals;
+
+	ratio = (float)generations / max_generations;  // MP since we dont have num_evals
 	w = wmin +(wmax - wmin) * (1.0 - ratio);
 			 		
 	generations++;
@@ -231,20 +261,10 @@ int ParticleSwarmGS::search(Population &Pop)
 	****************************************************************/
 	
 	// Output Information
-	//ORIG201011 if(outputEveryNgens > 0 && generations % outputEveryNgens == 0) {
 	if(outputEveryNgens > 0 && 
-	  (generations % outputEveryNgens == 0||generations==1||evaluate.evals()>=num_evals)) {
+	  (generations % outputEveryNgens == 0||generations==1)) {
 		//pr(logFile, "%d %8d %10.2f %10.2f %10.2f %6.2f %8.2f\n", generations, evaluate.evals(), Pg.value(Normal_Eval), Pop_avg, Pi_avg, w, v_avg);
 		//ORIG pr(logFile, "%8d %10ld %10.2f  \n", generations, evaluate.evals(), Pg.value(Normal_Eval));		
-	       // TSRI MP 201011 - adding basic per-100 generation statistics
-	       // print "Generation:" line (basic info, no mean/median/stddev...
-		(void)fprintf(logFile,"Generation: %3u   ", generations);
-		(void)fprintf(logFile, " Oldest's energy: %.3f    Lowest energy: %.3f",
-				0.0 /* dummy */, Pg.value(Normal_Eval) );
-	       (void)fprintf(logFile,"    Num.evals.: %ld\n", evaluate.evals() );
-	       // END TSRI MP 201011
-
-
 		fflush(logFile);
 	}
 	//pr(logFile, "%8d\t%6d\t%6.3f\t%6.3f\t%6.3f\n", generations, evaluate.evals(), X_best_value, Pg.value(Normal_Eval), dist);	
@@ -253,4 +273,3 @@ int ParticleSwarmGS::search(Population &Pop)
 	
 	return (0);
 }
-
