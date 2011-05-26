@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.14 2011/03/08 04:18:36 mp Exp $
+ $Id: intnbtable.cc,v 1.15 2011/05/26 23:50:07 rhuey Exp $
 
  AutoDock 
 
@@ -61,6 +61,7 @@ void intnbtable( Boole *const P_B_havenbp,
                  ConstReal cB, 
                  const int xA, 
                  const int xB,
+                 const int i_smooth,
                  ConstDouble coeff_desolv,
                  ConstDouble sigma,
                  /* not const */ EnergyTables *const ad_tables,
@@ -152,6 +153,23 @@ void intnbtable( Boole *const P_B_havenbp,
         }
 
     } // next i // for ( i = 1;  i < NEINT;  i++ )
+    ad_tables->e_vdW_Hb[0][a1][a2]  =  ad_tables->e_vdW_Hb[0][a2][a1]  =   EINTCLAMP;
+    //ad_tables->e_vdW_Hb[NEINT-1][a1][a2]  =  ad_tables->e_vdW_Hb[NEINT-1][a2][a1]  = 0;
+
+    /* smooth with min function */ /* GPF_MAP */
+    if (i_smooth > 0) {
+        Real energy_smooth[NEINT];
+        for (i = 1;  i < NEINT-1;  i++) {
+            energy_smooth[i] = 100000.;
+            for (int j = max(0, i - i_smooth);  j < min(NEINT, i + i_smooth);  j++) {
+              energy_smooth[i] = min(energy_smooth[i], ad_tables->e_vdW_Hb[j][a1][a2]);
+            }
+        }
+        for (i = 1;  i < NEINT-1;  i++) {
+            ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1] = energy_smooth[i];
+        }
+    } /* endif smoothing */
+
     
     nbeEnd = times( &tms_nbeEnd );
     pr( logFile, "Time taken: ");

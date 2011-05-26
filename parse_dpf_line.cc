@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.36 2011/05/20 23:54:54 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.37 2011/05/26 23:50:08 rhuey Exp $
 
  AutoDock 
 
@@ -110,6 +110,7 @@ int parse_dpf_line( const char line[] )
                       {"linsched", DPF_SCHEDLIN}, 
                       {"schedlin", DPF_SCHEDLIN}, 
                       {"intelec", DPF_INTELEC}, 
+                      {"smooth", DPF_SMOOTH}, 
                       {"seed", DPF_SEED}, 
                       {"e0max", DPF_E0MAX}, 
                       {"simanneal", DPF_SIMANNEAL}, 

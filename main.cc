@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.140 2011/05/26 03:35:30 mp Exp $
+ $Id: main.cc,v 1.141 2011/05/26 23:50:07 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -111,7 +111,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.140 2011/05/26 03:35:30 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.141 2011/05/26 23:50:07 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -406,6 +406,8 @@ int xA = 12;
 int xB = 6;
 int xA_unbound = 12;
 int xB_unbound = 6;
+int i_smooth=0;
+Real r_smooth=0.;
 int I_tor;
 int I_torBarrier;
 int MaxRetries = 1000; /* Default maximum number of retries for ligand init. */
@@ -724,7 +726,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.140 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.141 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -951,6 +953,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         get1arg( line, "%*s " FDFMT, &scale_eintermol, "SCALE_EINTERMOL");
 	  pr(logFile,"  Intermolecular energy term will be scaled by factor %f\n", scale_eintermol);
+	 break;
+//______________________________________________________________________________
+
+
+    case DPF_SMOOTH:
+        /*
+        **  smooth r_smooth
+        **  set internal non-bond table smoothing in Angstroms
+        */
+        get1arg( line, "%*s " FDFMT, &r_smooth, "SMOOTH");
+        (void) fprintf( logFile, "\nPotentials will be smoothed by: %.3lf Angstrom\n\n", r_smooth);
+        /* Angstrom is divided by A_DIV in look-up table. */
+        /* Typical value of r_smooth is 0.5 Angstroms */
+        /* so i_smooth = 0.5 * 100. / 2 = 25 */
+        i_smooth = (int) (r_smooth*A_DIV/2.);
 	 break;
 //______________________________________________________________________________
 
@@ -1187,9 +1204,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
                     cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-                    intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
+                    intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, i_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-                    intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
+                    intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, i_smooth, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
                     // Increment the atom type numbers, a1 and a2, for the internal non-bond table
                     a2++;
                     if (a2 >= info->num_atom_types) {
@@ -2224,9 +2241,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 else a[i] = foundParameter->map_index;
             }
             pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
+            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, i_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
            // pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-            //intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
+            //intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, i_smooth, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
         } else {
             pr(logFile,"WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
             exit(-1);
