@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.139 2011/05/25 22:58:16 rhuey Exp $
+ $Id: main.cc,v 1.140 2011/05/26 03:35:30 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -111,7 +111,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.139 2011/05/25 22:58:16 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.140 2011/05/26 03:35:30 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -724,7 +724,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.139 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.140 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1941,6 +1941,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                       quatComponentsToQuat(a,b,c,d) :
                       axisDegreeToQuat(a,b,c,d);
         }
+	sInit.Q = convertQuatToRot(sInit.Q); // assure axis-angle is consistent with quaternion
+
         ligand.S.Q = sInit.Q;
         if (outlev >= 0) {
             if (dpf_keyword == DPF_QUATERNION0) {
