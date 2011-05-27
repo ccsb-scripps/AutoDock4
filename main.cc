@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.141 2011/05/26 23:50:07 rhuey Exp $
+ $Id: main.cc,v 1.142 2011/05/27 04:05:58 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -111,7 +111,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.141 2011/05/26 23:50:07 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.142 2011/05/27 04:05:58 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -726,7 +726,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.141 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.142 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -962,8 +962,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  smooth r_smooth
         **  set internal non-bond table smoothing in Angstroms
         */
+	if(B_found_ligand_types) {
+		stop("You must specify the smoothing radius before specifying the ligand_types.");
+		}
         get1arg( line, "%*s " FDFMT, &r_smooth, "SMOOTH");
-        (void) fprintf( logFile, "\nPotentials will be smoothed by: %.3lf Angstrom\n\n", r_smooth);
+        (void) fprintf( logFile, "\nInternal energy non-bond potentials will be smoothed by %.3lf Angstrom\n\n", r_smooth);
         /* Angstrom is divided by A_DIV in look-up table. */
         /* Typical value of r_smooth is 0.5 Angstroms */
         /* so i_smooth = 0.5 * 100. / 2 = 25 */
