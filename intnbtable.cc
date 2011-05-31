@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.15 2011/05/26 23:50:07 rhuey Exp $
+ $Id: intnbtable.cc,v 1.16 2011/05/31 03:36:59 mp Exp $
 
  AutoDock 
 
@@ -61,7 +61,7 @@ void intnbtable( Boole *const P_B_havenbp,
                  ConstReal cB, 
                  const int xA, 
                  const int xB,
-                 const int i_smooth,
+                 ConstReal r_smooth,
                  ConstDouble coeff_desolv,
                  ConstDouble sigma,
                  /* not const */ EnergyTables *const ad_tables,
@@ -156,14 +156,23 @@ void intnbtable( Boole *const P_B_havenbp,
     ad_tables->e_vdW_Hb[0][a1][a2]  =  ad_tables->e_vdW_Hb[0][a2][a1]  =   EINTCLAMP;
     //ad_tables->e_vdW_Hb[NEINT-1][a1][a2]  =  ad_tables->e_vdW_Hb[NEINT-1][a2][a1]  = 0;
 
-    /* smooth with min function */ /* GPF_MAP */
-    if (i_smooth > 0) {
+    /* smooth with min function  r_smooth is Angstrom range of "smoothing" */ /* GPF_MAP */
+    if (r_smooth > 0) {
         Real energy_smooth[NEINT];
+	// MP TODO why does this leave the last element unsmoothed?
         for (i = 1;  i < NEINT-1;  i++) {
+	    double r = IndexToDistance(i);
+	    double rlow  = r - r_smooth/2;
+	    double rhigh = r + r_smooth/2;
             energy_smooth[i] = 100000.;
-            for (int j = max(0, i - i_smooth);  j < min(NEINT, i + i_smooth);  j++) {
+#ifdef NOSQRT
+            for (int j = max(0, BoundedSqAng_to_index(rlow*rlow)); 
+	      j < min(NEINT, BoundedSqAng_to_index(rhigh*rhigh));  j++)
+#else
+            for (int j = max(0, BoundedAng_to_index(rlow));
+	      j < min(NEINT, BoundedAng_to_index(rhigh));  j++) 
+#endif
               energy_smooth[i] = min(energy_smooth[i], ad_tables->e_vdW_Hb[j][a1][a2]);
-            }
         }
         for (i = 1;  i < NEINT-1;  i++) {
             ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1] = energy_smooth[i];
