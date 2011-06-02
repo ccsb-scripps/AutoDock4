@@ -15,7 +15,7 @@ move 1pgp_lig.pdbqt                  # small molecule
 flexres 1pgp_flex.pdbqt              # file containing flexible residues
 about 23.407 29.2817 39.8079         # small molecule center
 tran0 23.407 29.2817 39.8079         # initial coordinates/A or random
-quat0 1 0 0 0                        # initial quaternion
+quaternion0 0 0 0 1                  # initial quaternion
 dihe0 0 0 0 0 0 0 0 0 0 0 0 0 0      # initial dihedrals (relative) or random
 tstep 0.0                            # translation step/A
 qstep 0.0                            # quaternion step/deg

@@ -5,7 +5,7 @@ intelec                              # calculate internal electrostatic energy
 
 seed 28641 1106107140                # seeds for random generator
 
-ligand_types C HD OA P SA         # ligand atom type names
+ligand_types C HD OA P SA            # ligand atom type names
 fld 1pgp_rec.maps.fld                # grid_data_file
 map 1pgp_rec.C.map                   # atom-specific affinity map
 map 1pgp_rec.HD.map                  # atom-specific affinity map
@@ -18,7 +18,7 @@ desolvmap 1pgp_rec.d.map             # desolvation map
 move 1pgp_lig_32tors.pdbqt           # small molecule
 about 22.894 28.598 40.259           # small molecule center
 tran0 22.894 28.598 40.259           # small molecule center
-quat0 1 0 0 0                        # initial quaternion
+quaternion0 0 0 0 1                  # initial quaternion
 dihe0 0 0 0 0 0 0 0 0 0 0 0          # initial dihedrals (relative) or random
 tstep 0.0                            # translation step/A
 qstep 0.0                            # quaternion step/deg

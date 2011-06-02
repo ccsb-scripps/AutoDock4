@@ -14,12 +14,12 @@ desolvmap 1pgp_rec.d.map             # desolvation map
 move 1pgp_lig.pdbqt                  # small molecule
 about 22.894 28.598 40.259           # small molecule center
 tran0 22.894 28.598 40.259           # small molecule center
-quat0 1 0 0 0                        # initial quaternion
+quaternion0 0 0 0 1                  # initial quaternion
 dihe0 0 0 0 0 0 0 0 0 0 0 0          # initial dihedrals (relative) or random
 tstep 0.0                            # translation step/A
 qstep 0.0                            # quaternion step/deg
 dstep 0.0                            # torsion step/deg
-unbound 0.0                         # free energy of the unbound state
+unbound 0.0                          # free energy of the unbound state
 
 rmstol 2.0                           # cluster_tolerance/A
 epdb                                 # compute energy of PDBQT specified by 'move' 
