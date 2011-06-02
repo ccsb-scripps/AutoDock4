@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.33 2011/05/24 17:06:04 rhuey Exp $
+# $Id: test_autodock4.py,v 1.34 2011/06/02 23:05:42 rhuey Exp $
 #
 
 """
@@ -311,7 +311,7 @@ class AutoDock4_1pgp_ligrand_ga_only_test( AutoDock_simple_test ):
     #print "in new ligrand_ga_only test"
         #expected_binding_energy = +843.59     -5.89
         #expected_intermol_energy = +21.00  -6.17
-        #expected_internal_energy = +820.50 -1.80
+        #expected_internal_energy = +820.50 -3.25
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -321,7 +321,7 @@ class AutoDock4_1pgp_ga_only_test( AutoDock_simple_test ):
     #print "in new ga_only test"
         #expected_binding_energy = +843.59     -5.89
         #expected_intermol_energy = +21.00  -6.17
-        #expected_internal_energy = +820.50 -1.80
+        #expected_internal_energy = +820.50 -3.25
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
@@ -353,7 +353,7 @@ class AutoDock_test( AutoDock_base_test ):
         self.assertEqual( self.computed, self.expected_outcome )
         # Check the final energy is expected value.
         expected_intermol_energy = -6.17
-        expected_internal_energy = -1.80
+        expected_internal_energy = -3.25
         (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename, ['intermol_energy','total_internal'] )
         print "Testing that intermolecular energy = %.2f kcal/mol." % (expected_intermol_energy,)
         self.assertEqual( round(intermol_energy,6), round(expected_intermol_energy,6))
@@ -393,7 +393,7 @@ class AutoDock4_energy_test( AutoDock_base_test ):
             print "Testing that DLG exists and AutoDock did not complete."
         self.assertEqual( self.computed, self.expected_outcome )
         # Check the final energy is expected value.
-        #expected_unbound_energy = -1.80
+        #expected_unbound_energy = -3.25
         #expected_binding_energy = +843.59     -5.89
         (binding_energy) = parse_energy_from_DLG( self.dlg_filename, ['binding_energy'])[0]
         print "Testing that binding energy = %.2f kcal/mol." % (self.expected_binding_energy,)
@@ -416,7 +416,7 @@ class AutoDock4_unbound_test( AutoDock_base_test ):
             print "Testing that DLG exists and AutoDock did not complete."
         self.assertEqual( self.computed, self.expected_outcome )
         # Check the final energy is expected value.
-        #expected_unbound_energy = -1.80
+        #expected_unbound_energy = -3.25
         (unbound_energy) = parse_energy_from_DLG( self.dlg_filename, ['unbound_energy'])[0]
         print "Testing that unbound energy = %.2f kcal/mol." % (self.expected_unbound_energy,)
         print "unbound_energy=", unbound_energy
@@ -426,14 +426,14 @@ class AutoDock4_unbound_test( AutoDock_base_test ):
 class AutoDock4_1pgp_unbound_default_test( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound is NOT set in the DPF."""
     dpf_stem = "1pgp_unbound_default"
-    expected_unbound_energy = -1.80
+    expected_unbound_energy = -3.25
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_unbound_model_extended( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound_model is set to extended."""
     dpf_stem = "1pgp_unbound_model_extended"
-    expected_unbound_energy = -0.28
+    expected_unbound_energy = -0.99
     #expected_unbound_energy = -0.66 #prior to 4/2009
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
@@ -441,7 +441,7 @@ class AutoDock4_1pgp_unbound_model_extended( AutoDock4_unbound_test ):
 class AutoDock4_1pgp_unbound_compute_unbound_extended( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound_model is set to extended."""
     dpf_stem = "1pgp_unbound_compute_unbound_extended"
-    expected_unbound_energy = -0.28
+    expected_unbound_energy = -0.99
     #expected_unbound_energy = -0.66 #prior to 4/2009
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
@@ -464,7 +464,7 @@ class AutoDock4_1pgp_unbound_model_compact( AutoDock4_unbound_test ):
 class AutoDock4_1pgp_unbound_model_bound( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound_model is set to bound."""
     dpf_stem = "1pgp_unbound_model_bound"
-    expected_unbound_energy = -1.80
+    expected_unbound_energy = -3.25
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -489,8 +489,8 @@ class AutoDock4_1pgp_ligrand_ga_only_energy_test( AutoDock4_energy_test ):
     #print "in new ligrand_ga_only test"
         #expected_binding_energy = +843.59     -5.89
         #expected_intermol_energy = +21.00  -6.17
-        #expected_internal_energy = +820.50 -1.80
-    expected_binding_energy = 11.51
+        #expected_internal_energy = +820.50 -3.15
+    expected_binding_energy = 101.85
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
@@ -502,7 +502,7 @@ class AutoDock4_1pgp_ga_only_energy_test( AutoDock4_energy_test ):
     #print "in new ga_only test"
         #expected_binding_energy = +843.59     -5.89
         #expected_intermol_energy = +21.00  -6.17
-        #expected_internal_energy = +820.50 -1.80
+        #expected_internal_energy = +820.50 -3.25
     expected_binding_energy = -4.08
     expected_outcome = True # True means Successful Completion!
 
@@ -516,7 +516,7 @@ class AutoDock4_1pgp_flexres_energy_test( AutoDock4_energy_test ):
         #expected_binding_energy =  -4.22
         #expected_intermol_energy = -5.93
         #expected_internal_energy = -2.18
-    expected_binding_energy = -4.22
+    expected_binding_energy = -4.73
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
