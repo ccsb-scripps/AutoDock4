@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.34 2011/06/02 23:05:42 rhuey Exp $
+# $Id: test_autodock4.py,v 1.35 2011/06/02 23:39:58 rhuey Exp $
 #
 
 """
@@ -521,6 +521,18 @@ class AutoDock4_1pgp_flexres_energy_test( AutoDock4_energy_test ):
 
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_ga_smooth0_energy_test( AutoDock4_energy_test ):
+    """Test that autodock 4.2 gives expected internal energy when smooth is set to 0 in the DPF."""
+    dpf_stem = "1pgp_smooth0"
+    #restores former values (less negative)
+    expected_binding_energy =  -5.89
+    expected_intermol_energy = -6.17
+    expected_internal_energy = -1.80
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+
 
 
 if __name__ == '__main__':
@@ -570,6 +582,7 @@ if __name__ == '__main__':
         # tests for ga_only and energy
         'AutoDock4_1pgp_ligrand_ga_only_energy_test',
         'AutoDock4_1pgp_ga_only_energy_test',
+        'AutoDock4_1pgp_ga_smooth0_energy_test',
         # tests for energy with flexible residues 
         'AutoDock4_1pgp_flexres_energy_test',
     ]
