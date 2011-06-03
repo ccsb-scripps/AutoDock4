@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.h,v 1.15 2011/03/08 04:18:37 mp Exp $
+ $Id: qmultiply.h,v 1.16 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -31,12 +31,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 #include "structs.h"
 
-Quat uniformQuat( void );
-Quat convertQuatToRot( const Quat& q );
-Quat convertRotToQuat( const Quat& q );
+Quat randomQuat( void );
+AxisAngle QuatToAxisAngle( const Quat& q );
+Quat AxisAngleToQuat( const AxisAngle& aa );
 Quat raaToQuat( const Real raa[3], ConstReal angle );
-Quat normQuat( /* not const */ Quat q );
-Quat normRot( /* not const */ Quat q );
+Quat raaToQuat( const double raa[3], ConstReal angle );
+int mkUnitQuat( Quat *const q ); // normalize in place, return 0 if error
+Quat normQuat( Quat q ); // return normalized copy of quat q
+AxisAngle normAxisAngle( const  AxisAngle& aa ); // return normalized axis, current angle
 Real quatDifferenceToAngle( const Quat& ql, const Quat& qr );
 Real quatDifferenceToAngleDeg( const Quat& ql, const Quat& qr );
 Quat conjugate( const Quat& q );
@@ -50,17 +52,15 @@ Quat quatComponentsToQuat( ConstReal qx, ConstReal qy, ConstReal qz, ConstReal q
 
 void qmultiply( Quat *const q, register const Quat *const ql, register const Quat *const qr );
 void qconjmultiply( Quat *const q, register const Quat *const ql, register const Quat *const qr );
-void mkUnitQuat( Quat *const q );
 void printQuat_q( FILE *const fp, const Quat& q );
 void printQuat_r( FILE *const fp, const Quat& q );
 void printQuat( FILE *const fp, const Quat& q );
 void debugQuat( FILE *const fp, const Quat& q, const unsigned int linenumber, const char *const message );
-Quat uniformQuatByAmount( ConstReal amount );
-void unitQuat2rotation( /* not const */ Quat *q );
+Quat randomQuatByAmount( ConstReal amount );
 void print_q_reorient_message( FILE *const logFile, const Quat& q_reorient );
-void create_random_orientation( /* not const */ Quat *const ptr_quat );
 //void assertQuatOK( const Quat q );
-const Quat identityQuat();
+Quat identityQuat();
+AxisAngle identityAxisAngle();
 Real a_range_reduction( ConstReal a );
 Real alerp( ConstReal a, ConstReal b, ConstReal fract );
 #endif

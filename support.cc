@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.40 2011/05/26 03:39:07 mp Exp $
+ $Id: support.cc,v 1.41 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -672,7 +672,6 @@ Quat Genotype::readQuat() const
     q.y = gread(4).real;
     q.z = gread(5).real;
     q.w = gread(6).real;
-    // q = convertQuatToRot( q );
     return q;
 }
 
@@ -691,7 +690,6 @@ Quat Phenotype::readQuat() const
     q.y = gread(4).real;
     q.z = gread(5).real;
     q.w = gread(6).real;
-    // q = convertQuatToRot( q );
     return q;
 }
 

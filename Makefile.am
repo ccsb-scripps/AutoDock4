@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.32 2011/05/25 22:58:16 rhuey Exp $
+# $Id: Makefile.am,v 1.33 2011/06/03 05:31:36 mp Exp $
 # 
 # AutoDock  
 # 
@@ -257,7 +257,9 @@ AM_CXXFLAGS += -Wno-write-strings # increase compatibility with pre 4.x compiler
 #AM_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #AM_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
 
+# TODO M Pique - ASSERTQUATOK turns on error checking in qmultiply.cc
 AM_CPPFLAGS = -DNOSQRT \
+              -DASSERTQUATOK \
               -DUSE_8A_NBCUTOFF \
               -DWRITEPDBQSTATE \
               -I$(srcdir)/../acro/include # Standard accuracy, but faster; no crossover in quaternion

@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.145 2011/06/02 22:28:31 mp Exp $
+ $Id: main.cc,v 1.146 2011/06/03 05:31:36 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -111,7 +111,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.145 2011/06/02 22:28:31 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.146 2011/06/03 05:31:36 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -603,7 +603,7 @@ for (i = 0; i  < MAX_TORS;  i++ ) {
 initialiseState( &sInit );
 initialiseState( &(ligand.S) );
 
-initialiseQuat( &q_reorient );
+initialiseQuat( &q_reorient ); // set to identity
 
 F_W      =  360.0 / NTORDIVS;
 F_hW     =  F_W  / 2.0;
@@ -725,7 +725,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.145 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.146 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1390,7 +1390,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         initialiseState( &sInit );
         initialiseState( &(ligand.S) );
-        initialiseQuat( &q_reorient );
+        initialiseQuat( &q_reorient ); // set to identity
         B_constrain_dist = B_haveCharges = FALSE;
         ntor1 = ntor = atomC1 = atomC2 = 0;
         ntor_ligand = 0;
@@ -1588,14 +1588,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 initvec[0] = sInit.T.x;
                 initvec[1] = sInit.T.y;
                 initvec[2] = sInit.T.z;
-                /*
-                 * axis-angle (nx,ny,nz,ang) suffers from bias
-                initvec[3] = sInit.Q.nx;
-                initvec[4] = sInit.Q.ny;
-                initvec[5] = sInit.Q.nz;
-                initvec[6] = DegreesToRadians( sInit.Q.ang );
-                */
-                sInit.Q = convertRotToQuat( sInit.Q );
                 initvec[3] = sInit.Q.x;
                 initvec[4] = sInit.Q.y;
                 initvec[5] = sInit.Q.z;
@@ -1755,8 +1747,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             if (streq(param[0],"random")) {
                 // reorient random
                 B_reorient_random = TRUE; // create a new random orientation before docking
-
-                create_random_orientation( &q_reorient );
+                q_reorient = randomQuat();
 
             } else if (streq(param[0],"standard")) {
                 { // reorient standard
@@ -1778,7 +1769,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     vec_x_axis[Z] = 0.;
                     vec_z_axis[X] = 0.;
                     vec_z_axis[Y] = 0.;
-                    vec_z_axis[Z] = 1.;
                     for (xyz = 0;  xyz < SPACE;  xyz++) {
                         vec_01[xyz] = (double)( crdpdb[1][xyz] - crdpdb[0][xyz] );
                         vec_12[xyz] = (double)( crdpdb[2][xyz] - crdpdb[1][xyz] );
@@ -1804,22 +1794,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         //
                         // We need to rotate the molecule about the normal to vec_normal and vec_z_axis
                         Cross_product( vec_reorient_axis, vec_normal, vec_z_axis );
-                        //
                         // Set the rotation axis for reorientation
-                        q_reorient.nx = vec_reorient_axis[X];
-                        q_reorient.ny = vec_reorient_axis[Y];
-                        q_reorient.nz = vec_reorient_axis[Z];
-                        //
-                        // Normalise the vector defining the axis of rotation:
-                        q_reorient = normRot( q_reorient );
-                        //
                         // Set the angle for reorientation of the first 3 atoms
                         // into the xy-plane
-                        q_reorient.ang = -angle_n1z;
-                        //
-                        // Convert the rotation-about-axis components (nx,ny,nz,ang)
-                        // to a rotation-quaternion (x,y,z,w):
-                        q_reorient = convertRotToQuat( q_reorient );
+                        q_reorient = raaToQuat(vec_reorient_axis, -angle_n1z);
 
                         // Rotate ligand into the xy-plane...
                         // qtransform( origin, q_reorient, crdreo, true_ligand_atoms );
@@ -1842,15 +1820,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         // to be parallel to the x-axis, will be
                         // perpendicular to the xy-plane, i.e. the z-axis,
                         // since the molecule's first 3 atoms are now in the xy-plane.
-                        q_reorient.nx = vec_z_axis[X];
-                        q_reorient.ny = vec_z_axis[Y];
-                        q_reorient.nz = vec_z_axis[Z];
-                        //
                         // Set the rotation angle:
-                        q_reorient.ang = angle_01x;
-                        //
                         // Build the quaternion from the axis-angle rotation values:
-                        q_reorient = convertRotToQuat( q_reorient );
+                        q_reorient = raaToQuat(vec_z_axis, angle_01x);
                     } // angle_012 is appropriate to align into xy-plane
 
                 } else {
@@ -1861,22 +1833,23 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 } // reorient standard
             } else {
                 { // reorient <nx> <ny> <nz> <angle>
+		    AxisAngle aa;
                     B_reorient_random = FALSE; // do not create a new random orientation before docking
 
                     // Read the specified initial orientation for the ligand
-                    nfields = sscanf( line,"%*s %lf %lf %lf %lf", &(q_reorient.nx), &(q_reorient.ny), &(q_reorient.nz), &(q_reorient.ang) );
+                    nfields = sscanf( line,"%*s %lf %lf %lf %lf",
+		     &aa.nx, &aa.ny, &aa.nz, &aa.ang );
                     if ( nfields == 4 ) {
                         // Normalise the vector defining the axis of rotation:
-                        q_reorient = normRot( q_reorient );
                         // Make sure angle is in radians, and ranges from -PI to PI
-                        q_reorient.ang = DegreesToRadians( q_reorient.ang ); // convert from degrees to radians
-                        q_reorient.ang = ModRad( q_reorient.ang ); // wrap to range (0, 2*PI) using modulo 2*PI
-                        q_reorient.ang = WrpRad( q_reorient.ang ); // wrap to range (-PI, PI)
+                        aa.ang = DegreesToRadians( aa.ang ); // convert from degrees to radians
+                        aa.ang = ModRad( aa.ang ); // wrap to range (0, 2*PI) using modulo 2*PI
+                        aa.ang = WrpRad( aa.ang ); // wrap to range (-PI, PI)
                         pr( logFile, "After normalising the vector, and converting the angle to radians, the axis-angle rotation becomes ((%.3f, %.3f, %.3f), %.2f radians)\n",
-                                q_reorient.nx, q_reorient.ny, q_reorient.ny, q_reorient.ang);
+                                aa.nx, aa.ny, aa.ny, aa.ang);
                         // Convert the rotation-about-axis components (nx,ny,nz,ang)
                         // to a rotation-quaternion (x,y,z,w):
-                        q_reorient = convertRotToQuat( q_reorient );
+                        q_reorient = AxisAngleToQuat(aa);
                     } else {
                         prStr( error_message, "%s: ERROR! Please specify the vector x,y,z and rotation angle (degrees) using four real numbers.\n", programname );
                         stop( error_message );
@@ -1944,7 +1917,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // and set the boolean B_RandomQuat0 to true,
             // so we can generate random quaternions in population-based methods.
             B_RandomQuat0 = TRUE;
-            create_random_orientation( &(sInit.Q) );
+            sInit.Q = randomQuat();
             if (outlev >= 0) {
                 pr( logFile, "Each run will begin with a new, random initial orientation.\n");
             }
@@ -1958,7 +1931,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                       quatComponentsToQuat(a,b,c,d) :
                       axisDegreeToQuat(a,b,c,d);
         }
-	sInit.Q = convertQuatToRot(sInit.Q); // assure axis-angle is consistent with quaternion
 
         ligand.S.Q = sInit.Q;
         if (outlev >= 0) {
@@ -3100,7 +3072,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                 if (B_reorient_random == TRUE) {
                     // create a new random orientation before docking
-                    create_random_orientation( &q_reorient );
+                    q_reorient = randomQuat();
                     // reorient the ligand
                     reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type,
                               parameterArray, q_reorient, origin, ntor, tlist, vt, &ligand, debug );

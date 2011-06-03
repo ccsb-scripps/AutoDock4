@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.21 2011/03/08 04:18:37 mp Exp $
+ $Id: stateLibrary.cc,v 1.22 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -42,7 +42,7 @@ void initialiseState( /* not const */ State *const S )
     S->T.x = 0.0;
     S->T.y = 0.0;
     S->T.z = 0.0;
-    initialiseQuat( &(S->Q) );
+    S->Q = identityQuat();
     S->ntor = 0;
     for (i = 0; i  < MAX_TORS;  i++ ) {
         S->tor[i] = 0.0;
@@ -51,18 +51,9 @@ void initialiseState( /* not const */ State *const S )
     S->Center.y = 0.0;
     S->Center.z = 0.0;
 }
-
-void initialiseQuat( /* not const */ Quat *const Q )
+void initialiseQuat ( Quat *Q )
 {
-    Q->nx = 1.0;
-    Q->ny = 0.0;
-    Q->nz = 0.0;
-    Q->ang = 0.0;
-    Q->x = 0.0;
-    Q->y = 0.0;
-    Q->z = 0.0;
-    Q->w = 1.0;
-    Q->qmag = 1.0;
+	*Q = identityQuat();
 }
 
 void copyState( /* not const */ State *const D,  /* Destination -- copy to here */
@@ -98,6 +89,7 @@ void printState( FILE *const fp,
                  const int detail )
 {
     register int i;
+    AxisAngle aa;
 
     switch( detail ) {
         case 0:
@@ -110,9 +102,8 @@ void printState( FILE *const fp,
             (void)fprintf( fp, "\nSTATE VARIABLES:\n________________\n\n" );
             (void)fprintf( fp, "Translation x,y,z         = %.3f %.3f %.3f\n", S.T.x, S.T.y, S.T.z );
             (void)fprintf( fp, "Quaternion x,y,z,w        = %.6f %.6f %.6f %.6f\n", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
-            S.Q = convertQuatToRot( S.Q );
-            (void)fprintf( fp, "Axis-Angle nx,ny,nz,angle = %.3f %.3f %.3f %.3lf\n", S.Q.nx, S.Q.ny, S.Q.nz, RadCanonicalDeg(S.Q.ang) );
-            //(void)fprintf( fp, "Quaternion qmag           = %.3f\n", S.Q.qmag );
+	    aa = QuatToAxisAngle( S.Q );
+            (void)fprintf( fp, "Axis-Angle nx,ny,nz,angle = %.3f %.3f %.3f %.3lf\n", aa.nx, aa.ny, aa.nz, RadCanonicalDeg(aa.ang) );
             (void)fprintf( fp, "Center x,y,z         = %.3f %.3f %.3f\n", S.Center.x, S.Center.y, S.Center.z );
             (void)fprintf( fp, "Number of Torsions        = %d\n", S.ntor );
             if (S.ntor > 0) {
@@ -182,10 +173,11 @@ static void writeStateAQ( FILE *const fp, /* not const */ State S, const char co
        case 'a':
        default:
 	    //  axis-angle.
-	    S.Q = convertQuatToRot( S.Q ); // quaternion to axis-angle.
+	    AxisAngle aa = QuatToAxisAngle( S.Q );
 
-	    S.Q.ang = WrpRad( ModRad( S.Q.ang ));
-	    (void)fprintf( fp, "%6.3f %6.3f %6.3f %6.3f  ", S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees(S.Q.ang) );
+	    float ang = RadCanonicalDeg(WrpRad( ModRad( aa.ang )));
+	    (void)fprintf( fp, "%6.3f %6.3f %6.3f %6.3f  ",
+	      aa.nx, aa.ny, aa.nz, ang);
 	    break;
     }
     // Write torsion angles.
@@ -203,9 +195,10 @@ void writeState( FILE *const fp, /* not const */ State S )
 
 int checkState( const State *const D )
 {
+// return 0 if failure   1 if OK
     register int i;
     int retval = 1;
-    double magnitude_q = 0.;
+    double magnitude_q;
         
     if (ISNAN(D->T.x)) {
         (void)fprintf(logFile,"checkState: (NaN) detected in x translation\n");
@@ -249,24 +242,6 @@ int checkState( const State *const D )
                 retval = 0;
             }
     }
-
-    if (ISNAN(D->Q.nx)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in nx component of axis-angle\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.ny)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in ny component of axis-angle\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.nz)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in nz component of axis-angle\n");
-        retval = 0;
-    }
-    if (ISNAN(D->Q.ang)) {
-        (void)fprintf(logFile,"checkState: (NaN) detected in ang component of axis-angle\n");
-        retval = 0;
-    }
-
 
     return(retval);
 }

@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.29 2011/03/09 01:35:05 mp Exp $
+ $Id: getInitialState.cc,v 1.30 2011/06/03 05:31:36 mp Exp $
 
  AutoDock  
 
@@ -119,7 +119,7 @@ void getInitialState(
     initStart = times( &tms_initStart );
 
     retries = 0;
-    if ((B_RandomTran0 == TRUE) || (B_RandomQuat0 == TRUE) || (B_RandomDihe0 == TRUE)) {
+    if ((B_RandomTran0) || (B_RandomQuat0) || (B_RandomDihe0)) {
         do {
             /*
             ** while e0total, initial energy, is too high,
@@ -137,19 +137,13 @@ void getInitialState(
                 }
             }/*if*/
             if (B_RandomQuat0) {
-                /*
-                sInit->Q.nx  = random_range( -1., 1. );
-                sInit->Q.ny  = random_range( -1., 1. );
-                sInit->Q.nz  = random_range( -1., 1. );
-                sInit->Q.ang = DegreesToRadians( random_range( 0., 360.) );//convert to radians
-                mkUnitQuat( &(sInit->Q) );
-                */
-                sInit->Q = uniformQuat(); // generate a uniformly-distributed quaternion
-                sInit->Q = convertQuatToRot( sInit->Q ); // convert from qx,qy,qz,qw to axis-angle (nx,ny,nz,ang)
+                sInit->Q = randomQuat(); // generate a uniformly-distributed quaternion
 
                 if (outlev > 1) {
-                    pr( logFile, "Random initial axis-angle,  axisangle0 %.3f %.3f %.3f %.1f\n", sInit->Q.nx, sInit->Q.ny, sInit->Q.nz, RadiansToDegrees( sInit->Q.ang ) );
                     pr( logFile, "Random initial quaternion,  quaternion0 %.3f %.3f %.3f %.3f\n", sInit->Q.x, sInit->Q.y, sInit->Q.z,  sInit->Q.w );
+                     // convert from qx,qy,qz,qw to axis-angle (nx,ny,nz,ang)
+		    AxisAngle aa = QuatToAxisAngle(sInit->Q);
+                    pr( logFile, "Random initial axis-angle,  axisangle0 %.3f %.3f %.3f %.1f\n", aa.nx, aa.ny, aa.nz, RadiansToDegrees( aa.ang ) );
                 }
             }/*if*/
             if ( B_RandomDihe0 && (ntor > 0) ) {

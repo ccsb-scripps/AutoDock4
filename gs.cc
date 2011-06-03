@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.46 2011/05/25 05:03:57 mp Exp $
+ $Id: gs.cc,v 1.47 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -462,9 +462,10 @@ void Genetic_Algorithm::mutate(Genotype &mutant, const int gene_number)
             // Mutate all four comopnents of the quaternion, (x,y,z,w) simultaneously:
             // Generate a uniformly-distributed quaternion
             Quat q_change;
-            q_change = uniformQuat();
+	    // MP TODO here we could use quat by amount for better mutations
+            q_change = randomQuat();
 #ifdef DEBUG_MUTATION
-            fprintf( logFile, "q_change -- after uniformQuat\n" );
+            fprintf( logFile, "q_change -- after randomQuat\n" );
             printQuat_q( logFile, q_change );
 #endif
             Quat q_current = mutant.readQuat();

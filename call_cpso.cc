@@ -287,7 +287,7 @@ State call_cpso(Local_Search *const local_method,
     //Result is stored in the History state for writePDBQ and for clustering ....
     sTemp=sInit;
     copyDimension(&sTemp, P[best]);
-    mkUnitQuat(&sTemp.Q);
+    mkUnitQuat(&sTemp.Q); // MP TODO probably unnecc
     //printState(logFile, sTemp, 2);        
     return (sTemp);
 } //call_cpso

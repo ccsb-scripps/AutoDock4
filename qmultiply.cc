@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.18 2011/03/08 04:18:37 mp Exp $
+ $Id: qmultiply.cc,v 1.19 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -36,6 +36,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern  FILE    *logFile;
 
+static Quat sidentityQuat = { 0., 0., 0., 1.}; // x,y,z,w
+static AxisAngle sidentityAxisAngle = { 1., 0., 0., 0.}; // x,y,z,angle
+
 
 void qmultiply( /* not const */  Quat *const q, //result
                 register const Quat *const ql,   //left
@@ -54,7 +57,6 @@ void qmultiply( /* not const */  Quat *const q, //result
 /*      Date: 12/03/92                                                        */
 /*----------------------------------------------------------------------------*/
 /*    Inputs: ql = rotation to be applied to quaternion in qr                 */
-/*   Globals: none.                                                           */
 /*----------------------------------------------------------------------------*/
 /* Modification Record                                                        */
 /* Date     Inits   Comments                                                  */
@@ -64,6 +66,10 @@ void qmultiply( /* not const */  Quat *const q, //result
 /******************************************************************************/
 { 
     register double x,y,z,w;
+#ifdef ASSERTQUATOK
+    assertQuatOK(*ql);
+    assertQuatOK(*qr);
+#endif
 
     x = (double) (ql->w*qr->x + ql->x*qr->w + ql->y*qr->z - ql->z*qr->y);
     y = (double) (ql->w*qr->y + ql->y*qr->w + ql->z*qr->x - ql->x*qr->z);
@@ -74,38 +80,49 @@ void qmultiply( /* not const */  Quat *const q, //result
     q->y = y;
     q->z = z;
     q->w = w;
+#ifdef ASSERTQUATOK
+    assertQuatOK(*q);
+#endif
 }
 
 void qconjmultiply( Quat *const q,
-                    register const Quat *const ql,
-                    register const Quat *const qr )
+                    const Quat *const ql,
+                    const Quat *const qr )
 //     __     
 // q = ql . qr
 {
+#ifdef ASSERTQUATOK
+    assertQuatOK(*ql);
+    assertQuatOK(*qr);
+#endif
     Quat conj_ql = conjugate( *ql );
     qmultiply( q, &conj_ql, qr );
+#ifdef ASSERTQUATOK
+    assertQuatOK(conj_ql);
+    assertQuatOK(*q);
+#endif
 }
 
-void mkUnitQuat( Quat *const q )
-    // essentially, convertRotToQuat( Quat q )
+    
+int 
+mkUnitQuat( Quat *const q )
+    // normalize in place, return 0 if error
 {	
-    double inv_nmag, hqang, s;
-	     
-    inv_nmag = 1. / hypotenuse( q->nx, q->ny, q->nz );
-    q->nx *= inv_nmag;       /* Normalize q */
-    q->ny *= inv_nmag;       /* Normalize q */
-    q->nz *= inv_nmag;       /* Normalize q */
-      
-    hqang = 0.5 * q->ang;
-    s     = sin( hqang );
-    
-    q->w  = cos( hqang );
-    q->x  = s * q->nx;
-    q->y  = s * q->ny;
-    q->z  = s * q->nz;
-    
-    /* q->qmag = hypotenuse4( q->x,  q->y,  q->z,  q->w  ); */
-} // mkUnitQuat( Quat *q )
+    double mag4 = hypotenuse4( q->x, q->y, q->z, q->w );
+    if (mag4 > APPROX_ZERO) {
+        double inv_mag = 1. / mag4;
+	q->x *= inv_mag;       /* Normalize q */
+	q->y *= inv_mag;       /* Normalize q */
+	q->z *= inv_mag;       /* Normalize q */
+	q->w *= inv_mag;       /* Normalize q */
+#ifdef ASSERTQUATOK
+    assertQuatOK(*q);
+#endif
+	return 1; // OK
+	}
+    else *q= sidentityQuat; // error
+    return 0;
+}
 
 void printQuat_q( FILE *const fp, const Quat& q )
 {
@@ -113,16 +130,20 @@ void printQuat_q( FILE *const fp, const Quat& q )
     (void) fprintf( fp, "Mag(Quat(x,y,z,w))=   %5.2f\n", sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w) );
 } // printQuat_q( Quat q )
 
-void printQuat_r( FILE *const fp, const Quat& qq )
+void printQuat_r( FILE *const fp, const Quat& q )
 {
-    Quat q = qq;
-    q = convertQuatToRot( q );
-    (void) fprintf( fp, "Axis(nx,ny,nz),Angle= %5.2f %5.2f %5.2f  %5.2f\n", q.nx, q.ny, q.nz, q.ang);
-    (void) fprintf( fp, "Mag(Axis(nx,ny,nz))=  %5.2f\n", sqrt(q.nx*q.nx + q.ny*q.ny + q.nz*q.nz) );
+    AxisAngle aa = QuatToAxisAngle( q );
+    (void) fprintf( fp, "Axis(nx,ny,nz),Angle= %5.2f %5.2f %5.2f  %5.2f\n",
+     aa.nx, aa.ny, aa.nz, aa.ang);
+    (void) fprintf( fp, "Mag(Axis(nx,ny,nz))=  %5.2f\n", 
+      hypotenuse(aa.nx, aa.ny, aa.nz));
 } // printQuat_r( Quat q )
 
 void printQuat( FILE *const fp, const Quat& q )
 {
+#ifdef ASSERTQUATOK
+    assertQuatOK(q);
+#endif
     printQuat_q( fp, q );
     printQuat_r( fp, q );
 } // printQuat( Quat q )
@@ -134,17 +155,12 @@ void debugQuat( FILE *fp, const Quat& q, const unsigned int linenumber, const ch
 }
 
 Quat normQuat( Quat q )
-    // Normalise the 4D quaternion, x,y,z,w
+    // return normalised copy of quaterion q
+    // or, if not normalisable, return identity quaternion
+    // see also mkUnitQuat which operates in place
 {
-    register double mag4 = hypotenuse4( q.x, q.y, q.z, q.w );
-    if (mag4 > APPROX_ZERO) {
-        register double inv_mag4 = 1. / mag4;
-        q.x *= inv_mag4;
-        q.y *= inv_mag4;
-        q.z *= inv_mag4;
-        q.w *= inv_mag4;
-    }
-    return q;
+    if ( mkUnitQuat(&q) ) return q;
+    else return sidentityQuat; // error
 }
 
 /*
@@ -161,117 +177,123 @@ void assertQuatOK( const Quat q )
 #define assertQuatOK( q ) {register double aQOK_mag4 = hypotenuse4( (q).x, (q).y, (q).z, (q).w ); assert((aQOK_mag4 > ONE_MINUS_EPSILON) && (aQOK_mag4 < ONE_PLUS_EPSILON)); }
 */
 
-Quat normRot( Quat q )
+AxisAngle normAxisAngle( const AxisAngle& aa )
     // Normalise the 3D rotation axis or vector nx,ny,nz
 {
-    double mag3 = hypotenuse( q.nx, q.ny, q.nz );
+    AxisAngle ret;
+    double mag3 = hypotenuse( aa.nx, aa.ny, aa.nz );
     if (mag3 > APPROX_ZERO) {
         double inv_mag3 = 1. / mag3;
-        q.nx *= inv_mag3;
-        q.ny *= inv_mag3;
-        q.nz *= inv_mag3;
+        ret.nx = inv_mag3 * aa.nx;
+        ret.ny = inv_mag3 * aa.ny;
+        ret.nz = inv_mag3 * aa.nz;
+	ret.ang = aa.ang;
+        return ret;
     }
-    return q;
+    else return sidentityAxisAngle;
 }
 
 Real quatDifferenceToAngle( const Quat& ql, const Quat& qr )
 {
-    Quat qdiff, rot;
+    Quat qdiff;
     qconjmultiply(&qdiff, &ql, &qr);
-    rot = convertQuatToRot( qdiff );
-    return rot.ang;
+    AxisAngle aa = QuatToAxisAngle(qdiff);
+    return aa.ang;
 }
 
-Real quatDifferenceToAngleDeg( const Quat& ql, const Quat& qr )
+Real
+quatDifferenceToAngleDeg( const Quat& ql, const Quat& qr )
 {
-    return (180./PI)* quatDifferenceToAngle( ql, qr );
+    return RadiansToDegrees(quatDifferenceToAngle( ql, qr ));
 }
 
 
-Quat convertQuatToRot( const Quat& q )
+AxisAngle
+QuatToAxisAngle( const Quat& q )
+{
     // Convert the quaternion components (x,y,z,w) of the quaternion q,
     // to the corresponding rotation-about-axis components (nx,ny,nz,ang)
-{
+    // Originally was named convertQuatToRot(  )
+    Quat input = q;
+    AxisAngle retval;
     // TODO handle big W!  Singularities...
-    Quat retval = q;
-#ifdef SUPER_DEBUG_MUTATION // mp
-    fprintf( logFile, "convertQuatToRot:  q.w = %.3f\n", q.w );
-#endif
-    assert( fabs( retval.w ) <= 1.001 );
-    if ( retval.w > 1. ) retval.w = 1.;
-    if ( retval.w < -1. ) retval.w = -1.;
+    assert( fabs( input.w ) <= 1.001 );
+    if ( input.w > 1. ) input.w = 1.;
+    if ( input.w < -1. ) input.w = -1.;
 
-    register double angle = 2. * acos( retval.w );
-    register double inv_sin_half_angle = 1.;
-    if ( retval.w == 1. ) {
-        retval.nx = 1.;
-        retval.ny = 0.;
-        retval.nz = 0.;
-    } else {
-        inv_sin_half_angle = 1. / sin( angle / 2. );
+    if ( input.w == 1. ||  input.w == -1 ) return sidentityAxisAngle;
+    else {
+        register double angle = 2. * acos( input.w );
+        double inv_sin_half_angle =  1. / sin( angle / 2. );
 
-        retval.nx = retval.x * inv_sin_half_angle;
-        retval.ny = retval.y * inv_sin_half_angle;
-        retval.nz = retval.z * inv_sin_half_angle;
+        retval.nx = input.x * inv_sin_half_angle;
+        retval.ny = input.y * inv_sin_half_angle;
+        retval.nz = input.z * inv_sin_half_angle;
+	// by convention, angles should be in the range -PI to +PI.
+        retval.ang = WrpModRad( angle ); 
 
-        retval = normRot( retval );
+        return normAxisAngle(retval);
     }
-    angle = WrpModRad( angle );  // by convention, angles should be in the range -PI to +PI.
-    retval.ang = angle;
+}
 
-/*
-    // Copy the existing x,y,z,w components
-    retval.x = q.x;
-    retval.y = q.y;
-    retval.z = q.z;
-    retval.w = q.w;
-*/
-
-    return retval;
-} // convertQuatToRot( Quat q )
-
-Quat convertRotToQuat( const Quat& q )
+Quat
+AxisAngleToQuat( const AxisAngle& aa )
+{	
     // Normalize the rotation-about-axis vector 
     // and convert the rotation-about-axis components (nx,ny,nz,ang)
     // to the corresponding quaternion components (x,y,z,w)
-{	
-    double hqang, s;
-    Quat retval;
+    // Originally was named convertRotToQuat( )
+    double nmag, inv_nmag, hqang, s;
+    Quat q;
+	     
+    nmag = hypotenuse( aa.nx, aa.ny, aa.nz );
 
-    retval.nx = q.nx;
-    retval.ny = q.ny;
-    retval.nz = q.nz;
-    retval = normRot( retval );
+    if ( nmag <= APPROX_ZERO)  return sidentityQuat; // error
 
-    retval.ang = q.ang;
-      
-    hqang = 0.5 * q.ang;
-    s = sin( hqang );
-    
-    retval.x = s * q.nx;
-    retval.y = s * q.ny;
-    retval.z = s * q.nz;
-    retval.w = cos( hqang );
-    
-    /* q.qmag = hypotenuse4( q.x,  q.y,  q.z,  q.w  ); */
-    return retval;
-} // Quat convertRotToQuat( Quat q )
+    inv_nmag = 1. / nmag;
+    hqang = 0.5 * aa.ang;
+    s     = sin( hqang );
+    q.x = s * aa.nx * inv_nmag;       /* Normalize axis */
+    q.y = s * aa.ny * inv_nmag;       /* Normalize axis */
+    q.z = s * aa.nz * inv_nmag;       /* Normalize axis */
+    q.w  = cos( hqang );
+#ifdef ASSERTQUATOK
+    assertQuatOK(q);
+#endif
+    return q;
+}
 
-Quat raaToQuat( const Real raa[3], ConstReal angle )
+Quat
+raaToQuat( const Real raa[3], ConstReal angle )   // "Real"type signature
 {
-    Quat input;
+    // input axis need not be normalized
+    AxisAngle input;
 
     input.nx = raa[0];
     input.ny = raa[1];
     input.nz = raa[2];
     input.ang = angle;
 
-    return convertRotToQuat( input );
-} // Quat raaToQuat( Real raa[4] )
-
-Quat uniformQuat( void )
-    // Generate a uniformly-distributed random quaternion (UDQ)
+    return AxisAngleToQuat( input );
+}
+Quat
+raaToQuat( const double raa[3], ConstReal angle ) // "double" type signature
 {
+    // input axis need not be normalized
+    AxisAngle input;
+
+    input.nx = raa[0];
+    input.ny = raa[1];
+    input.nz = raa[2];
+    input.ang = angle;
+
+    return AxisAngleToQuat( input );
+}
+
+Quat
+randomQuat( void )
+{
+// Generate a uniformly-distributed random quaternion (UDQ)
     double x0, r1, r2, t1, t2;  // for uniformly distributed quaternion calculation
     Quat q;
 
@@ -288,40 +310,28 @@ Quat uniformQuat( void )
     // q.z = sin( t2 ) * (  r2 = ( (genunf(0., 1.) < 0.5) ?  (-1.) : (+1.) ) * sqrt( x0 )  );  // random sign version
     q.z = sin( t2 ) * (  r2 = sqrt( x0 )  );  // strict Shoemake version
     q.w = cos( t2 ) * r2;
-
+#ifdef ASSERTQUATOK
+    assertQuatOK(q);
+#endif
     return q;
 }
 
-Quat uniformQuatByAmount( ConstReal amount )
+Quat
+randomQuatByAmount( ConstReal amount )
+{
     // returns a quaternion from a random axis and specified angle
     // amount is an angle in radians
-{
-    Quat q = uniformQuat();
-    q = convertQuatToRot( q );
-    q = axisRadianToQuat( q.nx, q.ny, q.nz, amount );
-    return q;
-}
-
-void unitQuat2rotation( Quat *const q )
-    // Convert from a unit quaternion to a rotation about an unit 3D-vector
-{
-    double inv_sin_half_ang;
-
-    q->ang = 2. * acos( q->w );
-    inv_sin_half_ang = 1. / sin( 0.5 * q->ang );
-    q->nx  = q->x * inv_sin_half_ang; 
-    q->ny  = q->y * inv_sin_half_ang; 
-    q->nz  = q->z * inv_sin_half_ang; 
-    
-    return;
+    Quat q = randomQuat();
+    AxisAngle aa = QuatToAxisAngle( q ); // will not be 3-element normalized
+    return axisRadianToQuat( q.x, q.y, q.z, amount );
 }
 
 void print_q_reorient_message( FILE *const logFile, const Quat& q_reorient )
     // Print message about q_reorient
 {
-    pr( logFile, "\nRe-orienting the ligand using the following axis (nx, ny, nz) and angle values:\n");
-    pr( logFile, "NEWDPF   reorient %.3lf %.3lf %.3lf %.2lf\n",
-        q_reorient.nx, q_reorient.ny, q_reorient.nz, RadiansToDegrees( q_reorient.ang ) );
+    pr( logFile, "\nRe-orienting the ligand using the following quaternion:\n");
+    pr( logFile, "NEWDPF   reorient Quat %.3lf %.3lf %.3lf %.3lf\n",
+        q_reorient.x, q_reorient.y, q_reorient.z, q_reorient.w);
 
     pr( logFile, "\n");
     pr( logFile, "q_reorient:\n");
@@ -330,21 +340,6 @@ void print_q_reorient_message( FILE *const logFile, const Quat& q_reorient )
 
     return;
 } // Print message about q_reorient
-
-void create_random_orientation( /* not const */ Quat *const ptr_quat ) 
-{
-    // Generate a random initial orientation for the ligand
-    Quat q_random;
-    // Generate a uniformly-distributed quaternion:
-    // setting the x,y,z,w components
-    q_random = uniformQuat();
-    ptr_quat->x = q_random.x;
-    ptr_quat->y = q_random.y;
-    ptr_quat->z = q_random.z;
-    ptr_quat->w = q_random.w;
-    // Update the (nx,ny,nz,ang) components of the quaternion, ptr_quat:
-    *ptr_quat = convertQuatToRot( *ptr_quat );
-}
 
 Quat conjugate( const Quat& q )
 {
@@ -427,7 +422,7 @@ Quat slerp1( const Quat& qa, const Quat& qb, ConstDouble t )
 	double sinHalfTheta = sqrt(1.0 - cosHalfTheta*cosHalfTheta);
 	// if theta = 180 degrees then result is not fully defined
 	// we could rotate around any axis normal to qa or qb
-	if (fabs(sinHalfTheta) < 0.001){ // fabs is floating point absolute
+	if (fabs(sinHalfTheta) < APPROX_ZERO) { // fabs is floating point absolute
 		qm.w = (qa.w * 0.5 + qb.w * 0.5);
 		qm.x = (qa.x * 0.5 + qb.x * 0.5);
 		qm.y = (qa.y * 0.5 + qb.y * 0.5);
@@ -535,14 +530,18 @@ Quat slerp( const Quat& qa, const Quat& qb, ConstDouble t )
 
 Quat axisRadianToQuat( ConstReal ax, ConstReal ay, ConstReal az, ConstReal angle )
 {
-    Real raa[3] = { ax, ay, az };
+    // axis need not be normalized
+    Real raa[3];
+    raa[0]= ax;
+    raa[1]= ay;
+    raa[2]= az;
     return raaToQuat( raa, angle );
 }
 
 Quat axisDegreeToQuat( ConstReal ax, ConstReal ay, ConstReal az, ConstReal angle )
 {
-    Real raa[3] = { ax, ay, az };
-    return raaToQuat( raa, DegreesToRadians( angle ) );
+    // axis need not be normalized
+    return axisRadianToQuat( ax, ay, az, DegreesToRadians( angle ) );
 }
 
 Quat quatComponentsToQuat( ConstReal qx, ConstReal qy, ConstReal qz, ConstReal qw )
@@ -555,12 +554,12 @@ Quat quatComponentsToQuat( ConstReal qx, ConstReal qy, ConstReal qz, ConstReal q
     return normQuat( Q );
 }
 
-const Quat identityQuat()
-{
-    Quat Q;
-    Q.x = Q.y = Q.z = 0.;
-    Q.w = 1.;
-    return Q;
+Quat identityQuat() {
+	return sidentityQuat;
+}
+	
+AxisAngle identityAxisAngle() {
+	return sidentityAxisAngle;
 }
 
 /* Radians */

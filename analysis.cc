@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.44 2011/05/18 16:43:16 rhuey Exp $
+ $Id: analysis.cc,v 1.45 2011/06/03 05:31:36 mp Exp $
 
  AutoDock  
 
@@ -269,6 +269,7 @@ void analysis( const int   Nnb,
                  nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
                  B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model );
      
+     	    AxisAngle aa = QuatToAxisAngle(hist[c].Q);
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
 
             printEnergies( &eb, "USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model);
@@ -278,7 +279,7 @@ void analysis( const int   Nnb,
             pr( logFile, "USER    NEWDPF move\t%s\n", smFileName );
             pr( logFile, "USER    NEWDPF about\t%f %f %f\n", sml_center[X],sml_center[Y],sml_center[Z]);
             pr( logFile, "USER    NEWDPF tran0\t%f %f %f\n", hist[c].T.x, hist[c].T.y, hist[c].T.z );
-            pr( logFile, "USER    NEWDPF axisangle0\t%f %f %f %f\n", hist[c].Q.nx, hist[c].Q.ny, hist[c].Q.nz, RadiansToDegrees(hist[c].Q.ang) );
+            pr( logFile, "USER    NEWDPF axisangle0\t%f %f %f %f\n", aa.nx, aa.ny, aa.nz, RadiansToDegrees(aa.ang) );
             pr( logFile, "USER    NEWDPF quaternion0\t%f %f %f %f\n", hist[c].Q.x, hist[c].Q.y, hist[c].Q.z, hist[c].Q.w );
             if (ntor > 0) {
                 // Deprecated in AutoDock 4 // pr( logFile, "USER    NEWDPF ndihe\t%d\n", hist[c].ntor );

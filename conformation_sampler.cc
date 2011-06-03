@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.13 2011/03/08 04:18:36 mp Exp $
+ $Id: conformation_sampler.cc,v 1.14 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -138,15 +138,7 @@ void ConformationSampler::random_sample(const int num_samples) {
 		rand_axis(random_axis_angle, angle);
 		multiplyraa(base_axis_angle, random_axis_angle, new_axis_angle);
 
-        Quat q;
-        q.nx = new_axis_angle[0];
-        q.ny = new_axis_angle[1];
-        q.nz = new_axis_angle[2];
-        q.ang = new_axis_angle[3];
-
-        q = convertRotToQuat( q );
-
-        probe_point.writeQuat( q );
+        probe_point.writeQuat(raaToQuat(  new_axis_angle, new_axis_angle[3]));
 
 		current_energy();
 	}
@@ -224,13 +216,13 @@ void ConformationSampler::update_bounds(void) /* not const */ {
     q = probe_point.readQuat();
 
     // convert to axis-angle
-    q = convertQuatToRot( q );
+    AxisAngle aa = QuatToAxisAngle( q );
 
 	// set up axis-angle array
-    raa[0] = q.nx;
-    raa[1] = q.ny;
-    raa[2] = q.nz;
-    raa[3] = q.ang;
+    raa[0] = aa.nx;
+    raa[1] = aa.ny;
+    raa[2] = aa.nz;
+    raa[3] = aa.ang;
 
 	raaEuler(raa, euler);
 	

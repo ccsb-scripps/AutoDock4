@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.14 2010/10/01 22:51:39 mp Exp $
+ $Id: mkNewState.cc,v 1.15 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -66,21 +66,13 @@ void mkNewState( /* not const */ State *const now,
     ** Quaternion angular displacement
     */
     if (qtwStep > APPROX_ZERO) {
-        /*
-        // (This code probably does *not* produce a uniformly distributed quaternion)
-        change->Q.nx  = Randpm1; 
-        change->Q.ny  = Randpm1; 
-        change->Q.nz  = Randpm1; 
-        change->Q.ang = random_pm( qtwStep );
-        mkUnitQuat( &(change->Q) );
-        */
 
         /*
         **  This should produce a uniformly distributed quaternion, according to
         **  Shoemake, Graphics Gems III.6, pp.124-132, "Uniform Random Rotations",
         **  published by Academic Press, Inc., (1992)
         */
-        change->Q = uniformQuat();
+        change->Q = randomQuat();
 
         /*
         **  Apply random change, to Last Quaternion

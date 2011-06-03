@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.32 2011/05/18 16:43:16 rhuey Exp $
+ $Id: eval.cc,v 1.33 2011/06/03 05:31:36 mp Exp $
 
  AutoDock  
 
@@ -95,23 +95,11 @@ void make_state_from_rep(const Representation *const *const rep, /* not const */
    assert( !ISNAN( rep[3]->gene(3).real ) );
    stateNow->Q.w = rep[3]->gene(3).real;
 
-   // Generate the corresponding axis-angle ("rotation")
-   Quat q_axis_angle;
-   q_axis_angle = convertQuatToRot( stateNow->Q );
-
-   // Update the axis-angle values in stateNow
-   stateNow->Q.nx = q_axis_angle.nx;
-   stateNow->Q.ny = q_axis_angle.ny;
-   stateNow->Q.nz = q_axis_angle.nz;
-   stateNow->Q.ang = q_axis_angle.ang;
-   
    //  Copy the angles
    for (i=0; i<stateNow->ntor; i++) {
       assert( !ISNAN( rep[4]->gene(i).real ) );
       stateNow->tor[i] = rep[4]->gene(i).real;
    }
-
-   // mkUnitQuat(&(stateNow->Q));
 }
 
 double Eval::operator()(const Representation *const *const rep)
@@ -306,8 +294,6 @@ void make_state_from_rep(const double *const rep, const int n, /* not const */ S
     now->Q.y = rep[4];
     now->Q.z = rep[5];
     now->Q.w = rep[6];
-
-    now->Q = convertQuatToRot( now->Q );
 
     //  Copy the angles
     now->ntor = n - 7;

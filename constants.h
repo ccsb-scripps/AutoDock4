@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.30 2011/05/18 16:44:50 rhuey Exp $
+ $Id: constants.h,v 1.31 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -142,31 +142,25 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #ifdef USE_8A_NBCUTOFF
 
-// #ifdef USE_XCODE // Xcode-gmm
-
-#define NEINT    2048         /* Number of values in internal energy table */ // Xcode-gmm
-#define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
+#define NBC         8.00      /* Non-bonded cutoff for internal energy calc./Ang*/ 
+#define NEINT    2048         /* Number of values in internal energy table */
 #define A_DIV     100.00      /* Used in distance look-up table. */
-#define INV_A_DIV   0.01      /* Used in distance look-up table. i.e. every 1/100-th of an Angstrom */
-#define SQA_DIV    32.00      /* Used in square-distance look-up table. */
-#define INT_SQA_DIV   32      /* Xcode-gmm */
-#define INV_SQA_DIV 0.03125   /* INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
-#define NBC         8.00      /* Non-bonded cutoff for internal energy calc./Ang*/ // Xcode-gmm
-#define NBC2       64.00      /* NBC^2, units: Angstrom^2 */ // Xcode-gmm
 
 #else
 
-#define NEINT  131072         /* Number of values in internal energy table */
-#define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
-#define A_DIV     100.00      /* Used in distance look-up table. */
-#define INV_A_DIV   0.01      /* Used in distance look-up table. i.e. every 1/100-th of an Angstrom */
-#define SQA_DIV    32.00      /* Used in square-distance look-up table. */
-#define INT_SQA_DIV   32      /* Xcode-gmm */
-#define INV_SQA_DIV 0.03125   /* INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
 #define NBC        64.00      /* Non-bonded cutoff for internal energy calc./Ang*/
-#define NBC2     4096.00      /* NBC^2, units: Angstrom^2 */
+#define NEINT  131072         /* Number of values in internal energy table */
+#define A_DIV     100.00      /* Used in distance look-up table. */
 
 #endif
+
+#define NBC2     (NBC*NBC)    /* NBC^2, units: Angstrom^2 */
+#define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
+#define INV_A_DIV  (1./A_DIV)      /* Used in distance look-up table. i.e. every 1/100-th of an Angstrom */
+#define INT_SQA_DIV   (NEINT/(int)NBC2)      /* Xcode-gmm */
+#define SQA_DIV    (NEINT/NBC2)      /* Used in square-distance look-up table. */
+#define INV_SQA_DIV (1./SQA_DIV) /* 0.03125   INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
+
 
 #define NDIEL 16384           /* Number of dielectric values in lookup table.
                                  NDIEL is bigger than NEINT because electrostatic interactions are much
@@ -300,7 +294,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /* SqAng_to_index converts from the square of a distance to an array index */
 #define SqAng_to_index(r2)        ( (int) ( (r2) * SQA_DIV ) )
 #define SqAng_to_index_NBC2(r2)   ( (int) ( ( min( r2, NBC2 ) ) * SQA_DIV ) )
-#define SqAng_to_index_Int(r2)    (INT_SQA_DIV * (int)(r2))  /* Xcode-gmm */
 
 /* BoundedSqAng_to_index converts from the square of a distance to an array index, but never returns an index out of bounds. */
 #define BoundedSqAng_to_index(r2) ( (((int)((r2)*SQA_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r2)*SQA_DIV)) )

@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.59 2011/05/26 03:39:07 mp Exp $ 
+ $Id: call_glss.cc,v 1.60 2011/06/03 05:31:36 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -80,22 +80,19 @@ Representation **generate_R(const int num_torsions, GridMapSetInfo *const info)
    retval[2] = new RealVector( 1, info->lo[Z], info->hi[Z] );
 
    // Generate a uniformly-distributed random quaternion for a random rotation (UDQ)
-   q = uniformQuat();
-   q = convertQuatToRot( q );
+   q = randomQuat();
 #ifdef DEBUG
    printQuat( logFile, q );
 #endif
 
    // Set the unit vector components (the "axis"), for the rotation about axis
-   retval[3] = new RealVector( 3, -1., 1., q.nx, q.ny, q.nz ); // uniformly-distributed quaternion (UDQ)
+   retval[3] = new RealVector( 4, -1., 1., q.x, q.y, q.z, q.w ); // uniformly-distributed quaternion (UDQ)
 
-   // Set the angle (the "rotation") for the rotation about axis, 
-   // and any torsion angles
-   retval[4] = new RealVector( num_torsions+1, -PI, PI, q.ang ); // uniformly-distributed quaternion (UDQ)
-   // retval[4] = new RealVector( num_torsions+1, -PI, PI );  // rotation-about-axis angle is uniformly distributed, -PI to PI, not UDQ
+   // Set the angle for any torsion angles
+   retval[4] = new RealVector( num_torsions, -PI, PI );  // torsion angle is uniformly distributed, -PI to PI
 
 #ifdef DEBUG
-    (void)fprintf(logFile,"call_glss.cc/Representation **generate_R()  done assigning each of the retval[0-5] elements...\n");
+    (void)fprintf(logFile,"call_glss.cc/Representation **generate_R()  done assigning each of the retval[0-4] elements...\n");
 #endif
 
    return(retval);
@@ -121,8 +118,7 @@ Representation **generate_R_quaternion(const int num_torsions, const GridMapSetI
    retval[2] = new RealVector( 1, info->lo[Z], info->hi[Z] );
 
    // Generate a uniformly-distributed random quaternion for a random rotation (UDQ)
-   q = uniformQuat();
-   q = convertQuatToRot( q );
+   q = randomQuat();
 #ifdef DEBUG
    printQuat( logFile, q );
 #endif
@@ -224,8 +220,6 @@ Individual set_ind(const int num_torsions,  const GridMapSetInfo *const info, co
    temp_Gtype.write(state.T.y, 1);
    temp_Gtype.write(state.T.z, 2);
 
-   q = convertRotToQuat( state.Q );
-
 #ifdef DEBUG_QUAT
 #ifdef DEBUG_QUAT_PRINT
     pr( logFile, "DEBUG_QUAT: set_ind()\n" );
@@ -326,8 +320,13 @@ State call_glss(/* not const */ Global_Search *global_method,
         }
         if (!B_RandomQuat0) {
             if (outlev > 1) { 
-                (void)fprintf(logFile, "Setting the initial orientation using axis-angle values for individual number %d to %.2lf %.2lf %.2lf  %.2lf deg\n\n", indiv+1, sInit.Q.nx, sInit.Q.ny, sInit.Q.nz, RadiansToDegrees(sInit.Q.ang)); 
-                (void)fprintf(logFile, "which corresponds to the quaternion (x,y,z,w) values:  %.2lf %.2lf %.2lf %.2lf\n\n", sInit.Q.x, sInit.Q.y, sInit.Q.z, sInit.Q.w); 
+		AxisAngle aa = QuatToAxisAngle(sInit.Q);
+                (void)fprintf(logFile, 
+		 "Setting the initial orientation using quaterion values (x,y,z,w) for individual number %d to %.6lf %.6lf %.6lf %.6lf\n\n", 
+		 indiv+1, sInit.Q.x, sInit.Q.y, sInit.Q.z, sInit.Q.w);
+                (void)fprintf(logFile, 
+		"which corresponds to the axis-angle (x,y,z,degree) values:  %.2lf %.2lf %.2lf %.2lf\n\n",
+		aa.nx, aa.ny, aa.nz, aa.ang); 
             }
             thisPop[indiv].genotyp.write( sInit.Q.x, 3 );
             thisPop[indiv].genotyp.write( sInit.Q.y, 4 );

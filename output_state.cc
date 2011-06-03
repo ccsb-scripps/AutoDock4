@@ -1,6 +1,6 @@
 /*
 
- $Id: output_state.cc,v 1.11 2010/10/01 22:51:39 mp Exp $
+ $Id: output_state.cc,v 1.12 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -68,9 +68,10 @@ void output_state( FILE *const fp,
     FILE *FP_watch;
 #endif
 
+    // note: state is printed as quaternion not axis-angle
     fprintf(fp, "state %d %c %f %f  %lf %lf %lf  %lf %lf %lf %lf\n",
         istep, lastmove, energy, eint, S.T.x, S.T.y, S.T.z,
-        S.Q.nx, S.Q.ny, S.Q.nz, RadiansToDegrees( S.Q.ang ) );
+        S.Q.x, S.Q.y, S.Q.z, S.Q.w );
 
     for (i=0; i<ntor; i++) {
         fprintf(fp, "%f\n", RadiansToDegrees( S.tor[i]) );

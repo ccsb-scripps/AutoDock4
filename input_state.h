@@ -1,6 +1,6 @@
 /*
 
- $Id: input_state.h,v 1.6 2010/08/27 00:05:07 mp Exp $
+ $Id: input_state.h,v 1.7 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -31,7 +31,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 int input_state( State *S,
 		 FILE  *const fp, 
-                 const char  line[LINE_LEN], 
+                 const char  *const line, 
                  const int   ntor, 
 		 int   *const P_istep, 
                  Real  *const P_energy, 

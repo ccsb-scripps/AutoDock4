@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.32 2011/03/09 01:35:05 mp Exp $
+ $Id: simanneal.cc,v 1.33 2011/06/03 05:31:36 mp Exp $
 
  AutoDock  
 
@@ -587,8 +587,6 @@ void simanneal ( int   *const Addr_nconf,
             copyState( &sSave, sLast );
         }
 
-        sSave.Q.ang = WrpRad( ModRad( sSave.Q.ang ) );
-
         for (i=0; i<ntor; i++) {
             sSave.tor[i] = WrpRad( ModRad( sSave.tor[i] ) );
         }
@@ -600,9 +598,9 @@ void simanneal ( int   *const Addr_nconf,
 
         pr( logFile, "Final Translation = %.2f, %.2f, %.2f\n", sSave.T.x, sSave.T.y, sSave.T.z );
         pr( logFile, "Final Quaternion = ( %+.2f, %+.2f, %+.2f, %+.2f )\n", sSave.Q.x, sSave.Q.y, sSave.Q.z, sSave.Q.w );
-        sSave.Q = convertQuatToRot( sSave.Q );
-        pr( logFile, "Final Rotation Axis = ( %+.2f, %+.2f, %+.2f )\n", sSave.Q.nx, sSave.Q.ny, sSave.Q.nz );
-        pr( logFile, "Final Rotation Angle = %5.1f deg\n", RadiansToDegrees(sSave.Q.ang) );
+	AxisAngle aa = QuatToAxisAngle( sSave.Q );
+        pr( logFile, "Final Rotation Axis = ( %+.2f, %+.2f, %+.2f )\n", aa.nx, aa.ny, aa.nz );
+        pr( logFile, "Final Rotation Angle = %5.1f deg\n", RadiansToDegrees(WrpRad( ModRad(aa.ang))) );
 
         copyState( &sHist[ *Addr_nconf ], sSave );
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.31 2011/05/19 22:03:13 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.32 2011/06/03 05:31:36 mp Exp $
 
  AutoDock  
 
@@ -187,6 +187,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     }
 
 	if (outlev > -1) {
+		AxisAngle aa = QuatToAxisAngle( state.Q );
 		// output of coordinates
         pr( logFile, "%s: MODEL     %4d\n", state_type_string, irun+1 );
         pr( logFile, "%s: USER    Run = %d\n", state_type_string, irun+1 );
@@ -208,9 +209,9 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 		(void) fprintf(logFile, "%s: USER    NEWDPF about %f %f %f\n", state_type_string, sml_center[X], sml_center[Y], sml_center[Z]);
 		(void) fprintf(logFile, "%s: USER    NEWDPF tran0 %f %f %f\n", state_type_string, state.T.x, state.T.y, state.T.z);
 		(void) fprintf(logFile, "%s: USER    NEWDPF quaternion0 %f %f %f %f\n", state_type_string, state.Q.x, state.Q.y, state.Q.z, state.Q.w);
-        state.Q = convertQuatToRot( state.Q );
-		(void) fprintf(logFile, "%s: USER    NEWDPF axisangle0 %f %f %f %f\n", state_type_string, state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
-		(void) fprintf(logFile, "%s: USER    NEWDPF quat0 %f %f %f %f # deprecated\n", state_type_string, state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
+		(void) fprintf(logFile, "%s: USER    NEWDPF axisangle0 %f %f %f %f\n", state_type_string, aa.nx, aa.ny, aa.nz, RadiansToDegrees(WrpRad(ModRad(aa.ang))));
+		// note quat0 is deprecated, same as axis-angle
+		(void) fprintf(logFile, "%s: USER    NEWDPF quat0 %f %f %f %f\n", state_type_string, aa.nx, aa.ny, aa.nz, RadiansToDegrees(WrpRad(ModRad(aa.ang))));
 		if (ntor > 0) {
             // ndihe is deprecated; uses the number of torsions in the PDBQT's torsion tree
 			// (void) fprintf(logFile, "%s: USER    NEWDPF ndihe %d\n", state_type_string, ntor);
@@ -229,9 +230,9 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 
 			pr(stateFile, "\t\t<tran0>%f %f %f</tran0>\n", state.T.x, state.T.y, state.T.z);
 			pr(stateFile, "\t\t<quaternion0>%f %f %f %f</quaternion0>\n", state.Q.x, state.Q.y, state.Q.z, state.Q.w);
-            state.Q = convertQuatToRot( state.Q );
-			pr(stateFile, "\t\t<quat0>%f %f %f %f</quat0>\n", state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
-			pr(stateFile, "\t\t<axisangle0>%f %f %f %f</axisangle0>\n", state.Q.nx, state.Q.ny, state.Q.nz, RadiansToDegrees(WrpRad(ModRad(state.Q.ang))));
+			// quat0 is deprecated, same as axisangle0
+			pr(stateFile, "\t\t<quat0>%f %f %f %f</quat0>\n", aa.nx, aa.ny, aa.nz, RadiansToDegrees(WrpRad(ModRad(aa.ang))));
+			pr(stateFile, "\t\t<axisangle0>%f %f %f %f</axisangle0>\n", aa.nx, aa.ny, aa.nz, RadiansToDegrees(WrpRad(ModRad(aa.ang))));
 			if (ntor > 0) {
 				pr(stateFile, "\t\t<ndihe>%d</ndihe>\n", ntor);
 				pr(stateFile, "\t\t<dihe0>");

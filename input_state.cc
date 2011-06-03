@@ -1,6 +1,6 @@
 /*
 
- $Id: input_state.cc,v 1.8 2010/08/27 00:05:07 mp Exp $
+ $Id: input_state.cc,v 1.9 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -33,11 +33,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <string.h>
 #include "input_state.h"
 
-#define LINELEN 132
+#define LINELEN 1000
 
+/* TODO MPique 2011-06 appears unused in AutoDock or AutoGrid, untested 
+ *   after adapting to read state as quaternion x,y,z,w rather than axis-angle
+ */
 int input_state( State *const S,
 		 FILE  *const fp,
-		 const char  line[LINE_LEN],
+		 const char  *line,
 		 const int   ntor,
 		 int   *const p_istep,
 		 Real  *const p_energy,
@@ -53,10 +56,9 @@ int input_state( State *const S,
     fprintf(stderr, "line=|%s|\n", line);
 #endif /* DEBUG */
 
-    status = sscanf(line, "%*s %d %1s " FDFMT " " FDFMT " %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T.x), &(S->T.y), &(S->T.z),  &(S->Q.nx), &(S->Q.ny), &(S->Q.nz),  &(S->Q.ang) );
+    status = sscanf(line, "%*s %d %1s " FDFMT " " FDFMT " %lf %lf %lf %lf %lf %lf %lf", &istep, &lastmove, &energy, &eint,  &(S->T.x), &(S->T.y), &(S->T.z),  &(S->Q.x), &(S->Q.y), &(S->Q.z),  &(S->Q.w) );
 
     if (status != 0) {
-	S->Q.ang = DegreesToRadians( S->Q.ang );
 	mkUnitQuat( &(S->Q) );
 
     *p_istep = istep;

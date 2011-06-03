@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.24 2010/05/14 21:25:51 mp Exp $
+ $Id: structs.h,v 1.25 2011/06/03 05:31:36 mp Exp $
 
  AutoDock  
 
@@ -78,32 +78,36 @@ typedef struct quat
   double y;			/* quaternion's y-component */
   double z;			/* quaternion's z-component */
   double w;			/* quaternion's w-component */
-  double qmag;			/* quaternion's 4-D magnitude */
+} Quat;
+
+typedef struct axisangle  /* used in older AutoDock code as "Rot" */
+{
   double nx;			/* unit vector's x-component */
   double ny;			/* unit vector's y-component */
   double nz;			/* unit vector's z-component */
-  double ang;			/* angle of rotation about unit-vector */
-} Quat;
+  double ang;			/* angle of rotation about unit-vector, radians */
+} AxisAngle;
 
-typedef struct quaternion
-{
-    double v[4];
-} Quaternion;
-
-#define NX 0
-#define NY 1
-#define NZ 2
-
+#ifdef AXANG
 typedef struct axis
 {
     double v[3];
 } Axis;
 
-typedef struct axisangle
+// MP in progress - which is easier to use
+typedef struct axisang
 {
+    union axis {
     Axis axis;
+    struct xyz {
+	  double nx;			/* unit vector's x-component */
+	  double ny;			/* unit vector's y-component */
+	  double nz;			/* unit vector's z-component */
+	  } xyz;
+	};
     double angle;
 } AxisAngle;
+#endif
 
 
 /* ____________________________________________________________________________ */

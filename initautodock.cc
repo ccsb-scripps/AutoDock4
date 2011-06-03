@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.cc,v 1.14 2010/08/27 00:05:07 mp Exp $
+ $Id: initautodock.cc,v 1.15 2011/06/03 05:31:36 mp Exp $
 
  AutoDock 
 
@@ -127,6 +127,8 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
         }
 
         if (outlev > 1) {
+            mkUnitQuat( &(s0->Q) );  // assure is normalized
+	    AxisAngle aa = QuatToAxisAngle(s0->Q);
             pr( logFile, "Undoing all previous ligand transformations.\n");
             pr( logFile, "Resetting ligand to input PDBQ coordinates centred on \"about\" coordinates.\n" );
             if (ntor > 0) {
@@ -139,11 +141,10 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
             pr( logFile, "\nApplying initial translation...\n");
             pr( logFile, "Ligand translated to:  %+.3f  %+.3f  %+.3f\n\n", s0->T.x, s0->T.y, s0->T.z );
             pr( logFile, "Applying initial quaternion...\n");
-            pr( logFile, "Ligand rigid-body-rotated by: %+.1f degrees,   about unit vector: %+.3f %+.3f %+.3f.\n\n", RadiansToDegrees(s0->Q.ang), s0->Q.nx, s0->Q.ny, s0->Q.nz );
+            pr( logFile, "Ligand rigid-body-rotated by: %+.1f degrees,   about unit vector: %+.3f %+.3f %+.3f.\n\n", RadiansToDegrees(aa.ang), aa.nx, aa.ny, aa.nz);
             flushLog;
         }
 
-        mkUnitQuat( &(s0->Q) );
         cnv_state_to_coords( *s0,  vt, tlist, ntor,  crdpdb, crd, natom); // all const except crd
 
         for (i = 0;  i < natom;  i++) {
@@ -244,15 +245,7 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                 prStr( note, ">>> Trying a new, randomly-generated rigid body rotation. (overriding user-specified initial rotation values)\n");
                 pr_2x( stderr, logFile, note );
 
-                /*
-                s0->Q.nx  = random_range( -1., 1. );
-                s0->Q.ny  = random_range( -1., 1. );
-                s0->Q.nz  = random_range( -1., 1. );
-                s0->Q.ang = DegreesToRadians( random_range( 0., 360. ) );  //radians
-                mkUnitQuat( &(s0->Q) );
-                */
-                s0->Q = uniformQuat();
-                s0->Q = convertQuatToRot( s0->Q );
+                s0->Q = randomQuat();
 
             }/*if (B_eq_and_opp)*/
 
