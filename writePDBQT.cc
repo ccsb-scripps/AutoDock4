@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.32 2011/06/03 05:31:36 mp Exp $
+ $Id: writePDBQT.cc,v 1.33 2011/06/06 19:29:12 rhuey Exp $
 
  AutoDock  
 
@@ -284,13 +284,15 @@ writePDBQT(const int irun, const FourByteLong seed[2],
                 if (keepresnum > 0) {
                     // Retain the original Residue Numbering (held in atomstuff)
                     print_PDBQT_atom_resstr(logFile, state_type_prefix_string, 
-                                   i + 1, atomstuff[i], crd,
+                                   i , atomstuff[i], crd,
+                                   //i incremented in print_PDBQT_atom_resstr
                                    this_emap, this_elec, 
                                    charge[i], parameterArray[type[i]].autogrid_type, "\n" );
                 } else {
                     // Change the residue number to the run number 
                     print_PDBQT_atom_resnum(logFile, state_type_prefix_string, 
-                                   i + 1, atomstuff[i], irun+1, crd,
+                                   i , atomstuff[i], irun+1, crd,
+                                   //i incremented in print_PDBQT_atom_resnum
                                    this_emap, this_elec, 
                                    charge[i], parameterArray[type[i]].autogrid_type, "\n" );
 
