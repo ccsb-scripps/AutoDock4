@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.33 2011/06/06 19:29:12 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.34 2011/06/06 23:02:33 rhuey Exp $
 
  AutoDock  
 
@@ -329,7 +329,7 @@ void print_PDBQT( FILE *const logFile,
 { // Print out the coordinates
     for (int i=0; i<true_ligand_atoms; i++) {
         print_PDBQT_atom_resstr(logFile, prefix,
-       i + 1, atomstuff[i], crd,
+        i , atomstuff[i], crd,
         1., 0., 
        charge[i], parameterArray[type[i]].autogrid_type, suffix );
     }
