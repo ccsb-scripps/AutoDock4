@@ -23,6 +23,12 @@ inline float Norm(float *x, int n)
  * 
  * Huameng Li, 07/2008
  * 
+ *
+ * Key modifications spring-summer 2011 by R Huey & M Pique at TRSI:
+ *   No longer does local search here, the caller will do that (or not)
+ *     after each generation.
+ *   Returns best (lowest energy) individual in first position of Pop.
+ *     Order of other individuals is undefined.
  ***********************************************************************/
 int ParticleSwarmGS::search(Population &Pop)
 {
@@ -35,14 +41,14 @@ int ParticleSwarmGS::search(Population &Pop)
 	//float phi, c;
 	float ratio = 0.0;
 	
-	// initialize velocity		
+	// on first call per run, allocate Pi array, initialize velocity vectors
 	if(_Pi == NULL) {
 		
 		pr(logFile, "PSO max_generations = %d\n", max_generations);
 		pr(logFile, "PSO size = %d\n", size); // MP debug
 				
 		fprintf(logFile, "PSO Allocate initial velocity of particles...\n");
-		_Pi = new Population(Pop);
+		_Pi = new Population(Pop); // copy of Pop (? MP)
 		
 		pop_size = Pop.num_individuals();
 		pr(logFile, "PSO pop_size = %d\n", pop_size); // MP debug
@@ -90,13 +96,33 @@ int ParticleSwarmGS::search(Population &Pop)
 		pr(logFile, "---------- -------- ---------- \n");					
 									
 	}
+
+	// Update weights as the run progresses
+	// Huameng had:  ratio = (float)evaluate.evals() / num_evals;
+	ratio = (float)generations / max_generations;  // MP TODO since we dont have num_evals
+	pso_w = wmin +(wmax - wmin) * (1.0 - ratio);
 	
+	// Set shorthand names for best for each indiv, best individual in pop
 	Population &Pi = (Population &)(*_Pi);
 	Individual &Pg = (Individual &)(*_Pg);
 	
 	//double piBestE[pop_size];	    // E array for personal Best	
 	//double prevE[pop_size];       // E array for particles in previous run 
 	//double curE[pop_size];        // E array for particles in current run
+
+	// update Pi from Pop, set Global Best Pg, which points to _Pg
+	for(i = 0; i < pop_size; i++ ) {		
+		if( Pop[i].value(Normal_Eval) < Pi[i].value(Normal_Eval) )		
+		        Pi[i] = Pop[i];
+	 // assert energy of Pi[i] <= energy of Pop[i]
+	}
+	best = 0;	
+	for(i = 1; i < pop_size; i++ ) {		
+		if( Pi[i].value(Normal_Eval) < Pi[best].value(Normal_Eval) )		
+			best = i;			
+	}
+	Pg = Pi[best];
+	// assert energy of Pg <= energy of Pi[*] <= energy of Pop[*]
 		   		   	 	     	   	 	   	   	   	  
 	//update position variable related to the translation and rotation of each particle			
 	for(i = 0; i < pop_size; i++) {
@@ -104,22 +130,23 @@ int ParticleSwarmGS::search(Population &Pop)
 		//r2 = 1.0 - r1;
 		//get the best in neighborhood, e.g., Neighborhood Best (nbBest)		
 		g = i;
-		for(j = i + 1; j < i + K; j++) {
+		for(j = i + 1; j < i + pso_K; j++) {
 			if(Pi[j % pop_size].value(Normal_Eval) < Pi[g].value(Normal_Eval))
 				g = (j % pop_size);
 		}
 				
 		// size is the dimension of docking search (e.g, n*nlig + ntor)			
-		for(j = 0; j < size; j++) {		
+		for(j = 0; j < size; j++) {
 			r1 = ranf();
 			r2 = ranf();
-			// update velocity
+			// note that phenotype "gread" is x,y,z,qx,qy,qz,qw,t1...
 			curVal = Pop[i].phenotyp.gread(j).real;
 									
 			
 			// -Huameng
+			// update velocity
 			if(ratio <= 0.8) {				
-				v[i][j] = w * v[i][j] + c1 * r1 * (Pi[i].phenotyp.gread(j).real - curVal)
+				v[i][j] = pso_w * v[i][j] + c1 * r1 * (Pi[i].phenotyp.gread(j).real - curVal)
 			                      + c2 * r2 * (Pi[g].phenotyp.gread(j).real - curVal);
 			} else {
 				//Incorporate stage 2 constriction PSO 
@@ -137,25 +164,23 @@ int ParticleSwarmGS::search(Population &Pop)
 				
 			newVal = curVal + v[i][j];
 										
-			// update x,y,z, quarternion, torsion of particle i
+			// update x,y,z, quaternion, torsion of particle i
 			Pop[i].phenotyp.write(newVal, j);												
 		}
-		// need to normalize Quarternion
-		Quat q;
-		q = Pop[i].phenotyp.readQuat();
+		// must normalize Quaternion after modifying its components
+		Quat q = Pop[i].phenotyp.readQuat();
 		Pop[i].phenotyp.writeQuat( normQuat( q ));
-		
-		//evaluate new solution
-		//this will be done in step: 'Find the best in Pop'						
-		//Pop[i].value(Normal_Eval);
+
+		Pop[i].inverse_mapping(); // MP@@ copy phenotype to genotype (may not be necc)
 		
 	}	// end current swarm	
 	
-	// Find the best in Pop	
+	// Update personal best Pi after this swarm search generation.
+	// Find the best in Pop after this swarm search generation.
+	// Note each could be better or worse than former best, stored in Pg
 	best = 0;
-	double X_best_value = 99999999; // MP debug Pop[0].value(Normal_Eval);	
+	double X_best_value = 99999999;
 	for(i = 0; i < pop_size; i++) {		
-		Pop[i].inverse_mapping(); // MP@@ copy phenotype to genotype
 		piCurE = Pop[i].value(Normal_Eval);
 		if(piCurE < X_best_value) {
 			best = i;
@@ -167,13 +192,28 @@ int ParticleSwarmGS::search(Population &Pop)
 			Pi[i] = Pop[i];			
 		}										
 	}
-	// MP debug - verifying msort is bringing best individual to Pop[0]
-	pr(logFile, "PSO pre-msort  best=%d Pop[%d]=%.2f X_best_value=%.2f, Pop[0,1,..] = ", 
+
+	// exchange the best Pop individual into location Pop[0]
+	// and exchange the corresponding Pi history entry
+	pr(logFile, "PSO pre-swap  best=%d Pop[%d]=%.2f X_best_value=%.2f, Pop[0,1,..] = ", 
 	  best, best, Pop[best].value(Normal_Eval), X_best_value);
 	for(i=0;i<8; i++) pr(logFile, "%8.2f ", Pop[i].value(Normal_Eval));
 	pr(logFile, "\n");
-	Pop.msort(1); // MP@@ - bring best individual to position 0 (for local search)
-	// MP debug - look again for best after msort, should be at [0]
+
+
+
+	if(best!=0) {
+		Individual temp;
+		temp = Pop[0];
+		Pop[0] = Pop[best];
+		Pop[best] = temp;
+
+		temp = Pi[0];
+		Pi[0] = Pi[best];
+		Pi[best] = temp;
+	}
+
+	// MP debug - look again for best after swap, should be at [0]
 	// Find the best in Pop	
 	best = 0;
 	X_best_value = 99999999; // MP debug Pop[0].value(Normal_Eval);	
@@ -189,7 +229,7 @@ int ParticleSwarmGS::search(Population &Pop)
 			Pi[i] = Pop[i];			
 		}										
 	}
-	pr(logFile, "PSO post-msort best=%d Pop[%d]=%.2f X_best_value=%.2f, Pop[0,1,..] = ", 
+	pr(logFile, "PSO post-swap best=%d Pop[%d]=%.2f X_best_value=%.2f, Pop[0,1,..] = ", 
 	  best, best, Pop[best].value(Normal_Eval), X_best_value);
 	for(i=0;i<8; i++) pr(logFile, "%8.2f ", Pop[i].value(Normal_Eval));
 	pr(logFile, "\n");
@@ -204,32 +244,8 @@ int ParticleSwarmGS::search(Population &Pop)
 //		if( Pop[best].value(Normal_Eval) < Pi[best].value(Normal_Eval) ) {
 //			Pi[best] = Pop[best];			
 //		}					
-		//pr(logFile, "NumEvals=%d\tX_best before LS=%.2f\tX_best after LS=%.2f\n",	
-		//			evaluate.evals(), X_best_value, Pop[best].value(Normal_Eval));		
 //	}		
-	
-	
-	// Update Pi, personal Best in history
-	//for(i = 0; i < pop_size; i++) {					
-	//	if(Pop[i].value(Normal_Eval) < Pi[i].value(Normal_Eval))	
-	//		Pi[i] = Pop[i];			
-	//}
-				
-	// update Global Best Pg, which points to _Pg
-	best = 0;	
-	for(i = 1; i < pop_size; i++ ) {		
-		if( Pi[i].value(Normal_Eval) < Pi[best].value(Normal_Eval) )		
-			best = i;			
-	}
-	
-	Pg = Pi[best];
-	
-	// Update weight
-	// Huameng:  ratio = (float)evaluate.evals() / num_evals;
 
-	ratio = (float)generations / max_generations;  // MP since we dont have num_evals
-	w = wmin +(wmax - wmin) * (1.0 - ratio);
-			 		
 	generations++;
 	
 	// comments out the swarm analysis   -Huameng
@@ -260,7 +276,7 @@ int ParticleSwarmGS::search(Population &Pop)
 	dist /= count;
 	****************************************************************/
 	
-	// Output Information
+	// Output PSO statistics
 	if(outputEveryNgens > 0 && 
 	  (generations % outputEveryNgens == 0||generations==1)) {
 		//pr(logFile, "%d %8d %10.2f %10.2f %10.2f %6.2f %8.2f\n", generations, evaluate.evals(), Pg.value(Normal_Eval), Pop_avg, Pi_avg, w, v_avg);

@@ -17,12 +17,12 @@ class ParticleSwarmGS : public Global_Search
 		float **v;	// velocity
 		float *vmax;	//max velocity 
 		float *vmin;	// min velocity
-		float w;	   // inertia weight
-		float wmax;
-		float wmin;
+		float pso_w;	   // inertia weight
+		float wmax;	// pso_w at beginning of run
+		float wmin;	// pso_w at conclusion of run, see pso.cc
 		float c1;	// cognitive
 		float c2;	// social
-	    int K;      // number of neighbor particles
+	    int pso_K;      // number of neighbor particles
 	    float c;    // constriction factor for cPSO
 	    
 		int generations;
@@ -108,7 +108,7 @@ inline ParticleSwarmGS::ParticleSwarmGS(
 	 v = NULL; 
 	c1 = pso_c1;	      
 	c2 = pso_c1; 
-	K = pso_k;
+	pso_K = pso_k;
     c = 0.01;
 }
 
@@ -140,7 +140,7 @@ inline int ParticleSwarmGS::terminate(void)
 inline void ParticleSwarmGS::reset(void)
 {
 	generations = 0;
-	w = wmax;
+	pso_w = wmax;
 	if(_Pi)
 		delete _Pi;
 	if(_Pg)

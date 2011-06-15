@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.146 2011/06/03 05:31:36 mp Exp $
+ $Id: main.cc,v 1.147 2011/06/15 04:53:27 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -111,7 +111,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.146 2011/06/03 05:31:36 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.147 2011/06/15 04:53:27 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -496,7 +496,7 @@ Local_Search *LocalSearchMethod = NULL;
 //Declaration of Variables for particle swarm optimization (PSO) 
 double c1 = 2.05; 		// coefficient
 double c2 = 2.05; 		// coefficient
-int K = 4; 				// Max number of particles informed by a given one 
+int pso_K = 4; 				// Max number of particles informed by a given one 
 //int eval_max = 250000; //  max number of evalulations 
 //PSO in SODOCK
 float pso_wmax = 0.9;
@@ -725,7 +725,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.146 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.147 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3512,8 +3512,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
 
    case PSO_K:
-        get1arg(line, "%*s %d", &K, "PSO_K");
-        pr(logFile, "Max number of particles informed by a given one = %d.\n", K);
+        get1arg(line, "%*s %d", &pso_K, "PSO_K");
+        pr(logFile, "Max number of particles informed by a given one = %d.\n", pso_K);
         break;
 
 //______________________________________________________________________________
@@ -3632,7 +3632,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	  					LocalSearchMethod, 
 	  					c1,
 	  					c2,
-	  					K,
+	  					pso_K,
 	  					num_generations, 
 	  					output_pop_stats);  
         ((ParticleSwarmGS*)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
@@ -3679,7 +3679,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                                 //const int D, //number of dimensions:7 + ntor
                                 //double *const xmin, double *const xmax, 
                                 //const unsigned int num_evals, 
-                                //const int K, ConstDouble c1, ConstDouble c2,
+                                //const int pso_K, ConstDouble c1, ConstDouble c2,
                                 //const int outlev)
 
 #ifdef chenglong
@@ -3690,7 +3690,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	 						xmin, 
 	 						xmax, 
 	 						eval_max, 
-	 						K, 
+	 						pso_K, 
 	 						c1, 
 	 						c2, 
 	 						outlev,	 					
@@ -3706,7 +3706,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	 						lb_rho);	
 	 						
 #endif
-            //sHist[j] = call_cpso(GlobalSearchMethod, sInit, j, S, D, xmin, xmax, eval_max, K, c1, c2, outlev);
+            //sHist[j] = call_cpso(GlobalSearchMethod, sInit, j, S, D, xmin, xmax, eval_max, pso_K, c1, c2, outlev);
             //sHist[j] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size,
             //                          &ligand, output_pop_stats, info, end_of_branch);
                 sHist[j] = call_glss( GlobalSearchMethod, LocalSearchMethod,
@@ -3864,12 +3864,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             psoStartClock = times(&tms_psoStartClock);
 // Reiterate output level...
 //pr(logFile, "Output level is set to %d.... about to invoke call_cpso:n_exec=%d, S=%d, D=%d, 
-//   *xmin= %f, *xmax=%f, eval_max=%d, K=%f\n\n", outlev, n_exec, S, D, *xmin, *xmax, eval_max, K);
+//   *xmin= %f, *xmax=%f, eval_max=%d, K=%f\n\n", outlev, n_exec, S, D, *xmin, *xmax, eval_max, pso_K);
 //Start Particle Swarm Optimization Run	               
-//sHist[n_exec] = call_cpso(n_exec, sInit, S, D, xmin, xmax, eval_max, K, c1, c2, outlev,
+//sHist[n_exec] = call_cpso(n_exec, sInit, S, D, xmin, xmax, eval_max, pso_K, c1, c2, outlev,
 //					7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, search_freq, rho_ptr, lb_rho_ptr);	
 // swarmsize factor S is analogous to pop_size
-            sHist[n_exec] = call_cpso(LocalSearchMethod, sInit, n_exec, S, D, xmin, xmax, eval_max, K, c1, c2, outlev);
+            sHist[n_exec] = call_cpso(LocalSearchMethod, sInit, n_exec, S, D, xmin, xmax, eval_max, pso_K, c1, c2, outlev);
             //Finished Particle Swarm Optimization Run
             psoEndClock = times(&tms_psoEndClock);
             pr(logFile, "\nRun completed. Time taken for this PSO run:\n");
