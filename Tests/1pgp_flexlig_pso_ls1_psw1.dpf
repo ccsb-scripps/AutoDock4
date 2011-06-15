@@ -30,7 +30,7 @@ e0max 0.0 10000                      # max initial ernergy; max number of retrie
 
 ga_pop_size 150                      # number of individuals in population
 ga_num_evals 2500                    # maximum number of energy evaluations
-ga_num_generations 4                 # maximum number of generations
+ga_num_generations 15                # maximum number of generations
 #set_ga                               # set the above parameters for GA or LGA
 
 sw_max_its 30                        # iterations of Solis & Wets local search
