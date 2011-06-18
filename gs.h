@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.21 2011/05/24 23:43:48 rhuey Exp $
+ $Id: gs.h,v 1.22 2011/06/18 05:05:00 mp Exp $
 
  AutoDock 
 
@@ -27,13 +27,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 //  These are the classes in the global search hierarchy.  Notice that
 //  Global_Search is an abstract base class and as such it can never
 //  be instantiated.  For now, the only global search operator is the
-//  Genetic Algorithm.
-//  rsh 07/08/95
+//  Genetic Algorithm.  rsh 07/08/95
+//  ParticleSwarmGS added as another global search spring-summer 2011 rsh and mp
 
 #ifndef _GLOBAL_SEARCH_H
 #define _GLOBAL_SEARCH_H
 
 #include "support.h"
+#include "ls.h"
 
 enum M_mode { ERR = -1, BitFlip, CauchyDev, IUniformSub };
 enum Selection_Mode { Proportional=0, LinearRanking=1, Tournament=2, Boltzmann=3 };
@@ -46,6 +47,7 @@ class Global_Search
       Global_Search(void);
       virtual ~Global_Search(void);
       virtual int search(Population &) = 0;
+      virtual int localsearch(Population &, Local_Search *) = 0;
       virtual int terminate(void) = 0;
       virtual void reset(void) = 0;
       virtual void reset(const Output_pop_stats&) = 0;
@@ -73,6 +75,7 @@ class Genetic_Algorithm : public Global_Search
       unsigned int elitism;
 	  Real c_rate;
 	  Real m_rate;
+      Real localsearch_freq;
       unsigned int window_size;
       Real alpha;
 	  Real beta;
@@ -113,6 +116,7 @@ class Genetic_Algorithm : public Global_Search
       Genetic_Algorithm(const EvalMode init_e_mode, const Selection_Mode init_s_mode,
 			const Xover_Mode init_c_mode, const Worst_Mode init_w_mode, const int init_elitism,
                         ConstReal  init_c_rate, ConstReal  init_m_rate,
+			ConstReal init_localsearch_freq,
                         const int init_window_size, const unsigned int init_max_generations,
                         const Output_pop_stats&); // after 2010.05
       ~Genetic_Algorithm(void);
@@ -125,6 +129,7 @@ class Genetic_Algorithm : public Global_Search
       char * longname(void);
       int terminate(void);
       int search(Population &);
+      int localsearch(Population &, Local_Search *);
       int set_linear_ranking_selection_probability_ratio(ConstReal );
       
 };
@@ -147,6 +152,7 @@ inline Genetic_Algorithm::Genetic_Algorithm(void)
    elitism = window_size = low = high = 0;
    m_rate = 0.02;
    c_rate = 0.80;
+   localsearch_freq = 0.06;
    alpha = beta = 0.0;
    tranStep = 2.0;
    quatStep = torsStep = DegreesToRadians( 30.0 );

@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.19 2011/03/08 04:18:37 mp Exp $
+ $Id: ls.cc,v 1.20 2011/06/18 05:05:00 mp Exp $
 
  AutoDock 
 
@@ -350,14 +350,11 @@ int Solis_Wets_Base::search(Individual &solution)
    (void)fprintf(logFile, "ls.cc/int Solis_Wets_Base::search(Individual &solution)\n");
 #endif /* DEBUG */
 
-   if (ranf() < search_frequency) {
       // Do inverse mapping if SW changed phenotyp 
       if (SW(solution.phenotyp)) {
       solution.inverse_mapping();
       ls_count++;      
       }
-   }
-
    return(0);
 }
 
@@ -366,7 +363,7 @@ Pattern_Search::Pattern_Search(void)
 }
 
 Pattern_Search::Pattern_Search(const unsigned int init_size, const unsigned int init_max_success, ConstReal init_step_size, ConstReal init_step_threshold, ConstReal init_expansion, ConstReal init_contraction, ConstReal init_search_frequency)
-: size(init_size), max_success(init_max_success), step_size(init_step_size), step_threshold(init_step_threshold), expansion(init_expansion), contraction(init_contraction), search_frequency(init_search_frequency)
+: size(init_size), max_success(init_max_success), step_size(init_step_size), step_threshold(init_step_threshold), expansion(init_expansion), contraction(init_contraction), localsearch_frequency(init_search_frequency)
 {
   current_step_size = step_size;
   pattern = new Real[size];
@@ -422,7 +419,7 @@ int Pattern_Search::search(Individual &solution)
 {
   // TODO: implement scaling?
 
-  if (ranf() >= search_frequency) {
+  if (ranf() >= localsearch_frequency) {
     return(0);
   }
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.47 2011/06/03 05:31:36 mp Exp $
+ $Id: gs.cc,v 1.48 2011/06/18 05:05:00 mp Exp $
 
  AutoDock 
 
@@ -172,6 +172,7 @@ Genetic_Algorithm::Genetic_Algorithm( const EvalMode init_e_mode,
                                       const int init_elitism, 
                                       ConstReal  init_c_rate, 
                                       ConstReal  init_m_rate, 
+                                      ConstReal  init_localsearch_freq, 
                                       const int init_window_size, 
                                       const unsigned int init_max_generations,
                                       const Output_pop_stats& init_output_pop_stats)
@@ -183,6 +184,7 @@ w_mode(init_w_mode),
 elitism(init_elitism),
 c_rate(init_c_rate),
 m_rate(init_m_rate),
+localsearch_freq(init_localsearch_freq),
 window_size(init_window_size),
 alpha(1.0),
 beta(0.0),
@@ -1395,7 +1397,7 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
    return(next_generation);
 }
 
-//  For right now global search is taken to be a GA
+//  Global search is a GA or a PSO
 //
 //  This is where the action is... SEARCH!
 //
@@ -1498,5 +1500,30 @@ int Genetic_Algorithm::search(Population &solutions)
    for (i=0; i<solutions.num_individuals(); i++) {
        solutions[i].incrementAge();
    }
+   return(0);
+}
+int Genetic_Algorithm::localsearch(Population &thisPop, Local_Search *local_method)
+{
+	// apply local search (if not NULL) to population with 
+	// frequency search_freq
+	// (this code moved from call_glss.cc into methods of
+	//  the GA/LGA and PSO since their needs differed so - M Pique Jun 2011)
+	if(local_method != NULL) for (int i=0; i<thisPop.num_individuals(); i++) {
+#ifdef LOCALSEARCHDEBUG
+// MP June 2011 - disabled after move of code TODO since values not handy
+            if (outlev > 1) {
+                (void)fprintf( logFile, "LS: %d",generations-1); 
+                (void)fprintf( logFile, " %d",i+1); 
+                (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
+           }
+#endif
+           if(ranf() < localsearch_freq ) local_method->search(thisPop[i]);
+#ifdef LOCALSEARCHDEBUG
+           if (outlev > 1) {
+                (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
+                (void)fprintf( logFile, " \n"); 
+            }
+#endif
+	} // if a local_method is passed
    return(0);
 }

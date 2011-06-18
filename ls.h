@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.h,v 1.11 2010/10/01 22:51:39 mp Exp $
+ $Id: ls.h,v 1.12 2011/06/18 05:05:00 mp Exp $
 
  AutoDock 
 
@@ -59,7 +59,7 @@ class Pattern_Search : public Local_Search
 			unsigned int max_success;
       Real step_size, current_step_size;
       Real step_threshold, expansion, contraction;
-			Real search_frequency;
+			Real localsearch_frequency;
 			Real *pattern;
 			unsigned int *index;
 			unsigned int successes;
@@ -85,12 +85,11 @@ class Solis_Wets_Base : public Local_Search
    protected:
       unsigned int size, max_its, max_successes, max_failures;
       Real expansion, contraction;
-      Real search_frequency;
       Real *deviates, *bias;
 
    public:
       Solis_Wets_Base(void);
-      Solis_Wets_Base(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal);
+      Solis_Wets_Base(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal);
       virtual ~Solis_Wets_Base(void);
       virtual double gen_deviates(ConstReal) const = 0;
       virtual Boole SW(/* not const */ Phenotype &) = 0;
@@ -106,7 +105,7 @@ class Solis_Wets : public Solis_Wets_Base
 
    public:
       Solis_Wets(void);
-      Solis_Wets(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, ConstReal, ConstReal);
+      Solis_Wets(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, ConstReal);
       virtual ~Solis_Wets(void);
       virtual double gen_deviates(ConstReal) const = 0;
       Boole SW(/* not const */ Phenotype &);
@@ -120,8 +119,8 @@ class Pseudo_Solis_Wets : public Solis_Wets_Base
 
    public:
       Pseudo_Solis_Wets(void);
-      Pseudo_Solis_Wets(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal);
-      Pseudo_Solis_Wets(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, Real* const, Real* const);
+      Pseudo_Solis_Wets(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal);
+      Pseudo_Solis_Wets(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, Real* const, Real* const);
       virtual ~Pseudo_Solis_Wets(void);
       virtual double gen_deviates(ConstReal) const = 0;
       Boole SW(Phenotype &);
@@ -131,7 +130,7 @@ class Solis_Wets1 : public Solis_Wets
 {
    public:
       Solis_Wets1(void);
-      Solis_Wets1(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, ConstReal, ConstReal);
+      Solis_Wets1(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, ConstReal);
       ~Solis_Wets1(void);
       double gen_deviates(ConstReal) const;
 };
@@ -140,7 +139,7 @@ class Solis_Wets2 : public Solis_Wets
 {
    public:
       Solis_Wets2(void);
-      Solis_Wets2(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, ConstReal, ConstReal);
+      Solis_Wets2(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, ConstReal);
       ~Solis_Wets2(void);
       double gen_deviates(ConstReal) const;
 };
@@ -149,8 +148,8 @@ class Pseudo_Solis_Wets1 : public Pseudo_Solis_Wets
 {
    public:
       Pseudo_Solis_Wets1(void);
-      Pseudo_Solis_Wets1(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal);
-      Pseudo_Solis_Wets1(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, Real* const, Real* const);
+      Pseudo_Solis_Wets1(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal);
+      Pseudo_Solis_Wets1(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, Real* const, Real* const);
       ~Pseudo_Solis_Wets1(void);
       double gen_deviates(ConstReal) const;
 };
@@ -159,8 +158,8 @@ class Pseudo_Solis_Wets2 : public Pseudo_Solis_Wets
 {
    public:
       Pseudo_Solis_Wets2(void);
-      Pseudo_Solis_Wets2(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal);
-      Pseudo_Solis_Wets2(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, Real* const, Real* const);
+      Pseudo_Solis_Wets2(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal);
+      Pseudo_Solis_Wets2(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, Real* const, Real* const);
       ~Pseudo_Solis_Wets2(void);
       double gen_deviates(ConstReal) const;
 };
@@ -176,15 +175,15 @@ inline Local_Search::~Local_Search(void)
 
 inline Solis_Wets_Base::Solis_Wets_Base(void)
 :  size(0), max_its(10), max_successes(5), max_failures(5), expansion(2.0), contraction(0.5),
-   search_frequency(1.0), deviates(NULL), bias(NULL)
+   deviates(NULL), bias(NULL)
 {
 }
 
 inline Solis_Wets_Base::Solis_Wets_Base(const unsigned int init_size, const unsigned int init_max_its, 
                                         const unsigned int init_max_succ, const unsigned int init_max_fail, 
-                                        ConstReal init_expansion, ConstReal init_contraction, ConstReal init_search_freq)
+                                        ConstReal init_expansion, ConstReal init_contraction)
 :  size(init_size), max_its(init_max_its), max_successes(init_max_succ), max_failures(init_max_fail),
-   expansion(init_expansion), contraction(init_contraction), search_frequency(init_search_freq)
+   expansion(init_expansion), contraction(init_contraction)
 {
    bias = new Real[size];
    deviates = new Real[size];
@@ -220,9 +219,9 @@ inline Solis_Wets::Solis_Wets(void)
 
 inline Solis_Wets::Solis_Wets(const unsigned int init_size, const unsigned int init_max_its, const unsigned int init_max_succ, 
                               const unsigned int init_max_fail, ConstReal init_rho, ConstReal init_lb_on_rho, 
-                              ConstReal init_expansion, ConstReal init_contraction, ConstReal init_search_freq)
-:  Solis_Wets_Base(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion, init_contraction, 
-                   init_search_freq), rho(init_rho), lower_bound_on_rho(init_lb_on_rho)
+                              ConstReal init_expansion, ConstReal init_contraction)
+:  Solis_Wets_Base(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion, init_contraction),
+                   rho(init_rho), lower_bound_on_rho(init_lb_on_rho)
 {
 }
 
@@ -237,18 +236,18 @@ inline Pseudo_Solis_Wets::Pseudo_Solis_Wets(void)
 
 inline Pseudo_Solis_Wets::Pseudo_Solis_Wets(const unsigned int init_size, const unsigned init_max_its, 
                                             const unsigned int init_max_succ, const unsigned int init_max_fail, 
-                                            ConstReal init_expansion, ConstReal init_contraction, ConstReal init_search_freq)
-:  Solis_Wets_Base(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion, init_contraction, 
-                   init_search_freq), rho(NULL), lower_bound_on_rho(NULL), temp_rho(NULL)
+                                            ConstReal init_expansion, ConstReal init_contraction)
+:  Solis_Wets_Base(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion, init_contraction),
+                   rho(NULL), lower_bound_on_rho(NULL), temp_rho(NULL)
 {
 }
 
 inline Pseudo_Solis_Wets::Pseudo_Solis_Wets(const unsigned int init_size, unsigned init_max_its, 
                                             const unsigned int init_max_succ, unsigned int init_max_fail, 
-                                            ConstReal init_expansion, ConstReal init_contraction, ConstReal init_search_freq, 
+                                            ConstReal init_expansion, ConstReal init_contraction,
                                             Real *const init_rho, Real *const init_lb_on_rho)
-:  Solis_Wets_Base(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion, init_contraction, 
-                   init_search_freq), rho(init_rho), lower_bound_on_rho(init_lb_on_rho)
+:  Solis_Wets_Base(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion, init_contraction),
+                   rho(init_rho), lower_bound_on_rho(init_lb_on_rho)
 {
    temp_rho = new Real[init_size];
 }
@@ -278,9 +277,9 @@ inline Solis_Wets1::Solis_Wets1(void)
 
 inline Solis_Wets1::Solis_Wets1(const unsigned int init_size, const unsigned int init_max_its, const unsigned int init_max_succ, 
                                 const unsigned int init_max_fail, ConstReal init_rho, ConstReal init_lb_on_rho, 
-                                ConstReal init_expansion, ConstReal init_contraction, ConstReal init_search_freq)
+                                ConstReal init_expansion, ConstReal init_contraction)
 :  Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_rho, init_lb_on_rho, init_expansion, 
-              init_contraction, init_search_freq)
+              init_contraction)
 {
 }
 
@@ -300,9 +299,9 @@ inline Solis_Wets2::Solis_Wets2(void)
 
 inline Solis_Wets2::Solis_Wets2(const unsigned int init_size, const unsigned int init_max_its, const unsigned int init_max_succ, 
                               const unsigned int init_max_fail, ConstReal init_rho, ConstReal init_lb_on_rho, 
-                              ConstReal init_expansion, ConstReal init_contraction, ConstReal init_search_freq)
+                              ConstReal init_expansion, ConstReal init_contraction)
 :  Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_rho, init_lb_on_rho, init_expansion,
-              init_contraction, init_search_freq)
+              init_contraction)
 {
 }
 
@@ -322,20 +321,19 @@ inline Pseudo_Solis_Wets1::Pseudo_Solis_Wets1(void)
 
 inline Pseudo_Solis_Wets1::Pseudo_Solis_Wets1(const unsigned int init_size, const unsigned int init_max_its, 
                                               const unsigned int init_max_succ, const unsigned int init_max_fail,  
-                                              ConstReal init_expansion, ConstReal init_contraction, 
-                                              ConstReal init_search_freq)
+                                              ConstReal init_expansion, ConstReal init_contraction)
 :  Pseudo_Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion,
-                     init_contraction, init_search_freq)
+                     init_contraction)
 {
 }
 
 inline Pseudo_Solis_Wets1::Pseudo_Solis_Wets1(const unsigned int init_size, unsigned int init_max_its, 
                                               const unsigned int init_max_succ, unsigned int init_max_fail,  
                                               ConstReal init_expansion, ConstReal init_contraction, 
-                                              ConstReal init_search_freq, Real *const init_rho,
+                                              Real *const init_rho,
                                               Real *const init_lb_on_rho)
 :  Pseudo_Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion,
-                     init_contraction, init_search_freq, init_rho, init_lb_on_rho)
+                     init_contraction, init_rho, init_lb_on_rho)
 {
 }
 
@@ -355,20 +353,19 @@ inline Pseudo_Solis_Wets2::Pseudo_Solis_Wets2(void)
 
 inline Pseudo_Solis_Wets2::Pseudo_Solis_Wets2(const unsigned int init_size, const unsigned int init_max_its, 
                                               const unsigned int init_max_succ, const unsigned int init_max_fail,  
-                                              ConstReal init_expansion, ConstReal init_contraction, 
-                                              ConstReal init_search_freq)
+                                              ConstReal init_expansion, ConstReal init_contraction)
 :  Pseudo_Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion,
-                     init_contraction, init_search_freq)
+                     init_contraction)
 {
 }
 
 inline Pseudo_Solis_Wets2::Pseudo_Solis_Wets2(const unsigned int init_size, const unsigned int init_max_its, 
                                               const unsigned int init_max_succ, const unsigned int init_max_fail,  
                                               ConstReal init_expansion, ConstReal init_contraction, 
-                                              ConstReal init_search_freq, Real *const init_rho,
+                                              Real *const init_rho,
                                               Real *const init_lb_on_rho)
 :  Pseudo_Solis_Wets(init_size, init_max_its, init_max_succ, init_max_fail, init_expansion,
-                     init_contraction, init_search_freq, init_rho, init_lb_on_rho)
+                     init_contraction, init_rho, init_lb_on_rho)
 {
 }
 

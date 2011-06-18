@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.147 2011/06/15 04:53:27 mp Exp $
+ $Id: main.cc,v 1.148 2011/06/18 05:05:00 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -111,7 +111,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.147 2011/06/15 04:53:27 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.148 2011/06/18 05:05:00 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -301,7 +301,7 @@ Real m_rate = 0.02;
 Real c_rate = 0.80;
 Real alpha = 0;
 Real beta = 1;
-Real search_freq = 0.06;
+Real localsearch_freq = 0.06;
 Real unbound_internal_FE = 0.0;
 Real unbound_ext_internal_FE = 0.0;
 Real unbound_ad_internal_FE = 0.0;
@@ -725,7 +725,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.147 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.148 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2926,7 +2926,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if(output_pop_stats.everyNgens>0) pr( logFile, "\n\tOutput population statistics every %u generations.\n", output_pop_stats.everyNgens );
         else pr( logFile, "\n\tNever output generation-based population statistics.\n");
       }
-      GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate,
+      GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate, localsearch_freq,
                                                  window_size, num_generations, output_pop_stats);
       ((Genetic_Algorithm *)GlobalSearchMethod)->mutation_values( low, high, alpha, beta, trnStep0, qtwStep0, torStep0  );
       ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
@@ -2949,7 +2949,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       }
 
       pr(logFile, "Creating a new Local Search object using the Solis-Wets algorithm (SW1) with the current settings.\n\n");
-      LocalSearchMethod = new Solis_Wets1(7+sInit.ntor, max_its, max_succ, max_fail, rho, lb_rho, 2.0, 0.5, search_freq);
+      LocalSearchMethod = new Solis_Wets1(7+sInit.ntor, max_its, max_succ, max_fail, rho, lb_rho, 2.0, 0.5);
 
       break;
 //______________________________________________________________________________
@@ -2997,7 +2997,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          lb_rho_ptr[j] = lb_rho * psw_tors_scale;//formerly torStepFinal;
       }
 
-      LocalSearchMethod = new Pseudo_Solis_Wets1(7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, search_freq, rho_ptr, lb_rho_ptr);
+      LocalSearchMethod = new Pseudo_Solis_Wets1(7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, rho_ptr, lb_rho_ptr);
 
       break;
 
@@ -3013,7 +3013,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 
       pr(logFile, "Creating a new Local Search object using the Pattern Search algorithm (PS) with the current settings.\n\n");
-      LocalSearchMethod = new Pattern_Search(7+sInit.ntor, max_succ, rho, lb_rho, 2.0, 0.5, search_freq);
+      LocalSearchMethod = new Pattern_Search(7+sInit.ntor, max_succ, rho, lb_rho, 2.0, 0.5, localsearch_freq);
 
       break;
 
@@ -3491,8 +3491,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 
     case LS_search_freq:
-        get1arg(line, "%*s " FDFMT, &search_freq, "LS_SEARCH_FREQ");
-        pr(logFile, "Local search will be performed with frequency %f.\n", search_freq);
+        get1arg(line, "%*s " FDFMT, &localsearch_freq, "LS_SEARCH_FREQ");
+        pr(logFile, "Local search will be performed with frequency %f.\n", localsearch_freq);
         break;
 
 //______________________________________________________________________________
@@ -3699,7 +3699,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	 						max_fail, 
 	 						2.0, 
 	 						0.5, 
-	 						search_freq, 
+	 						localsearch_freq, 
 	 						rho_ptr, 
 	 						lb_rho_ptr,
 	 						rho,
@@ -3867,7 +3867,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //   *xmin= %f, *xmax=%f, eval_max=%d, K=%f\n\n", outlev, n_exec, S, D, *xmin, *xmax, eval_max, pso_K);
 //Start Particle Swarm Optimization Run	               
 //sHist[n_exec] = call_cpso(n_exec, sInit, S, D, xmin, xmax, eval_max, pso_K, c1, c2, outlev,
-//					7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, search_freq, rho_ptr, lb_rho_ptr);	
+//					7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, localsearch_freq, rho_ptr, lb_rho_ptr);	
 // swarmsize factor S is analogous to pop_size
             sHist[n_exec] = call_cpso(LocalSearchMethod, sInit, n_exec, S, D, xmin, xmax, eval_max, pso_K, c1, c2, outlev);
             //Finished Particle Swarm Optimization Run

@@ -12,6 +12,7 @@ class ParticleSwarmGS : public Global_Search
 	private:
 		Population *_Pi;	// best solution for each individual in its own searching history
 		Individual	*_Pg;	// current best solution
+		int best; // index in Pi of current global best solution
 		int pop_size;	// population size
 		int size;	// number of dimensions (7*nlig + num_torsion)
 		float **v;	// velocity
@@ -58,6 +59,7 @@ class ParticleSwarmGS : public Global_Search
         void reset(const Output_pop_stats&);
         int terminate(void);
         int search(Population &);  			
+	int localsearch(Population &, Local_Search *);
 };
 
 inline char * ParticleSwarmGS::shortname(void)

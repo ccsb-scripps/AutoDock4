@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.60 2011/06/03 05:31:36 mp Exp $ 
+ $Id: call_glss.cc,v 1.61 2011/06/18 05:05:00 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -429,30 +429,19 @@ State call_glss(/* not const */ Global_Search *global_method,
 
         if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, generation, info ); }
 
+        // call the global method's local search method if any
 	if(local_method != NULL) {
 	   if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
-
-	   // MP @@ TODO hack for PSO :
-	   if(0==strcmp(global_method->shortname(),"PSO")) {
-	        (void)fprintf( logFile, "PSO LS only Pop[0] was %f\n", 
-		 thisPop[0].value(localEvalMode));
-	   	local_method->search(thisPop[0]);
-	        (void)fprintf( logFile, "PSO LS only Pop[0] now %f\n", 
-		 thisPop[0].value(localEvalMode));
-		}
-	   else // MP HACK
-           for (i=0; i<pop_size; i++) {
-            if (outlev > 1) {
+	   if (outlev > 1) for (i=0; i<pop_size; i++) {
                 (void)fprintf( logFile, "LS: %d",generation); 
                 (void)fprintf( logFile, " %d",i+1); 
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
            }
-           local_method->search(thisPop[i]);
-           if (outlev > 1) {
+           global_method->localsearch(thisPop, local_method);
+	   if (outlev > 1) for (i=0; i<pop_size; i++) {
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
                 (void)fprintf( logFile, " \n"); 
             }
-          }
 
           if (outlev > 2) {
             (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"local search\">\n", generation);

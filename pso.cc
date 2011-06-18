@@ -25,15 +25,13 @@ inline float Norm(float *x, int n)
  * 
  *
  * Key modifications spring-summer 2011 by R Huey & M Pique at TRSI:
- *   No longer does local search here, the caller will do that (or not)
- *     after each generation.
- *   Returns best (lowest energy) individual in first position of Pop.
- *     Order of other individuals is undefined.
+ *   No longer does local search here, the caller will do that
+ *     after each generation using our localsearch method, below.
+ * Caution: do not reorder the Pop array outside of these functions. MP/RH
  ***********************************************************************/
 int ParticleSwarmGS::search(Population &Pop)
 {
 	int i, j, g;
-	int best;
 	double r1, r2;
 	double curVal;
 	double newVal;
@@ -178,6 +176,8 @@ int ParticleSwarmGS::search(Population &Pop)
 	// Update personal best Pi after this swarm search generation.
 	// Find the best in Pop after this swarm search generation.
 	// Note each could be better or worse than former best, stored in Pg
+	// This 'best' value will be used by a subsequent call to LocalSearch,
+	//   see below. M Pique June 2011
 	best = 0;
 	double X_best_value = 99999999;
 	for(i = 0; i < pop_size; i++) {		
@@ -193,6 +193,8 @@ int ParticleSwarmGS::search(Population &Pop)
 		}										
 	}
 
+#ifdef SWAPBEST
+// MP June 2011 - unworkable try to unify GA/LGA and PSO
 	// exchange the best Pop individual into location Pop[0]
 	// and exchange the corresponding Pi history entry
 	pr(logFile, "PSO pre-swap  best=%d Pop[%d]=%.2f X_best_value=%.2f, Pop[0,1,..] = ", 
@@ -233,18 +235,11 @@ int ParticleSwarmGS::search(Population &Pop)
 	  best, best, Pop[best].value(Normal_Eval), X_best_value);
 	for(i=0;i<8; i++) pr(logFile, "%8.2f ", Pop[i].value(Normal_Eval));
 	pr(logFile, "\n");
+#endif
 
 	////////////////////////////////////////////////////////
 	// Local Search
 	////////////////////////////////////////////////////////
-	// If local seach method is defined, apply local search			
-//	if(LocalSearchMethod) {							
-//		LocalSearchMethod->search(Pop[best]);
-					
-//		if( Pop[best].value(Normal_Eval) < Pi[best].value(Normal_Eval) ) {
-//			Pi[best] = Pop[best];			
-//		}					
-//	}		
 
 	generations++;
 	
@@ -288,4 +283,39 @@ int ParticleSwarmGS::search(Population &Pop)
 	//fflush(logFile);
 	
 	return (0);
+}
+
+int ParticleSwarmGS::localsearch(Population &Pop, Local_Search *local_method)
+{
+// Set shorthand names for best for each indiv, best individual in pop
+Population &Pi = (Population &)(*_Pi);
+Individual &Pg = (Individual &)(*_Pg);
+	if(local_method == NULL) return(-1);
+	if(best<0||best>=Pop.num_individuals()) {
+		stop("PSO LocalSearch bad best value");
+	}
+#ifdef PSODEBUG
+ // disabled by MP Jun 2011 after code move TODO
+	// MP DEBUG 2011
+	(void)fprintf( logFile, "PSO LS only Pop[best=%d] was %f\n", 
+	 best, Pop[0].value(localEvalMode));
+#endif
+	// If local seach method is defined, apply local search			
+	local_method->search(Pop[best]);
+
+	if(Pop[best].value(Normal_Eval) < Pi[best].value(Normal_Eval)) {
+		Pi[best] = Pop[best];			
+		Pg = Pi[best]; // mp maybe not needed
+	}					
+#ifdef PSODEBUG
+ // disabled by MP Jun 2011 after code move TODO
+	// MP DEBUG 2011:
+	(void)fprintf( logFile, "PSO LS only Pop[best=%d] now %f\n", 
+	 best, Pop[0].value(localEvalMode));
+   if (outlev > 1) {
+	(void)fprintf( logFile, " %f",Pop[best].value(localEvalMode)); 
+	(void)fprintf( logFile, " \n"); 
+	    }
+#endif
+	return(0);
 }
