@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.148 2011/06/18 05:05:00 mp Exp $
+ $Id: main.cc,v 1.149 2011/07/07 23:58:35 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -111,7 +111,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.148 2011/06/18 05:05:00 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.149 2011/07/07 23:58:35 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -504,6 +504,7 @@ float pso_wmin = 0.4;
 float pso_tvmax = 2.0;
 float pso_qvmax = 0.5;
 float pso_rvmax = DegreesToRadians(50.0);
+PSO_Options pso_options ; //  MP in progress
 
 
 info = (GridMapSetInfo *) calloc(1, sizeof(GridMapSetInfo) );
@@ -725,7 +726,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.148 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.149 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2927,7 +2928,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         else pr( logFile, "\n\tNever output generation-based population statistics.\n");
       }
       GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate, localsearch_freq,
-                                                 window_size, num_generations, output_pop_stats);
+                                                 window_size, num_evals, num_generations, output_pop_stats);
       ((Genetic_Algorithm *)GlobalSearchMethod)->mutation_values( low, high, alpha, beta, trnStep0, qtwStep0, torStep0  );
       ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
 
@@ -3500,6 +3501,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
    case PSO_C1:
         get1arg(line, "%*s %lf", &c1, "PSO_C1");
         pr(logFile, "PSO will be performed with the First Confidence Coefficient  (C1) %lf.\n", c1);
+	pso_options.c1=c1; // MP in progress
         break;
 
 //______________________________________________________________________________
@@ -3627,12 +3629,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	  GlobalSearchMethod = new ParticleSwarmGS(
                         pso_vmax,
                         pso_vmin,
-	  					pso_wmax, 
-	  					pso_wmin, 
+						pso_options,
 	  					LocalSearchMethod, 
-	  					c1,
-	  					c2,
-	  					pso_K,
+						num_evals,
 	  					num_generations, 
 	  					output_pop_stats);  
         ((ParticleSwarmGS*)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);

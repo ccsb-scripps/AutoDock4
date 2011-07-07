@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.25 2011/06/03 05:31:36 mp Exp $
+ $Id: structs.h,v 1.26 2011/07/07 23:58:35 mp Exp $
 
  AutoDock  
 
@@ -340,6 +340,7 @@ typedef struct velocity {
 	int size;
 	double v[D_max];
 } Velocity;
+
 /*______________________________________________________________________________*/
 
 typedef struct position {

@@ -2,10 +2,39 @@
 #define _pso_h
 
 #include "gs.h"
-#include "ls.h"
+#include "ls.h" 
 #include "structs.h"
 
 extern FILE *logFile;
+
+// define class for PSO algorithmic options
+// to avoid having to change dozens of method signatures whenever
+// the option set is changed. MP TSRI 2011
+struct PSO_Options {
+	float pso_w;	   // inertia weight
+	float wmax;	// pso_w at beginning of run
+	float wmin;	// pso_w at conclusion of run, see pso.cc
+	float c1;	// cognitive
+	float c2;	// social
+	int pso_K;      // number of neighbor particles
+	float c;    // constriction factor for cPSO
+	Boole pso_neighbors_dynamic; // MP
+	Boole pso_random_by_dimension; // MP
+	Boole pso_interpolate_as_scalars; // MP
+  public:
+    PSO_Options () :
+        pso_w(1.), // w
+        wmax(1.), // wmax
+        wmin(1.), // wmin
+        c1(6.), // c1
+        c2(6.), // c2
+        pso_K(4),  // pso_K
+        c(0.01),  // c
+        pso_neighbors_dynamic(false), // 
+        pso_random_by_dimension(true),  // 
+        pso_interpolate_as_scalars(true)  //
+        { }
+	};
 
 class ParticleSwarmGS : public Global_Search 
 {
@@ -18,16 +47,9 @@ class ParticleSwarmGS : public Global_Search
 		float **v;	// velocity
 		float *vmax;	//max velocity 
 		float *vmin;	// min velocity
-		float pso_w;	   // inertia weight
-		float wmax;	// pso_w at beginning of run
-		float wmin;	// pso_w at conclusion of run, see pso.cc
-		float c1;	// cognitive
-		float c2;	// social
-	    int pso_K;      // number of neighbor particles
-	    float c;    // constriction factor for cPSO
+		PSO_Options pso_options;
 	    
 		int generations;
-		int max_generations;
 		int outputEveryNgens;
         Output_pop_stats output_pop_stats;
 	
@@ -38,13 +60,10 @@ class ParticleSwarmGS : public Global_Search
 		ParticleSwarmGS(
 			float *init_vmax, 
 			float *init_vmin, 
-			float init_wmax, 
-			float init_wmin,
+			PSO_Options init_pso_options, 
 			Local_Search *init_LS, 
-			float pso_c1,
-			float pso_c2,
-			int pso_k, 
-			int max_generations,
+			unsigned int init_max_evals, 
+			unsigned int init_max_generations, 
 			Output_pop_stats output_pop_stats); 			
 		
 		Individual& getBest();	
@@ -88,30 +107,22 @@ inline ParticleSwarmGS::~ParticleSwarmGS()
 inline ParticleSwarmGS::ParticleSwarmGS(
 			float *init_vmax, 
 			float *init_vmin, 
-			float init_wmax, 
-			float init_wmin,
+			PSO_Options init_pso_options, 
 			Local_Search *init_LS, 
-			float pso_c1,
-			float pso_c2,
-			int pso_k,
-			const int init_max_generations, 
-			Output_pop_stats init_output_pop_stats)
+			const unsigned int init_max_evals, 
+			const unsigned int init_max_generations, 
+			Output_pop_stats init_output_pop_stats) :
+    Global_Search(  init_max_evals, init_max_generations)
 {
 	vmax = init_vmax; 
 	vmin = init_vmin;			  
-	wmax = init_wmax; 
-	wmin = init_wmin;
+	pso_options = init_pso_options;
 	LocalSearchMethod = init_LS;
     generations = 0;
-    max_generations = init_max_generations;
 	output_pop_stats = init_output_pop_stats;
 	_Pi =NULL; 
 	_Pg = NULL ;
 	 v = NULL; 
-	c1 = pso_c1;	      
-	c2 = pso_c1; 
-	pso_K = pso_k;
-    c = 0.01;
 }
 
 inline Individual& ParticleSwarmGS:: getBest()
@@ -131,8 +142,8 @@ inline void ParticleSwarmGS::initialize(const unsigned int init_pop_size, const 
 
 inline int ParticleSwarmGS::terminate(void)
 {
-   if (max_generations>0) {
-      return(generations>=max_generations); 
+   if (max_generations>(unsigned) 0) {
+      return((unsigned)generations>=max_generations); 
    } else {
       return(0);  //  Don't terminate
    }
@@ -142,7 +153,7 @@ inline int ParticleSwarmGS::terminate(void)
 inline void ParticleSwarmGS::reset(void)
 {
 	generations = 0;
-	pso_w = wmax;
+	//MP pso_w = wmax;
 	if(_Pi)
 		delete _Pi;
 	if(_Pg)

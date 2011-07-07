@@ -28,16 +28,30 @@ inline float Norm(float *x, int n)
  *   No longer does local search here, the caller will do that
  *     after each generation using our localsearch method, below.
  * Caution: do not reorder the Pop array outside of these functions. MP/RH
+ * Packaged algorithm options into a structure to simplify signatures.
  ***********************************************************************/
 int ParticleSwarmGS::search(Population &Pop)
 {
 	int i, j, g;
-	double r1, r2;
 	double curVal;
 	double newVal;
 	double piCurE = 0.0;
 	//float phi, c;
 	float ratio = 0.0;
+
+
+	// MP in progress TODO
+	float pso_w = pso_options.pso_w;	   // inertia weight
+	float wmax = pso_options.wmax;	// pso_w at beginning of run
+	float wmin = pso_options.wmin;	// pso_w at conclusion of run
+	float c1 = pso_options.c1;
+	float c2 = pso_options.c2;
+	int pso_K = pso_options.pso_K;      // number of neighbor particles
+	float c = pso_options.c;    // constriction factor for cPSO
+	Boole pso_neighbors_dynamic = pso_options.pso_neighbors_dynamic; // MP
+	Boole pso_random_by_dimension = pso_options.pso_random_by_dimension; // MP
+	Boole pso_interpolate_as_scalars = pso_options.pso_interpolate_as_scalars; // MP
+
 	
 	// on first call per run, allocate Pi array, initialize velocity vectors
 	if(_Pi == NULL) {
@@ -122,10 +136,14 @@ int ParticleSwarmGS::search(Population &Pop)
 	Pg = Pi[best];
 	// assert energy of Pg <= energy of Pi[*] <= energy of Pop[*]
 		   		   	 	     	   	 	   	   	   	  
+	// MP TODO set up or modify neighborhood lists
+	// MP  one option is to remake neighborhoods if Pi not improved
+	//     this dynamic neighborhood is in the "other" PSO code
+
+
 	//update position variable related to the translation and rotation of each particle			
 	for(i = 0; i < pop_size; i++) {
 				
-		//r2 = 1.0 - r1;
 		//get the best in neighborhood, e.g., Neighborhood Best (nbBest)		
 		g = i;
 		for(j = i + 1; j < i + pso_K; j++) {
@@ -134,9 +152,18 @@ int ParticleSwarmGS::search(Population &Pop)
 		}
 				
 		// size is the dimension of docking search (e.g, n*nlig + ntor)			
-		for(j = 0; j < size; j++) {
+		double r1, r2;
+		if(!pso_random_by_dimension) {
 			r1 = ranf();
 			r2 = ranf();
+		}
+
+		for(j = 0; j < size; j++) {
+			if(pso_random_by_dimension) {
+				r1 = ranf();
+				r2 = ranf();
+			}
+
 			// note that phenotype "gread" is x,y,z,qx,qy,qz,qw,t1...
 			curVal = Pop[i].phenotyp.gread(j).real;
 									
@@ -151,16 +178,16 @@ int ParticleSwarmGS::search(Population &Pop)
 				v[i][j] = 0.1 * (v[i][j] + 6.05 * r1 * (Pi[i].phenotyp.gread(j).real - curVal)
 			                    + 6.05 * r2 * (Pi[g].phenotyp.gread(j).real - curVal));
 			}
+																							// MP TODO handle quat and torsion velocities better
 			                      																			
-			// verify and restrict the new velocity
+			// verify and restrict the new velocity component
 			if(v[i][j] > vmax[j])
 				v[i][j] = vmax[j];
-				//v[i][j] = random_range(vmin[j], vmax[j]) ;
 			else if(v[i][j] < vmin[j])
 				v[i][j] = vmin[j];
-				//v[i][j] = random_range(vmin[j], vmax[j]) ;
 				
 			newVal = curVal + v[i][j];
+																							// MP TODO handle quat and torsion accumulation better
 										
 			// update x,y,z, quaternion, torsion of particle i
 			Pop[i].phenotyp.write(newVal, j);												
@@ -171,7 +198,7 @@ int ParticleSwarmGS::search(Population &Pop)
 
 		Pop[i].inverse_mapping(); // MP@@ copy phenotype to genotype (may not be necc)
 		
-	}	// end current swarm	
+	}	// end current swarm
 	
 	// Update personal best Pi after this swarm search generation.
 	// Find the best in Pop after this swarm search generation.
@@ -192,50 +219,6 @@ int ParticleSwarmGS::search(Population &Pop)
 			Pi[i] = Pop[i];			
 		}										
 	}
-
-#ifdef SWAPBEST
-// MP June 2011 - unworkable try to unify GA/LGA and PSO
-	// exchange the best Pop individual into location Pop[0]
-	// and exchange the corresponding Pi history entry
-	pr(logFile, "PSO pre-swap  best=%d Pop[%d]=%.2f X_best_value=%.2f, Pop[0,1,..] = ", 
-	  best, best, Pop[best].value(Normal_Eval), X_best_value);
-	for(i=0;i<8; i++) pr(logFile, "%8.2f ", Pop[i].value(Normal_Eval));
-	pr(logFile, "\n");
-
-
-
-	if(best!=0) {
-		Individual temp;
-		temp = Pop[0];
-		Pop[0] = Pop[best];
-		Pop[best] = temp;
-
-		temp = Pi[0];
-		Pi[0] = Pi[best];
-		Pi[best] = temp;
-	}
-
-	// MP debug - look again for best after swap, should be at [0]
-	// Find the best in Pop	
-	best = 0;
-	X_best_value = 99999999; // MP debug Pop[0].value(Normal_Eval);	
-	for(i = 0; i < pop_size; i++) {
-		piCurE = Pop[i].value(Normal_Eval);
-		if(piCurE < X_best_value) {
-			best = i;
-			X_best_value = piCurE;
-		}
-		
-		// Update Pi, personal Best in history				
-		if(piCurE < Pi[i].value(Normal_Eval)) {
-			Pi[i] = Pop[i];			
-		}										
-	}
-	pr(logFile, "PSO post-swap best=%d Pop[%d]=%.2f X_best_value=%.2f, Pop[0,1,..] = ", 
-	  best, best, Pop[best].value(Normal_Eval), X_best_value);
-	for(i=0;i<8; i++) pr(logFile, "%8.2f ", Pop[i].value(Normal_Eval));
-	pr(logFile, "\n");
-#endif
 
 	////////////////////////////////////////////////////////
 	// Local Search
@@ -291,7 +274,7 @@ int ParticleSwarmGS::localsearch(Population &Pop, Local_Search *local_method)
 Population &Pi = (Population &)(*_Pi);
 Individual &Pg = (Individual &)(*_Pg);
 	if(local_method == NULL) return(-1);
-	if(best<0||best>=Pop.num_individuals()) {
+	if(best<0||(unsigned)best>=Pop.num_individuals()) {
 		stop("PSO LocalSearch bad best value");
 	}
 #ifdef PSODEBUG

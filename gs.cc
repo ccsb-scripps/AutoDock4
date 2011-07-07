@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.48 2011/06/18 05:05:00 mp Exp $
+ $Id: gs.cc,v 1.49 2011/07/07 23:58:35 mp Exp $
 
  AutoDock 
 
@@ -174,10 +174,12 @@ Genetic_Algorithm::Genetic_Algorithm( const EvalMode init_e_mode,
                                       ConstReal  init_m_rate, 
                                       ConstReal  init_localsearch_freq, 
                                       const int init_window_size, 
+                                      const unsigned int init_max_evals,
                                       const unsigned int init_max_generations,
                                       const Output_pop_stats& init_output_pop_stats)
 
-:  e_mode(init_e_mode),
+: Global_Search(init_max_evals, init_max_generations),
+e_mode(init_e_mode),
 s_mode(init_s_mode),
 c_mode(init_c_mode),
 w_mode(init_w_mode),
@@ -194,7 +196,6 @@ torsStep( DegreesToRadians( 30.0 ) ),  // 30 degrees
 low(-100),
 high(100),
 generations(0),
-max_generations(init_max_generations),
 output_pop_stats(init_output_pop_stats),
 converged(0),
 alloc(NULL),
@@ -1508,7 +1509,7 @@ int Genetic_Algorithm::localsearch(Population &thisPop, Local_Search *local_meth
 	// frequency search_freq
 	// (this code moved from call_glss.cc into methods of
 	//  the GA/LGA and PSO since their needs differed so - M Pique Jun 2011)
-	if(local_method != NULL) for (int i=0; i<thisPop.num_individuals(); i++) {
+	if(local_method != NULL) for (unsigned int i=0; i<thisPop.num_individuals(); i++) {
 #ifdef LOCALSEARCHDEBUG
 // MP June 2011 - disabled after move of code TODO since values not handy
             if (outlev > 1) {

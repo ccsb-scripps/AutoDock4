@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.22 2011/06/18 05:05:00 mp Exp $
+ $Id: gs.h,v 1.23 2011/07/07 23:58:35 mp Exp $
 
  AutoDock 
 
@@ -44,7 +44,7 @@ enum Worst_Mode { AverageOfN, OfN, Ever };
 class Global_Search
 {
    public:
-      Global_Search(void);
+      Global_Search(unsigned int init_max_evals, unsigned int init_max_generations);
       virtual ~Global_Search(void);
       virtual int search(Population &) = 0;
       virtual int localsearch(Population &, Local_Search *) = 0;
@@ -53,14 +53,22 @@ class Global_Search
       virtual void reset(const Output_pop_stats&) = 0;
       virtual char * shortname(void) = 0;
       virtual char * longname(void) = 0;
+      unsigned int max_evals ;
+      unsigned int max_generations ;
       // the next four are only applicable to Genetic_Algorithm
-      // but I'm uncertain how best to fit statistics into the
-      // existing classes so bear with me  - Mike Pique Dec 2009
       unsigned int cg_count; // statistics - crossover gene-by-gene count
       unsigned int ci_count; // statistics - crossover indiv-by-indiv count
       unsigned int mg_count; // statistics - mutation gene-by-gene count
       unsigned int mi_count; // statistics - mutation indiv-by-indiv count
 };
+inline Global_Search::Global_Search(
+        const unsigned int init_max_evals, 
+        const unsigned int init_max_generations
+    ) : max_evals(init_max_evals), max_generations(init_max_generations),
+    cg_count(0), ci_count(0), mg_count(0), mi_count(0)
+{
+}
+
 
 // The class Genetic_Algorithm is a Global_Search method,
 // 
@@ -82,7 +90,6 @@ class Genetic_Algorithm : public Global_Search
       Real tranStep, quatStep, torsStep;
       int low, high; // should these be int or Real?
       unsigned int generations; 
-	  unsigned int max_generations;
       Output_pop_stats output_pop_stats;// gmm 2000.11.1,2003.08.18, MPique 2010.05 
       unsigned int converged; // gmm 7-jan-98
  	  Real *alloc;
@@ -117,7 +124,9 @@ class Genetic_Algorithm : public Global_Search
 			const Xover_Mode init_c_mode, const Worst_Mode init_w_mode, const int init_elitism,
                         ConstReal  init_c_rate, ConstReal  init_m_rate,
 			ConstReal init_localsearch_freq,
-                        const int init_window_size, const unsigned int init_max_generations,
+                        const int init_window_size, 
+			const unsigned int init_max_evals,
+			const unsigned int init_max_generations,
                         const Output_pop_stats&); // after 2010.05
       ~Genetic_Algorithm(void);
       void initialize(unsigned int, unsigned int);
@@ -135,15 +144,12 @@ class Genetic_Algorithm : public Global_Search
 };
 
 //  Inline Functions
-inline Global_Search::Global_Search(void)
-{
-   cg_count = ci_count = mg_count = mi_count = 0;
-}
 
 inline Global_Search::~Global_Search(void)
 {
 }
 
+#ifdef VOIDCONSTRUCTOR
 // Default values set in this constructor.
 inline Genetic_Algorithm::Genetic_Algorithm(void)
 : alloc(NULL), mutation_table(NULL), ordering(NULL), m_table_size(0), worst_window(NULL)
@@ -163,6 +169,7 @@ inline Genetic_Algorithm::Genetic_Algorithm(void)
    output_pop_stats.everyNevals = 0;
    linear_ranking_selection_probability_ratio = 2.0; //mp+rh 10/2009
 }
+#endif
 
 inline Genetic_Algorithm::~Genetic_Algorithm(void)
 {
