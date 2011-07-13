@@ -122,7 +122,7 @@ void swarmActivity(const int S, const int D, const Position *const Xi, const int
 {
 	int s, d;
 	double swarm_activity;
-	double position_dist[S_max];    // Euclidian distance of position and prev position
+	double position_dist[PSO_S_MAX];    // Euclidian distance of position and prev position
 	double diff;                    // just a helper variable for calculating the distance
 	// RG Swarm activity begin
         swarm_activity = 0;

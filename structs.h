@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.26 2011/07/07 23:58:35 mp Exp $
+ $Id: structs.h,v 1.27 2011/07/13 05:08:26 mp Exp $
 
  AutoDock  
 
@@ -338,16 +338,16 @@ typedef struct energy_breakdown
 
 typedef struct velocity {
 	int size;
-	double v[D_max];
+	double v[PSO_D_MAX];
 } Velocity;
 
 /*______________________________________________________________________________*/
 
 typedef struct position {
         int size;
-        double x[D_max];
+        double x[PSO_D_MAX];
         double f;		// fitness value of particle
-        double prev_x[D_max];		// previous fitness value of particle
+        double prev_x[PSO_D_MAX];		// previous pos of particle
 } Position;
 
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: call_gs.cc,v 1.14 2011/05/21 05:21:26 mp Exp $
+ $Id: call_gs.cc,v 1.15 2011/07/13 05:08:26 mp Exp $
 
  AutoDock 
 
@@ -51,7 +51,7 @@ State call_gs(Global_Search *global_method, State& now, unsigned int num_evals, 
               Molecule *mol,
               Output_pop_stats& extOutput_pop_stats,
               GridMapSetInfo *info,
-              int end_of_branch[MAX_TORS])
+              int end_of_branch[MAX_TORS], int outlev, FILE * logFile)
 {
    register unsigned int i;
 
@@ -67,7 +67,7 @@ State call_gs(Global_Search *global_method, State& now, unsigned int num_evals, 
    }
 
     while ((evaluate.evals() < num_evals) && (!global_method->terminate()))
-      global_method->search(thisPop);
+      global_method->search(thisPop, outlev, logFile);
 
    if (pop_size>1) thisPop.msort(1);
 

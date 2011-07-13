@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.32 2011/05/26 23:50:07 rhuey Exp $
+ $Id: dpftoken.h,v 1.33 2011/07/13 05:08:26 mp Exp $
 
  AutoDock 
 
@@ -161,28 +161,28 @@ enum DpfTokens {
   GA_PROPORTIONAL_SELECTION    =109,
   GA_TOURNAMENT_SELECTION      =110,
   GA_BOLTZMAN_SELECTION        =111,
-  PSO_WMAX	                   =112,
-  PSO_WMIN	                   =113,
-  PSO_TVMAX                    =114,
-  PSO_QVMAX                    =115,
-  PSO_RVMAX                    =116,
-  PSO_C1 		               =117,
-  PSO_C2 		               =118,
-  //PSO_swarm_moves	       =118,
-  PSO_swarm_size_factor	       =120,
-  //PSO_n_exec                   =120,
-  PSO_K                        =121,
-  DPF_PSO_CONSTRICTION	       =122, //this is the only PSO implemented in autodock so far (5/2011)
-  DPF_PSO_STANDARD_VW	       =123,
-  DPF_PSO_STANDARD_CW	       =124,
-  DPF_PSO_SSM		           =125,
-  DPF_PARSWARMOPT              =126,
-  GA_LINEAR_RANKING_SELECTION  =127,
-  DPF_RMSMODE                  =128,
-  DPF_SCALE_EINTERMOL          =129,
-  DPF_OUTPUT_POP_STATS         =130,
-  DPF_OUTPUT_RESNUM_AS         =131,
-  DPF_SMOOTH                   =132,
+  PSO_W_START	                   , // the initializers are unnecessary so...
+  PSO_W_END	                   ,
+  PSO_TVMAX                    ,
+  PSO_QVMAX                    ,
+  PSO_RVMAX                    ,
+  PSO_C1 		       ,
+  PSO_C2 		       ,
+  PSO_NEIGHBORS_DYNAMIC	       ,
+  PSO_RANDOM_BY_DIMENSION      ,
+  PSO_ADAPTIVE_VELOCITY       ,
+  PSO_K                       ,
+  DPF_PSO_CONSTRICTION	      , //this is the no longer supported PSO implemented in autodock so far (5/2011)
+  PSO_STAGE2CONSTRICTION	,
+  PSO_INTERPOLATE_AS_SCALARS	,
+  DPF_PSO_SSM		        ,
+  DPF_PARSWARMOPT              ,  //this is the current PSO implemented in autodock (7/2011)
+  GA_LINEAR_RANKING_SELECTION  ,
+  DPF_RMSMODE                  ,
+  DPF_SCALE_EINTERMOL          ,
+  DPF_OUTPUT_POP_STATS         ,
+  DPF_OUTPUT_RESNUM_AS         ,
+  DPF_SMOOTH                   ,
 };
 #endif
 /* EOF */

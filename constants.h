@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.32 2011/07/07 23:58:35 mp Exp $
+ $Id: constants.h,v 1.33 2011/07/13 05:08:26 mp Exp $
 
  AutoDock 
 
@@ -527,9 +527,9 @@ enum Unbound_Model { Unbound_Default=0, Unbound_Same_As_Bound=1, Extended=2, Com
 /*
 Constants used for the PSO Work
  */
-#define D_max     (7+MAX_TORS)   // Max number of dimensions of the search space
-#define S_max 	  1024	 // Max swarm size
-#define R_max 	  1024   // Max number of runs
+#define PSO_D_MAX     (7+MAX_TORS)   // Max number of dimensions of the search space
+#define PSO_S_MAX 	  200	 // Max swarm size
+#define PSO_K_MAX 	  PSO_S_MAX	 // Max neighbors
 /*----------------------------------------------------------------------------* 
  * End of file                                                                * 
  *----------------------------------------------------------------------------*/

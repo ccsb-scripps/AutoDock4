@@ -1,6 +1,6 @@
 /*
 
- $Id: hybrids.h,v 1.20 2011/05/25 22:58:16 rhuey Exp $
+ $Id: hybrids.h,v 1.21 2011/07/13 05:08:26 mp Exp $
 
  AutoDock 
 
@@ -99,7 +99,9 @@ State call_gs(Global_Search *global_method, State& now, unsigned int num_evals, 
               Molecule *mol,
               Output_pop_stats& extOutput_pop_stats,
               GridMapSetInfo *info,
-              int end_of_branch[MAX_TORS] );
+              int end_of_branch[MAX_TORS],
+	      int outlev,
+	      FILE * logFile);
 
 #endif
 

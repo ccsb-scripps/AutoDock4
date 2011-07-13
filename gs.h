@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.23 2011/07/07 23:58:35 mp Exp $
+ $Id: gs.h,v 1.24 2011/07/13 05:08:26 mp Exp $
 
  AutoDock 
 
@@ -46,8 +46,8 @@ class Global_Search
    public:
       Global_Search(unsigned int init_max_evals, unsigned int init_max_generations);
       virtual ~Global_Search(void);
-      virtual int search(Population &) = 0;
-      virtual int localsearch(Population &, Local_Search *) = 0;
+      virtual int search(Population &, int, FILE *) = 0;
+      virtual int localsearch(Population &, Local_Search *, int, FILE *) = 0;
       virtual int terminate(void) = 0;
       virtual void reset(void) = 0;
       virtual void reset(const Output_pop_stats&) = 0;
@@ -137,8 +137,8 @@ class Genetic_Algorithm : public Global_Search
       char * shortname(void);
       char * longname(void);
       int terminate(void);
-      int search(Population &);
-      int localsearch(Population &, Local_Search *);
+      int search(Population &, int, FILE *);
+      int localsearch(Population &, Local_Search *, int, FILE *);
       int set_linear_ranking_selection_probability_ratio(ConstReal );
       
 };

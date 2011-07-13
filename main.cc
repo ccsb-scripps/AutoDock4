@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.149 2011/07/07 23:58:35 mp Exp $
+ $Id: main.cc,v 1.150 2011/07/13 05:08:26 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -73,6 +73,8 @@ using std::string;
 // convenience macro for parsing the (many) single-argument DPF lines:
 //  if not 1 (non-ignored) argument, stop, reporting fatal error
 #define get1arg(line, fmt, addr, token) if(1!=sscanf(line, fmt, addr))stop("syntax error in " token " line")
+// convenience macro for making value boolean (in place)
+#define mkbool(x) (x=((x)!=0))
 
 #include <sys/param.h>
 #include <ctype.h> // tolower
@@ -111,7 +113,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.149 2011/07/07 23:58:35 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.150 2011/07/13 05:08:26 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -123,12 +125,10 @@ static void exit_if_missing_elecmap_desolvmap_about(string  keyword); // see bot
 //------------------------------- PSO -Work Variables declaration 
 
 // State Structure Variable DECLARATION
-State sNew[S_max];
 int nb_eval; // Current number of Swarm evaluations
-//int eval_max = 0; //Max number of Swarm iterations
 int S ; // Swarm size
-double xmin[D_max], xmax[D_max]; // Intervals defining the search space
-//double Vmin[D_max], Vmax[D_max]; // Intervals defining the search space
+double xmin[PSO_D_MAX], xmax[PSO_D_MAX]; // Intervals defining the search space
+//double Vmin[PSO_D_MAX], Vmax[PSO_D_MAX]; // Intervals defining the search space
 
 int main (int argc, const char ** argv)
 
@@ -494,15 +494,16 @@ Local_Search *LocalSearchMethod = NULL;
 //// Local_Search *UnboundLocalSearchMethod = NULL;
 
 //Declaration of Variables for particle swarm optimization (PSO) 
-double c1 = 2.05; 		// coefficient
-double c2 = 2.05; 		// coefficient
-int pso_K = 4; 				// Max number of particles informed by a given one 
+// (defaults now set in constructor, see pso.h)
+//double c1 = 2.05; 		// coefficient
+//double c2 = 2.05; 		// coefficient
+//int pso_K = 4; 				// Max number of particles informed by a given one 
 //int eval_max = 250000; //  max number of evalulations 
-//PSO in SODOCK
-float pso_wmax = 0.9;
-float pso_wmin = 0.4;
+//PSO in SODOCK 
+//float pso_w_start = 0.9;
+//float pso_wmin = 0.4;
 float pso_tvmax = 2.0;
-float pso_qvmax = 0.5;
+float pso_qvmax = 1.0;
 float pso_rvmax = DegreesToRadians(50.0);
 PSO_Options pso_options ; //  MP in progress
 
@@ -726,7 +727,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.149 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.150 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3241,6 +3242,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
+    // this code no longer live - 2011-06 RH/MP  to be removed soon
     case DPF_NULL:
     //case DPF_GS:
       get1arg(line, "%*s %d", &nruns, "GA_ONLY_RUN or DO_GLOBAL_ONLY");
@@ -3292,7 +3294,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
               gaStart = times(&tms_gaStart);
 
               sHist[nconf] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size,
-                                      &ligand, output_pop_stats, info, end_of_branch);
+                                      &ligand, output_pop_stats, info, end_of_branch, outlev, logFile);
 
               pr(logFile, "\nFinal docked state:\n");
               sHist[nconf].Center.x = lig_center[X];
@@ -3499,23 +3501,24 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 //______________________________________________________________________________
    
    case PSO_C1:
-        get1arg(line, "%*s %lf", &c1, "PSO_C1");
-        pr(logFile, "PSO will be performed with the First Confidence Coefficient  (C1) %lf.\n", c1);
-	pso_options.c1=c1; // MP in progress
+        get1arg(line, "%*s %lf", &pso_options.c1, "PSO_C1");
+        pr(logFile, "PSO will be performed with the First Coefficient  (C1) %lf.\n", pso_options.c1);
         break;
 
 //______________________________________________________________________________
 
    case PSO_C2:
-        get1arg(line, "%*s %lf", &c2, "PSO_C2");
-        pr(logFile, "PSO will be performed with the Second Confidence Coefficient (C2) %lf.\n", c2);
+        get1arg(line, "%*s %lf", &pso_options.c2, "PSO_C2");
+        pr(logFile, "PSO will be performed with the Second Coefficient (C2) %lf.\n", pso_options.c2);
         break;
 
 //______________________________________________________________________________
 
    case PSO_K:
-        get1arg(line, "%*s %d", &pso_K, "PSO_K");
-        pr(logFile, "Max number of particles informed by a given one = %d.\n", pso_K);
+        get1arg(line, "%*s %d", &pso_options.pso_K, "PSO_K");
+	// MP TODO this should be allowed to be equal to pop_size
+	if(pso_options.pso_K>PSO_K_MAX) stop("PSO_K_max too big ");
+        pr(logFile, "Max number of particles informed by a given one = %d.\n", pso_options.pso_K);
         break;
 
 //______________________________________________________________________________
@@ -3540,15 +3543,50 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
         
- 	case PSO_WMAX:
-	    (void) sscanf( line, "%*s %f", &pso_wmax);
+ 	case PSO_W_START:
+	     get1arg( line, "%*s %lf", &pso_options.pso_w_start, "PSO_W_START");
+        pr(logFile, "PSO starting velocity weight  = %f.\n", pso_options.pso_w_start);
 		break;
 //______________________________________________________________________________
  
-	case PSO_WMIN:
-	    (void) sscanf( line, "%*s %f", &pso_wmin);
+	case PSO_W_END:
+	    get1arg( line, "%*s %lf", &pso_options.pso_w_end, "PSO_W_END");
+        pr(logFile, "PSO ending velocity weight  = %f.\n", pso_options.pso_w_end);
 		break;
 //______________________________________________________________________________
+ 
+	case PSO_NEIGHBORS_DYNAMIC:
+	    get1arg( line, "%*s %d", &pso_options.pso_neighbors_dynamic,
+	     "PSO_NEIGHBORS_DYNAMIC");
+        pr(logFile, "PSO neighbors dynamic  = %d.\n", mkbool(pso_options.pso_neighbors_dynamic));
+		break;
+//______________________________________________________________________________
+ 
+	case PSO_RANDOM_BY_DIMENSION:
+	    get1arg( line, "%*s %d", &pso_options.pso_random_by_dimension, "PSO_RANDOM_BY_DIMENSION");
+        pr(logFile, "PSO random by dimension  = %d.\n", mkbool(pso_options.pso_random_by_dimension));
+		break;
+//______________________________________________________________________________
+ 
+	case PSO_ADAPTIVE_VELOCITY:
+	    get1arg( line, "%*s %d", &pso_options.pso_adaptive_velocity,
+	     "PSO_ADAPTIVE_VELOCITY");
+        pr(logFile, "PSO adaptive velocity  = %d.\n", mkbool(pso_options.pso_adaptive_velocity));
+		break;
+//______________________________________________________________________________
+ 
+	case PSO_STAGE2CONSTRICTION:
+	    get1arg( line, "%*s %d", &pso_options.pso_stage2constriction,
+	     "PSO_STAGE2CONSTRICTION");
+        pr(logFile, "PSO stage2constriction  = %d.\n", mkbool(pso_options.pso_stage2constriction));
+		break;
+//______________________________________________________________________________
+ 
+	case PSO_INTERPOLATE_AS_SCALARS:
+	    get1arg( line, "%*s %d", &pso_options.pso_interpolate_as_scalars,
+	     "PSO_INTERPOLATE_AS_SCALARS");
+        pr(logFile, "PSO interpolate as scalars = %d.\n", mkbool(pso_options.pso_interpolate_as_scalars));
+		break;
 // 	
 //	case PSO_OUTPUT_GENS:
 //	    (void) sscanf( line, "%*s %d", &pso_output_gens);	    
@@ -3557,15 +3595,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 // parameters for pso vmax. vmin = -vmax
 //_______________________________________________________________________________________	    
 	case PSO_TVMAX:
-	    (void) sscanf( line, "%*s %f", &pso_tvmax);
+	    get1arg( line, "%*s %f", &pso_tvmax, "PSO_TVMAX");
 		break;
 //_______________________________________________________________________________________	    
 	case PSO_QVMAX:
-	    (void) sscanf( line, "%*s %f", &pso_qvmax);
+	    get1arg( line, "%*s %f", &pso_qvmax, "PSO_QVMAX");
 		break;
 //_______________________________________________________________________________________	    
 	case PSO_RVMAX:
-	    (void) sscanf( line, "%*s %f", &pso_rvmax);
+	    get1arg( line, "%*s %f", &pso_rvmax, "PSO_RVMAX");
 		pso_rvmax = DegreesToRadians(pso_rvmax);
 		break;	    
 //_______________________________________________________________________________________	    
@@ -3576,7 +3614,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
  ////////////////////////////////////////////////////////////////////////////////
     case DPF_PARSWARMOPT:
         int D; //search space dimension 
-    	(void) sscanf( line, "%*s %d", &nruns );	
+    	get1arg( line, "%*s %d", &nruns, "PARSWARMOPT" );
         
       //set GlobalSearchMethod to ParticleSwarmGS
 	  if (GlobalSearchMethod != NULL) {
@@ -3601,11 +3639,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	    };
 
 	  
-	  float pso_vmax [100]; // TODO = float [7 + sInit.ntor];
-	  float pso_vmin [100]; // TODO = float [7 + sInit.ntor];
+	  float pso_vmax [PSO_D_MAX]; // TODO = float [7 + sInit.ntor];
+	  float pso_vmin [PSO_D_MAX]; // TODO = float [7 + sInit.ntor];
+	  //pso_vmax = float [7 + sInit.ntor];
 	  //pso_vmin = float [7 + sInit.ntor];
-	  //pso_vmin = float [7 + sInit.ntor];
-	  //translation, Quarternion, torsion
+	  //translation, quaternion, torsion
 	  	//translation x, y, z
 	  	for(j= 0; j < 3; j++) {
 			pso_vmax[j] = pso_tvmax;

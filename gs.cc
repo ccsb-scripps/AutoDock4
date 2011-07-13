@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.49 2011/07/07 23:58:35 mp Exp $
+ $Id: gs.cc,v 1.50 2011/07/13 05:08:26 mp Exp $
 
  AutoDock 
 
@@ -1402,7 +1402,7 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
 //
 //  This is where the action is... SEARCH!
 //
-int Genetic_Algorithm::search(Population &solutions)
+int Genetic_Algorithm::search(Population &solutions, int outlev, FILE *logFile)
 {
    register unsigned int i;
 
@@ -1503,7 +1503,8 @@ int Genetic_Algorithm::search(Population &solutions)
    }
    return(0);
 }
-int Genetic_Algorithm::localsearch(Population &thisPop, Local_Search *local_method)
+int Genetic_Algorithm::localsearch(Population &thisPop, Local_Search *local_method, 
+ int outlev, FILE *logFile)
 {
 	// apply local search (if not NULL) to population with 
 	// frequency search_freq

@@ -1,6 +1,6 @@
 /*
 
- $Id: autocomm.h,v 1.20 2010/10/01 22:51:39 mp Exp $
+ $Id: autocomm.h,v 1.21 2011/07/13 05:08:26 mp Exp $
 
  AutoDock  
 
@@ -147,7 +147,7 @@ enum legacy_definitions {
 #include "typedefs.h"
 
 
-typedef char Boole;
+typedef int Boole; // this could become the C++ type bool  (MP 2011 TODO)
 
 
 typedef struct AtomDesc {

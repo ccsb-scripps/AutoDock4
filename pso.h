@@ -11,28 +11,34 @@ extern FILE *logFile;
 // to avoid having to change dozens of method signatures whenever
 // the option set is changed. MP TSRI 2011
 struct PSO_Options {
-	float pso_w;	   // inertia weight
-	float wmax;	// pso_w at beginning of run
-	float wmin;	// pso_w at conclusion of run, see pso.cc
-	float c1;	// cognitive
-	float c2;	// social
+	double pso_w;	   // inertia weight
+	double pso_w_start;	// pso_w at beginning of run
+	double pso_w_end;	// pso_w at conclusion of run, see pso.cc
+	double c1;	// cognitive
+	double c2;	// social
 	int pso_K;      // number of neighbor particles
-	float c;    // constriction factor for cPSO
+	double c;    // constriction factor for cPSO   MP TODO notused
+	double pso_vmax_scale; // MP 
 	Boole pso_neighbors_dynamic; // MP
 	Boole pso_random_by_dimension; // MP
-	Boole pso_interpolate_as_scalars; // MP
+	Boole pso_adaptive_velocity; // MP
+	Boole pso_stage2constriction; // MP
+	Boole pso_interpolate_as_scalars; // MP nothing else is implemented yet
   public:
     PSO_Options () :
-        pso_w(1.), // w
-        wmax(1.), // wmax
-        wmin(1.), // wmin
-        c1(6.), // c1
-        c2(6.), // c2
+        pso_w(1.0), // w
+        pso_w_start(0.9), // pso_w at beginning of run
+        pso_w_end(0.4), // pso_w at conclusion of run
+        c1(2.05), // c1
+        c2(2.05), // c2
         pso_K(4),  // pso_K
         c(0.01),  // c
+	pso_vmax_scale(0.1), // MP added not yet implemented
         pso_neighbors_dynamic(false), // 
         pso_random_by_dimension(true),  // 
-        pso_interpolate_as_scalars(true)  //
+        pso_adaptive_velocity(false),  //
+        pso_stage2constriction(false), //
+	pso_interpolate_as_scalars(true)  //
         { }
 	};
 
@@ -77,8 +83,8 @@ class ParticleSwarmGS : public Global_Search
 		void reset(void);
         void reset(const Output_pop_stats&);
         int terminate(void);
-        int search(Population &);  			
-	int localsearch(Population &, Local_Search *);
+        int search(Population &, int outlev, FILE * logFile); 
+	int localsearch(Population &, Local_Search *, int outlev, FILE * logFile);
 };
 
 inline char * ParticleSwarmGS::shortname(void)
@@ -138,7 +144,7 @@ inline void ParticleSwarmGS::initialize(const unsigned int init_pop_size, const 
 
 
 // The following part are derived virtual functions
-//int search(Population &);
+//int search(Population &, int outlev, FILE * logFile);
 
 inline int ParticleSwarmGS::terminate(void)
 {
@@ -153,7 +159,7 @@ inline int ParticleSwarmGS::terminate(void)
 inline void ParticleSwarmGS::reset(void)
 {
 	generations = 0;
-	//MP pso_w = wmax;
+	//MP pso_w = pso_w_start;
 	if(_Pi)
 		delete _Pi;
 	if(_Pg)

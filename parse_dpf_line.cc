@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.37 2011/05/26 23:50:08 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.38 2011/07/13 05:08:26 mp Exp $
 
  AutoDock 
 
@@ -193,20 +193,18 @@ int parse_dpf_line( const char line[] )
               , {"ga_boltzman_selection", GA_BOLTZMAN_SELECTION}
               , {"pso_c1", PSO_C1}
               , {"pso_c2", PSO_C2}
-              , {"pso_k", PSO_K}
-              , {"pso_w_start", PSO_WMAX}
-              , {"pso_w_end", PSO_WMIN}
+              , {"pso_neighbors", PSO_K} , {"pso_k", PSO_K} // syns
+              , {"pso_w_start", PSO_W_START}
+              , {"pso_w_end", PSO_W_END}
               , {"pso_tvmax", PSO_TVMAX}
               , {"pso_qvmax", PSO_QVMAX}
               , {"pso_rvmax", PSO_RVMAX}
-              //, {"pso_swarm_moves", PSO_swarm_moves}
-              , {"pso_ss_factor", PSO_swarm_size_factor}
-              //, {"pso_n_exec", PSO_n_exec}
-              , {"do_cpso", DPF_PSO_CONSTRICTION}
-              , {"do_spso_vw", DPF_PSO_STANDARD_VW}
-              , {"do_spso_cw", DPF_PSO_STANDARD_CW}
-              , {"do_ssmpso", DPF_PSO_SSM}
-              , {"do_pso", DPF_PARSWARMOPT}
+              , {"pso_neighbors_dynamic", PSO_NEIGHBORS_DYNAMIC}
+              , {"pso_random_by_dimension", PSO_RANDOM_BY_DIMENSION}
+              , {"pso_adaptive_velocity", PSO_ADAPTIVE_VELOCITY}
+              , {"pso_stage2constriction", PSO_STAGE2CONSTRICTION}
+              , {"pso_interpolate_as_scalars", PSO_INTERPOLATE_AS_SCALARS}
+              , {"do_pso", DPF_PARSWARMOPT} , {"do_cpso", DPF_PARSWARMOPT}  // syns
 
 #if defined(USING_COLINY)
               , {"coliny", DPF_COLINY}  
