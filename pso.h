@@ -20,23 +20,28 @@ struct PSO_Options {
 	double c;    // constriction factor for cPSO   MP TODO notused
 	double pso_vmax_scale; // MP 
 	Boole pso_neighbors_dynamic; // MP
+	Boole pso_neighbors_symmetric; // MP
 	Boole pso_random_by_dimension; // MP
 	Boole pso_adaptive_velocity; // MP
+	Boole pso_regenerate_at_limit; // MP
 	Boole pso_stage2constriction; // MP
 	Boole pso_interpolate_as_scalars; // MP nothing else is implemented yet
+  // default values for PSO options :
   public:
     PSO_Options () :
         pso_w(1.0), // w
         pso_w_start(0.9), // pso_w at beginning of run
         pso_w_end(0.4), // pso_w at conclusion of run
-        c1(2.05), // c1
-        c2(2.05), // c2
-        pso_K(4),  // pso_K
-        c(0.01),  // c
-	pso_vmax_scale(0.1), // MP added not yet implemented
+        c1(2.05), 
+        c2(2.05),
+        pso_K(4),
+        c(0.01),
+	pso_vmax_scale(0.1), // MP not yet implemented
         pso_neighbors_dynamic(false), // 
+        pso_neighbors_symmetric(false), //  MP not yet implemented
         pso_random_by_dimension(true),  // 
         pso_adaptive_velocity(false),  //
+        pso_regenerate_at_limit(true),  //
         pso_stage2constriction(false), //
 	pso_interpolate_as_scalars(true)  //
         { }
@@ -53,6 +58,8 @@ class ParticleSwarmGS : public Global_Search
 		float **v;	// velocity
 		float *vmax;	//max velocity 
 		float *vmin;	// min velocity
+		double *xmax;	// max coord bound
+		double *xmin;	// min coord bound
 		PSO_Options pso_options;
 	    
 		int generations;
@@ -66,6 +73,8 @@ class ParticleSwarmGS : public Global_Search
 		ParticleSwarmGS(
 			float *init_vmax, 
 			float *init_vmin, 
+			double *init_xmax, 
+			double *init_xmin, 
 			PSO_Options init_pso_options, 
 			Local_Search *init_LS, 
 			unsigned int init_max_evals, 
@@ -113,6 +122,8 @@ inline ParticleSwarmGS::~ParticleSwarmGS()
 inline ParticleSwarmGS::ParticleSwarmGS(
 			float *init_vmax, 
 			float *init_vmin, 
+			double *init_xmax, 
+			double *init_xmin, 
 			PSO_Options init_pso_options, 
 			Local_Search *init_LS, 
 			const unsigned int init_max_evals, 
@@ -122,6 +133,8 @@ inline ParticleSwarmGS::ParticleSwarmGS(
 {
 	vmax = init_vmax; 
 	vmin = init_vmin;			  
+	xmax = init_xmax; 
+	xmin = init_xmin;			  
 	pso_options = init_pso_options;
 	LocalSearchMethod = init_LS;
     generations = 0;

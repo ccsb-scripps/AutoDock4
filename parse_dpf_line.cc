@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.38 2011/07/13 05:08:26 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.39 2011/07/14 00:50:47 mp Exp $
 
  AutoDock 
 
@@ -194,16 +194,18 @@ int parse_dpf_line( const char line[] )
               , {"pso_c1", PSO_C1}
               , {"pso_c2", PSO_C2}
               , {"pso_neighbors", PSO_K} , {"pso_k", PSO_K} // syns
+              , {"pso_neighbors_symmetric", PSO_NEIGHBORS_SYMMETRIC}
+              , {"pso_neighbors_dynamic", PSO_NEIGHBORS_DYNAMIC}
               , {"pso_w_start", PSO_W_START}
               , {"pso_w_end", PSO_W_END}
               , {"pso_tvmax", PSO_TVMAX}
               , {"pso_qvmax", PSO_QVMAX}
               , {"pso_rvmax", PSO_RVMAX}
-              , {"pso_neighbors_dynamic", PSO_NEIGHBORS_DYNAMIC}
               , {"pso_random_by_dimension", PSO_RANDOM_BY_DIMENSION}
               , {"pso_adaptive_velocity", PSO_ADAPTIVE_VELOCITY}
               , {"pso_stage2constriction", PSO_STAGE2CONSTRICTION}
               , {"pso_interpolate_as_scalars", PSO_INTERPOLATE_AS_SCALARS}
+              , {"pso_regenerate_at_limit", PSO_REGENERATE_AT_LIMIT}
               , {"do_pso", DPF_PARSWARMOPT} , {"do_cpso", DPF_PARSWARMOPT}  // syns
 
 #if defined(USING_COLINY)

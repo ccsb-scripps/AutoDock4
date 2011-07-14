@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.150 2011/07/13 05:08:26 mp Exp $
+ $Id: main.cc,v 1.151 2011/07/14 00:50:47 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -113,7 +113,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.150 2011/07/13 05:08:26 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.151 2011/07/14 00:50:47 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -125,9 +125,8 @@ static void exit_if_missing_elecmap_desolvmap_about(string  keyword); // see bot
 //------------------------------- PSO -Work Variables declaration 
 
 // State Structure Variable DECLARATION
-int nb_eval; // Current number of Swarm evaluations
 int S ; // Swarm size
-double xmin[PSO_D_MAX], xmax[PSO_D_MAX]; // Intervals defining the search space
+double pso_xmin[PSO_D_MAX], pso_xmax[PSO_D_MAX]; // Intervals defining the search space
 //double Vmin[PSO_D_MAX], Vmax[PSO_D_MAX]; // Intervals defining the search space
 
 int main (int argc, const char ** argv)
@@ -495,13 +494,8 @@ Local_Search *LocalSearchMethod = NULL;
 
 //Declaration of Variables for particle swarm optimization (PSO) 
 // (defaults now set in constructor, see pso.h)
-//double c1 = 2.05; 		// coefficient
-//double c2 = 2.05; 		// coefficient
-//int pso_K = 4; 				// Max number of particles informed by a given one 
-//int eval_max = 250000; //  max number of evalulations 
 //PSO in SODOCK 
-//float pso_w_start = 0.9;
-//float pso_wmin = 0.4;
+// MP these max values are as received from ??? and seem excessive...
 float pso_tvmax = 2.0;
 float pso_qvmax = 1.0;
 float pso_rvmax = DegreesToRadians(50.0);
@@ -727,7 +721,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.150 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.151 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3518,7 +3512,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         get1arg(line, "%*s %d", &pso_options.pso_K, "PSO_K");
 	// MP TODO this should be allowed to be equal to pop_size
 	if(pso_options.pso_K>PSO_K_MAX) stop("PSO_K_max too big ");
-        pr(logFile, "Max number of particles informed by a given one = %d.\n", pso_options.pso_K);
+        pr(logFile, "Max number of PSO particles informing a given one = %d.\n", pso_options.pso_K);
         break;
 
 //______________________________________________________________________________
@@ -3562,6 +3556,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 		break;
 //______________________________________________________________________________
  
+	case PSO_NEIGHBORS_SYMMETRIC:
+	    get1arg( line, "%*s %d", &pso_options.pso_neighbors_symmetric,
+	     "PSO_NEIGHBORS_SYMMETRIC");
+        pr(logFile, "PSO neighbors dynamic  = %d.\n", mkbool(pso_options.pso_neighbors_dynamic));
+		break;
+//______________________________________________________________________________
+ 
 	case PSO_RANDOM_BY_DIMENSION:
 	    get1arg( line, "%*s %d", &pso_options.pso_random_by_dimension, "PSO_RANDOM_BY_DIMENSION");
         pr(logFile, "PSO random by dimension  = %d.\n", mkbool(pso_options.pso_random_by_dimension));
@@ -3572,6 +3573,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	    get1arg( line, "%*s %d", &pso_options.pso_adaptive_velocity,
 	     "PSO_ADAPTIVE_VELOCITY");
         pr(logFile, "PSO adaptive velocity  = %d.\n", mkbool(pso_options.pso_adaptive_velocity));
+		break;
+//______________________________________________________________________________
+
+	case PSO_REGENERATE_AT_LIMIT:
+	    get1arg( line, "%*s %d", &pso_options.pso_regenerate_at_limit,
+	     "REGENERATE_AT_LIMIT");
+        pr(logFile, "PSO regenerate_at_limit = %d.\n", mkbool(pso_options.pso_regenerate_at_limit));
 		break;
 //______________________________________________________________________________
  
@@ -3634,11 +3642,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	 	fflush(logFile);  
 
         
-	    if (outlev > 3) {
-            pr( logFile, "\ncalling initialiseDimension: info->lo=%f %f %f , info->hi=%f %f %f,  \n", info->lo[0], info->lo[1], info->lo[2], info->hi[0], info->hi[1], info->hi[1]);
-	    };
-
 	  
+	  if(outlev>0) {
+		pr(logFile, "PSO tvmax = %.3f\n", pso_tvmax);
+		pr(logFile, "PSO qvmax = %.3f\n", pso_qvmax);
+		pr(logFile, "PSO rvmax = %.3f\n", pso_rvmax);
+		}
+
 	  float pso_vmax [PSO_D_MAX]; // TODO = float [7 + sInit.ntor];
 	  float pso_vmin [PSO_D_MAX]; // TODO = float [7 + sInit.ntor];
 	  //pso_vmax = float [7 + sInit.ntor];
@@ -3649,7 +3659,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 			pso_vmax[j] = pso_tvmax;
 		  	pso_vmin[j] = -pso_tvmax;
 		}
-		// quaternion components
+		// quaternion components  MP this isnt meaningful should be just a scalar angle
 		for(j=3; j < 7; j++) {		
 			pso_vmax[j] = pso_qvmax;	
 			pso_vmin[j] = -pso_qvmax;			
@@ -3660,13 +3670,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 		pso_vmin[j] = -pso_rvmax;		
         }
       
-	   //Initialise the State's dimension xmax, xmin using gridMapInf	  rho_ptr = new float [7*nlig + sInit.ntor];
-	   initialiseDimension(info, xmin, xmax, D);
+        if (outlev > 2) {
+            pr( logFile, "\ncalling PSO initialiseDimension: info->lo=%f %f %f , info->hi=%f %f %f,  \n", info->lo[0], info->lo[1], info->lo[2], info->hi[0], info->hi[1], info->hi[2]);
+	    };
+        initialiseDimension(info, pso_xmin, pso_xmax, D);
+        if (outlev > 2) {
+            pr( logFile, "\nAFTER PSO initDim trans: xmin=%f %f %f , xmax=%f %f %f,  \n", pso_xmin[0], pso_xmin[1], pso_xmin[2], pso_xmax[0], pso_xmax[1], pso_xmax[2]);
+            pr( logFile, "\nAFTER PSO initDim quat: xmin=%f %f %f %f, xmax=%f %f %f %f,  \n", pso_xmin[3], pso_xmin[4], pso_xmin[5], pso_xmin[6], pso_xmax[3], pso_xmax[4], pso_xmax[5],pso_xmax[6]);
+        };
 	  
 
 	  GlobalSearchMethod = new ParticleSwarmGS(
                         pso_vmax,
                         pso_vmin,
+                        pso_xmax,
+                        pso_xmin,
 						pso_options,
 	  					LocalSearchMethod, 
 						num_evals,

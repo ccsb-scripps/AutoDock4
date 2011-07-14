@@ -37,16 +37,15 @@ inline float Norm(float *x, int n)
  ***********************************************************************/
 int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 {
-	int i, j, g;
+	int i, j;
 	double curVal;
 	double newVal;
 	double piCurE = 0.0;
-	//float phi, c;
 	float g_ratio, e_ratio, ratio;
-	int LINKS[PSO_S_MAX][PSO_K_MAX];
+	int links[PSO_S_MAX][PSO_K_MAX]; // neighbors of i (the [i][0] is always self)
 
 
-	// MP in progress TODO
+	// copy some options for convenience
 	float pso_w = pso_options.pso_w;	   // inertia weight
 	float w_start = pso_options.pso_w_start;	// pso_w at beginning of run
 	float w_end = pso_options.pso_w_end;	// pso_w at conclusion of run
@@ -70,12 +69,16 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 		pr(logFile, "PSO size = %d\n", size);
 
 		if(outlev>0){
+		pr(logFile, "PSO w_start = %.2f\n", pso_options.pso_w_start);
+		pr(logFile, "PSO w_end = %.2f\n", pso_options.pso_w_end);
 		pr(logFile, "PSO c1 = %.2f\n", pso_options.c1);
 		pr(logFile, "PSO c2 = %.2f\n", pso_options.c2);
 		pr(logFile, "PSO K = %d\n", pso_options.pso_K);
 		pr(logFile, "PSO neighbors_dynamic = %s\n", bool(pso_options.pso_neighbors_dynamic));
+		pr(logFile, "PSO neighbors_symmetric = %s\n", bool(pso_options.pso_neighbors_symmetric));
 		pr(logFile, "PSO random_by_dimension = %s\n", bool(pso_options.pso_random_by_dimension));
 		pr(logFile, "PSO adaptive_velocity = %s\n", bool(pso_options.pso_adaptive_velocity));
+		pr(logFile, "PSO regenerate_at_limit = %s\n", bool(pso_options.pso_regenerate_at_limit));
 		pr(logFile, "PSO stage2constriction = %s\n", bool(pso_options.pso_stage2constriction));
 		pr(logFile, "PSO interpolate_as_scalars = %s\n", bool(pso_options.pso_interpolate_as_scalars));
 		}
@@ -155,6 +158,19 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	
 	//double piBestE[pop_size];	    // E array for personal Best	
 
+	// set prevE from curE (previous move)
+	for(unsigned int i=0;i<pop_size;i++) prevE[i] = curE[i];
+
+	// if global best has not improved, recreate neighborhood links before this move
+	if(pso_options.pso_neighbors_dynamic && Pg.value(Normal_Eval) > prevBestE) {
+		if(outlev>1)  {
+			// DEBUG MP
+			fprintf(logFile, "PSO init_links Pg= %.2f prevBestE= %.2f\n",
+			 Pg.value(Normal_Eval) , prevBestE);
+			}
+		init_links=TRUE;
+	}
+
 	for(i = 0; i < pop_size; i++ ) {		
 		curE[i] = Pop[i].value(Normal_Eval);
 		// update Pi from Pop
@@ -173,16 +189,17 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	prevBestE=Pg.value(Normal_Eval);
 	// assert energy of Pg <= energy of Pi[*] <= energy of Pop[*]
 		   		   	 	     	   	 	   	   	   	  
-	// MP TODO set up or modify neighborhood lists
-	// MP  one option is to remake neighborhoods if Pi not improved
-	//     this dynamic neighborhood is in the "other" PSO code
+	// set up or modify neighborhood lists
+	//  dynamic option remakes neighborhoods if Pi not improved
+	//     this dynamic neighborhood is from the "other" PSO code
+	// if the entire population is the neighborhood, this table is not used
         if (init_links && pso_K<pop_size) {
             //Who informs who, at random
-	    // note these are asymmetric links
+	    // MP:note these are asymmetric links - unlike Huamengs I think
             for (int s=0; s<pop_size; s++) {
-                LINKS[s][0]=s; // Each particle informs itself
+                links[s][0]=s; // Each particle informs itself
 	        // K-1 other links (could possibly be self or repeated)
-                for(int i=1; i<pso_K;i++) LINKS[s][i]= (int) random_range(0, pop_size-1);
+                for(int i=1; i<pso_K;i++) links[s][i]= (int) random_range(0, pop_size-1);
             }        
 	    init_links=FALSE;
         }
@@ -192,11 +209,11 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	for(i = 0; i < pop_size; i++) {
 				
 		if(pso_K < pop_size) {
-			//get the best in neighborhood, e.g., Neighborhood Best (nbBest)		
-			g = i;
+			// get the best in neighborhood of "i", e.g., Neighborhood Best (nbBest)		
+			int g = i; // self
 			for(j =  1; j < pso_K; j++) {
-				if(Pi[LINKS[i][j]].value(Normal_Eval) < Pi[g].value(Normal_Eval))
-				g = LINKS[i][j];
+				if(Pi[links[i][j]].value(Normal_Eval) < Pi[g].value(Normal_Eval))
+				g = links[i][j];
 			}
 			nbBest=Pi[g];
 		}
@@ -239,6 +256,29 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 				
 			// apply velocity
 			newVal = curVal + v[i][j];
+
+			// verify new value is in bounds
+			// MP: note that only translation has a bound -
+			//  quaternions and torsions wrap (in ways we are ignoring here).
+			if(pso_options.pso_regenerate_at_limit && j<3 
+			    && (newVal < xmin[j] || newVal > xmax[j]) ) {
+				// regenerate at random xyz - do not 
+				//  change orientation or torsions for now
+				if(outlev>2)  fprintf(logFile, 
+				"PSO [%d] hit limit[%c] (%.2f,%.2f,%.2f) ", i, "XYZ"[j],
+				Pop[i].phenotyp.gread(0).real,
+				Pop[i].phenotyp.gread(1).real,
+				Pop[i].phenotyp.gread(2).real);
+
+				for(int d=0;d<3;d++) {
+					Pop[i].phenotyp.write( random_range(xmin[d], xmax[d]), d);
+					}
+				if(outlev>2)  fprintf(logFile, "regen at (%.2f,%.2f,%.2f)\n",
+				Pop[i].phenotyp.gread(0).real,
+				Pop[i].phenotyp.gread(1).real,
+				Pop[i].phenotyp.gread(2).real);
+				break;  // end of this individual move
+			}
 															// MP TODO handle quat and torsion accumulation better
 										
 			// update x,y,z, quaternion, torsion of particle i
@@ -343,13 +383,7 @@ Individual &Pg = (Individual &)(*_Pg);
 		Pg = Pi[best]; // mp maybe not needed
 	}					
 
-	// set prevE from curE
-	for(unsigned int i=0;i<Pop.num_individuals();i++) prevE[i] = curE[i];
 
-	// if global best has not improved, recreate neighborhood links in next cycle
-	if(pso_options.pso_neighbors_dynamic && Pg.value(Normal_Eval) > prevBestE) {
-		init_links=TRUE;
-	}
 	// MP DEBUG 2011:
 	if(outlev>1) (void)fprintf( logFile, "PSO LS only Pop[best=%d] now %f\n", 
 	 best, Pop[best].value(Normal_Eval));
