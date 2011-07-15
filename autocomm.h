@@ -1,6 +1,6 @@
 /*
 
- $Id: autocomm.h,v 1.21 2011/07/13 05:08:26 mp Exp $
+ $Id: autocomm.h,v 1.22 2011/07/15 04:28:51 mp Exp $
 
  AutoDock  
 
@@ -90,10 +90,10 @@ const /* not unsigned */ int LINE_LEN=256;    /* Line length in characters      
 /* The stacksize limit within Xcode forces us to use smaller grids */
 const /* not unsigned */ int MAX_GRID_PTS=61;   /* Maximum number of grid points in 1 dimension */
 #elif defined( __CYGWIN__ ) 
+				/* MAX_GRID_PTS 128 causes a SIGSEGV on Cygwin */
 const /* not unsigned */ int MAX_GRID_PTS=64;   /* Maximum number of grid points in 1 dimension */
 #else
-const /* not unsigned */ int MAX_GRID_PTS=128;	/* Maximum number of grid points in 1 dimension */
-				/* MAX_GRID_PTS 128 causes a SIGSEGV on Cygwin */
+const /* not unsigned */ int MAX_GRID_PTS=512;	/* Maximum number of grid points in 1 dimension */
 #endif
 
 const Real EINTCLAMP=100000.; /* Clamp pairwise internal energies (kcal/mol )  */
