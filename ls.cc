@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.20 2011/06/18 05:05:00 mp Exp $
+ $Id: ls.cc,v 1.21 2011/07/15 03:58:11 mp Exp $
 
  AutoDock 
 
@@ -351,10 +351,10 @@ int Solis_Wets_Base::search(Individual &solution)
 #endif /* DEBUG */
 
       // Do inverse mapping if SW changed phenotyp 
-      if (SW(solution.phenotyp)) {
+   if (SW(solution.phenotyp)) {
       solution.inverse_mapping();
-      ls_count++;      
       }
+   ls_count++;      
    return(0);
 }
 

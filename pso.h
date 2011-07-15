@@ -62,7 +62,7 @@ class ParticleSwarmGS : public Global_Search
 		double *xmin;	// min coord bound
 		PSO_Options pso_options;
 	    
-		int generations;
+		unsigned int generations;
 		int outputEveryNgens;
         Output_pop_stats output_pop_stats;
 	
@@ -155,6 +155,11 @@ inline void ParticleSwarmGS::initialize(const unsigned int init_pop_size, const 
     size = ndims;
 }
 
+// MP adapted from gs.h (can we just have one of these?)
+inline unsigned int ParticleSwarmGS::num_generations(void) const
+{
+   return(generations);
+}
 
 // The following part are derived virtual functions
 //int search(Population &, int outlev, FILE * logFile);
