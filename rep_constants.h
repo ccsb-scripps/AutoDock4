@@ -1,6 +1,6 @@
 /*
 
- $Id: rep_constants.h,v 1.6 2010/10/01 22:51:40 mp Exp $
+ $Id: rep_constants.h,v 1.7 2011/07/27 05:20:27 mp Exp $
 
  AutoDock 
 
@@ -42,21 +42,13 @@ enum QuaternionEnum {
 	QW_ROTATION_INDEX=6
 };
 
-// Axis-Angle
-enum AxisAngleEnum {
-	X_ROTATION_INDEX=3,
-	Y_ROTATION_INDEX=4,
-	Z_ROTATION_INDEX=5
-};
-
-#define ROTATION_ANGLE_INDEX QW_ROTATION_INDEX
 
 #define is_translation_index(i) (((i) >= X_TRANSLATION_INDEX) && ((i) <= Z_TRANSLATION_INDEX))
-#define is_axis_index(i) (((i) >= X_ROTATION_INDEX) && ((i) <= Z_ROTATION_INDEX))
-#define is_angle_index(i) ((i) == ROTATION_ANGLE_INDEX)
+#define is_axis_index(i) (((i) >= QX_ROTATION_INDEX) && ((i) <= QZ_ROTATION_INDEX))
+#define is_angle_index(i) ((i) == QW_ROTATION_INDEX) // see conformation_sampler.cc
 #define is_rotation_index(i) (((i) >= QX_ROTATION_INDEX) && ((i) <= QW_ROTATION_INDEX))
 #define is_first_rotation_index(i) (((i) == QX_ROTATION_INDEX))
 #define is_within_rotation_index(i) (((i) > QX_ROTATION_INDEX) && ((i) <= QW_ROTATION_INDEX))
-#define is_conformation_index(i) ((i) > ROTATION_ANGLE_INDEX)
+#define is_conformation_index(i) ((i) > QW_ROTATION_INDEX)
 
 #endif

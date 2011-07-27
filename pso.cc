@@ -1,6 +1,6 @@
 #include "pso.h"
 #include "ranlib.h"
-#include "support.h" // for evalmode
+#include "support.h" // for evalmode and rep_constants
 #include <math.h>
 
 extern Eval evaluate;
@@ -40,7 +40,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	int i, j;
 	double curVal;
 	double newVal;
-	double piCurE = 0.0;
+	double Pop_best_value;
 	float g_ratio, e_ratio, ratio;
 	int links[PSO_S_MAX][PSO_K_MAX]; // neighbors of i (the [i][0] is always self)
 
@@ -111,8 +111,8 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 		//  first velocity update from occurring
 		for(i = 0; i < pop_size; i++) prevE[i] = curE[i] = HUGE; // initially unfavorable
 
-		/* analysis
-		pr(logFile, "Initial velocity V:\n");
+		if(outlev>2) {
+		pr(logFile, "PSO Initial velocity V:\n");
 		for(i=0;i<pop_size;i++) {
 			pr(logFile, " V[%d] ", i);
 			for(j=0;j<size;j++)
@@ -126,12 +126,12 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 				pr(logFile, "%+6.2f ", (*_Pi)[i].phenotyp.gread(j).real);
 			pr(logFile, "\n");
 		}
-		*/
+		}
 								
 		// Display field title
 		//pr(logFile, "Generation NumEvals     Pg       PopAvg     PiAvg       w      |V| Avg\n");
 		//pr(logFile, "---------- -------- ---------- ---------- ---------- -------- --------\n");					
-		//pr(logFile, "Generation\tNumEvals\tpi X_best\tgBest Pg\tImproved\n");	
+		//pr(logFile, "Generation\tNumEvals\tpi Pop_best\tgBest Pg\tImproved\n");	
 		pr(logFile, "Generation NumEvals  gBest E   \n");
 		pr(logFile, "---------- -------- ---------- \n");					
 		init_links = TRUE;
@@ -163,7 +163,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 
 	// if global best has not improved, recreate neighborhood links before this move
 	if(pso_options.pso_neighbors_dynamic && Pg.value(Normal_Eval) > prevBestE) {
-		if(outlev>1)  {
+		if(outlev>2)  {
 			// DEBUG MP
 			fprintf(logFile, "PSO init_links Pg= %.2f prevBestE= %.2f\n",
 			 Pg.value(Normal_Eval) , prevBestE);
@@ -205,7 +205,8 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
         }
 
 
-	//update position (translation, rotation, torsions) of each particle			
+	// compute velocity vector for each particle
+	// Note - this loop uses Pop[i] but does not modify Pop[i]
 	for(i = 0; i < pop_size; i++) {
 				
 		if(pso_K < pop_size) {
@@ -242,26 +243,40 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 			// if not adaptive_velocity, always update velocity.
 			// if adaptive_velocity, update velocity only if individual's energy
 			//  is WORSE than (or same as) its previous energy
-			if( (!pso_options.pso_adaptive_velocity) || Pi[i].value(Normal_Eval)>=prevE[i]) {
-				// MP TODO use neighborhood or use global?
+			if( (!pso_options.pso_adaptive_velocity) || Pop[i].value(Normal_Eval)>=prevE[i]) {
 				v[i][j] = pso_w * v[i][j] 
 					+ c1 * r1 * (Pi[i].phenotyp.gread(j).real - curVal)
 					+ c2 * r2 * (nbBest.phenotyp.gread(j).real - curVal);
 				}
-															   // MP TODO handle quat and torsion velocities better
+													   // MP TODO handle quat and torsion velocities better
 			                      																			
 			// verify and restrict the new velocity component
 			if(v[i][j] > vmax[j]) v[i][j] = vmax[j];
 			else if(v[i][j] < vmin[j]) v[i][j] = vmin[j];
+		} // next dim
+	}	// end compute velocity 
 				
+	// update position (translation, rotation, torsions) Pop[i] of each particle			
+	for(i = 0; i < pop_size; i++) {
+		for(j = 0; j < size; j++) {
+
+			curVal = Pop[i].phenotyp.gread(j).real;
+			// wrap torsions (MP not sure if ever necessary...)
+			if(is_conformation_index(j)) curVal=WrpModRad(curVal);
+
 			// apply velocity
 			newVal = curVal + v[i][j];
 
-			// verify new value is in bounds
+
+			// wrap torsions
+			// and verify new translation value is within bounds
 			// MP: note that only translation has a bound -
-			//  quaternions and torsions wrap (in ways we are ignoring here).
-			if(pso_options.pso_regenerate_at_limit && j<3 
+			//  quaternions and torsions wrap 
+			//  (for quaternions, in ways we are ignoring here).
+			if(is_conformation_index(j)) newVal=WrpModRad(newVal);
+			else if( is_translation_index(j)
 			    && (newVal < xmin[j] || newVal > xmax[j]) ) {
+				if(pso_options.pso_regenerate_at_limit) {
 				// regenerate at random xyz - do not 
 				//  change orientation or torsions for now
 				if(outlev>2)  fprintf(logFile, 
@@ -278,32 +293,39 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 				Pop[i].phenotyp.gread(1).real,
 				Pop[i].phenotyp.gread(2).real);
 				break;  // end of this individual move
+				}
+			else {
+				// if not regenerate at random,
+				// simply clamp this translation component
+			     if(newVal < xmin[j]) newVal=xmin[j];
+			     else if (newVal > xmax[j]) newVal=xmax[j];
+				}
 			}
-															// MP TODO handle quat and torsion accumulation better
+													// MP TODO handle quat and torsion accumulation better
 										
 			// update x,y,z, quaternion, torsion of particle i
-			Pop[i].phenotyp.write(newVal, j);												
-		}
-		// must normalize Quaternion after modifying its components
-		Quat q = Pop[i].phenotyp.readQuat();
-		Pop[i].phenotyp.writeQuat( normQuat( q ));
+			Pop[i].phenotyp.write(newVal, j);
+		} // next dim
+	// must always normalize Quaternion after modifying its components
+	Quat q = Pop[i].phenotyp.readQuat();
+	Pop[i].phenotyp.writeQuat( normQuat( q ));
 
-		Pop[i].inverse_mapping(); // MP@@ copy phenotype to genotype (may not be necc)
+	Pop[i].inverse_mapping(); // MP@@ copy phenotype to genotype (may not be necc)
 		
-	}	// end current swarm
+	}	// end update position
 	
 	// Update personal best Pi after this swarm search generation.
 	// Find the best in Pop after this swarm search generation.
 	// Note each could be better or worse than former best, stored in Pg
-	// This 'best' value will be used by a subsequent call to LocalSearch,
+	// This 'best' index will be used by a subsequent call to LocalSearch,
 	//   see below. M Pique June 2011
 	best = 0;
-	double X_best_value = 99999999;
+	Pop_best_value = HUGE;
 	for(i = 0; i < pop_size; i++) {		
-		piCurE = Pop[i].value(Normal_Eval);
-		if(piCurE < X_best_value) {
+		double piCurE = Pop[i].value(Normal_Eval);
+		if(piCurE < Pop_best_value) {
 			best = i;
-			X_best_value = piCurE;
+			Pop_best_value = piCurE;
 		}
 		
 		// Update Pi, personal Best in history				
@@ -312,14 +334,10 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 		}										
 	}
 
-	////////////////////////////////////////////////////////
-	// Local Search
-	////////////////////////////////////////////////////////
-
 	generations++;
 	
+#ifdef SWARM_ANALYSIS
 	// comments out the swarm analysis   -Huameng
-	/********************************************************
 	float Pop_avg = 0;
 	float Pi_avg = 0;
 	float v_avg = 0;
@@ -344,7 +362,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 		count++;
 	}
 	dist /= count;
-	****************************************************************/
+#endif /* SWARM_ANALYSIS */
 	
 	// Output PSO statistics
 	if(outputEveryNgens > 0 && 
@@ -353,8 +371,8 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 		//ORIG pr(logFile, "%8d %10ld %10.2f  \n", generations, evaluate.evals(), Pg.value(Normal_Eval));		
 		fflush(logFile);
 	}
-	//pr(logFile, "%8d\t%6d\t%6.3f\t%6.3f\t%6.3f\n", generations, evaluate.evals(), X_best_value, Pg.value(Normal_Eval), dist);	
-	//pr(logFile, "%6d\t%6d\t%6.3f\t%6.3f\n\n", generations, evaluate.evals(), X_best_value, Pg.value(Normal_Eval));		
+	//pr(logFile, "%8d\t%6d\t%6.3f\t%6.3f\t%6.3f\n", generations, evaluate.evals(), Pop_best_value, Pg.value(Normal_Eval), dist);	
+	//pr(logFile, "%6d\t%6d\t%6.3f\t%6.3f\n\n", generations, evaluate.evals(), Pop_best_value, Pg.value(Normal_Eval));		
 	//fflush(logFile);
 	
 	return (0);
