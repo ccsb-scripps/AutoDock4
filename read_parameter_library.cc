@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.21 2010/10/23 00:05:37 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.22 2011/08/17 22:06:24 rhuey Exp $
 
  AutoDock 
 
@@ -72,9 +72,10 @@ void read_parameter_library(
     // remember this filename for report_parameter_library()
     snprintf(parameter_library, sizeof parameter_library, "from file: \"%s\"", FN_parameter_library);
     while (fgets(parameter_library_line, sizeof(parameter_library_line), parameter_library_file) != NULL) {
-        param_keyword = parse_param_line("huhu");
+        param_keyword = parse_param_line(parameter_library_line);
+        //@@what was this->??param_keyword = parse_param_line("huhu");
         if (debug > 0) {
-            pr(logFile, "DEBUG: parameter_library_line = %sDEBUG: param_keyword          = %d\n", parameter_library_line, param_keyword);
+        pr(logFile, "DEBUG: parameter_library_line = %sDEBUG: param_keyword          = %d\n", parameter_library_line, param_keyword);
         }
 
         switch (param_keyword) {
