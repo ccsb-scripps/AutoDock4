@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.h,v 1.11 2010/10/01 22:51:40 mp Exp $
+ $Id: read_parameter_library.h,v 1.12 2011/09/17 00:01:33 mp Exp $
 
  AutoDock 
 
@@ -30,12 +30,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "autocomm.h"
 
 void read_parameter_library(
-        const char *const FN_parameter_library,
-        const int outlev
+	FILE *logFile,
+        const int outlev,
+        const char *const FN_parameter_library
         );
 
 void setup_parameter_library(
-        int outlev,
+	FILE *logFile,
+        const int outlev,
         const char * model_text,
         const Unbound_Model unbound_model
         );
@@ -43,7 +45,8 @@ void setup_parameter_library(
 // The returned string is not supposed to be changed
 const char * report_parameter_library();
 
-void setup_distdepdiel( const int outlev, 
+void setup_distdepdiel( FILE *logFile,
+			const int outlev, 
                         EnergyTables *const ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables
                       );
 

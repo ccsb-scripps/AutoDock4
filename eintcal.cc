@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.23 2010/10/01 22:51:39 mp Exp $
+ $Id: eintcal.cc,v 1.24 2011/09/17 00:01:33 mp Exp $
 
  AutoDock  
 
@@ -147,7 +147,6 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
     register int a1=0, a2=0;
     register int t1=0, t2=0; // Xcode-gmm
     register int nonbond_type=0; // if = 4, it is a 1_4;  otherwise it is another kind of nonbond
-    register int index_lt_NEINT=0;
     register int index_lt_NDIEL=0;
     register int nb_group=0;
     int inb_from=0;
@@ -233,8 +232,9 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 
 #endif  // NOSQRT ]
 
-            index_lt_NEINT = BoundedNeint(index);  // guarantees that index_lt_NEINT is never greater than (NEINT - 1)
             index_lt_NDIEL = BoundedNdiel(index);  // guarantees that index_lt_NDIEL is never greater than (NDIEL - 1)
+
+	    e_desolv = ptr_ad_energy_tables->sol_fn[index_lt_NDIEL] * nb_desolv;
 
             if (B_calcIntElec) {
                 //  Calculate  Electrostatic  Energy
@@ -242,8 +242,9 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
                 e_elec = q1q2 * r_dielectric;
                 e_internal = e_elec;
             }
+
             if  ( r2 < nbc2 ) {   
-                e_desolv = ptr_ad_energy_tables->sol_fn[index_lt_NEINT] * nb_desolv;
+		 int index_lt_NEINT = BoundedNeint(index);  // guarantees that index_lt_NEINT is never greater than (NEINT - 1) (scaled NBC, non-bond cutoff)
                 if (B_include_1_4_interactions != 0 && nonbond_type == 4) {
                     //| Compute a scaled 1-4 interaction,
                     e_internal += scale_1_4 * (ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv);
@@ -251,6 +252,7 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
                     e_internal += ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1] + e_desolv;
                 }
             }
+
 
 
           total_e_internal += e_internal;
@@ -266,7 +268,7 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
               pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
                     (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
                     (double)e_internal, (double)e_elec, (double)e_vdW_Hb, (double)e_desolv, 
-                    (double)ptr_ad_energy_tables->sol_fn[index_lt_NEINT], (int)nonbond_type, (double)dielectric 
+                    (double)ptr_ad_energy_tables->sol_fn[index_lt_NDIEL], (int)nonbond_type, (double)dielectric 
                  );
           } else {
 
@@ -274,7 +276,7 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
               pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
                     (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
                     (double)e_internal, (double)e_vdW_Hb, (double)e_desolv, 
-                    (double)ptr_ad_energy_tables->sol_fn[index_lt_NEINT], (int)nonbond_type, (double)dielectric 
+                    (double)ptr_ad_energy_tables->sol_fn[index_lt_NDIEL], (int)nonbond_type, (double)dielectric 
                  );
           }
 

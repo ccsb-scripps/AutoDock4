@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.16 2011/05/31 03:36:59 mp Exp $
+ $Id: intnbtable.cc,v 1.17 2011/09/17 00:01:33 mp Exp $
 
  AutoDock 
 
@@ -50,7 +50,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #endif
 
-extern FILE *logFile;
 extern int debug;
 
 void intnbtable( Boole *const P_B_havenbp,
@@ -65,7 +64,9 @@ void intnbtable( Boole *const P_B_havenbp,
                  ConstDouble coeff_desolv,
                  ConstDouble sigma,
                  /* not const */ EnergyTables *const ad_tables,
-                 const Boole B_is_unbound_calculation )
+                 const Boole B_is_unbound_calculation,
+		 FILE *logFile,
+		 const int outlev)
 {
     /* Local variables: */
 
@@ -123,10 +124,6 @@ void intnbtable( Boole *const P_B_havenbp,
         // r is the distance that corresponds to the lookup index
         r = IndexToDistance(i); 
 
-        // Compute the distance-dependent gaussian component of the desolvation energy, sol_fn[i];
-        // Weight this by the coefficient for desolvation, coeff_desolv.
-        ad_tables->sol_fn[i] = coeff_desolv * exp( minus_inv_two_sigma_sqd * sq(r) );
-
         // Compute r^xA and r^xB:
         rA = pow( r, (double)xA );
         rB = pow( r, (double)xB );
@@ -179,6 +176,18 @@ void intnbtable( Boole *const P_B_havenbp,
         }
     } /* endif smoothing */
 
+    // loop up to a maximum distance of  (NDIEL * INV_A_DIV), 
+    //                          usually    16384 * 0.01,       or 163.84 Angstroms
+    for ( i = 0;  i < NDIEL;  i++ ) {
+        // i is the lookup-table index that corresponds to the distance
+
+        // r is the distance that corresponds to the lookup index
+        r = IndexToDistance(i); 
+
+        // Compute the distance-dependent gaussian component of the desolvation energy, sol_fn[i];
+        // Weight this by the coefficient for desolvation, coeff_desolv.
+        ad_tables->sol_fn[i] = coeff_desolv * exp( minus_inv_two_sigma_sqd * sq(r) );
+    } // next i // for ( i = 1;  i < NDIEL;  i++ )
     
     nbeEnd = times( &tms_nbeEnd );
     pr( logFile, "Time taken: ");
@@ -187,7 +196,8 @@ void intnbtable( Boole *const P_B_havenbp,
 /* end of intnbtable */
 
 
-void setup_distdepdiel( const int outlev, 
+void setup_distdepdiel( FILE *logFile,
+			const int outlev, 
                         EnergyTables *const ptr_ad_energy_tables  // Holds vdw+Hb, desolvation & dielectric lookup tables
                       )
 {

@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.152 2011/07/15 03:58:11 mp Exp $
+ $Id: main.cc,v 1.153 2011/09/17 00:01:33 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -113,7 +113,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.152 2011/07/15 03:58:11 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.153 2011/09/17 00:01:33 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -721,7 +721,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.152 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.153 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -751,15 +751,15 @@ pr( logFile, "\nNOTE: \"rus\" stands for:\n\n      r = Real, wall-clock or elaps
 //
 // Read in default parameters
 //
-setup_parameter_library(outlev, "default Unbound_Same_As_Bound", Unbound_Same_As_Bound);
+setup_parameter_library(logFile, outlev, "default Unbound_Same_As_Bound", Unbound_Same_As_Bound);
 
 //
 // Compute the look-up table for the distance-dependent dielectric function
 //
 (void) fprintf(logFile, "\n\nPreparing Energy Tables for Bound Calculation:\n\n");
-setup_distdepdiel(outlev, ad_energy_tables);
+setup_distdepdiel(logFile, outlev, ad_energy_tables);
 (void) fprintf(logFile, "Preparing Energy Tables for Unbound Calculation:\n\n");
-setup_distdepdiel(outlev, unbound_energy_tables);
+setup_distdepdiel(logFile, outlev, unbound_energy_tables);
 
 //______________________________________________________________________________
 
@@ -910,7 +910,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
 
         parameter_library_found = 1==sscanf( line, "%*s %s", FN_parameter_library );
-        read_parameter_library(FN_parameter_library, outlev);
+        read_parameter_library(logFile, outlev, FN_parameter_library);
 
         break;
 
@@ -1200,9 +1200,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;");
                     pr(logFile, "\n smoothing range is %.4f\n", r_smooth);
-                    intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
+                    ///@@intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
+                    intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-                    intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, r_smooth, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
+                    intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, r_smooth, AD4.coeff_desolv,  sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev);
                     // Increment the atom type numbers, a1 and a2, for the internal non-bond table
                     a2++;
                     if (a2 >= info->num_atom_types) {
@@ -2209,9 +2210,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 else a[i] = foundParameter->map_index;
             }
             pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
-           // pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-            //intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, r_smooth, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION );
+            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
+           pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
+           intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, r_smooth, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev );
         } else {
             pr(logFile,"WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
             exit(-1);
@@ -4072,7 +4073,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         || streq( unbound_model_type, "same_as_bound")
         || streq( unbound_model_type, "unbound_same_as_bound")) {
             if (ad4_unbound_model != Unbound_Same_As_Bound)  // default for Autodock 4.1
-                setup_parameter_library(outlev, "Unbound_Same_As_Bound", Unbound_Same_As_Bound);
+                setup_parameter_library(logFile, outlev, "Unbound_Same_As_Bound", Unbound_Same_As_Bound);
             ad4_unbound_model = Unbound_Same_As_Bound;
         } else if (streq( unbound_model_type, "extended")) {
             if (ad4_unbound_model != Unbound_Default) { //illegal to set extended after other
@@ -4082,7 +4083,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
             if ( (1== sscanf( line, "%*s extended energy " FDFMT, &unbound_internal_FE ))){
                 ad4_unbound_model = Extended;
-                setup_parameter_library(outlev, "unbound_extended", ad4_unbound_model);
+                setup_parameter_library(logFile, outlev, "unbound_extended", ad4_unbound_model);
             }
             else goto process_DPF_COMPUTE_UNBOUND_EXTENDED; // case DPF_COMPUTE_UNBOUND_EXTENDED below
         } else if (streq( unbound_model_type, "compact")) {
@@ -4133,7 +4134,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 stop("");
             }
             ad4_unbound_model = Extended;
-            setup_parameter_library(outlev, "unbound_extended", ad4_unbound_model);
+            setup_parameter_library(logFile, outlev, "unbound_extended", ad4_unbound_model);
 
             pr(logFile, "Computing the energy of the unbound state of the ligand,\ngiven the torsion tree defined in the ligand file.\n\n");
             (void) fflush( logFile );

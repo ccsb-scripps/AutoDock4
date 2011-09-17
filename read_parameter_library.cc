@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.22 2011/08/17 22:06:24 rhuey Exp $
+ $Id: read_parameter_library.cc,v 1.23 2011/09/17 00:01:33 mp Exp $
 
  AutoDock 
 
@@ -36,7 +36,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "default_parameters.h"
 
 
-extern FILE *logFile;
 extern char *programname;
 extern int debug;
 extern Linear_FE_Model AD4;
@@ -48,8 +47,9 @@ static Boole string_ends_with(const char *const a, const char *const b);
 static char parameter_library[MAX_CHARS];
 
 void read_parameter_library(
-        const char *const FN_parameter_library,
-        const int outlev
+	FILE *logFile,
+	const int outlev,
+        const char *const FN_parameter_library
         )
 {
     static ParameterEntry thisParameter;
@@ -192,7 +192,7 @@ void read_parameter_library(
     } // while there is another line of parameters to read in
 }
 
-void setup_parameter_library( const int outlev, const char *const model_text, const Unbound_Model unbound_model )
+void setup_parameter_library( FILE *logFile, const int outlev, const char *const model_text, const Unbound_Model unbound_model )
 {
     static ParameterEntry thisParameter;
     char parameter_library_line[LINE_LEN];
