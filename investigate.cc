@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.25 2011/03/09 01:35:05 mp Exp $
+ $Id: investigate.cc,v 1.26 2011/09/21 20:12:43 rhuey Exp $
 
  AutoDock  
 
@@ -91,7 +91,8 @@ void investigate( const int   Nnb,
                     ConstReal unbound_internal_FE,
                     /* not const */ GridMapSetInfo *const info, // modified in mkRandomState
                     const Boole B_use_non_bond_cutoff,
-                    const Boole B_have_flexible_residues)
+                    const Boole B_have_flexible_residues, 
+                    const int h_index)
 
 {
     Boole B_outside = FALSE;

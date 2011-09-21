@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.153 2011/09/17 00:01:33 mp Exp $
+ $Id: main.cc,v 1.154 2011/09/21 20:12:43 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -113,7 +113,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.153 2011/09/17 00:01:33 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.154 2011/09/21 20:12:43 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -372,6 +372,7 @@ int a2=0;
 int atomC1;
 int atomC2;
 int dpf_keyword = -1;
+int h_index = -1; //index of hydrogen type if any 
 int n_heavy_atoms_in_ligand = 0;
 int ncycles = -1;
 int iCon=0;
@@ -721,7 +722,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.153 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.154 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1067,8 +1068,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         for (i=0; i<num_atom_types; i++) {
             strcpy(info->atom_type_name[i], ligand_atom_type_ptrs[i]);
+            if (!strncmp(&info->atom_type_name[i][0], "H", 1)) h_index = i;
 #ifdef DEBUG
             (void) fprintf(logFile, "%d %s ->%s\n",i, ligand_atom_type_ptrs[i], info->atom_type_name[i]);
+            (void) fprintf(logFile, "h_index =%d\n",h_index);
 #endif
         }
 
@@ -3992,7 +3995,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                       ignore_inter, B_include_1_4_interactions, scale_1_4,
                       unbound_internal_FE,
                       info, B_use_non_bond_cutoff, B_have_flexible_residues,
-                      B_rms_atoms_ligand_only, ad4_unbound_model);
+                      B_rms_atoms_ligand_only, ad4_unbound_model, h_index);
 
         break;
 
@@ -4045,7 +4048,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE,
-                            info, B_use_non_bond_cutoff, B_have_flexible_residues );
+                            info, B_use_non_bond_cutoff, B_have_flexible_residues, h_index );
 
         break;
 
