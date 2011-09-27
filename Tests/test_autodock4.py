@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.35 2011/06/02 23:39:58 rhuey Exp $
+# $Id: test_autodock4.py,v 1.36 2011/09/27 22:45:45 rhuey Exp $
 #
 
 """
@@ -318,6 +318,18 @@ class AutoDock4_1pgp_ligrand_ga_only_test( AutoDock_simple_test ):
 class AutoDock4_1pgp_ga_only_test( AutoDock_simple_test ):
     """Test that autodock 4.2 works when ga_only is set in the DPF."""
     dpf_stem = "1pgp_ga_only"
+    #print "in new ga_only test"
+        #expected_binding_energy = +843.59     -5.89
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -3.25
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_about_only_test( AutoDock_simple_test ):
+    """Test that autodock 4.2 works when about is set in the DPF but tran0,
+    dihe0 and quat0 are missing."""
+    dpf_stem = "1pgp_about_only"
     #print "in new ga_only test"
         #expected_binding_energy = +843.59     -5.89
         #expected_intermol_energy = +21.00  -6.17
