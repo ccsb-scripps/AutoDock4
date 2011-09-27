@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.154 2011/09/21 20:12:43 rhuey Exp $
+ $Id: main.cc,v 1.155 2011/09/27 23:36:18 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -113,11 +113,12 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.154 2011/09/21 20:12:43 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.155 2011/09/27 23:36:18 mp Exp $"};
 
 
 int sel_prop_count = 0;
 static Boole B_found_about_keyword = FALSE; //set false by 'move' true by 'about'
+static Boole B_found_tran0_keyword = FALSE; //set false by 'move' true by 'tran0'
 static Boole B_found_elecmap = FALSE;
 static Boole B_found_desolvmap = FALSE;
 static void exit_if_missing_elecmap_desolvmap_about(string  keyword); // see bottom of main.cc
@@ -722,7 +723,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.154 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.155 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -1407,6 +1408,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         // this is the DPF_MOVE section...
         B_found_move_keyword = TRUE;
         B_found_about_keyword = FALSE; //set false by 'move', set true by 'about'
+        B_found_tran0_keyword = FALSE;
+
 
         print_1_4_message(logFile, B_include_1_4_interactions, scale_1_4);
 
@@ -1691,6 +1694,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr( logFile, "Small molecule center of rotation =\t" );
         pr( logFile, "(%+.3f, %+.3f, %+.3f)\n\n", lig_center[X], lig_center[Y], lig_center[Z]);
         B_found_about_keyword = TRUE; //set false by 'move' true by 'about'
+        B_found_tran0_keyword = FALSE;
 	/* record center used as part of overall State */
 	sInit.Center.x=lig_center[X];
 	sInit.Center.y=lig_center[Y];
@@ -1886,6 +1890,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             ligand.S.T.y = sInit.T.y;
             ligand.S.T.z = sInit.T.z;
         }
+        B_found_tran0_keyword = TRUE;
         if (outlev >= 0) {
             pr( logFile, "Initial translation =\t\t\t(%.3f, %.3f, %.3f) Angstroms\n", sInit.T.x, sInit.T.y, sInit.T.z );
         }
@@ -3034,6 +3039,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                //  stop(error_message);
              //}
             exit_if_missing_elecmap_desolvmap_about("gals");
+	    // set 'tran0' vector to same as 'about' if not specified (2011-09)
+	    if ( ! B_found_tran0_keyword ) {
+		    pr( logFile, "Setting 'tran0' value to same as 'about' value\n");
+		    ligand.S.T = sInit.T = sInit.Center;
+		    B_found_tran0_keyword = TRUE;
+	    }
             pr( logFile, "Number of requested %s dockings = %d run%c\n", GlobalSearchMethod->shortname(), nruns, (nruns > 1)?'s':' ');
             if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
             pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
@@ -3159,6 +3170,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                stop(error_message);
             }
            exit_if_missing_elecmap_desolvmap_about("ls");
+	    // set 'tran0' vector to same as 'about' if not specified (2011-09)
+	    if ( ! B_found_tran0_keyword ) {
+		    pr( logFile, "Setting 'tran0' value to same as 'about' value\n");
+		    ligand.S.T = sInit.T = sInit.Center;
+		    B_found_tran0_keyword = TRUE;
+	    }
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
            if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
            pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
