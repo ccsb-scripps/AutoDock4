@@ -1,0 +1,36 @@
+autodock_parameter_version 4.1       # used by autodock to validate parameter set
+outlev 0
+parameter_file AD4.1_bound.dat       # New parameter library
+#include_1_4_interactions 1.0        # test
+intelec                              # calculate internal electrostatic energy
+
+seed 28641 1106107140                # seeds for random generator
+
+ligand_types C HD OA P               # ligand atom type names
+fld 1pgp_rec.maps.fld                # grid_data_file
+map 1pgp_rec.C.map                   # atom-specific affinity map
+map 1pgp_rec.HD.map                  # atom-specific affinity map
+map 1pgp_rec.OA.map                  # atom-specific affinity map
+map 1pgp_rec.P.map                   # atom-specific affinity map
+elecmap 1pgp_rec.e.map               # electrostatics map
+desolvmap 1pgp_rec.d.map             # desolvation map
+
+move 1pgp_lig.pdbqt                  # small molecule
+about 22.894 28.598 40.259           # small molecule center
+torsdof 6
+
+rmstol 2.0                           # cluster_tolerance/A
+
+extnrg 1000.0                        # external grid energy
+
+e0max 0.0 10000                      # max initial ernergy; max number of retries
+e0max 0.0 10000                      # max initial energy; max number of retries
+sw_max_its 1000                      # iterations of Solis & Wets local search
+sw_max_succ 4                        # consecutive successes before changing rho
+sw_max_fail 4                        # consecutive failures before changing rho
+sw_rho 1.0                           # size of local search space to sample
+sw_lb_rho 0.01                       # lower bound on rho
+ls_search_freq 1.0                   # probability of performing local search on individual
+set_psw1                             # set the above Pseudo Solis & Wets parameters
+do_local_only 5                     # do this many LS runs
+analysis           
