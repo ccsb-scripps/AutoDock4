@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.36 2011/09/27 22:45:45 rhuey Exp $
+# $Id: test_autodock4.py,v 1.37 2011/09/28 17:04:55 rhuey Exp $
 #
 
 """
@@ -597,6 +597,8 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_ga_smooth0_energy_test',
         # tests for energy with flexible residues 
         'AutoDock4_1pgp_flexres_energy_test',
+        # tests for setting tran0 from about
+        'AutoDock4_1pgp_about_only_test', 
     ]
     unittest.main( argv=( [__name__ ,] + test_cases ) )
     #  The call "unittest.main()" automatically runs all the TestCase classes in
