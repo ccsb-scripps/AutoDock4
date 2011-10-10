@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.14 2011/06/03 05:31:36 mp Exp $
+ $Id: conformation_sampler.cc,v 1.15 2011/10/10 17:43:03 rhuey Exp $
 
  AutoDock 
 
@@ -40,6 +40,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #define RMSD_SYMMETRY TRUE
 #define RMSD_UNIQUE_PAIR TRUE
+#define RMSD_HEAVY_ATOMS_ONLY FALSE
 #define TRAN_STEP 0.03 // size of translation steps (x,y,z)
 #define ROT_ANG_STEP 0.025 // size of step for rotation angle
 #define TOR_ANG_STEP 0.03 // size of step for torsion angles
@@ -61,6 +62,7 @@ Real *lig_center;
 int natom;
 int *type;
 GridMapSetInfo *info;
+int h_index;
 
 Real crd[MAX_ATOMS][SPACE];
 Real ref_crd[MAX_ATOMS][SPACE];
@@ -199,11 +201,11 @@ Real ConformationSampler::current_rmsd(void) /* not const */ {
 	probe_ind.inverse_mapping();
 	probe_state = probe_ind.state(base_state.ntor);
 	cnv_state_to_coords(probe_state, vt, tlist, probe_state.ntor, crdpdb, crd, natom);
-	return getrms(crd, base_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type);
+	return getrms(crd, base_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type, RMSD_HEAVY_ATOMS_ONLY, h_index);
 }
 
 Real ConformationSampler::reference_rmsd(void) const {
-	return getrms(base_crd, ref_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type);
+	return getrms(base_crd, ref_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type, RMSD_HEAVY_ATOMS_ONLY, h_index);
 }
 
 void ConformationSampler::update_bounds(void) /* not const */ {
