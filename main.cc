@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.155 2011/09/27 23:36:18 mp Exp $
+ $Id: main.cc,v 1.156 2011/10/10 17:42:24 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -113,7 +113,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.155 2011/09/27 23:36:18 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.156 2011/10/10 17:42:24 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -365,6 +365,7 @@ Boole B_found_autodock_parameter_version = FALSE;
 Boole B_use_non_bond_cutoff = TRUE;
 Boole B_have_flexible_residues = FALSE;  // if the receptor has flexible residues, this will be set to TRUE
 Boole B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
+Boole B_rms_heavy_atoms_only = FALSE;  // cluster on the ligand heavy atoms only, exclude hydrogens
 Boole B_reorient_random = FALSE; // if true, create a new random orientation before docking
 int atm1=0;
 int atm2=0;
@@ -723,7 +724,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.155 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.156 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2575,7 +2576,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         clmode( num_atom_types, clus_rms_tol,
                 hostnm, jobStart, tms_jobStart,
                 B_write_all_clusmem, FN_clus, crdpdb, lig_center,
-                B_symmetry_flag, B_unique_pair_flag, FN_rms_ref_crds );
+                B_symmetry_flag, B_unique_pair_flag, FN_rms_ref_crds,
+                B_rms_heavy_atoms_only, h_index);
         break;
 
 //______________________________________________________________________________
@@ -2609,23 +2611,29 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case DPF_RMSMODE:
         /*
-        **  rmsmode atype|unique_pair
+        **  rmsmode atype|unique_pair|heavy_atoms_only
         **  Calculate symmetrical RMS values 
         **  considering each atom to be paired at most one time (unique_pair)
-	**  or used repeatedly (atype) (AD 4.2 default)
+        **  considering only non-hydrogen atoms (heavy_atoms)
+        **  or used repeatedly (atype) (AD 4.2 default)
         */
         char rms_mode[LINE_LEN];
         get1arg( line, "%*s %s", rms_mode , "RMS_MODE");
         if (streq(rms_mode, "unique_pair")||streq(rms_mode, "uniquepair")) {
-		B_unique_pair_flag = TRUE;
-		if (outlev >= 0) {
-		    pr( logFile, "Symmetry in RMS calculations will consider only unique atom pairs.\n\n" );
-		}
-	} else if (streq(rms_mode, "atype")) {
-		B_unique_pair_flag = FALSE;
-		if (outlev >= 0) {
-		    pr( logFile, "Symmetry in RMS calculations will consider all atom pairs.\n\n" );
-		}
+            B_unique_pair_flag = TRUE;
+            if (outlev >= 0) {
+                pr( logFile, "Symmetry in RMS calculations will consider only unique atom pairs.\n\n" );
+            }
+        } else if (streq(rms_mode, "atype")) {
+            B_unique_pair_flag = FALSE;
+            if (outlev >= 0) {
+                pr( logFile, "Symmetry in RMS calculations will consider all atom pairs.\n\n" );
+            }
+        } else if (streq(rms_mode, "heavy_atoms_only")) {
+            B_rms_heavy_atoms_only = TRUE;  // cluster on the ligand heavy atoms only, excluding hydrogens
+            if (outlev >= 0) {
+               pr( logFile, "RMS calculations will consider only heavy atom pairs.\n\n" );
+            }
         } else {
             pr( logFile, "%s:  ERROR:  Unrecognized rms mode type \"%s\" .\n",
                     programname, rms_mode );
@@ -2872,7 +2880,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 clmode( num_atom_types, clus_rms_tol,
                         hostnm, jobStart, tms_jobStart,
                         B_write_all_clusmem, FN_clus, crdpdb, lig_center,
-                        B_symmetry_flag, B_unique_pair_flag, FN_rms_ref_crds );
+                        B_symmetry_flag, B_unique_pair_flag, FN_rms_ref_crds,
+                        B_rms_heavy_atoms_only, h_index);
             }
             for (j = 0; j < MAX_RUNS; j++) {
                 econf[j] = torsFreeEnergy;
@@ -4012,7 +4021,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                       ignore_inter, B_include_1_4_interactions, scale_1_4,
                       unbound_internal_FE,
                       info, B_use_non_bond_cutoff, B_have_flexible_residues,
-                      B_rms_atoms_ligand_only, ad4_unbound_model, h_index);
+                      B_rms_atoms_ligand_only, ad4_unbound_model, 
+                      B_rms_heavy_atoms_only, h_index);
 
         break;
 
@@ -4065,7 +4075,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE,
-                            info, B_use_non_bond_cutoff, B_have_flexible_residues, h_index );
+                            info, B_use_non_bond_cutoff, B_have_flexible_residues, 
+                            B_rms_heavy_atoms_only, h_index );
 
         break;
 

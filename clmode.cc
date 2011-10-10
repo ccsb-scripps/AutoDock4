@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.15 2011/05/19 22:03:12 rhuey Exp $
+ $Id: clmode.cc,v 1.16 2011/10/10 17:42:24 rhuey Exp $
 
  AutoDock 
 
@@ -51,8 +51,10 @@ void  clmode( const int   num_atm_maps,
               const Real crdpdb[MAX_ATOMS][SPACE],
               const Real sml_center[SPACE],
               const Boole B_symmetry_flag,
-	      const Boole B_unique_pair_flag,
-              const char  *const rms_ref_crds )
+              const Boole B_unique_pair_flag,
+              const char  *const rms_ref_crds,
+              const Boole B_rms_heavy_atoms_only,
+              const int h_index )
 
 {
     FILE *clusFile;
@@ -118,7 +120,7 @@ void  clmode( const int   num_atm_maps,
         if (( strindex( line, "USER    Total Interaction Energy of Complex") >= 0 )
          || ( strindex( line, "REMARK  Total Interaction Energy of Complex") >= 0 )
          || ( strindex( line, "USER    Estimated Free Energy of Binding") >= 0 )  // Added for 4.2.x compatibility SF
-				) {
+        ){
             /*
              * Read in the energy of this conformation;
              * This is preferred over "Final Docked Energy" because this is never
@@ -206,17 +208,17 @@ void  clmode( const int   num_atm_maps,
                     atomstuff[atomCounter][30] = '\0';
                     if ( ! haveTypes ) {
                         //sscanf( &line[12], "%s", pdbaname[atomCounter] );
-			if(strlen(line)<77+1) {
-			    // TODO MPique 2010-06 write test for this 77+1
+                        if(strlen(line)<77+1) {
+                            // TODO MPique 2010-06 write test for this 77+1
                             pr( logFile, "\nNOTE: Atom number %d, line too short, cannot determine atom type\n", atomCounter+1);
-			    strcpy(pdbaname[atomCounter], "?");
-			    }
+                            strcpy(pdbaname[atomCounter], "?");
+                        }
 				
                         else sscanf( &line[77], "%s", pdbaname[atomCounter] ); //  Added for 4.2.x compatibility SF
                         /*
                          * Determine this atom's atom type:
                          */
-			type[atomCounter] = get_atom_type(pdbaname[atomCounter]);
+                        type[atomCounter] = get_atom_type(pdbaname[atomCounter]);
 
                         if (type[atomCounter] == -1) {
                             pr( logFile, "\nNOTE: Atom number %d, unknown atom type \n\n", atomCounter+1);
@@ -306,8 +308,9 @@ void  clmode( const int   num_atm_maps,
         ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort, 
                                      nconf, natom, type, crdSave, crdpdb, 
                                      sml_center, clu_rms, 
-				     B_symmetry_flag, B_unique_pair_flag,
-                                     ref_crds, ref_natoms, ref_rms);
+                                     B_symmetry_flag, B_unique_pair_flag,
+                                     ref_crds, ref_natoms, ref_rms,
+                                     B_rms_heavy_atoms_only, h_index);
 
         pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
         flushLog;

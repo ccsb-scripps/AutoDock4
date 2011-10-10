@@ -1,6 +1,6 @@
 /*
 
- $Id: getrms.h,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: getrms.h,v 1.8 2011/10/10 17:42:24 rhuey Exp $
 
  AutoDock 
 
@@ -28,11 +28,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define GETRMS
 
 #include "constants.h"
+#include <stdio.h>
 
 Real  getrms( const Real Crd[MAX_ATOMS][SPACE], 
                const Real CrdRef[MAX_ATOMS][SPACE], 
                const Boole B_symmetry_flag, 
                const Boole B_unique_pair_flag, 
                const int   natom, 
-               const int   type[MAX_ATOMS] );
+               const int   type[MAX_ATOMS],
+               const Boole B_rms_heavy_atoms_only, 
+               const int h_index);
 #endif

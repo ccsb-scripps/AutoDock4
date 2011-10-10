@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.46 2011/09/21 20:12:43 rhuey Exp $
+ $Id: analysis.cc,v 1.47 2011/10/10 17:42:24 rhuey Exp $
 
  AutoDock  
 
@@ -98,6 +98,7 @@ void analysis( const int   Nnb,
                const Boole B_have_flexible_residues,
                const Boole B_rms_atoms_ligand_only,
                const Unbound_Model ad4_unbound_model, 
+               const Boole B_rms_heavy_atoms_only,
                const int h_index
 
               )
@@ -216,7 +217,8 @@ void analysis( const int   Nnb,
         ncluster = cluster_analysis( clus_rms_tol, cluster, num_in_clu, isort, 
                     nconf, n_rms_atoms, type, crdSave, crdpdb, 
                     sml_center, clu_rms, B_symmetry_flag, B_unique_pair_flag,
-                    ref_crds, ref_natoms, ref_rms);
+                    ref_crds, ref_natoms, ref_rms, B_rms_heavy_atoms_only,
+                    h_index);
 
         pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
         flushLog;
@@ -237,7 +239,7 @@ void analysis( const int   Nnb,
         pr( logFile, "\nSorry!  Unable to perform cluster analysis, because not enough conformations were generated.\n\n\n" );
 
         ncluster = 1;
-        ref_rms[0] = getrms( crd, ref_crds, B_symmetry_flag, B_unique_pair_flag, n_rms_atoms, type);
+        ref_rms[0] = getrms( crd, ref_crds, B_symmetry_flag, B_unique_pair_flag, n_rms_atoms, type, B_rms_heavy_atoms_only, h_index);
         clu_rms[0][0] = 0.;
         num_in_clu[0] = 1;
         cluster[0][0] = 0;

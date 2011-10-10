@@ -1,6 +1,6 @@
 /*
 
- $Id: cluster_analysis.cc,v 1.9 2010/10/01 22:51:39 mp Exp $
+ $Id: cluster_analysis.cc,v 1.10 2011/10/10 17:42:24 rhuey Exp $
 
  AutoDock 
 
@@ -47,7 +47,9 @@ int cluster_analysis( ConstReal   clus_rms_tol,
                       const Boole B_unique_pair_flag,
                       /* not const */ Real ref_crds[MAX_ATOMS][SPACE],
                       const int ref_natoms,
-                      /* not const */ Real ref_rms[MAX_RUNS])
+                      /* not const */ Real ref_rms[MAX_RUNS],
+                      const Boole B_rms_heavy_atoms_only,
+                      const int h_index)
 {
 /* __________________________________________________________________________
   | Cluster Analysis                                                         |
@@ -87,13 +89,15 @@ int cluster_analysis( ConstReal   clus_rms_tol,
 
     num_in_clus[0] = nClusters = 1;         
     clu_rms[0][0]  = getrms(crd[thisconf], ref_crds,
-                            B_symmetry_flag, B_unique_pair_flag, natom, type);
+                            B_symmetry_flag, B_unique_pair_flag, natom, type,
+                            B_rms_heavy_atoms_only, h_index);
 
 /* Go through *all* conformations... */
     for ( i=0; i<nconf; i++) {
 
 /* Calculate the RMSD to the reference structure: */
-        ref_rms[i] = getrms(crd[i], ref_crds, B_symmetry_flag, B_unique_pair_flag, natom, type);
+        ref_rms[i] = getrms(crd[i], ref_crds, B_symmetry_flag, B_unique_pair_flag, natom, type, 
+                            B_rms_heavy_atoms_only, h_index);
     }
 
 /* Go through all conformations *except* 0-th... */
@@ -108,7 +112,8 @@ int cluster_analysis( ConstReal   clus_rms_tol,
         for ( compare=0; compare<nClusters; compare++ ) {
 
             rms = getrms(crd[thisconf], crd[cluster[compare][0]],
-                         B_symmetry_flag, B_unique_pair_flag, natom, type);
+                         B_symmetry_flag, B_unique_pair_flag, natom, type,
+                         B_rms_heavy_atoms_only, h_index);
 
 /* Check rms; if greater than tolerance, */
             if ( rms > clus_rms_tol ) {
@@ -131,7 +136,8 @@ int cluster_analysis( ConstReal   clus_rms_tol,
 /* Start a new cluster...  */
             cluster[ nClusters ][0] = thisconf;
             clu_rms[ nClusters ][0] = getrms(crd[thisconf], ref_crds,
-                                             B_symmetry_flag, B_unique_pair_flag, natom, type);
+                                             B_symmetry_flag, B_unique_pair_flag, natom, type,
+                                             B_rms_heavy_atoms_only, h_index);
             num_in_clus[ nClusters ] = 1;
 
 /* Increment the number of clusters... */

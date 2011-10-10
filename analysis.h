@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.h,v 1.24 2011/09/21 20:12:43 rhuey Exp $
+ $Id: analysis.h,v 1.25 2011/10/10 17:42:24 rhuey Exp $
 
  AutoDock  
 
@@ -82,6 +82,7 @@ void  analysis( const int   Nnb,
                 const Boole B_have_flexible_residues,
                 const Boole B_rms_atoms_ligand_only,
                 const Unbound_Model ad4_unbound_model,
+                const Boole B_rms_heavy_atoms_only,
                 const int h_index 
                );
 #endif

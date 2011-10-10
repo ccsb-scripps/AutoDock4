@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.26 2011/09/21 20:12:43 rhuey Exp $
+ $Id: investigate.cc,v 1.27 2011/10/10 17:42:24 rhuey Exp $
 
  AutoDock  
 
@@ -92,6 +92,7 @@ void investigate( const int   Nnb,
                     /* not const */ GridMapSetInfo *const info, // modified in mkRandomState
                     const Boole B_use_non_bond_cutoff,
                     const Boole B_have_flexible_residues, 
+                    const Boole B_rms_heavy_atoms_only, 
                     const int h_index)
 
 {
@@ -208,7 +209,7 @@ void investigate( const int   Nnb,
                 } while (B_outside);
                 /* Now, ligand is inside grid */
                 /* Calculate RMSD from reference structure */
-                rms = getrms( crd, ref_crds, B_symmetry_flag, B_unique_pair_flag, natom, type);
+                rms = getrms( crd, ref_crds, B_symmetry_flag, B_unique_pair_flag, natom, type, B_rms_heavy_atoms_only, h_index);
             } while (rms > MaxRms);
             /* Calculate Energy of System, */
             e = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, info, 

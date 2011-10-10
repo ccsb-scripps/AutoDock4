@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.h,v 1.21 2011/09/21 20:12:43 rhuey Exp $
+ $Id: investigate.h,v 1.22 2011/10/10 17:42:24 rhuey Exp $
 
  AutoDock  
 
@@ -88,6 +88,7 @@ void investigate( const int   Nnb,
                     /* not const */ GridMapSetInfo *const info, // modified in mkRandomState
                     const Boole B_use_non_bond_cutoff,
                     const Boole B_have_flexible_residues,
+                    const Boole B_rms_heavy_atoms_only,
                     const int h_index);
 #endif
 #if MPIQUE
@@ -136,5 +137,7 @@ void investigate(
                 ConstReal unbound_internal_FE,
                 GridMapSetInfo *info,
                 Boole B_use_non_bond_cutoff,
-                Boole B_have_flexible_residues);
+                Boole B_have_flexible_residues,
+                Boole B_rms_heavy_atoms_only,
+                int h_index);
 #endif
