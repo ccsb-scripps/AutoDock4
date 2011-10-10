@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.38 2011/10/03 17:32:38 rhuey Exp $
+# $Id: test_autodock4.py,v 1.39 2011/10/10 17:46:12 rhuey Exp $
 #
 
 """
@@ -391,6 +391,11 @@ class AutoDock4_1pgp_no_parameter_file_test( AutoDock_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_rmsmode_heavy_atoms_only_test( AutoDock_test ):
+    """Test that autodock4 works using new keyword rmsmode heavy_atoms_only."""
+    dpf_stem = "1pgp_rmsmode_heavy_atoms_only"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
 class AutoDock4_energy_test( AutoDock_base_test ):
     """Class for AutoDock testing free energy."""
     expected_binding_energy = None
@@ -571,6 +576,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_unbound_model_illegal_test', #1
         'AutoDock4_1pgp_ga_select_tournament_test',
         'AutoDock4_1pgp_ga_select_linear_ranking_test',
+        'AutoDock4_1pgp_rmsmode_heavy_atoms_only_test',
         #next dpf sets tran0,quaternion0,dihe0 to random
         'AutoDock4_1pgp_ligrand_ga_only_test', 
         'AutoDock4_1pgp_ga_only_test',
