@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.40 2011/10/10 18:06:39 rhuey Exp $
+# $Id: test_autodock4.py,v 1.41 2011/10/10 18:14:13 rhuey Exp $
 #
 
 """
@@ -350,7 +350,12 @@ class AutoDock4_1pgp_flexres_test( AutoDock_simple_test ):
 
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_rmsmode_heavy_atoms_only_noH_test( AutoDock_simple_test ):
+    """Test that autodock4 works if noHs when using new keyword rmsmode heavy_atoms_only."""
+    dpf_stem = "1pgp_rmsmode_heavy_atoms_only_noH"
+    expected_outcome = True # True means Successful Completion!
 
+#______________________________________________________________________________
 class AutoDock_test( AutoDock_base_test ):
     """Class for AutoDock testing."""
 
@@ -394,11 +399,6 @@ class AutoDock4_1pgp_no_parameter_file_test( AutoDock_test ):
 class AutoDock4_1pgp_rmsmode_heavy_atoms_only_test( AutoDock_test ):
     """Test that autodock4 works using new keyword rmsmode heavy_atoms_only."""
     dpf_stem = "1pgp_rmsmode_heavy_atoms_only"
-    expected_outcome = True # True means Successful Completion!
-
-class AutoDock4_1pgp_rmsmode_heavy_atoms_only_noH_test( AutoDock_test ):
-    """Test that autodock4 works if noHs when using new keyword rmsmode heavy_atoms_only."""
-    dpf_stem = "1pgp_rmsmode_heavy_atoms_only_noH"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 class AutoDock4_energy_test( AutoDock_base_test ):
