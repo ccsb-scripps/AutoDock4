@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.42 2011/10/11 17:11:25 rhuey Exp $
+# $Id: test_autodock4.py,v 1.43 2011/10/12 16:30:03 rhuey Exp $
 #
 
 """
@@ -358,11 +358,24 @@ class AutoDock4_1pgp_rmsmode_heavy_atoms_only_noH_test( AutoDock_simple_test ):
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_rmsmode_all_heavy_atom_pairs_only_test( AutoDock_simple_test ):
-    """Test that autodock4 works if noHs+all_pairs when using new keyword rmsmode atype_heavy_atoms_only."""
+    """Test that autodock4 works if rms calc uses all pairs of heavy_atoms.
+       Set by including these TWO rmsmode cmds in dpf:  
+        rmsmode unique_pair       #sets B_unique_pair_flag to TRUE (default is FALSE)
+        rmsmode heavy_atoms_only  #sets B_rms_heavy_atoms_only to TRUE (default is FALSE)
+        """
     dpf_stem = "1pgp_rmsmode_all_heavy_atom_pairs_only"
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
+
+class AutoDock4_1pgp_rmsmode_unique_heavy_atom_pairs_only_test( AutoDock_simple_test ):
+    """Test that autodock4 works if rms calc uses only unique pairs of heavy_atoms specified 
+          with two rmsmode cmds: unique_pair heavy_atoms_only."""
+    dpf_stem = "1pgp_rmsmode_unique_heavy_atom_pairs_only"
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
 class AutoDock_test( AutoDock_base_test ):
     """Class for AutoDock testing."""
 
@@ -591,6 +604,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_rmsmode_heavy_atoms_only_test',
         'AutoDock4_1pgp_rmsmode_heavy_atoms_only_noH_test',
         'AutoDock4_1pgp_rmsmode_all_heavy_atom_pairs_only_test',
+        'AutoDock4_1pgp_rmsmode_unique_heavy_atom_pairs_only_test',
         #next dpf sets tran0,quaternion0,dihe0 to random
         'AutoDock4_1pgp_ligrand_ga_only_test', 
         'AutoDock4_1pgp_ga_only_test',
