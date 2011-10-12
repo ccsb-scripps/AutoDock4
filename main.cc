@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.157 2011/10/11 17:09:03 rhuey Exp $
+ $Id: main.cc,v 1.158 2011/10/12 16:43:29 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -113,7 +113,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.157 2011/10/11 17:09:03 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.158 2011/10/12 16:43:29 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -724,7 +724,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.157 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.158 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -2634,17 +2634,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             if (outlev >= 0) {
                pr( logFile, "RMS calculations will consider only heavy atom pairs.\n\n" );
             }
-        } else if (streq(rms_mode, "atype_heavy_atoms_only")) {
-            B_unique_pair_flag = FALSE;
-            B_rms_heavy_atoms_only = TRUE;  // cluster on the ligand heavy atoms only, excluding hydrogens
-            if (outlev >= 0) {
-               pr( logFile, "RMS calculations will consider all heavy atom pairs .\n\n" );
-            }
         } else {
             pr( logFile, "%s:  ERROR:  Unrecognized rms mode type \"%s\" .\n",
                     programname, rms_mode );
             stop("");
         }
+        if (B_rms_heavy_atoms_only && B_unique_pair_flag)
+            if (outlev >= 0) {
+               pr( logFile, "RMS calculations will consider only unique pairs of heavy atoms.\n\n" );
+            }
         break;
 
 //______________________________________________________________________________
