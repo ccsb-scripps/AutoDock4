@@ -1,5 +1,5 @@
 autodock_parameter_version 4.1       # used by autodock to validate parameter set
-outlev 0
+outlev 1
 parameter_file AD4.1_bound.dat       # New parameter library
 #include_1_4_interactions 1.0        # test
 intelec                              # calculate internal electrostatic energy
@@ -49,7 +49,8 @@ sw_rho 1.0                           # size of local search space to sample
 sw_lb_rho 0.01                       # lower bound on rho
 ls_search_freq 0.06                  # probability of performing local search on individual
 set_psw1                             # set the above pseudo-Solis & Wets parameters
-rmsmode atype_heavy_atoms_only       # all pairs of heavy atoms will be used for rms computation
+rmsmode heavy_atoms_only             # only pairs of heavy atoms will be used for rms computation
+rmsmode atype                        # all pairs will be used for rms computation
 ga_run 3                             # do this many hybrid GA-LS runs
 
 analysis
