@@ -1,4 +1,4 @@
-# $Id: AD4_PARM99.dat,v 1.3 2009/01/19 19:50:56 rhuey Exp $
+# $Id: AD4_PARM99.dat,v 1.4 2012/01/18 17:45:21 rhuey Exp $
 # AutoDock AMBER PARM99 Parameters - Version 1.0
 #
 # Van der Waals Radii and Epsilon Well-Depths are from AMBER PARM99
@@ -14,17 +14,28 @@
 #             extended conformation when unbound.
 # compact -- this assumes the internal energy of the ligand is that of a 
 #            compact conformation when unbound.
-FE_unbound_model unbound_same_as_bound
+#FE_unbound_model unbound_same_as_bound
 
 #
 # AutoDock 4 coefficient with respect to original (AD2) parameters
-#
+# PREVIOUS to 1/2012:
+#FE_coeff_vdW    0.1560
+#FE_coeff_hbond  0.0974
+#FE_coeff_estat  0.1465
+#FE_coeff_desolv 0.1159
+#FE_coeff_tors   0.2744
 
-FE_coeff_vdW    0.1560
-FE_coeff_hbond  0.0974
-FE_coeff_estat  0.1465
-FE_coeff_desolv 0.1159
-FE_coeff_tors   0.2744
+# AutoDock 4 free energy coefficients with respect to original (AD2) energetic parameters
+#  This model assumes that the bound and unbound conformations are the same.
+#  See Table 3 in Huey,Morris,Olson&Goodsell (2007) J Comput Chem 28: 1145-1152.
+#
+#               Free Energy Coefficient
+#               ------
+FE_coeff_vdW    0.1662
+FE_coeff_hbond  0.1209
+FE_coeff_estat  0.1406
+FE_coeff_desolv 0.1322
+FE_coeff_tors   0.2983
 
 # - Unweighted vdW and Unweighted hbond Well Depths
 #
