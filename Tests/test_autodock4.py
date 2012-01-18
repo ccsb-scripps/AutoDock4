@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.44 2012/01/18 22:22:26 rhuey Exp $
+# $Id: test_autodock4.py,v 1.45 2012/01/18 23:51:39 rhuey Exp $
 #
 
 """
@@ -516,11 +516,38 @@ class AutoDock4_1pgp_unbound_set0_test( AutoDock4_unbound_test ):
     expected_unbound_energy = 0.
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
+
 class AutoDock4_1pgp_unbound_set10_test( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound is set to 10 in the DPF."""
     dpf_stem = "1pgp_unbound_set10"
     expected_unbound_energy = 10.
     expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_1_4_50_test( AutoDock4_energy_test ):
+    """Test that autodock 4.2 works include_1_4 set to 50 in the DPF."""
+    dpf_stem = "1pgp_1_4_50"
+    #print "in new ga_only test"
+        #expected_binding_energy = +843.59     -5.87
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -3.23
+    expected_binding_energy = -4.08
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+
+class AutoDock4_1pgp_1_4_100_test( AutoDock4_energy_test ):
+    """Test that autodock 4.2 works include_1_4 set to 100 in the DPF."""
+    dpf_stem = "1pgp_1_4_100"
+    #print "in new ga_only test"
+        #expected_binding_energy = +843.59     -5.87
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -3.23
+    #expected_binding_energy = -4.08
+    expected_binding_energy = -3.49
+    expected_outcome = True # True means Successful Completion!
+
 #______________________________________________________________________________
 
 #print "docked[binding_energy]=", docked['binding_energy']
@@ -562,6 +589,32 @@ class AutoDock4_1pgp_flexres_energy_test( AutoDock4_energy_test ):
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
+
+class AutoDock4_1pgp_flexres_energy_1_4_50_test( AutoDock4_energy_test ):
+    """Test that autodock 4.2 works when flexres is set in the DPF."""
+    dpf_stem = "1pgp_flexres_1_4_50"
+    #print "in new flexres test"
+        #expected_binding_energy =  -4.22
+        #expected_intermol_energy = -5.93
+        #expected_internal_energy = -2.18
+    #expected_binding_energy = -4.72
+    expected_binding_energy = -3.42
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_flexres_energy_1_4_100_test( AutoDock4_energy_test ):
+    """Test that autodock 4.2 works when flexres is set in the DPF."""
+    dpf_stem = "1pgp_flexres_1_4_100"
+    #print "in new flexres test"
+        #expected_binding_energy =  -4.22
+        #expected_intermol_energy = -5.93
+        #expected_internal_energy = -2.18
+    expected_binding_energy = -2.0
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
 
 class AutoDock4_1pgp_ga_smooth0_energy_test( AutoDock4_energy_test ):
     """Test that autodock 4.2 gives expected internal energy when smooth is set to 0 in the DPF."""
@@ -631,6 +684,11 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_ga_smooth0_energy_test',
         # tests for energy with flexible residues 
         'AutoDock4_1pgp_flexres_energy_test',
+        'AutoDock4_1pgp_flexres_energy_1_4_50_test',
+        'AutoDock4_1pgp_flexres_energy_1_4_100_test',
+        # tests for energy with 1_4_interactions
+        'AutoDock4_1pgp_1_4_50_test',
+        'AutoDock4_1pgp_1_4_100_test',
         # tests for setting tran0 from about
         'AutoDock4_1pgp_about_only_test', 
     ]
