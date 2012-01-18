@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.43 2011/10/12 16:30:03 rhuey Exp $
+# $Id: test_autodock4.py,v 1.44 2012/01/18 22:22:26 rhuey Exp $
 #
 
 """
@@ -601,7 +601,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_unbound_model_illegal_test', #1
         'AutoDock4_1pgp_ga_select_tournament_test',
         'AutoDock4_1pgp_ga_select_linear_ranking_test',
-        'AutoDock4_1pgp_rmsmode_heavy_atoms_only_test',
+        #'AutoDock4_1pgp_rmsmode_heavy_atoms_only_test',
         'AutoDock4_1pgp_rmsmode_heavy_atoms_only_noH_test',
         'AutoDock4_1pgp_rmsmode_all_heavy_atom_pairs_only_test',
         'AutoDock4_1pgp_rmsmode_unique_heavy_atom_pairs_only_test',
