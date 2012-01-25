@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.33 2011/07/13 05:08:26 mp Exp $
+ $Id: constants.h,v 1.34 2012/01/25 02:19:31 mp Exp $
 
  AutoDock 
 
@@ -162,10 +162,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define INV_SQA_DIV (1./SQA_DIV) /* 0.03125   INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
 
 
-#define NDIEL 16384           /* Number of dielectric values in lookup table.
+#define NDIEL 16384           /* Number of dielectric and desolvation values in lookup table.
                                  NDIEL is bigger than NEINT because electrostatic interactions are much
                                  longer-range than van der Waals interactions. */
-#define NDIEL_1 (NDIEL - 1)   /* The last valid index in dielectric lookup table, NDIEL minus 1 */
+#define NDIEL_1 (NDIEL - 1)   /* The last valid index in dielectric and desolv lookup tables, NDIEL minus 1 */
 
 /*
  * Alternate Scheme:-              (Uses less memory; for smaller ligands, < 8.0 Ang.)
