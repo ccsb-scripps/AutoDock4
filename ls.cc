@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.21 2011/07/15 03:58:11 mp Exp $
+ $Id: ls.cc,v 1.22 2012/01/25 00:10:29 mp Exp $
 
  AutoDock 
 
@@ -27,6 +27,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+//#define DEBUG0  // mild
 //#define DEBUG
 //#define DEBUG2
 /********************************************************************
@@ -103,7 +104,7 @@ Boole Solis_Wets::SW(/* not const */ Phenotype &vector)
    }
 
    for (i=0; i < max_its; i++) {
-#ifdef DEBUG
+#ifdef TRACELS
 //convenience function for debugging
 #define traceState(msg,vector) printDState(logFile,msg,vector,i,prevxyz,startxyz,prevQuat,startQuat,num_successes,num_failures,temp_rho,bias,deviates)
 void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, const int i, const Real prevxyz[3],
@@ -133,7 +134,7 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
       traceState("initial", vector);
    } 
    
-#endif /* DEBUG */
+#endif /* TRACELS */
 #ifdef DEBUG
 #ifdef INTERNAL
    Real dt; // translation step scalar
@@ -145,7 +146,7 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
    ct=0;
    for ( int d=0;d<3;d++) ct += (startxyz[d] - xyz[d])*(startxyz[d]- xyz[d]);
    ct = sqrt(ct);
-   (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+8.4f p=%4.2f b=(%5.2f %5.2f %5.2f) dev=(%5.2f %5.2f %5.2f)", 
+   (void)fprintf(logFile, "\nLS::    %3d #S=%3d #F=%3d %+8.4f p=%4.2f b=(%5.2f %5.2f %5.2f) dev=(%5.2f %5.2f %5.2f)", 
                                   i, num_successes, num_failures, vector.evaluate(Normal_Eval), temp_rho, bias[0], bias[1], bias[2], 
                                   deviates[0], deviates[1], deviates[2]);
    (void)fprintf(logFile, " xyz=(");
@@ -187,9 +188,9 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
          num_failures = 0;
          vector = newPh;
          modified = TRUE;
-#ifdef DEBUG
+#ifdef TRACELS
          traceState("accept+", newPh);
-#endif /* DEBUG */
+#endif /* TRACELS */
 
          for (j=0; j < size; j++) {
             // bias[j] = 0.20*bias[j] + 0.40*deviates[j];  // original & questionable
@@ -203,9 +204,9 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
             num_failures = 0;
             vector = newPh;
             modified = TRUE;
-#ifdef DEBUG
+#ifdef TRACELS
             traceState("accept-", newPh);
-#endif /* DEBUG */
+#endif /* TRACELS */
             for (j=0; j < size; j++) {
                // bias[j] -= 0.40*deviates[j]; // incorrect
                bias[j] = 0.60*bias[j] - 0.40*deviates[j]; // correct if deviates is not changed
@@ -214,9 +215,9 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
             num_failures++;
             num_successes = 0;
             // vector is unchanged  // x
-#ifdef DEBUG
+#ifdef TRACELS
             traceState("reject ", newPh);
-#endif /* DEBUG */
+#endif /* TRACELS */
             for (j=0; j < size; j++) {
                bias[j] *= 0.50;
             }
@@ -266,13 +267,13 @@ Boole Pseudo_Solis_Wets::SW(/* not const */ Phenotype &vector)
    }
 
    for (i=0; i < max_its; i++) {
-#ifdef DEBUG
+#ifdef DEBUG0
    Real xyz[3];
    for ( int d=0;d<3;d++) xyz[d] = vector.gread(d).real;
-   (void)fprintf(logFile, "\nLS::    %3d #S=%d #F=%d %+6.2f p0=%f b0=%f xyz=(%.2f %.2f %.2f)", 
+   (void)fprintf(logFile, "LS:: %3d #S=%3d #F=%3d %+8.4f p0=%.4f b0=%+7.4f xyz=(%.6f %.4f %.4f)\n", 
                                   i, num_successes, num_failures, vector.evaluate(Normal_Eval), temp_rho[0], bias[0],
                                   xyz[0],xyz[1],xyz[2]);
-#endif /* DEBUG */
+#endif /* DEBUG0 */
       // Generate deviates
       for (j=0; j < size; j++) {
          deviates[j] = gen_deviates(temp_rho[j]);

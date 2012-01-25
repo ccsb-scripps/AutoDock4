@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.62 2011/07/13 05:08:26 mp Exp $ 
+ $Id: call_glss.cc,v 1.63 2012/01/25 00:10:29 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -415,10 +415,10 @@ State call_glss(/* not const */ Global_Search *global_method,
 	Clock genEnd;
 	Clock genStart = times( &tms_genStart );
 
-        if (outlev > 1) { (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", generation); }
+        if (outlev > 2) { (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", generation); }
 
       if(generation>0) {
-        if (outlev > 1) { (void)fprintf( logFile, "Performing Global Search.\n"); }
+        if (outlev > 2) { (void)fprintf( logFile, "Performing Global Search.\n"); }
         global_method->search(thisPop, outlev, logFile);
 
         if (outlev > 2) {
@@ -431,7 +431,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 
         // call the global method's local search method if any
 	if(local_method != NULL) {
-	   if (outlev > 1) { (void)fprintf( logFile, "Performing Local Search.\n"); }
+	   if (outlev > 2) { (void)fprintf( logFile, "Performing Local Search.\n"); }
 	   if (outlev > 3) for (i=0; i<pop_size; i++) {
                 (void)fprintf( logFile, "LS: %d",generation); 
                 (void)fprintf( logFile, " %d",i+1); 

@@ -1,6 +1,6 @@
 /*
 
- $Id: call_ls.cc,v 1.9 2010/10/01 22:51:39 mp Exp $
+ $Id: call_ls.cc,v 1.10 2012/01/25 00:10:29 mp Exp $
 
  AutoDock 
 
@@ -113,13 +113,32 @@ State call_ls(Local_Search *const local_method, const State& now, const unsigned
       thisPop[i] = cnv_state_to_ind(now); 
       thisPop[i].mol = mol;
    }
+#ifdef DEBUG0
+// MP Sept 2011
+extern FILE *logFile;
+double e_start;
+#endif
 
-   for(i=0; i<pop_size; i++)
-   {
+for(i=0; i<pop_size; i++)
+{
+#ifdef DEBUG0
+// MP Sept 2011
+if(i==0)fprintf(logFile, "LS:: ->call_ls(thisPop[%3d]) %10.6f\n", i,
+e_start=thisPop[i].value(Normal_Eval));
+#endif
       local_method->search( thisPop[i] );
+#ifdef DEBUG0
+fprintf(logFile, "LS:: <-call_ls(thisPop[%3d]) %10.6f\n", i,
+thisPop[i].value(Normal_Eval));
+#endif
    }
 
    if (pop_size > 1)
 	 	thisPop.msort(1);
+#ifdef DEBUG0
+double e_final = thisPop[0].value(Normal_Eval);
+fprintf(logFile, "LS:: orig %10.6f best %10.6f (improvement %10.6f) \n", 
+ e_start, e_final, e_start-e_final);
+#endif
    return(thisPop[0].state(now.ntor));
 }
