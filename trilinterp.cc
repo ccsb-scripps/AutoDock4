@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.18 2011/03/09 01:35:05 mp Exp $
+ $Id: trilinterp.cc,v 1.19 2012/01/25 00:13:28 mp Exp $
 
  AutoDock  
 
@@ -193,6 +193,14 @@ Real trilinterp(
 	 }
 #endif /* not MAPSUBSCRIPT */
 #endif /* not MINPOINT */
+
+//#define PRINTATOMCOMPONENTS
+ /* Hack to print each atom's terms to stdout M Pique  2011-12 */
+#ifdef PRINTATOMCOMPONENTS
+  fprintf(stdout, "atom ligand %3d e= %8.5f m= %8.5f d= %8.5f xyz( %8.4f %8.4f %8.4f ) \n",
+      i+1, e, m, d, x, y, z);
+#endif
+ 
 
         elec_total += e * charge[i];
         emap_total += m + d * abs_charge[i]; 
