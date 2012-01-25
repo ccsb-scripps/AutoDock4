@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.17 2011/09/17 00:01:33 mp Exp $
+ $Id: intnbtable.cc,v 1.18 2012/01/25 00:20:55 mp Exp $
 
  AutoDock 
 
@@ -118,6 +118,23 @@ void intnbtable( Boole *const P_B_havenbp,
     // loop up to a maximum distance of  (NEINT * INV_A_DIV), 
     //                          usually    2048 * 0.01,       or 20.48 Angstroms
 
+//#define SHOWDISTANCES
+ // MPique 2011 produce table of distances and values for judging cutoffs
+#ifdef SHOWDISTANCES
+    fprintf(logFile, "DISTANCES SQA_DIV= %.5f\n", SQA_DIV);
+    fprintf(logFile, "DISTANCES INV_SQA_DIV= %.5f\n", INV_SQA_DIV);
+    fprintf(logFile, "DISTANCES %s %.2f %.2f %.2f %.2f  ... %.2f %.2f %.2f [%d]\n",
+       "NEINT",
+       IndexToDistance(0),
+       IndexToDistance(1),
+       IndexToDistance(2),
+       IndexToDistance(3),
+       IndexToDistance(NEINT-3),
+       IndexToDistance(NEINT-2),
+       IndexToDistance(NEINT-1),
+       NEINT);
+#endif
+
     for ( i = 1;  i < NEINT;  i++ ) {
         // i is the lookup-table index that corresponds to the distance
 
@@ -178,6 +195,19 @@ void intnbtable( Boole *const P_B_havenbp,
 
     // loop up to a maximum distance of  (NDIEL * INV_A_DIV), 
     //                          usually    16384 * 0.01,       or 163.84 Angstroms
+#ifdef SHOWDISTANCES
+ // MPique fall 2011
+    fprintf(logFile, "DISTANCES %s %.2f %.2f %.2f %.2f  ... %.2f %.2f %.2f [%d]\n",
+       "NDIEL",
+       IndexToDistance(0),
+       IndexToDistance(1),
+       IndexToDistance(2),
+       IndexToDistance(3),
+       IndexToDistance(NDIEL-3),
+       IndexToDistance(NDIEL-2),
+       IndexToDistance(NDIEL-1),
+       NDIEL);
+#endif
     for ( i = 0;  i < NDIEL;  i++ ) {
         // i is the lookup-table index that corresponds to the distance
 
