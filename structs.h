@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.28 2011/09/17 00:01:33 mp Exp $
+ $Id: structs.h,v 1.29 2012/01/25 02:20:28 mp Exp $
 
  AutoDock  
 
@@ -281,11 +281,11 @@ typedef struct nonbond_param
 {
     int a1;           // ATM1
     int a2;           // ATM2
-    int t1;           // TYPE1
-    int t2;           // TYPE2
     int nonbond_type; // NBTYPE
     double desolv;
     double q1q2;      // product of atom partial charges
+    int t1;           // TYPE1
+    int t2;           // TYPE2
 
     nonbond_param() : a1(0), a2(0) {}
 } NonbondParam;
