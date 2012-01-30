@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.158 2011/10/12 16:43:29 rhuey Exp $
+ $Id: main.cc,v 1.159 2012/01/30 23:41:16 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -103,7 +103,6 @@ using std::string;
 //#include "call_cpso.h"
 #include "dimLibrary.h"
 #include "pso.h"
-#include "call_gs.h"
 
 extern int debug;
 extern int keepresnum;
@@ -113,7 +112,7 @@ extern Linear_FE_Model AD4;
 extern Real nb_group_energy[3]; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 extern int Nnb_array[3];  ///< number of nonbonds in the ligand, intermolecular and receptor groups
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.158 2011/10/12 16:43:29 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.159 2012/01/30 23:41:16 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -724,7 +723,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.158 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.159 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -3270,114 +3269,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 //______________________________________________________________________________
 
-    // this code no longer live - 2011-06 RH/MP  to be removed soon
-    case DPF_NULL:
-    //case DPF_GS:
-      get1arg(line, "%*s %d", &nruns, "GA_ONLY_RUN or DO_GLOBAL_ONLY");
-
-          if (nruns>MAX_RUNS) {
-
-              prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
-              stop(error_message);
-
-          } else if (GlobalSearchMethod==NULL) {
-              prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate a Global Optimization object.\n", programname);
-              stop(error_message);
-           }
-
-          exit_if_missing_elecmap_desolvmap_about("gs");
-
-          pr(logFile, "Number of Genetic Algorithm (GA) only dockings = %d run%c\n", nruns, (nruns>1)?'s':' ');
-          if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
-          pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
-
-
-          evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
-                          info, map, elec, emap,
-                          nonbondlist,
-                          ad_energy_tables,
-                          Nnb, B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
-                          B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
-                          ignore_inter,
-                          B_include_1_4_interactions, scale_1_4, scale_eintermol,
-                          unbound_internal_FE, B_use_non_bond_cutoff, B_have_flexible_residues);
-                          //parameterArray, unbound_internal_FE, B_use_non_bond_cutoff, B_have_flexible_residues);
-
-            evaluate.compute_intermol_energy(TRUE);
-
-          if(write_stateFile){
-            fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
-            fprintf(stateFile,"\t<runs>\n");
-          }
-          for (j=0; j<nruns; j++) {
-
-              fprintf( logFile, "\n\n\tBEGINNING GENETIC ALGORITHM DOCKING\n");
-              pr(logFile, "\nDoing Genetic Algorithm run:  %d/%d.\n", j+1, nruns);
-              (void) fflush( logFile );
-
-              pr(logFile, "Date:\t");
-              printdate( logFile, 2 );
-              (void) fflush( logFile );
-
-              gaStart = times(&tms_gaStart);
-
-              sHist[nconf] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size,
-                                      &ligand, output_pop_stats, info, end_of_branch, outlev, logFile);
-
-              pr(logFile, "\nFinal docked state:\n");
-              sHist[nconf].Center.x = lig_center[X];
-              sHist[nconf].Center.y = lig_center[Y];
-              sHist[nconf].Center.z = lig_center[Z];
-              printState(logFile, sHist[nconf], 2);
-
-              gaEnd = times(&tms_gaEnd);
-              pr(logFile, "Time taken for this Genetic Algorithm (GA) run:\n");
-              timesyshms(gaEnd-gaStart, &tms_gaStart, &tms_gaEnd);
-              pr(logFile, "\n");
-              (void) fflush(logFile);
-
-              pr(logFile, "Total number of Energy Evaluations: %lu\n", evaluate.evals() );
-              pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
-
-
-              pr( logFile, "\n\n\tFINAL GENETIC ALGORITHM DOCKED STATE\n" );
-              pr( logFile,     "\t____________________________________\n\n\n" );
-
-              writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
-                          sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                          crd, emap, elec,
-                          charge, abs_charge, qsp_abs_charge,
-                          ligand_is_inhibitor,
-                          torsFreeEnergy,
-                          vt, tlist, crdpdb, nonbondlist,
-                          ad_energy_tables,
-                          type, Nnb, B_calcIntElec,
-                          map,
-                          outlev,
-                          ignore_inter,
-                          B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
-                          info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues, ad4_unbound_model);
-
-              // See also "calculateEnergies.cc", switch(ad4_unbound_model)
-              if (ad4_unbound_model == Unbound_Same_As_Bound) {
-                  // Update the unbound internal energy, setting it to the current internal energy
-                  unbound_internal_FE = eintra;
-              }
-              econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
-
-              ++nconf;
-
-              pr( logFile, UnderLine );
-
-          } // Next run
-          if(write_stateFile){
-            fprintf(stateFile,"\t</runs>\n");
-            (void) fflush(stateFile);
-          }
-      break;
-
-//______________________________________________________________________________
-
     case GA_pop_size:
        get1arg(line, "%*s %u", &pop_size, "GA_POP_SIZE");
        pr(logFile, "A population of %u individuals will be used\n", pop_size);
@@ -3795,9 +3686,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	 						lb_rho);	
 	 						
 #endif
-            //sHist[j] = call_cpso(GlobalSearchMethod, sInit, j, S, D, xmin, xmax, eval_max, pso_K, c1, c2, outlev);
-            //sHist[j] = call_gs( GlobalSearchMethod, sInit, num_evals, pop_size,
-            //                          &ligand, output_pop_stats, info, end_of_branch);
                 sHist[j] = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                           sInit,
                                           num_evals, pop_size,
