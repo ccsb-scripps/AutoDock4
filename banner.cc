@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.21 2010/08/27 00:05:07 mp Exp $
+ $Id: banner.cc,v 1.22 2012/01/31 18:38:08 rhuey Exp $
 
  AutoDock 
 
@@ -77,6 +77,8 @@ void banner( const char *const version_num )
     (void) fprintf(logFile, "                 |           Max Chang, TSRI            |\n");
     (void) fprintf(logFile, "                 |        Alexander Gillet, TSRI        |\n");
     (void) fprintf(logFile, "                 |         Stefano Forli, TSRI          |\n");
+    (void) fprintf(logFile, "                 |         Chenglong Li, OSU            |\n");
+    (void) fprintf(logFile, "                 |         Huameng Li, OSU              |\n");
     (void) fprintf(logFile, "                 |        Richard K. Belew, UCSD        |\n");
     (void) fprintf(logFile, "                 |       David S. Goodsell, TSRI        |\n");
     (void) fprintf(logFile, "                 |        Arthur J. Olson, TSRI         |\n");
