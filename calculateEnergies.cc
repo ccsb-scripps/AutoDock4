@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.17 2011/03/09 01:35:05 mp Exp $
+ $Id: calculateEnergies.cc,v 1.18 2012/02/01 23:52:30 rhuey Exp $
 
  AutoDock  
 
@@ -249,7 +249,7 @@ void update_binding_energy_breakdown( /* not const */ EnergyBreakdown *const eb,
         case Unbound_Same_As_Bound:
         default:
             // Update the unbound internal energy, setting it to the current internal energy
-            eb->e_unbound_internal_FE = eb->e_intra_lig;  // current internal energy of the ligand unbound state
+            eb->e_unbound_internal_FE = eb->e_intra;  // current internal energy of the ligand + flexres unbound state (2)+(3)+(5)
             eb->deltaG = eb->e_inter +  eb->e_torsFreeEnergy;
             break;
         case User:
