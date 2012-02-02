@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.29 2012/01/25 02:20:28 mp Exp $
+ $Id: structs.h,v 1.30 2012/02/02 23:28:31 rhuey Exp $
 
  AutoDock  
 
@@ -334,23 +334,6 @@ typedef struct energy_breakdown
     Real deltaG;                    // estimated change in free energy upon binding
 
 } EnergyBreakdown;
-
-/*______________________________________________________________________________
-**PSO Work Structures */
-
-typedef struct velocity {
-	int size;
-	double v[PSO_D_MAX];
-} Velocity;
-
-/*______________________________________________________________________________*/
-
-typedef struct position {
-        int size;
-        double x[PSO_D_MAX];
-        double f;		// fitness value of particle
-        double prev_x[PSO_D_MAX];		// previous pos of particle
-} Position;
 
 #endif
 /* EOF */

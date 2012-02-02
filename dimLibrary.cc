@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include <stdio.h>
+#include "pso.h"
 #include "dimLibrary.h"
 #include "constants.h"
 #include "ranlib.h"

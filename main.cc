@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.160 2012/02/02 02:16:47 mp Exp $
+ $Id: main.cc,v 1.161 2012/02/02 23:28:30 rhuey Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -101,8 +101,8 @@ using std::string;
 #include "alea.h"
 // PSO
 //#include "call_cpso.h"
-#include "dimLibrary.h"
 #include "pso.h"
+#include "dimLibrary.h"
 
 extern int debug;
 extern int keepresnum;
@@ -110,7 +110,7 @@ extern Real idct;
 extern Eval evaluate;
 extern Linear_FE_Model AD4;
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.160 2012/02/02 02:16:47 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.161 2012/02/02 23:28:30 rhuey Exp $"};
 
 
 int sel_prop_count = 0;
@@ -726,7 +726,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.160 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.161 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 

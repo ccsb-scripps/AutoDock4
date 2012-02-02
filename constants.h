@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.34 2012/01/25 02:19:31 mp Exp $
+ $Id: constants.h,v 1.35 2012/02/02 23:28:30 rhuey Exp $
 
  AutoDock 
 
@@ -524,12 +524,6 @@ const Real TK = 298.15;      // Room temperature, in K
 enum Unbound_Model { Unbound_Default=0, Unbound_Same_As_Bound=1, Extended=2, Compact=3, User=4 };
 #endif
 
-/*
-Constants used for the PSO Work
- */
-#define PSO_D_MAX     (7+MAX_TORS)   // Max number of dimensions of the search space
-#define PSO_S_MAX 	  200	 // Max swarm size
-#define PSO_K_MAX 	  PSO_S_MAX	 // Max neighbors
 /*----------------------------------------------------------------------------* 
  * End of file                                                                * 
  *----------------------------------------------------------------------------*/

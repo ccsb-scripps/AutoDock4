@@ -199,6 +199,31 @@ inline void ParticleSwarmGS::reset(const Output_pop_stats &init_output_pop_stats
 	reset();
 }
 	
+/*
+Constants used for the PSO Work
+ */
+#define PSO_D_MAX     (7+MAX_TORS)   // Max number of dimensions of the search space
+#define PSO_S_MAX 	  200	 // Max swarm size
+#define PSO_K_MAX 	  PSO_S_MAX	 // Max neighbors
+
+
+/*______________________________________________________________________________
+**PSO Work Structures */
+
+typedef struct velocity {
+	int size;
+	double v[PSO_D_MAX];
+} Velocity;
+
+/*______________________________________________________________________________*/
+
+typedef struct position {
+        int size;
+        double x[PSO_D_MAX];
+        double f;		// fitness value of particle
+        double prev_x[PSO_D_MAX];		// previous pos of particle
+} Position;
+
 
 
 #endif
