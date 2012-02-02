@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.46 2012/01/26 19:46:15 rhuey Exp $
+# $Id: test_autodock4.py,v 1.47 2012/02/02 22:11:22 rhuey Exp $
 #
 
 """
@@ -587,7 +587,7 @@ class AutoDock4_1pgp_flexres_energy_test( AutoDock4_energy_test ):
         #expected_binding_energy =  -4.22
         #expected_intermol_energy = -5.93
         #expected_internal_energy = -2.18
-    expected_binding_energy = -4.72
+    expected_binding_energy = -4.33
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
@@ -600,7 +600,7 @@ class AutoDock4_1pgp_flexres_energy_1_4_50_test( AutoDock4_energy_test ):
         #expected_intermol_energy = -5.93
         #expected_internal_energy = -2.18
     #expected_binding_energy = -4.72
-    expected_binding_energy = -3.42
+    expected_binding_energy = -4.33
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
@@ -612,7 +612,7 @@ class AutoDock4_1pgp_flexres_energy_1_4_100_test( AutoDock4_energy_test ):
         #expected_binding_energy =  -4.22
         #expected_intermol_energy = -5.93
         #expected_internal_energy = -2.18
-    expected_binding_energy = -2.0
+    expected_binding_energy = -4.33
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
