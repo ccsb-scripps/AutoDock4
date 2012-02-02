@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.15 2011/06/03 05:31:36 mp Exp $
+ $Id: mkNewState.cc,v 1.16 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -47,7 +47,10 @@ void mkNewState( /* not const */ State *const now,
                 ConstReal qtwStep,
                 ConstReal torStep,
                 const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-                const int N_con[MAX_TORS])
+                const int N_con[MAX_TORS],
+		const int true_ligand_atoms,
+		const int outlev,
+		FILE *logFile)
     // Create a new state, based on the current state
 {
     register int i;
@@ -103,6 +106,7 @@ void mkNewState( /* not const */ State *const now,
         }
     }/*i*/
 
-    cnv_state_to_coords( *now,  vt, tlist, ntor,  crdpdb, crd, natom );
+    cnv_state_to_coords( *now,  vt, tlist, ntor,  crdpdb, crd, natom,
+     true_ligand_atoms, outlev, logFile);
 } 
 /* EOF */

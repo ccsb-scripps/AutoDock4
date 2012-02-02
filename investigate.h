@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.h,v 1.22 2011/10/10 17:42:24 rhuey Exp $
+ $Id: investigate.h,v 1.23 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -43,7 +43,7 @@ extern FILE *logFile;
 extern char *programname;
 
 
-void investigate( const int   Nnb,
+void investigate( const int   Nnb, int Nnb_array[3], Real nb_group_energy[3],
                     const Real charge[MAX_ATOMS],
                     const Real abs_charge[MAX_ATOMS],
                     const Real qsp_abs_charge[MAX_ATOMS],
@@ -58,7 +58,6 @@ void investigate( const int   Nnb,
                     const int   natom,
                     const NonbondParam *const nonbondlist,
                     const int   ntor,
-                    const int   outlev,
                     const int   tlist[MAX_TORS][MAX_ATOMS],
                     const int   type[MAX_ATOMS],
                     const Real vt[MAX_TORS][SPACE],
@@ -89,7 +88,10 @@ void investigate( const int   Nnb,
                     const Boole B_use_non_bond_cutoff,
                     const Boole B_have_flexible_residues,
                     const Boole B_rms_heavy_atoms_only,
-                    const int h_index);
+                    const int h_index,
+		    const int true_ligand_atoms,
+                    const int   outlev,
+		    FILE *logFile);
 #endif
 #if MPIQUE
 void investigate(

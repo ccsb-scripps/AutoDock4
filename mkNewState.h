@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.h,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: mkNewState.h,v 1.9 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -52,5 +52,8 @@ void  mkNewState( State *const now,
                   ConstReal qtwStep,
                   ConstReal torStep,
 	          const Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-		  const int   N_con[MAX_TORS]);
+		  const int   N_con[MAX_TORS],
+		  const int true_ligand_atoms,
+		  const int outlev,
+		  FILE *logFile);
 #endif

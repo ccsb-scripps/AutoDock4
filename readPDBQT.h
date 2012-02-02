@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.h,v 1.16 2010/10/01 22:51:40 mp Exp $
+ $Id: readPDBQT.h,v 1.17 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -38,14 +38,15 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "torNorVec.h"
 #include "success.h"
 #include "openfile.h"
-#include "constants.h"
 #include "stack.h"
 
 void  readPDBQTLine( char line[LINE_LEN],
                      int  *const ptr_serial,
                      Real crd[SPACE], 
                      Real *const P_q,
-                     ParameterEntry *thisparm);
+                     ParameterEntry *thisparm,
+		     const int outlev,
+		     FILE *logFile);
 
 Molecule readPDBQT( char  line[LINE_LEN],
 
@@ -66,6 +67,7 @@ Molecule readPDBQT( char  line[LINE_LEN],
 
               char  atomstuff[MAX_ATOMS][MAX_CHARS],
               int   *const P_n_heavy_atoms_in_ligand,
+	      int   *const P_true_ligand_atoms,
 
               Boole *const P_B_constrain,
               int   *const P_atomC1,
@@ -80,6 +82,7 @@ Molecule readPDBQT( char  line[LINE_LEN],
               Real vt[MAX_TORS][NTRN],
 
               int   *const P_Nnb,
+	      int  Nnb_array[3],
               NonbondParam *const nonbondlist,
 
               const Clock& jobStart,
@@ -87,7 +90,6 @@ Molecule readPDBQT( char  line[LINE_LEN],
               const char  hostnm[MAX_CHARS],
 
               int   *const P_ntorsdof,
-              const int   outlev,
 
               int   ignore_inter[MAX_ATOMS],
               
@@ -96,6 +98,9 @@ Molecule readPDBQT( char  line[LINE_LEN],
               Atom  atoms[MAX_ATOMS],
               /* not const */ char  PDBQT_record[MAX_RECORDS][LINE_LEN],
 
-              /* not const */ int end_of_branch[MAX_TORS]
+              /* not const */ int end_of_branch[MAX_TORS],
+              const int   debug,
+              const int   outlev,
+	      FILE *logFile
               );
 #endif

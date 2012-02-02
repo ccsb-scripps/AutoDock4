@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.16 2011/10/10 17:42:24 rhuey Exp $
+ $Id: clmode.cc,v 1.17 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -38,7 +38,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "clmode.h"
 
 
-extern FILE *logFile;
 extern char *programname;
 
 void  clmode( const int   num_atm_maps,
@@ -54,7 +53,9 @@ void  clmode( const int   num_atm_maps,
               const Boole B_unique_pair_flag,
               const char  *const rms_ref_crds,
               const Boole B_rms_heavy_atoms_only,
-              const int h_index )
+              const int h_index,
+	      const int outlev,
+	      FILE *logFile)
 
 {
     FILE *clusFile;
@@ -167,7 +168,7 @@ void  clmode( const int   num_atm_maps,
              * atom type for one atom.
              * Let's save the coordinates for this atom, atomCounter.
              */
-            readPDBQTLine( line, &serial, crdSave[confCounter][atomCounter], &q, &thisparm );
+            readPDBQTLine( line, &serial, crdSave[confCounter][atomCounter], &q, &thisparm, outlev, logFile );
 
             if ( ! haveAtoms ) {
                 /*

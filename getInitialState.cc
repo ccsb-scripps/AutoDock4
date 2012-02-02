@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.30 2011/06/03 05:31:36 mp Exp $
+ $Id: getInitialState.cc,v 1.31 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -40,7 +40,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "calculateEnergies.h"
 
 
-extern FILE *logFile;
 extern char *programname;
 
 
@@ -72,13 +71,15 @@ void getInitialState(
                 #include "map_declare.h"
             const int   natom,
             const int   Nnb,
+	    int Nnb_array[3],
+	    Real nb_group_energy[3],
+	    const int true_ligand_atoms,
             const NonbondParam *const nonbondlist,
             const int   ntor,
             const int   tlist[MAX_TORS][MAX_ATOMS],
             const int   type[MAX_ATOMS],
             const Real vt[MAX_TORS][SPACE],
             const int   irun1,
-            const int   outlev,
             const int   MaxRetries,
 
             ConstReal  torsFreeEnergy,
@@ -97,7 +98,9 @@ void getInitialState(
             const GridMapSetInfo *const info,
             const Boole B_use_non_bond_cutoff,
             const Boole B_have_flexible_residues,
-            const Unbound_Model ad4_unbound_model
+            const Unbound_Model ad4_unbound_model,
+            const int   outlev,
+	    FILE *logFile
            )
 
 {
@@ -172,15 +175,17 @@ void getInitialState(
     ** _________________________________________________________________________
     */
             initautodock( atomstuff, crd, crdpdb, 
-                natom, ntor, sInit, tlist, vt, outlev, info);
+                natom, ntor, sInit, tlist, vt, true_ligand_atoms,outlev, info);
             
             e0inter = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                         info, ignore_inter, elec, emap,
                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
-            e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb, 
+            e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd,
+			  Nnb, Nnb_array, nb_group_energy,
                           B_calcIntElec, B_include_1_4_interactions,
                           scale_1_4, qsp_abs_charge,
-                          B_use_non_bond_cutoff, B_have_flexible_residues);
+                          B_use_non_bond_cutoff, B_have_flexible_residues,
+			  outlev, logFile);
             e0total = e0inter + e0intra;
 
             if (e0total < e0min) {
@@ -219,13 +224,16 @@ void getInitialState(
         } while ( e0total > e0max );
     } // endif
 
-    cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom );
+    cnv_state_to_coords( *sInit, vt, tlist, ntor, crdpdb, crd, natom,
+     true_ligand_atoms, outlev, logFile);
 
     eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
          crd, charge, abs_charge, type, map, info,
          ignore_inter, elec, emap, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
-         nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model );
+         nonbondlist, ptr_ad_energy_tables,
+	 Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+         B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model,
+	 outlev, logFile);
 
     copyState( sMinm, *sInit );
     copyState( sLast, *sInit );

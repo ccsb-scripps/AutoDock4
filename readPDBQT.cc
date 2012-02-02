@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.32 2010/10/01 22:51:40 mp Exp $
+ $Id: readPDBQT.cc,v 1.33 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -46,11 +46,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*----------------------------------------------------------------------------*/
 
-extern int      debug;
 extern int      parse_tors_mode;
-extern FILE    *logFile;
 extern char    *programname;
-extern int      true_ligand_atoms;
 
 /*----------------------------------------------------------------------------*/
 Molecule readPDBQT(char input_line[LINE_LEN],
@@ -71,6 +68,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
                     char atomstuff[MAX_ATOMS][MAX_CHARS],
                     int *const P_n_heavy_atoms_in_ligand,
+		    int *P_true_ligand_atoms, // set
 
                     Boole *const P_B_constrain,
                     int *const P_atomC1,
@@ -85,20 +83,23 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     Real vt[MAX_TORS][NTRN],
 
                     int *const P_Nnb,
+		    int Nnb_array[3],
                     NonbondParam *const nonbondlist,
 
                     const Clock& jobStart,
                     const struct tms& tms_jobStart,
                     const char *const hostnm,
                     int *const P_ntorsdof,
-                    const int outlev,
                     int ignore_inter[MAX_ATOMS],
                     const int B_include_1_4_interactions,
 
                     Atom atoms[MAX_ATOMS],
                     /* not const */ char PDBQT_record[MAX_RECORDS][LINE_LEN],
 
-                    /* not const */ int end_of_branch[MAX_TORS]
+                    /* not const */ int end_of_branch[MAX_TORS],
+		    const int debug,
+                    const int outlev,
+		    FILE *logFile
                     )
 
 {
@@ -296,7 +297,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 // read the partial atomic charge and store it in charge[],
                 // and read the parameters of this atom and store them in this_parameter_entry,
                 // setting the "autogrid_type" in this_parameter_entry.
-                readPDBQTLine(input_line, &serial, crdpdb[natom], &charge[natom], &this_parameter_entry);
+                readPDBQTLine(input_line, &serial, crdpdb[natom], &charge[natom], &this_parameter_entry,outlev,logFile);
 
                 /*
                 // Verify the serial number for this atom
@@ -494,16 +495,16 @@ Molecule readPDBQT(char input_line[LINE_LEN],
             // Keep updating "true_ligand_atoms" until we find a "BEGIN_RES".
             // "true_ligand_atoms" is the number of atoms in the moving ligand, 
             // and excludes all atoms in the flexible sidechain residues of the receptor.
-			true_ligand_atoms = natom;
+			*P_true_ligand_atoms = natom;
         }
 
 	} // i, next record in PDBQT file 
 
-    pr(logFile, "\nNumber of atoms in movable ligand = %d\n\n", true_ligand_atoms);
+    pr(logFile, "\nNumber of atoms in movable ligand = %d\n\n", *P_true_ligand_atoms);
 
     pr(logFile, "Number of non-hydrogen atoms in movable ligand = %d\n\n", *P_n_heavy_atoms_in_ligand);
 
-	pr(logFile, "\nNumber of atoms found in flexible receptor sidechains (\"residues\") =\t%d atoms\n\n", natom - true_ligand_atoms);
+	pr(logFile, "\nNumber of atoms found in flexible receptor sidechains (\"residues\") =\t%d atoms\n\n", natom - *P_true_ligand_atoms);
 
 	pr(logFile, "Total number of atoms found =\t%d atoms\n\n", natom);
 
@@ -574,7 +575,8 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	 * array)
 	 */
 	mkTorTree(atomnumber, PDBQT_record, nrecord, tlist, &ntor, P_ntor_ligand, FN_ligand, pdbaname,
-              P_B_constrain, P_atomC1, P_atomC2, P_sqlower, P_squpper, P_ntorsdof, ignore_inter);
+              P_B_constrain, P_atomC1, P_atomC2, P_sqlower, P_squpper, P_ntorsdof, ignore_inter,
+	      *P_true_ligand_atoms, outlev, logFile);
 
 	*P_ntor = ntor;
 	*P_ntor1 = ntor - 1;
@@ -599,10 +601,10 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	}
 
         if (debug > 0) {
-			printbonds(natom, nbonds, bonded, "\nDEBUG:  1. BEFORE getbonds, bonded[][] array is:\n\n", 1);
+			printbonds(natom, nbonds, bonded, "\nDEBUG:  1. BEFORE getbonds, bonded[][] array is:\n\n", 1, outlev, logFile);
 		}
         // find all the bonds in the ligand
-		errorcode = getbonds(crdpdb, 0, true_ligand_atoms, bond_index, nbonds, bonded);
+		errorcode = getbonds(crdpdb, 0, *P_true_ligand_atoms, bond_index, nbonds, bonded, debug, outlev, logFile);
 	   if(errorcode!=0)  {
 			pr(logFile, " ERROR in ligand getbonds, code=%d\n", errorcode);
 			stop(" ERROR in ligand getbonds");
@@ -610,7 +612,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
         if (B_have_flexible_residues) {
             // find all the bonds in the receptor
-            errorcode = getbonds(crdpdb, true_ligand_atoms, natom, bond_index, nbonds, bonded);
+            errorcode = getbonds(crdpdb, *P_true_ligand_atoms, natom, bond_index, nbonds, bonded, debug, outlev, logFile);
 	   if(errorcode!=0)  {
 			pr(logFile, " ERROR in receptor getbonds, code=%d\n", errorcode);
 			stop(" ERROR in receptor getbonds");
@@ -618,22 +620,22 @@ Molecule readPDBQT(char input_line[LINE_LEN],
         }
 
 		if (debug > 0) {
-			printbonds(natom, nbonds, bonded, "\nDEBUG:  2. AFTER getbonds, bonded[][] array is:\n\n", 0);
+			printbonds(natom, nbonds, bonded, "\nDEBUG:  2. AFTER getbonds, bonded[][] array is:\n\n", 0, outlev, logFile);
 			pr(logFile, "Detecting all non-bonds.\n\n");
 		}
-		errorcode = nonbonds(crdpdb, nbmatrix, natom, bond_index, B_include_1_4_interactions, nbonds, bonded);
+		errorcode = nonbonds(crdpdb, nbmatrix, natom, bond_index, B_include_1_4_interactions, nbonds, bonded, debug, outlev, logFile);
 		if(errorcode!=0)  {
 			pr(logFile, " ERROR in nonbonds, code=%d\n", errorcode);
 			stop(" ERROR in nonbonds");
 			}
 
 		if (debug > 0) {
-			printbonds(natom, nbonds, bonded, "\nDEBUG:  4. AFTER nonbonds, bonded[][] array is:\n\n", 0);
+			printbonds(natom, nbonds, bonded, "\nDEBUG:  4. AFTER nonbonds, bonded[][] array is:\n\n", 0, outlev, logFile);
 			pr(logFile, "Weeding out non-bonds in rigid parts of the torsion tree.\n\n");
 		}
-		weedbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, P_Nnb, nonbondlist, outlev, map_index);
+		weedbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, P_Nnb, nonbondlist, Nnb_array, *P_true_ligand_atoms, map_index, debug, outlev, logFile);
 
-		print_nonbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, *P_Nnb, nonbondlist, outlev, map_index);
+		print_nonbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, *P_Nnb, nonbondlist, map_index, outlev, logFile);
 
         // Update the unit vectors for the torsion rotations
         update_torsion_vectors( crdpdb, ntor, tlist, vt, &mol, debug );
@@ -664,7 +666,9 @@ readPDBQTLine( char line[LINE_LEN],
                int  *const ptr_serial,
                Real crd[SPACE],
                Real *const ptr_q,
-               ParameterEntry *const this_parameter_entry )
+               ParameterEntry *const this_parameter_entry,
+	       const int outlev,
+	       FILE *logFile)
 /*----------------------------------------------------------------------------*/
 {
     char char8[9];

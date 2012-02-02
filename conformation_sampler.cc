@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.15 2011/10/10 17:43:03 rhuey Exp $
+ $Id: conformation_sampler.cc,v 1.16 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -30,7 +30,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "rep_constants.h"
 #include <math.h>
 
-#define VERBOSE false
+//#define VERBOSE
 #define AVOGADRO 6.022e23f
 #define RK_CONSTANT 0.0019872065 // constant in entropy calculation
 #define TEMP 298 // temperature in entropy calculation
@@ -54,7 +54,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define ICO_Y 0.850650808352039932
 
 extern class Eval evaluate;
-extern FILE *logFile;
 
 Real (*vt)[SPACE], (*crdpdb)[SPACE];
 int (*tlist)[MAX_ATOMS];
@@ -71,12 +70,14 @@ const Real vertices[12][3] = {{-ICO_X, 0., ICO_Y}, {ICO_X, 0., ICO_Y}, {-ICO_X, 
                               {0., ICO_Y, ICO_X}, {0., ICO_Y, -ICO_X}, {0., -ICO_Y, ICO_X}, {0., -ICO_Y, -ICO_X},
                               {ICO_Y, ICO_X, 0.}, {-ICO_Y, ICO_X, 0.}, {ICO_Y, -ICO_X, 0.}, {-ICO_Y, -ICO_X, 0.}};
 
-ConformationSampler::ConformationSampler(const State& init_state) {
+ConformationSampler::ConformationSampler(const State& init_state, 
+ int true_ligand_atoms, int outlev, FILE *logFile) {
 	base_state = init_state;
 	base_ind = set_ind(info, init_state);
 	base_point = base_ind.phenotyp;	
 	base_energy = base_point.evaluate(Normal_Eval);
-	cnv_state_to_coords(init_state, vt, tlist, init_state.ntor, crdpdb, base_crd, natom);
+	cnv_state_to_coords(init_state, vt, tlist, init_state.ntor, crdpdb, base_crd, natom,
+	 true_ligand_atoms, outlev, logFile);
 	
 	dimensionality = BASE_DIMENSIONS + init_state.ntor;
 	evals = 0;
@@ -94,7 +95,7 @@ ConformationSampler::ConformationSampler(const State& init_state) {
 
 	// store axis/angle representation in an array
 
-    // read the quaternion
+    // read the rep
     Quat base_q = probe_point.readQuat();
 
 	// initialize bounds
@@ -115,11 +116,11 @@ ConformationSampler::ConformationSampler(const State& init_state) {
 	}
 }
 
-void ConformationSampler::random_sample(void) {
-	random_sample(1);
+void ConformationSampler::random_sample(int true_ligand_atoms, int outlev, FILE *logFile) {
+	random_sample(1, true_ligand_atoms, outlev, logFile);
 }
 
-void ConformationSampler::random_sample(const int num_samples) {
+void ConformationSampler::random_sample(const int num_samples, int true_ligand_atoms, int outlev, FILE *logFile) {
 	Real multiplier;
 	
 	for (int sample=0; sample < num_samples; sample++) {
@@ -142,7 +143,7 @@ void ConformationSampler::random_sample(const int num_samples) {
 
         probe_point.writeQuat(raaToQuat(  new_axis_angle, new_axis_angle[3]));
 
-		current_energy();
+		current_energy(true_ligand_atoms,outlev,logFile);
 	}
 }
 
@@ -151,18 +152,18 @@ ConformationSampler::~ConformationSampler(void) {
 
 // NOTE: currently, the torsional free energy penalty is not included.
 // Since this is an entropic term, I believe we can ignore it in this analysis.
-Real ConformationSampler::current_energy(void) /* not const */ {
+Real ConformationSampler::current_energy(int true_ligand_atoms, int outlev, FILE *logFile) /* not const */ {
 	evals++;
 	Real energy = probe_point.evaluate(Normal_Eval);
-	Real rmsd = current_rmsd();
+	Real rmsd = current_rmsd(true_ligand_atoms, outlev, logFile);
 	
-	if (VERBOSE) {
+#ifdef VERBOSE
 		fprintf(logFile, "state %d %.3f %.3f", evals, energy, rmsd);
 		for (int i=0; i < dimensionality; i++) {
 			fprintf(logFile, " %.3f", probe_point.gread(i).real);
 		}
 		fprintf(logFile,"\n");
-	}
+#endif
 	
 	total_energy += energy;
 	Boltzmann_sum += exp(-energy/RT_CONSTANT);
@@ -196,11 +197,13 @@ Real ConformationSampler::current_energy(void) /* not const */ {
 	return energy;
 }
 
-Real ConformationSampler::current_rmsd(void) /* not const */ {
+Real ConformationSampler::current_rmsd(
+ int true_ligand_atoms, int outlev, FILE *logFile) /* not const */ {
 	probe_ind.phenotyp = probe_point;
 	probe_ind.inverse_mapping();
 	probe_state = probe_ind.state(base_state.ntor);
-	cnv_state_to_coords(probe_state, vt, tlist, probe_state.ntor, crdpdb, crd, natom);
+	cnv_state_to_coords(probe_state, vt, tlist, probe_state.ntor, crdpdb, crd, natom,
+	 true_ligand_atoms, outlev, logFile);
 	return getrms(crd, base_crd, RMSD_SYMMETRY, RMSD_UNIQUE_PAIR, natom, type, RMSD_HEAVY_ATOMS_ONLY, h_index);
 }
 
@@ -242,7 +245,7 @@ void ConformationSampler::update_bounds(void) /* not const */ {
 	}
 }
 
-void ConformationSampler::systematic_search(const int index) {
+void ConformationSampler::systematic_search(const int index, int true_ligand_atoms, int outlev, FILE *logFile) {
 	
 	// for rotation axes, rotate using the pre-defined vertices 
 	if ( is_axis_index( index ) ) {
@@ -255,7 +258,7 @@ void ConformationSampler::systematic_search(const int index) {
             increment_q = raaToQuat( vertices[i], temp_rotation_angle );
             qmultiply( &new_q, &base_q, &increment_q );
 			probe_point.writeQuat( new_q );
-			systematic_search(Z_TRANSLATION_INDEX); // go to translation
+			systematic_search(Z_TRANSLATION_INDEX, true_ligand_atoms, outlev, logFile); // go to translation
 		}
 	}
 	
@@ -286,17 +289,17 @@ void ConformationSampler::systematic_search(const int index) {
 			
 			if (index == 0) {
                 // End recursion
-				(void)current_energy();
+				(void)current_energy(true_ligand_atoms,outlev,logFile);
 			}
 			else {
 				// check if the rotation angle is 0, to avoid shifting axis unnecessarily
 				if ( is_angle_index( index ) && current == 2 * num_steps) {
                     probe_point.writeQuat( base_point.readQuat() );
-					systematic_search(Z_TRANSLATION_INDEX); // skip to translation
-					//current_energy();// DEBUGGING
+					systematic_search(Z_TRANSLATION_INDEX, true_ligand_atoms, outlev, logFile); // skip to translation
+					//current_energy(true_ligand_atoms,outlev,logFile);// DEBUGGING
 				}
 				else {
-					systematic_search(index-1);
+					systematic_search(index-1, true_ligand_atoms, outlev, logFile);
 				}
 			}
 		}
@@ -366,7 +369,8 @@ Real ConformationSampler::entropy_estimate(void) const {
 	return RT_CONSTANT*log(Vtot*Vconf*Boltzmann_diff_sum);
 }
 
-void ConformationSampler::output_statistics(void) const {
+void ConformationSampler::output_statistics(int outlev, FILE *logFile) const {
+	if(outlev<0) return;
 	fprintf(logFile, "Conformation starting energy: %.3f\n", base_energy);
 	fprintf(logFile, "RMSD from reference state: %.3f\n", reference_rmsd());
 	fprintf(logFile, "Fraction of favorable evaluations: %.3f\n", (Real)favorable_evals/evals);
@@ -386,7 +390,8 @@ void ConformationSampler::output_statistics(void) const {
 	fprintf(logFile, "%d evaluations.\n\n", evals);
 }
 
-void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info) {
+void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info,
+ int true_ligand_atoms, int outlev, FILE *logFile) {
 	vt = init_vt;
 	crdpdb = init_crdpdb;
 	tlist = init_tlist;
@@ -401,15 +406,16 @@ void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf
 	for (int i=0; i < nconf; i++) {
 		fprintf(logFile, "\nConformation %d:\n", i+1);
 		State base_state = hist[i];
-		ConformationSampler CS(base_state);
-		//CS.systematic_search(CS.dimensionality-1);
-		CS.systematic_search(BASE_DIMENSIONS-1);
-		CS.output_statistics();
+		ConformationSampler CS(base_state, true_ligand_atoms, outlev, logFile);
+		//CS.systematic_search(CS.dimensionality-1, true_ligand_atoms, outlev, logFile);
+		CS.systematic_search(BASE_DIMENSIONS-1, true_ligand_atoms, outlev, logFile);
+		CS.output_statistics(outlev, logFile);
 	}
 	fprintf(logFile,"\n\n");
 }
 
-void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /* not const */ int num_samples, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info) {
+void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /* not const */ int num_samples, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info,
+ int true_ligand_atoms, int outlev, FILE *logFile) {
 	vt = init_vt;
 	crdpdb = init_crdpdb;
 	tlist = init_tlist;
@@ -426,9 +432,9 @@ void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /*
 	for (int i=0; i < nconf; i++) {
 		fprintf(logFile, "\nConformation %d:\n", i+1);
 		State base_state = hist[i];
-		ConformationSampler CS(base_state);
-		CS.random_sample(num_samples);
-		CS.output_statistics();
+		ConformationSampler CS(base_state, true_ligand_atoms, outlev, logFile);
+		CS.random_sample(num_samples, true_ligand_atoms, outlev, logFile);
+		CS.output_statistics(outlev, logFile);
 	}
 	
 	fprintf(logFile,"\n\n");

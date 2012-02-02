@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.26 2010/10/01 22:51:39 mp Exp $
+ $Id: eval.h,v 1.27 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -49,13 +49,15 @@ extern FILE *logFile;
 void make_state_from_rep(const double *const x, const int n, State *const now);
 #endif
 
-void make_state_from_rep(const Representation *const *const rep, State *const stateNow);
+void make_state_from_rep(const Representation *const *const rep, State *const stateNow, int outlev, FILE *logFile);
 
 class Eval
 {
    private:
       UnsignedFourByteLong num_evals;
       int natom, Nnb;
+      int *Nnb_array;
+      Real  *nb_group_energy;
       GridMapSetInfo *info;
       MapType *map;
       Real eval_elec[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
@@ -79,6 +81,9 @@ class Eval
       Boole B_compute_intermol_energy; // use for computing unbound state
       Boole B_use_non_bond_cutoff;  // set this to FALSE if we are computing unbound extended conformations
       Boole B_have_flexible_residues;
+      int true_ligand_atoms;
+      int outlev;
+      FILE *logFile;
 
    public:
       Eval(void);
@@ -96,6 +101,8 @@ class Eval
                   /* not const */ NonbondParam *init_nonbondlist,
                   /* not const */ EnergyTables   *init_ptr_ad_energy_tables,
                   const int init_Nnb,
+		  int *init_Nnb_array,
+		  Real *init_nb_group_energy,
                   const Boole          init_B_calcIntElec,
                   const Boole          init_B_isGaussTorCon,
 		  /* not const */ Boole init_B_isTorConstrained[MAX_TORS],
@@ -113,7 +120,10 @@ class Eval
                   ConstReal   init_scale_eintermol,
                   ConstReal   init_unbound_internal_FE,
                   const Boole  init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
-                  const Boole  init_B_have_flexible_residues
+                  const Boole  init_B_have_flexible_residues,
+		  int init_true_ligand_atoms,
+		  int init_outlev,
+		  FILE *init_logFile
                   );
       void update_crds( Real init_crdreo[MAX_ATOMS][SPACE], 
                         Real init_vt[MAX_TORS][SPACE] );
@@ -127,8 +137,7 @@ class Eval
       double eval(const int); // GMM - allows calculation of a particular term of the total energy
       UnsignedFourByteLong evals(void);
       void reset(void);
-      int write(FILE *const out_file, const Representation *const *const rep);
-      double evalpso(/* not const */ State *const state);
+      int write(const Representation *const *const rep, const int true_ligand_atoms, const int outlev, FILE *logFile);
       void compute_intermol_energy(const Boole init_B_compute_intermol_energy); // for computing unbound state
 };
 
@@ -151,6 +160,8 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
                         /* not const */ NonbondParam *const init_nonbondlist,
                         /* not const */ EnergyTables   *const init_ptr_ad_energy_tables,
                         const int init_Nnb,
+			int *init_Nnb_array,
+			Real *init_nb_group_energy,
                         const Boole init_B_calcIntElec, 
                         const Boole init_B_isGaussTorCon,
                         /* not const */ Boole init_B_isTorConstrained[MAX_TORS], // values are not copied but pointers
@@ -173,7 +184,10 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
 
                         ConstReal  init_unbound_internal_FE,
                         const Boole init_B_use_non_bond_cutoff,  // set this to FALSE if we are computing unbound extended conformations
-                        const Boole init_B_have_flexible_residues
+                        const Boole init_B_have_flexible_residues,
+		       int init_true_ligand_atoms,
+		       int init_outlev,
+		       FILE *init_logFile
                        )
 
 {
@@ -190,6 +204,8 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
     nonbondlist = init_nonbondlist;
     ptr_ad_energy_tables = init_ptr_ad_energy_tables;
     Nnb = init_Nnb;
+    Nnb_array= init_Nnb_array;
+    nb_group_energy= init_nb_group_energy;
     B_calcIntElec = init_B_calcIntElec;
     B_isGaussTorCon = init_B_isGaussTorCon;
     B_isTorConstrained = init_B_isTorConstrained;
@@ -227,6 +243,9 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
 
     B_use_non_bond_cutoff = init_B_use_non_bond_cutoff;  // set this to FALSE if we are computing unbound extended conformations
     B_have_flexible_residues = init_B_have_flexible_residues;
+    true_ligand_atoms = init_true_ligand_atoms;
+    outlev = init_outlev;
+    logFile = init_logFile;
 }
 
 inline void Eval::update_crds( Real init_crdreo[MAX_ATOMS][SPACE], 

@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.h,v 1.11 2010/08/27 00:05:09 mp Exp $
+ $Id: weedbonds.h,v 1.12 2012/02/02 02:16:48 mp Exp $
 
  AutoDock 
 
@@ -39,8 +39,12 @@ void  weedbonds( const int   natom,
        /* not const */ int   nbmatrix_binary[MAX_ATOMS][MAX_ATOMS],
        /* not const */ int   *P_Nnb,
        /* not const */ NonbondParam *const nonbondlist,
+      /* not const */	int   Nnb_array[3],
+		 const int   true_ligand_atoms,
+		 const int   type[MAX_ATOMS],
+		 const int   debug,
                  const int   outlev,
-		 const int   type[MAX_ATOMS]);
+		 FILE *logFile);
 #endif
 
 
@@ -60,7 +64,8 @@ void print_nonbonds(
                 /* not const */ int nbmatrix[MAX_ATOMS][MAX_ATOMS],
                 const int Nnb,
                 const NonbondParam *nonbondlist,
+                const int type[MAX_ATOMS],
                 const int outlev,
-                const int type[MAX_ATOMS]);
+		FILE *logFile);
 #endif
 

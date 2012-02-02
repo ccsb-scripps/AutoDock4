@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.h,v 1.10 2010/08/27 00:05:07 mp Exp $
+ $Id: mkTorTree.h,v 1.11 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -45,5 +45,8 @@ void  mkTorTree(const int   atomnumber[MAX_RECORDS],
                 Real *const P_sqlower,
                 Real *const P_squpper,
                 int   *const P_ntorsdof,
-                int   ignore_inter[MAX_ATOMS]);
+                int   ignore_inter[MAX_ATOMS],
+		int true_ligand_atoms,
+		int outlev,
+		FILE *logFile);
 #endif

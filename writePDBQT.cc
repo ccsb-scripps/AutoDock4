@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.34 2011/06/06 23:02:33 rhuey Exp $
+ $Id: writePDBQT.cc,v 1.35 2012/02/02 02:16:48 mp Exp $
 
  AutoDock  
 
@@ -37,12 +37,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "calculateEnergies.h"
 
 extern int keepresnum;
-extern FILE *logFile;
 extern int write_stateFile;
 extern FILE *stateFile;
-extern int true_ligand_atoms;
-extern int Nnb_array[3];
-extern Real nb_group_energy[3];
 
 void
 writePDBQT(const int irun, const FourByteLong seed[2], 
@@ -71,9 +67,11 @@ writePDBQT(const int irun, const FourByteLong seed[2],
          const EnergyTables *const ptr_ad_energy_tables, 
 		 const int type[MAX_ATOMS],  // aka 'map_index' in 'ParameterEntry' structures
 		 const int Nnb, 
+		 int Nnb_array[3],
+		 Real nb_group_energy[3], 
+		 const int true_ligand_atoms,
 		 const Boole B_calcIntElec, 
          #include "map_declare.h"
-		 const int outlev, 
 		 const int ignore_inter[MAX_ATOMS], 
 		 const Boole B_include_1_4_interactions, 
 		 const Real scale_1_4, 
@@ -85,7 +83,9 @@ writePDBQT(const int irun, const FourByteLong seed[2],
          const char PDBQT_record[MAX_RECORDS][LINE_LEN], 
          const Boole B_use_non_bond_cutoff, 
          const Boole B_have_flexible_residues, 
-         const Unbound_Model ad4_unbound_model
+         const Unbound_Model ad4_unbound_model,
+	 const int outlev, 
+	 FILE *logFile
          )
 
 {
@@ -153,14 +153,16 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 	}
 
     // Convert state variables to x, y, z-coordinates
-	cnv_state_to_coords( state, vt, tlist, ntor, crdpdb, crd, natom );
+	cnv_state_to_coords( state, vt, tlist, ntor, crdpdb, crd, natom,
+	  true_ligand_atoms, outlev, logFile);
 
     // Calculate the energy breakdown
     eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues, 
          crd, charge, abs_charge, type, map, info, 
          ignore_inter, elec, emap, &elec_total, &emap_total, 
-         nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, 
-         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model);
+         nonbondlist, ptr_ad_energy_tables, 
+	 Nnb, Nnb_array, nb_group_energy, true_ligand_atoms, B_calcIntElec, 
+         B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
 
     // Set the total intramolecular energy (sum of intramolecular energies of ligand and of protein)
     if (ntor > 0) {

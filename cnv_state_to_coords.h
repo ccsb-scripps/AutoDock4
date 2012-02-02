@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.h,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: cnv_state_to_coords.h,v 1.9 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -38,5 +38,8 @@ void cnv_state_to_coords( const State& now,
                           const int ntor,
                           const Real crdpdb[MAX_ATOMS][SPACE],
                           /* not const */ Real crd[MAX_ATOMS][SPACE],
-                          const int natom);
+                          const int natom,
+			  const int true_ligand_atoms,
+			  const int outlev,
+			  FILE *logFile);
 #endif

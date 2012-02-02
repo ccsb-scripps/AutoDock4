@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.h,v 1.12 2011/03/09 01:35:05 mp Exp $
+ $Id: calculateEnergies.h,v 1.13 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -61,7 +61,9 @@ EnergyBreakdown calculateEnergies(
     ConstReal            scale_eintermol,                 // input  scaling factor for intermolecular energies
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
     const Boole          B_use_non_bond_cutoff,     // input  boolean whether to use a nonbond distance cutoff
-    const Unbound_Model ad4_unbound_model
+    const Unbound_Model ad4_unbound_model,
+    const int outlev,
+    FILE *logFile
 
 );
 
@@ -95,12 +97,17 @@ EnergyBreakdown calculateBindingEnergies(
     const NonbondParam *const nonbondlist,          // input  list of nonbonds
     const EnergyTables *const ptr_ad_energy_tables, // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
     const int            Nnb,                       // input  total number of nonbonds
+    int Nnb_array[3],
+    Real nb_group_energy[3],
+    const int true_ligand_atoms,
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     ConstReal            scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
     const Boole          B_use_non_bond_cutoff,     // input  boolean whether to use a nonbond distance cutoff
-    const Unbound_Model  ad4_unbound_model
+    const Unbound_Model  ad4_unbound_model,
+    const int outlev,
+    FILE *logFile
 
 );
 

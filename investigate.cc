@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.27 2011/10/10 17:42:24 rhuey Exp $
+ $Id: investigate.cc,v 1.28 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -43,11 +43,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define RANDOM_MODE 1
 #define CHANGE_MODE 2
 
-extern FILE *logFile;
 extern char *programname;
 
 
-void investigate( const int   Nnb,
+void investigate( const int   Nnb, int Nnb_array[3], Real nb_group_energy[3],
                     const Real charge[MAX_ATOMS],
                     const Real abs_charge[MAX_ATOMS],
                     const Real qsp_abs_charge[MAX_ATOMS],
@@ -62,7 +61,6 @@ void investigate( const int   Nnb,
                     const int   natom,
                     const NonbondParam *const nonbondlist,
                     const int   ntor,
-                    const int   outlev,
                     const int   tlist[MAX_TORS][MAX_ATOMS],
                     const int   type[MAX_ATOMS],
                     const Real vt[MAX_TORS][SPACE],
@@ -93,7 +91,10 @@ void investigate( const int   Nnb,
                     const Boole B_use_non_bond_cutoff,
                     const Boole B_have_flexible_residues, 
                     const Boole B_rms_heavy_atoms_only, 
-                    const int h_index)
+                    const int h_index,
+		    const int true_ligand_atoms,
+		    const int outlev,
+		    FILE *logFile)
 
 {
     Boole B_outside = FALSE;
@@ -191,7 +192,8 @@ void investigate( const int   Nnb,
                             fflush(logFile);
                         }
                     }
-                    cnv_state_to_coords( sNow, vt, tlist, ntor, crdpdb, crd, natom );
+                    cnv_state_to_coords( sNow, vt, tlist, ntor, crdpdb, crd, natom,
+		     true_ligand_atoms, outlev, logFile);
      
                     /* Check to see if any atom is outside the grid...  */
                     for (i = 0;  i < natom;  i++) {
@@ -214,10 +216,12 @@ void investigate( const int   Nnb,
             /* Calculate Energy of System, */
             e = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, info, 
                 ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
-                 + eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
+                 + eintcal( nonbondlist, ptr_ad_energy_tables, crd,
+		     Nnb, Nnb_array, nb_group_energy, 
                      B_calcIntElec, B_include_1_4_interactions,
                      scale_1_4, qsp_abs_charge, 
-                     B_use_non_bond_cutoff, B_have_flexible_residues);
+                     B_use_non_bond_cutoff, B_have_flexible_residues, 
+		     outlev, logFile);
             if (B_isGaussTorCon) {
                 for (Itor = 0; Itor < ntor; Itor++) {
                     if (B_isTorConstrained[Itor] == 1) {

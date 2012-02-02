@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.h,v 1.19 2010/10/01 22:51:39 mp Exp $
+ $Id: getInitialState.h,v 1.20 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -64,13 +64,15 @@ void getInitialState(
                 #include "map_declare.h"
             const int   natom,
             const int   Nnb,
+	    int   Nnb_array[3],
+	    Real   nb_group_energy[3],
+	    const int   true_ligand_atoms,
             const NonbondParam *const nonbondlist,
             const int   ntor,
             const int   tlist[MAX_TORS][MAX_ATOMS],
             const int   type[MAX_ATOMS],
             const Real vt[MAX_TORS][SPACE],
             const int   irun1,
-            const int   outlev,
 	    const int   MaxRetries,
 
 	    ConstReal  torsFreeEnergy,
@@ -89,7 +91,9 @@ void getInitialState(
             const GridMapSetInfo *const info,
             const Boole B_use_non_bond_cutoff,
             const Boole B_have_flexible_residues,
-            const Unbound_Model ad4_unbound_model
+            const Unbound_Model ad4_unbound_model,
+            const int   outlev,
+	    FILE *logFile
            );
 
 #endif

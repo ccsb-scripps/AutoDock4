@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.33 2011/06/03 05:31:36 mp Exp $
+ $Id: simanneal.cc,v 1.34 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -40,12 +40,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "energy.h"
 
 
-extern FILE *logFile;
 extern char *programname;
 
 
 void simanneal ( int   *const Addr_nconf,
                 const int   Nnb,
+		int Nnb_array[3],
+		Real nb_group_energy[3],
+		const int true_ligand_atoms,
                 ConstReal WallEnergy,
                 const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                 Real charge[MAX_ATOMS],
@@ -72,7 +74,6 @@ void simanneal ( int   *const Addr_nconf,
                 const int   nrejmax,
                 const int   ntor1,
                 const int   ntor,
-                const int   outlev,
 
                 /* not const */ State sInit, /* tor0, qtn0 */
                 /* not const */ State sHist[MAX_RUNS], /* was qtnHist, torHist */
@@ -143,7 +144,9 @@ void simanneal ( int   *const Addr_nconf,
         const Boole B_use_non_bond_cutoff,
         const Boole B_have_flexible_residues, 
         const char PDBQT_record[MAX_RECORDS][LINE_LEN],
-        const Unbound_Model ad4_unbound_model
+        const Unbound_Model ad4_unbound_model,
+	const int outlev,
+	FILE *logFile
         )
 
 {
@@ -272,14 +275,15 @@ void simanneal ( int   *const Addr_nconf,
                      B_RandomTran0, B_RandomQuat0, B_RandomDihe0, 
                      charge, abs_charge, qsp_abs_charge, crd, crdpdb, atomstuff,
                      elec, emap, ptr_ad_energy_tables, B_calcIntElec,
-                     map, natom, Nnb, nonbondlist,
-                     ntor, tlist, type, vt, irun1, outlev, MaxRetries,
+                     map, natom, Nnb, Nnb_array, nb_group_energy, 
+		     true_ligand_atoms, nonbondlist,
+                     ntor, tlist, type, vt, irun1, MaxRetries,
                      torsFreeEnergy, ligand_is_inhibitor,
                      ignore_inter,
                      B_include_1_4_interactions, scale_1_4, scale_eintermol,
                      unbound_internal_FE, info, 
                      B_use_non_bond_cutoff, B_have_flexible_residues,
-                     ad4_unbound_model);
+                     ad4_unbound_model, outlev, logFile);
 
         /* Initialize the "annealing" temperature */
         RT = RT0;                
@@ -336,7 +340,9 @@ void simanneal ( int   *const Addr_nconf,
                     trnStep,
                     qtwStep,
                     torStep,
-                    F_TorConRange, N_con);
+                    F_TorConRange, N_con,
+		    true_ligand_atoms,
+		    outlev, logFile);
 
                 if (B_constrain) {
                     for (xyz = 0;  xyz < SPACE;  xyz++) {
@@ -402,9 +408,11 @@ void simanneal ( int   *const Addr_nconf,
                                         info, ignore_inter, NULL_ELEC, NULL_EVDW,
                                         NULL_ELEC_TOTAL, NULL_EVDW_TOTAL)
                            + (eintra = eintcal(nonbondlist, ptr_ad_energy_tables, crd, Nnb,
+				   Nnb_array, nb_group_energy, 
                                    B_calcIntElec, B_include_1_4_interactions,
                                    scale_1_4, qsp_abs_charge, 
-                                   B_use_non_bond_cutoff, B_have_flexible_residues)
+                                   B_use_non_bond_cutoff, B_have_flexible_residues,
+				   outlev, logFile)
                                );
 
                         if (B_isGaussTorCon) {
@@ -509,15 +517,17 @@ void simanneal ( int   *const Addr_nconf,
                          TRUE, TRUE, TRUE, 
                          charge, abs_charge, qsp_abs_charge, crd, crdpdb, atomstuff,
                          elec, emap, ptr_ad_energy_tables, B_calcIntElec,
-                         map, natom, Nnb, nonbondlist,
-                         ntor, tlist, type, vt, irun1, outlev, MaxRetries,
+                         map, natom, 
+			 Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+			 nonbondlist, ntor, tlist, type, vt, irun1, MaxRetries,
                          torsFreeEnergy, ligand_is_inhibitor,
                          ignore_inter,
                          B_include_1_4_interactions, scale_1_4, scale_eintermol,
                          unbound_internal_FE,
                          info, B_use_non_bond_cutoff,
                          B_have_flexible_residues,
-                         ad4_unbound_model);
+                         ad4_unbound_model,
+			 outlev, logFile);
 
             } else {
 
@@ -620,13 +630,16 @@ void simanneal ( int   *const Addr_nconf,
             }
         }
 
-        cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom );
+        cnv_state_to_coords( sSave, vt, tlist, ntor, crdpdb, crd, natom,
+	 true_ligand_atoms, outlev, logFile);
 
         if (ntor > 0) {
-            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
+            eintra = eintcal( nonbondlist, ptr_ad_energy_tables, crd,
+	       Nnb, Nnb_array, nb_group_energy,
                B_calcIntElec, B_include_1_4_interactions,
                scale_1_4, qsp_abs_charge, 
-               B_use_non_bond_cutoff, B_have_flexible_residues);
+               B_use_non_bond_cutoff, B_have_flexible_residues,
+	       outlev, logFile);
         } else {
             eintra = 0.0 ;
         }
@@ -640,13 +653,14 @@ void simanneal ( int   *const Addr_nconf,
                 ligand_is_inhibitor, torsFreeEnergy, 
                 vt, tlist, crdpdb, nonbondlist, 
                 ptr_ad_energy_tables,
-                type, Nnb, B_calcIntElec,
+                type, Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+		B_calcIntElec,
                 map,
-                outlev, ignore_inter,
+                ignore_inter,
                 B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                 info, 1 /* = DOCKED */, PDBQT_record, 
                 B_use_non_bond_cutoff, B_have_flexible_residues,
-                ad4_unbound_model);
+                ad4_unbound_model, outlev, logFile);
 
         // See also "calculateEnergies.cc", switch(ad4_unbound_model)
         if (ad4_unbound_model == Unbound_Same_As_Bound) {

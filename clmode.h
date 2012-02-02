@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.h,v 1.11 2011/10/10 17:42:24 rhuey Exp $
+ $Id: clmode.h,v 1.12 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -52,6 +52,8 @@ void  clmode( const int   num_atm_maps,
               const Boole B_unique_pair_flag,
               const char  *const rms_ref_crds,
               const Boole B_rms_heavy_atoms_only,
-              const int h_index
+              const int h_index,
+	      const int outlev,
+	      FILE *logFile
               );
 #endif

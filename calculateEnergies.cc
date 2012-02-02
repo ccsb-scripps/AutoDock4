@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.18 2012/02/01 23:52:30 rhuey Exp $
+ $Id: calculateEnergies.cc,v 1.19 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -39,17 +39,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "trilinterp.h"
 #include "eintcal.h"
 
-extern FILE *logFile;
-extern int true_ligand_atoms;
-extern int Nnb_array[3];
-extern Real nb_group_energy[3];
-
-// EnergyBreakdown eb;
-// eb = calculateEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
-//      tcoord, charge, abs_charge, type, map, ptr_info,
-//      ignore_inter, elec, emap, p_elec_total, p_emap_total,
-//      nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec, 
-//      B_include_1_4_interactions, scale_1_4, scale_eintermol, qsp_abs_charge,  B_use_non_bond_cutoff );
 
 EnergyBreakdown calculateEnergies(
     const int            natom,                     // input  number of atoms
@@ -75,12 +64,17 @@ EnergyBreakdown calculateEnergies(
     const NonbondParam *const nonbondlist,          // input  list of nonbonds
     const EnergyTables *const ptr_ad_energy_tables, // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
     const int            Nnb,                       // input  total number of nonbonds
+    int Nnb_array[3],
+    Real nb_group_energy[3],
+    const int true_ligand_atoms,
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     const Real           scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           scale_eintermol,                 // input  scaling factor for intermolecular energies
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
-    const Boole          B_use_non_bond_cutoff      // input  boolean whether to use a nonbond distance cutoff
+    const Boole          B_use_non_bond_cutoff,     // input  boolean whether to use a nonbond distance cutoff
+    const int outlev,
+    FILE *logFile
 
 )
 
@@ -105,7 +99,10 @@ EnergyBreakdown calculateEnergies(
     if (ntor > 0) {
         // computing all the nonbond interaction energies fills nb_group_energy[3] array
         // with intramolecular energy of ligand, intermolecular energy, and intramolecular energy of receptor
-        (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge,  B_use_non_bond_cutoff, B_have_flexible_residues ) ;
+        (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, 
+	Nnb_array, nb_group_energy,
+	B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
+	B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile) ;
         
         eb.e_intra_moving_moving_lig = nb_group_energy[INTRA_LIGAND];
         eb.e_inter_moving_moving = nb_group_energy[INTER];
@@ -185,12 +182,17 @@ EnergyBreakdown calculateBindingEnergies(
     const NonbondParam *const nonbondlist,          // input  list of nonbonds
     const EnergyTables *const ptr_ad_energy_tables, // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
     const int            Nnb,                       // input  total number of nonbonds
+    int Nnb_array[3],
+    Real nb_group_energy[3],
+    const int true_ligand_atoms,
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
     ConstReal            scale_1_4,                 // input  scaling factor for 1,4 interactions, if included
     const Real           qsp_abs_charge[MAX_ATOMS], // input  q-solvation parameters
     const Boole          B_use_non_bond_cutoff,     // input  boolean whether to use a nonbond distance cutoff
-    const Unbound_Model  ad4_unbound_model
+    const Unbound_Model  ad4_unbound_model,
+    const int outlev,
+    FILE *logFile
 
 )
 
@@ -215,7 +217,9 @@ EnergyBreakdown calculateBindingEnergies(
     if (ntor > 0) {
         // computing all the nonbond interaction energies fills nb_group_energy[3] array
         // with intramolecular energy of ligand, intermolecular energy, and intramolecular energy of receptor
-        (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues ) ;
+        (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, 
+	Nnb_array, nb_group_energy,
+	B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile) ;
         
         eb.e_intra_moving_moving_lig = nb_group_energy[INTRA_LIGAND];
         eb.e_inter_moving_moving = nb_group_energy[INTER];

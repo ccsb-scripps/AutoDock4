@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.26 2012/01/25 02:22:14 mp Exp $
+ $Id: eintcal.cc,v 1.27 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -36,8 +36,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 
 extern Linear_FE_Model AD4;
-extern int Nnb_array[3];
-extern Real nb_group_energy[3];
 
 #ifndef EINTCALPRINT
 
@@ -46,31 +44,38 @@ Real eintcal( const NonbondParam * const nonbondlist,
               const EnergyTables  *ptr_ad_energy_tables,
               const Real tcoord[MAX_ATOMS][SPACE],
               const int           Nnb,
+	      int Nnb_array[3],
+  	      Real nb_group_energy[3],
               const Boole         B_calcIntElec,
               const Boole         B_include_1_4_interactions,
               ConstReal  scale_1_4,
               const Real qsp_abs_charge[MAX_ATOMS],
               const Boole B_use_non_bond_cutoff,
-              const Boole B_have_flexible_residues  // if the receptor has flexibile residues, this will be set to TRUE
+              const Boole B_have_flexible_residues,  // if the receptor has flexibile residues, this will be set to TRUE
+	      const int outlev,
+	      FILE *logFile
              )
 
 #else 
 
 // eintcalPrint [
 
-extern FILE *logFile;
 
 // Calculate internal energy and print out a detailed report
 Real eintcalPrint( const NonbondParam * const nonbondlist,
                    const EnergyTables  *ptr_ad_energy_tables,
                    const Real tcoord[MAX_ATOMS][SPACE],
                    const int           Nnb,
+	           int Nnb_array[3],
+  	           Real nb_group_energy[3],
                    const Boole         B_calcIntElec,
                    const Boole         B_include_1_4_interactions,
                    ConstReal  scale_1_4,
                    const Real qsp_abs_charge[MAX_ATOMS],
                    const Boole B_use_non_bond_cutoff,
-                   const Boole B_have_flexible_residues  // if the receptor has flexibile residues, this will be set to TRUE
+                   const Boole B_have_flexible_residues, // if the receptor has flexibile residues, this will be set to TRUE
+		   const int outlev,
+		   FILE *logFile
                   )
 // eintcalPrint ]
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.h,v 1.20 2010/10/01 22:51:40 mp Exp $
+ $Id: simanneal.h,v 1.21 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -40,6 +40,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 void simanneal( int   *const P_nconf, 
                 const int   Nnb, 
+		int Nnb_array[3],
+		Real nb_group_energy[3],
+		const int true_ligand_atoms,
                 ConstReal WallEnergy, 
                 const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
                 Real charge[MAX_ATOMS], 
@@ -66,7 +69,6 @@ void simanneal( int   *const P_nconf,
                 const int   nrejmax, 
                 const int   ntor1, 
                 const int   ntor, 
-                const int   outlev, 
 
                 /* not const */ State sInit, 
 		/* not const */ State sHist[MAX_RUNS],        
@@ -129,6 +131,8 @@ void simanneal( int   *const P_nconf,
                 const Boole B_use_non_bond_cutoff,
                 const Boole B_have_flexible_residues,
                 const char  PDBQT_record[MAX_RECORDS][LINE_LEN],
-                const Unbound_Model ad4_unbound_model);
+                const Unbound_Model ad4_unbound_model,
+                const int   outlev, 
+		FILE *logFile);
 
 #endif

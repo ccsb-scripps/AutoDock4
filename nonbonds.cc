@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.15 2010/08/27 00:05:07 mp Exp $
+ $Id: nonbonds.cc,v 1.16 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -35,8 +35,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "mdist.h"  /* mindist and maxdist are here */
 
 
-extern int debug;
-extern  FILE    *logFile;
 extern char *programname;
 
 using namespace std;
@@ -49,14 +47,17 @@ nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
               const int   bond_index[MAX_ATOMS],
               const int         B_include_1_4_interactions,
 	      const int	nbonds[MAX_ATOMS],
-              const int         bonded[MAX_ATOMS][MAX_NBONDS])
+              const int         bonded[MAX_ATOMS][MAX_NBONDS],
+	      const int debug,
+	      const int outlev,
+	      FILE *logFile)
 {
 	int i,j,k,l;
     int nonbond_type;
     int errorcode = 0;
 
     if (debug>0) {
-        printbonds(natom, nbonds, bonded, "\nDEBUG:  3. INSIDE nonbonds, bonded[][] array is:\n\n", 0);
+        printbonds(natom, nbonds, bonded, "\nDEBUG:  3. INSIDE nonbonds, bonded[][] array is:\n\n", 0, outlev, logFile);
     }
 
     //
@@ -133,7 +134,11 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
               const int to_atom,
               const int bond_index[MAX_ATOMS],
 	      /* not const */ int nbonds[MAX_ATOMS],
-              /* not const */ int bonded[MAX_ATOMS][MAX_NBONDS])
+              /* not const */ int bonded[MAX_ATOMS][MAX_NBONDS],
+	      const int debug,
+	      const int outlev,
+	      FILE *logFile
+	      )
 {
 	int i,j;
 	double dist,dx,dy,dz;
@@ -234,7 +239,8 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
 
 /*----------------------------------------------------------------------------*/
 
-void printbonds(const int natom, const int nbonds[MAX_ATOMS], const int bonded[MAX_ATOMS][MAX_NBONDS], const char *message, const int B_print_all_bonds)
+void printbonds(const int natom, const int nbonds[MAX_ATOMS], const int bonded[MAX_ATOMS][MAX_NBONDS], const char *message, const int B_print_all_bonds,
+const int outlev, FILE *logFile)
 {
     pr(logFile, message);
     for (int i = 0; i<natom; i++) {  // loop over atoms, "i", from 1 to natom
@@ -250,16 +256,16 @@ void printbonds(const int natom, const int nbonds[MAX_ATOMS], const int bonded[M
 
 /*----------------------------------------------------------------------------*/
 
-void print_1_4_message(FILE *const file, const Boole B_include_1_4_interactions, const Real scale_1_4)
+void print_1_4_message(const Boole B_include_1_4_interactions, const Real scale_1_4, const int outlev, FILE *logFile)
 {
     if (B_include_1_4_interactions == FALSE) {
-        pr(file, "1,4-interactions will be _ignored_ in the non-bonded internal energy calculation.\n\n");
+        pr(logFile, "1,4-interactions will be _ignored_ in the non-bonded internal energy calculation.\n\n");
     } else {
-        pr(file, "1,4-interactions will be _included_ in the non-bonded internal energy calculation.\n\n");
-        pr(file, "1,4-interaction energies will be will be scaled by a factor of %.2lf .\n\n", (double)scale_1_4);
-        pr(file, "NOTE:  Computed internal energies will differ from the standard AutoDock free energy function.\n\n");
+        pr(logFile, "1,4-interactions will be _included_ in the non-bonded internal energy calculation.\n\n");
+        pr(logFile, "1,4-interaction energies will be will be scaled by a factor of %.2lf .\n\n", (double)scale_1_4);
+        pr(logFile, "NOTE:  Computed internal energies will differ from the standard AutoDock free energy function.\n\n");
     }
-    (void) fflush(file);
+    (void) fflush(logFile);
 } // end of print_1_4_message
 
 /* EOF */

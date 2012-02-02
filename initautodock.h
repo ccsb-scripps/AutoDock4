@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.h,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: initautodock.h,v 1.8 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -41,6 +41,7 @@ void initautodock(
 	    /* not const */ State *const s0,
 	    const int   tlist[MAX_TORS][MAX_ATOMS],
 	    const Real vt[MAX_TORS][SPACE],
+	    const int   true_ligand_atoms,
 	    const int   outlev,
             const GridMapSetInfo *const info );
 #endif

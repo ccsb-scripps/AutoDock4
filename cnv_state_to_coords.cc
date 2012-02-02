@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.cc,v 1.11 2010/10/01 22:51:39 mp Exp $
+ $Id: cnv_state_to_coords.cc,v 1.12 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -41,16 +41,16 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "rotlsqfit.h"
 #endif
 
-extern FILE *logFile;
-extern int true_ligand_atoms;
-
 void cnv_state_to_coords( const State& now,
                           const Real vt[MAX_TORS][SPACE],
                           const int tlist[MAX_TORS][MAX_ATOMS],
                           const int ntor,
                           const Real crdpdb[MAX_ATOMS][SPACE],
                           /* not const */ Real crd[MAX_ATOMS][SPACE],
-                          const int natom)
+                          const int natom,
+			  const int true_ligand_atoms,
+			  const int outlev,
+			  FILE *logFile)
 
 {
 #ifdef DEBUG

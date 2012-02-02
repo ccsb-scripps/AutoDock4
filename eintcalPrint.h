@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcalPrint.h,v 1.16 2010/10/01 22:51:39 mp Exp $
+ $Id: eintcalPrint.h,v 1.17 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -31,12 +31,16 @@ Real  eintcalPrint( const NonbondParam * const nonbondlist,
                      const EnergyTables  *ad_energy_tables,
                      const Real tcoord[MAX_ATOMS][SPACE],
                      const int   Nnb,
+		     int Nnb_array[3],
+		     Real nb_group_energy[3],
                      const Boole B_calcIntElec,
                      const Boole B_include_1_4_interactions,
                      ConstReal  scale_1_4,
                      const Real qsp_abs_charge[MAX_ATOMS],
                      const Boole B_use_non_bond_cutoff,
-                     const Boole B_have_flexible_residues);  // if the receptor has flexibile residues, this will be set to TRUE
+                     const Boole B_have_flexible_residues, // if the receptor has flexibile residues, this will be set to TRUE
+		     const int outlev,
+		     FILE *logFile);  
 
 #endif
 

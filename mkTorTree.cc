@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.18 2011/03/08 04:18:37 mp Exp $
+ $Id: mkTorTree.cc,v 1.19 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -37,8 +37,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "PDBQT_tokens.h"
 
 
-extern int true_ligand_atoms;
-extern FILE *logFile;
 extern char  *programname;
     
 
@@ -59,7 +57,10 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 /* not const */ Real  *const P_sqlower,
 /* not const */ Real  *const P_squpper,
 /* not const */ int   *const P_ntorsdof,
-/* not const */ int   ignore_inter[MAX_ATOMS])
+/* not const */ int   ignore_inter[MAX_ATOMS],
+	int true_ligand_atoms,
+	int outlev,
+	FILE *logFile)
 
 {
 

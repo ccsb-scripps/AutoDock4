@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.h,v 1.14 2011/05/18 16:46:05 rhuey Exp $
+ $Id: writePDBQT.h,v 1.15 2012/02/02 02:16:48 mp Exp $
 
  AutoDock  
 
@@ -59,9 +59,11 @@ void writePDBQT(const int irun, const FourByteLong seed[2],
                     const EnergyTables *const ptr_ad_energy_tables,
                     const int   type[MAX_ATOMS],
                     const int   Nnb,
+		    int Nnb_array[3],
+		    Real nb_group_energy[3], 
+		    const int true_ligand_atoms,
                     const Boole B_calcIntElec,
                 #include "map_declare.h"
-                    const int outlev,
                     const int   ignore_inter[MAX_ATOMS],
                     const Boole B_include_1_4_interactions,
                     const Real scale_1_4,
@@ -72,7 +74,9 @@ void writePDBQT(const int irun, const FourByteLong seed[2],
                     const char PDBQT_record[MAX_RECORDS][LINE_LEN],
                     const Boole B_use_non_bond_cutoff,
                     const Boole B_have_flexible_residues,
-                    const Unbound_Model ad4_unbound_model
+                    const Unbound_Model ad4_unbound_model,
+                    const int outlev,
+		    FILE *logFile
                     );
 
 void print_PDBQT( FILE *const logFile, 
@@ -83,7 +87,7 @@ void print_PDBQT( FILE *const logFile,
                   const Real charge[MAX_ATOMS],
                   const ParameterEntry parameterArray[MAX_ATOM_TYPES], // input  nonbond and desolvation parameters
                   const int type[MAX_ATOMS],
-                  const char *const suffix // newline or empty
+                  const char *const suffix  // newline or empty
         );
 
 

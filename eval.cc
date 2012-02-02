@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.33 2011/06/03 05:31:36 mp Exp $
+ $Id: eval.cc,v 1.34 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -40,8 +40,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "stateLibrary.h"
 #include "assert.h"
 
-extern FILE *logFile;
-
 #include <stdio.h>
 #include <string.h>
 
@@ -65,7 +63,7 @@ extern FILE *logFile;
        tor 1, ..., tor N are the ntor torsion angles
 */
 
-void make_state_from_rep(const Representation *const *const rep, /* not const */ State *const stateNow) /* not a member function */
+void make_state_from_rep(const Representation *const *const rep, /* not const */ State *const stateNow, const int outlev, FILE *logFile) /* not a member function */
 /*
     This routine modifies the various components of stateNow to correspond
     to the chromosome.  
@@ -104,13 +102,13 @@ void make_state_from_rep(const Representation *const *const rep, /* not const */
 
 double Eval::operator()(const Representation *const *const rep)
 {
-   make_state_from_rep(rep, &stateNow);
+   make_state_from_rep(rep, &stateNow, outlev, logFile);
    return eval();
 }
 
 double Eval::operator()(const Representation *const *const rep, const int term)
 {
-   make_state_from_rep(rep, &stateNow);
+   make_state_from_rep(rep, &stateNow, outlev, logFile);
    return eval(term);
 }
 
@@ -164,7 +162,8 @@ double Eval::eval(const int term)
  
    // Ligand could be inside or could still be outside, check all the atoms...
    // cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdreo, crd, natom);
-   cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
+   cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom,
+    true_ligand_atoms, outlev, logFile);
 
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/Checking to see if all coordinates are inside grid...\n");
@@ -195,9 +194,11 @@ double Eval::eval(const int term)
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after trilinterp, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
     energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
+		 Nnb_array, nb_group_energy,
                  B_calcIntElec, B_include_1_4_interactions, 
                  scale_1_4, qsp_abs_charge,
-                 B_use_non_bond_cutoff, B_have_flexible_residues);
+                 B_use_non_bond_cutoff, B_have_flexible_residues,
+		 outlev, logFile);
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after eintcal, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
@@ -251,7 +252,8 @@ double Eval::eval(const int term)
    return(retval);
 }
 
-int Eval::write(FILE *const out_file, const Representation *const *const rep)
+int Eval::write(const Representation *const *const rep,
+ const int true_ligand_atoms, const int outlev, FILE *logFile)
 {
     int i=0, retval=0;
     //char rec14[14];
@@ -260,9 +262,9 @@ int Eval::write(FILE *const out_file, const Representation *const *const rep)
     (void)fprintf(logFile,"eval.cc/int Eval::write(FILE *out_file, Representation **rep)\n");
 #endif /*DEBUG*/
 
-    make_state_from_rep(rep, &stateNow);
-    // cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdreo, crd, natom);
-    cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
+    make_state_from_rep(rep, &stateNow, outlev, logFile);
+    cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom,
+     true_ligand_atoms, outlev, logFile);
     for (i=0; i<natom; i++) {
             print_PDBQT_atom_resstr( logFile, "", i,   " C   RES     1 ", crd, 
              0.0, 0.0, charge[i],"", "\n"); 
@@ -271,14 +273,14 @@ int Eval::write(FILE *const out_file, const Representation *const *const rep)
 }
 
 #if defined(USING_COLINY) // {
-double Eval::operator()(const double* const vec, const int len)
+double Eval::operator()(const double* const vec, const int len, const int outlev, FILE *logFile)
 {
-   make_state_from_rep(vec, len, &stateNow);
+   make_state_from_rep(vec, len, &stateNow, outlev, logFile);
    return eval();
 }
 
 
-void make_state_from_rep(const double *const rep, const int n, /* not const */ State *const now)
+void make_state_from_rep(const double *const rep, const int n, /* not const */ State *const now, const int outlev, FILE *logFile)
 {
 #   ifdef DEBUG
     (void)fprintf(logFile, "eval.cc/make_state_from_rep(double *rep, int n, State *now)\n");
@@ -336,96 +338,3 @@ return ::evaluate(x,n);
 }
 //
 #endif // USING_COLINY // }
-
-double Eval::evalpso(/* not const */ State *const state)
-{
-    register int i;
-    int   B_outside = 0;
-    int   I_tor = 0;
-    int   indx = 0;
-    double energy = 0.0;
-
-	//double einter = 0.0; 
-	//double eintra = 0.0; 
-    Real emap_total = 0.0L;
-    Real elec_total = 0.0L;
-    Real emap[MAX_ATOMS] = { 0.0L };
-    Real elec[MAX_ATOMS] = { 0.0L };
-
-	
-	mkUnitQuat( &(state->Q) );
-	copyState(&stateNow, *state);
-
-#ifdef DEBUG
-    if (is_out_grid_info(stateNow.T.x, stateNow.T.y, stateNow.T.z)) {
-       (void)fprintf(logFile,"eval.cc/evalpso: stateNow.T is outside grid!\n");
-    }
-    (void)fprintf(logFile,"eval.cc/evalpso: Converting state to coordinates...\n");
-#endif /* DEBUG */
- 
-   // Ligand could be inside or could still be outside, check all the atoms...
-   cnv_state_to_coords(stateNow, vt, tlist, stateNow.ntor, crdpdb, crd, natom);
-
-#ifdef DEBUG
-(void)fprintf(logFile,"eval.cc/Checking to see if all coordinates are inside grid...\n");
-#endif /* DEBUG */
-
-   
-   //if (!B_template){
-   // Use standard energy function
-
-        energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-	     info, ignore_inter, elec, emap, &elec_total, &emap_total);
-
-        energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
-                       B_calcIntElec, B_include_1_4_interactions,
-                       scale_1_4, qsp_abs_charge,
-                       B_use_non_bond_cutoff, B_have_flexible_residues);
-         
-        if (B_isGaussTorCon) {
-            for (I_tor = 0; I_tor <= stateNow.ntor; I_tor++) {
-                if (B_isTorConstrained[I_tor] == 1) {
-                    indx = RadiansToDivs( WrpModRad(stateNow.tor[I_tor]) );
-                    if (B_ShowTorE) {
-                        energy += (double)(US_TorE[I_tor] = US_torProfile[I_tor][indx]);
-                    } else {
-                        energy += (double)US_torProfile[I_tor][indx];
-                    }
-                }
-            } // I_tor
-        }/*if isGaussTorCon*/
-    //} else {
-    //    // Use template scoring function
-    //    if (!B_outside) {
-    //        energy = template_trilinterp( crd, charge, type, natom, map, inv_spacing,
-    //                              xlo, ylo, zlo, template_energy, template_stddev);
-    //    } else {
-    //        energy = outside_templ_trilinterp( crd, charge, type, natom, map,
-    //                                           inv_spacing, 
-    //                                           xlo, ylo, zlo,
-    //                                           xhi, yhi, zhi,  xcen, ycen, zcen,
-    //                                           template_energy, template_stddev);
-    //    }
-    //}
-
-   num_evals++;
-
-   if (!finite(energy)) {
-      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is infinite!\n\n");
-      for (i=0; i<natom; i++) {
-            print_PDBQT_atom_resstr( logFile, "", i,   DUMMYATOMSTUFFINF, crd, 
-             0.0, 0.0, charge[i],"", "\n"); 
-      } // i
-   }
-   if (ISNAN(energy)) {
-      (void)fprintf( logFile, "eval.cc:  ERROR!  energy is not a number!\n\n");
-      for (i=0; i<natom; i++) {
-            print_PDBQT_atom_resstr( logFile, "", i,   DUMMYATOMSTUFFNAN, crd, 
-             0.0, 0.0, charge[i],"", "\n"); 
-      } // i
-   }
-
-   return(energy);
-}
-
-

@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.h,v 1.10 2011/03/08 04:18:36 mp Exp $
+ $Id: conformation_sampler.h,v 1.11 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -64,20 +64,21 @@ class ConformationSampler {
 		Real bin_max_energy[NUM_BINS];
 		Real bin_Boltzmann_sum[NUM_BINS];
 
-		ConformationSampler(const State&);
+		ConformationSampler(const State&,
+		  int true_ligand_atoms, int outlev, FILE *logFile);
 		~ConformationSampler(void);
 
-		void random_sample(void);
-		void random_sample(const int);
-		void systematic_search(const int index);
-		Real current_energy(void); /* not const */ 
-		Real current_rmsd(void); /* not const */ 
+		void random_sample(int true_ligand_atoms, int outlev, FILE *logFile);
+		void random_sample(const int, int true_ligand_atoms, int outlev, FILE *logFile);
+		void systematic_search(const int index, int true_ligand_atoms, int outlev, FILE *logFile);
+		Real current_energy(int true_ligand_atoms, int outlev, FILE *logFile); /* not const */ 
+		Real current_rmsd(int true_ligand_atoms, int outlev, FILE *logFile); /* not const */ 
 		Real reference_rmsd(void) const;
 		Real fraction_favorable(void) const;
 		Real average_favorable_energy(void) const;
 		Real energy_volume(void) const;
 		Real RK_entropy(void) const;
-		void output_statistics(void) const;
+		void output_statistics(int outlev, FILE *logFile) const;
 		Real partition_function(void) const;
 		Real partition_function(int bin) const;
 		Real entropy_estimate(void) const;
@@ -91,13 +92,15 @@ class ConformationSampler {
 void systematic_conformation_sampler(const State hist[MAX_RUNS],
 		const int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE],
 		int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE],
-		const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info);
+		const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info,
+		int true_ligand_atoms, int outlev, FILE *logFile);
 
 void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf,
 		/* const */ int num_samples, Real init_vt[MAX_TORS][SPACE],
 		Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS],
 		Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS],
-		GridMapSetInfo *const init_info);
+		GridMapSetInfo *const init_info,
+		int true_ligand_atoms, int outlev, FILE *logFile);
 
 Individual set_ind(GridMapSetInfo *const info, const State state);
 void raaEuler(const Real raa[4], /* not const */ Real euler[3]);

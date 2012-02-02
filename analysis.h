@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.h,v 1.25 2011/10/10 17:42:24 rhuey Exp $
+ $Id: analysis.h,v 1.26 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -42,6 +42,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define ANALYSIS
 
 void  analysis( const int   Nnb, 
+	        int Nnb_array[3],
+	        Real nb_group_energy[3],
+		const int true_ligand_atoms,
                 const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
                 const Real charge[MAX_ATOMS], 
                 const Real abs_charge[MAX_ATOMS], 
@@ -70,7 +73,6 @@ void  analysis( const int   Nnb,
                 ConstReal   torsFreeEnergy,
                 const Boole B_write_all_clusmem,
                 const int ligand_is_inhibitor,
-                const int   outlev,
                 const int   ignore_inter[MAX_ATOMS],
                 const Boole   B_include_1_4_interactions,
                 ConstReal   scale_1_4,
@@ -83,6 +85,8 @@ void  analysis( const int   Nnb,
                 const Boole B_rms_atoms_ligand_only,
                 const Unbound_Model ad4_unbound_model,
                 const Boole B_rms_heavy_atoms_only,
-                const int h_index 
+                const int h_index,
+                const int   outlev,
+		FILE *logFile
                );
 #endif

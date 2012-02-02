@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.41 2011/06/03 05:31:36 mp Exp $
+ $Id: support.cc,v 1.42 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -38,6 +38,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 //#define DEBUG 
 extern FILE *logFile;
+extern int outlev;
 
 extern class Eval evaluate;
 
@@ -383,7 +384,8 @@ void Population::printPopulationAsStates(FILE *const output, const int num, cons
 #ifdef DEBUG2
       // to print only infinite or NaN structures // if (!finite(thisValue) || ISNAN(thisValue)) {//debug
       // Convert state to coords and print it out...//debug
-      cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);//debug
+      cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom,
+       true_ligand_atoms, outlev, logFile);//debug
       (void)fprintf(logFile, "MODEL     %4d\n", i+1);
       for (j=0; j<heap[i].mol->natom; j++) {//debug
             print_PDBQT_atom_resnum( logFile, "", j, DUMMYATOMSTUFFINF,   1,  // replace 1 with i+1 for incrementing residue numbers.
@@ -432,7 +434,8 @@ void Population::printPopulationAsCoordsEnergies(FILE *const output, const int n
       (void)fprintf( output, "\n");
 
       // We need the coordinates of this individual to compute the electrostatic and nonbond energies
-      //cnv_state_to_coords( heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom);
+      //cnv_state_to_coords( heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom,
+       //true_ligand_atoms, outlev, logFile);
 
    }// i
    (void)fprintf( output, "\n");
@@ -928,7 +931,8 @@ State Phenotype::make_state(const int ntor) const
 
 
    retval.ntor = ntor;
-   make_state_from_rep(value_vector, &retval);
+   make_state_from_rep(value_vector, &retval, outlev, logFile);
+   //make_state_from_rep(value_vector, &retval);
    return(retval);
 }
 

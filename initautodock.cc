@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.cc,v 1.15 2011/06/03 05:31:36 mp Exp $
+ $Id: initautodock.cc,v 1.16 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -50,6 +50,7 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                     /* not const */ State *const s0,
                     const int   tlist[MAX_TORS][MAX_ATOMS],
                     const Real vt[MAX_TORS][SPACE],
+		    const int true_ligand_atoms,
                     const int   outlev,
                     const GridMapSetInfo *const info )
 
@@ -145,7 +146,8 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
             flushLog;
         }
 
-        cnv_state_to_coords( *s0,  vt, tlist, ntor,  crdpdb, crd, natom); // all const except crd
+        cnv_state_to_coords( *s0,  vt, tlist, ntor,  crdpdb, crd, natom,
+	 true_ligand_atoms, outlev, logFile); // all const except crd
 
         for (i = 0;  i < natom;  i++) {
             B_outside = is_out_grid_info( crd[i][X], crd[i][Y], crd[i][Z] );

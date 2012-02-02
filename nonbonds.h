@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.h,v 1.11 2010/08/27 00:05:07 mp Exp $
+ $Id: nonbonds.h,v 1.12 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -34,7 +34,10 @@ nonbonds( const Real crdpdb[MAX_ATOMS][SPACE],
 	const int bond_index[MAX_ATOMS],
 	const int B_include_1_4_interactions,
 	const int nbonds[MAX_ATOMS], // per atom
-	const int bonded[MAX_ATOMS][MAX_NBONDS]);
+	const int bonded[MAX_ATOMS][MAX_NBONDS],
+	const int debug,
+	const int outlev,
+	FILE *logFile);
 #endif
 
 #ifndef GETBONDS
@@ -46,18 +49,22 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
               const int to_atom,
 	      const int bond_index[MAX_ATOMS],
 	      /* not const */ int nbonds[MAX_ATOMS], // per atom
-              /* not const */ int bonded[MAX_ATOMS][MAX_NBONDS]);
+              /* not const */ int bonded[MAX_ATOMS][MAX_NBONDS],
+	      const int debug,
+	      const int outlev,
+	      FILE *logFile);
 #endif
 
 #ifndef PRINTBONDS
 #define PRINTBONDS
 #include "constants.h"
-void printbonds(const int natom, const int nbonds[MAX_ATOMS], const int bonded[MAX_ATOMS][MAX_NBONDS], const char *message, const int B_print_all_bonds);
+void printbonds(const int natom, const int nbonds[MAX_ATOMS], const int bonded[MAX_ATOMS][MAX_NBONDS], const char *message, const int B_print_all_bonds, const int outlev, FILE *logFile);
 #endif
 
 #ifndef PRINT14
 #define PRINT14
 #include "constants.h"
 #include <stdio.h>
-void print_1_4_message(FILE *file, Boole B_include_1_4_interactions,  Real scale_1_4);
+void print_1_4_message(Boole B_include_1_4_interactions,  Real scale_1_4,
+const int outlev, FILE *logFile);
 #endif

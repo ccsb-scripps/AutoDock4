@@ -1,6 +1,6 @@
 /*
 
- $Id: autoglobal.h,v 1.18 2009/06/05 00:08:17 rhuey Exp $
+ $Id: autoglobal.h,v 1.19 2012/02/02 02:16:47 mp Exp $
 
  AutoDock 
 
@@ -76,20 +76,17 @@ int	    DesolvMap = 0;
 int     ignore_errors = FALSE;
 int     keepresnum = 1;
 int     parse_tors_mode = FALSE;
-int	    true_ligand_atoms = 0;
 int     write_stateFile = FALSE;
-// For energy breakdown of non-bonded interactions
-int     Nnb_array[3] = {0};    // number of nonbonds in the ligand, intermolecular and receptor groups
 
 Real	idct = 1.0;
 // For energy breakdown of non-bonded interactions
-Real    nb_group_energy[3] = {0.0};  // total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
 
 FILE    *command_in_fp;
 FILE    *command_out_fp;
 FILE    *parFile;
 FILE    *GPF;
-FILE    *logFile;
+int     outlev;   // made global for debugging convenience
+FILE    *logFile;   // made global for debugging convenience
 FILE    *stateFile;
 
 Linear_FE_Model AD3;

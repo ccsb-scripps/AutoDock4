@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.47 2011/10/10 17:42:24 rhuey Exp $
+ $Id: analysis.cc,v 1.48 2012/02/02 02:16:47 mp Exp $
 
  AutoDock  
 
@@ -50,13 +50,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "analysis.h"
 #include "eintcal.h"
 
-extern FILE  *logFile;
 extern int   keepresnum;
 extern char  dock_param_fn[];
 extern char  *programname;
-extern int   true_ligand_atoms;
 
 void analysis( const int   Nnb, 
+	       int Nnb_array[3],
+	       Real nb_group_energy[3],
+	       const int true_ligand_atoms,
                const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
                const Real  charge[MAX_ATOMS], 
                const Real  abs_charge[MAX_ATOMS], 
@@ -87,7 +88,6 @@ void analysis( const int   Nnb,
                ConstReal    torsFreeEnergy,
                const Boole B_write_all_clusmem,
                const int   ligand_is_inhibitor,
-               const int   outlev,
                const int   ignore_inter[MAX_ATOMS],
                const Boole   B_include_1_4_interactions,
                ConstReal   scale_1_4,
@@ -99,7 +99,9 @@ void analysis( const int   Nnb,
                const Boole B_rms_atoms_ligand_only,
                const Unbound_Model ad4_unbound_model, 
                const Boole B_rms_heavy_atoms_only,
-               const int h_index
+               const int h_index,
+               const int   outlev,
+	       FILE *logFile
 
               )
 
@@ -198,7 +200,8 @@ void analysis( const int   Nnb,
         copyState( &save, hist[k] );
 
         /* fprintf( logFile, "Converting state %d to coordinates.\n", k); */
-        cnv_state_to_coords( save, vt, tlist, ntor, crdpdb, crd, natom);
+        cnv_state_to_coords( save, vt, tlist, ntor, crdpdb, crd, natom,
+	 true_ligand_atoms, outlev, logFile);
 
         /* fprintf( logFile, "Saving coordinates of state %d.\n", k); */
 
@@ -269,8 +272,8 @@ void analysis( const int   Nnb,
             eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
                  crd, charge, abs_charge, type, map, info,
                  ignore_inter, elec, emap, &elec_total, &emap_total,
-                 nonbondlist, ptr_ad_energy_tables, Nnb, B_calcIntElec,
-                 B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model );
+                 nonbondlist, ptr_ad_energy_tables, Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+		 B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
      
      	    AxisAngle aa = QuatToAxisAngle(hist[c].Q);
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
