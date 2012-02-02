@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.34 2011/07/14 00:50:47 mp Exp $
+ $Id: dpftoken.h,v 1.35 2012/02/02 22:26:26 rhuey Exp $
 
  AutoDock 
 
@@ -82,7 +82,6 @@ enum DpfTokens {
   DPF_TRJOUT                   ,
   DPF_TRJSEL                   ,
   DPF_EXTNRG                   ,
-  DPF_NEWCRD                   ,
   DPF_CLUSTER                  ,
   DPF_CLUSALL                  ,
   DPF_RMSNOSYM                 ,
@@ -127,12 +126,10 @@ enum DpfTokens {
   DPF_TORSDOF	               ,
   DPF_INVESTIGATE	       ,
   DPF_LIG_NOT_INHIB            ,
-  DPF_TEMPL_ENERGY             ,
   DPF_HOLLOW_OUT               ,
   DPF_COLINY	               ,
   DPF_INCLUDE_1_4_INTERACTIONS ,
   DPF_PARAMETER_LIBRARY	       ,
-  DPF_RECEPTOR_TYPES	       ,
   DPF_LIGAND_TYPES	       ,
   DPF_UNBOUND	               ,
   DPF_EPDB	               ,

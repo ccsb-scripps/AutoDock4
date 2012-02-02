@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.39 2011/07/14 00:50:47 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.40 2012/02/02 22:26:26 rhuey Exp $
 
  AutoDock 
 
@@ -96,7 +96,6 @@ int parse_dpf_line( const char line[] )
                       {"trjout", DPF_TRJOUT}, 
                       {"trjsel", DPF_TRJSEL}, 
                       {"extnrg", DPF_EXTNRG}, 
-                      {"newcrd", DPF_NEWCRD}, 
                       {"cluster", DPF_CLUSTER}, 
                       {"write_all", DPF_CLUSALL}, 
                       {"write_all_cluster_members", DPF_CLUSALL}, 
@@ -153,13 +152,10 @@ int parse_dpf_line( const char line[] )
                       {"bin_energies_by_rmsd", DPF_INVESTIGATE}, 
                       {"investigate", DPF_INVESTIGATE}, 
               {"ligand_is_not_inhibitor", DPF_LIG_NOT_INHIB}, 
-              {"template", DPF_TEMPL_ENERGY}, 
-              {"template_energy_file", DPF_TEMPL_ENERGY}, 
               {"include_1_4_interactions", DPF_INCLUDE_1_4_INTERACTIONS}, 
 	      {"scale_eintermol", DPF_SCALE_EINTERMOL},
               {"parameter_library", DPF_PARAMETER_LIBRARY}, 
               {"parameter_file", DPF_PARAMETER_LIBRARY} 
-              , {"receptor_types", DPF_RECEPTOR_TYPES}  
               , {"ligand_types", DPF_LIGAND_TYPES}      
               , {"unbound", DPF_UNBOUND}      
               , {"epdb", DPF_EPDB}      
@@ -193,7 +189,8 @@ int parse_dpf_line( const char line[] )
               , {"ga_boltzman_selection", GA_BOLTZMAN_SELECTION}
               , {"pso_c1", PSO_C1}
               , {"pso_c2", PSO_C2}
-              , {"pso_neighbors", PSO_K} , {"pso_k", PSO_K} // syns
+              , {"pso_neighbors", PSO_K}
+              , {"pso_k", PSO_K} // syns
               , {"pso_neighbors_symmetric", PSO_NEIGHBORS_SYMMETRIC}
               , {"pso_neighbors_dynamic", PSO_NEIGHBORS_DYNAMIC}
               , {"pso_w_start", PSO_W_START}
@@ -206,7 +203,8 @@ int parse_dpf_line( const char line[] )
               , {"pso_stage2constriction", PSO_STAGE2CONSTRICTION}
               , {"pso_interpolate_as_scalars", PSO_INTERPOLATE_AS_SCALARS}
               , {"pso_regenerate_at_limit", PSO_REGENERATE_AT_LIMIT}
-              , {"do_pso", DPF_PARSWARMOPT} , {"do_cpso", DPF_PARSWARMOPT}  // syns
+              , {"do_pso", DPF_PARSWARMOPT} 
+              , {"do_cpso", DPF_PARSWARMOPT}  // syns
 
 #if defined(USING_COLINY)
               , {"coliny", DPF_COLINY}  
