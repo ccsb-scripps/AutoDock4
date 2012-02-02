@@ -11,7 +11,7 @@ map 1pgp_rigid.OA.map                # atom-specific affinity map
 map 1pgp_rigid.N.map                 # atom-specific affinity map
 elecmap 1pgp_rigid.e.map             # electrostatics map
 desolvmap 1pgp_rigid.d.map           # desolvation map
-include_1_4_interactions 50          # include scaled 1_4_interactions 
+include_1_4_interactions 0.5         # include scaled 1_4_interactions 
 move 1pgp_lig.pdbqt                  # small molecule
 flexres 1pgp_flex.pdbqt              # file containing flexible residues
 about 23.407 29.2817 39.8079         # small molecule center
