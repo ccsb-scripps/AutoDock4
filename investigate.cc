@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.28 2012/02/02 02:16:47 mp Exp $
+ $Id: investigate.cc,v 1.29 2012/02/04 02:22:05 mp Exp $
 
  AutoDock  
 
@@ -178,7 +178,7 @@ void investigate( const int   Nnb, int Nnb_array[3], Real nb_group_energy[3],
                 do { /* while (B_outside); */
                     if (mode == RANDOM_MODE) {
                         sNow = mkRandomState( ntor, F_TorConRange, N_con, info );
-                        if (outlev > 2) {
+                        if (outlev >= LOGRUNV) {
                             fprintf(logFile, "mkRandomState:  ");
                             writeState(logFile, sNow);
                             fflush(logFile);
@@ -186,7 +186,7 @@ void investigate( const int   Nnb, int Nnb_array[3], Real nb_group_energy[3],
                     } else {
                         sNow = changeState( sNow, trnStep, torStep,
                                               ntor, F_TorConRange, N_con);
-                        if (outlev > 2) {
+                        if (outlev >= LOGRUNV) {
                             fprintf(logFile, "changeState:  ");
                             writeState(logFile, sNow);
                             fflush(logFile);
@@ -247,7 +247,7 @@ void investigate( const int   Nnb, int Nnb_array[3], Real nb_group_energy[3],
                 MinEnergyInRmsBin[RmsBinNum] = e;
             }
             /* Output if it is time, */
-            if (outlev > 0) {
+            if (outlev >= LOGBASIC ) {
                 if ((Test+1)%OutputEveryNTests == 0) {
                     fprintf(logFile, "NumberOfTests= %d\n", Test+1);
                     fprintf(logFile, "-------------\n");

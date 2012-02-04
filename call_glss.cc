@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.63 2012/01/25 00:10:29 mp Exp $ 
+ $Id: call_glss.cc,v 1.64 2012/02/04 02:22:05 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -311,7 +311,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 
         // If initial values were supplied, put them in thisPop[0] and remap
         if (!B_RandomTran0) {
-            if (outlev > 1) { (void)fprintf(logFile, "Setting the initial translation (tran0) for individual number %d to %.2lf %.2lf %.2lf\n\n", indiv+1, sInit.T.x, sInit.T.y, sInit.T.z); }
+            if (outlev >= LOGRUNVV)  (void)fprintf(logFile, "Setting the initial translation (tran0) for individual number %d to %.2lf %.2lf %.2lf\n\n", indiv+1, sInit.T.x, sInit.T.y, sInit.T.z); 
             thisPop[indiv].genotyp.write( sInit.T.x, 0 );
             thisPop[indiv].genotyp.write( sInit.T.y, 1 );
             thisPop[indiv].genotyp.write( sInit.T.z, 2 );
@@ -319,12 +319,12 @@ State call_glss(/* not const */ Global_Search *global_method,
             thisPop[indiv].mapping();
         }
         if (!B_RandomQuat0) {
-            if (outlev > 1) { 
+	        if (outlev >= LOGRUNVV) {
 		AxisAngle aa = QuatToAxisAngle(sInit.Q);
-                (void)fprintf(logFile, 
+                (void)fprintf(logFile,  
 		 "Setting the initial orientation using quaterion values (x,y,z,w) for individual number %d to %.6lf %.6lf %.6lf %.6lf\n\n", 
 		 indiv+1, sInit.Q.x, sInit.Q.y, sInit.Q.z, sInit.Q.w);
-                (void)fprintf(logFile, 
+                (void) fprintf(logFile, 
 		"which corresponds to the axis-angle (x,y,z,degree) values:  %.2lf %.2lf %.2lf %.2lf\n\n",
 		aa.nx, aa.ny, aa.nz, aa.ang); 
             }
@@ -337,12 +337,13 @@ State call_glss(/* not const */ Global_Search *global_method,
         }
         if (sInit.ntor > 0) {
             if (!B_RandomDihe0) {
-                if (outlev > 1) { (void)fprintf(logFile, "Setting the initial torsions (dihe0) for individual number %d to ", indiv+1); }
+                if (outlev >= LOGRUNVV) 
+                (void)fprintf(logFile, "Setting the initial torsions (dihe0) for individual number %d to ", indiv+1); 
                 for (j=0; j<sInit.ntor; j++) {
                     thisPop[indiv].genotyp.write( sInit.tor[j], 7+j );
-                    if (outlev > 1) { (void)fprintf(logFile, "%.2lf ", RadiansToDegrees(sInit.tor[j])); }
+                    if (outlev >=LOGRUNVV)  (void)fprintf(logFile, "%.2lf ", RadiansToDegrees(sInit.tor[j])); 
                 };
-                if (outlev > 1) { (void)fprintf(logFile, " deg\n\n"); }
+                if (outlev >= LOGRUNVV) (void)fprintf(logFile, " deg\n\n");
                 // Remember to keep the phenotype up-to-date
                 thisPop[indiv].mapping();
             }
@@ -379,7 +380,7 @@ State call_glss(/* not const */ Global_Search *global_method,
     }
 #endif
 
-    if (outlev > 2) { 
+    if (outlev >= LOGRUNVV ) { 
         (void)fprintf( logFile, "The initial population consists of the following %d individuals:\n\n", pop_size);
         (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"initialisation of population\">\n", 0);
         (void)fprintf( logFile, "</generation>\n\n\n");
@@ -389,6 +390,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 // We now have a mapped and evaluated population suitable for search
 
     // next line will resemble "Beginning LAMARCKIAN GENETIC ALGORITHM (LGA), with .."
+    if(outlev >= LOGFORADT )
     (void)fprintf( logFile, "Beginning %s%s (%s%s), with a maximum of %u energy evaluations.\n\n", 
         local_method?"LAMARCKIAN ":"",
       global_method?global_method->longname():"NULL",
@@ -415,42 +417,42 @@ State call_glss(/* not const */ Global_Search *global_method,
 	Clock genEnd;
 	Clock genStart = times( &tms_genStart );
 
-        if (outlev > 2) { (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", generation); }
+        if (outlev >= LOGRUNV ) (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", generation);
 
       if(generation>0) {
-        if (outlev > 2) { (void)fprintf( logFile, "Performing Global Search.\n"); }
+        if (outlev >= LOGRUNVV)  (void)fprintf( logFile, "Performing Global Search.\n"); 
         global_method->search(thisPop, outlev, logFile);
 
-        if (outlev > 2) {
+        if (outlev >= LOGRUNVVV) {
             (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"global search\">\n", generation);
             thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
-        if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, generation, info ); }
+        if (pop_size > 1 && outlev >= LOGRUNVV) minmeanmax( logFile, thisPop, generation, info );
 
         // call the global method's local search method if any
 	if(local_method != NULL) {
-	   if (outlev > 2) { (void)fprintf( logFile, "Performing Local Search.\n"); }
-	   if (outlev > 3) for (i=0; i<pop_size; i++) {
+	   if (outlev >= LOGRUNVV ) (void)fprintf( logFile, "Performing Local Search.\n");
+	   if (outlev >= LOGRUNVVV ) for (i=0; i<pop_size; i++) {
                 (void)fprintf( logFile, "LS: %d",generation); 
                 (void)fprintf( logFile, " %d",i+1); 
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
            }
            global_method->localsearch(thisPop, local_method, outlev, logFile);
-	   if (outlev > 3) for (i=0; i<pop_size; i++) {
+	   if (outlev >= LOGRUNVVV ) for (i=0; i<pop_size; i++) {
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
                 (void)fprintf( logFile, " \n"); 
             }
 
-          if (outlev > 2) {
+          if (outlev >= LOGRUNVV ) {
             (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"local search\">\n", generation);
             thisPop.printPopulationAsStates( logFile, pop_size, sInit.ntor );
             (void)fprintf( logFile, "</generation>\n\n\n");
           }
 	} // if a local_method is active
 
-        if (pop_size > 1 && outlev > 3) { minmeanmax( logFile, thisPop, generation, info ); }
+        if (pop_size > 1 && outlev >= LOGRUNVV ) minmeanmax( logFile, thisPop, generation, info );
 	} // end if generation > 0
 
     // note we terminate without searching if num_evals is 0
@@ -460,7 +462,7 @@ State call_glss(/* not const */ Global_Search *global_method,
     genEnd = times( &tms_genEnd );
 
 
-    if(pop_size>0 && generation==0) {
+    if(pop_size>0 && generation==0 && outlev >= LOGRUNV) {
 	// print initial best energy for statistics
 	// M Pique 28 Oct 2009 - adding a (harmless...) thisPop.msort(1) here
 	// broke the unbound-extended test. Investigating why
@@ -518,7 +520,7 @@ State call_glss(/* not const */ Global_Search *global_method,
        //
        // This is purely for studying population convergence and is
        // controlled by the "output_population_statistics" DPF keyword. - M Pique 2010
-       if (outlev>0 && output_pop_stats.level > 0 &&  (
+       if (outlev>= LOGRUNV && output_pop_stats.level > 0 &&  (
 	  generation==0
 	  ||
 	  terminate 

@@ -120,7 +120,7 @@ State call_cpso(Local_Search *const local_method,
     {
         //Updating evaluations        
         evaluations++;
-        if (outlev >1)
+        if (outlev > LOGRUNBASIC )
         {
             pr(logFile, "PSO: Updating the swarm at move %d (= %d and %u evaluations)\n", nb_eval+1, evaluations, (unsigned int) evaluate.evals());
         }
@@ -182,7 +182,7 @@ State call_cpso(Local_Search *const local_method,
         {
             //Updating evaluations
             evaluations++;
-            if (outlev >2)
+            if (outlev >= LOGRUNV)
             {
                 pr(logFile, "\nPSO: Updating the swarm at move %d (= %d and %u evaluations)\n", nb_eval+1, evaluations, (unsigned int) evaluate.evals());
             }
@@ -245,7 +245,7 @@ State call_cpso(Local_Search *const local_method,
             //...evaluate the new position
             prev_value[s] = Xi[s].f;
             Xi[s].f= evaluate.evalpso(&sNew[s]);//E-test
-            if (outlev > 2) 
+            if (outlev >= LOGRUNVV) 
             {
                 pr(logFile,"\nSwarmMove: (%d) \tParticle:  %d \tEnergy= %8.2lf\n", nb_eval + 1, s + 1, Xi[s].f);
                 printState(logFile, sNew[s], 0);
@@ -279,7 +279,7 @@ State call_cpso(Local_Search *const local_method,
         if(pso_energy >= energy_prev) init_links = 1;
         else init_links = 0;
         energy_prev = pso_energy;
-        if (outlev > 2) 
+        if (outlev >= LOGRUNV) 
         {
             pr(logFile, "PSO- Run: %2d \tPSObest Energy@Swarm_Move: %4d \tP= %8.2lf  \t(nbeval= %d and %u )\n", n_exec+1, nb_eval+1, pso_energy, evaluations, (unsigned int) evaluate.evals());
         };

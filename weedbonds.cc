@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.19 2012/02/02 02:16:47 mp Exp $
+ $Id: weedbonds.cc,v 1.20 2012/02/04 02:22:05 mp Exp $
 
  AutoDock 
 
@@ -260,7 +260,7 @@ void print_nonbonds(
         Nnbonds[i] = 0;
     }
 
-    if (outlev > -1) {
+    if (outlev >= LOGLIGREAD)  {
         // Print out the matrix of non-bonded interactions
         if (ntor > 0) {
             pr( logFile, "\n\nMatrix of Non-Bonded Interactions:\n" );
@@ -329,7 +329,7 @@ void print_nonbonds(
     } // endif
 #endif // DEBUG
 
-    if (outlev > -1) {
+    if (outlev >= LOGLIGREAD) {
         // Print out a list of internal non-bonded interactions
         if (ntor > 0) {
             pr( logFile, "\n\nList of Internal Non-Bonded Interactions:\n" );
@@ -384,9 +384,11 @@ void print_nonbonds(
         } //  i 
     } // outlev > -1
 
+    if( outlev >= LOGLIGREAD ){
     pr( logFile, "\nInternal Non-bonded Interactions before,\t%d\n", (natom+1)*natom/2);
     pr( logFile, "                       and after weeding =\t%d\n\n", Nnb);
 
     flushLog;
+    }
 }
 // EOF

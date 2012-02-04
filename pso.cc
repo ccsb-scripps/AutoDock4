@@ -68,7 +68,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 		pr(logFile, "PSO max_evaluations = %d\n", max_evals);
 		pr(logFile, "PSO size = %d\n", size);
 
-		if(outlev>0){
+		if(outlev>LOGBASIC){
 		pr(logFile, "PSO w_start = %.2f\n", pso_options.pso_w_start);
 		pr(logFile, "PSO w_end = %.2f\n", pso_options.pso_w_end);
 		pr(logFile, "PSO c1 = %.2f\n", pso_options.c1);
@@ -111,7 +111,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 		//  first velocity update from occurring
 		for(i = 0; i < pop_size; i++) prevE[i] = curE[i] = HUGE; // initially unfavorable
 
-		if(outlev>2) {
+		if(outlev>LOGRUNV) {
 		pr(logFile, "PSO Initial velocity V:\n");
 		for(i=0;i<pop_size;i++) {
 			pr(logFile, " V[%d] ", i);
@@ -163,7 +163,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 
 	// if global best has not improved, recreate neighborhood links before this move
 	if(pso_options.pso_neighbors_dynamic && Pg.value(Normal_Eval) > prevBestE) {
-		if(outlev>2)  {
+		if(outlev>LOGRUNV)  {
 			// DEBUG MP
 			fprintf(logFile, "PSO init_links Pg= %.2f prevBestE= %.2f\n",
 			 Pg.value(Normal_Eval) , prevBestE);
@@ -279,7 +279,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 				if(pso_options.pso_regenerate_at_limit) {
 				// regenerate at random xyz - do not 
 				//  change orientation or torsions for now
-				if(outlev>2)  fprintf(logFile, 
+				if(outlev>LOGRUNV)  fprintf(logFile, 
 				"PSO [%d] hit limit[%c] (%.2f,%.2f,%.2f) ", i, "XYZ"[j],
 				Pop[i].phenotyp.gread(0).real,
 				Pop[i].phenotyp.gread(1).real,
@@ -288,7 +288,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 				for(int d=0;d<3;d++) {
 					Pop[i].phenotyp.write( random_range(xmin[d], xmax[d]), d);
 					}
-				if(outlev>2)  fprintf(logFile, "regen at (%.2f,%.2f,%.2f)\n",
+				if(outlev>LOGRUNV)  fprintf(logFile, "regen at (%.2f,%.2f,%.2f)\n",
 				Pop[i].phenotyp.gread(0).real,
 				Pop[i].phenotyp.gread(1).real,
 				Pop[i].phenotyp.gread(2).real);
@@ -390,7 +390,7 @@ Individual &Pg = (Individual &)(*_Pg);
 		stop("PSO LocalSearch bad best value");
 	}
 	// MP DEBUG 2011
-	if(outlev>1) (void)fprintf( logFile, "PSO LS only Pop[best=%d] was %f\n", 
+	if(outlev>LOGRUNV) (void)fprintf( logFile, "PSO LS only Pop[best=%d] was %f\n", 
 	 best, Pop[best].value(Normal_Eval));
 
 	// If local seach method is defined, apply local search			
@@ -403,9 +403,9 @@ Individual &Pg = (Individual &)(*_Pg);
 
 
 	// MP DEBUG 2011:
-	if(outlev>1) (void)fprintf( logFile, "PSO LS only Pop[best=%d] now %f\n", 
+	if(outlev>LOGRUNV) (void)fprintf( logFile, "PSO LS only Pop[best=%d] now %f\n", 
 	 best, Pop[best].value(Normal_Eval));
-   if (outlev > 1) {
+   if (outlev > LOGRUNV) {
 	(void)fprintf( logFile, " %f",Pop[best].value(Normal_Eval)); 
 	(void)fprintf( logFile, " \n"); 
 	    }

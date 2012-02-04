@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.35 2012/02/02 02:16:48 mp Exp $
+ $Id: writePDBQT.cc,v 1.36 2012/02/04 02:22:05 mp Exp $
 
  AutoDock  
 
@@ -129,7 +129,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     }
 
     // Write out the state variables
-	if ((outlev > -1) && (outlev < 3)) {
+	if ((outlev > LOGMIN ) && (outlev < 999)) { // LOGTODO why high limit?
         // "outlev" is the level of detail: 2 is high, 0 is low
 
 	// pass original center to printState - could be improved - MP 2010-05
@@ -147,7 +147,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         pr(logFile, "State:\t"); // various possibly longer formats, as axis-angle
         printState(logFile, state, outlev);
         pr(logFile, "\n\n");
-	} else if (outlev < 0) {
+	} else if (outlev >= LOGMIN ) {
 		printState(logFile, state, 0);
         pr(logFile, "\n");
 	}
@@ -188,7 +188,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         eb.e_inter_moving_moving = 0.0;
     }
 
-	if (outlev > -1) {
+	if (outlev >= LOGMIN ) {
 		AxisAngle aa = QuatToAxisAngle( state.Q );
 		// output of coordinates
         pr( logFile, "%s: MODEL     %4d\n", state_type_string, irun+1 );

@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.50 2011/07/13 05:08:26 mp Exp $
+ $Id: gs.cc,v 1.51 2012/02/04 02:22:05 mp Exp $
 
  AutoDock 
 
@@ -1513,7 +1513,7 @@ int Genetic_Algorithm::localsearch(Population &thisPop, Local_Search *local_meth
 	if(local_method != NULL) for (unsigned int i=0; i<thisPop.num_individuals(); i++) {
 #ifdef LOCALSEARCHDEBUG
 // MP June 2011 - disabled after move of code TODO since values not handy
-            if (outlev > 1) {
+            if (outlev >= LOGRUNV) {
                 (void)fprintf( logFile, "LS: %d",generations-1); 
                 (void)fprintf( logFile, " %d",i+1); 
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
@@ -1521,7 +1521,7 @@ int Genetic_Algorithm::localsearch(Population &thisPop, Local_Search *local_meth
 #endif
            if(ranf() < localsearch_freq ) local_method->search(thisPop[i]);
 #ifdef LOCALSEARCHDEBUG
-           if (outlev > 1) {
+           if (outlev >= LOGRUNV) {
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
                 (void)fprintf( logFile, " \n"); 
             }

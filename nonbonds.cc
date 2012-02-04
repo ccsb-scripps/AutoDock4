@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.16 2012/02/02 02:16:47 mp Exp $
+ $Id: nonbonds.cc,v 1.17 2012/02/04 02:22:05 mp Exp $
 
  AutoDock 
 
@@ -259,8 +259,9 @@ const int outlev, FILE *logFile)
 void print_1_4_message(const Boole B_include_1_4_interactions, const Real scale_1_4, const int outlev, FILE *logFile)
 {
     if (B_include_1_4_interactions == FALSE) {
+	if(outlev >= LOGBASIC)
         pr(logFile, "1,4-interactions will be _ignored_ in the non-bonded internal energy calculation.\n\n");
-    } else {
+    } else if( outlev >= LOGMIN) {
         pr(logFile, "1,4-interactions will be _included_ in the non-bonded internal energy calculation.\n\n");
         pr(logFile, "1,4-interaction energies will be will be scaled by a factor of %.2lf .\n\n", (double)scale_1_4);
         pr(logFile, "NOTE:  Computed internal energies will differ from the standard AutoDock free energy function.\n\n");

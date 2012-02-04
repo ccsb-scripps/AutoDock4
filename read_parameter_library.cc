@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.23 2011/09/17 00:01:33 mp Exp $
+ $Id: read_parameter_library.cc,v 1.24 2012/02/04 02:22:05 mp Exp $
 
  AutoDock 
 
@@ -173,9 +173,10 @@ void read_parameter_library(
                 thisParameter.epsij_hb *= AD4.coeff_hbond;
 
                 apm_enter(thisParameter.autogrid_type, thisParameter);
+		if(outlev >= LOGETABLES) {
                 pr(logFile, "Parameters for the atom type \"%s\" were read in from \"%s\" as follows:\n\n", thisParameter.autogrid_type, FN_parameter_library);
 
-                if (outlev > 2) {
+                if (outlev > LOGETABLES) {
                     pr(logFile, "\tR-eqm = %5.2f Angstrom\n\tweighted epsilon = %5.3f\n\tAtomic fragmental volume = %5.3f\n\tAtomic solvation parameter = %5.3f\n\tH-bonding R-eqm = %5.3f\n\tweighted H-bonding epsilon = %5.3f\n\tH-bonding type = %d,  bond index = %d\n\n",
                             thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
                             thisParameter.Rij_hb, thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
@@ -184,6 +185,7 @@ void read_parameter_library(
                             thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
                             thisParameter.Rij_hb, thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
                 }
+		}
                 break;
 
             default:
@@ -369,10 +371,11 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
                 }
 
                 apm_enter(thisParameter.autogrid_type, thisParameter);
+		if(outlev >= LOGETABLES) {
                 pr(logFile, "Parameters for the atom type \"%s\" were initialised with the following default values:\n\n", thisParameter.autogrid_type);
 
 
-                if (outlev > 2) {
+                if (outlev > LOGETABLES) {
                     pr(logFile, "\tR-eqm = %5.2f Angstrom\n\tweighted epsilon = %5.3f\n\tAtomic fragmental volume = %5.3f\n\tAtomic solvation parameter = %5.3f\n\tH-bonding R-eqm = %5.3f\n\tweighted H-bonding epsilon = %5.3f\n\tH-bonding type = %d,  bond index = %d\n\n",
                             thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
                             thisParameter.Rij_hb, thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
@@ -381,6 +384,7 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
                             thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
                             thisParameter.Rij_hb, thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
                 }
+		}
                 break;
 
             default:

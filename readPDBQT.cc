@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.33 2012/02/02 02:16:47 mp Exp $
+ $Id: readPDBQT.cc,v 1.34 2012/02/04 02:22:05 mp Exp $
 
  AutoDock 
 
@@ -344,7 +344,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     // We found the atom type and its parameters
                     map_index[natom] = found_parm->map_index;
                     bond_index[natom] = found_parm->bond_index;
-                    if (outlev > 0) {
+                    if (outlev >= LOGETABLES) {
                         (void) fprintf(logFile, "Found parameters for atom %d, atom type \"%s\", grid map index = %d\n",
                                    natom + 1, found_parm->autogrid_type, found_parm->map_index);
                     }

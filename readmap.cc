@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.15 2011/03/08 04:18:37 mp Exp $
+ $Id: readmap.cc,v 1.16 2012/02/04 02:22:05 mp Exp $
 
  AutoDock 
 
@@ -274,8 +274,9 @@ Statistics readmap( char           line[LINE_LEN],
     }
     */
 
-    pr( logFile, "Closing file.\n" );
+    if(outlev >= LOGRECREAD) pr( logFile, "Closing file.\n" );
     fclose( map_file );
+    if(outlev >= LOGRECREAD) {
     pr( logFile, "%d energies found for map %d\n", nv, num_maps+1 );
     if (map_type == 'e') {
         pr( logFile, "Minimum electrostatic potential = %.2f,  maximum electrostatic potential = %.2f\n\n", map_min, map_max );
@@ -288,6 +289,7 @@ Statistics readmap( char           line[LINE_LEN],
     timesys( loadEnd - loadStart, &tms_loadStart, &tms_loadEnd );
 
     pr( logFile, "\n" );
+    }
 
     if (nv != nvExpected ) {
         char message[LINE_LEN];

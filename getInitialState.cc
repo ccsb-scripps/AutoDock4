@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.31 2012/02/02 02:16:47 mp Exp $
+ $Id: getInitialState.cc,v 1.32 2012/02/04 02:22:05 mp Exp $
 
  AutoDock  
 
@@ -135,14 +135,14 @@ void getInitialState(
                 sInit->T.x = random_range( info->lo[X], info->hi[X] );
                 sInit->T.y = random_range( info->lo[Y], info->hi[Y] );
                 sInit->T.z = random_range( info->lo[Z], info->hi[Z] );
-                if (outlev > 1) {
+                if (outlev >= LOGRUNV) {
                     pr( logFile, "Random initial translation,  tran0 %.3f %.3f %.3f\n", sInit->T.x, sInit->T.y, sInit->T.z);
                 }
             }/*if*/
             if (B_RandomQuat0) {
                 sInit->Q = randomQuat(); // generate a uniformly-distributed quaternion
 
-                if (outlev > 1) {
+                if (outlev >= LOGRUNV ) {
                     pr( logFile, "Random initial quaternion,  quaternion0 %.3f %.3f %.3f %.3f\n", sInit->Q.x, sInit->Q.y, sInit->Q.z,  sInit->Q.w );
                      // convert from qx,qy,qz,qw to axis-angle (nx,ny,nz,ang)
 		    AxisAngle aa = QuatToAxisAngle(sInit->Q);
@@ -150,18 +150,18 @@ void getInitialState(
                 }
             }/*if*/
             if ( B_RandomDihe0 && (ntor > 0) ) {
-                if (outlev > 1) {
+                if (outlev >= LOGRUNV ) {
                     pr( logFile, "Random initial torsions, ndihe = %d\ndihe0 = ", ntor);
                 }
                 sInit->ntor = ntor;
                 for (i=0; i<ntor; i++) {
                     sInit->tor[i] = random_range(-180.,180.);
-                    if (outlev > 1) {
+                    if (outlev >= LOGRUNV ) {
                         pr( logFile, "%7.2f ", sInit->tor[i] ); /*in degrees*/
                     }
                     sInit->tor[i] = DegreesToRadians( sInit->tor[i] ); /*now in radians*/
                 }
-                if (outlev > 1) {
+                if (outlev >= LOGRUNV ) {
                     pr( logFile, "\n");
                 }
             }/*if*/
@@ -206,7 +206,7 @@ void getInitialState(
 
             ++retries;
             if ((retries > 0) && (retries < MaxRetries) &&
-                (e0total > e0max) && (outlev > 1)) {
+                (e0total > e0max) && (outlev >= LOGRUNVV)) {
 
                 pr(logFile, "Initial total energy, e0total = %.3f, too high!\n", e0total);
                 pr(logFile, "Number of attempts = %d (run %d)\n\n", retries, irun1);
@@ -214,6 +214,7 @@ void getInitialState(
 
             } else if (retries >= MaxRetries) {
 
+		if(outlev >= LOGRUNVV)
                 pr( logFile, "Sorry, too many retries (%d).  Continuing...\n\nWill use the state with the lowest energy found, %.2f\n\n", MaxRetries, e0min);
                 e0total = e0min;
                 copyState( sInit, *sMinm );

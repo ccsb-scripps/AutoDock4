@@ -145,7 +145,7 @@ void swarmActivity(const int S, const int D, const Position *const Xi, const int
 		position_dist[s] = sqrt(position_dist[s]);
 		swarm_activity += position_dist[s];
 	}
-	if (outlev >1)
+	if (outlev >= LOGRUNVV )
 	{
 		swarm_activity = (swarm_activity) / (S * D);
 		pr(logFile, "swarm_move %d SA= %f\n", nb_eval+1, swarm_activity);

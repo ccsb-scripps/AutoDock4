@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.18 2012/01/25 00:20:55 mp Exp $
+ $Id: intnbtable.cc,v 1.19 2012/02/04 02:22:05 mp Exp $
 
  AutoDock 
 
@@ -234,24 +234,23 @@ void setup_distdepdiel( FILE *logFile,
     register int i=0;
     register double distance=0.0L;
 
-    if (outlev > 0) {
+    if (outlev >= LOGETABLES ) {
         pr(logFile, "Calculating distance-dependent dielectric function using the method of Mehler & Solmajer\n\n\n");
     }
 
     ptr_ad_energy_tables->epsilon_fn[0] = 1.0L;
-    if (outlev > 1) {
+    if (outlev >= LOGETABLES) {
         pr(logFile, "i, ptr_ad_energy_tables->epsilon_fn[i] = %d, %8.4lf\n", i, ptr_ad_energy_tables->epsilon_fn[i]);
     }
     for (i = 1;  i < NDIEL;  i++) {
         distance = IndexToDistance(i);
         ptr_ad_energy_tables->epsilon_fn[i] = calc_ddd_Mehler_Solmajer( distance, APPROX_ZERO );
         ptr_ad_energy_tables->r_epsilon_fn[i] = distance * calc_ddd_Mehler_Solmajer( distance, APPROX_ZERO );
-        if (outlev > 1) {
-            if (i%1000 == 0) {
+        if (outlev >= LOGETABLES &&
+             (i%1000 == 0)) {
                 pr(logFile, "i = %5d,  distance = %7.2lf,  epsilon_fn[i] = %8.4lf,  r_epsilon_fn[i] = %8.4lf\n", 
                         i, distance, ptr_ad_energy_tables->epsilon_fn[i], ptr_ad_energy_tables->r_epsilon_fn[i]);
             }
-        }
         // pre-compute reciprocal to avoid having to do it later in eintcal.
         ptr_ad_energy_tables->r_epsilon_fn[i] = 1.0 /  ptr_ad_energy_tables->r_epsilon_fn[i];
     } // next i

@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.35 2012/02/02 23:28:30 rhuey Exp $
+ $Id: constants.h,v 1.36 2012/02/04 02:22:05 mp Exp $
 
  AutoDock 
 
@@ -226,6 +226,18 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define OUTLEV1_GENS 100 /* output every 100 generations */
 #define OUTLEV2_GENS 1 /* output every generation */
 
+/* logFile outlev handling: low to high */
+#define LOGMIN -2
+#define LOGMINCLUST -1
+#define LOGBASIC 0
+#define LOGFORADT 1
+#define LOGRUNV 2
+#define LOGRUNVV 3
+#define LOGRUNVVV 4
+#define LOGLIGREAD 3
+#define LOGRECREAD 4
+#define LOGETABLES 5
+#define LOGNBINTE 5   // analysis.cc nonbond internal energy table
 #endif  /* CONSTANTS */
 
 

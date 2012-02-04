@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.161 2012/02/02 23:28:30 rhuey Exp $
+ $Id: main.cc,v 1.162 2012/02/04 02:22:05 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -110,7 +110,7 @@ extern Real idct;
 extern Eval evaluate;
 extern Linear_FE_Model AD4;
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.161 2012/02/02 23:28:30 rhuey Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.162 2012/02/04 02:22:05 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -726,7 +726,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 banner( version_num.c_str() );
 
-(void) fprintf(logFile, "                           $Revision: 1.161 $\n\n");
+(void) fprintf(logFile, "                           $Revision: 1.162 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 
 
@@ -878,6 +878,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Output level,
         */
         get1arg( line, "%*s %d", &outlev, "OUTLEV" );
+	// LOGTODO 2012 MP  make these symbolic
         switch ( outlev ) {
         case -1:
             pr( logFile, "Output Level = -1.  ONLY STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
@@ -893,7 +894,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             break;
         case 2:
         default:
-            pr( logFile, "Output Level = 2.  FULL OUTPUT DURING DOCKING.\n" );
+	    sprintf(message, 
+	     "Output Level = %d. FULL OUTPUT DURING DOCKING.\n", outlev);
+            pr( logFile, message );
             output_pop_stats.everyNgens = (unsigned int) OUTLEV2_GENS;
             break;
         }
@@ -978,12 +981,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Calculate internal electrostatic energies...
         */
         B_calcIntElec = TRUE;
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Electrostatic energies will be calculated for all non-bonds between moving atoms.\n\n");
         }
         nfields = sscanf( line, "%*s " FDFMT, &AD3_FE_coeff_estat );
         if (nfields == 1) {
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr(logFile, "NOTE!  Internal electrostatics will NOT be scaled by the factor specified by this command,  %.4f -- the coefficient set by this command is ignored in AutoDock 4;\n", AD3_FE_coeff_estat);
                 pr(logFile, "       the coefficient that will actually be used should be set in the parameter library file.\n");
                 pr(logFile, "       The coefficient for the electrostatic energy term is %.4f", AD4.coeff_estat);
@@ -1105,7 +1108,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 // 0-based index it had in the list of ligand types supplied in the DPF "types" line:
                 foundParameter->map_index = i;
                 parameterArray[i] = *(foundParameter);
-                if (outlev > 0) {
+                if (outlev >= LOGLIGREAD) {
                     (void) fprintf( logFile, "Parameters found for ligand type \"%s\" (grid map index = %d, weighted well depth, epsilon = %6.4f)", foundParameter->autogrid_type, foundParameter->map_index, foundParameter->epsij );
                     if (parameter_library_found == 1) {
                         pr( logFile, " in parameter library \"%s\".\n", FN_parameter_library );
@@ -1124,7 +1127,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 stop(error_message);
             } // if / else apm_find
         } // for i
-        pr( logFile, "\n\n");
 
         (void) fflush( logFile);
 
@@ -1209,6 +1211,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     pr(logFile, "\n smoothing range is %.4f\n", r_smooth);
                     ///@@intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
                     intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
+		    if(outlev>=LOGETABLES)
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
                     intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, r_smooth, AD4.coeff_desolv,  sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev);
                     // Increment the atom type numbers, a1 and a2, for the internal non-bond table
@@ -1241,7 +1244,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	if(! B_found_ligand_types) {
 		stop("You must specify the ligand_types before reading the grid data file.");
 		}
-        // TO DO: add outlev
+        // LOGTODO TO DO: add outlev
         readfield( info, line, jobStart, tms_jobStart );
         num_maps = 0;
 
@@ -1256,7 +1259,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	   info->num_alloc[Z] * info->num_alloc[Y] * 
 	   info->num_alloc[X] * info->num_alloc_maps;
         map = (MapType *) calloc(info->map_alloc_size, sizeof(MapType));
-	if(outlev>=0) {
+	if(outlev >= LOGRECREAD) {
 	   pr(logFile, "Allocating %d x %d x %d (x,y,z) grid of %d maps, %ld bytes\n", 
 	   info->num_alloc[X] , info->num_alloc[Y] , 
 	   info->num_alloc[Z] , info->num_alloc_maps,
@@ -1286,7 +1289,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // Read in the AutoGrid atomic affinity map
             // map_index could be incremented here if we had the atom_type stored in each map...
             map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'a' );
-            pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
+            if( outlev >= LOGRECREAD ) pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                     map_stats.minimum, map_stats.mean, map_stats.maximum);
             num_maps++;
 
@@ -1306,7 +1309,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  elecmap file.e.map
          */
         map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'e' );
-        pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
+        if( outlev >= LOGRECREAD ) pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                 map_stats.minimum, map_stats.mean, map_stats.maximum);
         ElecMap = num_maps;
         B_found_elecmap = TRUE;
@@ -1320,7 +1323,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  desolvmap file.d.map
          */
         map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'd' );
-        pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
+        if( outlev >= LOGRECREAD ) pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                 map_stats.minimum, map_stats.mean, map_stats.maximum);
         DesolvMap = num_maps;
         B_found_desolvmap = TRUE;
@@ -1339,7 +1342,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (B_atom_types_found == TRUE) {
             // map_index could be incremented here if we had the atom_type stored in each map...
             map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'c' );
-            pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
+            if( outlev >= LOGRECREAD ) pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                     map_stats.minimum, map_stats.mean, map_stats.maximum);
             num_maps++;
         } else {
@@ -1475,7 +1478,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr(logFile,"Calculating the product of the partial atomic charges, q1*q2, for all %d non-bonded pairs...\n\n", Nnb);
             pr(logFile," -- Scaled q1*q2 means multiplied by both  %.1lf (for conversion later on to kcal/mol)\n", (double)ELECSCALE);
             pr(logFile,"    and by the AD4 FF electrostatics coefficient, %.4lf\n\n", (double)AD4.coeff_estat);
-            if (outlev >= 0) {
+            if (outlev >= LOGLIGREAD) {
                 pr(logFile,"Non-bonded                           Scaled\n");
                 pr(logFile,"   Pair     Atom1-Atom2    q1*q2      q1*q2\n");
                 pr(logFile,"__________  ___________  _________  _________\n");
@@ -1489,11 +1492,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                        ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[atm1])
                        + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[atm2]) );
                 nonbondlist[i].q1q2 = charge[atm1] * charge[atm2];
-                if (outlev >= 0) {
+                if (outlev >= LOGLIGREAD) {
                     pr(logFile,"   %4d     %5d-%-5d    %5.2f",i+1,atm1+1,atm2+1,nonbondlist[i].q1q2);
                 }//outlev
                 nonbondlist[i].q1q2 *= ELECSCALE * AD4.coeff_estat;
-                if (outlev >= 0) {
+                if (outlev >= LOGLIGREAD) {
                     pr(logFile,"     %6.2f\n",nonbondlist[i].q1q2);
                     pr(logFile,"\n");
                 }//outlev
@@ -1719,7 +1722,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if ( nmol == 0 || true_ligand_atoms==0) {
             pr( logFile, "Must specify a ligand PDBQT file, using the \"move\" command.\n");
         } else {
-            if (outlev >= 0) {
+            if (outlev >= LOGLIGREAD) {
                 pr( logFile, "Translating small molecule by:\t" );
                 pr( logFile, "(%+.3f, %+.3f, %+.3f)\n\n", -lig_center[X], -lig_center[Y], -lig_center[Z]);
             }
@@ -1736,7 +1739,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 } /* xyz */
                 maxrad = max(maxrad,sqrt(r2sum));
             } /* i */
-            if (outlev >= 0 && true_ligand_atoms>0) {
+            if (outlev >= LOGLIGREAD && true_ligand_atoms>0) {
                 pr( logFile, "Furthest true ligand atom from \"about\" center is %.3f Angstroms (maxrad).\n\n",maxrad);
             }
         }
@@ -1902,7 +1905,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             ligand.S.T.z = sInit.T.z;
         }
         B_found_tran0_keyword = TRUE;
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Initial translation =\t\t\t(%.3f, %.3f, %.3f) Angstroms\n", sInit.T.x, sInit.T.y, sInit.T.z );
         }
         break;
@@ -1934,7 +1937,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // so we can generate random quaternions in population-based methods.
             B_RandomQuat0 = TRUE;
             sInit.Q = randomQuat();
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Each run will begin with a new, random initial orientation.\n");
             }
         } else {
@@ -1949,7 +1952,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
 
         ligand.S.Q = sInit.Q;
-        if (outlev >= 0) {
+	// LOGTODO fix logic in the next mess MP
+        if (outlev >= LOGBASIC ) {
             if (dpf_keyword == DPF_QUATERNION0) {
                 pr( logFile, "Initial quaternion,  (x,y,z,w) =\t( %.3f, %.3f, %.3f, %.3f ),\n", sInit.Q.x, sInit.Q.y, sInit.Q.z, sInit.Q.w);
             } else {
@@ -1981,7 +1985,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  ndihe
         **  Formerly, number of dihedral angles to be specified by "dihe0"
         */
-            if (outlev >= 0) {
+            if (outlev >= LOGMIN) {
                 pr( logFile, "%s: WARNING!  The \"ndihe\" command is no longer supported.  The number of torsions in the PDBQT file(s) is the number that will be used (i.e. %d)\n", programname, ntor);
             }
         break;
@@ -2012,7 +2016,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr( logFile, "The number of torsions detected in the PDBQT files was %d torsions.\n", ntor);
 	        stop("torsion count mismatch");
             } else {
-                if (outlev >= 0) {
+                if (outlev >= LOGBASIC) {
                     pr( logFile, "%d initial torsion angles were detected on input line.\n", nfields );
                 }
             }
@@ -2022,7 +2026,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "%s: WARNING!  The number of torsions specified (%d) does not match the number found in the PDBQT file (i.e. %d)\n", programname, nval, ntor);
         }
         for ( i=0; i<nval; i++ ) {
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "\tInitial torsion %2d = %7.2f deg\n", (i+1), sInit.tor[i] ); /* sInit.tor is in degrees */
                 /* Convert sInit.tor[i] into radians */
             }
@@ -2047,7 +2051,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         if (nfields == 2) {
             B_CalcTrnRF = TRUE;
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Final cycle,   maximum translation step = +/- %-.1f Angstroms\n", trnStepFinal);
                 pr( logFile, "Reduction factor will be calculated when number of cycles has been read in.\n");
             }
@@ -2067,7 +2071,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         } else if (nfields == EOF) {
             stop("End of file encountered in QSTEP line");
         } else if (nfields > 0) {
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Initial cycle, maximum quaternion angle step = +/- %-.1f deg\n", qtwStep0);
             }
             /* convert to radians */
@@ -2075,7 +2079,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         if (nfields == 2) {
             B_CalcQtwRF = TRUE;
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Final cycle,   maximum quaternion angle step = +/- %-.1f deg\n", qtwStepFinal);
                 pr( logFile, "Reduction factor will be calculated when number of cycles has been read in.\n");
             }
@@ -2097,7 +2101,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         } else if (nfields == EOF) {
             stop( "End of file encountered in DSTEP line");
         } else if (nfields > 0) {
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Initial cycle, maximum torsion angle step = +/- %-.1f deg\n", torStep0);
             }
             /* convert to radians */
@@ -2105,7 +2109,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         if (nfields == 2) {
             B_CalcTorRF = TRUE;
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Final cycle,   maximum torsion angle step = +/- %-.1f deg\n", torStepFinal);
                 pr( logFile, "Reduction factor will be calculated when number of cycles has been read in.\n");
             }
@@ -2122,7 +2126,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Translation reduction factor,
         */
         get1arg( line, "%*s " FDFMT, &trnFac, "TRNRF" );
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Reduction factor for translations =\t%-.3f /cycle\n", trnFac );
         }
         B_trnReduc = (trnFac != 1.);
@@ -2136,7 +2140,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Quaternion reduction factor,
         */
         get1arg( line, "%*s " FDFMT, &qtwFac, "QRARF" );
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Reduction factor for quaternion angle =\t%-.3f /cycle\n", qtwFac );
         }
         B_qtwReduc = (qtwFac != 1.);
@@ -2150,7 +2154,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Torsion reduction factor,
         */
         get1arg( line, "%*s " FDFMT, &torFac, "DIHRF" );
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Reduction factor for torsion angles =\t%-.3f /cycle\n", torFac );
         }
         B_torReduc = (torFac != 1.);
@@ -2283,7 +2287,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Temperature reduction factor,
         */
         get1arg( line, "%*s " FDFMT, &RTFac, "RTRF");
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "R*Temperature reduction factor = %8.2f\t/cycle\n", RTFac );
         }
         if (RTFac >= 1.) {
@@ -2323,7 +2327,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr( logFile, "Maximum number of cycles =\t\t\t%8d cycles\n\n", ncycles);
         if (B_linear_schedule) {
             RTreduc = RT0 / ncycles;
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "\nA linear temperature reduction schedule was requested...\n" );
                 pr( logFile, "Annealing temperature will be reduced by %.3f cal mol per cycle.\n\n", RTreduc );
             }
@@ -2341,12 +2345,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (naccmax < 0) {
             stop("Negative number of accepted moves in ACCS line");
         }
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Maximum number accepted per cycle =\t\t%8d steps\n", naccmax);
         }
         if (nrejmax != 0) {
             nstepmax = naccmax + nrejmax;
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "                                           \t_________\n" );
                 pr( logFile, "Maximum possible number of steps per cycle =\t%8d\tsteps\n\n", nstepmax);
             }
@@ -2362,12 +2366,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         get1arg( line, "%*s %d", &nrejmax, "REJS" );
         if (nrejmax < 0) stop("Negative number of rejected moves in REJS line");
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Maximum number rejected per cycle =\t\t%8d steps\n", nrejmax);
         }
         if (naccmax != 0) {
             nstepmax = naccmax + nrejmax;
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "                                           \t_________\n" );
                 pr( logFile, "Maximum possible number of steps per cycle =\t%8d steps\n\n", nstepmax);
             }
@@ -2383,7 +2387,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         get1arg( line, "%*s %c", &selminpar, "SELECT" );
         B_selectmin = (selminpar == 'm');
-        if(outlev >= 0) {
+        if(outlev >= LOGBASIC) {
 		if ( B_selectmin ) {
 			pr( logFile, "%s will begin each new cycle\nwith the state of minimum energy from the previous annealing cycle.\n", programname);
 		  } else {
@@ -2400,7 +2404,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Cluster tolerance,
         */
         get1arg( line, "%*s " FDFMT, &clus_rms_tol, "RMSTOL");
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Maximum RMS tolerance for conformational cluster analysis = %.2f Angstroms\n", clus_rms_tol);
         }
         break;
@@ -2413,7 +2417,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  RMS Reference Coordinates:
         */
         get1arg( line, "%*s %s", FN_rms_ref_crds, "RMSREF");
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "RMS reference coordinates will taken from \"%s\"\n", FN_rms_ref_crds );
         }
         break;
@@ -2434,17 +2438,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	    stop("error in RMSATOMS line");
         } else {
             if ( streq( rms_atoms_cmd, "ligand_only")) {
-                if (outlev >= 0) {
+                if (outlev >= LOGBASIC) {
                     pr( logFile, "RMS clustering will be performed on the ligand atoms only.\n" );
                 }
                 B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
             } else if ( streq( rms_atoms_cmd, "all")) {
-                if (outlev >= 0) {
+                if (outlev >= LOGBASIC) {
                     pr( logFile, "RMS clustering will be performed on the moving atoms of the receptor plus all the ligand atoms.\n" );
                 }
                 B_rms_atoms_ligand_only = FALSE;  // cluster on the ligand atoms plus moving receptor atoms
             } else {
-                if (outlev >= 0) {
+                if (outlev >= LOGBASIC) {
                     pr( logFile, "RMS clustering will be performed on the ligand atoms only.\n" );
                 }
                 B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
@@ -2461,17 +2465,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         get1arg( line, "%*s %d", &trj_freq, "TRJFRQ");
         B_write_trj = (trj_freq > 0);
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, UnderLine );
             pr( logFile, "\t\tTRAJECTORY INFORMATION\n" );
             pr( logFile, "\t\t______________________\n\n\n" );
         }
         if (B_write_trj) {
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Output frequency for trajectory frames =\tevery %d step%s\n", trj_freq, (trj_freq > 1)?"s.":"." );
             }
         } else {
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "No trajectory of states will be written.\n\n" );
                 pr( logFile, "Subsequent \"trjbeg\", \"trjend\", \"trjout\" and \"trjsel\" parameters will be ignored.\n\n" );
             }
@@ -2486,7 +2490,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Trajectory begin cycle,
         */
         get1arg( line, "%*s %d", &trj_begin_cyc, "TRJBEG" );
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Begin outputting trajectory of states at cycle:\t%d\n", trj_begin_cyc );
         }
         if (trj_begin_cyc < 0) {
@@ -2505,7 +2509,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Trajectory end cycle,
         */
         get1arg( line, "%*s %d", &trj_end_cyc, "TRJEND" );
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Cease outputting trajectory of states at cycle:\t%d\n", trj_end_cyc );
         }
         if (trj_end_cyc > ncycles) {
@@ -2524,7 +2528,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Trajectory file,
         */
         get1arg( line, "%*s %s", FN_trj, "TRJOUT" );
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "\nWrite trajectory of state variables to file: \"%s\"\n", FN_trj);
         }
         break;
@@ -2540,11 +2544,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         B_acconly = (out_acc_rej == 'A');
         B_either  = (out_acc_rej == 'E');
         if (B_acconly) {
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Output *accepted* states only.\n" );
             }
         } else if (B_either) {
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Output *either* accepted or rejected states.\n" );
             }
         } else {
@@ -2560,7 +2564,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Wall Energy,
         */
         get1arg( line, "%*s " FDFMT, &WallEnergy, "EXTNRG" );
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "External grid energy (beyond grid map walls) = %.2f\n\n", WallEnergy );
         }
         break;
@@ -2574,7 +2578,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         get1arg( line, "%*s %s", FN_clus, "CLUSTER" );
         B_cluster_mode = TRUE;
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Cluster mode is now set.\n\n" );
         }
         clmode( num_atom_types, clus_rms_tol,
@@ -2592,7 +2596,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** Write all cluster members...
         */
         B_write_all_clusmem = TRUE;
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "All members of each cluster will be written out after the clustering histogram.\n(This is instead of outputting just the lowest energy member in each.)\n\n" );
         }
         break;
@@ -2606,7 +2610,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  ignoring any atom-type equivalences...
         */
         B_symmetry_flag = FALSE;
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "Symmetry will be ignored in RMS calculations.\n\n" );
         }
         break;
@@ -2625,17 +2629,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         get1arg( line, "%*s %s", rms_mode , "RMS_MODE");
         if (streq(rms_mode, "unique_pair")||streq(rms_mode, "uniquepair")) {
             B_unique_pair_flag = TRUE;
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Symmetry in RMS calculations will consider only unique atom pairs.\n\n" );
             }
         } else if (streq(rms_mode, "atype")) {
             B_unique_pair_flag = FALSE;
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Symmetry in RMS calculations will consider all atom pairs.\n\n" );
             }
         } else if (streq(rms_mode, "heavy_atoms_only")) {
             B_rms_heavy_atoms_only = TRUE;  // cluster on the ligand heavy atoms only, excluding hydrogens
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                pr( logFile, "RMS calculations will consider only heavy atom pairs.\n\n" );
             }
         } else {
@@ -2644,7 +2648,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             stop("");
         }
         if (B_rms_heavy_atoms_only && B_unique_pair_flag)
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                pr( logFile, "RMS calculations will consider only unique pairs of heavy atoms.\n\n" );
             }
         break;
@@ -2659,14 +2663,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  more accurate entropy estimations...
         */
         B_linear_schedule = TRUE;
-        if (outlev >= 0) {
+        if (outlev >= LOGBASIC) {
             pr( logFile, "A linear temperature reduction schedule will be used...\n\n" );
         }
         if (ncycles == -1) {
             pr( logFile, "\nWARNING!  Please specify the number of cycles first!\n\n" );
         } else {
             RTreduc = RT0 / ncycles;
-            if (outlev >= 0) {
+            if (outlev >= LOGBASIC) {
                 pr( logFile, "Annealing temperature will be reduced by %.3f cal mol per cycle.\n\n", RTreduc );
             }
         }
@@ -3579,7 +3583,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         
 	  
-	  if(outlev>0) {
+	  if(outlev>LOGBASIC) {
 		pr(logFile, "PSO tvmax = %.3f\n", pso_tvmax);
 		pr(logFile, "PSO qvmax = %.3f\n", pso_qvmax);
 		pr(logFile, "PSO rvmax = %.3f\n", pso_rvmax);

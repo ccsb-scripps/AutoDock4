@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.48 2012/02/02 02:16:47 mp Exp $
+ $Id: analysis.cc,v 1.49 2012/02/04 02:22:05 mp Exp $
 
  AutoDock  
 
@@ -49,6 +49,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "printEnergies.h"
 #include "analysis.h"
 #include "eintcal.h"
+#include "eintcalPrint.h"
 
 extern int   keepresnum;
 extern char  dock_param_fn[];
@@ -188,7 +189,7 @@ void analysis( const int   Nnb,
     for ( k=0; k<nconf; k++ ) {
 
         /* fprintf( logFile, "\n\nState hist[%d].\n", k); */
-        if (outlev > -1) {
+        if (outlev >= LOGMIN) {
 	    // pass center to printState - could be improved MPique 2010
 	    hist[k].Center.x = sml_center[X];
 	    hist[k].Center.y = sml_center[Y];
@@ -196,15 +197,9 @@ void analysis( const int   Nnb,
             printState( logFile, hist[k], 2 );
         }
 
-        /* fprintf( logFile, "\nCopying state %d.\n", k); */
         copyState( &save, hist[k] );
-
-        /* fprintf( logFile, "Converting state %d to coordinates.\n", k); */
         cnv_state_to_coords( save, vt, tlist, ntor, crdpdb, crd, natom,
 	 true_ligand_atoms, outlev, logFile);
-
-        /* fprintf( logFile, "Saving coordinates of state %d.\n", k); */
-
         /* Save coordinates in crdSave array...  */
         (void)memcpy(crdSave[k], crd, natom*SPACE*sizeof(Real));
     } /*k*/
@@ -223,12 +218,13 @@ void analysis( const int   Nnb,
                     ref_crds, ref_natoms, ref_rms, B_rms_heavy_atoms_only,
                     h_index);
 
+	if (outlev >= LOGMIN) {
         pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
-        flushLog;
 
         prClusterHist( ncluster, irunmax, clus_rms_tol,num_in_clu, cluster, econf, clu_rms, ref_rms);
+	}
 
-        if (outlev > -1) {
+        if (outlev >= LOGMINCLUST ) {
             pr( logFile, "\n\tLOWEST ENERGY DOCKED CONFORMATION from EACH CLUSTER");
             pr( logFile, "\n\t___________________________________________________\n\n\n" );
 
@@ -275,6 +271,7 @@ void analysis( const int   Nnb,
                  nonbondlist, ptr_ad_energy_tables, Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
 		 B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
      
+	    if(outlev >= LOGMIN) {
      	    AxisAngle aa = QuatToAxisAngle(hist[c].Q);
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
 
@@ -300,8 +297,9 @@ void analysis( const int   Nnb,
             }/*if*/
             pr( logFile, "USER  \n");
             flushLog;
+	    }
      
-            if (outlev > -11) {
+            if (outlev > LOGMIN)  {
                 if (keepresnum > 0) {
                     // Log File PDBQ coordinates [
                     pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
@@ -327,16 +325,22 @@ void analysis( const int   Nnb,
             pr( logFile, "TER\n" );
             pr( logFile, "ENDMDL\n" );
             // End of outputting coordinates of this "MODEL"...
-#ifdef EINTCALPRINT
+//#ifdef EINTCALPRINT
+	    if(outlev >= LOGNBINTE ){
             // Print detailed breakdown of internal energies of all non-bonds
-            (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, Nnb, B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues);
-#endif
+            (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, 
+	    Nnb, Nnb_array, nb_group_energy, 
+	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues,
+	    outlev, logFile);
+	    }
+//#endif
             flushLog;
         } /*k*/
     } /*i   (Next cluster.) */
     pr( logFile, "\n\n" );
 
-    // AVS Field file [
+    if(outlev >= LOGFORADT)  { // LOGTODO
+    // AVS Field file 
     off[0]=5;
     off[1]=6;
     off[2]=7;
@@ -359,6 +363,6 @@ void analysis( const int   Nnb,
     strcat( filename, ".dlg.pdb\0" );
 
     print_avsfld( logFile, veclen, natom, ncluster, off, 12, label, filename );
-    //]
+    }
 }
 /* EOF */

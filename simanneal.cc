@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.34 2012/02/02 02:16:47 mp Exp $
+ $Id: simanneal.cc,v 1.35 2012/02/04 02:22:05 mp Exp $
 
  AutoDock  
 
@@ -259,7 +259,7 @@ void simanneal ( int   *const Addr_nconf,
         irun1 = 1 + irun;
 
 
-        if (outlev > 0) {
+        if (outlev >= LOGBASIC) {
             pr(logFile, "\n\tINITIALIZING AUTOMATED DOCKING SIMULATION\n" );
             pr(logFile, "\t_________________________________________\n\n" );
             pr( logFile, "RUN %d...\n\n", irun1);
@@ -299,7 +299,7 @@ void simanneal ( int   *const Addr_nconf,
         qtwStep = qtwStep0;        /* quaternion angle, w*/
         torStep = torStep0;        /* torsion angles*/
 
-        if (outlev > 0) {
+        if (outlev > LOGFORADT) {
             pr( logFile, "\n\n\t\tBEGINNING SIMULATED ANNEALING");
             pr( logFile, "\n\t\t_____________________________\n\n");
             pr( logFile, "\n      \t      \tMinimum     Average     | Acc/    Accepted:    Rejected:     |          |  xyz-Translation  |        Time:        \n");
@@ -537,12 +537,12 @@ void simanneal ( int   *const Addr_nconf,
                 /*
                 **  Output-level dependent diagnostics...
                 */
-                if (outlev > 0) {
+                if (outlev >= LOGRUNV) {
                     /*pr(logFile, "\n"); / *###*/
                     pr( logFile, "%d /%d\t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", irun1, irunmax, icycle1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (Real)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
                     cycEnd = times( &tms_cycEnd );
                     timesys( cycEnd - cycStart, &tms_cycStart, &tms_cycEnd );
-                    if (outlev > 1) {
+                    if (outlev > LOGRUNV ) {
                         pr( logFile, "\tEnergy:   \tState:\n\t__________\t____________________________________________________________\nMinimum\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [x,y,z,w] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eMin, sMin.T.x, sMin.T.y, sMin.T.z, sMin.Q.x, sMin.Q.y, sMin.Q.z, sMin.Q.w );
                         pr( logFile, "\nLast\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [x,y,z,w] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eLast, sLast.T.x, sLast.T.y, sLast.T.z, sLast.Q.x, sLast.Q.y, sLast.Q.z, sLast.Q.w );
                         if (ntor > 0) {
@@ -562,9 +562,9 @@ void simanneal ( int   *const Addr_nconf,
                             pr( logFile, "\nQuaternion Rotation step size reduced; now =\t +/- %.2f deg\n", qtwFac);
                         if ( B_torReduc )
                             pr( logFile, "\nTorsion step size reduced; now =\t\t +/- %.2f deg\n", torFac);
-                    }/*outlev > 1*/
+                    }/*outlev > LOGRUNV */
                     flushLog;
-                }/*outlev > 0*/
+                }/*outlev >= LOGRUNV*/
                 /*
                 ** Reduce temperature,
                 */

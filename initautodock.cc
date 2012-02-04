@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.cc,v 1.16 2012/02/02 02:16:47 mp Exp $
+ $Id: initautodock.cc,v 1.17 2012/02/04 02:22:05 mp Exp $
 
  AutoDock 
 
@@ -91,7 +91,7 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
         }
     }
 
-    if (outlev > 1) {
+    if (outlev > LOGLIGREAD) {
         pr(logFile, "Allowable atom-coordinates are within these grid extents:\n\n");
         pr(logFile, "\t%7.3f < x <%7.3f\n\t%7.3f < y <%7.3f\n\t%7.3f < z <%7.3f\n\n", (double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z]);
     }
@@ -110,7 +110,7 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
             last_delta[xyz] =  delta[ip[xyz]][xyz];
         }
 
-        if (outlev > 1) {
+        if (outlev >= LOGLIGREAD  ) {
             pr( logFile, "Initializing the correction vectors and pointers.\n");
         }
 
@@ -127,7 +127,7 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
             }
         }
 
-        if (outlev > 1) {
+        if (outlev >= LOGLIGREAD ) {
             mkUnitQuat( &(s0->Q) );  // assure is normalized
 	    AxisAngle aa = QuatToAxisAngle(s0->Q);
             pr( logFile, "Undoing all previous ligand transformations.\n");
@@ -155,7 +155,7 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
 
                 strncpy( rec8, &atomstuff[i][13], (size_t)8);
                 rec8[8]='\0';
-                if (outlev > 1) {
+                if (outlev >= LOGLIGREAD) {
                     pr( logFile, "WARNING: Atom %s is outside grid!\n", rec8);
                 }
 /*
@@ -168,30 +168,30 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                 for (xyz = 0;  xyz < SPACE;  xyz++) {
                     if ( crd[i][xyz] < info->lo[xyz] )  {
                         delta[i][xyz] = info->lo[xyz] - crd[i][xyz] + TINYDELTA;
-                        if (outlev > 1) {
+                        if (outlev >= LOGLIGREAD ) {
                             pr( logFile,"%s: atom %d, %c=%.3f, is too low, since grid-min=%.3f; ", programname, i+1, axis[xyz], crd[i][xyz], info->lo[xyz] );
                             pr( logFile,"increase %c by at least %.3f A\n", axis[xyz], (double)delta[i][xyz] );
                         }
                     } else if ( crd[i][xyz] ==  info->lo[xyz] )  {
-                        if (outlev > 1) {
+                        if (outlev >= LOGLIGREAD ) {
                             pr( logFile,"%s: \"is_out_grid\"//lo macro failure on atom %d, %c-axis. Overriding move_inside instruction.\n", programname,i+1,axis[xyz]);
                         }
                         B_move_inside = FALSE;
                     }
                     if ( crd[i][xyz] > info->hi[xyz] )  {
                         delta[i][xyz] = info->hi[xyz] - crd[i][xyz] - TINYDELTA;
-                        if (outlev > 1) {
+                        if (outlev >= LOGLIGREAD ) {
                             pr( logFile,"%s: atom %d, %c=%.3f, is too high, since grid-max=%.3f;", programname, i+1, axis[xyz], crd[i][xyz], info->hi[xyz] );
                             pr( logFile,"decrease %c by at least %.3f A\n", axis[xyz], -(double)delta[i][xyz] );
                         }
                     } else if ( crd[i][xyz] ==  info->hi[xyz] )  {
-                        if (outlev > 1) {
+                        if (outlev >= LOGLIGREAD )  {
                             pr( logFile,"%s: \"is_out_grid\"//hi macro failure on atom %d, %c-axis. Overriding move_inside instruction.\n", programname,i+1,axis[xyz]);
                         }
                         B_move_inside = FALSE;
                     }
                 }/*xyz*/
-                if (outlev > 1) {
+                if (outlev >= LOGLIGREAD ) {
                     pr( logFile,"\n" );
                 }
             }/*if B_outside*/
@@ -199,7 +199,7 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
         flushLog;
 
         if ( B_move_inside ) {
-            if (outlev > 1) {
+            if (outlev >= LOGLIGREAD ) {
                 pr(logFile,"Axis Atom delta   delta_max ip_max delta_min ip_min axis\n");
                 pr(logFile,"____ ____ _______ _________ ______ _________ ______ ____\n");
             }
@@ -216,7 +216,7 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                         ip_min[xyz] = i;
                         B_change = TRUE;
                     }
-                    if ((i>0) && B_change && (outlev > 1)) {
+                    if ((i>0) && B_change && (outlev >= LOGLIGREAD )) {
                         pr(logFile," %c   %3d %7.3f %7.3f    %3d   %7.3f    %3d\n", axis[xyz], (i+1), delta[i][xyz], delta_max[xyz], ip_max[xyz], delta_min[xyz], ip_min[xyz]);
                     }
                 } /*xyz*/
@@ -230,7 +230,7 @@ void initautodock(  const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                 }
             } /*xyz*/
 
-            if (outlev > 1) {
+            if (outlev >= LOGLIGREAD ) {
                 pr( logFile, "\n%s:\nLast tran0 correction vector was:\t(%.3f, %.3f, %.3f) \n", programname, (double)last_delta[X], (double)last_delta[Y], (double)last_delta[Z] );
                 pr( logFile, "tran0 correction vector is now:\t(%.3f, %.3f, %.3f) \n", (double)delta[ip[X]][X], (double)delta[ip[Y]][Y], (double)delta[ip[Z]][Z] );
             }
