@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.25 2012/02/07 03:29:00 mp Exp $
+ $Id: read_parameter_library.cc,v 1.26 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -34,6 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "parse_param_line.h"
 #include "atom_parameter_manager.h"
 #include "default_parameters.h"
+#include "stop.h"
 
 
 extern char *programname;
@@ -59,15 +60,15 @@ void read_parameter_library(
     int nfields;
     int param_keyword = -1;
     int int_hbond_type = 0;
+    char msg[1000]; // for error messages
 
     pr(logFile, "Using read_parameter_library() to try to open and read \"%s\".\n\n", FN_parameter_library);
 
     // Open and read the parameter library
     //
     if ((parameter_library_file = ad_fopen(FN_parameter_library, "r")) == NULL) {
-         fprintf(logFile,"Sorry, I can't find or open %s\n", FN_parameter_library);
-         fprintf(stderr,"Sorry, I can't find or open %s\n", FN_parameter_library);
-         exit(-1);
+         sprintf(msg,"Sorry, I can't find or open %s\n", FN_parameter_library);
+         stop(msg); // exits
     }
 
     // remember this filename for report_parameter_library()
@@ -83,8 +84,8 @@ void read_parameter_library(
 #define process(term, string)  \
   nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.term); \
   if (nfields < 1) { \
-                    pr( logFile, "%s: ERROR:  Must supply a %s coefficient as a floating point number.\n\n", programname, string); \
-                    exit(-1); \
+                    sprintf( msg, "%s: ERROR:  Must supply a %s coefficient as a floating point number.\n\n", programname, string); \
+                    stop(msg); \
                 } \
 		if( outlev >= LOGETABLES ) \
                 pr( logFile, "Free energy coefficient for the %s term = \t%.4lf\n\n", string, AD4.term);
@@ -116,9 +117,10 @@ void read_parameter_library(
                 break;
 
             case PAR_UNBOUND:
-                pr( logFile, "%s: ERROR: the unbound model cannot be specified in the parameter library file.\n\n", programname);
-                pr( logFile, "Use the DPF parameter 'unbound_model' instead.\n");
-		exit(-1);
+                sprintf( msg, 
+		"%s: ERROR: the unbound model cannot be specified in the parameter library file.\nUse the DPF parameter 'unbound_model' instead.\n", 
+		programname);
+		stop(msg);
                 break;
 
             case PAR_ATOM_PAR:
@@ -189,6 +191,7 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
     int param_keyword = -1;
     int int_hbond_type = 0;
     register int counter = 0;
+    char msg[1000]; // for error messages
 
     if ( outlev >= LOGETABLES )
     pr(logFile, "Setting up parameter library with AutoDock %s values.\n\n\n", 
@@ -212,8 +215,8 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
         strncpy(parameter_library, "'same as bound' [AutoDock 4.2 default]", sizeof parameter_library);
     }
     else {
-        pr(logFile, "BUG: cannot determine %s parameter values \n",model_text);
-        exit(-1);
+        sprintf(msg, "BUG: cannot determine %s parameter values \n",model_text);
+        stop(msg);
     }
 
 
@@ -254,9 +257,10 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
                 break;
 
             case PAR_UNBOUND:
-                pr( logFile, "%s: ERROR: the unbound model cannot be specified in the parameter library file.\n\n", programname);
-                pr( logFile, "Use the DPF parameter 'unbound_model' instead.\n");
-		exit(-1);
+		sprintf(msg,
+                "%s: ERROR: the unbound model cannot be specified in the parameter library file.\nUse the DPF parameter 'unbound_model' instead.\n",
+		programname);
+		stop(msg);
                 break;
 
             case PAR_ATOM_PAR:

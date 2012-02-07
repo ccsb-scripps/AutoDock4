@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.9 2011/03/08 04:18:37 mp Exp $
+ $Id: ranlib.cc,v 1.10 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -33,6 +33,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <math.h>
 #include <stdlib.h>
 #include "structs.h"
+#include "stop.h"
 
 // C++ equivalents of Fortran functions:
 inline Real ABS(ConstReal x) { return ((x) >= 0 ? (x) : -(x)) ; }
@@ -42,7 +43,6 @@ inline FourByteLong IABS(const FourByteLong x) { return ((x) >= 0 ? (x) : -(x)) 
 inline FourByteLong IMIN(const FourByteLong a, const FourByteLong b) { return ((a) <= (b) ? (a) : (b)) ; }
 inline FourByteLong IMAX(const FourByteLong a, const FourByteLong b) { return ((a) >= (b) ? (a) : (b)) ; }
 
-static void ftnstop(const char *const msg);
 static Real sgamma(ConstReal a);
 static Real sexpo(void);
 static Real fsign(ConstReal num, ConstReal sign);
@@ -50,7 +50,6 @@ static Real snorm(void);
 static FourByteLong ignbin(const FourByteLong n, ConstReal pp);
 static FourByteLong ignpoi(ConstReal mu);
 
-extern FILE *logFile;
 
 static const Real expmax=89.0;
 static const Real infnty=1.0E38;
@@ -88,7 +87,7 @@ static FourByteLong qsame;
     if(!(aa <= 0.0 || bb <= 0.0)) goto S10;
     fputs(" AA or BB <= 0 in GENBET - Abort!",stderr);
     fprintf(stderr," AA: %16.6E BB %16.6E\n",aa,bb);
-    exit(1);
+    stop("ERROR AA or BB <= 0 in genbet");
 S10:
     olda = aa;
     oldb = bb;
@@ -278,7 +277,7 @@ static Real genchi;
     if(!(df <= 0.0)) goto S10;
     fputs("DF <= 0 in GENCHI - ABORT",stderr);
     fprintf(stderr,"Value of DF: %16.6E\n",df);
-    exit(1);
+    stop("ERROR DF <= 0 in genchi");
 S10:
     genchi = 2.0*gengam(1.0,df/2.0);
     return genchi;
@@ -336,7 +335,7 @@ static Real genf,xden,xnum;
     if(!(dfn <= 0.0 || dfd <= 0.0)) goto S10;
     fputs("Degrees of freedom nonpositive in GENF - abort!",stderr);
     fprintf(stderr,"DFN value: %16.6EDFD value: %16.6E\n",dfn,dfd);
-    exit(1);
+    stop("DFN in genf");
 S10:
     xnum = genchi(dfn)/dfn;
 /*
@@ -437,15 +436,15 @@ void genmul(const FourByteLong n, const Real *const p, const FourByteLong ncat, 
 {
 static Real prob,ptot,sum;
 static FourByteLong i,icat,ntot;
-    if(n < 0) ftnstop("N < 0 in GENMUL");
-    if(ncat <= 1) ftnstop("NCAT <= 1 in GENMUL");
+    if(n < 0) stop("N < 0 in GENMUL");
+    if(ncat <= 1) stop("NCAT <= 1 in GENMUL");
     ptot = 0.0F;
     for (i=0; i<ncat-1; i++) {
-        if(*(p+i) < 0.0F) ftnstop("Some P(i) < 0 in GENMUL");
-        if(*(p+i) > 1.0F) ftnstop("Some P(i) > 1 in GENMUL");
+        if(*(p+i) < 0.0F) stop("Some P(i) < 0 in GENMUL");
+        if(*(p+i) > 1.0F) stop("Some P(i) > 1 in GENMUL");
         ptot += *(p+i);
     }
-    if(ptot > 0.99999F) ftnstop("Sum of P(i) > 1 in GENMUL");
+    if(ptot > 0.99999F) stop("Sum of P(i) > 1 in GENMUL");
 /*
      Initialize variables
 */
@@ -495,7 +494,7 @@ static Real gennch;
     if(!(df <= 1.0 || xnonc < 0.0)) goto S10;
     fputs("DF <= 1 or XNONC < 0 in GENNCH - ABORT",stderr);
     fprintf(stderr,"Value of DF: %16.6E Value of XNONC%16.6E\n",df,xnonc);
-    exit(1);
+    stop("ERROR in gennch");
 S10:
     gennch = genchi(df-1.0)+pow(gennor(sqrt(xnonc),1.0),2.0);
     return gennch;
@@ -535,7 +534,7 @@ static FourByteLong qcond;
     fprintf(stderr,
       "DFN value: %16.6EDFD value: %16.6EXNONC value: \n%16.6E\n",dfn,dfd,
       xnonc);
-    exit(1);
+    stop("ERROR in gennf");
 S10:
     xnum = gennch(dfn,xnonc)/dfn;
 /*
@@ -622,7 +621,7 @@ extern Real genunf(ConstReal low, ConstReal high)
     if(!(low > high)) goto S10;
     fprintf(stderr,"LOW > HIGH in GENUNF: LOW %16.6E HIGH: %16.6E\n",low,high);
     fputs("Abort",stderr);
-    exit(1);
+    stop("ERROR LOW > HIGH in genunf");
 S10:
     genunf = low+(high-low)*ranf();
     return genunf;
@@ -646,8 +645,7 @@ extern void gscgn(const FourByteLong getset, FourByteLong *const g)
     if(getset == 0) *g = curntg;
     else  {
         if(*g < 0 || *g > numg) {
-            fputs(" Generator number out of range in GSCGN",stderr);
-            exit(0);
+            stop(" Generator number out of range in GSCGN");
         }
         curntg = *g;
     }
@@ -978,9 +976,9 @@ static Real y,a,r;
 /*
      Check Arguments
 */
-    if(n < 0) ftnstop("N < 0 in IGNNBN");
-    if(p <= 0.0F) ftnstop("P <= 0 in IGNNBN");
-    if(p >= 1.0F) ftnstop("P >= 1 in IGNNBN");
+    if(n < 0) stop("N < 0 in IGNNBN");
+    if(p <= 0.0F) stop("P <= 0 in IGNNBN");
+    if(p >= 1.0F) stop("P >= 1 in IGNNBN");
 /*
      Generate Y, a random gamma (n,(1-p)/p) variable
 */
@@ -1256,13 +1254,13 @@ static FourByteLong ignuin,ign,maxnow,range,ranp1;
 
     if(!(low > high)) goto S10;
     fputs(" low > high in ignuin - ABORT",stderr);
-    exit(1);
+    stop("ERROR low > high in ignuin");
 
 S10:
     range = high-low;
     if(!(range > maxnum)) goto S20;
     fputs(" high - low too large in ignuin - ABORT",stderr);
-    exit(1);
+    stop("ERROR high - low too large in ignuin");
 
 S20:
     if(!(low == high)) goto S30;
@@ -1327,7 +1325,7 @@ static FourByteLong mltmod,a0,a1,k,p,q,qh,rh;
     fputs(" a, m, s out of order in mltmod - ABORT!",stderr);
     fprintf(stderr," a = %12ld s = %12ld m = %12ld\n",a,s,m);
     fputs(" mltmod requires: 0 < a < m; 0 < s < m",stderr);
-    exit(1);
+    stop("ERROR in mltmod");
 S10:
     if(!(a < h)) goto S20;
     a0 = a;
@@ -1519,7 +1517,7 @@ static FourByteLong i,icount,info,j,D2,D3,D4,D5;
     if(!(p <= 0)) goto S10;
     fputs("P nonpositive in SETGMN",stderr);
     fprintf(stderr,"Value of P: %12ld\n",p);
-    exit(1);
+    stop("ERROR P nonpos in setgmn");
 S10:
     *parm = p;
 /*
@@ -1532,7 +1530,7 @@ S10:
     spofa(covm,p,p,&info);
     if(!(info != 0)) goto S30;
     fputs(" COVM not positive definite in SETGMN",stderr);
-    exit(1);
+    stop("ERROR COVM in setgmn");
 S30:
     icount = p+1;
 /*
@@ -1959,15 +1957,4 @@ static inline Real fsign(ConstReal num, ConstReal sign )
 if ( ( sign>0.0f && num<0.0f ) || ( sign<0.0f && num>0.0f ) )
     return -num;
 else return num;
-}
-
-/************************************************************************
-FTNSTOP:
-Prints msg to standard error and then exits
-************************************************************************/
-static void ftnstop(const char* const msg)
-/* msg - error message */
-{
-  if (msg != NULL) fprintf(stderr,"%s\n",msg);
-  exit(0);
 }

@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.29 2012/02/04 02:22:05 mp Exp $
+ $Id: investigate.cc,v 1.30 2012/02/07 20:47:30 mp Exp $
 
  AutoDock  
 
@@ -39,6 +39,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <time.h>
 #include "structs.h"
 #include "investigate.h"
+#include "stop.h"
 
 #define RANDOM_MODE 1
 #define CHANGE_MODE 2
@@ -143,10 +144,12 @@ void investigate( const int   Nnb, int Nnb_array[3], Real nb_group_energy[3],
             fprintf( logFile, "%s: Problems while reading \"%s\".\n", programname, FN_rms_ref_crds);
             fprintf( logFile, "Will attempt to use the input PDBQ file coordinates as reference.\n");
         } else if (ref_natoms != natom) {
-            pr( logFile, "%s: ERROR!  Wrong number of atoms in reference structure.\n", programname);
-            pr( logFile, "Input PDBQ structure has %d atoms, but reference structure has %d atoms.\n\n", natom, ref_natoms);
-            ref_natoms = -1;
-            exit(-1);
+	    char msg[200];
+	    sprintf(msg, 
+	    "%s: ERROR!  Wrong number of atoms in reference structure.\n\
+            Input PDBQ structure has %d atoms, but reference structure has %d atoms.\n",
+	    programname, natom, ref_natoms);
+            stop(msg); // exits
         }
     }
 

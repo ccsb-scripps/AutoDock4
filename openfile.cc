@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.cc,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: openfile.cc,v 1.9 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -26,7 +26,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 
- $Id: openfile.cc,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: openfile.cc,v 1.9 2012/02/07 20:47:30 mp Exp $
 
 */
 
@@ -45,6 +45,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "filesys.h" 		// boinc_fopen(), etc... */
 #endif
 #include "openfile.h"
+#include "stop.h"
 
 
 extern char *programname;
@@ -96,15 +97,15 @@ int openFile( const char *const filename,
     struct tms tms_jobEnd;
 
     if ( (*fp = ad_fopen(filename, mode)) == NULL ) {
-	fprintf(stderr, "\n%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
-	fprintf(logFile,"\n%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
+	char error_message[400];
+	sprintf(error_message, "%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
 
 	jobEnd = times( &tms_jobEnd );
 	timesys( jobEnd - start, &tms_start, &tms_jobEnd );
-	pr_2x( logFile, stderr, UnderLine );
+	pr_2x( logFile, stderr, error_message );
 
 	if (mayExit) {
-	    exit(-1); /* END PROGRAM */
+	    stop(error_message); // exits
 	} else {
 	    return( FALSE );
 	}

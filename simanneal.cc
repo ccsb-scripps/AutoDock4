@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.35 2012/02/04 02:22:05 mp Exp $
+ $Id: simanneal.cc,v 1.36 2012/02/07 20:47:30 mp Exp $
 
  AutoDock  
 
@@ -227,15 +227,13 @@ void simanneal ( int   *const Addr_nconf,
     if ( B_writeTrj ) {
                 FP_trj = fopen(FN_trj, "w");
         if ( FP_trj == NULL ) {
-	    char message[LINE_LEN];
-            prStr( message, "\n%s: can't create trajectory file %s\n", programname, FN_trj);
-            pr_2x( stderr, logFile, message );
-            prStr( message, "\n%s: Unsuccessful Completion.\n\n", programname);
-            pr_2x( stderr, logFile, message );
+	    char error_message[LINE_LEN];
+            prStr( error_message, "\n%s: can't create trajectory file %s\n", programname, FN_trj);
+            pr_2x( stderr, logFile, error_message );
             jobEnd = times( &tms_jobEnd );
             timesys( jobEnd - jobStart, &tms_jobStart, &tms_jobEnd );
             pr_2x( logFile, stderr, UnderLine );
-            exit( -1 );
+            stop(error_message);
         }/*END PROGRAM*/
     }/*endif*/
 
@@ -299,7 +297,7 @@ void simanneal ( int   *const Addr_nconf,
         qtwStep = qtwStep0;        /* quaternion angle, w*/
         torStep = torStep0;        /* torsion angles*/
 
-        if (outlev > LOGFORADT) {
+        if (outlev >= LOGFORADT) {
             pr( logFile, "\n\n\t\tBEGINNING SIMULATED ANNEALING");
             pr( logFile, "\n\t\t_____________________________\n\n");
             pr( logFile, "\n      \t      \tMinimum     Average     | Acc/    Accepted:    Rejected:     |          |  xyz-Translation  |        Time:        \n");

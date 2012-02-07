@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.20 2012/02/07 05:14:55 mp Exp $
+ $Id: mkTorTree.cc,v 1.21 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -396,14 +396,15 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
     Boole B_atom_number_OK = TRUE;
 
     for (itor=0; itor<ntor; itor++ ) {
+	char error_msg[LINE_LEN];
         B_atom_number_OK &= check_atomnumber_ok( tlist[ itor ][ ATM1 ] );
         B_atom_number_OK &= check_atomnumber_ok( tlist[ itor ][ ATM2 ] );
         if (B_atom_number_OK) for (int i=0;  i < tlist[ itor ][ NUM_ATM_MOVED ]; i++ ) {
                 B_atom_number_OK &= check_atomnumber_ok( tlist[ itor ][ 3+i ] );
             }
         if (B_atom_number_OK) continue;
-        pr( logFile, "%s: ERROR:  Torsion number %d between atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n", programname, itor+1, 1+tlist[itor][ATM1], 1+tlist[itor][ATM2], tlist[itor][NUM_ATM_MOVED] );
-        pr( stderr, "%s: ERROR:  Torsion number %d between atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n", programname, itor+1, 1+tlist[itor][ATM1], 1+tlist[itor][ATM2], tlist[itor][NUM_ATM_MOVED] );
+        prStr(error_msg, "%s: ERROR:  Torsion number %d between atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n", programname, itor+1, 1+tlist[itor][ATM1], 1+tlist[itor][ATM2], tlist[itor][NUM_ATM_MOVED] );
+	stop(error_msg); // exits
         exit(-1);
     }
 

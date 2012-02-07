@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.21 2012/02/07 05:14:55 mp Exp $
+ $Id: weedbonds.cc,v 1.22 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ void weedbonds( const int natom,
     register int j = 0;
     register int k = 0;
 
-    char error_message[LINE_LEN];
+    char error_msg[LINE_LEN];
 
 
 /*___________________________________________________________________________
@@ -161,8 +161,8 @@ void weedbonds( const int natom,
                 nonbondlist[Nnb][NBTYPE] = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
-                pr( logFile, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
-		exit(-1);
+                prStr( error_msg, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+		stop(error_msg);
             }
         } // j
     } // i
@@ -179,8 +179,8 @@ void weedbonds( const int natom,
                 nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
-                pr( logFile, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
-		exit(-1);
+                prStr( error_msg, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+		stop(error_msg);
             }
         } // j
     } // i
@@ -197,8 +197,8 @@ void weedbonds( const int natom,
                 nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
-                pr( logFile, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
-		exit(-1);
+                prStr( error_msg, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+		stop(error_msg);
             }
         } // j
     } // i
@@ -215,16 +215,16 @@ void weedbonds( const int natom,
                 nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
-                pr( logFile, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
-		exit(-1);
+                prStr(error_msg, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+		stop(error_msg);
             }
         } // j
     } // i
     Nnb_array[INTRA_RECEPTOR] = Nnb;
 
     if (Nnb > MAX_NONBONDS) {
-        prStr( error_message, "too many non-bonded interactions (%d) in small molecule\n\t(increase MAX_NONBONDS from %d).", Nnb, MAX_NONBONDS );
-        stop( error_message );
+        prStr( error_msg, "too many non-bonded interactions (%d) in small molecule\n\t(increase MAX_NONBONDS from %d).", Nnb, MAX_NONBONDS );
+        stop( error_msg );
         exit( -1 );
     } else {
         *Addr_Nnb = Nnb;

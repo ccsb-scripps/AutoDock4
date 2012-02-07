@@ -1,6 +1,6 @@
 /*
 
- $Id: torNorVec.cc,v 1.10 2012/02/07 05:14:55 mp Exp $
+ $Id: torNorVec.cc,v 1.11 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -80,7 +80,6 @@ void torNorVec( const Real crdpdb[MAX_ATOMS][SPACE],
 	    char error_message[LINE_LEN];
 	    prStr( error_message, "Torsion %d, normal vector, magVec, is 0; imminent division by zero caught.", j );
 	    stop( error_message );
-	    exit( -1 );
 	}
 
 	imagVec = 1. / magVec;

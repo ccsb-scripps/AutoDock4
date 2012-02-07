@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.17 2012/02/07 05:14:55 mp Exp $
+ $Id: readmap.cc,v 1.18 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -304,7 +304,7 @@ Statistics readmap( char           line[LINE_LEN],
         pr_2x( logFile, stderr, UnderLine );
 
         /* END PROGRAM */
-        exit(-1);
+        stop("ERROR in readmap");
     } 
 
     flushLog;

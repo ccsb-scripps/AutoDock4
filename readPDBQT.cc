@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.35 2012/02/07 05:14:55 mp Exp $
+ $Id: readPDBQT.cc,v 1.36 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -217,7 +217,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	if (nrecord > MAX_RECORDS) {
 		prStr(error_message, "ERROR: %d records read in, but only dimensioned for %d.\nChange \"MAX_RECORDS\" in \"constants.h\".", nrecord, MAX_RECORDS);
 		stop(error_message);
-		exit(-1);
 	} else {
         // Read in the input Ligand PDBQT file...
 		if (openFile(FN_ligand, "r", &FP_ligand, jobStart, tms_jobStart, TRUE)) {
@@ -268,18 +267,16 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 if ( ! B_is_in_branch ) {
                     // Flag this as an error
                     // Incorrectly nested BRANCH/ENDBRANCH records
-                    pr( logFile, "%s: ERROR:  All ATOM and HETATM records must be given before any nested BRANCHes; see line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
-                    pr( stderr, "%s: ERROR:  All ATOM and HETATM records must be given before any nested BRANCHes; see line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
-                    exit( -1 );
+		    prStr(error_message,
+                    "%s: ERROR:  All ATOM and HETATM records must be given before any nested BRANCHes; see line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
+                    stop(error_message);
                 }
                 
                 // Check that the line is at least 78 characters long
                 if (strlen(input_line) < 78) {
-                    pr(logFile, "%s: FATAL ERROR: line %d is too short!\n", programname, i+1);
-                    pr(logFile, "%s: FATAL ERROR: line \"%s\".\n", programname, input_line);
-                    pr(stderr, "%s: FATAL ERROR: line %d is too short!\n", programname, i+1);
-                    pr(stderr, "%s: FATAL ERROR: line \"%s\".\n", programname, input_line);
-                    exit(-1);
+		    prStr(error_message,
+                    "%s: FATAL ERROR: line %d is too short!\n", programname, i+1);
+                    stop(error_message);
                 }
 
                 ParameterEntry * found_parm;
@@ -302,9 +299,9 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 /*
                 // Verify the serial number for this atom
                 if ( serial != (natom + 1) ) {
-                    pr( logFile, "%s: ERROR:  ATOM and HETATM records must be numbered sequentially from 1.  See line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
-                    pr( stderr, "%s: ERROR:  ATOM and HETATM records must be numbered sequentially from 1.  See line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
-                    exit( -1 );
+		    prStr(error_message,
+                    "%s: ERROR:  ATOM and HETATM records must be numbered sequentially from 1.  See line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
+                    stop(error_message);
                 }
                 */
 
@@ -405,7 +402,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 if (nrigid_piece>MAX_TORS){
 		            prStr(error_message, "PDBQT ERROR: too many torsions, maximum number of torsions is %d", MAX_TORS);
 		            stop(error_message);
-		            exit(-1);
                 }
                 stack_push(s, piece);//at this pt push the parent piece number
                 if (debug > 0) {
@@ -433,10 +429,8 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 }
                 parent = stack_pop(s);
                 if (parent < 0) {
-			        pr(logFile,   "PDBQT ERROR: Encountered end of branch without corresponding branch");
 		            prStr(error_message, "PDBQT ERROR: Encountered end of branch without corresponding branch");
 		            stop(error_message);
-		            exit(-1);
                 }
                 if (parent>1){ 
                     //if parent is 1, it is the 'ligand' root. In that case,we don't have an eob for it.
@@ -519,7 +513,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     if (B_is_in_branch || -1 != stack_pop(s)){
 	    prStr(error_message, "ERROR: BRANCH statement without a corresponding ENDBRANCH\n\n");
         stop(error_message);
-		exit(-1);
     }
     // create end_of_branch array
     // 0th element refers to first torsion
@@ -537,14 +530,12 @@ Molecule readPDBQT(char input_line[LINE_LEN],
         if (end_of_branch[j] <0) {
 		    prStr(error_message, "ERROR: end_of_branch[%d] < 0 (%d)\n", j, end_of_branch[j]);
 		    stop(error_message);
-		    exit(-1);
         }
     }
 
 	if (natom > MAX_ATOMS) {
 		prStr(error_message, "ERROR: Too many atoms found (i.e. %d); maximum allowed is %d.\nChange the \"#define MAX_ATOMS\" line in \"constants.h\"\n.", natom, MAX_ATOMS);
 		stop(error_message);
-		exit(-1);
 	} else {
 		*P_natom = natom;
 		mol.natom = natom;
@@ -701,7 +692,7 @@ readPDBQTLine( char line[LINE_LEN],
     char2[2] = '\0';
 
 #define check_sscanf( str, fmt, val, fieldname )  if (1 != sscanf( str, fmt, val ))  {\
-    sprintf(message, "\n%s: WARNING! Could not read " fieldname " in PDBQT line \"%s\".\n", programname, line );\
+    prStr(message, "\n%s: WARNING! Could not read " fieldname " in PDBQT line \"%s\".\n", programname, line );\
     pr_2x(stderr, logFile, message); }
 
     // Read in the serial number of this atom

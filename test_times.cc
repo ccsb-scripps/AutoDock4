@@ -1,6 +1,6 @@
 /*
 
- $Id: test_times.cc,v 1.6 2009/05/08 23:02:18 rhuey Exp $
+ $Id: test_times.cc,v 1.7 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -34,7 +34,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <time.h>      // time_t time(time_t *tloc);
 #include <sys/times.h>
 #include <unistd.h> // sysconf
-#include <stdlib.h> // exit
 #include "timesyshms.h"
 
 #ifdef __alpha
@@ -68,8 +67,7 @@ int main( int argc, char **argv, char **envp )
 
     if (clktck == 0) {        /* fetch clock ticks per second first time */
         if ( (clktck = sysconf(_SC_CLK_TCK)) < (FourByteLong)0L) {
-            (void) printf("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
-            exit( -1 );
+            (void) stop("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
         } else {
             idct = (Real)1. / (Real)clktck;
             (void) printf("\n\nFYI:  Number of clock ticks per second = %d\nFYI:  Elapsed time per clock tick = %.3e seconds\n\n\n\n", clktck, idct);

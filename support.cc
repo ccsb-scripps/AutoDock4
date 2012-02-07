@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.42 2012/02/02 02:16:47 mp Exp $
+ $Id: support.cc,v 1.43 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -142,6 +142,7 @@ void Population::SiftDown(void) /* not const */
 void Population::msort(const int m) /* not const */
 {
    register int i;
+   char error_message[200];
 
 #ifdef DEBUG
    (void)fprintf(logFile, "support.cc/void Population::msort(int m=%d)\n", m);
@@ -160,8 +161,8 @@ void Population::msort(const int m) /* not const */
    //  Now place the m best members at the beginning of the array
    if (m==size) return; //we're done
    if (m>size) {
-        (void)fprintf(logFile, "support.cc/Population::msort(int m=%d) -- ERROR!  m > size!\n\n", m);
-        exit(-1);
+        sprintf(error_message, "support.cc/Population::msort(int m=%d) -- ERROR!  m > size!\n\n", m);
+        stop(error_message);
    }
 
    for (i=0; i<m && i<size-1; i++) {
@@ -452,11 +453,13 @@ void Population::set_eob(/* not const */ int init_end_of_branch[MAX_TORS])
 int Population::get_eob(const int init_tor) const
 // Get the end_of_branch[] value for the supplied torsion number, init_tor
 {
+char error_message[200];
     if ((init_tor >= 0) && (init_tor < MAX_TORS)) {
         return end_of_branch[init_tor];
     } else {
-        (void)fprintf(logFile, "support.cc/Population::get_eob(int init_tor=%d) -- ERROR!  Attempt to access out-of-bounds torsion!\n\n", init_tor);
-        exit(-1);
+        (void)sprintf(error_message, "support.cc/Population::get_eob(int init_tor=%d) -- ERROR!  Attempt to access out-of-bounds torsion!\n", init_tor);
+        stop(error_message);
+	return(0); // dummy to keep lint happy NOTREACHED
     }
 }
 

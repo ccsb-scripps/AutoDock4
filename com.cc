@@ -1,6 +1,6 @@
 /*
 
- $Id: com.cc,v 1.5 2010/08/27 00:05:07 mp Exp $
+ $Id: com.cc,v 1.6 2012/02/07 20:47:30 mp Exp $
 
  AutoDock 
 
@@ -32,9 +32,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdlib.h>
 #include "ranlib.h"
 #include "structs.h"
+#include "stop.h"
 
-
-extern FILE *logFile;
 
 void advnst(const FourByteLong k)
 /*
@@ -64,8 +63,7 @@ static FourByteLong qrgnin;
 */
     gsrgs(0L,&qrgnin);
     if(qrgnin) goto S10;
-    fputs(" ADVNST called before random generator initialized - ABORT",stderr);
-    exit(1);
+    stop(" ADVNST called before random generator initialized - ABORT");
 S10:
     gscgn(0L,&g);
     ib1 = Xa1;
@@ -108,9 +106,7 @@ static FourByteLong qrgnin;
 */
     gsrgs(0L,&qrgnin);
     if(qrgnin) goto S10;
-    fprintf(stderr,"%s\n",
-      " GETSD called before random number generator  initialized -- abort!");
-    exit(0);
+    stop(" GETSD called before random number generator  initialized -- abort!");
 S10:
     gscgn(0L,&g);
     *iseed1 = *(Xcg1+g-1);
@@ -203,9 +199,7 @@ static FourByteLong qrgnin;
 */
     gsrgs(0L,&qrgnin);
     if(qrgnin) goto S10;
-    fprintf(stderr,"%s\n",
-      " INITGN called before random number generator  initialized -- abort!");
-    exit(1);
+    stop( " INITGN called before random number generator  initialized -- abort!");
 S10:
     gscgn(0L,&g);
     if(-1 != isdtyp) goto S20;
@@ -224,8 +218,7 @@ S30:
     *(Xlg2+g-1) = mltmod(Xa2w,*(Xlg2+g-1),Xm2);
     goto S50;
 S40:
-    fprintf(stderr,"%s\n","isdtyp not in range in INITGN");
-    exit(1);
+    stop("isdtyp not in range in INITGN");
 S50:
     *(Xcg1+g-1) = *(Xlg1+g-1);
     *(Xcg2+g-1) = *(Xlg2+g-1);
@@ -357,9 +350,7 @@ static FourByteLong qrgnin;
 */
     gsrgs(0L,&qrgnin);
     if(qrgnin) goto S10;
-    fprintf(stderr,"%s\n",
-      " SETANT called before random number generator  initialized -- abort!");
-    exit(1);
+    stop( " SETANT called before random number generator  initialized -- abort!");
 S10:
     gscgn(0L,&g);
     Xqanti[g-1] = qvalue;
@@ -394,9 +385,7 @@ static FourByteLong qrgnin;
 */
     gsrgs(0L,&qrgnin);
     if(qrgnin) goto S10;
-    fprintf(stderr,"%s\n",
-      " SETSD called before random number generator  initialized -- abort!");
-    exit(1);
+    stop( " SETSD called before random number generator  initialized -- abort!");
 S10:
     gscgn(0L,&g);
     *(Xig1+g-1) = iseed1;
