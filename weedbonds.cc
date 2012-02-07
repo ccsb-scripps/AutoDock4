@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.20 2012/02/04 02:22:05 mp Exp $
+ $Id: weedbonds.cc,v 1.21 2012/02/07 05:14:55 mp Exp $
 
  AutoDock 
 
@@ -161,7 +161,8 @@ void weedbonds( const int natom,
                 nonbondlist[Nnb][NBTYPE] = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
-                pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+                pr( logFile, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+		exit(-1);
             }
         } // j
     } // i
@@ -178,7 +179,8 @@ void weedbonds( const int natom,
                 nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
-                pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+                pr( logFile, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+		exit(-1);
             }
         } // j
     } // i
@@ -195,7 +197,8 @@ void weedbonds( const int natom,
                 nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
-                pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+                pr( logFile, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+		exit(-1);
             }
         } // j
     } // i
@@ -212,7 +215,8 @@ void weedbonds( const int natom,
                 nonbondlist[Nnb].nonbond_type = nbmatrix[i][j];
                 ++Nnb;
             } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
-                pr( logFile, "ERROR: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+                pr( logFile, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
+		exit(-1);
             }
         } // j
     } // i

@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.162 2012/02/04 02:22:05 mp Exp $
+ $Id: main.cc,v 1.163 2012/02/07 05:14:55 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -110,7 +110,7 @@ extern Real idct;
 extern Eval evaluate;
 extern Linear_FE_Model AD4;
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.162 2012/02/04 02:22:05 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.163 2012/02/07 05:14:55 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -724,10 +724,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 ** Output banner...
 */
 
-banner( version_num.c_str() );
+banner( version_num.c_str(), outlev, logFile);
 
-(void) fprintf(logFile, "                           $Revision: 1.162 $\n\n");
+if ( outlev >= LOGBASIC ) {
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.163 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
+}
 
 
 //______________________________________________________________________________
@@ -735,22 +737,25 @@ banner( version_num.c_str() );
 ** Print the time and date when the log file was created...
 */
 
-pr( logFile, "This file was created at:\t\t\t" );
-printdate( logFile, 1 );
+if(outlev>=LOGBASIC) {
+	pr( logFile, "This file was created at:\t\t\t" );
+	printdate( logFile, 1 );
+}
 
-(void) strcpy(hostnm, "unknown host");
-
-if (gethostname( hostnm, sizeof hostnm ) == 0) {
+(void) strcpy(hostnm, "");
+gethostname( hostnm, sizeof hostnm );
+if(hostnm[0]=='\0') strcpy(hostnm, "unknown host");
+else if (outlev>=LOGBASIC ) {
     pr( logFile, "                   using:\t\t\t\"%s\"\n", hostnm );
 }
 
-pr( logFile, "\nNOTE: \"rus\" stands for:\n\n      r = Real, wall-clock or elapsed time;\n      u = User or cpu-usage time;\n      s = System time\n\nAll timings are in seconds, unless otherwise stated.\n\n\n" );
-
 //______________________________________________________________________________
+if(outlev>=LOGFORADT) {
 
 (void) fprintf(logFile, "\n      ________________________________________________________________\n\n");
 (void) fprintf(logFile, "                   SETTING UP DEFAULT PARAMETER LIBRARY\n");
 (void) fprintf(logFile, "      ________________________________________________________________\n\n\n");
+}
 
 //______________________________________________________________________________
 //
@@ -761,10 +766,13 @@ setup_parameter_library(logFile, outlev, "default Unbound_Same_As_Bound", Unboun
 //
 // Compute the look-up table for the distance-dependent dielectric function
 //
+if(outlev >= LOGETABLES)
 (void) fprintf(logFile, "\n\nPreparing Energy Tables for Bound Calculation:\n\n");
 setup_distdepdiel(logFile, outlev, ad_energy_tables);
+if(outlev >= LOGETABLES)
 (void) fprintf(logFile, "Preparing Energy Tables for Unbound Calculation:\n\n");
 setup_distdepdiel(logFile, outlev, unbound_energy_tables);
+
 
 //______________________________________________________________________________
 
@@ -1207,8 +1215,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 if (xA != xB) {
                     cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
                     cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
+
+		    if(outlev >= LOGETABLES) {
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;");
                     pr(logFile, "\n smoothing range is %.4f\n", r_smooth);
+		    }
                     ///@@intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
                     intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
 		    if(outlev>=LOGETABLES)
@@ -1244,8 +1255,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	if(! B_found_ligand_types) {
 		stop("You must specify the ligand_types before reading the grid data file.");
 		}
-        // LOGTODO TO DO: add outlev
-        readfield( info, line, jobStart, tms_jobStart );
+        readfield( info, line, jobStart, tms_jobStart, outlev, logFile );
         num_maps = 0;
 
         // Dynamically allocate memory for the maps, clear to 0.
@@ -1456,7 +1466,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr( logFile, "Estimated loss of torsional free energy upon binding = %+.4f kcal/mol\n\n", torsFreeEnergy);
 
         for (i=0;i<natom;i++) {
-            if (ignore_inter[i] == 1) {
+            if (ignore_inter[i] == 1 && outlev>=LOGLIGREAD) {
                 pr(logFile, "Special Boundary Conditions:\n");
                 pr(logFile, "____________________________\n\n");
                 pr(logFile, "AutoDock will ignore the following atoms in the input PDBQT file \nin intermolecular energy calculations:\n");
@@ -1465,7 +1475,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
         }
         for (i=0;i<natom;i++) {
-            if (ignore_inter[i] == 1) {
+            if (ignore_inter[i] == 1 && outlev>=LOGLIGREAD) {
                 pr(logFile, "Atom number %d:  %s\n", i+1, atomstuff[i] );
             }
         }
@@ -1475,10 +1485,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "%s: WARNING! No partial atomic charges have been supplied yet.\n\n",programname);
         } else {
             if (Nnb > 0) {
-            pr(logFile,"Calculating the product of the partial atomic charges, q1*q2, for all %d non-bonded pairs...\n\n", Nnb);
-            pr(logFile," -- Scaled q1*q2 means multiplied by both  %.1lf (for conversion later on to kcal/mol)\n", (double)ELECSCALE);
-            pr(logFile,"    and by the AD4 FF electrostatics coefficient, %.4lf\n\n", (double)AD4.coeff_estat);
             if (outlev >= LOGLIGREAD) {
+               pr(logFile,"Calculating the product of the partial atomic charges, q1*q2, for all %d non-bonded pairs...\n", Nnb);
+               pr(logFile," -- Scaled q1*q2 means multiplied by both  %.1lf (for conversion later on to kcal/mol)\n", (double)ELECSCALE);
+               pr(logFile,"    and by the AD4 FF electrostatics coefficient, %.4lf\n\n", (double)AD4.coeff_estat);
                 pr(logFile,"Non-bonded                           Scaled\n");
                 pr(logFile,"   Pair     Atom1-Atom2    q1*q2      q1*q2\n");
                 pr(logFile,"__________  ___________  _________  _________\n");
@@ -1876,9 +1886,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } // endif
         } // end parsing reorient command line
 
-        // reorient( logFile, true_ligand_atoms, atomstuff, crdreo, charge, type,
         reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type,
-                  parameterArray, q_reorient, origin, ntor, tlist, vt, &ligand, debug );
+                  parameterArray, q_reorient, origin, ntor, tlist, vt, &ligand,
+		  debug, outlev);
 
         break;
 
@@ -2026,7 +2036,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "%s: WARNING!  The number of torsions specified (%d) does not match the number found in the PDBQT file (i.e. %d)\n", programname, nval, ntor);
         }
         for ( i=0; i<nval; i++ ) {
-            if (outlev >= LOGBASIC) {
+            if (outlev > LOGBASIC) {
                 pr( logFile, "\tInitial torsion %2d = %7.2f deg\n", (i+1), sInit.tor[i] ); /* sInit.tor is in degrees */
                 /* Convert sInit.tor[i] into radians */
             }
@@ -2047,7 +2057,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         } else if (nfields == EOF) {
             stop(  "End of file encountered in TSTEP line");
         } else if (nfields > 0) {
-            pr( logFile, "Initial cycle, maximum translation step = +/- %-.1f Angstroms\n", trnStep0);
+            pr( logFile, "Initial simanneal cycle, maximum translation step = +/- %-.1f Angstroms\n", trnStep0);
         }
         if (nfields == 2) {
             B_CalcTrnRF = TRUE;
@@ -2072,7 +2082,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             stop("End of file encountered in QSTEP line");
         } else if (nfields > 0) {
             if (outlev >= LOGBASIC) {
-                pr( logFile, "Initial cycle, maximum quaternion angle step = +/- %-.1f deg\n", qtwStep0);
+                pr( logFile, "Initial simanneal cycle, maximum quaternion angle step = +/- %-.1f deg\n", qtwStep0);
             }
             /* convert to radians */
             qtwStep0 = DegreesToRadians( qtwStep0 );
@@ -2102,7 +2112,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             stop( "End of file encountered in DSTEP line");
         } else if (nfields > 0) {
             if (outlev >= LOGBASIC) {
-                pr( logFile, "Initial cycle, maximum torsion angle step = +/- %-.1f deg\n", torStep0);
+                pr( logFile, "Initial simanneal cycle, maximum torsion angle step = +/- %-.1f deg\n", torStep0);
             }
             /* convert to radians */
             torStep0 = DegreesToRadians( torStep0 );
@@ -2110,8 +2120,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (nfields == 2) {
             B_CalcTorRF = TRUE;
             if (outlev >= LOGBASIC) {
-                pr( logFile, "Final cycle,   maximum torsion angle step = +/- %-.1f deg\n", torStepFinal);
-                pr( logFile, "Reduction factor will be calculated when number of cycles has been read in.\n");
+                pr( logFile, "Final simanneal cycle,   maximum torsion angle step = +/- %-.1f deg\n", torStepFinal);
+                pr( logFile, "Reduction factor will be calculated when number of simanneal cycles has been read in.\n");
             }
             /* convert to radians */
             torStepFinal = DegreesToRadians( torStepFinal );
@@ -2127,7 +2137,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         get1arg( line, "%*s " FDFMT, &trnFac, "TRNRF" );
         if (outlev >= LOGBASIC) {
-            pr( logFile, "Reduction factor for translations =\t%-.3f /cycle\n", trnFac );
+            pr( logFile, "Reduction factor for simanneal translations =\t%-.3f /cycle\n", trnFac );
         }
         B_trnReduc = (trnFac != 1.);
         break;
@@ -2141,7 +2151,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         get1arg( line, "%*s " FDFMT, &qtwFac, "QRARF" );
         if (outlev >= LOGBASIC) {
-            pr( logFile, "Reduction factor for quaternion angle =\t%-.3f /cycle\n", qtwFac );
+            pr( logFile, "Reduction factor for simanneal quaternion angle =\t%-.3f /cycle\n", qtwFac );
         }
         B_qtwReduc = (qtwFac != 1.);
         break;
@@ -2155,7 +2165,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         get1arg( line, "%*s " FDFMT, &torFac, "DIHRF" );
         if (outlev >= LOGBASIC) {
-            pr( logFile, "Reduction factor for torsion angles =\t%-.3f /cycle\n", torFac );
+            pr( logFile, "Reduction factor for simanneal torsion angles =\t%-.3f /cycle\n", torFac );
         }
         B_torReduc = (torFac != 1.);
         break;
@@ -2854,17 +2864,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
             if (B_CalcTrnRF) {
                 trnFac = RedFac(trnStep0, trnStepFinal, ncycm1);
-                pr( logFile, "Calculated reduction factor for translations     = %-.3f /cycle\n", trnFac);
+                pr( logFile, "Calculated reduction factor for simanneal translations     = %-.3f /cycle\n", trnFac);
                 B_trnReduc = (trnFac != 1.);
             }
             if (B_CalcQtwRF) {
                 qtwFac = RedFac(qtwStep0, qtwStepFinal, ncycm1);
-                pr( logFile, "Calculated reduction factor for quaternion angle = %-.3f /cycle\n", qtwFac );
+                pr( logFile, "Calculated reduction factor for simanneal quaternion angle = %-.3f /cycle\n", qtwFac );
                 B_qtwReduc = (qtwFac != 1.);
             }
             if (B_CalcTorRF) {
                 torFac    = RedFac(torStep0, torStepFinal, ncycm1);
-                pr( logFile, "Calculated reduction factor for torsion angles   = %-.3f /cycle\n", torFac );
+                pr( logFile, "Calculated reduction factor for simanneal torsion angles   = %-.3f /cycle\n", torFac );
                 B_torReduc = (torFac != 1.);
             }
             pr(logFile, "\n");
@@ -3111,7 +3121,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     q_reorient = randomQuat();
                     // reorient the ligand
                     reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type,
-                              parameterArray, q_reorient, origin, ntor, tlist, vt, &ligand, debug );
+                              parameterArray, q_reorient, origin, ntor, tlist, vt, &ligand, debug, outlev );
                     // update the evaluate object
                     evaluate.update_crds( crdpdb, vt );
                 }

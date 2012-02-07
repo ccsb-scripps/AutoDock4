@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.22 2012/01/31 18:38:08 rhuey Exp $
+ $Id: banner.cc,v 1.23 2012/02/07 05:14:55 mp Exp $
 
  AutoDock 
 
@@ -31,14 +31,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include "banner.h"
 
-extern FILE *logFile;
-
-void banner( const char *const version_num )
+void banner( const char *const version_num, const int outlev, FILE *logFile )
 {
 
 /*----------------------------------------------------------------------------*/
 /* Output banner...                                                           */
 /*----------------------------------------------------------------------------*/
+
+if(outlev>=LOGFORADT) {
 
     (void) fprintf(logFile, "      ________________________________________________________________\n");
     (void) fprintf(logFile, "\n");
@@ -65,7 +65,7 @@ void banner( const char *const version_num )
     (void) fprintf(logFile, "                  ______________________________________ \n");
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |      AutoDock %-3.3s Release %-8s   |\n", version_num, version_num );
-    (void) fprintf(logFile, "                 |            (c) 1989-2009             |\n");
+    (void) fprintf(logFile, "                 |            (C) 1989-2012             |\n");
     (void) fprintf(logFile, "                 |    The Scripps Research Institute    |\n");
     (void) fprintf(logFile, "                 |                                      |\n");
     (void) fprintf(logFile, "                 |        Garrett M. Morris, TSRI       |\n");
@@ -92,11 +92,17 @@ void banner( const char *const version_num )
     (void) fprintf(logFile, "                 | For help, email %-19s |\n", PACKAGE_BUGREPORT);
     (void) fprintf(logFile, "                 |______________________________________|\n");
     (void) fprintf(logFile, "\n\n");
+}
+else {
+    (void) fprintf(logFile, "          AutoDock %-3.3s Release %-8s\n", version_num, version_num );
+    (void) fprintf(logFile, "         (C) 1989-2012 The Scripps Research Institute\n");
+}
+
     (void) fprintf(logFile, "        AutoDock comes with ABSOLUTELY NO WARRANTY.\n");
 // GNU BEGIN   (see maintenance script update_license_de-GNU)
     (void) fprintf(logFile, "        AutoDock is free software, and you are welcome\n");
     (void) fprintf(logFile, "        to redistribute it under certain conditions;\n");
-    (void) fprintf(logFile, "        for details type 'autodock -C'\n\n");
+    (void) fprintf(logFile, "        for details type 'autodock4 -C'\n\n");
 // GNU END   (see maintenance script update_license_de-GNU)
 
 }

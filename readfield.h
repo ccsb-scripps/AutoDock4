@@ -1,6 +1,6 @@
 /*
 
- $Id: readfield.h,v 1.8 2010/10/01 22:51:40 mp Exp $
+ $Id: readfield.h,v 1.9 2012/02/07 05:14:55 mp Exp $
 
  AutoDock 
 
@@ -32,30 +32,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "stop.h"
 #include "structs.h"
 
-/*
-void    readfield( Real *P_inv_spacing, 
-                Real *P_spacing, 
-                char  gdfldFileName[MAX_CHARS], 
-                char  gpfFileName[MAX_CHARS], 
-                int   gridpts1[SPACE], 
-                int   gridpts[SPACE], 
-		Real *xhi,
-		Real *yhi,
-		Real *zhi,
-                Clock jobStart, 
-                char  line[LINE_LEN], 
-                Real *xlo, 
-                Real *ylo, 
-                Real *zlo, 
-                char  macromolFileName[MAX_CHARS], 
-                Real maP_center[SPACE], 
-		struct tms tms_jobStart );
-*/
-
 void readfield( GridMapSetInfo *const info, // *ptr_map_set_info
                 /* not const */ char line[LINE_LEN],
                 const Clock& jobStart,
-                const struct tms& tms_jobStart );
+                const struct tms& tms_jobStart,
+		const int outlev,
+		FILE *logFile);
 
 
 #endif

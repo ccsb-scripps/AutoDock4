@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.h,v 1.10 2010/10/01 22:51:39 mp Exp $
+ $Id: qtransform.h,v 1.11 2012/02/07 05:14:55 mp Exp $
 
  AutoDock  
 
@@ -53,5 +53,6 @@ void reorient( FILE *const logFile,
                const int tlist[MAX_TORS][MAX_ATOMS],
                /* not const */ Real vt[MAX_TORS][SPACE],
                /* not const */ Molecule *ptr_ligand,
-               const int debug );
+               const int debug,
+	       const int outlev);
 #endif

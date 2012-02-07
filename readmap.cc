@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.16 2012/02/04 02:22:05 mp Exp $
+ $Id: readmap.cc,v 1.17 2012/02/07 05:14:55 mp Exp $
 
  AutoDock 
 
@@ -122,9 +122,10 @@ Statistics readmap( char           line[LINE_LEN],
         } else {
             strcpy(atom_type_name, info->atom_type_name[num_maps]);
         }
+	if(outlev>=LOGRECREAD)
         pr( logFile, "Opened Grid Map %d (%s):\t\t\t\t%s\n", num_maps+1, atom_type_name, FileName );
 
-        if (!ignore_errors) {
+        if (outlev>=LOGRECREAD && !ignore_errors) {
             pr( logFile, "Checking header information.\n" );
         }
          /*
@@ -217,11 +218,13 @@ Statistics readmap( char           line[LINE_LEN],
     nvExpected = info->num_points1[X] * info->num_points1[Y] * info->num_points1[Z];
     nv = 0;
 
+    if(outlev>=LOGRECREAD) {
     pr( logFile, "Number of grid points expected in  x-dimension:  %d\n", info->num_points1[X] );
     pr( logFile, "Number of grid points expected in  y-dimension:  %d\n", info->num_points1[Y] );
     pr( logFile, "Number of grid points expected in  z-dimension:  %d\n", info->num_points1[Z] );
     pr( logFile, "Looking for %d energies from Grid Map %d... \n", nvExpected, num_maps+1 );
     flushLog;
+    }
     loadStart = times( &tms_loadStart );
 
     for ( k = 0;  k < info->num_points1[Z];  k++) {
@@ -289,7 +292,7 @@ Statistics readmap( char           line[LINE_LEN],
     timesys( loadEnd - loadStart, &tms_loadStart, &tms_loadEnd );
 
     pr( logFile, "\n" );
-    }
+    } // if outlev
 
     if (nv != nvExpected ) {
         char message[LINE_LEN];

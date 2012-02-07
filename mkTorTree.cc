@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.19 2012/02/02 02:16:47 mp Exp $
+ $Id: mkTorTree.cc,v 1.20 2012/02/07 05:14:55 mp Exp $
 
  AutoDock 
 
@@ -66,7 +66,6 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 
     int   atomlast = 0;
     int   ii = 0;
-    int   imax = 0;
     int   itor = 0;
     int   keyword_id = -1;
     int   nbranches = 0;
@@ -146,6 +145,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
     /*____________________________________________________________*/
             case PDBQ_REMARK:
 
+		if(outlev>=LOGFORADT)
                 pr( logFile, "%s", Rec_line[ i ] );
                 break;
 
@@ -323,6 +323,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 upper = fabs( (double)upper );
                 lower = fabs( (double)lower );
 
+		if(outlev>=LOGLIGREAD)
                 pr( logFile, "Constrain the distance between atom %d and atom %d to be within %.3f and %.3f Angstroms.\n\n", *P_atomC1, *P_atomC2, lower, upper);
 
                 if (lower > upper) {
@@ -354,12 +355,14 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
             case PDBQ_END_RES:
                 found_new_res = 0;
                 nres++;
+		if(outlev>=LOGLIGREAD)
                 pr(logFile, "Residue number %d has %d moving atoms.\n\n", nres, natoms_in_res-2);
                 break;
 
     /*____________________________________________________________*/
             case PDBQ_TORSDOF:
                 sscanf(Rec_line[i], "%*s %d", P_ntorsdof);
+		if(outlev>=LOGLIGREAD)
                 pr( logFile, "\nTORSDOF record detected: number of torsional degress of freedom has been set to %d.\n", *P_ntorsdof );
                 break;
 
@@ -420,14 +423,16 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
             tlist[ i ][ j ] = tlistsort[ i ][ j ];
         }
     }
-    if (ntor > 0) {
+    if (ntor > 0 ) {
         pr( logFile, "\n\nNumber of Rotatable Bonds in Small Molecule =\t%d torsions\n", ntor);
+	if(outlev>=LOGLIGREAD)  {
         pr( logFile, "\n\nTORSION TREE\n____________\n\nSorted in order of increasing number of atoms moved:\n\n" );
      
         pr( logFile, "Torsion                    #\n" );
         pr( logFile, " #  Atom1--Atom2 Moved List of Atoms Moved\n" );
         pr( logFile, "___ ____________ _____ ________________________________________________________\n");
         for ( j=0; j<ntor; j++ ) {
+           int   imax ;
             pr( logFile, "%2d  %5s--%-5s  %3d  ", j+1, pdbaname[ tlist[ j ][ ATM1 ] ], pdbaname[ tlist[ j ][ ATM2 ] ], tlist[ j ][ NUM_ATM_MOVED ] );
             imax = tlist[ j ][ NUM_ATM_MOVED ] + 2;
             for ( i = 3; i <= imax; i++ ) {
@@ -436,7 +441,9 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
             pr( logFile, "\n" );
         }
         pr( logFile, "\n" );
+	} // end outlev
     } else { 
+	if(outlev>=LOGBASIC)
         pr( logFile, "\n*** No Rotatable Bonds detected in Small Molecule. ***\n\n" );
     }
 }

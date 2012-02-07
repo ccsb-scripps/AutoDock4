@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.19 2012/02/04 02:22:05 mp Exp $
+ $Id: intnbtable.cc,v 1.20 2012/02/07 05:14:55 mp Exp $
 
  AutoDock 
 
@@ -93,6 +93,7 @@ void intnbtable( Boole *const P_B_havenbp,
 
     *P_B_havenbp = TRUE;
 
+    if( outlev >= LOGETABLES ) {
     if (a1 != a2) {
         pr( logFile, "\nNon-bonded parameters for %s-%s and %s-%s interactions, used in %s energy calculations:\n", info->atom_type_name[a1], info->atom_type_name[a2], info->atom_type_name[a2], info->atom_type_name[a1], calc_type );
     } else {
@@ -114,6 +115,7 @@ void intnbtable( Boole *const P_B_havenbp,
     flushLog;
 
     nbeStart = times( &tms_nbeStart );
+    } // end if outlev
 
     // loop up to a maximum distance of  (NEINT * INV_A_DIV), 
     //                          usually    2048 * 0.01,       or 20.48 Angstroms
@@ -170,11 +172,11 @@ void intnbtable( Boole *const P_B_havenbp,
     ad_tables->e_vdW_Hb[0][a1][a2]  =  ad_tables->e_vdW_Hb[0][a2][a1]  =   EINTCLAMP;
     //ad_tables->e_vdW_Hb[NEINT-1][a1][a2]  =  ad_tables->e_vdW_Hb[NEINT-1][a2][a1]  = 0;
 
-    /* smooth with min function  r_smooth is Angstrom range of "smoothing" */ /* GPF_MAP */
+    /* smooth with min function; 
+      r_smooth is Angstrom range of "smoothing" */
     if (r_smooth > 0) {
         Real energy_smooth[NEINT];
-	// MP TODO why does this leave the last element unsmoothed?
-        for (i = 1;  i < NEINT-1;  i++) {
+        for (i = 1;  i <= NEINT-1;  i++) {
 	    double r = IndexToDistance(i);
 	    double rlow  = r - r_smooth/2;
 	    double rhigh = r + r_smooth/2;
@@ -219,9 +221,11 @@ void intnbtable( Boole *const P_B_havenbp,
         ad_tables->sol_fn[i] = coeff_desolv * exp( minus_inv_two_sigma_sqd * sq(r) );
     } // next i // for ( i = 1;  i < NDIEL;  i++ )
     
-    nbeEnd = times( &tms_nbeEnd );
-    pr( logFile, "Time taken: ");
-    timesys( nbeEnd - nbeStart, &tms_nbeStart, &tms_nbeEnd );
+    if( outlev >= LOGETABLES ) {
+	    nbeEnd = times( &tms_nbeEnd );
+	    pr( logFile, "Time taken: ");
+	    timesys( nbeEnd - nbeStart, &tms_nbeStart, &tms_nbeEnd );
+    }
 }
 /* end of intnbtable */
 

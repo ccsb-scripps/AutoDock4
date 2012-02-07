@@ -1,6 +1,6 @@
 /*
 
- $Id: torNorVec.cc,v 1.9 2011/03/08 04:18:37 mp Exp $
+ $Id: torNorVec.cc,v 1.10 2012/02/07 05:14:55 mp Exp $
 
  AutoDock 
 
@@ -36,13 +36,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <ctype.h>
 #endif /* DEBUG */
 
-extern FILE *logFile;
-
-
 void torNorVec( const Real crdpdb[MAX_ATOMS][SPACE],
 		const int ntor,
 		const int tlist[MAX_TORS][MAX_ATOMS],
-		/* not const */ Real vt[MAX_TORS][SPACE] )
+		/* not const */ Real vt[MAX_TORS][SPACE],
+		const int outlev,
+		FILE *logFile)
 {
 
     register int xyz = 0;
@@ -59,6 +58,7 @@ void torNorVec( const Real crdpdb[MAX_ATOMS][SPACE],
       |       or this pre-calculation of normal vectors will fail. |
       |____________________________________________________________| */
 
+    if(outlev>=LOGLIGREAD)
     pr( logFile, "\nCalculating normalized torsion vectors.\n\n" );
 
     for (j=0; j<ntor; j++) {
@@ -90,7 +90,6 @@ void torNorVec( const Real crdpdb[MAX_ATOMS][SPACE],
 	} /* xyz */
 
     } /* j */
-    flushLog;
     return;
 }
 
@@ -99,13 +98,15 @@ void update_torsion_vectors( const Real crdpdb[MAX_ATOMS][SPACE],
                              const int  tlist[MAX_TORS][MAX_ATOMS],
                              /* not const */ Real vt[MAX_TORS][SPACE],
                              /* not const */ Molecule *ligand,
-                             const int debug )
+                             const int debug,
+			     const int outlev,
+			     FILE *logFile)
 { // Update the unit vectors for the torsion rotations
     register int i=0, j=0;
     if (debug > 0) {
         pr(logFile, "Calculating unit vectors for each torsion.\n\n");
     }
-    torNorVec(crdpdb, ntor, tlist, vt);
+    torNorVec(crdpdb, ntor, tlist, vt,outlev,logFile);
     for (i = 0; i < MAX_TORS; i++) {
         ligand->vt[i][X] = vt[i][X];
         ligand->vt[i][Y] = vt[i][Y];

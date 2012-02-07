@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.34 2012/02/04 02:22:05 mp Exp $
+ $Id: readPDBQT.cc,v 1.35 2012/02/07 05:14:55 mp Exp $
 
  AutoDock 
 
@@ -500,6 +500,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 	} // i, next record in PDBQT file 
 
+    if(outlev>=LOGLIGREAD) {
     pr(logFile, "\nNumber of atoms in movable ligand = %d\n\n", *P_true_ligand_atoms);
 
     pr(logFile, "Number of non-hydrogen atoms in movable ligand = %d\n\n", *P_n_heavy_atoms_in_ligand);
@@ -509,6 +510,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	pr(logFile, "Total number of atoms found =\t%d atoms\n\n", natom);
 
 	pr(logFile, "Number of flexible residues found in the receptor =\t%d residues\n\n", nres);
+   }
 
 
     //check for mismatched BRANCH/ENDBRANCH records
@@ -548,6 +550,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 		mol.natom = natom;
 	}
 
+	if(outlev>=LOGLIGREAD) {
 	pr(logFile, "\nSummary of number of atoms of a given atom type:\n");
 	pr(logFile, "------------------------------------------------\n\n");
 	for (i = 0; i < num_atom_maps; i++) {
@@ -556,9 +559,11 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 	pr(logFile, "\n\nSummary of total charge on ligand, residues and overall:\n");
 	pr(logFile, "-------------------------------------------------------\n");
+    }
 
     // Check total charge on ligand
-	pr(logFile, "\nTotal charge on ligand                               =\t%+.3f e\n", total_charge_ligand);
+	if(outlev>=LOGBASIC)
+	pr(logFile, "Total charge on ligand                               =\t%+.3f e\n", total_charge_ligand);
 	iq = (int) ((aq = fabs(total_charge_ligand)) + 0.5);
 	lq = iq - QTOL;
 	uq = iq + QTOL;
@@ -638,13 +643,15 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 		print_nonbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, *P_Nnb, nonbondlist, map_index, outlev, logFile);
 
         // Update the unit vectors for the torsion rotations
-        update_torsion_vectors( crdpdb, ntor, tlist, vt, &mol, debug );
+        update_torsion_vectors( crdpdb, ntor, tlist, vt, &mol, debug, 
+	 outlev, logFile);
 
 		flushLog;
 
 	free(nbonds);
 	free(bonded);
 	} else {
+		if(outlev>=LOGLIGREAD)
 		fprintf(logFile, ">>> No torsions detected, so skipping \"nonbonds\", \"weedbonds\" and \"torNorVec\" <<<\n\n");
 	}
 

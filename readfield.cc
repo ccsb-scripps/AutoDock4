@@ -1,6 +1,6 @@
 /*
 
- $Id: readfield.cc,v 1.8 2010/10/01 22:51:40 mp Exp $
+ $Id: readfield.cc,v 1.9 2012/02/07 05:14:55 mp Exp $
 
  AutoDock 
 
@@ -36,13 +36,13 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <sys/types.h>
 #include "readfield.h"
 
-extern FILE *logFile;
-
 //FIXME: tms_jobStart could be passed by reference
 void readfield( /* not const */ GridMapSetInfo *const info,
                 /* not const */ char line[LINE_LEN],
                 const Clock& jobStart,
-                const struct tms& tms_jobStart )
+                const struct tms& tms_jobStart,
+		const int outlev,
+		FILE *logFile)
 {
     FILE *fldFile;
     char rec9[9], inputline[LINE_LEN];
@@ -57,7 +57,8 @@ void readfield( /* not const */ GridMapSetInfo *const info,
     (void) sscanf( line, "%*s %s", info->FN_gdfld);
      
     if ( openFile( info->FN_gdfld, "r", &fldFile, jobStart, tms_jobStart, TRUE )) {
-        pr( logFile, "Opening Grid Map Dimensions file:\t\t%s\n\n", info->FN_gdfld);
+	if(outlev >= LOGFORADT) 
+        pr( logFile, "Opening Grid Map Dimensions file:\t\t%s\n", info->FN_gdfld);
     }
 
     /*
@@ -74,6 +75,7 @@ void readfield( /* not const */ GridMapSetInfo *const info,
         }
     } /* endwhile */
     info->inv_spacing = 1. / (info->spacing);
+    if(outlev>=LOGFORADT)
     pr( logFile, "Grid Point Spacing =\t\t\t\t%.3f Angstroms\n\n", info->spacing);
 
     /*
@@ -88,12 +90,13 @@ void readfield( /* not const */ GridMapSetInfo *const info,
         }
     }
 
+    if(outlev>=LOGFORADT)
     pr( logFile, "Even Number of User-specified Grid Points =\t%d x-points\n\t\t\t\t\t\t%d y-points\n\t\t\t\t\t\t%d z-points\n\n", info->num_points[X],info->num_points[Y],info->num_points[Z]);
     for (i = 0;  i < SPACE;  i++) {
         info->num_points1[i] = info->num_points[i] + 1;
 	info->num_alloc[i] = info->num_points1[i]; // this is an odd number
     } /* i */
-    pr( logFile, "Adding the Central Grid Point makes:\t\t%d x-points\n\t\t\t\t\t\t%d y-points\n\t\t\t\t\t\t%d z-points\n\n", info->num_points1[X], info->num_points1[Y], info->num_points1[Z]);
+    //TODO useful? pr( logFile, "Adding the Central Grid Point makes:\t\t%d x-points\n\t\t\t\t\t\t%d y-points\n\t\t\t\t\t\t%d z-points\n\n", info->num_points1[X], info->num_points1[Y], info->num_points1[Z]);
     if ( (info->num_points[X] <= 0)||(info->num_points[Y] <= 0)||(info->num_points[Z] <= 0) ) {
         stop("insufficient grid points." );
     } else if ((info->num_points[X] > MAX_GRID_PTS)||(info->num_points[Y] > MAX_GRID_PTS)||(info->num_points[Z] > MAX_GRID_PTS)) {
@@ -105,21 +108,23 @@ void readfield( /* not const */ GridMapSetInfo *const info,
     */
     (void) fgets(inputline, LINE_LEN, fldFile);
     (void) sscanf(inputline,"%*s %lf %lf %lf", &info->center[X], &info->center[Y], &info->center[Z]);
-    pr( logFile, "Coordinates of Central Grid Point of Maps =\t(%.3f, %.3f, %.3f)\n\n", info->center[X],  info->center[Y],  info->center[Z]);
+    if(outlev >= LOGFORADT)
+	    pr( logFile, "Coordinates of Central Grid Point of Maps =\t(%.3f, %.3f, %.3f)\n", info->center[X],  info->center[Y],  info->center[Z]);
 
     /*
     ** #MACROMOLECULE 
     */
     (void) fgets(inputline, LINE_LEN, fldFile);
     (void) sscanf(inputline,"%*s %s", info->FN_receptor);
-    pr( logFile, "Macromolecule file used to create Grid Maps =\t%s\n\n", info->FN_receptor);
+    pr( logFile, "Macromolecule file used to create Grid Maps =\t%s\n", info->FN_receptor);
 
     /*
     ** #GRID_PARAMETER_FILE 
     */
     (void) fgets(inputline, LINE_LEN, fldFile);
     (void) sscanf(inputline,"%*s %s", info->FN_gpf);
-    pr( logFile, "Grid Parameter file used to create Grid Maps =\t%s\n\n", info->FN_gpf);
+    if(outlev>=LOGFORADT)
+    pr( logFile, "Grid Parameter file used to create Grid Maps =\t%s\n", info->FN_gpf);
 
     /*
     ** Close Grid-dimensions data file 
@@ -134,9 +139,11 @@ void readfield( /* not const */ GridMapSetInfo *const info,
         info->hi[i] = info->center[i] + (info->num_points[i]/2) * (info->spacing);
     }
 
+    if(outlev>=LOGFORADT) {
     pr( logFile, "Minimum coordinates in grid = (%.3f, %.3f, %.3f)\n",   info->lo[X], info->lo[Y], info->lo[Z]);
     pr( logFile, "Maximum coordinates in grid = (%.3f, %.3f, %.3f)\n\n", info->hi[X], info->hi[Y], info->hi[Z]);
     fflush( logFile );
+    }
 }
 /*
 ** EOF

@@ -1,6 +1,6 @@
 /*
 
- $Id: qtransform.cc,v 1.14 2011/05/18 16:43:16 rhuey Exp $
+ $Id: qtransform.cc,v 1.15 2012/02/07 05:14:55 mp Exp $
 
  AutoDock  
 
@@ -139,7 +139,7 @@ void reorient( FILE *const logFile,
                const int tlist[MAX_TORS][MAX_ATOMS],
                /* not const */ Real vt[MAX_TORS][SPACE],
                /* not const */ Molecule *ptr_ligand,
-               const int debug )
+               const int debug, const int outlev )
  {
     // Print out the un-reoriented coordinates
     pr( logFile, "\nUn-reoriented ligand's coordinates:\n" );
@@ -153,7 +153,8 @@ void reorient( FILE *const logFile,
     qtransform( origin, q_reorient, crdpdb, true_ligand_atoms );
 
     // Update the unit vectors for the torsion rotations
-    update_torsion_vectors( crdpdb, ntor, tlist, vt, ptr_ligand, debug );
+    update_torsion_vectors( crdpdb, ntor, tlist, vt, ptr_ligand, 
+     debug, outlev, logFile);
     
     // Print out the re-oriented coordinates
     pr( logFile, "Reoriented ligand's coordinates:\n" );
