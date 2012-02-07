@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.24 2012/02/04 02:22:05 mp Exp $
+ $Id: read_parameter_library.cc,v 1.25 2012/02/07 03:29:00 mp Exp $
 
  AutoDock 
 
@@ -43,6 +43,7 @@ extern Linear_FE_Model AD4;
 
 static Boole string_begins_with(const char *const a, const char *const b);
 static Boole string_ends_with(const char *const a, const char *const b);
+#define streq(a,b) (0==strcasecmp(a,b))
 
 static char parameter_library[MAX_CHARS];
 
@@ -78,6 +79,16 @@ void read_parameter_library(
         pr(logFile, "DEBUG: parameter_library_line = %sDEBUG: param_keyword          = %d\n", parameter_library_line, param_keyword);
         }
 
+// define convenience macro for common processing
+#define process(term, string)  \
+  nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.term); \
+  if (nfields < 1) { \
+                    pr( logFile, "%s: ERROR:  Must supply a %s coefficient as a floating point number.\n\n", programname, string); \
+                    exit(-1); \
+                } \
+		if( outlev >= LOGETABLES ) \
+                pr( logFile, "Free energy coefficient for the %s term = \t%.4lf\n\n", string, AD4.term);
+
         switch (param_keyword) {
             case PAR_:
             case PAR_NULL:
@@ -85,53 +96,29 @@ void read_parameter_library(
                 break;
 
             case PAR_VDW:
-                nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_vdW);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-                pr( logFile, "Free energy coefficient for the van der Waals term = \t%.4lf\n\n", AD4.coeff_vdW);
+		process( coeff_vdW, "van der Waals term")
                 break;
 
             case PAR_HBOND:
-                nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_hbond);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-                pr( logFile, "Free energy coefficient for the H-bonding term     = \t%.4lf\n\n", AD4.coeff_hbond);
+		process( coeff_hbond, "H-bonding term")
                 break;
 
             case PAR_ESTAT:
-                nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_estat);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-                pr( logFile, "Free energy coefficient for the electrostatic term = \t%.4lf\n\n", AD4.coeff_estat);
+		process( coeff_estat, "electrostatic term")
                 break;
 
             case PAR_DESOLV:
-                nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_desolv);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-                pr( logFile, "Free energy coefficient for the desolvation term   = \t%.4lf\n\n", AD4.coeff_desolv);
+		process( coeff_desolv, "desolvation term")
                 break;
 
             case PAR_TORS:
-                nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_tors);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-                pr( logFile, "Free energy coefficient for the torsional term     = \t%.4lf\n\n", AD4.coeff_tors);
+		process( coeff_tors, "torsional term")
                 break;
 
             case PAR_UNBOUND:
-                pr( logFile, "%s: WARNING: the unbound model cannot be specified in the parameter library file.\n\n", programname);
+                pr( logFile, "%s: ERROR: the unbound model cannot be specified in the parameter library file.\n\n", programname);
                 pr( logFile, "Use the DPF parameter 'unbound_model' instead.\n");
+		exit(-1);
                 break;
 
             case PAR_ATOM_PAR:
@@ -203,6 +190,7 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
     int int_hbond_type = 0;
     register int counter = 0;
 
+    if ( outlev >= LOGETABLES )
     pr(logFile, "Setting up parameter library with AutoDock %s values.\n\n\n", 
                  model_text);
 
@@ -224,7 +212,7 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
         strncpy(parameter_library, "'same as bound' [AutoDock 4.2 default]", sizeof parameter_library);
     }
     else {
-        pr(logFile, "DEBUG: cannot determine %s parameter values \n",model_text);
+        pr(logFile, "BUG: cannot determine %s parameter values \n",model_text);
         exit(-1);
     }
 
@@ -246,53 +234,29 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
                 break;
 
             case PAR_VDW:
-                nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_vdW);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-                pr( logFile, "Free energy coefficient for the van der Waals term = \t%.4lf\n\n", AD4.coeff_vdW);
+		process( coeff_vdW, "van der Waals term")
                 break;
 
             case PAR_HBOND:
-                nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_hbond);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-                pr( logFile, "Free energy coefficient for the H-bonding term     = \t%.4lf\n\n", AD4.coeff_hbond);
+		process( coeff_hbond, "H-bonding term")
                 break;
 
             case PAR_ESTAT:
-                nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_estat);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-                pr( logFile, "Free energy coefficient for the electrostatic term = \t%.4lf\n\n", AD4.coeff_estat);
+		process( coeff_estat, "electrostatic term")
                 break;
 
             case PAR_DESOLV:
-                nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_desolv);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-                pr( logFile, "Free energy coefficient for the desolvation term   = \t%.4lf\n\n", AD4.coeff_desolv);
+		process( coeff_desolv, "desolvation term")
                 break;
 
             case PAR_TORS:
-                nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.coeff_tors);
-                if (nfields < 1) {
-                    pr( logFile, "%s: WARNING:  Please supply a coefficient as a floating point number.\n\n", programname);
-                    continue; // skip any parameter_library_line without enough info
-                }
-                pr( logFile, "Free energy coefficient for the torsional term     = \t%.4lf\n\n", AD4.coeff_tors);
+		process( coeff_tors, "torsional term")
                 break;
 
             case PAR_UNBOUND:
-                pr( logFile, "%s: WARNING: the unbound model cannot be specified in the parameter library file.\n\n", programname);
+                pr( logFile, "%s: ERROR: the unbound model cannot be specified in the parameter library file.\n\n", programname);
                 pr( logFile, "Use the DPF parameter 'unbound_model' instead.\n");
+		exit(-1);
                 break;
 
             case PAR_ATOM_PAR:
@@ -332,6 +296,8 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
 
                 thisParameter.epsij    *= AD4.coeff_vdW;
                 thisParameter.epsij_hb *= AD4.coeff_hbond;
+#ifdef ADVINA // {
+// experimental 
     struct xs_vdw_lookup { char name[4]; float value;};
     static struct xs_vdw_lookup xs_vdw_lookup[] = { // adapted from AutoDock Vina atom_constants.h
     {"C", 1.9},
@@ -353,7 +319,6 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
     //"I", 2.2,
     //"Met_D", 1.2,
     {"", -1 }};
-#define streq(a,b) (0==strcasecmp(a,b))
 
                 {
                 int xs_vdw_i = -1;
@@ -369,6 +334,7 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
                     }
                 else thisParameter.xs_radius = xs_vdw_lookup[xs_vdw_i].value;
                 }
+#endif // } ADVINA
 
                 apm_enter(thisParameter.autogrid_type, thisParameter);
 		if(outlev >= LOGETABLES) {
