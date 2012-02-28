@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.163 2012/02/07 05:14:55 mp Exp $
+ $Id: main.cc,v 1.164 2012/02/28 00:18:40 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -110,7 +110,7 @@ extern Real idct;
 extern Eval evaluate;
 extern Linear_FE_Model AD4;
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.163 2012/02/07 05:14:55 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.164 2012/02/28 00:18:40 mp Exp $"};
 
 
 int sel_prop_count = 0;
@@ -666,7 +666,7 @@ F_lnH = ((Real)log(0.5));
 
 //______________________________________________________________________________
 /*
-** Determine output level before we ouput anything.
+** Determine output level before we output anything.
 ** We must parse the entire DPF -- silently -- for any outlev settings
 ** or flexible residues file specification
 */
@@ -682,25 +682,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Output level,
         */
         get1arg( line, "%*s %d", &outlev, "OUTLEV" );
-
-	// set frequency of printing minimal generational statistics
-	//  For more verbose population statistics, use "output_pop_stats"
-	output_pop_stats.everyNevals = 0;  // do not trigger by num of evals
-        switch ( outlev ) {
-        case -1:
-            output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
-            break;
-        case 0:
-            output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
-            break;
-        case 1:
-            output_pop_stats.everyNgens = (unsigned int) OUTLEV1_GENS;
-            break;
-        case 2:
-        default:
-            output_pop_stats.everyNgens = (unsigned int) OUTLEV2_GENS;
-            break;
-        }
         break;
 
     case DPF_FLEXRES:
@@ -727,7 +708,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.163 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.164 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -776,9 +757,11 @@ setup_distdepdiel(logFile, outlev, unbound_energy_tables);
 
 //______________________________________________________________________________
 
+if(outlev>LOGFORADT) {
 (void) fprintf(logFile, "\n      ___________________________________________________\n\n");
 (void) fprintf(logFile,   "             PARSING INPUT DOCKING PARAMETER FILE\n");
 (void) fprintf(logFile,   "      ___________________________________________________\n\n");
+}
 
 //______________________________________________________________________________
 /*
@@ -808,11 +791,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         case DPF_BLANK_LINE:
         case DPF_COMMENT:
-            pr( logFile, "DPF> %s", line );
+	    if(outlev>=LOGBASIC) pr( logFile, "DPF> %s", line );
             break;
 
         default:
-            pr( logFile, "\n\nDPF> %s\n", line );
+	    if(outlev>LOGFORADT) pr(logFile, "\n\n");
+            if(outlev>=LOGBASIC) pr( logFile, "DPF> %s\n", line );
             indcom = strindex( line, "#" );
             if (indcom != -1) {
                 line[ indcom ] = '\0'; /* Truncate "line" at the comment */
@@ -840,7 +824,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
 
         B_found_autodock_parameter_version = 1==sscanf( line, "%*s %s", autodock_parameter_version );
-        pr( logFile, "\n\tAutodock parameter version %s.\n", autodock_parameter_version );
+        pr( logFile, "\tAutodock parameter version %s.\n", autodock_parameter_version );
         break;
 
 /*____________________________________________________________________________*/
@@ -886,32 +870,52 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Output level,
         */
         get1arg( line, "%*s %d", &outlev, "OUTLEV" );
-	// LOGTODO 2012 MP  make these symbolic
+        output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS; // default
+	// MP TODO  this could be improved
+        pr( logFile, "Output Level = %d " , outlev);
         switch ( outlev ) {
-        case -1:
-            pr( logFile, "Output Level = -1.  ONLY STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
+	case LOGMIN:
+	case LOGMINCLUST:
+            pr( logFile, "ONLY STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
             output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
             break;
-        case 0:
-            pr( logFile, "Output Level = 0.\n" );
+        case LOGBASIC:
+            pr( logFile, " BASIC OUTPUT DURING DOCKING (LOGBASIC).\n" );
             output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
             break;
-        case 1:
-            pr( logFile, "Output Level = 1.  MINIMUM OUTPUT DURING DOCKING.\n" );
+        case LOGFORADT:
+            pr( logFile, " ADT-COMPATIBLE OUTPUT DURING DOCKING.\n" );
             output_pop_stats.everyNgens = (unsigned int) OUTLEV1_GENS;
             break;
-        case 2:
-        default:
+        case LOGRUNV:
 	    sprintf(message, 
-	     "Output Level = %d. FULL OUTPUT DURING DOCKING.\n", outlev);
+	     " EXPANDED OUTPUT DURING DOCKING.\n");
             pr( logFile, message );
             output_pop_stats.everyNgens = (unsigned int) OUTLEV2_GENS;
+	    break;
+	case LOGLIGREAD:
+	case LOGRECREAD:
+	    pr(logFile, " EXPANDED OUTPUT DURING LIGAND/RECEPTOR SETUP.\n" );
             break;
+        case LOGRUNVV:
+        case LOGRUNVVV:
+	    sprintf(message, 
+	     " FULL OUTPUT DURING DOCKING.\n");
+            pr( logFile, message );
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV2_GENS;
+	    break;
+	case LOGETABLES:
+	case LOGNBINTE:
+	    pr(logFile, " EXPANDED OUTPUT DURING ENERGY TABLE SETUP.\n" );
+	    break;
+	default:
+	    pr(logFile, " WARNING, undocumented outlev setting %d.\n", outlev );
+	    break;
         }
         if(output_pop_stats.everyNgens>0) pr( logFile, "\n\tOutput population statistics every %u generations.\n", output_pop_stats.everyNgens );
-        else pr( logFile, "\n\tNever output generation-based population statistics.\n");
+        else if(outlev>LOGBASIC) pr( logFile, "\n\tNever output generation-based population statistics.\n");
         if(output_pop_stats.everyNevals>0) pr( logFile, "\n\tOutput population statistics every %u energy evaluations.\n", output_pop_stats.everyNevals );
-        else pr( logFile, "\n\tNever output evaluation-count-based population statistics.\n");
+        else if(outlev>LOGBASIC) pr( logFile, "\n\tNever output evaluation-count-based population statistics.\n");
         break;
 
 /*____________________________________________________________________________*/
@@ -1459,11 +1463,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile, "Number of non-hydrogen atoms in ligand:  %d\n\n", n_heavy_atoms_in_ligand);
 
         pr(logFile, "Number of vibrational degrees of freedom of ligand:  %d\n\n\n", (3 * true_ligand_atoms) - 6 );
-        pr( logFile, "Number of torsional degrees of freedom = %d\n", ntorsdof);
+        pr(logFile, "Number of torsional degrees of freedom = %d\n", ntorsdof);
 
         torsFreeEnergy = (Real)ntorsdof * AD4.coeff_tors;
 
-        pr( logFile, "Estimated loss of torsional free energy upon binding = %+.4f kcal/mol\n\n", torsFreeEnergy);
+        pr(logFile, "Estimated loss of torsional free energy upon binding = %+.4f kcal/mol\n\n", torsFreeEnergy);
 
         for (i=0;i<natom;i++) {
             if (ignore_inter[i] == 1 && outlev>=LOGLIGREAD) {
@@ -1622,7 +1626,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 coliny_init(algname, domain, sInit.ntor+7);
 
                 for (j=0; j<nruns; j++) {
-                  fprintf( logFile, "\n\n\tBEGINNING Coliny %s DOCKING\n",algname);
+                  fprintf( logFile, "\n\tBEGINNING Coliny %s DOCKING\n",algname);
                   pr(logFile, "\nDoing %s run:  %d/%d.\n", algname, j+1, nruns);
 
                   //coliny uses a single seed
@@ -2036,10 +2040,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr( logFile, "%s: WARNING!  The number of torsions specified (%d) does not match the number found in the PDBQT file (i.e. %d)\n", programname, nval, ntor);
         }
         for ( i=0; i<nval; i++ ) {
-            if (outlev > LOGBASIC) {
+            if (outlev > LOGFORADT) 
                 pr( logFile, "\tInitial torsion %2d = %7.2f deg\n", (i+1), sInit.tor[i] ); /* sInit.tor is in degrees */
                 /* Convert sInit.tor[i] into radians */
-            }
             ligand.S.tor[i] = sInit.tor[i] = DegreesToRadians( sInit.tor[i] ); /* sInit.tor is now in radians  Added:05-01-95 */
         }
         break;
@@ -3106,7 +3109,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
             for (j=0; j<nruns; j++) {
 
-                (void) fprintf( logFile, "\n\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
+                (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
                 (void) fflush( logFile );
                 pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
 
@@ -3130,6 +3133,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
 
                 // Reiterate output level...
+		if(outlev>=LOGRUNV)
                 pr(logFile, "Output level is set to %d.\n\n", outlev);
 
                 // Start Lamarckian GA run -- Bound simulation
@@ -3235,7 +3239,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
            for (j=0; j<nruns; j++) {
 
-               (void) fprintf( logFile, "\n\n\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
+               (void) fprintf( logFile, "\n\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
                pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
                (void) fflush( logFile );
 
@@ -3660,8 +3664,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	   //BEGINNING PARTICLE SWARM OPTIMIZATION run
 	   for (j = 0; j < nruns; j++)
 	   {	 
-	 		//(void) fprintf( logFile, "\n\n\tBEGINNING PARTICLE SWARM OPTIMIZATION (PSO) \n");
-            (void) fprintf( logFile, "\n\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
+	 		//(void) fprintf( logFile, "\n\tBEGINNING PARTICLE SWARM OPTIMIZATION (PSO) \n");
+            (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
 	 		(void) fflush( logFile );
 
 	 		pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
@@ -3967,7 +3971,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // to determine the unbound state of the flexible molecule:
             evaluate.compute_intermol_energy(FALSE);
             //
-            (void) fprintf( logFile, "\n\n\tBEGINNING COMPUTATION OF UNBOUND EXTENDED STATE USING LGA\n");
+            (void) fprintf( logFile, "\n\tBEGINNING COMPUTATION OF UNBOUND EXTENDED STATE USING LGA\n");
             (void) fprintf( logFile,     "\t_________________________________________________________\n\n\n");
             (void) fflush( logFile );
             //
@@ -4117,7 +4121,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                  *  Genetic Algorithm-Local search,  a.k.a.
                  *  Lamarckian Genetic Algorithm
                  */
-                (void) fprintf( logFile, "\n\n\tBEGINNING COMPUTATION OF UNBOUND AUTODOCK STATE USING LGA\n");
+                (void) fprintf( logFile, "\n\tBEGINNING COMPUTATION OF UNBOUND AUTODOCK STATE USING LGA\n");
                 (void) fprintf( logFile,     "\t_________________________________________________________\n\n\n");
                 (void) fflush( logFile );
                 //

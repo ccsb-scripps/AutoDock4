@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.36 2012/02/04 02:22:05 mp Exp $
+ $Id: writePDBQT.cc,v 1.37 2012/02/28 00:18:40 mp Exp $
 
  AutoDock  
 
@@ -129,17 +129,18 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     }
 
     // Write out the state variables
-	if ((outlev > LOGMIN ) && (outlev < 999)) { // LOGTODO why high limit?
-        // "outlev" is the level of detail: 2 is high, 0 is low
 
 	// pass original center to printState - could be improved - MP 2010-05
 	state.Center.x = sml_center[X];
 	state.Center.y = sml_center[Y];
 	state.Center.z = sml_center[Z];
-	pr(logFile, "Detailed state:\t");
-	printState(logFile, state, 6); // detailed, include center, ntor
+
+	pr(logFile, "Detailed state: ");
+	printState(logFile, state, 6); // detailed, include center, ntor, no newline
 	pr(logFile, "\n");
 
+	if (outlev >= LOGBASIC) {
+        // "outlev" is the level of detail: 2 is high, 0 is low
         pr(logFile, "QState:\t");
         printState(logFile, state, 5); // short format, as quaternion
         pr(logFile, "\n");
@@ -147,9 +148,6 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         pr(logFile, "State:\t"); // various possibly longer formats, as axis-angle
         printState(logFile, state, outlev);
         pr(logFile, "\n\n");
-	} else if (outlev >= LOGMIN ) {
-		printState(logFile, state, 0);
-        pr(logFile, "\n");
 	}
 
     // Convert state variables to x, y, z-coordinates

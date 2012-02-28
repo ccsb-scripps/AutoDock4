@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.36 2012/02/04 02:22:05 mp Exp $
+ $Id: constants.h,v 1.37 2012/02/28 00:18:40 mp Exp $
 
  AutoDock 
 
@@ -232,12 +232,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define LOGBASIC 0
 #define LOGFORADT 1
 #define LOGRUNV 2
-#define LOGRUNVV 3
-#define LOGRUNVVV 4
 #define LOGLIGREAD 3
 #define LOGRECREAD 4
-#define LOGETABLES 5
-#define LOGNBINTE 5   // analysis.cc nonbond internal energy table
+#define LOGRUNVV 5
+#define LOGRUNVVV 6
+#define LOGETABLES 7
+#define LOGNBINTE 8   // analysis.cc nonbond internal energy table
 #endif  /* CONSTANTS */
 
 

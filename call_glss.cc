@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.64 2012/02/04 02:22:05 mp Exp $ 
+ $Id: call_glss.cc,v 1.65 2012/02/28 00:18:40 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -429,7 +429,7 @@ State call_glss(/* not const */ Global_Search *global_method,
             (void)fprintf( logFile, "</generation>\n\n\n");
         }
 
-        if (pop_size > 1 && outlev >= LOGRUNVV) minmeanmax( logFile, thisPop, generation, info );
+        if (pop_size > 1 && outlev >= LOGRUNVVV) minmeanmax( logFile, thisPop, generation, info );
 
         // call the global method's local search method if any
 	if(local_method != NULL) {
@@ -452,7 +452,7 @@ State call_glss(/* not const */ Global_Search *global_method,
           }
 	} // if a local_method is active
 
-        if (pop_size > 1 && outlev >= LOGRUNVV ) minmeanmax( logFile, thisPop, generation, info );
+        if (pop_size > 1 && outlev >= LOGRUNVVV ) minmeanmax( logFile, thisPop, generation, info );
 	} // end if generation > 0
 
     // note we terminate without searching if num_evals is 0

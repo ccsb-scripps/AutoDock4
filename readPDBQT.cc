@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.36 2012/02/07 20:47:30 mp Exp $
+ $Id: readPDBQT.cc,v 1.37 2012/02/28 00:18:40 mp Exp $
 
  AutoDock 
 
@@ -188,6 +188,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     if (B_have_flexible_residues) {
         //  Attempt to open the flexible residue PDBQT file...
         if (openFile(FN_flexres, "r", &FP_flexres, jobStart, tms_jobStart, TRUE)) {
+            if(outlev>=LOGBASIC)
             pr(logFile, "Flexible Residues PDBQT file = \"%s\"\n\n", FN_flexres);
         }
     }
@@ -220,14 +221,17 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	} else {
         // Read in the input Ligand PDBQT file...
 		if (openFile(FN_ligand, "r", &FP_ligand, jobStart, tms_jobStart, TRUE)) {
-			pr(logFile,   "INPUT LIGAND PDBQT FILE:");
-			pr(logFile, "\n________________________\n\n");
+			if(outlev>=LOGFORADT){
+			  pr(logFile,   "INPUT LIGAND PDBQT FILE:");
+			  pr(logFile, "\n________________________\n\n");
+			 }
 			for (i = 0; i < nligand_record; i++) {
 				if (fgets(PDBQT_record[i], LINE_LEN, FP_ligand) != NULL) {
+					if(outlev>=LOGFORADT)
 					pr(logFile, "INPUT-LIGAND-PDBQT: %s", PDBQT_record[i]);
 				}
 			} // i
-			pr(logFile, UnderLine);
+			if(outlev>=LOGFORADT) pr(logFile, UnderLine);
 		} // if
 		(void) fclose(FP_ligand);
 
@@ -250,8 +254,10 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 	// Count the ATOMs and HETATMs; store the (x,y,z) coordinates...
 	// Also, check for any BEGIN_RES records, for receptor flexibility...
+	if(outlev>=LOGLIGREAD) {
 	pr(logFile, "\nDetermining Atom Types and Parameters for the Moving Atoms\n");
 	pr(logFile,   "__________________________________________________________\n\n");
+	}
 	natom = 0;
     //debug = 1;
 
