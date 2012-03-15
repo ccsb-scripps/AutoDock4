@@ -1,4 +1,4 @@
-# $Id: AD4.1_compact.dat,v 1.4 2009/01/19 19:50:56 rhuey Exp $
+# $Id: AD4.1_compact.dat,v 1.5 2012/03/15 15:55:57 rhuey Exp $
 # 
 # AutoDock 
 # 
@@ -23,7 +23,7 @@
 
 # AutoDock Linear Free Energy Model Coefficients and Energetic Parameters
 #                   Version 4.1 Compact
-#                     $Revision: 1.4 $
+#                     $Revision: 1.5 $
 
 # FE_unbound_model is used to specify how the internal energy of the
 # ligand should be treated when estimating the free energy of binding,
@@ -35,7 +35,7 @@
 #             extended conformation when unbound.
 # compact -- this assumes the internal energy of the ligand is that of a 
 #            compact conformation when unbound.
-FE_unbound_model compact
+#FE_unbound_model compact
 
 # AutoDock 4 free energy coefficients with respect to original (AD2) energetic parameters
 #  This model assumes that the unbound conformation is compact.
