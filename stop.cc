@@ -1,6 +1,6 @@
 /*
 
- $Id: stop.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: stop.cc,v 1.7 2012/03/16 00:09:57 rhuey Exp $
 
  AutoDock 
 
@@ -53,11 +53,17 @@ void stop(const char *const reason)
         string pn=programname;
         string r=reason;
 	string message =  pn + ": ERROR: "+r+"\n";
-	print_2x( logFile, stderr, message.c_str() );
+	fprintf( logFile,  message.c_str() );
+	fprintf( stderr, message.c_str() );
+
 	message = pn + ": Aborting...\n\n";
-	print_2x( logFile, stderr, message.c_str() );
+	fprintf( logFile,  message.c_str() );
+	fprintf( stderr, message.c_str() );
+
 	message = pn + ": Unsuccessful Completion.\n\n";
-	print_2x( logFile, stderr, message.c_str() );
+	fprintf( logFile,  message.c_str() );
+	fprintf( stderr, message.c_str() );
+
 	fflush(logFile);
 	fflush(stderr);
     }
