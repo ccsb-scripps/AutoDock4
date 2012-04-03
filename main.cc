@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.164 2012/02/28 00:18:40 mp Exp $
+ $Id: main.cc,v 1.165 2012/04/03 21:41:21 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -18,8 +18,8 @@
 **            10550 North Torrey Pines Road
 **            La Jolla, CA 92037.
 **____________________________________________________________________________
-**    Inputs: Control file, Small Molecule PDBQT file, macromolecular grid map
-**            files.
+**    Inputs: Docking parameter file, Small Molecule PDBQT file, 
+**  macromolecular grid map files.
 **   Returns: Autodock Log File, includes docked conformation clusters (PDBQT)
 **____________________________________________________________________________
 ** Modification Record (pre-CVS)
@@ -110,31 +110,42 @@ extern Real idct;
 extern Eval evaluate;
 extern Linear_FE_Model AD4;
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.164 2012/02/28 00:18:40 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.165 2012/04/03 21:41:21 mp Exp $"};
 
 
-int sel_prop_count = 0;
+int sel_prop_count = 0; // gs.cc debug switch
+
 static int true_ligand_atoms = 0;
+
+// static (local to this source file main.cc) DPF-parsing state variables: 
+
+static Boole parameter_library_found = FALSE; // was atom parm file specified? (not required)
 static Boole B_found_about_keyword = FALSE; //set false by 'move' true by 'about'
 static Boole B_found_tran0_keyword = FALSE; //set false by 'move' true by 'tran0'
 static Boole B_found_elecmap = FALSE;
 static Boole B_found_desolvmap = FALSE;
-static void exit_if_missing_elecmap_desolvmap_about(string  keyword); // see bottom of main.cc
+static Boole B_atom_types_found = FALSE;
+static Boole B_havemap = FALSE;
+static Boole B_found_move_keyword = FALSE;
+static Boole B_found_ligand_types = FALSE;
+static Boole B_found_autodock_parameter_version = FALSE;
+static Boole B_have_flexible_residues = FALSE;  // does the receptor have flexible residues
 
-//------------------------------- PSO -Work Variables declaration 
 
+
+static void exit_if_missing_elecmap_desolvmap_about(string keyword); // see bottom of main.cc
+
+// PSO 
 // State Structure Variable DECLARATION
 int S ; // Swarm size
 double pso_xmin[PSO_D_MAX], pso_xmax[PSO_D_MAX]; // Intervals defining the search space
-//double Vmin[PSO_D_MAX], Vmax[PSO_D_MAX]; // Intervals defining the search space
+
+
 
 int main (int argc, const char ** argv)
 
 
 {
-
-//   MAX_MAPS
-//
 
 //   MAX_GRID_PTS & MAX_MAPS
 //
@@ -204,7 +215,7 @@ char hostnm[MAX_CHARS];
 //
 char PDBQT_record[MAX_RECORDS][LINE_LEN];
 
-//   SPACE
+//   SPACE (3)
 //
 Real lig_center[SPACE];
 //Real map_center[SPACE];
@@ -218,9 +229,6 @@ State sUnbound_ext; // State of the unbound ligand's conformation after extended
 //// UNCOMMENT if using Step 2 in unbound calculation ---> State sUnbound_ls; // State of the unbound ligand's conformation after a local search
 State sUnbound_ad; // State of the unbound ligand's conformation after an AutoDock search
 
-char out_acc_rej = '?';
-char timeSeedIsSet[2];
-char selminpar = 'm';
 char S_contype[8];
 
 //   MAX_ATOM_TYPES
@@ -229,24 +237,21 @@ char            *ligand_atom_type_ptrs[MAX_ATOM_TYPES]; /* array of ptrs used to
 ParameterEntry parameterArray[MAX_ATOM_TYPES]; // input  nonbond and desolvation parameters
 static ParameterEntry * foundParameter;
 
-Real cA;
-Real cB;
-Real cA_unbound = 392586.8;  // repulsive
-Real cB_unbound = 0.0; // attractive
-Real epsij;
+// internal DPF-parsing state variables
+char timeSeedIsSet[2];
+
+// gaussian torsion dihedral contraints
+Boole B_isGaussTorCon = FALSE;
+Boole B_constrain_dist;
+int iCon=0;
 Real F_A;
 Real F_Aova;
 Real F_tor;
 Real F_torPref;
 Real F_torHWdth;
-Real Rij;
+
 Real sqlower;
 Real squpper;
-Real tmpconst;
-
-// Distance-dependence in Desolvation Term
-const double sigma = 3.6L;
-const double qsolpar = 0.01097L;
 
 // ELECSCALE converts between CGS units and SI units;
 // see, e.g. p 254, "Molecular Modeling and Simulation", by Tamar Schlick, Springer.
@@ -257,114 +262,133 @@ const Real ELECSCALE = 332.06363;
 
 // const Real ELECSCALE = 83.0159075;   this ELECSCALE (corresponding to eps(r) = 1/4r) gives -7.13 kcal/mol for 1pgp Tests/test_autodock4.py
 
-// i
-double Ri, epsi, Ri_hb, epsi_hb;
-hbond_type hbondi;
 
-// j
-double Rj, epsj, Rj_hb, epsj_hb;
-hbond_type hbondj;
-
-Real scale_1_4 = 0.5;
-Real scale_eintermol = 1.0; // scale factor for intermolecular energy term vs intra
 Real c=0.0;
-Real clus_rms_tol = 0.0;
-Real e0max = BIG;
+
+// energy evaluation working storage:
+Real cA;
+Real cB;
 Real eintra = 0.0;  // sum of intramolecular energy for the ligand plus that of the protein
 Real einter = 0.0; // intermolecular energy between the ligand and the protein
 Real etotal = 0.0;
 Real AD3_FE_coeff_estat   = 1.000;
-Real qtwFac = 1.0;
-Real qtwStep0 = DegreesToRadians( 5.0 );
-Real qtwStepFinal = DegreesToRadians( 0.5 );
+Real torsFreeEnergy = 0.0;
+
+
+// ligand setup - these must (should be..) reset for each serial ligand (not really supported - MPique)
 Real maxrad = -1.0;
 Real r2sum=0.0;
+static Boole B_haveCharges=FALSE;
+
+
+// Simulated annealing  DPF-settable parameters:
+Boole B_linear_schedule = TRUE; /* TRUE is ADT default */
+	// ^^ MP TODO 2012 BY making TRUE default, there is no way to turn off
+Boole B_selectmin = TRUE; // adopt min instead of last state - ADT default TRUE
+Real e0max = 0; // minimum energy for simanneal initial state - 0 is ADT default
+int MaxRetries = 10000; // maximum number of retries for simanneal ligand init. 10000 is ADT default
+Real RT0 = /* 616.0*/ 1000.; /* 1000 is ADT default */
+Real RTFac = 0.95; /* 0.95 is ADT default */
+int ncycles = 50; /* 50 is ADT default */
+int naccmax = 100; /* 100 is ADT default */
+int nrejmax = 100; /* 100 is ADT default */
+
+ // note: trnStep0, qtwStep0, torStep0 also control GA mutations and 'investigate' (MP)
+Real trnFac = 1.0; /* 1.0 is ADT default: i.e., no reduction */
+Real trnStep0 = 2.0;  /* 2 is ADT default MP TODO 2012 */
+Real trnStepFinal = 0.2;
+Real qtwFac = 1.0; /* 1.0 is ADT default: i.e., no reduction  */
+Real qtwStep0 = DegreesToRadians( 50.0 );  /* 50 is ADT default MP TODO 2012 */
+Real qtwStepFinal = DegreesToRadians( 0.5 );
+Real torStep0 = DegreesToRadians( 50.0 );  /* 50 is ADT default MP TODO 2012 */
+Real torStepFinal = DegreesToRadians( 1.0 );
+Real torFac = 1.0; /* 1.0 is ADT default: i.e., no reduction  */
+ // simanneal file-based or real-time monitoring
+Boole B_write_trj = FALSE;
+Boole B_watch = FALSE;
+Boole B_acconly = FALSE;
+Boole B_either = FALSE;
+
+// simanneal internal variables, not directly settable in DPF:
+Real RTreduc; // RT decrease per cycle if linear_schedule
 // Real RJ = 8.31441;     // in J/K/mol, Gas Constant, Atkins Phys.Chem., 2/e
 // Real Rcal = 1.9871917; // in cal/K/mol, Gas Constant, RJ/4.184
 // Real T0K = 273.15;        // 0 degrees Celsius, in K
-Real RTreduc = 1.0;
-Real RT0 = 616.0;
-Real RTFac = 0.95;
-Real torsdoffac = 0.3113;
-Real torsFreeEnergy = 0.0;
-Real torFac = 1.0;
-Real torStep0 = DegreesToRadians( 5.0 );
-Real torStepFinal = DegreesToRadians( 1.0 );
-Real trnFac = 1.0;
-Real trnStep0 = 0.2;
-Real trnStepFinal = 0.2;
-Real WallEnergy = 1.0e8; /* Energy barrier beyond walls of gridmaps. */
-//  The GA Stuff
-Real m_rate = 0.02;
-Real c_rate = 0.80;
-Real alpha = 0;
-Real beta = 1;
-Real localsearch_freq = 0.06;
+Boole B_tempChange = FALSE;
+Boole B_torReduc = FALSE;
+Boole B_trnReduc = FALSE;
+Boole B_qtwReduc = FALSE;
+Boole B_CalcTrnRF = FALSE;
+Boole B_CalcQtwRF = FALSE;
+Boole B_CalcTorRF = FALSE;
+
+
+
 Real unbound_internal_FE = 0.0;
 Real unbound_ext_internal_FE = 0.0;
 Real unbound_ad_internal_FE = 0.0;
-Real emap_total = 0.;
-Real elec_total = 0.;
-Real charge_total = 0.;
-Real etot = 0.;
-//  The LS Stuff
-Real rho = 1.0;
-Real lb_rho = 0.01;
-Real *rho_ptr = NULL;
-Real *lb_rho_ptr = NULL;
-//
-Real psw_trans_scale = 1.0;//1 angstrom
+
+
+//  LS  local search (SW or PSW)
+Real rho = 1.0; // for SW
+Real lb_rho = 0.01; // for SW
+Real *rho_ptr = NULL; // for PSW array of rho
+Real *lb_rho_ptr = NULL; // for PSW array of lb_rho
+Real psw_trans_scale = 1.0; // 1 angstrom
 Real psw_rot_scale = 0.05;  //about 3 degrees, we think
 Real psw_tors_scale = 0.1; //about 6 degrees
 
-Unbound_Model ad4_unbound_model = Unbound_Default; 
-//NOT Same_As_Bound so user can specify in dpf
+// energy evaluation and potential scoring function parameters settable in DPF
+Unbound_Model ad4_unbound_model = Unbound_Default; //NOT Same_As_Bound so user can specify in dpf
+Real scale_1_4 = 0.5;
+Real scale_eintermol = 1.0; // scale factor for intermolecular energy term vs intra
+Boole B_include_1_4_interactions = FALSE;  // FALSE was the default behaviour in AutoDock versions 1 to 3.
+Boole B_use_non_bond_cutoff = TRUE;
+Boole B_calcIntElec = FALSE;
+Boole B_calcIntElec_saved = FALSE;
+Real r_smooth=0.5; // vdw nonbond smoothing range, not radius, Ang - default 0.5 matches AutoGrid recommendations
+Real WallEnergy = 1000; /* Energy barrier beyond walls of gridmaps. 1000 is ADT default  */
+int xA = 12;
+int xB = 6;
+Real cA_unbound = 392586.8;  // repulsive
+Real cB_unbound = 0.0; // attractive
+
+
+// Distance-dependence in Desolvation Term
+const double sigma = 3.6L;
+const double qsolpar = 0.01097L;
+
 
 EnergyBreakdown eb;
-
 initialise_energy_breakdown(&eb, 0, 0);
 
 static Output_pop_stats output_pop_stats;
 
-Boole B_atom_types_found = FALSE;
-Boole B_isGaussTorCon = FALSE;
-Boole B_constrain_dist;
-Boole B_either = FALSE;
-Boole B_calcIntElec = FALSE;
-Boole B_calcIntElec_saved = FALSE;
-Boole B_write_trj = FALSE;
-Boole B_watch = FALSE;
-Boole B_acconly = FALSE;
-Boole B_cluster_mode = FALSE;
-Boole B_havemap = FALSE;
-Boole B_havenbp = FALSE;
-Boole B_haveCharges;
-Boole B_linear_schedule = FALSE;
-Boole B_qtwReduc = FALSE;
-Boole B_selectmin = FALSE;
-Boole B_symmetry_flag = TRUE;
-Boole B_unique_pair_flag = FALSE;
-Boole B_tempChange = TRUE;
-Boole B_torReduc = FALSE;
-Boole B_trnReduc = FALSE;
-Boole B_write_all_clusmem = FALSE;
-Boole B_ShowTorE = FALSE;
+
+
+// initial population for LS, GA, GALS, PSO
 Boole B_RandomTran0 = TRUE;
 Boole B_RandomQuat0 = TRUE;
 Boole B_RandomDihe0 = TRUE;
-Boole B_CalcTrnRF = FALSE;
-Boole B_CalcQtwRF = FALSE;
-Boole B_CalcTorRF = FALSE;
-Boole B_charMap = FALSE;
-Boole B_include_1_4_interactions = FALSE;  // This was the default behaviour in previous AutoDock versions (1 to 3).
-Boole B_found_move_keyword = FALSE;
-Boole B_found_ligand_types = FALSE;
-Boole B_found_autodock_parameter_version = FALSE;
-Boole B_use_non_bond_cutoff = TRUE;
-Boole B_have_flexible_residues = FALSE;  // if the receptor has flexible residues, this will be set to TRUE
+Boole B_reorient_random = FALSE; // if true, create a new random orientation before docking
+
+
+
+
+
+// cluster analysis
+Boole B_cluster_mode = FALSE; // if TRUE, writes to file named in DPF "cluster"
+Boole B_symmetry_flag = TRUE;
+Boole B_unique_pair_flag = FALSE;
+Boole B_write_all_clusmem = FALSE;
+Boole B_ShowTorE = FALSE;
 Boole B_rms_atoms_ligand_only = TRUE;  // cluster on the ligand atoms only
 Boole B_rms_heavy_atoms_only = FALSE;  // cluster on the ligand heavy atoms only, exclude hydrogens
-Boole B_reorient_random = FALSE; // if true, create a new random orientation before docking
+Real clus_rms_tol = 2.0; // 2.0 is ADT default
+
+// ligand atom types and matching receptor maps
+Boole B_charMap = FALSE;
+
 int atm1=0;
 int atm2=0;
 int a1=0;
@@ -374,27 +398,26 @@ int atomC2;
 int dpf_keyword = -1;
 int h_index = -1; //index of hydrogen type if any 
 int n_heavy_atoms_in_ligand = 0;
-int ncycles = -1;
-int iCon=0;
 int indcom = 0;
+
+// affinity/inhibition reporting controls: 
+Real torsdoffac = 0.3113;
 int ligand_is_inhibitor = 1;
-int ltorfmt = 4;
-int nruns = 0;
-int nstepmax = -1;
-int naccmax = 0;
+
+int nruns = 50; // for GA GALS and SIMANNEAL
+
 int natom = 0;
 
 // For energy breakdown of non-bonded interactions:
 int     Nnb_array[3] = {0};    // number of nonbonds in the ligand, intermolecular and receptor groups
 Real nb_group_energy[3]={0,0,0}; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
+Boole B_havenbp = FALSE;
 
 int nconf = 0;
-int ncycm1 = 1;
 int nlig = 0;
 int nres = 0;
 int nmol = 0;
 int Nnb = 0;
-int nrejmax = 0;
 int ntor = 0;
 int ntor1 = 1;
 int ntor_ligand = 0;
@@ -406,18 +429,16 @@ int nfields = 0;
 int trj_end_cyc = 0;
 int trj_begin_cyc = 0;
 int trj_freq = 0;
-int xA = 12;
-int xB = 6;
 int xA_unbound = 12;
 int xB_unbound = 6;
-Real r_smooth=0.5; // smoothing range, not radius, Ang - default 0.5 matches AutoGrid recommendations
 int I_tor;
 int I_torBarrier;
-int MaxRetries = 1000; /* Default maximum number of retries for ligand init. */
+
+// for INVESTIGATE operation
 int OutputEveryNTests = 1000;
 int NumLocalTests = 10;
 int maxTests = 10000;
-int parameter_library_found = 0;
+
 /* int beg; */
 /* int end; */
 /* int imol = 0; */
@@ -471,28 +492,39 @@ EnergyTables *unbound_energy_tables;  // Use for computing unbound energy & conf
 
 Statistics map_stats;
 
-//  The GA Stuff
+//  GA parameters controlled in DPF
 FourByteLong seed[2];
 unsigned int pop_size = 200;
 unsigned int num_generations = 0;  //  Don't terminate on the basis of number of generations
 unsigned int num_evals = 250000;
 unsigned int num_evals_unbound = num_evals;
+Selection_Mode s_mode = Proportional;
+int elitism = 1;
+Real linear_ranking_selection_probability_ratio = 2.0;
+Xover_Mode c_mode = TwoPt;  //  can be: OnePt, TwoPt, Uniform or Arithmetic
+Real m_rate = 0.02;
+Real c_rate = 0.80;
+Real alpha = 0;
+Real beta = 1;
+Real localsearch_freq = 0.06;
+
+// local search (PSW) parameters controlled in DPF
 unsigned int max_its = 300;
 unsigned int max_succ = 4;
 unsigned int max_fail = 4;
+
 int window_size = 10;
 int low = 0;
 int high = 100;
-int elitism = 1;
 
+// internal variables for GA and GA/LS
 // For Branch Crossover Mode
 int end_of_branch[MAX_TORS];
 
-Selection_Mode s_mode = Proportional;
-Real linear_ranking_selection_probability_ratio = 2.0;
-Xover_Mode c_mode = TwoPt;  //  can be: OnePt, TwoPt, Uniform or Arithmetic
+
 Worst_Mode w_mode = AverageOfN;
 EvalMode e_mode = Normal_Eval;
+
 Global_Search *GlobalSearchMethod = NULL;
 Local_Search *LocalSearchMethod = NULL;
 //// Local_Search *UnboundLocalSearchMethod = NULL;
@@ -582,6 +614,7 @@ if ( setflags(argc,argv,version_num.c_str()) == -1) {
 ** Initialize torsion arrays and constants.
 */
 
+int ltorfmt = 4;
 (void) strcpy( torfmt, "%*s" ); /* len(torfmt) is 3 chars */
 
 for (j = 0;  j < MAX_ATOMS;  j++ ) {
@@ -708,7 +741,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.164 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.165 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1002,7 +1035,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 pr(logFile, "NOTE!  Internal electrostatics will NOT be scaled by the factor specified by this command,  %.4f -- the coefficient set by this command is ignored in AutoDock 4;\n", AD3_FE_coeff_estat);
                 pr(logFile, "       the coefficient that will actually be used should be set in the parameter library file.\n");
                 pr(logFile, "       The coefficient for the electrostatic energy term is %.4f", AD4.coeff_estat);
-                if (parameter_library_found == 1) {
+                if (parameter_library_found) {
                     pr( logFile, " as specified in parameter library \"%s\".\n", FN_parameter_library );
                 } else {
                     pr( logFile, ", the factory default value.\n");
@@ -1122,7 +1155,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 parameterArray[i] = *(foundParameter);
                 if (outlev >= LOGLIGREAD) {
                     (void) fprintf( logFile, "Parameters found for ligand type \"%s\" (grid map index = %d, weighted well depth, epsilon = %6.4f)", foundParameter->autogrid_type, foundParameter->map_index, foundParameter->epsij );
-                    if (parameter_library_found == 1) {
+                    if (parameter_library_found) {
                         pr( logFile, " in parameter library \"%s\".\n", FN_parameter_library );
                     } else {
                         pr( logFile, "\n");
@@ -1132,7 +1165,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 // We could not find this parameter -- return error here
                 prStr( error_message,"%s: ERROR:  Unknown ligand atom type \"%s\"; add parameters for it to the parameter library first!\n", programname, info->atom_type_name[i]);
                 pr_2x( logFile, stderr, error_message );
-                if (parameter_library_found == 1) {
+                if (parameter_library_found) {
                     prStr( error_message,"%s:         Edit the parameter library file \"%s\" and try again.\n", programname, FN_parameter_library );
                     pr_2x( logFile, stderr, error_message );
                 }
@@ -1150,6 +1183,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             //  Find internal energy parameters, i.e.  epsilon and r-equilibrium values...
             //  Lennard-Jones and Hydrogen Bond Potentials
 
+	    // i
+	    double Ri, epsi, Ri_hb, epsi_hb;
+	    hbond_type hbondi;
+
             Ri = parameterArray[i].Rij;
             epsi = parameterArray[i].epsij;
             Ri_hb = parameterArray[i].Rij_hb;
@@ -1159,6 +1196,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // loop over atom types, j, from i to number of atom types
             for (j=i; j<num_atom_types; j++) {
 
+		// j
+		double Rj, epsj, Rj_hb, epsj_hb, epsij, Rij;
+		hbond_type hbondj;
                 //  Find internal energy parameters, i.e.  epsilon and r-equilibrium values...
                 //  Lennard-Jones and Hydrogen Bond Potentials
 
@@ -1217,6 +1257,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 }
                 /* Defend against division by zero... */
                 if (xA != xB) {
+		    Real tmpconst;
                     cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
                     cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
 
@@ -2052,7 +2093,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_TSTEP:
         /*
         **  tstep
-        **  Translation_step,
+        **  Simulated annealing Translation_step,
         */
         nfields = sscanf( line, "%*s " FDFMT2, &trnStep0, &trnStepFinal );
         if (nfields == 0) {
@@ -2076,7 +2117,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_QSTEP:
         /*
         **  qstep
-        **  Quaternion_step,
+        **  Simulated annealing Quaternion_step,
         */
         nfields = sscanf( line, "%*s " FDFMT2, &qtwStep0, &qtwStepFinal );
         if (nfields == 0) {
@@ -2106,7 +2147,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_DSTEP:
         /*
         **  dstep
-        **  Torsion_step,
+        **  Simulated annealing Torsion_step,
         */
         nfields = sscanf( line, "%*s " FDFMT2, &torStep0, &torStepFinal );
         if (nfields == 0) {
@@ -2195,6 +2236,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  DPF_INTNBP_REQM_EPS: Using epsilon and r-equilibrium values...
         **  DPF_INTNBP_COEFFS: Using coefficients...
         */
+	{ // block for locals
+        Real epsij;
+        Real Rij;
+	int xA, xB;
         nfields = sscanf( line, "%*s " FDFMT2 " %d %d %s %s", &Rij, &epsij, &xA, &xB, param[0], param[1] );
 	if(nfields!=6) stop("syntax error, not 6 values in INTNBP_R_EPS line");
         if ( dpf_keyword == DPF_INTNBP_REQM_EPS ) {
@@ -2229,6 +2274,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (xA != xB) {
             if ( dpf_keyword == DPF_INTNBP_REQM_EPS ) {
             // Calculate the coefficients from Rij and epsij
+    	    Real tmpconst;
             cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
             cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
             } else {
@@ -2253,6 +2299,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             pr(logFile,"WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
             exit(-1);
         }
+	} // block for locals
         break;
 
 //______________________________________________________________________________
@@ -2310,7 +2357,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         } else if (RTFac < 0.0 ) {
             stop("Cooling is impossible with a NEGATIVE reduction factor!" );
         }
-        B_tempChange = ( RTFac != 1.0 );
         break;
 
 //______________________________________________________________________________
@@ -2337,13 +2383,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
         get1arg( line, "%*s %d", &ncycles, "CYCLES" );
         if (ncycles < 0) stop("Negative number of cycles in CYCLES line");
-        pr( logFile, "Maximum number of cycles =\t\t\t%8d cycles\n\n", ncycles);
-        if (B_linear_schedule) {
-            RTreduc = RT0 / ncycles;
-            if (outlev >= LOGBASIC) {
-                pr( logFile, "\nA linear temperature reduction schedule was requested...\n" );
-                pr( logFile, "Annealing temperature will be reduced by %.3f cal mol per cycle.\n\n", RTreduc );
-            }
+	if (outlev >= LOGBASIC)  {
+           pr( logFile, "Maximum number of cycles =\t\t\t%8d cycles\n\n", ncycles);
         }
         break;
 
@@ -2352,7 +2393,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_ACCS:
         /*
         **  accs
-        **  Maximum number of steps accepted,
+        **  Maximum number of simanneal steps accepted,
         */
         get1arg( line, "%*s %d", &naccmax, "ACCS" );
         if (naccmax < 0) {
@@ -2361,13 +2402,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         if (outlev >= LOGBASIC) {
             pr( logFile, "Maximum number accepted per cycle =\t\t%8d steps\n", naccmax);
         }
-        if (nrejmax != 0) {
-            nstepmax = naccmax + nrejmax;
-            if (outlev >= LOGBASIC) {
-                pr( logFile, "                                           \t_________\n" );
-                pr( logFile, "Maximum possible number of steps per cycle =\t%8d\tsteps\n\n", nstepmax);
-            }
-        }
         break;
 
 //______________________________________________________________________________
@@ -2375,19 +2409,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_REJS:
         /*
         **  rejs
-        **  Maximum number of steps rejected,
+        **  Maximum number of simanneal steps rejected,
         */
         get1arg( line, "%*s %d", &nrejmax, "REJS" );
         if (nrejmax < 0) stop("Negative number of rejected moves in REJS line");
         if (outlev >= LOGBASIC) {
             pr( logFile, "Maximum number rejected per cycle =\t\t%8d steps\n", nrejmax);
-        }
-        if (naccmax != 0) {
-            nstepmax = naccmax + nrejmax;
-            if (outlev >= LOGBASIC) {
-                pr( logFile, "                                           \t_________\n" );
-                pr( logFile, "Maximum possible number of steps per cycle =\t%8d steps\n\n", nstepmax);
-            }
         }
         break;
 
@@ -2396,17 +2423,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_SELECT:
         /*
         **  select
-        **  Select either minimum or last state from previous cycle,
+        **  Select either minimum or last state from previous simanneal cycle,
         */
+	{ // block for locals
+        char selminpar = 'm';
         get1arg( line, "%*s %c", &selminpar, "SELECT" );
-        B_selectmin = (selminpar == 'm');
-        if(outlev >= LOGBASIC) {
-		if ( B_selectmin ) {
-			pr( logFile, "%s will begin each new cycle\nwith the state of minimum energy from the previous annealing cycle.\n", programname);
-		  } else {
-			pr( logFile, "%s will begin each new cycle\nwith the last state from the previous annealing cycle.\n", programname);
-		}
-	}
+	switch(selminpar) {
+	  case 'm': case 'M': B_selectmin = TRUE; break;
+	  case 'l': case 'L': B_selectmin = FALSE; break;
+	  default: stop("unrecognized option in 'select' : must be 'l' or 'm'");
+	  }
+	} // block for locals
         break;
 
 //______________________________________________________________________________
@@ -2485,11 +2512,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         if (B_write_trj) {
             if (outlev >= LOGBASIC) {
-                pr( logFile, "Output frequency for trajectory frames =\tevery %d step%s\n", trj_freq, (trj_freq > 1)?"s.":"." );
+                pr( logFile, "Output frequency for simanneal trajectory frames =\tevery %d step%s\n", trj_freq, (trj_freq > 1)?"s.":"." );
             }
         } else {
             if (outlev >= LOGBASIC) {
-                pr( logFile, "No trajectory of states will be written.\n\n" );
+                pr( logFile, "No trajectory of simanneal states will be written.\n\n" );
                 pr( logFile, "Subsequent \"trjbeg\", \"trjend\", \"trjout\" and \"trjsel\" parameters will be ignored.\n\n" );
             }
         }
@@ -2553,20 +2580,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  trjsel
         **  Trajectory select,
         */
+	{ // block for locals
+        char out_acc_rej = '?';
         get1arg( line, "%*s %c", &out_acc_rej, "TRJSEL" );
         B_acconly = (out_acc_rej == 'A');
         B_either  = (out_acc_rej == 'E');
-        if (B_acconly) {
-            if (outlev >= LOGBASIC) {
-                pr( logFile, "Output *accepted* states only.\n" );
-            }
-        } else if (B_either) {
-            if (outlev >= LOGBASIC) {
-                pr( logFile, "Output *either* accepted or rejected states.\n" );
-            }
-        } else {
+	if(!(B_acconly || B_either)) {
             stop("Missing or unknown accepted/rejected TRJSEL output flag.\n" );
         }
+	} // block for locals
         break;
 
 //______________________________________________________________________________
@@ -2675,17 +2697,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  reduction schedule.  This is necessary for
         **  more accurate entropy estimations...
         */
+	// MP TODO 2012 BY making TRUE default, there is no way to turn off
         B_linear_schedule = TRUE;
         if (outlev >= LOGBASIC) {
             pr( logFile, "A linear temperature reduction schedule will be used...\n\n" );
-        }
-        if (ncycles == -1) {
-            pr( logFile, "\nWARNING!  Please specify the number of cycles first!\n\n" );
-        } else {
-            RTreduc = RT0 / ncycles;
-            if (outlev >= LOGBASIC) {
-                pr( logFile, "Annealing temperature will be reduced by %.3f cal mol per cycle.\n\n", RTreduc );
-            }
         }
         break;
 
@@ -2694,11 +2709,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_WATCH:
         /*
         **  watch
-        **  for watching a job's progress PDBQT file in AVS,
+        **  for watching a job's simanneal progress PDBQT file in AVS,
         */
         get1arg( line, "%*s %s", FN_watch, "WATCH");
         if (B_write_trj) {
-            pr(logFile,"\nAutoDock will create the watch-file \"%s\", for real-time monitoring of runs.\n\n", FN_watch);
+            pr(logFile,"\nAutoDock will create the simanneal watch-file \"%s\", for real-time monitoring of runs.\n\n", FN_watch);
             pr(logFile,"\nThe watch-file will be updated every %d moves, in accordance with the trajectory parameters..\n\n", trj_freq);
             B_watch = TRUE;
         } else {
@@ -2835,7 +2850,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_E0MAX:
         /*
         **  e0max
-        **  Set maximum initial energy,
+        **  Set simanneal max initial energy, and, optionally, number of retries
         */
         nfields = sscanf( line, "%*s " FDFMT " %d", &e0max, &MaxRetries );
         if (nfields == 0) {
@@ -2843,12 +2858,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         } else if (nfields == EOF) {
             stop("End of file encountered in E0MAX line");
         } else if (nfields == 1) {
-            pr(logFile,"Using the default maximum number of retries for initialization, %d retries.\n\n", MaxRetries);
+            pr(logFile,"Using the default maximum number of retries for simanneal initialization, %d retries.\n", MaxRetries);
         } else if (nfields == 2) {
-            pr(logFile,"Using user-specified maximum number of retries for initialization, %d retries.\n\n", MaxRetries);
+            pr(logFile,"Using user-specified maximum number of retries for simanneal initialization, %d retries.\n", MaxRetries);
         }
         if (e0max < 0.) stop("e0max must be positive");
-        pr(logFile,"\nIf the initial energy is greater than e0max, %.3f,\nthen a new, random initial state will be created.\n\n",e0max);
+        pr(logFile,"If the simanneal initial energy is greater than e0max, %.3f,\nthen a new, random initial state will be created.\n\n",e0max);
         break;
 
 //______________________________________________________________________________
@@ -2857,50 +2872,82 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         ** simanneal
         */
+	    /* optional argument is alternate way to specify nruns : */
+    	    nfields = sscanf( line, "%*s %d",&nruns);
+
+            if ( nruns > MAX_RUNS ) {
+                prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
+                stop( error_message );
+		}
+            if (!B_found_about_keyword && true_ligand_atoms>0){
+                    prStr(error_message, "%s:  ERROR:  no \"about\" command has been specified!\n", programname);
+                    stop(error_message);
+                    exit(-1);
+              }
+            pr( logFile, "Maximum number of cycles =\t\t\t%8d cycles\n\n", ncycles);
+	    if (B_linear_schedule) {
+	       RTreduc = RT0 / ncycles;
+	       if (outlev >= LOGBASIC) {
+		  pr( logFile, "A linear temperature reduction schedule was requested...\n" );
+		  pr( logFile, "Annealing temperature will be reduced by %.3f cal mol per cycle.\n", RTreduc );
+		  }
+		}
+
         /*
         ** Calculate reduction factor based on initial and final step values,
         ** and number of cycles...
         */
-            ncycm1 = ncycles - 1;
-            if (ncycm1 < 0) {
-                ncycm1 = 1;
-            }
             if (B_CalcTrnRF) {
-                trnFac = RedFac(trnStep0, trnStepFinal, ncycm1);
+                trnFac = RedFac(trnStep0, trnStepFinal, ncycles-1);
                 pr( logFile, "Calculated reduction factor for simanneal translations     = %-.3f /cycle\n", trnFac);
-                B_trnReduc = (trnFac != 1.);
             }
+            B_trnReduc = (trnFac != 1.);
             if (B_CalcQtwRF) {
-                qtwFac = RedFac(qtwStep0, qtwStepFinal, ncycm1);
+                qtwFac = RedFac(qtwStep0, qtwStepFinal, ncycles-1);
                 pr( logFile, "Calculated reduction factor for simanneal quaternion angle = %-.3f /cycle\n", qtwFac );
-                B_qtwReduc = (qtwFac != 1.);
             }
+            B_qtwReduc = (qtwFac != 1.);
             if (B_CalcTorRF) {
-                torFac    = RedFac(torStep0, torStepFinal, ncycm1);
+                torFac    = RedFac(torStep0, torStepFinal, ncycles-1);
                 pr( logFile, "Calculated reduction factor for simanneal torsion angles   = %-.3f /cycle\n", torFac );
-                B_torReduc = (torFac != 1.);
             }
+            B_torReduc = (torFac != 1.);
+            B_tempChange = ( RTFac != 1.0 );
+
+            if(outlev >= LOGBASIC) {
+		if ( B_selectmin ) {
+			pr( logFile, "%s will begin each new cycle\nwith the state of minimum energy from the previous annealing cycle.\n", programname);
+		  } else {
+			pr( logFile, "%s will begin each new cycle\nwith the last state from the previous annealing cycle.\n", programname);
+		}
+	    }
             pr(logFile, "\n");
             /*
             ** Number of ligands read in...
             */
             if (nlig > 0) {
-                pr( logFile, "\nTotal number of ligands read in by the DPF \"move\" command = %d\n\n", nlig );
+                pr( logFile, "\nTotal number of ligands read in by the DPF \"move\" command = %d\n", nlig );
             }
             if (nres > 0) {
-                pr( logFile, "\nTotal number of residues read in by the DPF \"flex\" command = %d\n\n", nres );
+                pr( logFile, "\nTotal number of residues read in by the DPF \"flex\" command = %d\n", nres );
             }
-            pr(logFile, "\n");
+            if (outlev >= LOGBASIC) {
+                   pr( logFile, "                                           \t_________\n" );
+                   pr( logFile, "Maximum possible number of steps per cycle =\t%8d\tsteps\n\n", naccmax+nrejmax);
+            }
 
-            if (!B_found_about_keyword && true_ligand_atoms>0){
-                    prStr(error_message, "%s:  ERROR:  no \"about\" command has been specified!\n", programname);
-                    stop(error_message);
-                    exit(-1);
-            }
+	    if (outlev >= LOGBASIC) {
+                if (B_acconly) pr( logFile, "Output *accepted* states only.\n" );
+                else if (B_either) pr( logFile, "Output *either* accepted or rejected states.\n" );
+            pr(logFile, "\n");
+            } 
 
             if (B_havenbp) {
                 nbe( info, ad_energy_tables, num_atom_types );
-            }
+                if (outlev >= LOGBASIC) pr( logFile, "Output *accepted* states only.\n" );
+            } else if (B_either) {
+               if (outlev >= LOGBASIC) pr( logFile, "Output *either* accepted or rejected states.\n" );
+  	    } 
             if (B_cluster_mode) {
                 clmode( num_atom_types, clus_rms_tol,
                         hostnm, jobStart, tms_jobStart,
@@ -3067,7 +3114,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /*
         ** Genetic Algorithm-Local search,  a.k.a. Lamarckian Genetic Algorithm
         */
-            get1arg( line, "%*s %d",&nruns, "GA_RUN or GALS_RUN" );
+            nfields= sscanf(line, "%*s %d",&nruns); // optional way to specify nruns
             if ( nruns > MAX_RUNS ) {
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
@@ -3198,7 +3245,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case DPF_LS:
        // ls_run  |  do_local_only
-	       get1arg(line, "%*s %d", &nruns, "LS_RUN or DO_LOCAL_ONLY");
+	       nfields = sscanf(line, "%*s %d", &nruns); // optional way to specify nruns
             if ( nruns > MAX_RUNS ) {
 
                prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
@@ -3239,7 +3286,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
            for (j=0; j<nruns; j++) {
 
-               (void) fprintf( logFile, "\n\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
+               (void) fprintf( logFile, "\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
                pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
                (void) fflush( logFile );
 
@@ -3768,7 +3815,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         pr( logFile, "Number of torsional degrees of freedom = %d\n", ntorsdof);
         pr( logFile, "Free energy coefficient for torsional degrees of freedom = %.4f", AD4.coeff_tors);
-        if (parameter_library_found == 1) {
+        if (parameter_library_found) {
             pr( logFile, " as specified in parameter library \"%s\".\n\n", FN_parameter_library );
         } else {
             pr( logFile, ", the factory default value.\n\n");
@@ -4256,48 +4303,22 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          *  0 = NEW, or   PDBQT-71, and
          *  1 = OLD, or   PDBQT-55 (old PDBq format).
          */
+	{ // block for epdb locals:
+	Real emap_total = 0.;
+	Real elec_total = 0.;
+	Real charge_total = 0.;
+	Real etot = 0.;
+
         eintra = 0.0L;
         einter = 0.0L;
         etotal = 0.0L;
 
-        pr(logFile, "WARNING This command, \"epdb\", currently computes the energy of the ligand specified by the \"move lig.pdbqt\" command.\n");
         nfields = sscanf(line, "%*s %s", dummy_FN_ligand);
         if (nfields >= 1) {
+            pr(logFile, "ERROR: \"epdb\" computes the energy of the ligand specified by the \"move lig.pdbqt\" command.\n");
             stop("it will not read in the PDBQT file specified on the \"epdb\" command line.");
         }
 
-        /*
-        (void) sscanf(line, "%*s %s", FN_ligand);
-        pr(logFile, "epdb %s\n\n", FN_ligand);
-        natom = 0;
-        print_1_4_message(B_include_1_4_interactions, scale_1_4, outlev, logFile);
-        //
-        ligand = readPDBQT( line,
-                            num_atom_types,
-                            &natom,
-                            crdpdb, crdreo, charge, &B_haveCharges,
-                            type, bond_index,
-                            pdbaname, FN_ligand, FN_flexres, 
-			    B_have_flexible_residues, atomstuff, 
-			    &n_heavy_atoms_in_ligand, &true_ligand_atoms,
-                            &B_constrain_dist, &atomC1, &atomC2,
-                            &sqlower, &squpper,
-                            &ntor1, &ntor, &ntor_ligand,
-                            tlist, vt,
-                            &Nnb, Nnb_array, nonbondlist,
-                            jobStart, tms_jobStart, hostnm, &ntorsdof,
-                            ignore_inter,
-                            B_include_1_4_interactions,
-                            atoms, PDBQT_record, end_of_branch, debug, outlev, logFile);
-
-        //
-        // pre-calculate some values we will need later in computing the desolvation energy
-        //
-        for (i=0; i<natom; i++) {
-            abs_charge[i] = fabs(charge[i]);
-            qsp_abs_charge[i] = qsolpar * abs_charge[i];
-        }
-        */
         exit_if_missing_elecmap_desolvmap_about("epdb");
 
         // to restore the original coordinates, we must temporarily undo the centering transformation
@@ -4397,6 +4418,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         // restore the saved unbound internal FE
         //unbound_internal_FE = unbound_internal_FE_saved;
         //ad4_unbound_model = ad4_unbound_model_saved;
+	} // block for epdb locals:
 
         break;
 
