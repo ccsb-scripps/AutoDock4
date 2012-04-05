@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.28 2012/04/05 01:39:31 mp Exp $
+ $Id: eval.h,v 1.29 2012/04/05 05:00:54 mp Exp $
 
  AutoDock  
 
@@ -68,7 +68,7 @@ class Eval
       int *type, (*tlist)[MAX_ATOMS];
       NonbondParam *nonbondlist;
       Real *charge, *abs_charge, *qsp_abs_charge;
-      Real (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE], (*crdreo)[SPACE];
+      Real (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE];
       EnergyTables *ptr_ad_energy_tables;
       Boole *B_isTorConstrained;
       Molecule mol;
@@ -111,7 +111,6 @@ class Eval
                   /* not const */ unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
                   /* not const */ Real  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS+1][MAX_ATOMS],
                   /* not const */ Real  init_crdpdb[MAX_ATOMS][SPACE], 
-                  /* not const */ Real  init_crdreo[MAX_ATOMS][SPACE], 
                   const State& stateInit, 
 		  const Molecule& molInit,
                   const int            init_ignore_inter[MAX_ATOMS], // values are copied
@@ -125,7 +124,7 @@ class Eval
 		  int init_outlev,
 		  FILE *init_logFile
                   );
-      void update_crds( Real init_crdreo[MAX_ATOMS][SPACE], 
+      void update_crds( Real init_crd[MAX_ATOMS][SPACE], 
                         Real init_vt[MAX_TORS][SPACE] );
 
       double operator()(const Representation *const *const );
@@ -171,7 +170,6 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
                         /* not const */ Real init_vt[MAX_TORS][SPACE],
                         /* not const */ int init_tlist[MAX_TORS+1][MAX_ATOMS],
                         /* not const */ Real init_crdpdb[MAX_ATOMS][SPACE],
-                        /* not const */ Real init_crdreo[MAX_ATOMS][SPACE],
                         const State& stateInit,
                         const Molecule& molInit,
 
@@ -215,7 +213,6 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
     vt = init_vt;
     tlist = init_tlist;
     crdpdb = init_crdpdb;
-    crdreo = init_crdreo;
     // set all of the components of the State, one at a time...
     copyState( &stateNow, stateInit );
 #ifdef DEBUG
@@ -248,10 +245,10 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
     logFile = init_logFile;
 }
 
-inline void Eval::update_crds( Real init_crdreo[MAX_ATOMS][SPACE], 
+inline void Eval::update_crds( Real init_crd[MAX_ATOMS][SPACE], 
                                Real init_vt[MAX_TORS][SPACE])
 {
-    crdreo = init_crdreo;
+    crd = init_crd;
     vt = init_vt;
 }
 

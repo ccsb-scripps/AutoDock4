@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.166 2012/04/05 01:39:32 mp Exp $
+ $Id: main.cc,v 1.167 2012/04/05 05:00:54 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -103,6 +103,7 @@ using std::string;
 //#include "call_cpso.h"
 #include "pso.h"
 #include "dimLibrary.h"
+#include "center_ligand.h"
 
 /* globals : */
 extern int debug;
@@ -113,7 +114,7 @@ extern Linear_FE_Model AD4;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.166 2012/04/05 01:39:32 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.167 2012/04/05 05:00:54 mp Exp $"};
 
 
 
@@ -160,8 +161,8 @@ GridMapSetInfo *info;  // this information is from the AVS field file
 //
 char atomstuff[MAX_ATOMS][MAX_CHARS];
 char pdbaname[MAX_ATOMS][5];
+Real crdorig[MAX_ATOMS][SPACE];  // original (possibly reoriented?) coords
 Real crdpdb[MAX_ATOMS][SPACE];  // PDB coordinates, recentered by "about"
-Real crdreo[MAX_ATOMS][SPACE];  // reoriented coordinates NOT USED
 Real crd[MAX_ATOMS][SPACE];     // current coordinates
 Real charge[MAX_ATOMS];
 Real abs_charge[MAX_ATOMS];
@@ -171,11 +172,11 @@ Real emap[MAX_ATOMS];
 int type[MAX_ATOMS];
 int bond_index[MAX_ATOMS];
 int ignore_inter[MAX_ATOMS];
-Atom atoms[MAX_ATOMS];
+Atom atoms[MAX_ATOMS]; // MP  - why is this allocated and never? used TODO 2012
 
 //   MAX_TORS
 //
-int  tlist[MAX_TORS][MAX_ATOMS];
+int  tlist[MAX_TORS+1][MAX_ATOMS];
 Real vt[MAX_TORS][SPACE];
 Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2];
 unsigned short  US_TorE[MAX_TORS];
@@ -742,7 +743,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.166 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.167 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1479,7 +1480,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ligand = readPDBQT( line,
                             num_atom_types,
                             &natom,
-                            crdpdb, crdreo, charge, &B_haveCharges,
+                            crdpdb, charge, &B_haveCharges,
                             type, bond_index,
                             pdbaname, FN_ligand, FN_flexres, 
 			    B_have_flexible_residues, atomstuff, 
@@ -1495,12 +1496,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             atoms, PDBQT_record, end_of_branch,
 			    debug, outlev, logFile);
 
-	// MP@@ testing tlist
+#ifdef DEBUGTLIST 
+// MP 2012-04
 	for(int t=0;t<=ntor;t++) {
 	fprintf(logFile, "@@@ tlist[%2d] = %3d %3d %3d : ", t, tlist[t][0]+1, tlist[t][1]+1, tlist[t][2]);
 	for(int aii=0;aii<tlist[t][2];aii++) fprintf(logFile,"%2d ",tlist[t][3+aii]+1);
 	fprintf(logFile, "\n");
 	}
+#endif
+	// save crdpdb coords as crdorig 
+	for(int a=0;a<natom;a++) for(xyz=0;xyz<SPACE;xyz++)  
+	  crdorig[a][xyz]=crdpdb[a][xyz];
 
         // pre-calculate some values we will need later in computing the desolvation energy
         //
@@ -1634,7 +1640,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 			    B_calcIntElec, B_isGaussTorCon, B_isTorConstrained, B_ShowTorE,
                             US_TorE, US_torProfile,
                             vt, tlist,
-                            crdpdb, crdreo, sInit, ligand, ignore_inter, B_include_1_4_interactions, scale_1_4, scale_eintermol,
+                            crdpdb, sInit, ligand, ignore_inter, B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE,
                             B_use_non_bond_cutoff, B_have_flexible_residues,
 			    true_ligand_atoms, outlev, logFile);
@@ -1773,23 +1779,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr( logFile, "(%+.3f, %+.3f, %+.3f)\n\n", lig_center[X], lig_center[Y], lig_center[Z]);
         B_found_about_keyword = TRUE; //set false by 'move' true by 'about'
         B_found_tran0_keyword = FALSE;
-	/* record center used as part of overall State */
-	sInit.Center.x=lig_center[X];
-	sInit.Center.y=lig_center[Y];
-	sInit.Center.z=lig_center[Z];
-	ligand.S.Center.x = lig_center[X];
-	ligand.S.Center.y = lig_center[Y];
-	ligand.S.Center.z = lig_center[Z];
-        /*
-        **  Center the ligand,
-        */
         if ( nmol == 0 || true_ligand_atoms==0) {
             pr( logFile, "Must specify a ligand PDBQT file, using the \"move\" command.\n");
-        } else {
-            if (outlev >= LOGLIGREAD) {
-                pr( logFile, "Translating small molecule by:\t" );
-                pr( logFile, "(%+.3f, %+.3f, %+.3f)\n\n", -lig_center[X], -lig_center[Y], -lig_center[Z]);
-            }
+
+	    }
             /*
             **  Zero-out on central point...
 	    * TODO this will fail if "about" appears more than once - MPique
@@ -1806,7 +1799,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             if (outlev >= LOGLIGREAD && true_ligand_atoms>0) {
                 pr( logFile, "Furthest true ligand atom from \"about\" center is %.3f Angstroms (maxrad).\n\n",maxrad);
             }
-        }
         break;
 
 /*____________________________________________________________________________*/
@@ -1823,6 +1815,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
          * -OR-
          *  reorient <axis-x> <axis-y> <axis-z> <angle>
          *      # applies the specified rotation to the input ligand
+	 *
+	 * this modifies crdpdb but does not touch crdorig
          */
         get1arg( line, "%*s %s", param[0], "REORIENT" );
         { // Parse the reorient command
@@ -1882,13 +1876,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         q_reorient = raaToQuat(vec_reorient_axis, -angle_n1z);
 
                         // Rotate ligand into the xy-plane...
-                        // qtransform( origin, q_reorient, crdreo, true_ligand_atoms );
+                        // qtransform( origin, q_reorient, crdpdb, true_ligand_atoms );
                         qtransform( origin, q_reorient, crdpdb, true_ligand_atoms );
 
                         // Compute the updated vec_01, the vector between atom 0 and atom 1,
                         // since the preceding "qtransform" changed the coordinates.
                         for (xyz = 0;  xyz < SPACE;  xyz++) {
-                            // vec_01[xyz] = (double)( crdreo[1][xyz] - crdreo[0][xyz] );
                             vec_01[xyz] = (double)( crdpdb[1][xyz] - crdpdb[0][xyz] );
                         }
                         //
@@ -2888,11 +2881,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
 		}
-            if (!B_found_about_keyword && true_ligand_atoms>0){
-                    prStr(error_message, "%s:  ERROR:  no \"about\" command has been specified!\n", programname);
-                    stop(error_message);
-                    exit(-1);
-              }
             pr( logFile, "Maximum number of cycles =\t\t\t%8d cycles\n\n", ncycles);
 	    if (B_linear_schedule) {
 	       RTreduc = RT0 / ncycles;
@@ -2949,6 +2937,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 if (B_acconly) pr( logFile, "Output *accepted* states only.\n" );
                 else if (B_either) pr( logFile, "Output *either* accepted or rejected states.\n" );
             } 
+
+	    // set lig_center if not already set, use to center "crdpdb" ligand
+	    center_ligand(crdorig, !B_found_about_keyword, natom, true_ligand_atoms,
+	      tlist, ntor, crdpdb, lig_center, &sInit.T, &ligand.S.T,
+	      outlev>=LOGBASIC, outlev, logFile);
 
             if (B_havenbp)  nbe( info, ad_energy_tables, num_atom_types );
             if (B_cluster_mode) {
@@ -3132,12 +3125,25 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                //  stop(error_message);
              //}
             exit_if_missing_elecmap_desolvmap_about("gals");
+
+	    // set lig_center if not already set, use to center "crdpdb" ligand
+	    center_ligand(crdorig, !B_found_about_keyword, natom, true_ligand_atoms,
+	      tlist, ntor, crdpdb, lig_center, &sInit.Center, &ligand.S.Center,
+	      outlev>=LOGBASIC, outlev, logFile);
+
+	    // save centered crdpdb coords as crd (not sure is needed - MP 2012
+	    for(int a=0;a<natom;a++) for(xyz=0;xyz<SPACE;xyz++)  
+	      crd[a][xyz]=crdpdb[a][xyz];
+
 	    // set 'tran0' vector to same as 'about' if not specified (2011-09)
 	    if ( ! B_found_tran0_keyword ) {
-		    pr( logFile, "Setting 'tran0' value to same as 'about' value\n");
 		    ligand.S.T = sInit.T = sInit.Center;
+		    pr( logFile, 
+		    "Setting 'tran0' value to same as 'about' value: %.3f %.3f %.3f\n",
+		    ligand.S.T.x, ligand.S.T.y, ligand.S.T.z);
 		    B_found_tran0_keyword = TRUE;
 	    }
+
             pr( logFile, "Number of requested %s dockings = %d run%c\n", GlobalSearchMethod->shortname(), nruns, (nruns > 1)?'s':' ');
             if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
             pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
@@ -3147,11 +3153,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             printState( logFile, sInit, 2 );
 #endif
 
+
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
                             info, map, elec, emap, nonbondlist, ad_energy_tables, Nnb,
                             Nnb_array, nb_group_energy,
 			    B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
-                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE, B_use_non_bond_cutoff, B_have_flexible_residues,
@@ -3265,10 +3272,20 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                stop(error_message);
             }
            exit_if_missing_elecmap_desolvmap_about("ls");
+
+	    // set lig_center if not already set, use to center "crdpdb" ligand
+	    center_ligand(crdorig, !B_found_about_keyword, natom, true_ligand_atoms,
+	      tlist, ntor, crdpdb, lig_center, &sInit.Center, &ligand.S.Center,
+	      outlev>=LOGBASIC, outlev, logFile);
+	    // save centered crdpdb coords as crd (not sure is needed - MP 2012
+	    for(int a=0;a<natom;a++) for(xyz=0;xyz<SPACE;xyz++)  
+	      crd[a][xyz]=crdpdb[a][xyz];
 	    // set 'tran0' vector to same as 'about' if not specified (2011-09)
 	    if ( ! B_found_tran0_keyword ) {
-		    pr( logFile, "Setting 'tran0' value to same as 'about' value\n");
 		    ligand.S.T = sInit.T = sInit.Center;
+		    pr( logFile, 
+		    "Setting 'tran0' value to same as 'about' value: %.3f %.3f %.3f\n",
+		    ligand.S.T.x, ligand.S.T.y, ligand.S.T.z);
 		    B_found_tran0_keyword = TRUE;
 	    }
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
@@ -3280,7 +3297,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                            ad_energy_tables,
                            Nnb, Nnb_array, nb_group_energy,
 			   B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
-                           B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                           B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
                            ignore_inter,
                            B_include_1_4_interactions, scale_1_4, scale_eintermol,
                            unbound_internal_FE, B_use_non_bond_cutoff, B_have_flexible_residues, 
@@ -3706,11 +3723,19 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       fflush(logFile);      
    	 
 
+	    // set lig_center if not already set, use to center "crdpdb" ligand
+	    center_ligand(crdorig, !B_found_about_keyword, natom, true_ligand_atoms,
+	      tlist, ntor, crdpdb, lig_center, &sInit.Center, &ligand.S.Center,
+	      outlev>=LOGBASIC, outlev, logFile);
+	    // save centered crdpdb coords as crd (not sure is needed - MP 2012
+	    for(int a=0;a<natom;a++) for(xyz=0;xyz<SPACE;xyz++)  
+	      crd[a][xyz]=crdpdb[a][xyz];
+
 	   evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
                         info, map, elec, emap, nonbondlist, ad_energy_tables, Nnb,
 			Nnb_array, nb_group_energy,
                         B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
-                        B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                        B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
                         ignore_inter, B_include_1_4_interactions, scale_1_4, scale_eintermol,
                         unbound_internal_FE, B_use_non_bond_cutoff, B_have_flexible_residues,
 			true_ligand_atoms, outlev, logFile);
@@ -4016,7 +4041,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             info, map, elec, emap, nonbondlist, unbound_energy_tables, Nnb,
 			    Nnb_array, nb_group_energy,
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
-                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE, B_use_non_bond_cutoff, B_have_flexible_residues,
@@ -4076,7 +4101,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             //// evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, info, map,
                             //// elec, emap, nonbondlist, ad_energy_tables, Nnb,
                             //// B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
-                            //// B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                            //// B_ShowTorE, US_TorE, US_torProfile, vt, tlist, sInit, ligand,
                             //// ignore_inter,
                             //// B_include_1_4_interactions, scale_1_4,
                             //// unbound_internal_FE, B_use_non_bond_cutoff, B_have_flexible_residues,
@@ -4125,7 +4150,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             info, map, elec, emap, nonbondlist, ad_energy_tables, Nnb,
 			    Nnb_array, nb_group_energy,
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
-                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, crdreo, sInit, ligand,
+                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, scale_eintermol,
                             unbound_internal_FE, B_use_non_bond_cutoff, B_have_flexible_residues,
@@ -4330,18 +4355,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         exit_if_missing_elecmap_desolvmap_about("epdb");
 
-        // to restore the original coordinates, we must temporarily undo the centering transformation
-        for ( i=0; i<true_ligand_atoms; i++ ) {
-            for (xyz = 0;  xyz < SPACE;  xyz++) {
-                crdpdb[i][xyz] += lig_center[xyz];
-            }
-        }
         // warn if any atoms are outside the grid box
         for (i=0; i<natom; i++) {
 	    Boole this_atom_outside;
-	    this_atom_outside  = is_out_grid_info(crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z]);
+	    this_atom_outside  = is_out_grid_info(crdorig[i][X], crdorig[i][Y], crdorig[i][Z]);
             if (this_atom_outside) {
-                (void) sprintf( message, "%s: WARNING: Atom %d (%.3f, %.3f, %.3f) is outside the grid!\n", programname, i+1, crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z] );
+                (void) sprintf( message, "%s: WARNING: Atom %d (%.3f, %.3f, %.3f) is outside the grid!\n", programname, i+1, crdorig[i][X], crdorig[i][Y], crdorig[i][Z] );
                 print_2x( logFile, stderr, message );
             }
         }
@@ -4376,7 +4395,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         // Calculate the internal energy
         if (ntor > 0) {
-            (void) eintcalPrint(nonbondlist, ad_energy_tables, crdpdb, Nnb, Nnb_array, nb_group_energy,
+            (void) eintcalPrint(nonbondlist, ad_energy_tables, crdorig, Nnb, Nnb_array, nb_group_energy,
 	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
 	    B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile);
         }
@@ -4384,7 +4403,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
         // calculate the energy breakdown for the input coordinates, "crdpdb"
         eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
-                                crdpdb, charge, abs_charge, type, map, info,
+                                crdorig, charge, abs_charge, type, map, info,
                                 ignore_inter, elec, emap, &elec_total, &emap_total,
                                 nonbondlist, ad_energy_tables, Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
 				B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
@@ -4401,7 +4420,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         etot = 0.;
         for (i = 0;  i < natom;  i++) {
             etot = emap[i] + elec[i];
-            pr(logFile, "%4d  %10.2f  %10.2f  %10.2f  %7.3f  %8.4f  %8.4f  %8.4f\n", (type[i]+1), etot, emap[i], elec[i], charge[i], crdpdb[i][X], crdpdb[i][Y], crdpdb[i][Z]);
+            pr(logFile, "%4d  %10.2f  %10.2f  %10.2f  %7.3f  %8.4f  %8.4f  %8.4f\n", (type[i]+1), etot, emap[i], elec[i], charge[i], crdorig[i][X], crdorig[i][Y], crdorig[i][Z]);
             charge_total += charge[i];
         } /*i*/
         pr(logFile, "      __________  __________  __________  _______\n");
@@ -4416,13 +4435,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         printEnergies( &eb, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model );
         pr(logFile, "\n");
-
-        // remember to re-center the ligand
-        for ( i=0; i<true_ligand_atoms; i++ ) {
-            for (xyz = 0;  xyz < SPACE;  xyz++) {
-                crdpdb[i][xyz] -= lig_center[xyz];
-            }
-        }
 
         // restore the saved unbound internal FE
         //unbound_internal_FE = unbound_internal_FE_saved;
@@ -4672,10 +4684,6 @@ static void exit_if_missing_elecmap_desolvmap_about(string keyword)
          exit(-1);
     } else if (!B_found_desolvmap) {
          prStr(error_message, "%s:  %s command: no \"desolvmap\" command has been specified!\n", programname, keyword.c_str());
-         stop(error_message);
-         exit(-1);
-    } else if (!B_found_about_keyword && true_ligand_atoms>0){
-         prStr(error_message, "%s:  %s command: no \"about\" command has been specified!\n", programname, keyword.c_str());
          stop(error_message);
          exit(-1);
     }

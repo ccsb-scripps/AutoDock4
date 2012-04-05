@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.31 2012/04/05 01:39:32 mp Exp $
+ $Id: structs.h,v 1.32 2012/04/05 05:00:54 mp Exp $
 
  AutoDock  
 
@@ -170,7 +170,6 @@ typedef struct atom
 {
   double    coords[3];			    /* transformed coordinates */
   double    crdpdb[3];			    /* input PDB coordintates */
-  double    crdreo[3];			    /* reoriented coordintates */
   Boole     has_charge;			    /* TRUE if the atom has a charge */
 
   double    charge;

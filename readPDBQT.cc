@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.38 2012/04/05 01:39:32 mp Exp $
+ $Id: readPDBQT.cc,v 1.39 2012/04/05 05:00:54 mp Exp $
 
  AutoDock 
 
@@ -55,7 +55,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
                     int *const P_natom,
                     Real crdpdb[MAX_ATOMS][NTRN],
-                    Real crdreo[MAX_ATOMS][NTRN],
                     Real charge[MAX_ATOMS],
                     Boole *const P_B_haveCharges,
                     int map_index[MAX_ATOMS], //was:int type[MAX_ATOMS]
@@ -316,7 +315,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 for (j = 0; j < NTRN; j++) {
                     mol.crdpdb[natom][j] = crdpdb[natom][j];
                     mol.crd[natom][j] = crdpdb[natom][j];
-                    // crdreo[natom][j] = crdpdb[natom][j];
                 }
 
                 if (!B_found_begin_res) {

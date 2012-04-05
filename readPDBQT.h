@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.h,v 1.18 2012/04/05 01:39:32 mp Exp $
+ $Id: readPDBQT.h,v 1.19 2012/04/05 05:00:54 mp Exp $
 
  AutoDock 
 
@@ -54,7 +54,6 @@ Molecule readPDBQT( char  line[LINE_LEN],
 
               int   *const P_natom,
               Real crdpdb[MAX_ATOMS][NTRN],
-              Real crdreo[MAX_ATOMS][NTRN],
               Real charge[MAX_ATOMS],
               Boole *const P_B_haveCharges,
               int   type[MAX_ATOMS],
