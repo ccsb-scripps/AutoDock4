@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.165 2012/04/03 21:41:21 mp Exp $
+ $Id: main.cc,v 1.166 2012/04/05 01:39:32 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -104,18 +104,19 @@ using std::string;
 #include "pso.h"
 #include "dimLibrary.h"
 
+/* globals : */
 extern int debug;
 extern int keepresnum;
 extern Real idct;
 extern Eval evaluate;
 extern Linear_FE_Model AD4;
-
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.165 2012/04/03 21:41:21 mp Exp $"};
-
-
 int sel_prop_count = 0; // gs.cc debug switch
 
-static int true_ligand_atoms = 0;
+
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.166 2012/04/05 01:39:32 mp Exp $"};
+
+
+
 
 // static (local to this source file main.cc) DPF-parsing state variables: 
 
@@ -134,8 +135,9 @@ static Boole B_have_flexible_residues = FALSE;  // does the receptor have flexib
 
 
 static void exit_if_missing_elecmap_desolvmap_about(string keyword); // see bottom of main.cc
+static int true_ligand_atoms = 0; // used by exit_if ... 
 
-// PSO 
+// PSO  - Particle Swarm Optimization  - not officially supported
 // State Structure Variable DECLARATION
 int S ; // Swarm size
 double pso_xmin[PSO_D_MAX], pso_xmax[PSO_D_MAX]; // Intervals defining the search space
@@ -158,8 +160,8 @@ GridMapSetInfo *info;  // this information is from the AVS field file
 //
 char atomstuff[MAX_ATOMS][MAX_CHARS];
 char pdbaname[MAX_ATOMS][5];
-Real crdpdb[MAX_ATOMS][SPACE];  // original PDB coordinates from input
-Real crdreo[MAX_ATOMS][SPACE];  // reoriented coordinates
+Real crdpdb[MAX_ATOMS][SPACE];  // PDB coordinates, recentered by "about"
+Real crdreo[MAX_ATOMS][SPACE];  // reoriented coordinates NOT USED
 Real crd[MAX_ATOMS][SPACE];     // current coordinates
 Real charge[MAX_ATOMS];
 Real abs_charge[MAX_ATOMS];
@@ -218,7 +220,6 @@ char PDBQT_record[MAX_RECORDS][LINE_LEN];
 //   SPACE (3)
 //
 Real lig_center[SPACE];
-//Real map_center[SPACE];
 
 //   MAX_RUNS
 //
@@ -287,22 +288,23 @@ Boole B_linear_schedule = TRUE; /* TRUE is ADT default */
 Boole B_selectmin = TRUE; // adopt min instead of last state - ADT default TRUE
 Real e0max = 0; // minimum energy for simanneal initial state - 0 is ADT default
 int MaxRetries = 10000; // maximum number of retries for simanneal ligand init. 10000 is ADT default
-Real RT0 = /* 616.0*/ 1000.; /* 1000 is ADT default */
-Real RTFac = 0.95; /* 0.95 is ADT default */
+Real RT0 = /* 616.0*/ 100.; /* 616.0 was pre-4.3 default */
+Real RTFac = 0.90; /* 0.95 was pre-4.3 default */
 int ncycles = 50; /* 50 is ADT default */
-int naccmax = 100; /* 100 is ADT default */
-int nrejmax = 100; /* 100 is ADT default */
+int naccmax = 30000; /* 100 was pre-4.3 default */
+int nrejmax = 30000; /* 100 was pre-4.3 default */
 
- // note: trnStep0, qtwStep0, torStep0 also control GA mutations and 'investigate' (MP)
-Real trnFac = 1.0; /* 1.0 is ADT default: i.e., no reduction */
-Real trnStep0 = 2.0;  /* 2 is ADT default MP TODO 2012 */
-Real trnStepFinal = 0.2;
-Real qtwFac = 1.0; /* 1.0 is ADT default: i.e., no reduction  */
-Real qtwStep0 = DegreesToRadians( 50.0 );  /* 50 is ADT default MP TODO 2012 */
-Real qtwStepFinal = DegreesToRadians( 0.5 );
-Real torStep0 = DegreesToRadians( 50.0 );  /* 50 is ADT default MP TODO 2012 */
-Real torStepFinal = DegreesToRadians( 1.0 );
-Real torFac = 1.0; /* 1.0 is ADT default: i.e., no reduction  */
+ // note: trnStep0, qtwStep0, torStep0 also control 'investigate'
+ // but (despite appearances) do not control GA mutations (MP 2012)
+Real trnFac = 1.0; /* 1.0 is ADT default: i.e., no reduction in geom sched */
+Real trnStep0 = 0.2;  /* 2 was pre-4.3 default */
+Real trnStepFinal = 0; // no default value, must be set in DPF
+Real qtwFac = 1.0; /* 1.0 is ADT default: i.e., no reduction in geom sched */
+Real qtwStep0 = DegreesToRadians( 5.0 );  /* 50 was pre-4.3 default */
+Real qtwStepFinal = 0; // no default value, must be set in DPF
+Real torStep0 = DegreesToRadians( 5.0 );  /* 50 was pre-4.3 default */
+Real torStepFinal = 0; // no default value, must be set in DPF
+Real torFac = 1.0; /* 1.0 is ADT default: i.e., no reduction in geom sched */
  // simanneal file-based or real-time monitoring
 Boole B_write_trj = FALSE;
 Boole B_watch = FALSE;
@@ -419,7 +421,6 @@ int nres = 0;
 int nmol = 0;
 int Nnb = 0;
 int ntor = 0;
-int ntor1 = 1;
 int ntor_ligand = 0;
 int ntorsdof = 0;
 int num_maps = 0;
@@ -494,35 +495,35 @@ Statistics map_stats;
 
 //  GA parameters controlled in DPF
 FourByteLong seed[2];
-unsigned int pop_size = 200;
+unsigned int pop_size = 150; // 150 is ADT default
 unsigned int num_generations = 0;  //  Don't terminate on the basis of number of generations
 unsigned int num_evals = 250000;
 unsigned int num_evals_unbound = num_evals;
 Selection_Mode s_mode = Proportional;
-int elitism = 1;
+int elitism = 1; // 1 is ADT default
 Real linear_ranking_selection_probability_ratio = 2.0;
 Xover_Mode c_mode = TwoPt;  //  can be: OnePt, TwoPt, Uniform or Arithmetic
-Real m_rate = 0.02;
-Real c_rate = 0.80;
-Real alpha = 0;
-Real beta = 1;
-Real localsearch_freq = 0.06;
+Real m_rate = 0.02; // 0.02 is ADT default
+Real c_rate = 0.80; // 0.80 is ADT default
+Real alpha = 0; // I believe is unused in existing GA code - MP 2012
+Real beta = 1;  // I believe is unused in existing GA code - MP 2012
+Real localsearch_freq = 0.06;  // 0.06 is ADT default
+Worst_Mode w_mode = AverageOfN; // note: no keyword to change this in DPF
+int window_size = 10;
+int low = 0;  // unsure if is used in existing GA code - MP 2012
+int high = 100;  // unsure if is used in existing GA code - MP 2012
 
 // local search (PSW) parameters controlled in DPF
 unsigned int max_its = 300;
 unsigned int max_succ = 4;
 unsigned int max_fail = 4;
 
-int window_size = 10;
-int low = 0;
-int high = 100;
 
 // internal variables for GA and GA/LS
 // For Branch Crossover Mode
 int end_of_branch[MAX_TORS];
 
 
-Worst_Mode w_mode = AverageOfN;
 EvalMode e_mode = Normal_Eval;
 
 Global_Search *GlobalSearchMethod = NULL;
@@ -668,7 +669,7 @@ for (j = 0; j < MAX_RUNS; j++) {
 }
 
 B_constrain_dist = B_haveCharges = FALSE;
-ntor1 = ntor = atomC1 = atomC2 = 0;
+ntor = atomC1 = atomC2 = 0;
 sqlower = squpper = 0.0;
 
 timeSeedIsSet[0] = 'F';
@@ -741,7 +742,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.165 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.166 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1454,7 +1455,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         initialiseState( &(ligand.S) );
         initialiseQuat( &q_reorient ); // set to identity
         B_constrain_dist = B_haveCharges = FALSE;
-        ntor1 = ntor = atomC1 = atomC2 = 0;
+        ntor = atomC1 = atomC2 = 0;
         ntor_ligand = 0;
         ntorsdof = 0;
         sqlower = squpper = 0.0;
@@ -1485,7 +1486,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 			    &n_heavy_atoms_in_ligand, &true_ligand_atoms,
                             &B_constrain_dist, &atomC1, &atomC2,
                             &sqlower, &squpper,
-                            &ntor1, &ntor, &ntor_ligand,
+                            &ntor, &ntor_ligand,
                             tlist, vt,
                             &Nnb, Nnb_array, nonbondlist,
                             jobStart, tms_jobStart, hostnm, &ntorsdof, 
@@ -1493,6 +1494,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             B_include_1_4_interactions,
                             atoms, PDBQT_record, end_of_branch,
 			    debug, outlev, logFile);
+
+	// MP@@ testing tlist
+	for(int t=0;t<=ntor;t++) {
+	fprintf(logFile, "@@@ tlist[%2d] = %3d %3d %3d : ", t, tlist[t][0]+1, tlist[t][1]+1, tlist[t][2]);
+	for(int aii=0;aii<tlist[t][2];aii++) fprintf(logFile,"%2d ",tlist[t][3+aii]+1);
+	fprintf(logFile, "\n");
+	}
 
         // pre-calculate some values we will need later in computing the desolvation energy
         //
@@ -1570,8 +1578,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case DPF_FLEXRES:
         /*
          * flexible_residues file.pdbqt
+	 * This token is handled in pass 1, above.
          */
-        pr(logFile, "\nThe flexible residues will be read in from \"%s\".\n", FN_flexres);
+        pr(logFile, "The flexible residues will be read in from \"%s\".\n", FN_flexres);
         break;
 
 
@@ -2939,15 +2948,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	    if (outlev >= LOGBASIC) {
                 if (B_acconly) pr( logFile, "Output *accepted* states only.\n" );
                 else if (B_either) pr( logFile, "Output *either* accepted or rejected states.\n" );
-            pr(logFile, "\n");
             } 
 
-            if (B_havenbp) {
-                nbe( info, ad_energy_tables, num_atom_types );
-                if (outlev >= LOGBASIC) pr( logFile, "Output *accepted* states only.\n" );
-            } else if (B_either) {
-               if (outlev >= LOGBASIC) pr( logFile, "Output *either* accepted or rejected states.\n" );
-  	    } 
+            if (B_havenbp)  nbe( info, ad_energy_tables, num_atom_types );
             if (B_cluster_mode) {
                 clmode( num_atom_types, clus_rms_tol,
                         hostnm, jobStart, tms_jobStart,
@@ -2963,6 +2966,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             /* ___________________________________________________________________
             **
             ** Begin the automated docking simulation,
+	    **  using simulated annealing
             ** ___________________________________________________________________
             */
             simanneal( &nconf, Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
@@ -2973,7 +2977,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         elec, emap,
                         ncycles, nruns, jobStart,
                         map,
-                        naccmax, natom, nonbondlist, nrejmax, ntor1, ntor, 
+                        naccmax, natom, nonbondlist, nrejmax, ntor, 
                         sInit, sHist,   qtwFac, B_qtwReduc, qtwStep0,
                         B_selectmin, FN_ligand, lig_center, RT0, B_tempChange, RTFac,
                         tms_jobStart, tlist, torFac, B_torReduc, torStep0,
@@ -3017,6 +3021,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
       }
       GlobalSearchMethod = new Genetic_Algorithm(e_mode, s_mode, c_mode, w_mode, elitism, c_rate, m_rate, localsearch_freq,
                                                  window_size, num_evals, num_generations, output_pop_stats);
+      // note: the trn/qtw/torStep0 values appear unused beyond gs.h 
+      // I do not know whether low, high are used but changing them has no 
+      //    obvious effect
+      // According to gs.cc, alpha and beta are unused
+      //   - M Pique  April 2012
       ((Genetic_Algorithm *)GlobalSearchMethod)->mutation_values( low, high, alpha, beta, trnStep0, qtwStep0, torStep0  );
       ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
 
@@ -3375,21 +3384,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
     case GA_low:
        get1arg(line, "%*s %d", &low, "GA_LOW");
-       pr(logFile, "Setting low to %d.\n", low);
+       pr(logFile, "Setting GA low to %d.\n", low);
        break;
 
 //______________________________________________________________________________
 
     case GA_high:
        get1arg(line, "%*s %d", &high, "GA_HIGH");
-       pr(logFile, "Setting high to %d.\n", high);
+       pr(logFile, "Setting GA high to %d.\n", high);
        break;
 
 //______________________________________________________________________________
 
     case GA_elitism:
        get1arg(line, "%*s %d", &elitism, "GA_ELITISM");
-       pr(logFile, "The %d best will be preserved each generation.\n", elitism);
+       pr(logFile, "The %d best will be preserved each GA generation.\n", elitism);
        break;
 
 //______________________________________________________________________________

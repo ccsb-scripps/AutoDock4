@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.37 2012/02/28 00:18:40 mp Exp $
+ $Id: readPDBQT.cc,v 1.38 2012/04/05 01:39:32 mp Exp $
 
  AutoDock 
 
@@ -76,8 +76,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                     Real *const P_sqlower,
                     Real *const P_squpper,
 
-                    int *const P_ntor1,
-                    int *const P_ntor,
+                    int *const P_ntor, // number of torsions in lig + flexres
                     int *const P_ntor_ligand,   // the number of torsions in the ligand (excluding the flexible residues in receptor)
                     int tlist[MAX_TORS][MAX_ATOMS],
                     Real vt[MAX_TORS][NTRN],
@@ -581,7 +580,6 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	      *P_true_ligand_atoms, outlev, logFile);
 
 	*P_ntor = ntor;
-	*P_ntor1 = ntor - 1;
 
 	mol.S.ntor = ntor;
 

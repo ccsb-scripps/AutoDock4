@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.30 2012/02/07 20:47:30 mp Exp $
+ $Id: investigate.cc,v 1.31 2012/04/05 01:39:32 mp Exp $
 
  AutoDock  
 
@@ -62,7 +62,7 @@ void investigate( const int   Nnb, int Nnb_array[3], Real nb_group_energy[3],
                     const int   natom,
                     const NonbondParam *const nonbondlist,
                     const int   ntor,
-                    const int   tlist[MAX_TORS][MAX_ATOMS],
+                    const int   tlist[MAX_TORS+1][MAX_ATOMS],
                     const int   type[MAX_ATOMS],
                     const Real vt[MAX_TORS][SPACE],
                     const Boole B_isGaussTorCon,

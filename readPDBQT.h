@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.h,v 1.17 2012/02/02 02:16:47 mp Exp $
+ $Id: readPDBQT.h,v 1.18 2012/04/05 01:39:32 mp Exp $
 
  AutoDock 
 
@@ -75,7 +75,6 @@ Molecule readPDBQT( char  line[LINE_LEN],
               Real  *const P_sqlower,
               Real  *const P_squpper,
 
-              int   *const P_ntor1,
               int   *const P_ntor,
               int   *const P_ntor_ligand,
               int   tortree[MAX_TORS][MAX_ATOMS],

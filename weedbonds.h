@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.h,v 1.12 2012/02/02 02:16:48 mp Exp $
+ $Id: weedbonds.h,v 1.13 2012/04/05 01:39:32 mp Exp $
 
  AutoDock 
 
@@ -35,7 +35,7 @@ void  weedbonds( const int   natom,
                  const char  pdbaname[MAX_ATOMS][5],
                  const int   piece[MAX_ATOMS],
                  const int   ntor,
-                 const int   tlist[MAX_TORS][MAX_ATOMS],
+                 const int   tlist[MAX_TORS+1][MAX_ATOMS],
        /* not const */ int   nbmatrix_binary[MAX_ATOMS][MAX_ATOMS],
        /* not const */ int   *P_Nnb,
        /* not const */ NonbondParam *const nonbondlist,

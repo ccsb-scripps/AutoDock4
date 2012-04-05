@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.h,v 1.21 2012/02/02 02:16:47 mp Exp $
+ $Id: simanneal.h,v 1.22 2012/04/05 01:39:32 mp Exp $
 
  AutoDock  
 
@@ -67,7 +67,6 @@ void simanneal( int   *const P_nconf,
                 const int   natom, 
                 NonbondParam *const nonbondlist, 
                 const int   nrejmax, 
-                const int   ntor1, 
                 const int   ntor, 
 
                 /* not const */ State sInit, 
@@ -82,7 +81,7 @@ void simanneal( int   *const P_nconf,
                 const Boole B_RTChange, 
                 ConstReal RTFac, 
                 const struct tms& tms_jobStart, 
-                const int   tlist[MAX_TORS][MAX_ATOMS], 
+                const int   tlist[MAX_TORS+1][MAX_ATOMS], 
                 ConstReal torFac, 
                 const Boole B_torReduc, 
                 ConstReal torStep0, 

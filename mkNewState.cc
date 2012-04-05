@@ -1,6 +1,6 @@
 /*
 
- $Id: mkNewState.cc,v 1.16 2012/02/02 02:16:47 mp Exp $
+ $Id: mkNewState.cc,v 1.17 2012/04/05 01:39:32 mp Exp $
 
  AutoDock 
 
@@ -38,7 +38,7 @@ void mkNewState( /* not const */ State *const now,
                  /* not const */ State *const change,
 
                 const Real vt[MAX_TORS][NTRN],
-                const int   tlist[MAX_TORS][MAX_ATOMS],
+                const int   tlist[MAX_TORS+1][MAX_ATOMS],
                 const int   ntor,
                 /* not const */ Real crd[MAX_ATOMS][NTRN],
                 const Real crdpdb[MAX_ATOMS][NTRN],

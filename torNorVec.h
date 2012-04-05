@@ -1,6 +1,6 @@
 /*
 
- $Id: torNorVec.h,v 1.8 2012/02/07 05:14:55 mp Exp $
+ $Id: torNorVec.h,v 1.9 2012/04/05 01:39:32 mp Exp $
 
  AutoDock 
 
@@ -33,14 +33,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 void  torNorVec( const Real crdpdb[MAX_ATOMS][SPACE],
                  const int   ntor,
-                 const int   tlist[MAX_TORS][MAX_ATOMS],
+                 const int   tlist[MAX_TORS+1][MAX_ATOMS],
                  /* not const */ Real vt[MAX_TORS][SPACE],
 		 const int outlev,
 		 FILE *logFile);
 
 void update_torsion_vectors( const Real crdpdb[MAX_ATOMS][SPACE],
                              const int ntor,
-                             const int  tlist[MAX_TORS][MAX_ATOMS],
+                             const int  tlist[MAX_TORS+1][MAX_ATOMS],
                              /* not const */ Real vt[MAX_TORS][SPACE],
                              /* not const */ Molecule *ligand,
                              const int debug,

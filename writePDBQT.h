@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.h,v 1.15 2012/02/02 02:16:48 mp Exp $
+ $Id: writePDBQT.h,v 1.16 2012/04/05 01:39:32 mp Exp $
 
  AutoDock  
 
@@ -53,7 +53,7 @@ void writePDBQT(const int irun, const FourByteLong seed[2],
                     const int ligand_is_inhibitor,
                     const Real torsFreeEnergy,
                     const Real vt[MAX_TORS][SPACE],
-                    const int   tlist[MAX_TORS][MAX_ATOMS],
+                    const int   tlist[MAX_TORS+1][MAX_ATOMS],
                     const Real crdpdb[MAX_ATOMS][SPACE],
                     const NonbondParam *const nonbondlist,
                     const EnergyTables *const ptr_ad_energy_tables,

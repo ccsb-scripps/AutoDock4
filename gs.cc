@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.52 2012/02/07 20:47:30 mp Exp $
+ $Id: gs.cc,v 1.53 2012/04/05 01:39:32 mp Exp $
 
  AutoDock 
 
@@ -1133,6 +1133,19 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    if (allzero) {//debug
        (void)fprintf(logFile, "gs.cc:  W A R N I N G !  all alloc variables are zero!\n"); //debug
    }//debug
+     (void) fprintf(logFile, "gs.cc worst = %f   avg = %f   worst-avg = %f\n", worst, avg, worst-avg);
+     (void) fprintf(logFile, "gs.cc score[..] = ");
+   for (J=0;  J < original_population.num_individuals() && J<20;  J++) //debug
+     fprintf(logFile, "%.3f ", (worst - original_population[J].value(e_mode))*0.0000001);
+     (void) fprintf(logFile, "\n");
+
+     (void) fprintf(logFile, "gs.cc alloc[..] = ");
+     double ta=0; // alloc total
+   for (J=0;  J < original_population.num_individuals() && J<20;  J++) {//debug
+     fprintf(logFile, "%.3f ", alloc[J]);
+     ta += alloc[J];
+     }
+     (void) fprintf(logFile, "  total=%.3f\n", ta);
 #endif
 
    //  Permute the individuals
@@ -1169,15 +1182,15 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    }
 
 #ifdef DEBUG2
-   (void)fprintf(stderr, "gs.cc/void Genetic_Algorithm::"); //debug
-   (void)fprintf(stderr, "selection_proportional(Population &original_population, Individual *new_pop)\n"); //debug
+   (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::"); //debug
+   (void)fprintf(logFile, "selection_proportional(Population &original_population, Individual *new_pop)\n"); //debug
 #endif
 
    i = 0;
 
 #ifdef DEBUG2
    int count = 0;//debug
-   (void)fprintf(stderr, "gs.cc/beginning \"while(start_index < original_population.num_individuals()) {\" loop\n"); //debug
+   (void)fprintf(logFile, "gs.cc/beginning \"while(start_index < original_population.num_individuals()) {\" loop\n"); //debug
 #endif
 
    // ??? start_index = 0; // gmm, 1998-07-13 ???
@@ -1185,34 +1198,34 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    while (start_index < original_population.num_individuals()) {
        Real r; // local 
 #ifdef DEBUG2
-      (void)fprintf(stderr, "gs.cc:596/inside \"while(start_index(=%d) < original_population.num_individuals()(=%d)) \" loop:  count= %d\n", start_index, original_population.num_individuals(), ++count); //debug
+      (void)fprintf(logFile, "gs.cc:596/inside \"while(start_index(=%d) < original_population.num_individuals()(=%d)) \" loop:  count= %d\n", start_index, original_population.num_individuals(), ++count); //debug
 #endif
       assert(ordering[i] < original_population.num_individuals());//debug
       r = ranf();
 #ifdef DEBUG2
-      (void)fprintf(stderr, "gs.cc:599/inside debug_ranf= %.3f, alloc[ordering[i]]= %.3e, ordering[i]= %d,  i= %d\n", r, alloc[ordering[i]], ordering[i], i); // debug
+      (void)fprintf(logFile, "gs.cc:599/inside debug_ranf= %.3f, alloc[ordering[i]]= %.3e, ordering[i]= %d,  i= %d\n", r, alloc[ordering[i]], ordering[i], i); // debug
 #endif //  DEBUG2
       if (r < alloc[ordering[i]]) {
 #ifdef DEBUG2
-         (void)fprintf(stderr, "gs.cc:603/inside (debug_ranf < alloc[ordering[i]]) is true!\n"); //debug
-         (void)fprintf(stderr, "gs.cc:604/inside about to increment start_index in:  \"new_pop[start_index++] = original_population[ordering[i]];\"; right now, start_index= %d\n", start_index); //debug
+         (void)fprintf(logFile, "gs.cc:603/inside (debug_ranf < alloc[ordering[i]]) is true!\n"); //debug
+         (void)fprintf(logFile, "gs.cc:604/inside about to increment start_index in:  \"new_pop[start_index++] = original_population[ordering[i]];\"; right now, start_index= %d\n", start_index); //debug
 #endif
          new_pop[start_index] = original_population[ordering[i]];
          //new_pop[start_index].incrementAge();
          start_index++;
 #ifdef DEBUG2
-         (void)fprintf(stderr, "gs.cc:605/inside just incremented start_index, now start_index= %d\n", start_index); //debug
+         (void)fprintf(logFile, "gs.cc:605/inside just incremented start_index, now start_index= %d\n", start_index); //debug
 #endif
       }// endif (ranf() < alloc[ordering[i]])
 
 #ifdef DEBUG2
-      (void)fprintf(stderr, "gs.cc:608/inside i= %d, original_population.num_individuals()= %d\n", i, original_population.num_individuals()); //debug
-      (void)fprintf(stderr, "gs.cc:609/inside about to \"i = (i+1)%%original_population.num_individuals();\"\n"); //debug
+      (void)fprintf(logFile, "gs.cc:608/inside i= %d, original_population.num_individuals()= %d\n", i, original_population.num_individuals()); //debug
+      (void)fprintf(logFile, "gs.cc:609/inside about to \"i = (i+1)%%original_population.num_individuals();\"\n"); //debug
 #endif
       i = (i+1)%original_population.num_individuals();
 #ifdef DEBUG2
-      (void)fprintf(stderr, "gs.cc:611/inside just done \"i = (i+1)%%original_population.num_individuals();\"\n"); //debug
-      (void)fprintf(stderr, "gs.cc:612/inside i= %d  _____________________________________________________\n\n", i); //debug
+      (void)fprintf(logFile, "gs.cc:611/inside just done \"i = (i+1)%%original_population.num_individuals();\"\n"); //debug
+      (void)fprintf(logFile, "gs.cc:612/inside i= %d  _____________________________________________________\n\n", i); //debug
 
        allzero = 1;//debug
        for (J=0;  J < original_population.num_individuals();  J++) {//debug
@@ -1226,7 +1239,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
    }// endwhile (start_index < original_population.num_individuals())
 
 #ifdef DEBUG2
-  (void)fprintf(stderr, "gs.cc/finished \"while(start_index < original_population.num_individuals()) \" loop\n"); //debug
+  (void)fprintf(logFile, "gs.cc/finished \"while(start_index < original_population.num_individuals()) \" loop\n"); //debug
 #endif
 
 }

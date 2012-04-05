@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.32 2012/02/04 02:22:05 mp Exp $
+ $Id: getInitialState.cc,v 1.33 2012/04/05 01:39:32 mp Exp $
 
  AutoDock  
 
@@ -76,7 +76,7 @@ void getInitialState(
 	    const int true_ligand_atoms,
             const NonbondParam *const nonbondlist,
             const int   ntor,
-            const int   tlist[MAX_TORS][MAX_ATOMS],
+            const int   tlist[MAX_TORS+1][MAX_ATOMS],
             const int   type[MAX_ATOMS],
             const Real vt[MAX_TORS][SPACE],
             const int   irun1,

@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.27 2012/02/02 02:16:47 mp Exp $
+ $Id: eval.h,v 1.28 2012/04/05 01:39:31 mp Exp $
 
  AutoDock  
 
@@ -109,7 +109,7 @@ class Eval
                   const Boole          init_B_ShowTorE,
 		  /* not const */ unsigned short init_US_TorE[MAX_TORS],
                   /* not const */ unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
-                  /* not const */ Real  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS],
+                  /* not const */ Real  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS+1][MAX_ATOMS],
                   /* not const */ Real  init_crdpdb[MAX_ATOMS][SPACE], 
                   /* not const */ Real  init_crdreo[MAX_ATOMS][SPACE], 
                   const State& stateInit, 
@@ -169,7 +169,7 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
                         /* not const */ unsigned short init_US_TorE[MAX_TORS],
                         /* not const */ unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
                         /* not const */ Real init_vt[MAX_TORS][SPACE],
-                        /* not const */ int init_tlist[MAX_TORS][MAX_ATOMS],
+                        /* not const */ int init_tlist[MAX_TORS+1][MAX_ATOMS],
                         /* not const */ Real init_crdpdb[MAX_ATOMS][SPACE],
                         /* not const */ Real init_crdreo[MAX_ATOMS][SPACE],
                         const State& stateInit,

@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.49 2012/02/04 02:22:05 mp Exp $
+ $Id: analysis.cc,v 1.50 2012/04/05 01:39:31 mp Exp $
 
  AutoDock  
 
@@ -82,7 +82,7 @@ void analysis( const int   Nnb,
                const Real  sml_center[SPACE],
                const Boole B_symmetry_flag, 
 	       const Boole B_unique_pair_flag,
-               const int   tlist[MAX_TORS][MAX_ATOMS], 
+               const int   tlist[MAX_TORS+1][MAX_ATOMS], 
                const int   type[MAX_ATOMS], 
                const Real  vt[MAX_TORS][SPACE],
                const char  *FN_rms_ref_crds,

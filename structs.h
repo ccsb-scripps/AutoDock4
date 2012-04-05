@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.30 2012/02/02 23:28:31 rhuey Exp $
+ $Id: structs.h,v 1.31 2012/04/05 01:39:32 mp Exp $
 
  AutoDock  
 
@@ -143,7 +143,7 @@ typedef struct molecule
   char atomstr[MAX_ATOMS][MAX_CHARS];	/* strings describing atoms, from PDB file, cols,1-30. */
   int natom;			                /* number of atoms in molecule */
   Real vt[MAX_TORS][SPACE];        	/* vectors  of torsions */
-  int tlist[MAX_TORS][MAX_ATOMS];	    /* torsion list of movable atoms */
+  int tlist[MAX_TORS+1][MAX_ATOMS];	    /* torsion list of movable atoms+root atoms at end */
   State S;		                    	/* state of molecule */
 } Molecule;
 

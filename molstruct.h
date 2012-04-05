@@ -1,6 +1,6 @@
 /*
 
- $Id: molstruct.h,v 1.9 2009/05/08 23:02:14 rhuey Exp $
+ $Id: molstruct.h,v 1.10 2012/04/05 01:39:32 mp Exp $
 
  AutoDock 
 
@@ -45,9 +45,8 @@ typedef struct molecule {
 	double sqlower;
 	double squpper;
 
-	int   ntor1;
 	int   ntor;
-	int   tlist[ MAX_TORS ][ MAX_ATOMS ];
+	int   tlist[ MAX_TORS+1][ MAX_ATOMS ];
 	double vt[ MAX_TORS ][ NTRN ];
 
 	int   Nnb;

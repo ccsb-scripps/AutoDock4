@@ -1,6 +1,6 @@
 /*
 
- $Id: cnv_state_to_coords.cc,v 1.12 2012/02/02 02:16:47 mp Exp $
+ $Id: cnv_state_to_coords.cc,v 1.13 2012/04/05 01:39:31 mp Exp $
 
  AutoDock 
 
@@ -43,7 +43,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 void cnv_state_to_coords( const State& now,
                           const Real vt[MAX_TORS][SPACE],
-                          const int tlist[MAX_TORS][MAX_ATOMS],
+                          const int tlist[MAX_TORS+1][MAX_ATOMS],
                           const int ntor,
                           const Real crdpdb[MAX_ATOMS][SPACE],
                           /* not const */ Real crd[MAX_ATOMS][SPACE],

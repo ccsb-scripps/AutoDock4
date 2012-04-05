@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.36 2012/02/07 20:47:30 mp Exp $
+ $Id: simanneal.cc,v 1.37 2012/04/05 01:39:32 mp Exp $
 
  AutoDock  
 
@@ -72,7 +72,6 @@ void simanneal ( int   *const Addr_nconf,
                 const int   natom,
                 NonbondParam *const nonbondlist,
                 const int   nrejmax,
-                const int   ntor1,
                 const int   ntor,
 
                 /* not const */ State sInit, /* tor0, qtn0 */
@@ -414,7 +413,7 @@ void simanneal ( int   *const Addr_nconf,
                                );
 
                         if (B_isGaussTorCon) {
-                            /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { ***/
+                            /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { MP ***/
                             for (Itor = 0; Itor < ntor; Itor++) {
                                 if (B_isTorConstrained[Itor] == 1) {
                                     indx = RadiansToDivs( sNow.tor[Itor] );
@@ -546,11 +545,11 @@ void simanneal ( int   *const Addr_nconf,
                         if (ntor > 0) {
                             pr( logFile, "Minimum:\t(" );
                             for (i=0; i<ntor; i++) {
-                                pr( logFile, "%.1f%s ", RadiansToDegrees(sMin.tor[i]), (i < ntor1)?",":" deg)" );
+                                pr( logFile, "%.1f%s ", RadiansToDegrees(sMin.tor[i]), (i < ntor-1)?",":" deg)" );
                             }
                             pr( logFile, "\nLast:\t(" );
                             for (i=0; i<ntor; i++) {
-                                pr( logFile, "%.1f%s ", RadiansToDegrees(sLast.tor[i]), (i < ntor1)?",":" deg)" );
+                                pr( logFile, "%.1f%s ", RadiansToDegrees(sLast.tor[i]), (i < ntor-1)?",":" deg)" );
                             }
                             pr( logFile, "\n" );
                         }

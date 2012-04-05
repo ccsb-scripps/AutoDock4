@@ -1,6 +1,6 @@
 /*
 
- $Id: initautodock.h,v 1.8 2012/02/02 02:16:47 mp Exp $
+ $Id: initautodock.h,v 1.9 2012/04/05 01:39:32 mp Exp $
 
  AutoDock 
 
@@ -39,7 +39,7 @@ void initautodock(
 	    const int   natom,
 	    const int   ntor,
 	    /* not const */ State *const s0,
-	    const int   tlist[MAX_TORS][MAX_ATOMS],
+	    const int   tlist[MAX_TORS+1][MAX_ATOMS],
 	    const Real vt[MAX_TORS][SPACE],
 	    const int   true_ligand_atoms,
 	    const int   outlev,

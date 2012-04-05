@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.16 2012/02/02 02:16:47 mp Exp $
+ $Id: conformation_sampler.cc,v 1.17 2012/04/05 01:39:31 mp Exp $
 
  AutoDock 
 
@@ -390,7 +390,7 @@ void ConformationSampler::output_statistics(int outlev, FILE *logFile) const {
 	fprintf(logFile, "%d evaluations.\n\n", evals);
 }
 
-void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info,
+void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS+1][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info,
  int true_ligand_atoms, int outlev, FILE *logFile) {
 	vt = init_vt;
 	crdpdb = init_crdpdb;
@@ -414,7 +414,7 @@ void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf
 	fprintf(logFile,"\n\n");
 }
 
-void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /* not const */ int num_samples, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info,
+void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /* not const */ int num_samples, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS+1][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info,
  int true_ligand_atoms, int outlev, FILE *logFile) {
 	vt = init_vt;
 	crdpdb = init_crdpdb;

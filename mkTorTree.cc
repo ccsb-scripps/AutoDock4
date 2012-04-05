@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.21 2012/02/07 20:47:30 mp Exp $
+ $Id: mkTorTree.cc,v 1.22 2012/04/05 01:39:32 mp Exp $
 
  AutoDock 
 
@@ -44,7 +44,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 const char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
                 const int   nrecord,
 
-/* not const */ int   tlist[ MAX_TORS ][ MAX_ATOMS ],
+/* not const */ int   tlist[ MAX_TORS+1][ MAX_ATOMS ],
 /* not const */ int   *const P_ntor,
 /* not const */ int   *const P_ntor_ligand,
 
@@ -70,7 +70,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
     int   keyword_id = -1;
     int   nbranches = 0;
     int   ntor=0;
-    int   tlistsort[ MAX_TORS ][ MAX_ATOMS ];
+    int   tlistsort[ MAX_TORS+1][ MAX_ATOMS ];
     int   found_new_res = 0;
     int   nres = 0;
     int   natoms_in_res = 0;
@@ -115,6 +115,8 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
       |  tlist[ i ][ ATM2 ]             |                              |
       |  tlist[ i ][ NUM_ATM_MOVED ]  = number of atoms to be rotated  |
       |  tlist[ i ][ 3 ] and on       = atom IDs to be rotated.        |
+      |                                                                |
+      |  tlist[ ntor ][  ] holds atom identifiers of true ligand root  |
       |________________________________________________________________|
       | NOTE:  code does not explicitly check for keyword 'ROOT'.      |
       |________________________________________________________________|
@@ -424,6 +426,33 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
             tlist[ i ][ j ] = tlistsort[ i ][ j ];
         }
     }
+
+    /* fill in last entry in tlist - root atoms. 
+     *  root atoms here mean only within the "true ligand".
+     *  Entries for ATM1 and ATM2 are meaningless for the root.
+     * M Pique spring 2012 
+     */
+    { // local block
+    Boole B_is_root_atom[MAX_ATOMS];
+    int nrootatoms; // assumed in root until proven otherwise
+    // fill boolean array with TRUE up to true_ligand_atoms
+    for(int i=0;i<true_ligand_atoms;i++)  B_is_root_atom[i]= TRUE;
+    // set FALSE any atoms that participate in a torsion (including pivot atom)
+    for(int tor=0;tor<ntor;tor++) {
+        for(int i=0;i<tlist[tor][NUM_ATM_MOVED];i++) 
+	  B_is_root_atom[ tlist[tor][i+NUM_ATM_MOVED+1] ] = FALSE;
+	B_is_root_atom[ tlist[tor][ATM2] ] = FALSE; // pivot atom for tor
+    }
+    // count atoms still in root
+    nrootatoms=0;
+    for(int i=0;i<true_ligand_atoms;i++) if(B_is_root_atom[i]) {
+    	tlist[ntor][NUM_ATM_MOVED+nrootatoms+1] = i;
+	++nrootatoms;
+	}
+    tlist[ntor][ATM1] = tlist[ntor][ATM2] = 0; // meaningless
+    tlist[ntor][NUM_ATM_MOVED] = nrootatoms;
+    } // local block
+
     if (ntor > 0 ) {
         pr( logFile, "\n\nNumber of Rotatable Bonds in Small Molecule =\t%d torsions\n", ntor);
 	if(outlev>=LOGLIGREAD)  {
