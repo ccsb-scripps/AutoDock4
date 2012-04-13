@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.19 2012/01/25 00:13:28 mp Exp $
+ $Id: trilinterp.cc,v 1.20 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -58,7 +58,9 @@ Real trilinterp(
  /* not const */ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
  /* not const */ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
  /* not const */ Real *p_elec_total, // set if not NULL - total electrostatic energy
- /* not const */ Real *p_emap_total // set if not NULL - total intermolecular energy
+ /* not const */ Real *p_emap_total, // set if not NULL - total intermolecular energy
+ /* not const */ EnergyComponent *energy_component // set if not NULL - breakdown by elec/vdW_Hb/desolv
+
  )
 
 /******************************************************************************/
@@ -84,7 +86,7 @@ Real trilinterp(
 /******************************************************************************/
 
 {
-    double elec_total=0, emap_total=0;
+    double elec_total=0, emap_total=0, vdW_Hb_total=0, desolv_total=0;
     register int i;               /* i-th atom */
 
     for (i=first_atom; i<last_atom; i++) {
@@ -205,6 +207,11 @@ Real trilinterp(
         elec_total += e * charge[i];
         emap_total += m + d * abs_charge[i]; 
 
+	if (energy_component != NULL)  {
+	   desolv_total += d * abs_charge[i];
+	   vdW_Hb_total += m;
+	   }
+
         if (elec != NULL) elec[i] = e * charge[i];
         if (emap != NULL) emap[i] = m + d * abs_charge[i];
 
@@ -212,6 +219,12 @@ Real trilinterp(
 
     if (p_elec_total != NULL) *p_elec_total = elec_total;
     if (p_emap_total != NULL) *p_emap_total = emap_total;
+    if (energy_component != NULL)  {
+    	energy_component->elec = elec_total;
+    	energy_component->vdW_Hb = vdW_Hb_total;
+    	energy_component->desolv = desolv_total;
+	energy_component->total = elec_total + vdW_Hb_total + desolv_total;
+	}
 
     return( (Real)elec_total+emap_total );
 }

@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.h,v 1.27 2012/04/05 01:39:31 mp Exp $
+ $Id: analysis.h,v 1.28 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -43,7 +43,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 void  analysis( const int   Nnb, 
 	        int Nnb_array[3],
-	        Real nb_group_energy[3],
+	        GroupEnergy *group_energy,
 		const int true_ligand_atoms,
                 const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
                 const Real charge[MAX_ATOMS], 

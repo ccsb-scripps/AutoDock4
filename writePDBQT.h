@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.h,v 1.16 2012/04/05 01:39:32 mp Exp $
+ $Id: writePDBQT.h,v 1.17 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -60,7 +60,7 @@ void writePDBQT(const int irun, const FourByteLong seed[2],
                     const int   type[MAX_ATOMS],
                     const int   Nnb,
 		    int Nnb_array[3],
-		    Real nb_group_energy[3], 
+		    GroupEnergy *group_energy, 
 		    const int true_ligand_atoms,
                     const Boole B_calcIntElec,
                 #include "map_declare.h"

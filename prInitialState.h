@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.h,v 1.9 2010/08/27 00:05:08 mp Exp $
+ $Id: prInitialState.h,v 1.10 2012/04/13 06:22:10 mp Exp $
 
  AutoDock 
 
@@ -34,6 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 void  prInitialState( 
     const EnergyBreakdown *eb,
     const int natom,
+    const int true_ligand_atoms,
     const Real crd[MAX_ATOMS][SPACE],
     const char atomstuff[MAX_ATOMS][MAX_CHARS],
     const int type[MAX_ATOMS],

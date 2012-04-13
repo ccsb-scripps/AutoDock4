@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.34 2012/02/02 02:16:47 mp Exp $
+ $Id: eval.cc,v 1.35 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -184,17 +184,19 @@ double Eval::eval(const int term)
     if (B_compute_intermol_energy) {
         if(term==3) // do not need energy breakdown in this eval() case
         energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-	     info, ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
+	     info, ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
+	     NULL_ENERGY_BREAKDOWN);
         else
         energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-	     info, ignore_inter, elec, emap, &elec_total, &emap_total);
+	     info, ignore_inter, elec, emap, &elec_total, &emap_total,
+	     NULL_ENERGY_BREAKDOWN);
     }
     
 #ifdef DEBUG
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after trilinterp, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
     energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
-		 Nnb_array, nb_group_energy,
+		 Nnb_array, group_energy, /* perhaps do not need energy breakdown MP TODO 2012 */
                  B_calcIntElec, B_include_1_4_interactions, 
                  scale_1_4, qsp_abs_charge,
                  B_use_non_bond_cutoff, B_have_flexible_residues,

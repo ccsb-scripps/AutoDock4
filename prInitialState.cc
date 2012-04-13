@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.14 2011/05/18 16:43:16 rhuey Exp $
+ $Id: prInitialState.cc,v 1.15 2012/04/13 06:22:10 mp Exp $
 
  AutoDock 
 
@@ -44,6 +44,7 @@ extern char *programname;
 void prInitialState(
     const EnergyBreakdown *p_eb,
     const int natom,
+    const int true_ligand_atoms,
     const Real crd[MAX_ATOMS][SPACE],
     const char atomstuff[MAX_ATOMS][MAX_CHARS],
     const int type[MAX_ATOMS],
@@ -61,6 +62,8 @@ void prInitialState(
     int a = 0;
     Real emap_total = 0.0;
     Real elec_total = 0.0;
+    Real emap_flexres_total = 0;
+    Real elec_flexres_total = 0;
 
     strncpy(descriptor, "INITIAL STATE:  ", (size_t)16);
 
@@ -81,15 +84,18 @@ void prInitialState(
 
     print_atomic_energies( natom, atomstuff, type, emap, elec, charge );
 
-    emap_total = 0.0;
-    elec_total = 0.0;
-    for (a=0; a<natom; a++) {
+    for (a=0; a<true_ligand_atoms; a++) {
         emap_total += emap[a];
         elec_total += elec[a];
     }
+    for (a=true_ligand_atoms; a<natom; a++) {
+        emap_flexres_total += emap[a];
+        elec_flexres_total += elec[a];
+    }
     
 	pr( logFile, "\n\n" );
-    printEnergies( p_eb, "Initial ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model );
+    printEnergies( p_eb, "Initial ", ligand_is_inhibitor, emap_total, elec_total,
+     B_have_flexible_residues, emap_flexres_total, elec_flexres_total, ad4_unbound_model );
     pr( logFile, "\n\n" );
 
     flushLog;

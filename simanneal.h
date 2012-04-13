@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.h,v 1.22 2012/04/05 01:39:32 mp Exp $
+ $Id: simanneal.h,v 1.23 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -41,7 +41,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 void simanneal( int   *const P_nconf, 
                 const int   Nnb, 
 		int Nnb_array[3],
-		Real nb_group_energy[3],
+		GroupEnergy *group_energy,
 		const int true_ligand_atoms,
                 ConstReal WallEnergy, 
                 const char  atomstuff[MAX_ATOMS][MAX_CHARS], 

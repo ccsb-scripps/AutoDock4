@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.29 2012/04/05 05:00:54 mp Exp $
+ $Id: eval.h,v 1.30 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -57,7 +57,7 @@ class Eval
       UnsignedFourByteLong num_evals;
       int natom, Nnb;
       int *Nnb_array;
-      Real  *nb_group_energy;
+      GroupEnergy  *group_energy;
       GridMapSetInfo *info;
       MapType *map;
       Real eval_elec[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
@@ -102,7 +102,7 @@ class Eval
                   /* not const */ EnergyTables   *init_ptr_ad_energy_tables,
                   const int init_Nnb,
 		  int *init_Nnb_array,
-		  Real *init_nb_group_energy,
+		  GroupEnergy *init_group_energy,
                   const Boole          init_B_calcIntElec,
                   const Boole          init_B_isGaussTorCon,
 		  /* not const */ Boole init_B_isTorConstrained[MAX_TORS],
@@ -160,7 +160,7 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
                         /* not const */ EnergyTables   *const init_ptr_ad_energy_tables,
                         const int init_Nnb,
 			int *init_Nnb_array,
-			Real *init_nb_group_energy,
+			GroupEnergy *init_group_energy,
                         const Boole init_B_calcIntElec, 
                         const Boole init_B_isGaussTorCon,
                         /* not const */ Boole init_B_isTorConstrained[MAX_TORS], // values are not copied but pointers
@@ -203,7 +203,7 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
     ptr_ad_energy_tables = init_ptr_ad_energy_tables;
     Nnb = init_Nnb;
     Nnb_array= init_Nnb_array;
-    nb_group_energy= init_nb_group_energy;
+    group_energy= init_group_energy;
     B_calcIntElec = init_B_calcIntElec;
     B_isGaussTorCon = init_B_isGaussTorCon;
     B_isTorConstrained = init_B_isTorConstrained;

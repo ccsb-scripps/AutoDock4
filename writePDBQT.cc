@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.37 2012/02/28 00:18:40 mp Exp $
+ $Id: writePDBQT.cc,v 1.38 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -68,7 +68,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 		 const int type[MAX_ATOMS],  // aka 'map_index' in 'ParameterEntry' structures
 		 const int Nnb, 
 		 int Nnb_array[3],
-		 Real nb_group_energy[3], 
+		 GroupEnergy *group_energy, 
 		 const int true_ligand_atoms,
 		 const Boole B_calcIntElec, 
          #include "map_declare.h"
@@ -99,9 +99,9 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 
     Real e_inter_moving_fixed      = 0.0L;  // (1)  // trilinterp( 0, true_ligand_atoms, ...)
     Real e_intra_moving_fixed_rec  = 0.0L;  // (2)  // trilinterp( true_ligand_atoms, natom, ...)
-    Real e_intra_moving_moving_lig = 0.0L;  // (3)  // eintcal( 0, nb_array[0], ...)            // nb_group_energy[INTRA_LIGAND]
-    Real e_inter_moving_moving     = 0.0L;  // (4)  // eintcal( nb_array[0], nb_array[1], ...)  // nb_group_energy[INTER]
-    Real e_intra_moving_moving_rec = 0.0L;  // (5)  // eintcal( nb_array[1], nb_array[2], ...)  // nb_group_energy[INTRA_RECEPTOR]
+    Real e_intra_moving_moving_lig = 0.0L;  // (3)  // eintcal( 0, nb_array[0], ...)            // group_energy[INTRA_LIGAND]
+    Real e_inter_moving_moving     = 0.0L;  // (4)  // eintcal( nb_array[0], nb_array[1], ...)  // group_energy[INTER]
+    Real e_intra_moving_moving_rec = 0.0L;  // (5)  // eintcal( nb_array[1], nb_array[2], ...)  // group_energy[INTRA_RECEPTOR]
 
     Real e_inter = 0.0;      // total    intermolecular energy = (1) + (4)
     Real e_intra_lig = 0.0;  // ligand   intramolecular energy = (3)
@@ -159,13 +159,16 @@ writePDBQT(const int irun, const FourByteLong seed[2],
          crd, charge, abs_charge, type, map, info, 
          ignore_inter, elec, emap, &elec_total, &emap_total, 
          nonbondlist, ptr_ad_energy_tables, 
-	 Nnb, Nnb_array, nb_group_energy, true_ligand_atoms, B_calcIntElec, 
+	 Nnb, Nnb_array, group_energy, true_ligand_atoms, B_calcIntElec, 
          B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
 
     // Set the total intramolecular energy (sum of intramolecular energies of ligand and of protein)
     if (ntor > 0) {
         // Add the intramolecular energy of the receptor, for the (moving, fixed) atom pairs // (2)
-        *Ptr_eintra = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR] + eb.e_intra_moving_fixed_rec;
+        *Ptr_eintra = 
+	  group_energy->intra_moving_moving_lig.total + 
+	   group_energy->intra_moving_moving_rec.total +
+	     eb.e_intra_moving_fixed_rec;
     } else {
         *Ptr_eintra = 0.0;
     }
@@ -194,7 +197,12 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         pr( logFile, "%s: USER    DPF = %s\n", state_type_string, dpfFN );
         pr( logFile, "%s: USER  \n", state_type_string );
         
-        printEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model);
+	// see also main.cc and analysis.cc for similar code:
+        printEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor, emap_total, elec_total, 
+	 B_have_flexible_residues,  // next two terms are meaningful only if have flexible residues...
+	 group_energy->inter_moving_moving.vdW_Hb + group_energy->inter_moving_moving.desolv,
+	 group_energy->inter_moving_moving.elec,
+	 ad4_unbound_model);
 
         // Write part of the "XML" state file
 		if (write_stateFile) {

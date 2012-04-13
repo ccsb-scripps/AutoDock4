@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.h,v 1.13 2012/02/02 02:16:47 mp Exp $
+ $Id: calculateEnergies.h,v 1.14 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -98,7 +98,7 @@ EnergyBreakdown calculateBindingEnergies(
     const EnergyTables *const ptr_ad_energy_tables, // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
     const int            Nnb,                       // input  total number of nonbonds
     int Nnb_array[3],
-    Real nb_group_energy[3],
+    GroupEnergy *group_energy,
     const int true_ligand_atoms,
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds

@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.19 2012/02/02 02:16:47 mp Exp $
+ $Id: calculateEnergies.cc,v 1.20 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -65,7 +65,7 @@ EnergyBreakdown calculateEnergies(
     const EnergyTables *const ptr_ad_energy_tables, // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
     const int            Nnb,                       // input  total number of nonbonds
     int Nnb_array[3],
-    Real nb_group_energy[3],
+    GroupEnergy *group_energy,
     const int true_ligand_atoms,
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
@@ -86,27 +86,28 @@ EnergyBreakdown calculateEnergies(
     // computing trilinear-interpolated energies from atom = 0 to atom < true_ligand_atoms
     // gives the intermolecular energy between the ligand and the protein
     eb.e_inter_moving_fixed = scale_eintermol * trilinterp( 0, true_ligand_atoms, tcoord, charge, abs_charge, type, map, 
-	 info, ignore_inter, elec, emap, p_elec_total, p_emap_total);
+	 info, ignore_inter, elec, emap, p_elec_total, p_emap_total, 
+	 &group_energy->inter_moving_fixed);
 
     if (B_have_flexible_residues) {
-        // computing trilinear-interpolated energies from atom = true_ligand_atoms to atom < true_ligand_atoms
+        // computing trilinear-interpolated energies from atom = true_ligand_atoms to atom < natom
         // gives the intramolecular energy within the protein
         // we can ignore the elec_total and emap_total breakdown here
         eb.e_intra_moving_fixed_rec = trilinterp( true_ligand_atoms, natom, tcoord, charge, abs_charge, type, map, 
-	     info, ignore_inter, elec, emap, NULL, NULL);
+	     info, ignore_inter, elec, emap, NULL, NULL, &group_energy->intra_moving_fixed_rec);
     }
 
     if (ntor > 0) {
-        // computing all the nonbond interaction energies fills nb_group_energy[3] array
+        // computing all the nonbond interaction energies fills group_energy structure
         // with intramolecular energy of ligand, intermolecular energy, and intramolecular energy of receptor
         (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, 
-	Nnb_array, nb_group_energy,
+	Nnb_array, group_energy,
 	B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
 	B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile) ;
         
-        eb.e_intra_moving_moving_lig = nb_group_energy[INTRA_LIGAND];
-        eb.e_inter_moving_moving = nb_group_energy[INTER];
-        eb.e_intra_moving_moving_rec = nb_group_energy[INTRA_RECEPTOR];
+        eb.e_intra_moving_moving_lig = group_energy->intra_moving_moving_lig.total;
+        eb.e_inter_moving_moving = group_energy->inter_moving_moving.total;
+        eb.e_intra_moving_moving_rec = group_energy->intra_moving_moving_rec.total;
     }
 
     // update the totals in the energy breakdown structure
@@ -139,9 +140,9 @@ void initialise_energy_breakdown ( /* not const */ EnergyBreakdown *const eb,
 {
     eb->e_inter_moving_fixed = 0.0;      // (1)  // trilinterp( 0, true_ligand_atoms, ...)
     eb->e_intra_moving_fixed_rec = 0.0;  // (2)  // trilinterp( true_ligand_atoms, natom, ...)
-    eb->e_intra_moving_moving_lig = 0.0; // (3)  // eintcal( 0, nb_array[0], ...)            // nb_group_energy[INTRA_LIGAND]
-    eb->e_inter_moving_moving = 0.0;     // (4)  // eintcal( nb_array[0], nb_array[1], ...)  // nb_group_energy[INTER]
-    eb->e_intra_moving_moving_rec = 0.0; // (5)  // eintcal( nb_array[1], nb_array[2], ...)  // nb_group_energy[INTRA_RECEPTOR]
+    eb->e_intra_moving_moving_lig = 0.0; // (3)  // eintcal( 0, nb_array[0], ...)            // group_energy[INTRA_LIGAND]
+    eb->e_inter_moving_moving = 0.0;     // (4)  // eintcal( nb_array[0], nb_array[1], ...)  // group_energy[INTER]
+    eb->e_intra_moving_moving_rec = 0.0; // (5)  // eintcal( nb_array[1], nb_array[2], ...)  // group_energy[INTRA_RECEPTOR]
 
     eb->e_inter = 0.0;                   // total    intermolecular energy = (1) + (4)
     eb->e_intra = 0.0;                   // total    intramolecular energy = (3)  +  (2) + (5)
@@ -183,7 +184,7 @@ EnergyBreakdown calculateBindingEnergies(
     const EnergyTables *const ptr_ad_energy_tables, // input  pointer to AutoDock intermolecular, dielectric, solvation lookup tables
     const int            Nnb,                       // input  total number of nonbonds
     int Nnb_array[3],
-    Real nb_group_energy[3],
+    GroupEnergy *group_energy,
     const int true_ligand_atoms,
     const Boole          B_calcIntElec,             // input  boolean whether we must calculate internal electrostatics
     const Boole          B_include_1_4_interactions,// input  boolean whether to include 1,4 interactions as non-bonds
@@ -204,26 +205,27 @@ EnergyBreakdown calculateBindingEnergies(
     // computing trilinear-interpolated energies from atom = 0 to atom < true_ligand_atoms
     // gives the intermolecular energy between the ligand and the protein
     eb.e_inter_moving_fixed = trilinterp( 0, true_ligand_atoms, tcoord, charge, abs_charge, type, map, 
-	 info, ignore_inter, elec, emap, p_elec_total, p_emap_total);
+	 info, ignore_inter, elec, emap, p_elec_total, p_emap_total,
+	 &group_energy->inter_moving_fixed);
 
     if (B_have_flexible_residues) {
         // computing trilinear-interpolated energies from atom = true_ligand_atoms to atom < true_ligand_atoms
         // gives the intramolecular energy within the protein
         // we can ignore the elec_total and emap_total breakdown here
         eb.e_intra_moving_fixed_rec = trilinterp( true_ligand_atoms, natom, tcoord, charge, abs_charge, type, map, 
-	     info, ignore_inter, elec, emap, NULL, NULL);
+	     info, ignore_inter, elec, emap, NULL, NULL, &group_energy->intra_moving_fixed_rec);
     }
 
     if (ntor > 0) {
-        // computing all the nonbond interaction energies fills nb_group_energy[3] array
+        // computing all the nonbond interaction energies fills group_energy structure
         // with intramolecular energy of ligand, intermolecular energy, and intramolecular energy of receptor
         (void) eintcal( nonbondlist, ptr_ad_energy_tables, tcoord, Nnb, 
-	Nnb_array, nb_group_energy,
+	Nnb_array, group_energy,
 	B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile) ;
         
-        eb.e_intra_moving_moving_lig = nb_group_energy[INTRA_LIGAND];
-        eb.e_inter_moving_moving = nb_group_energy[INTER];
-        eb.e_intra_moving_moving_rec = nb_group_energy[INTRA_RECEPTOR];
+        eb.e_intra_moving_moving_lig = group_energy->intra_moving_moving_lig.total;
+        eb.e_inter_moving_moving = group_energy->inter_moving_moving.total;
+        eb.e_intra_moving_moving_rec = group_energy->intra_moving_moving_rec.total;
     }
 
     // update the totals in the energy breakdown structure
@@ -277,9 +279,9 @@ void initialise_binding_energy_breakdown( /* not const */ EnergyBreakdown *const
         {
     eb->e_inter_moving_fixed = 0.0;      // (1)  // trilinterp( 0, true_ligand_atoms, ...)
     eb->e_intra_moving_fixed_rec = 0.0;  // (2)  // trilinterp( true_ligand_atoms, natom, ...)
-    eb->e_intra_moving_moving_lig = 0.0; // (3)  // eintcal( 0, Nnb_array[0], ...)             // nb_group_energy[INTRA_LIGAND]
-    eb->e_inter_moving_moving = 0.0;     // (4)  // eintcal( Nnb_array[0], Nnb_array[1], ...)  // nb_group_energy[INTER]
-    eb->e_intra_moving_moving_rec = 0.0; // (5)  // eintcal( Nnb_array[1], Nnb_array[2], ...)  // nb_group_energy[INTRA_RECEPTOR]
+    eb->e_intra_moving_moving_lig = 0.0; // (3)  // eintcal( 0, Nnb_array[0], ...)             // group_energy[INTRA_LIGAND]
+    eb->e_inter_moving_moving = 0.0;     // (4)  // eintcal( Nnb_array[0], Nnb_array[1], ...)  // group_energy[INTER]
+    eb->e_intra_moving_moving_rec = 0.0; // (5)  // eintcal( Nnb_array[1], Nnb_array[2], ...)  // group_energy[INTRA_RECEPTOR]
 
     eb->e_inter = 0.0;                   // total    intermolecular energy = (1) + (4)
     eb->e_intra = 0.0;                   // total    intramolecular energy = (3) + (2) + (5)

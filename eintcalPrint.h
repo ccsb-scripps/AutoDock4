@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcalPrint.h,v 1.17 2012/02/02 02:16:47 mp Exp $
+ $Id: eintcalPrint.h,v 1.18 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -32,7 +32,7 @@ Real  eintcalPrint( const NonbondParam * const nonbondlist,
                      const Real tcoord[MAX_ATOMS][SPACE],
                      const int   Nnb,
 		     int Nnb_array[3],
-		     Real nb_group_energy[3],
+  	             GroupEnergy *group_energy,
                      const Boole B_calcIntElec,
                      const Boole B_include_1_4_interactions,
                      ConstReal  scale_1_4,

@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.50 2012/04/05 01:39:31 mp Exp $
+ $Id: analysis.cc,v 1.51 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -57,7 +57,7 @@ extern char  *programname;
 
 void analysis( const int   Nnb, 
 	       int Nnb_array[3],
-	       Real nb_group_energy[3],
+	       GroupEnergy *group_energy,
 	       const int true_ligand_atoms,
                const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
                const Real  charge[MAX_ATOMS], 
@@ -268,14 +268,24 @@ void analysis( const int   Nnb,
             eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
                  crd, charge, abs_charge, type, map, info,
                  ignore_inter, elec, emap, &elec_total, &emap_total,
-                 nonbondlist, ptr_ad_energy_tables, Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+                 nonbondlist, ptr_ad_energy_tables, Nnb, Nnb_array, group_energy, true_ligand_atoms,
 		 B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
      
 	    if(outlev >= LOGMIN) {
      	    AxisAngle aa = QuatToAxisAngle(hist[c].Q);
             print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
 
-            printEnergies( &eb, "USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model);
+	    // see also writePDBQT for similar code
+	    // we use here the newer group_energy in place of the legacy "emap_total" and "elec_total"
+	    // to handle the flex res cases cleanly MP 2012
+            printEnergies( &eb, "USER    ", ligand_is_inhibitor, 
+	     // emap_total, elec_total, 
+	      group_energy->inter_moving_fixed.vdW_Hb + group_energy->inter_moving_fixed.desolv,
+	      group_energy->inter_moving_fixed.elec,
+	      B_have_flexible_residues,  // next two terms are meaningful only if have flexible residues...
+	      group_energy->inter_moving_moving.vdW_Hb + group_energy->inter_moving_moving.desolv,
+	      group_energy->inter_moving_moving.elec,
+	      ad4_unbound_model);
      
             pr( logFile, "USER  \n");
             pr( logFile, "USER    DPF = %s\n", dock_param_fn);
@@ -329,7 +339,7 @@ void analysis( const int   Nnb,
 	    if(outlev >= LOGNBINTE ){
             // Print detailed breakdown of internal energies of all non-bonds
             (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, 
-	    Nnb, Nnb_array, nb_group_energy, 
+	    Nnb, Nnb_array, group_energy, 
 	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues,
 	    outlev, logFile);
 	    }

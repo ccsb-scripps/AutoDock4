@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.167 2012/04/05 05:00:54 mp Exp $
+ $Id: main.cc,v 1.168 2012/04/13 06:22:10 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -114,7 +114,7 @@ extern Linear_FE_Model AD4;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.167 2012/04/05 05:00:54 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.168 2012/04/13 06:22:10 mp Exp $"};
 
 
 
@@ -413,7 +413,7 @@ int natom = 0;
 
 // For energy breakdown of non-bonded interactions:
 int     Nnb_array[3] = {0};    // number of nonbonds in the ligand, intermolecular and receptor groups
-Real nb_group_energy[3]={0,0,0}; ///< total energy of each nonbond group (intra-ligand, inter, and intra-receptor)
+static GroupEnergy group_energy; // energy components of each of the five groups (intra-ligand, inter, and intra-receptor...)
 Boole B_havenbp = FALSE;
 
 int nconf = 0;
@@ -743,7 +743,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.167 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.168 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1450,7 +1450,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         }
         for (j=0; j<3; j++) {
             Nnb_array[j] = 0;
-            nb_group_energy[j] = 0.0;
         }
         initialiseState( &sInit );
         initialiseState( &(ligand.S) );
@@ -1636,7 +1635,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
                             info, map, elec, emap, nonbondlist, ad_energy_tables,
-                            Nnb, Nnb_array, nb_group_energy,
+                            Nnb, Nnb_array, &group_energy,
 			    B_calcIntElec, B_isGaussTorCon, B_isTorConstrained, B_ShowTorE,
                             US_TorE, US_torProfile,
                             vt, tlist,
@@ -1730,7 +1729,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                               vt, tlist, crdpdb, nonbondlist,
                               ad_energy_tables,
                               type, 
-			      Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+			      Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 			      B_calcIntElec,
                               map,
                               ignore_inter,
@@ -2962,7 +2961,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	    **  using simulated annealing
             ** ___________________________________________________________________
             */
-            simanneal( &nconf, Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+            simanneal( &nconf, Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 	    WallEnergy, atomstuff, charge, abs_charge, qsp_abs_charge, B_calcIntElec,
                         crd, crdpdb, dock_param_fn,
                         ad_energy_tables,
@@ -3156,7 +3155,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
                             info, map, elec, emap, nonbondlist, ad_energy_tables, Nnb,
-                            Nnb_array, nb_group_energy,
+                            Nnb_array, &group_energy,
 			    B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
                             ignore_inter,
@@ -3232,7 +3231,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                             vt, tlist, crdpdb, nonbondlist,
                             ad_energy_tables,
                             type, 
-			    Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+			    Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 			    B_calcIntElec,
                             map,
                             ignore_inter,
@@ -3295,7 +3294,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                            info, map, elec, emap,
                            nonbondlist,
                            ad_energy_tables,
-                           Nnb, Nnb_array, nb_group_energy,
+                           Nnb, Nnb_array, &group_energy,
 			   B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
                            B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
                            ignore_inter,
@@ -3343,7 +3342,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                            torsFreeEnergy,
                            vt, tlist, crdpdb, nonbondlist,
                            ad_energy_tables,
-                           type, Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+                           type, Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 			   B_calcIntElec,
                            map,
                            ignore_inter,
@@ -3733,7 +3732,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
 	   evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
                         info, map, elec, emap, nonbondlist, ad_energy_tables, Nnb,
-			Nnb_array, nb_group_energy,
+			Nnb_array, &group_energy,
                         B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                         B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
                         ignore_inter, B_include_1_4_interactions, scale_1_4, scale_eintermol,
@@ -3787,7 +3786,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                        vt, tlist, crdpdb, nonbondlist,
                        ad_energy_tables,
                        type, 
-		       Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+		       Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 		       B_calcIntElec, map,
                        ignore_inter, B_include_1_4_interactions, 
                        scale_1_4, parameterArray, unbound_internal_FE,
@@ -3822,7 +3821,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ** Perform Cluster analysis on results of docking,
         ** _____________________________________________________________________
         */
-            analysis( Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+            analysis( Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 	              atomstuff, charge, abs_charge, qsp_abs_charge, B_calcIntElec, clus_rms_tol,
                       crdpdb, ad_energy_tables, map, econf, nruns,
                       natom, nonbondlist, nconf, ntor, sHist, FN_ligand,
@@ -3874,7 +3873,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         (void) fprintf( logFile, "maxTests= %d\n", maxTests );
         (void) fprintf( logFile, "NumLocalTests= %d\n\n", NumLocalTests );
 	// M Pique TODO this probably should not use B_unique_pair_flag 2010
-        (void) investigate( Nnb, Nnb_array, nb_group_energy,
+        (void) investigate( Nnb, Nnb_array, &group_energy,
 	                    charge, abs_charge, qsp_abs_charge, B_calcIntElec,
                             crd, crdpdb, ad_energy_tables,
                             maxTests,
@@ -4039,7 +4038,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // to drive the molecule into an extended conformation
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
                             info, map, elec, emap, nonbondlist, unbound_energy_tables, Nnb,
-			    Nnb_array, nb_group_energy,
+			    Nnb_array, &group_energy,
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
                             ignore_inter,
@@ -4148,7 +4147,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             // Use this value to set unbound_internal_FE
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
                             info, map, elec, emap, nonbondlist, ad_energy_tables, Nnb,
-			    Nnb_array, nb_group_energy,
+			    Nnb_array, &group_energy,
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
                             ignore_inter,
@@ -4168,12 +4167,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	     true_ligand_atoms, outlev, logFile);
             //
             // Calculate the unbound internal energy using the standard AutoDock energy function
-            (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, Nnb_array, nb_group_energy,
+            (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, Nnb_array, &group_energy,
 	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge,
 	    B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile);
             //
-            // eintcal() and eintcalPrint() set the values of nb_group_energy[]
-            unbound_ext_internal_FE = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR];
+            // eintcal() and eintcalPrint() set the values of group_energy[]
+            unbound_ext_internal_FE = 
+	      group_energy.intra_moving_moving_lig.total + 
+	        group_energy.intra_moving_moving_rec.total;
             //
             pr(logFile, "\n\nThe internal energy of the unbound extended state was computed to be %+.3lf kcal/mol\n\n", unbound_ext_internal_FE);
             // end of Step 4 // }
@@ -4246,12 +4247,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 		 true_ligand_atoms, outlev, logFile);
                 //
                 // Calculate the unbound internal energy using the standard AutoDock energy function
-                (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, Nnb_array, nb_group_energy,
+                (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, Nnb_array, &group_energy,
 		B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
 		B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile);
                 //
-                // eintcal() and eintcalPrint() set the values of nb_group_energy[]
-                unbound_ad_internal_FE = nb_group_energy[INTRA_LIGAND] + nb_group_energy[INTRA_RECEPTOR];
+                // eintcal() and eintcalPrint() set the values of group_energy[]
+                unbound_ad_internal_FE = 
+	          group_energy.intra_moving_moving_lig.total + 
+	            group_energy.intra_moving_moving_rec.total;
                 //
                 pr(logFile, "\n\nThe internal energy of the unbound AutoDock state was computed to be %+.3lf kcal/mol\n\n", unbound_ad_internal_FE);
                 // end of Step 5.2 // }
@@ -4297,7 +4300,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                         vt, tlist, crdpdb, nonbondlist,
                         ad_energy_tables,
                         type, 
-			Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+			Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 			B_calcIntElec,
                         map,
                         ignore_inter,
@@ -4395,17 +4398,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         // Calculate the internal energy
         if (ntor > 0) {
-            (void) eintcalPrint(nonbondlist, ad_energy_tables, crdorig, Nnb, Nnb_array, nb_group_energy,
+            (void) eintcalPrint(nonbondlist, ad_energy_tables, crdorig, Nnb, Nnb_array, &group_energy,
 	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
 	    B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile);
         }
 
         pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
-        // calculate the energy breakdown for the input coordinates, "crdpdb"
+        // calculate the energy breakdown for the input coordinates, "crdorig"
         eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
                                 crdorig, charge, abs_charge, type, map, info,
                                 ignore_inter, elec, emap, &elec_total, &emap_total,
-                                nonbondlist, ad_energy_tables, Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+                                nonbondlist, ad_energy_tables, Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 				B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
                                 B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
 
@@ -4429,11 +4432,24 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         pr(logFile, "      vdW+Hb+Elec  vdW+Hbond  Electrosta  Partial\n");
         pr(logFile, "        Energy      Energy    tic Energy  Charge\n\n");
 
-        pr(logFile, "Total Intermolecular Interaction Energy   = %+.3lf kcal/mol\n", (double)(eb.e_inter + eb.e_intra) );
-        pr(logFile, "Total Intermolecular vdW + Hbond Energy   = %+.3lf kcal/mol\n", (double)emap_total);
-        pr(logFile, "Total Intermolecular Electrostatic Energy = %+.3lf kcal/mol\n\n\n", (double)elec_total);
+        pr(logFile, "Total Intermolecular Interaction Energy          = %+7.3lf kcal/mol\n", (double)eb.e_inter);
+        pr(logFile, 
+        "Total Intermolecular vdW + Hbond + desolv Energy = %+7.3lf kcal/mol\n",
+	  //"Total Intermolecular vdW + Hbond Energy   = %+.3lf kcal/mol\n",
+	   (double) emap_total + 
+	    group_energy.inter_moving_moving.vdW_Hb + // lig x flex res
+	      group_energy.inter_moving_moving.desolv); // lig x flex res
+        pr(logFile, 
+	 "Total Intermolecular Electrostatic Energy        = %+7.3lf kcal/mol\n\n\n", 
+	   (double) elec_total +
+	    group_energy.inter_moving_moving.elec);
 
-        printEnergies( &eb, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, B_have_flexible_residues, ad4_unbound_model );
+	// see also writePDBQT.cc and analysis.cc for similar code:
+        printEnergies( &eb, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, 
+	 B_have_flexible_residues,  // next two terms are meaningful only if have flexible residues...
+	 group_energy.inter_moving_moving.vdW_Hb + group_energy.inter_moving_moving.desolv,
+	 group_energy.inter_moving_moving.elec,
+	 ad4_unbound_model);
         pr(logFile, "\n");
 
         // restore the saved unbound internal FE

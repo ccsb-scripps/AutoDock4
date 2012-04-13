@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.h,v 1.24 2012/04/05 01:39:32 mp Exp $
+ $Id: investigate.h,v 1.25 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -43,7 +43,7 @@ extern FILE *logFile;
 extern char *programname;
 
 
-void investigate( const int   Nnb, int Nnb_array[3], Real nb_group_energy[3],
+void investigate( const int   Nnb, int Nnb_array[3], GroupEnergy *group_energy,
                     const Real charge[MAX_ATOMS],
                     const Real abs_charge[MAX_ATOMS],
                     const Real qsp_abs_charge[MAX_ATOMS],

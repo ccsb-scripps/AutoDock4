@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.h,v 1.14 2011/03/09 01:35:05 mp Exp $
+ $Id: trilinterp.h,v 1.15 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -36,6 +36,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define NULL_EVDW_TOTAL ((Real *)NULL)
 #define NULL_ELEC_TOTAL ((Real *)NULL)
 #define NULL_IGNORE_INTERMOL ((int *)NULL)
+#define NULL_ENERGY_BREAKDOWN ((EnergyComponent *)NULL)  /* also used in eintcal calls */
 
 #include "constants.h"
 #include "structs.h"
@@ -52,7 +53,8 @@ Real  trilinterp( CONST_INT first_atom,
  /* not const */ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
  /* not const */ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
  /* not const */ Real *p_elec_total, // set if not NULL - total electrostatic energy
- /* not const */ Real *p_emap_total // set if not NULL - total intermolecular energy
+ /* not const */ Real *p_emap_total, // set if not NULL - total intermolecular energy
+ /* not const */ EnergyComponent *energy_component // set if not NULL - breakdown by elec/vdW_Hb/desolv
  );
 
 #endif

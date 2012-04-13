@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.h,v 1.13 2010/10/01 22:51:39 mp Exp $
+ $Id: printEnergies.h,v 1.14 2012/04/13 06:22:10 mp Exp $
 
  AutoDock 
 
@@ -37,6 +37,8 @@ void printEnergies( const EnergyBreakdown *const eb,
                     ConstReal emap_total,
                     ConstReal elec_total,
                     const Boole B_have_flexible_residues,
+                    ConstReal emap_flexres_total,
+                    ConstReal elec_flexres_total,
                     const Unbound_Model ad4_unbound_model);
 
 void printStateEnergies( const EnergyBreakdown *eb,

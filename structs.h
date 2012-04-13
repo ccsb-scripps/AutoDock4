@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.32 2012/04/05 05:00:54 mp Exp $
+ $Id: structs.h,v 1.33 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -333,6 +333,23 @@ typedef struct energy_breakdown
     Real deltaG;                    // estimated change in free energy upon binding
 
 } EnergyBreakdown;
+
+/* component-level energy breakdowns  - added April 2012 */
+typedef struct energy_component
+{
+   Real total;
+   Real elec;
+   Real vdW_Hb;
+   Real desolv;
+   } EnergyComponent;
+/* component-level energy breakdowns for each of the five atomic interaction groups in AD4 */
+typedef struct group_energy {
+   EnergyComponent inter_moving_fixed;      // true lig  .   rec maps  : set in trilinterp
+   EnergyComponent intra_moving_fixed_rec;  // flex res  .   rec maps  : set in trilinterp
+   EnergyComponent intra_moving_moving_lig; // true lig  x   true lig  : set in eintcal
+   EnergyComponent inter_moving_moving;     // true lig  x   flex res  : set in eintcal
+   EnergyComponent intra_moving_moving_rec; // flex res  x   flex res  : set in eintcal
+   } GroupEnergy;
 
 #endif
 /* EOF */

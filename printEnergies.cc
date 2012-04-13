@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.21 2010/10/01 22:51:39 mp Exp $
+ $Id: printEnergies.cc,v 1.22 2012/04/13 06:22:10 mp Exp $
 
  AutoDock 
 
@@ -38,7 +38,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 extern FILE *stateFile;
 extern int write_stateFile;
-extern Real nb_group_energy[3];
 
 static inline void  print1000(FILE *file, ConstReal x) {
 	pr(file,  ((fabs((x)) >= 0.0) && ((fabs(x)) <= 1000.)) ? "%+7.2f" : "%+11.2e" , (x));
@@ -85,6 +84,8 @@ void printEnergies( const EnergyBreakdown *const eb,
                     ConstReal emap_total,
                     ConstReal elec_total,
                     const Boole B_have_flexible_residues, 
+		    ConstReal emap_flexres_total,
+		    ConstReal elec_flexres_total,
                     const Unbound_Model ad4_unbound_model
                    )
 
@@ -137,42 +138,51 @@ void printEnergies( const EnergyBreakdown *const eb,
         pr( logFile, "%s\n", prefixString);
     }
 
-    pr( logFile, "%s(1) Final Intermolecular Energy     = ", prefixString); print1000(logFile, eb->e_inter); pr( logFile, " kcal/mol\n");
-    pr( logFile, "%s    vdW + Hbond + desolv Energy     = ", prefixString); print1000(logFile, emap_total); pr( logFile, " kcal/mol\n");
-    pr( logFile, "%s    Electrostatic Energy            = ", prefixString); print1000(logFile, elec_total); pr( logFile, " kcal/mol\n");
-    if (B_have_flexible_residues) {
-        pr( logFile, "%s    Moving Ligand-Fixed Receptor    = ", prefixString); print1000(logFile, eb->e_inter_moving_fixed ); pr( logFile, " kcal/mol\n");
-        pr( logFile, "%s    Moving Ligand-Moving Receptor   = ", prefixString); print1000(logFile, eb->e_inter_moving_moving ); pr( logFile, " kcal/mol\n");
-    }
+// convenience function:
+#define item(label, term) pr(logFile, "%s%s", prefixString, label),\
+ print1000(logFile, term),\
+ pr(logFile, " kcal/mol\n")
 
-    pr( logFile, "%s(2) Final Total Internal Energy     = ", prefixString); print1000(logFile, eb->e_intra); pr( logFile, " kcal/mol\n");
-    if (B_have_flexible_residues) {
-        pr( logFile, "%s    Internal Energy Ligand          = ", prefixString); print1000(logFile, eb->e_intra_lig ); pr( logFile, " kcal/mol\n");
-        //pr( logFile, "%s    Internal Energy Receptor        = ", prefixString); print1000(logFile, eb->e_intra_rec ); pr( logFile, " kcal/mol\n");
-        pr( logFile, "%s    Internal Moving-Fixed Receptor  = ", prefixString); print1000(logFile, eb->e_intra_moving_fixed_rec ); pr( logFile, " kcal/mol\n");
-        pr( logFile, "%s    Internal Moving-Moving Receptor = ", prefixString); print1000(logFile, eb->e_intra_moving_moving_rec ); pr( logFile, " kcal/mol\n");
-    }
+item("(1) Final Intermolecular Energy     = ", eb->e_inter);
 
-    pr( logFile, "%s(3) Torsional Free Energy           = ", prefixString); print1000(logFile, eb->e_torsFreeEnergy); pr( logFile, " kcal/mol\n");
+if(B_have_flexible_residues) {
+item("    Moving Ligand-Fixed Receptor    = ", eb->e_inter_moving_fixed);
+item("       vdW + Hbond + desolv Energy  = ", emap_total);
+item("       Electrostatic Energy         = ", elec_total);
+item("    Moving Ligand-Moving Receptor   = ", eb->e_inter_moving_moving);
+item("       vdW + Hbond + desolv Energy  = ", emap_flexres_total);
+item("       Electrostatic Energy         = ", elec_flexres_total);
+} else {
+item("    vdW + Hbond + desolv Energy     = ", emap_total);
+item("    Electrostatic Energy            = ", elec_total);
+}
+
+item("(2) Final Total Internal Energy     = ", eb->e_intra);
+if(B_have_flexible_residues) {
+item("    Internal Energy Ligand          = ", eb->e_intra_lig);
+item("    Internal Moving-Fixed Receptor  = ", eb->e_intra_moving_fixed_rec);
+item("    Internal Moving-Moving Receptor = ", eb->e_intra_moving_moving_rec);
+}
+item("(3) Torsional Free Energy           = ", eb->e_torsFreeEnergy);
 
     switch(ad4_unbound_model){
         // in AutoDock 4.2, the default unbound model is "unbound is same as bound"
         case Unbound_Default:
         case Unbound_Same_As_Bound:
         default:
-            pr( logFile, "%s(4) Unbound System's Energy  [=(2)] = ", prefixString); 
+            item("(4) Unbound System's Energy  [=(2)] = ", eb->e_unbound_internal_FE); 
             break;
         case User:
         case Extended:
         case Compact:
-            pr( logFile, "%s(4) Unbound System's Energy         = ", prefixString); 
+            item("(4) Unbound System's Energy         = ", eb->e_unbound_internal_FE);
             break;
     }
-    print1000(logFile, eb->e_unbound_internal_FE); pr( logFile, " kcal/mol\n");
 
     pr( logFile, "%s\n", prefixString);
     pr( logFile, "%s\n", prefixString);
 }
+#undef item
 
 void printStateEnergies( const EnergyBreakdown *const eb, const char  *const prefixString, const int ligand_is_inhibitor )
 {

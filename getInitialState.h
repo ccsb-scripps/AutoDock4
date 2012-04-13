@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.h,v 1.21 2012/04/05 01:39:32 mp Exp $
+ $Id: getInitialState.h,v 1.22 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -65,7 +65,7 @@ void getInitialState(
             const int   natom,
             const int   Nnb,
 	    int   Nnb_array[3],
-	    Real   nb_group_energy[3],
+	    GroupEnergy   *group_energy,
 	    const int   true_ligand_atoms,
             const NonbondParam *const nonbondlist,
             const int   ntor,

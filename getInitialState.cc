@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.33 2012/04/05 01:39:32 mp Exp $
+ $Id: getInitialState.cc,v 1.34 2012/04/13 06:22:10 mp Exp $
 
  AutoDock  
 
@@ -72,7 +72,7 @@ void getInitialState(
             const int   natom,
             const int   Nnb,
 	    int Nnb_array[3],
-	    Real nb_group_energy[3],
+	    GroupEnergy *group_energy,
 	    const int true_ligand_atoms,
             const NonbondParam *const nonbondlist,
             const int   ntor,
@@ -179,9 +179,9 @@ void getInitialState(
             
             e0inter = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
                         info, ignore_inter, elec, emap,
-                        NULL_ELEC_TOTAL, NULL_EVDW_TOTAL);
+                        NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL_ENERGY_BREAKDOWN);
             e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd,
-			  Nnb, Nnb_array, nb_group_energy,
+			  Nnb, Nnb_array, group_energy,
                           B_calcIntElec, B_include_1_4_interactions,
                           scale_1_4, qsp_abs_charge,
                           B_use_non_bond_cutoff, B_have_flexible_residues,
@@ -232,14 +232,14 @@ void getInitialState(
          crd, charge, abs_charge, type, map, info,
          ignore_inter, elec, emap, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
          nonbondlist, ptr_ad_energy_tables,
-	 Nnb, Nnb_array, nb_group_energy, true_ligand_atoms,
+	 Nnb, Nnb_array, group_energy, true_ligand_atoms,
          B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model,
 	 outlev, logFile);
 
     copyState( sMinm, *sInit );
     copyState( sLast, *sInit );
 
-    prInitialState( &eb, natom, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor, B_have_flexible_residues, ad4_unbound_model );
+    prInitialState( &eb, natom, true_ligand_atoms, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor, B_have_flexible_residues, ad4_unbound_model );
 
     initEnd = times( &tms_initEnd );
     pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);
