@@ -107,9 +107,9 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 				v[i][j] = random_range(vmin[j], vmax[j]);				
 			}			
 		}
-		// MP: note that with adaptive velocity, the HUGE will prevent the
+		// MP: note that with adaptive velocity, the BIG will prevent the
 		//  first velocity update from occurring
-		for(i = 0; i < pop_size; i++) prevE[i] = curE[i] = HUGE; // initially unfavorable
+		for(i = 0; i < pop_size; i++) prevE[i] = curE[i] = BIG; // initially unfavorable
 
 		if(outlev>LOGRUNV) {
 		pr(logFile, "PSO Initial velocity V:\n");
@@ -320,7 +320,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	// This 'best' index will be used by a subsequent call to LocalSearch,
 	//   see below. M Pique June 2011
 	best = 0;
-	Pop_best_value = HUGE;
+	Pop_best_value = BIG;
 	for(i = 0; i < pop_size; i++) {		
 		double piCurE = Pop[i].value(Normal_Eval);
 		if(piCurE < Pop_best_value) {
