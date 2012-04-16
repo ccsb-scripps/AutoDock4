@@ -1,6 +1,6 @@
 /*
 
- $Id: output_state.cc,v 1.12 2011/06/03 05:31:36 mp Exp $
+ $Id: output_state.cc,v 1.13 2012/04/16 23:23:00 mp Exp $
 
  AutoDock 
 
@@ -36,11 +36,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "structs.h"
 #include "output_state.h"
 
-/* LOCK_SH 1       shared lock */
-/* LOCK_EX 2       exclusive lock */
-/* LOCK_NB 4       don't block when locking */
-/* LOCK_UN 8       unlock */
-#define PERMS 0666        /* hexadecimal permissions for watch-file */
+/* note: removed the not-so-portable file locking in favor of this read-noread method.
+ *  I do not believe this facility is used widely.  M Pique, spring 2012
+ */
+#define PERM_NOREAD 0        /* watch-file when not readable by monitoring process */
+#define PERM_READ  S_IRUSR|S_IRGRP|S_IROTH        /* watch-file when readable by monitoring process */
 
 /*----------------------------------------------------------------------------*/
 void output_state( FILE *const fp,
@@ -57,16 +57,12 @@ void output_state( FILE *const fp,
                    const Real crd[MAX_ATOMS][SPACE])
 /*----------------------------------------------------------------------------*/
 {
+ // Writes state to fp (logFile) and optionally coords to "watch file" as pseudo-PDB.
+ // This appears to be used only by simanneal.  M Pique spring 2012
     int i;
-	/*int lockf_status;*/
 	
-//#ifndef __ppc__
-#if defined( __ppc__ ) || defined( __CYGWIN__ )
-    // F_LOCK is not supported
-#else
     int FD_watch;
     FILE *FP_watch;
-#endif
 
     // note: state is printed as quaternion not axis-angle
     fprintf(fp, "state %d %c %f %f  %lf %lf %lf  %lf %lf %lf %lf\n",
@@ -77,29 +73,24 @@ void output_state( FILE *const fp,
         fprintf(fp, "%f\n", RadiansToDegrees( S.tor[i]) );
     }
 
-/* >>>> NOW USES lockf !!!! <<<< */
 
-// #ifndef __ppc__
-#if defined( __ppc__ ) || defined( __CYGWIN__ )
-	// F_LOCK is not supported
-#else
     if (B_watch) {
-        if ((FD_watch = creat( FN_watch, PERMS )) != -1) {;
+        if ((FD_watch = creat( FN_watch, PERM_NOREAD )) != -1) {;
             /* creates new file, or re-write old one */
 
             if ((FP_watch = fdopen( FD_watch, "w")) != NULL ) {
-                /*lockf_status = lockf( FD_watch, F_LOCK, 0 ); */
-                (void) lockf( FD_watch, F_LOCK, 0 ); 
+		fchmod( FD_watch, PERM_NOREAD);
 
                 for (i = 0;  i < natom;  i++) {
 		    fprintf( FP_watch, "%30s%8.3f%8.3f%8.3f\n",
 		    atomstuff[i], crd[i][X], crd[i][Y], crd[i][Z]);
                 }
-                fclose( FP_watch ); /*lockf_status=lockf(FD_watch,F_ULOCK,0);*/
+                fflush( FP_watch );
+		fchmod( FD_watch, PERM_READ);
+                fclose( FP_watch );
             }
         }
     }
-#endif
 
     return;
 }
