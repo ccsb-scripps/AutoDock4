@@ -1,6 +1,6 @@
 /*
 
- $Id: output_state.cc,v 1.13 2012/04/16 23:23:00 mp Exp $
+ $Id: output_state.cc,v 1.14 2012/04/17 23:08:42 mp Exp $
 
  AutoDock 
 
@@ -39,8 +39,13 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /* note: removed the not-so-portable file locking in favor of this read-noread method.
  *  I do not believe this facility is used widely.  M Pique, spring 2012
  */
-#define PERM_NOREAD 0        /* watch-file when not readable by monitoring process */
-#define PERM_READ  S_IRUSR|S_IRGRP|S_IROTH        /* watch-file when readable by monitoring process */
+// WIN32 MinGW seems to lack fchmod, S_IRGRP, and S_IROTH
+#ifdef HAVE_FCHMOD
+#define PERM_BUSY 0        /* watch-file when not to be readable by monitoring process */
+#define PERM_DONE  S_IRUSR|S_IRGRP|S_IROTH        /* watch-file when readable by monitoring process */
+#else
+#define PERM_BUSY 0444    /* dont even try to fiddle with the permissions */
+#endif
 
 /*----------------------------------------------------------------------------*/
 void output_state( FILE *const fp,
@@ -75,18 +80,22 @@ void output_state( FILE *const fp,
 
 
     if (B_watch) {
-        if ((FD_watch = creat( FN_watch, PERM_NOREAD )) != -1) {;
+        if ((FD_watch = creat( FN_watch, PERM_BUSY )) != -1) {;
             /* creates new file, or re-write old one */
 
             if ((FP_watch = fdopen( FD_watch, "w")) != NULL ) {
-		fchmod( FD_watch, PERM_NOREAD);
+#ifdef HAVE_FCHMOD
+		fchmod( FD_watch, PERM_BUSY);
+#endif
 
                 for (i = 0;  i < natom;  i++) {
 		    fprintf( FP_watch, "%30s%8.3f%8.3f%8.3f\n",
 		    atomstuff[i], crd[i][X], crd[i][Y], crd[i][Z]);
                 }
                 fflush( FP_watch );
-		fchmod( FD_watch, PERM_READ);
+#ifdef HAVE_FCHMOD
+		fchmod( FD_watch, PERM_DONE);
+#endif
                 fclose( FP_watch );
             }
         }
