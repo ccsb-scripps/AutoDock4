@@ -1,6 +1,6 @@
 /*
 
- $Id: timesyshms.cc,v 1.10 2010/10/01 22:51:40 mp Exp $
+ $Id: timesyshms.cc,v 1.11 2012/04/17 04:06:10 mp Exp $
 
  AutoDock 
 
@@ -31,12 +31,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include <sys/types.h>
 
-#ifndef _WIN32
 #include <sys/times.h>
 #include <unistd.h>
-#else
-#include "times.h"
-#endif
+
 #include "timesyshms.h"
 
 #include <time.h>

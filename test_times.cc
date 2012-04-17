@@ -1,6 +1,6 @@
 /*
 
- $Id: test_times.cc,v 1.8 2012/04/17 01:19:09 mp Exp $
+ $Id: test_times.cc,v 1.9 2012/04/17 04:06:10 mp Exp $
 
  AutoDock 
 
@@ -36,9 +36,26 @@ typedef float Real;
 #include <time.h>      // time_t time(time_t *tloc);
 #include <sys/times.h>
 #include <unistd.h> // sysconf
-#include "timesyshms.h"
 
-//#define Clock clock_t
+// next includes autocomm.h which currently #define Clock clock_t
+// clock_t is generally a long
+//#include "timesyshms.h"
+
+//#include <sys/types.h>
+//#include <sys/times.h>
+//#include <time.h>
+//#include "autocomm.h"
+//#include "printhms.h"
+
+#define Clock clock_t
+
+// POSIX migration:
+#include <sys/resource.h>
+
+void  timesyshms( const Clock&  duration,
+                  const struct tms *const start,
+                  const struct tms *const end );
+
 
 Real idct;
 

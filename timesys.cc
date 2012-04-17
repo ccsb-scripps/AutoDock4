@@ -1,6 +1,6 @@
 /*
 
- $Id: timesys.cc,v 1.9 2010/10/01 22:51:40 mp Exp $
+ $Id: timesys.cc,v 1.10 2012/04/17 04:06:10 mp Exp $
 
  AutoDock 
 
@@ -24,12 +24,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  */
 
-#ifndef _WIN32
 #   include <sys/times.h>
 #   include <unistd.h>
-#else
-#   include "times.h"
-#endif
 
 #ifdef HAVE_CONFIG_H
 #   include <config.h>

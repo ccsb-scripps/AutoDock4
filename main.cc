@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.168 2012/04/13 06:22:10 mp Exp $
+ $Id: main.cc,v 1.169 2012/04/17 04:06:10 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -114,7 +114,7 @@ extern Linear_FE_Model AD4;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.168 2012/04/13 06:22:10 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.169 2012/04/17 04:06:10 mp Exp $"};
 
 
 
@@ -743,7 +743,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.168 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.169 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -759,8 +759,10 @@ if(outlev>=LOGBASIC) {
 }
 
 (void) strcpy(hostnm, "");
+#ifdef HAVE_GETHOSTNAME
 gethostname( hostnm, sizeof hostnm );
-if(hostnm[0]=='\0') strcpy(hostnm, "unknown host");
+#endif
+if(hostnm[0]=='\0') strcpy(hostnm, "unknown_host");
 else if (outlev>=LOGBASIC ) {
     pr( logFile, "                   using:\t\t\t\"%s\"\n", hostnm );
 }
@@ -1069,7 +1071,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     pr(logFile,"Random number generator was seeded with the current time, value = %ld\n",seed[i]);
                 } else if (streq(param[i], "pid")) {
                     timeSeedIsSet[i] = 'F';
+#ifdef HAVE_GETPID
                     seed[i] = getpid();
+#elif HAVE_GETPROCESSID
+                    seed[i] = GetProcessId(); // Windows WIN32
+#else
+		    stop("cannot determine process id for random number seed");
+#endif
                     seed_random(seed[i]);
                     pr(logFile,"Random number generator was seeded with the process ID, value   = %ld\n",seed[i]);
                 } else {

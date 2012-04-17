@@ -1,6 +1,6 @@
 /*
 
- $Id: autocomm.h,v 1.22 2011/07/15 04:28:51 mp Exp $
+ $Id: autocomm.h,v 1.23 2012/04/17 04:06:10 mp Exp $
 
  AutoDock  
 
@@ -52,9 +52,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 ** 02/28/95 GMM     This header was added.                                    **
 *******************************************************************************/
 
-#ifndef COMMON_STUFF
-#define COMMON_STUFF
-
 /*
 ** Constants,
 */
@@ -86,15 +83,8 @@ const /* not unsigned */ int LINE_LEN=140;    /* Line length in characters      
 const /* not unsigned */ int LINE_LEN=256;    /* Line length in characters                      */
 #endif 
 
-#if defined( USE_XCODE )
-/* The stacksize limit within Xcode forces us to use smaller grids */
-const /* not unsigned */ int MAX_GRID_PTS=61;   /* Maximum number of grid points in 1 dimension */
-#elif defined( __CYGWIN__ ) 
-				/* MAX_GRID_PTS 128 causes a SIGSEGV on Cygwin */
-const /* not unsigned */ int MAX_GRID_PTS=64;   /* Maximum number of grid points in 1 dimension */
-#else
-const /* not unsigned */ int MAX_GRID_PTS=512;	/* Maximum number of grid points in 1 dimension */
-#endif
+// Note: MAX_GRID_PTS is a sanity check, and could be enlarged at will   M Pique 2012
+const /* not unsigned */ int MAX_GRID_PTS=1025;	/* Maximum number of grid points in 1 dimension */
 
 const Real EINTCLAMP=100000.; /* Clamp pairwise internal energies (kcal/mol )  */
 
@@ -106,24 +96,6 @@ const Real EINTCLAMP=100000.; /* Clamp pairwise internal energies (kcal/mol )  *
                             /* last two are for electrostatics and desolvation */
 
 #define VECLENMAX    16     /* For AVS fld files...                           */
-
-// Legacy definitions:
-const char COVALENTTYPE='Z';
-const char COVALENTTYPE2='Y';
-
-enum legacy_definitions {
-   CARBON=0,
-   NITROGEN=1,
-   OXYGEN=2,
-   SULPHUR=3,
-   HYDROGEN=4,
-   UNKNOWN=5,
-   METAL=6,
-   COVALENT=7,
-   COVALENT2=8
-};
-// end Legacy definitions
-
 
 #define UnderLine "________________________________________________________________________________\n\n"
 
@@ -165,31 +137,15 @@ typedef struct AtomDesc {
 ** Arch. times()				time()
 ** ----- ----------------------------------	--------------------------
 ** Sun	 clock_t times(struct tms *buffer);	time_t time(time_t *tloc);
-** SGI	 clock_t times(struct tms *buffer);	time_t time(time_t *tloc);
-** HP	 clock_t times(struct tms *buffer);	time_t time(time_t *tloc);
-** Alpha time_t  times(struct tms *buffer);	time_t time(time_t *tloc);
-** ----- ----------------------------------	--------------------------
-**	 Clock					time_t
 **
-** Arch	 srand48()												localtime()
 ** ----- -------------------------------									-----------------------------------------------
 ** Sun	 void srand48(long seedval);										struct tm *localtime(const time_t *clock);
-** SGI	 void srand48 (long seedval);										struct tm *localtime(const time_t *clock);
-** HP	 void srand48(long int seedval);									struct tm *localtime(const time_t *timer);
-** Alpha void srand48 (long seed_val);										struct tm *localtime(const time_t *timer );
-**
 ** timesys and timesyshms used to use Clock, should use time_t
 **
 */
 
-#ifdef __alpha
-#define Clock time_t
-#else
 #define Clock clock_t
-#endif /* #ifdef __alpha */
 
-
-#endif
 
 /*
  * assert that quaternions are OK

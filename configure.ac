@@ -1,9 +1,9 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-# $Id: configure.ac,v 1.60 2012/04/13 06:22:10 mp Exp $
+# $Id: configure.ac,v 1.61 2012/04/17 04:06:10 mp Exp $
 
 # for release replace x with appropriate version (4.2.4 was last 2010-Jul-7)
-AC_INIT([autodock], [4.2.4.x.20120412], [autodock@scripps.edu])
+AC_INIT([autodock], [4.2.4.x.20120416], [autodock@scripps.edu])
 AC_CONFIG_SRCDIR([analysis.cc])
 
 AM_INIT_AUTOMAKE()
@@ -37,7 +37,9 @@ AC_STRUCT_TM
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([gethostname pow sqrt strncasecmp])
+# getpid has a WIN32 equivalent GetProcessId
+# setlinebuf does not seem available in WIN32 MinGW
+AC_CHECK_FUNCS([gethostname getpid GetProcessId setlinebuf pow sqrt strncasecmp])
 
 case $host_os in
   *cygwin* ) CYGWIN=yes;;

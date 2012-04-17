@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.22 2011/05/19 22:03:13 rhuey Exp $
+ $Id: setflags.cc,v 1.23 2012/04/17 04:06:10 mp Exp $
 
  AutoDock 
 
@@ -239,7 +239,9 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
                 fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
                 return(-1);
             }
+#ifdef HAVE_SETLINEBUF
             setlinebuf(logFile); // to ensure output even if crash
+#endif
     return(argindex);
 }
 /* EOF */

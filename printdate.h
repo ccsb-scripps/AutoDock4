@@ -1,12 +1,13 @@
 /*
 
- $Id: printdate.h,v 1.4 2010/08/27 00:05:08 mp Exp $
+ $Id: printdate.h,v 1.5 2012/04/17 04:06:10 mp Exp $
 
  AutoDock 
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
+ AutoGrid is a Trade Mark of The Scripps Research Institute.
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -23,6 +24,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
  */
+
+// this source file is shared by AutoDock and AutoGrid
 
 #ifndef PRINTDATE
 #define PRINTDATE

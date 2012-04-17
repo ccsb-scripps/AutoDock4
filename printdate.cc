@@ -1,12 +1,13 @@
 /*
 
- $Id: printdate.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: printdate.cc,v 1.7 2012/04/17 04:06:10 mp Exp $
 
  AutoDock 
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
+ AutoGrid is a Trade Mark of The Scripps Research Institute.
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -27,17 +28,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include <sys/types.h>
 
-#ifndef _WIN32
-#   include <sys/time.h>
-#else
-#   include "times.h"
-#endif
+#include <sys/time.h>
 
 #ifdef HAVE_CONFIG_H
 #   include <config.h>
 #endif
 
 #include "printdate.h"
+// this source file is shared by AutoDock and AutoGrid
 
 void printdate( FILE *const fp, const int flag )
 {
