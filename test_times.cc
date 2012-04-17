@@ -1,6 +1,6 @@
 /*
 
- $Id: test_times.cc,v 1.7 2012/02/07 20:47:30 mp Exp $
+ $Id: test_times.cc,v 1.8 2012/04/17 01:19:09 mp Exp $
 
  AutoDock 
 
@@ -29,6 +29,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <config.h>
 #endif
 
+typedef float Real;
+
 #include <stdio.h>
 #include <sys/types.h> // time_t time(time_t *tloc);
 #include <time.h>      // time_t time(time_t *tloc);
@@ -36,11 +38,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <unistd.h> // sysconf
 #include "timesyshms.h"
 
-#ifdef __alpha
-#define Clock time_t
-#else
-#define Clock clock_t
-#endif /* #ifdef __alpha */
+//#define Clock clock_t
 
 Real idct;
 
@@ -54,9 +52,9 @@ Real idct;
 #endif
 
 
-int main( int argc, char **argv, char **envp );
+//int main( int argc, char **argv, char **envp );
 
-int main( int argc, char **argv, char **envp )
+int main( int argc, char **argv)
 {
     static FourByteLong clktck = 0;
     struct tms tms_jobStart;
@@ -67,7 +65,8 @@ int main( int argc, char **argv, char **envp )
 
     if (clktck == 0) {        /* fetch clock ticks per second first time */
         if ( (clktck = sysconf(_SC_CLK_TCK)) < (FourByteLong)0L) {
-            (void) stop("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
+            (void) printf("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
+	    return(1);
         } else {
             idct = (Real)1. / (Real)clktck;
             (void) printf("\n\nFYI:  Number of clock ticks per second = %d\nFYI:  Elapsed time per clock tick = %.3e seconds\n\n\n\n", clktck, idct);
@@ -88,22 +87,23 @@ int main( int argc, char **argv, char **envp )
     timesyshms( jobEnd - jobStart, &tms_jobStart, &tms_jobEnd );
 
 
+return 0;
 }
 
-    #include <sys/types.h>
-    #include <sys/times.h>
-    #include <time.h>
-    #include <unistd.h>
-    #include "timesyshms.h"
+    // #include <sys/types.h>
+    // #include <sys/times.h>
+    // #include <time.h>
+    // #include <unistd.h>
+    // #include "timesyshms.h"
 
 
-extern	Real	idct;
+//extern	Real	idct;
 
 /*----------------------------------------------------------------------------*/
 
-void timesyshms( Clock  duration,
-		 struct tms *start,
-		 struct tms *end )
+void timesyshms( const Clock&  duration,
+		 const struct tms *const start,
+		 const struct tms *const end )
 
 /*----------------------------------------------------------------------------*/
 
