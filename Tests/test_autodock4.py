@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.47 2012/02/02 22:11:22 rhuey Exp $
+# $Id: test_autodock4.py,v 1.48 2012/04/17 23:38:11 mp Exp $
 #
 
 """
@@ -130,6 +130,7 @@ def find_success_in_DLG( dlg_filename ):
 
 class AutoDock_base_test( unittest.TestCase ):
     """Base Class for AutoDock testing."""
+    """ do not instantiate this for a test, use simple_test or other subclass instead """
     dpf_stem = "BaseClass"
     computed = False
     def setUp( self ):
@@ -404,6 +405,12 @@ class AutoDock4_1pgp_test( AutoDock_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_timepid_test( AutoDock_simple_test ):
+    """Test that autodock4 executes using seed set by time and process-id"""
+    dpf_stem = "1pgp_timepid"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_smaller_test( AutoDock_test ):
     """Test that autodock4 executes using fewer parameters and an extremely short run."""
     dpf_stem = "1pgp_smaller"
@@ -642,6 +649,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_wrong_extension',
         'AutoDock4_1pgp_two_extensions',
         # simple tests:
+        'AutoDock4_1pgp_timepid_test',
         'AutoDock4_1pgp_ligand_types_map_mismatch',
         'AutoDock4_1pgp_illegal_keyword_test',
         'AutoDock4_1pgp_no_elecmap_test',
