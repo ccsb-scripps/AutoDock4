@@ -1,6 +1,6 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-# $Id: configure.ac,v 1.63 2012/04/18 01:30:19 mp Exp $
+# $Id: configure.ac,v 1.64 2012/04/18 05:17:46 mp Exp $
 
 # for release replace x with appropriate version (4.2.4 was last 2010-Jul-7)
 AC_INIT([autodock], [4.2.4.x.20120417], [autodock@scripps.edu])
@@ -37,13 +37,14 @@ AC_STRUCT_TM
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-# gethostname does not seem available in WIN32 MinGW
+# gethostname does not seem available in WIN32 MinGW so we include a local equiv in mingw_sysconf.h
 # getpid has a WIN32 equivalent GetProcessId but WIN32 MinGW supplies getpid
-# fchmod and constants S_IRGRP, S_IROTH do not seem available in WIN32 MinGW
-# setlinebuf does not seem available in WIN32 MinGW
-# sysconf does not seem available in WIN32 MinGW so we include a local subset in mingw_sysconf.h
-# times   does not seem available in WIN32 MinGW so we include a local equiv in mingw_sys_times.h
-AC_CHECK_FUNCS([gethostname getpid GetProcessId fchmod setlinebuf sysconf times pow sqrt strncasecmp])
+# fchmod and constants S_IRGRP, S_IROTH not available in WIN32 MinGW so block using (output_state.cc)
+# setlinebuf not available in WIN32 MinGW so we block using it (setflags.cc)
+# sysconf not available in WIN32 MinGW so we include a local subset in mingw_sysconf.h
+# times   not available in WIN32 MinGW so we include a local equiv in mingw_sys_times.h
+# getrusage not available in WIN32 MinGW so we include a local equiv in mingw_getrusage.cc
+AC_CHECK_FUNCS([gethostname getpid GetProcessId fchmod setlinebuf sysconf times getrusage pow sqrt strncasecmp])
 
 case $host_os in
   *cygwin* ) CYGWIN=yes;;

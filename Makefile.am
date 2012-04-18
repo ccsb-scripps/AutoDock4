@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.38 2012/04/18 01:30:19 mp Exp $
+# $Id: Makefile.am,v 1.39 2012/04/18 05:17:46 mp Exp $
 # 
 # AutoDock  
 # 
@@ -88,6 +88,7 @@ autodock4_SOURCES += \
     linpack.cc \
     ls.cc \
     mapping.cc \
+    mingw_getrusage.cc \
     minmeanmax.cc \
     mkNewState.cc \
     mkTorTree.cc \

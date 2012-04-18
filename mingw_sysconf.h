@@ -1,5 +1,6 @@
 /* AutoDock subset from Mingw32 - for sysconf() and gethostname()
- * $Id: mingw_sysconf.h,v 1.2 2012/04/18 01:30:19 mp Exp $
+ * Adapted from MinGW  M Pique 2012
+ * $Id: mingw_sysconf.h,v 1.3 2012/04/18 05:17:46 mp Exp $
  */
 /*
  * This file is part of the Mingw32 package.
