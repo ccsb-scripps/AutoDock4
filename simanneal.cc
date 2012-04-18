@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.38 2012/04/13 06:22:10 mp Exp $
+ $Id: simanneal.cc,v 1.39 2012/04/18 01:30:19 mp Exp $
 
  AutoDock  
 
@@ -33,11 +33,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/times.h>
 #include <sys/param.h>
 #include <time.h>
 #include "simanneal.h"
 #include "energy.h"
+#include "timesys.h"
 
 
 extern char *programname;

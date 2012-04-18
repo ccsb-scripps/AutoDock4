@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.65 2012/02/28 00:18:40 mp Exp $ 
+ $Id: call_glss.cc,v 1.66 2012/04/18 01:30:19 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -49,7 +49,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include <sys/types.h>      /*time_t time(time_t *tloc); */
 #include <time.h>           /*time_t time(time_t *tloc); */
-#include <sys/times.h>
 #include "timesyshms.h"
 
 extern FILE *logFile;

@@ -1,6 +1,6 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-# $Id: configure.ac,v 1.62 2012/04/17 23:08:42 mp Exp $
+# $Id: configure.ac,v 1.63 2012/04/18 01:30:19 mp Exp $
 
 # for release replace x with appropriate version (4.2.4 was last 2010-Jul-7)
 AC_INIT([autodock], [4.2.4.x.20120417], [autodock@scripps.edu])
@@ -42,7 +42,8 @@ AC_FUNC_MALLOC
 # fchmod and constants S_IRGRP, S_IROTH do not seem available in WIN32 MinGW
 # setlinebuf does not seem available in WIN32 MinGW
 # sysconf does not seem available in WIN32 MinGW so we include a local subset in mingw_sysconf.h
-AC_CHECK_FUNCS([gethostname getpid GetProcessId fchmod setlinebuf sysconf pow sqrt strncasecmp])
+# times   does not seem available in WIN32 MinGW so we include a local equiv in mingw_sys_times.h
+AC_CHECK_FUNCS([gethostname getpid GetProcessId fchmod setlinebuf sysconf times pow sqrt strncasecmp])
 
 case $host_os in
   *cygwin* ) CYGWIN=yes;;

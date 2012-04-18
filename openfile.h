@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.h,v 1.7 2010/10/01 22:51:39 mp Exp $
+ $Id: openfile.h,v 1.8 2012/04/18 01:30:19 mp Exp $
 
  AutoDock 
 
@@ -28,11 +28,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define OPENFILE
 
 #include "constants.h"
-#include "timesys.h"
-#include "print_2x.h"
 #include <sys/types.h>      /*time_t time(time_t *tloc); */
 #include <time.h>           /*time_t time(time_t *tloc); */
-#include <sys/times.h>
+#include "timesys.h"
+#include "print_2x.h"
 
 int  openfile( const char *const filename,
                const char mode[],

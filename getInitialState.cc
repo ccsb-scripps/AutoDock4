@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.34 2012/04/13 06:22:10 mp Exp $
+ $Id: getInitialState.cc,v 1.35 2012/04/18 01:30:19 mp Exp $
 
  AutoDock  
 
@@ -32,9 +32,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <math.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/times.h>
 #include <sys/param.h>
 #include <time.h>
+#include "timesys.h"
 #include "getInitialState.h"
 #include "trilinterp.h"
 #include "calculateEnergies.h"

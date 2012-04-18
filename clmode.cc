@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.17 2012/02/02 02:16:47 mp Exp $
+ $Id: clmode.cc,v 1.18 2012/04/18 01:30:19 mp Exp $
 
  AutoDock 
 
@@ -34,7 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <ctype.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/times.h>
+#include "timesyshms.h"
 #include "clmode.h"
 
 

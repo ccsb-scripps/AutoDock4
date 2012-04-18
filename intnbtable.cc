@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.20 2012/02/07 05:14:55 mp Exp $
+ $Id: intnbtable.cc,v 1.21 2012/04/18 01:30:19 mp Exp $
 
  AutoDock 
 
@@ -33,7 +33,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/times.h>
 #include <string.h>
 #include "intnbtable.h"
 #include "structs.h"

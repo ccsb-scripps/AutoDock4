@@ -1,6 +1,6 @@
 /*
 
- $Id: timesys.h,v 1.5 2010/10/01 22:51:40 mp Exp $
+ $Id: timesys.h,v 1.6 2012/04/18 01:30:19 mp Exp $
 
  AutoDock 
 
@@ -29,7 +29,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define TIMESYS
 
 #include <sys/types.h>
+
+// note: only timesys.h and timesyshms.h include the real sys/times.h 
+#ifdef HAVE_TIMES
 #include <sys/times.h>
+#else
+#include "mingw_sys_times.h"
+#endif
+
 #include <time.h>
 #include "autocomm.h"
 

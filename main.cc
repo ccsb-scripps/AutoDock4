@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.170 2012/04/17 23:08:42 mp Exp $
+ $Id: main.cc,v 1.171 2012/04/18 01:30:19 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -64,7 +64,6 @@
 #include <math.h>
 #include <sys/types.h> // time_t time(time_t *tloc);
 #include <time.h>      // time_t time(time_t *tloc);
-#include <sys/times.h>
 #include <stdlib.h>
 #ifndef HAVE_SYSCONF
 #include "mingw_sysconf.h"  // for sysconf(_SC_CLK_TCK) and possibly gethostname
@@ -102,6 +101,7 @@ using std::string;
 #include "conformation_sampler.h"
 #include "main.h"
 #include "alea.h"
+#include "timesys.h" // for struct tms
 // PSO
 //#include "call_cpso.h"
 #include "pso.h"
@@ -117,7 +117,7 @@ extern Linear_FE_Model AD4;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.170 2012/04/17 23:08:42 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.171 2012/04/18 01:30:19 mp Exp $"};
 
 
 
@@ -746,7 +746,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.170 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.171 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 

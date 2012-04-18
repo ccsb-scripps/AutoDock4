@@ -1,6 +1,6 @@
 /*
 
- $Id: success.cc,v 1.8 2011/04/28 23:25:27 rhuey Exp $
+ $Id: success.cc,v 1.9 2012/04/18 01:30:19 mp Exp $
 
  AutoDock 
 
@@ -29,7 +29,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #endif
 
 #include <stdio.h>
-#include <sys/times.h>
 #include <sys/types.h>
 #include <time.h>
 #include "success.h"

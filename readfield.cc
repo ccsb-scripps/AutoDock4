@@ -1,6 +1,6 @@
 /*
 
- $Id: readfield.cc,v 1.9 2012/02/07 05:14:55 mp Exp $
+ $Id: readfield.cc,v 1.10 2012/04/18 01:30:19 mp Exp $
 
  AutoDock 
 
@@ -32,7 +32,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include <sys/times.h>
 #include <sys/types.h>
 #include "readfield.h"
 

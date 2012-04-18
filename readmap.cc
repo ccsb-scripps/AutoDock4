@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.18 2012/02/07 20:47:30 mp Exp $
+ $Id: readmap.cc,v 1.19 2012/04/18 01:30:19 mp Exp $
 
  AutoDock 
 
@@ -32,10 +32,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/times.h>
 #include <time.h>
 #include <math.h>
 #include "readmap.h"
+#include "timesys.h" // for struct tms
 
 extern char dock_param_fn[];
 extern char *programname;

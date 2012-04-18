@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>      // time_t time(time_t *tloc);
-#include <sys/times.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/param.h>
