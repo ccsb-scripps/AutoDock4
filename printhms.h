@@ -1,6 +1,6 @@
 /*
 
- $Id: printhms.h,v 1.7 2010/10/01 22:51:39 mp Exp $
+ $Id: printhms.h,v 1.8 2012/04/20 01:28:58 mp Exp $
 
  AutoDock 
 
@@ -27,5 +27,5 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef PRINTHMS
 #define PRINTHMS
 #include "typedefs.h"
-void  printhms( ConstReal t );
+void  printhms( const Real t );
 #endif

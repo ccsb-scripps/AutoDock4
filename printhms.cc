@@ -1,6 +1,6 @@
 /*
 
- $Id: printhms.cc,v 1.8 2010/10/01 22:51:39 mp Exp $
+ $Id: printhms.cc,v 1.9 2012/04/20 01:28:58 mp Exp $
 
  AutoDock 
 
@@ -33,7 +33,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern FILE *logFile;
 
-void printhms( ConstReal t )
+void printhms( const Real t )
 
 {
     int   h,
