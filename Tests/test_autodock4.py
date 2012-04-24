@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.48 2012/04/17 23:38:11 mp Exp $
+# $Id: test_autodock4.py,v 1.49 2012/04/24 23:34:41 mp Exp $
 #
 
 """
@@ -68,19 +68,15 @@ def run_AutoDock( dpf_filename, dlg_filename ):
     and standard error."""
     dpf = dpf_directory + os.sep + dpf_filename
     dlg = test_output_directory + os.sep + dlg_filename
-    command = "rm -f " + dlg
-    os.system( command )
+    rm( dlg )
     command =   [autodock_executable, '-p', dpf, '-l', dlg] 
     print '\nRunning ' + autodock_executable + ' using DPF "'+dpf+'", saving results in "'+dlg+'":'
     try:
-        #( i, o, e ) = os.popen3( command ) # trap all the outputs
-        subprocess.call( command )
-        # TODO os.wait seems to return (pid, exit_status)
-        #os.wait() # for the child process to finish
-        # return True # this should really be os.wait()'s exit_status
+        rc = subprocess.call( command )
+	#print 'autodock returned ', rc  # DEBUG
         return find_success_in_DLG( dlg_filename )
-    except:
-        print "\nUnable to run " + autodock_executable + "."
+    except OSError,e:
+        print "\nUnable to run " + autodock_executable + " :", e
         return False
 
 #______________________________________________________________________________
@@ -125,6 +121,18 @@ def find_success_in_DLG( dlg_filename ):
         return success
     except:
         return False
+
+#______________________________________________________________________________
+
+def rm( filename ):
+    """Remove single file """
+    # no regular expression wildcards, e.g. * or ?, allowed
+    if os.access(filename, os.F_OK) :
+       try:
+          os.remove( filename )
+       except OSError,e:
+         print 'unable to remove '+filename
+
 
 #______________________________________________________________________________
 
