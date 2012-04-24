@@ -1,9 +1,9 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-# $Id: configure.ac,v 1.64 2012/04/18 05:17:46 mp Exp $
+# $Id: configure.ac,v 1.65 2012/04/24 20:59:31 mp Exp $
 
 # for release replace x with appropriate version (4.2.4 was last 2010-Jul-7)
-AC_INIT([autodock], [4.2.4.x.20120417], [autodock@scripps.edu])
+AC_INIT([autodock], [4.2.4.x.20120424], [autodock@scripps.edu])
 AC_CONFIG_SRCDIR([analysis.cc])
 
 AM_INIT_AUTOMAKE()

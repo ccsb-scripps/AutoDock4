@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.22 2012/04/05 01:39:32 mp Exp $
+ $Id: mkTorTree.cc,v 1.23 2012/04/24 20:59:31 mp Exp $
 
  AutoDock 
 
@@ -203,7 +203,6 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
     		    char  error_message[ LINE_LEN ];
                     prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
                     stop( error_message );
-                    exit( -1 );
                 }
                 if (found_first_res) {
                     sscanf(Rec_line[ i ],"%*s %d %*d", &nrestor );
@@ -217,7 +216,6 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                     char  error_message[ LINE_LEN ];
                     prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
                     stop( error_message );
-                    exit( -1 );
                 } /* endif */
                 nbranches = 0;
 
@@ -267,7 +265,6 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                     char  error_message[ LINE_LEN ];
                     prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
                     stop( error_message );
-                    exit( -1 );
                 }
                 nbranches = 0;
 
@@ -384,7 +381,6 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
         char  error_message[ LINE_LEN ];
         prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
         stop( error_message );
-        exit( -1 );
     } else {
         *P_ntor = ntor;
     }
@@ -407,7 +403,6 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
         if (B_atom_number_OK) continue;
         prStr(error_msg, "%s: ERROR:  Torsion number %d between atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n", programname, itor+1, 1+tlist[itor][ATM1], 1+tlist[itor][ATM2], tlist[itor][NUM_ATM_MOVED] );
 	stop(error_msg); // exits
-        exit(-1);
     }
 
     itor = 0;

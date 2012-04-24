@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.22 2012/02/07 20:47:30 mp Exp $
+ $Id: weedbonds.cc,v 1.23 2012/04/24 20:59:31 mp Exp $
 
  AutoDock 
 
@@ -225,7 +225,7 @@ void weedbonds( const int natom,
     if (Nnb > MAX_NONBONDS) {
         prStr( error_msg, "too many non-bonded interactions (%d) in small molecule\n\t(increase MAX_NONBONDS from %d).", Nnb, MAX_NONBONDS );
         stop( error_msg );
-        exit( -1 );
+        exit( EXIT_FAILURE );
     } else {
         *Addr_Nnb = Nnb;
     }

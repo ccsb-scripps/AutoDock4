@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.40 2012/04/18 01:30:19 mp Exp $
+ $Id: readPDBQT.cc,v 1.41 2012/04/24 20:59:31 mp Exp $
 
  AutoDock 
 
@@ -652,7 +652,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	if (parse_tors_mode) {
 		prStr(message, "\n\n *** PARSE TORSIONS MODE - Stopping here ***\n\n");
 		success(hostnm, jobStart, tms_jobStart);
-		exit(0);
+		exit(EXIT_SUCCESS);
 	}
 	return mol;
 }

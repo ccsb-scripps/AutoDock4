@@ -1,6 +1,6 @@
 /*
 
- $Id: stop.cc,v 1.7 2012/03/16 00:09:57 rhuey Exp $
+ $Id: stop.cc,v 1.8 2012/04/24 20:59:31 mp Exp $
 
  AutoDock 
 
@@ -68,6 +68,6 @@ void stop(const char *const reason)
 	fflush(stderr);
     }
 
-    exit(-1);
+    exit(EXIT_FAILURE); // POSIX, defined in stdlib.h
 }
 /* EOF */

@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.171 2012/04/18 01:30:19 mp Exp $
+ $Id: main.cc,v 1.172 2012/04/24 20:59:31 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -117,7 +117,7 @@ extern Linear_FE_Model AD4;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.171 2012/04/18 01:30:19 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.172 2012/04/24 20:59:31 mp Exp $"};
 
 
 
@@ -610,7 +610,7 @@ jobStart = times( &tms_jobStart );
 */
 
 if ( setflags(argc,argv,version_num.c_str()) == -1) {
-    exit(-1);
+    exit(EXIT_FAILURE);
 } /* END PROGRAM */
 
 
@@ -746,7 +746,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.171 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.172 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1258,7 +1258,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     "WARNING: pairwise distance, Rij, %.2f, is not a very reasonable value for the equilibrium separation of two atoms! (%.2f Angstroms <= Rij <= %.2f Angstroms)\n\n", Rij, RIJ_MIN, RIJ_MAX);
                     (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
                     /* gmm commented out for dave goodsell, mutable atoms
-                     * exit(-1); */
+                     * exit(EXIT_FAILURE); */
                 }
                 /* Check that the epsij is reasonable */
                 if ((epsij < EPSIJ_MIN) || (epsij > EPSIJ_MAX)) {
@@ -1266,7 +1266,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     "WARNING: well-depth, epsilon_ij, %.2f, is not a very reasonable value for the equilibrium potential energy of two atoms! (%.2f kcal/mol <= epsilon_ij <= %.2f kcal/mol)\n\n", epsij, EPSIJ_MIN, EPSIJ_MAX);
                     (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
                     /* gmm commented out for dave goodsell, mutable atoms
-                     * exit(-1); */
+                     * exit(EXIT_FAILURE); */
                 }
                 /* Defend against division by zero... */
                 if (xA != xB) {
@@ -1626,21 +1626,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             coliny_init(algname, "", 0);
             prStr(error_message, "%s:  ERROR:  no optimizer type specified.", programname);
             stop(error_message);
-            exit(-1);
+            exit(EXIT_FAILURE);
         }
         else if (streq(nruns_str,"help")) {
             std::vector<double> initvec;
             coliny_init(algname, nruns_str, 0);
             prStr(error_message, "%s:  ERROR:  no optimizer type specified.", programname);
             stop(error_message);
-            exit(-1);
+            exit(EXIT_FAILURE);
         }
 
 
             if (nruns>MAX_RUNS) {
                 prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop(error_message);
-                exit(-1);
+                exit(EXIT_FAILURE);
             }
             exit_if_missing_elecmap_desolvmap_about("coliny");
 
@@ -1768,7 +1768,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
             catch (std::exception& err) {
               (void)fprintf(logFile, "Caught Exception: %s\n", err.what());
-              exit(1);
+              exit(EXIT_FAILURE);
             }
 
     }
@@ -1912,8 +1912,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                 } else {
                     prStr( error_message, "%s: ERROR! Insufficient atoms in the ligand.  There must be at least three atoms in the ligand to use this command.\n", programname );
-                    stop( error_message );
-                    exit( -1 );
+                    stop( error_message ); // exits
                 }
                 } // reorient standard
             } else {
@@ -2268,7 +2267,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	            "WARNING: pairwise distance, Rij, %.2f, is not a very reasonable value for the equilibrium separation of two atoms! (%.2f Angstroms <= Rij <= %.2f Angstroms)\n\n", Rij, RIJ_MIN, RIJ_MAX);
 	            (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
 	            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
-	             * exit(-1); */
+	             * exit(EXIT_FAILURE); */
 	     	     }
 	        /* check that the epsij is reasonable */
 	        if ((epsij < EPSIJ_MIN) || (epsij > EPSIJ_MAX)) {
@@ -2276,7 +2275,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	            "WARNING: well-depth, epsilon_ij, %.2f, is not a very reasonable value for the equilibrium potential energy of two atoms! (%.2f kcal/mol <= epsilon_ij <= %.2f kcal/mol)\n\n", epsij, EPSIJ_MIN, EPSIJ_MAX);
 	            (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"? \n\n");
 	            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
-	             * exit(-1); */
+	             * exit(EXIT_FAILURE); */
 	        }
 	        } /* RING CLOSURE */
 
@@ -2308,8 +2307,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
            pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
            intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, r_smooth, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev );
         } else {
-            pr(logFile,"WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
-            exit(-1);
+            stop("WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
+            exit(EXIT_FAILURE);
         }
 	} // block for locals
         break;
@@ -2633,6 +2632,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 B_write_all_clusmem, FN_clus, crdpdb, lig_center,
                 B_symmetry_flag, B_unique_pair_flag, FN_rms_ref_crds,
                 B_rms_heavy_atoms_only, h_index, outlev, logFile);
+	// note : clmode exits program !
         break;
 
 //______________________________________________________________________________
@@ -4708,11 +4708,11 @@ static void exit_if_missing_elecmap_desolvmap_about(string keyword)
     if (!B_found_elecmap) {
          prStr(error_message, "%s:  %s command: no \"elecmap\" command has been specified!\n", programname, keyword.c_str());
          stop(error_message);
-         exit(-1);
+         exit(EXIT_FAILURE);
     } else if (!B_found_desolvmap) {
          prStr(error_message, "%s:  %s command: no \"desolvmap\" command has been specified!\n", programname, keyword.c_str());
          stop(error_message);
-         exit(-1);
+         exit(EXIT_FAILURE);
     }
 }
 

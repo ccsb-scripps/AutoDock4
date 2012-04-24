@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.23 2012/04/17 04:06:10 mp Exp $
+ $Id: setflags.cc,v 1.24 2012/04/24 20:59:31 mp Exp $
 
  AutoDock 
 
@@ -108,7 +108,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
      */
     if (argc==1) { //No arguments provided
         usage(stdout, "AutoDock");
-        exit(0);
+        exit(EXIT_FAILURE); // POSIX, defined in stdlib.h, as is EXIT_SUCCESS
     }
 /*----------------------------------------------------------------------------*/
 /* Loop over arguments                                                        */
@@ -131,7 +131,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
         case 'u':
         case 'h':
             usage(stdout, "AutoDock");
-            exit(0);
+            exit(EXIT_SUCCESS);
             break;
         case 'i':
             ignore_errors = TRUE;
@@ -145,7 +145,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             //show copyright
             show_copyright(stdout);
             show_warranty(stdout);
-            exit(0);
+            exit(EXIT_SUCCESS);
             break;
         case 'c':
             //command_mode removed with 4.1 release spring 2009, mp + rh
@@ -210,7 +210,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             fprintf(stdout, " This is free software: you are free to change and redistribute it.\n");
 // GNU END   (see maintenance script update_license_de-GNU)
             fprintf(stdout, " There is NO WARRANTY, to the extent permitted by law.\n");
-            exit(0);
+            exit(EXIT_SUCCESS);
             break;
         default:
             fprintf(stderr, "%s: unknown switch \"-%c\".  \n", programname, argv[1][1]);
