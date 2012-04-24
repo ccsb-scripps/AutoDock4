@@ -1,6 +1,6 @@
 /*
 
- $Id: stop.cc,v 1.8 2012/04/24 20:59:31 mp Exp $
+ $Id: stop.cc,v 1.9 2012/04/24 23:35:36 mp Exp $
 
  AutoDock 
 
@@ -45,18 +45,13 @@ void stop(const char *const reason)
 {
 
     if (logFile == stdout) {
-	fprintf( logFile, "%s: ERROR: %s\n", programname, reason);
-	fprintf( logFile, "%s: Aborting...\n\n", programname);
+	fprintf( logFile, "%s: FATAL ERROR: %s\n", programname, reason);
 	fprintf( logFile, "%s: Unsuccessful Completion.\n\n", programname);
 	fflush(  logFile  );
     } else {
         string pn=programname;
         string r=reason;
-	string message =  pn + ": ERROR: "+r+"\n";
-	fprintf( logFile,  message.c_str() );
-	fprintf( stderr, message.c_str() );
-
-	message = pn + ": Aborting...\n\n";
+	string message =  pn + ": FATAL ERROR: "+r+"\n";
 	fprintf( logFile,  message.c_str() );
 	fprintf( stderr, message.c_str() );
 

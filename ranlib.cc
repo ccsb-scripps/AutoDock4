@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.10 2012/02/07 20:47:30 mp Exp $
+ $Id: ranlib.cc,v 1.11 2012/04/24 23:35:36 mp Exp $
 
  AutoDock 
 
@@ -85,8 +85,6 @@ static FourByteLong qsame;
     qsame = olda == aa && oldb == bb;
     if(qsame) goto S20;
     if(!(aa <= 0.0 || bb <= 0.0)) goto S10;
-    fputs(" AA or BB <= 0 in GENBET - Abort!",stderr);
-    fprintf(stderr," AA: %16.6E BB %16.6E\n",aa,bb);
     stop("ERROR AA or BB <= 0 in genbet");
 S10:
     olda = aa;
@@ -617,11 +615,11 @@ extern Real genunf(ConstReal low, ConstReal high)
 */
 {
     static Real genunf;
+    char msg[1000];
 
     if(!(low > high)) goto S10;
-    fprintf(stderr,"LOW > HIGH in GENUNF: LOW %16.6E HIGH: %16.6E\n",low,high);
-    fputs("Abort",stderr);
-    stop("ERROR LOW > HIGH in genunf");
+    sprintf(msg,"LOW > HIGH in GENUNF: LOW %16.6E HIGH: %16.6E\n",low,high);
+    stop(msg);
 S10:
     genunf = low+(high-low)*ranf();
     return genunf;
@@ -1253,13 +1251,11 @@ extern FourByteLong ignuin(const FourByteLong low, const FourByteLong high)
 static FourByteLong ignuin,ign,maxnow,range,ranp1;
 
     if(!(low > high)) goto S10;
-    fputs(" low > high in ignuin - ABORT",stderr);
     stop("ERROR low > high in ignuin");
 
 S10:
     range = high-low;
     if(!(range > maxnum)) goto S20;
-    fputs(" high - low too large in ignuin - ABORT",stderr);
     stop("ERROR high - low too large in ignuin");
 
 S20:
@@ -1324,8 +1320,7 @@ static FourByteLong mltmod,a0,a1,k,p,q,qh,rh;
     if(!(a <= 0 || a >= m || s <= 0 || s >= m)) goto S10;
     fputs(" a, m, s out of order in mltmod - ABORT!",stderr);
     fprintf(stderr," a = %12ld s = %12ld m = %12ld\n",a,s,m);
-    fputs(" mltmod requires: 0 < a < m; 0 < s < m",stderr);
-    stop("ERROR in mltmod");
+    stop("ERROR in mltmod :  mltmod requires: 0 < a < m; 0 < s < m");
 S10:
     if(!(a < h)) goto S20;
     a0 = a;
@@ -1515,7 +1510,6 @@ static FourByteLong i,icount,info,j,D2,D3,D4,D5;
      TEST THE INPUT
 */
     if(!(p <= 0)) goto S10;
-    fputs("P nonpositive in SETGMN",stderr);
     fprintf(stderr,"Value of P: %12ld\n",p);
     stop("ERROR P nonpos in setgmn");
 S10:
@@ -1529,8 +1523,7 @@ S10:
 */
     spofa(covm,p,p,&info);
     if(!(info != 0)) goto S30;
-    fputs(" COVM not positive definite in SETGMN",stderr);
-    stop("ERROR COVM in setgmn");
+    stop("ERROR COVM in setgmn: COVM not positive definite ");
 S30:
     icount = p+1;
 /*

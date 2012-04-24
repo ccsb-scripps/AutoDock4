@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.172 2012/04/24 20:59:31 mp Exp $
+ $Id: main.cc,v 1.173 2012/04/24 23:35:36 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -117,7 +117,7 @@ extern Linear_FE_Model AD4;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.172 2012/04/24 20:59:31 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.173 2012/04/24 23:35:36 mp Exp $"};
 
 
 
@@ -746,7 +746,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.172 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.173 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1291,7 +1291,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     }
 
                 } else {
-                    pr(logFile,"WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
+                    pr(logFile,"ERROR: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
 		    stop("exponent would cause division by zero");
                 }
                 (void) fflush(logFile);
@@ -2307,7 +2307,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
            pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
            intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, r_smooth, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev );
         } else {
-            stop("WARNING: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
+            stop("ERROR: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
             exit(EXIT_FAILURE);
         }
 	} // block for locals
