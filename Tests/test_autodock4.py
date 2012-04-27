@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.49 2012/04/24 23:34:41 mp Exp $
+# $Id: test_autodock4.py,v 1.50 2012/04/27 07:03:09 mp Exp $
 #
 
 """
@@ -419,6 +419,12 @@ class AutoDock4_1pgp_timepid_test( AutoDock_simple_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_epdb_etables_test( AutoDock_simple_test ):
+    """Test autodock 4.3 high outlev detail for epdb and energy tables."""
+    dpf_stem = "1pgp_epdb_etables"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_smaller_test( AutoDock_test ):
     """Test that autodock4 executes using fewer parameters and an extremely short run."""
     dpf_stem = "1pgp_smaller"
@@ -511,7 +517,6 @@ class AutoDock4_1pgp_unbound_model_value( AutoDock4_unbound_test ):
     expected_unbound_energy = -3.12 
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
-
 
 class AutoDock4_1pgp_unbound_model_compact( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound_model is set to compact."""
@@ -658,6 +663,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_two_extensions',
         # simple tests:
         'AutoDock4_1pgp_timepid_test',
+        'AutoDock4_1pgp_epdb_etables_test',
         'AutoDock4_1pgp_ligand_types_map_mismatch',
         'AutoDock4_1pgp_illegal_keyword_test',
         'AutoDock4_1pgp_no_elecmap_test',

@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.33 2012/04/13 06:22:10 mp Exp $
+ $Id: structs.h,v 1.34 2012/04/27 07:03:08 mp Exp $
 
  AutoDock  
 
@@ -272,6 +272,7 @@ typedef struct energy_tables
     Real sol_fn[NDIEL];                            // distance-dependent desolvation function
     Real epsilon_fn[NDIEL];                        // distance-dependent dielectric function
     Real r_epsilon_fn[NDIEL];                      // r * distance-dependent dielectric function
+    Boole is_hbond[MAX_ATOM_TYPES][MAX_ATOM_TYPES]; // for eintcalprint use
 } EnergyTables;
 
 /* ______________________________________________________________________________ */
@@ -280,11 +281,12 @@ typedef struct nonbond_param
 {
     int a1;           // ATM1
     int a2;           // ATM2
-    int nonbond_type; // NBTYPE
+    int nonbond_type; // NBTYPE  0 = not 1_4     4 = is 1_4
     double desolv;
     double q1q2;      // product of atom partial charges
     int t1;           // TYPE1
     int t2;           // TYPE2
+    Boole is_hbond;
 
     nonbond_param() : a1(0), a2(0) {}
 } NonbondParam;
@@ -341,6 +343,8 @@ typedef struct energy_component
    Real elec;
    Real vdW_Hb;
    Real desolv;
+   Real vdW;  // not available for grid-based values
+   Real Hb;   // not available for grid-based values
    } EnergyComponent;
 /* component-level energy breakdowns for each of the five atomic interaction groups in AD4 */
 typedef struct group_energy {

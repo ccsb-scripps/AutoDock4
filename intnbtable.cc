@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.21 2012/04/18 01:30:19 mp Exp $
+ $Id: intnbtable.cc,v 1.22 2012/04/27 07:03:08 mp Exp $
 
  AutoDock 
 
@@ -34,6 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <time.h>
 #include <sys/types.h>
 #include <string.h>
+#include <stdlib.h> // for exit codes
 #include "intnbtable.h"
 #include "structs.h"
 #include "distdepdiel.h"
@@ -50,6 +51,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #endif
 
 extern int debug;
+static void printminvalue( char *label, const Real e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES],
+ const int neint, const int a1, const int a2, FILE *logFile);  // see end of this file
+
 
 void intnbtable( Boole *const P_B_havenbp,
                  const int a1,
@@ -59,6 +63,7 @@ void intnbtable( Boole *const P_B_havenbp,
                  ConstReal cB, 
                  const int xA, 
                  const int xB,
+		 Boole is_hbond,
                  ConstReal r_smooth,
                  ConstDouble coeff_desolv,
                  ConstDouble sigma,
@@ -69,8 +74,6 @@ void intnbtable( Boole *const P_B_havenbp,
 {
     /* Local variables: */
 
-    Clock  nbeEnd;
-    Clock  nbeStart;
 
     double rA;
     double rB;
@@ -79,18 +82,18 @@ void intnbtable( Boole *const P_B_havenbp,
 
     register int i;
 
+    static Clock  nbeStart; // static to keep lint quiet
+    static struct tms tms_nbeStart; // static to keep lint quiet
+    Clock  nbeEnd;
     struct tms tms_nbeEnd;
-    struct tms tms_nbeStart;
 
-    char calc_type[128];
+    char *calc_type;
 
-    if (B_is_unbound_calculation == TRUE) {
-        strcpy(calc_type, "unbound");
-    } else {
-        strcpy(calc_type, "internal");
-    }
+    if (B_is_unbound_calculation) calc_type="unbound";
+    else calc_type="internal";
 
     *P_B_havenbp = TRUE;
+    ad_tables->is_hbond[a1][a2]  =  ad_tables->is_hbond[a2][a1]  = is_hbond;
 
     if( outlev >= LOGETABLES ) {
     if (a1 != a2) {
@@ -100,17 +103,22 @@ void intnbtable( Boole *const P_B_havenbp,
     }
     // Output the form of the potential energy equation:
     if ( B_is_unbound_calculation ) {
-        pr( logFile, "\n               %9.1lf\n", cA );
+        pr( logFile, "\n            %12.5lf\n", cA );
         pr( logFile, "    E      =  -----------  -  r\n");
         pr( logFile, "     %2s,%-2s         %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA );
         pr( logFile, "                  r\n\n");
     } else {
-        pr( logFile, "\n               %9.1lf       %9.1lf \n", cA, cB );
+        pr( logFile, "\n            %12.5lf   %12.5lf \n", cA, cB );
         pr( logFile, "    E      =  -----------  -  -----------\n");
         pr( logFile, "     %2s,%-2s         %2d              %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA, xB );
         pr( logFile, "                  r               r \n\n");
     }
-    pr( logFile, "Calculating %s-%-s interaction energy versus atomic separation (%d data points).\n", info->atom_type_name[a1], info->atom_type_name[a2], NEINT );
+    pr( logFile, "Calculating %s-%-s interaction energy versus atomic separation (%.3f to %.3f Ang, %d intervals: widths %.3f to %.3f).\n",
+    info->atom_type_name[a1], info->atom_type_name[a2], 
+    IndexToDistance(1), IndexToDistance(NEINT-1),
+    NEINT, 
+    IndexToDistance(2)-IndexToDistance(1),
+    IndexToDistance(NEINT-1)-IndexToDistance(NEINT-2) );
     flushLog;
 
     nbeStart = times( &tms_nbeStart );
@@ -163,13 +171,20 @@ void intnbtable( Boole *const P_B_havenbp,
             ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA - cB/rB) );
 
             if (debug > 1) {
-                pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %.3f,   r=%.4lf\n",i, ad_tables->e_vdW_Hb[i][a1][a2], r ); // Xcode-gmm
+                pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %.5f,   r=%.4lf\n",i, ad_tables->e_vdW_Hb[i][a1][a2], r ); // Xcode-gmm
             }
         }
 
     } // next i // for ( i = 1;  i < NEINT;  i++ )
     ad_tables->e_vdW_Hb[0][a1][a2]  =  ad_tables->e_vdW_Hb[0][a2][a1]  =   EINTCLAMP;
     //ad_tables->e_vdW_Hb[NEINT-1][a1][a2]  =  ad_tables->e_vdW_Hb[NEINT-1][a2][a1]  = 0;
+
+    // report range of minimum values before smoothing
+    if( outlev >= LOGETABLES ) {
+       char label[40];
+       sprintf(label, "before smoothing %s %s-%-s ", calc_type, info->atom_type_name[a1], info->atom_type_name[a2]);
+       printminvalue( label, ad_tables->e_vdW_Hb, NEINT, a1, a2, logFile);
+    }
 
     /* smooth with min function; 
       r_smooth is Angstrom range of "smoothing" */
@@ -192,6 +207,12 @@ void intnbtable( Boole *const P_B_havenbp,
         for (i = 1;  i < NEINT-1;  i++) {
             ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1] = energy_smooth[i];
         }
+       // report range of minimum values after smoothing
+       if( outlev >= LOGETABLES ) {
+          char label[40];
+          sprintf(label, "after  smoothing %s %s-%-s ", calc_type, info->atom_type_name[a1], info->atom_type_name[a2]);
+          printminvalue( label, ad_tables->e_vdW_Hb, NEINT, a1, a2, logFile);
+       }
     } /* endif smoothing */
 
     // loop up to a maximum distance of  (NDIEL * INV_A_DIV), 
@@ -250,8 +271,8 @@ void setup_distdepdiel( FILE *logFile,
         ptr_ad_energy_tables->epsilon_fn[i] = calc_ddd_Mehler_Solmajer( distance, APPROX_ZERO );
         ptr_ad_energy_tables->r_epsilon_fn[i] = distance * calc_ddd_Mehler_Solmajer( distance, APPROX_ZERO );
         if (outlev >= LOGETABLES &&
-             (i%1000 == 0)) {
-                pr(logFile, "i = %5d,  distance = %7.2lf,  epsilon_fn[i] = %8.4lf,  r_epsilon_fn[i] = %8.4lf\n", 
+             ((i<1000&&(i%100)==0) || (i%1000) == 0)) {
+                pr(logFile, "i = %5d,  distance = %7.3lf,  epsilon_fn[i] = %9.4lf,  r_epsilon_fn[i] = %9.4lf\n", 
                         i, distance, ptr_ad_energy_tables->epsilon_fn[i], ptr_ad_energy_tables->r_epsilon_fn[i]);
             }
         // pre-compute reciprocal to avoid having to do it later in eintcal.
@@ -259,5 +280,34 @@ void setup_distdepdiel( FILE *logFile,
     } // next i
 }
 /* end of setup_distdepdiel */
+
+static void printminvalue( char *label, const Real e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES],
+ const int neint, const int a1, const int a2, FILE *logFile) 
+{
+   /* report distance range over which minimum value appears - a 'smoothing' debug tool mostly */
+int i;
+double minval;
+int ifirstmin=-1, ilastmin=-1; // indices
+
+	// find minimum value in list
+	minval=EINTCLAMP; // big
+	for(i=0;i<neint;i++) minval=min(minval, e_vdW_Hb[i][a1][a2]);
+
+	// find first appearance of minval
+	for(i=0;i<neint;i++) if(e_vdW_Hb[i][a1][a2]==minval) break;
+	ifirstmin=i;
+
+	// find last appearance of minval
+	for(i=0;i<neint;i++) if(e_vdW_Hb[i][a1][a2]==minval) ilastmin=i;
+
+	if(ifirstmin<0||ifirstmin>=neint||ilastmin<0||ilastmin>=neint) {
+		// bug check
+		fprintf(logFile, " bug check in intnbtable:printminvalue\n");
+		exit(EXIT_FAILURE);
+		}
+	fprintf(logFile, "%s minval=%10.6f over range d= %8.5f to %8.5f\n",
+	   label, minval, IndexToDistance(ifirstmin), IndexToDistance(ilastmin) );
+}
+
 
 /* EOF */

@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.h,v 1.15 2011/09/17 00:01:33 mp Exp $
+ $Id: intnbtable.h,v 1.16 2012/04/27 07:03:08 mp Exp $
 
  AutoDock 
 
@@ -38,6 +38,7 @@ void intnbtable(/* not const */ Boole *const P_B_havenbp,
                 ConstReal   cB,
                 const int   xA,
                 const int   xB,
+		const Boole is_hbond,
                 ConstReal   r_smooth,
                 ConstDouble coeff_desolv,
                 ConstDouble sigma,

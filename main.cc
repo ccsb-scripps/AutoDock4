@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.173 2012/04/24 23:35:36 mp Exp $
+ $Id: main.cc,v 1.174 2012/04/27 07:03:08 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -117,7 +117,7 @@ extern Linear_FE_Model AD4;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.173 2012/04/24 23:35:36 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.174 2012/04/27 07:03:08 mp Exp $"};
 
 
 
@@ -746,7 +746,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.173 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.174 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1167,7 +1167,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 foundParameter->map_index = i;
                 parameterArray[i] = *(foundParameter);
                 if (outlev >= LOGLIGREAD) {
-                    (void) fprintf( logFile, "Parameters found for ligand type \"%s\" (grid map index = %d, weighted well depth, epsilon = %6.4f)", foundParameter->autogrid_type, foundParameter->map_index, foundParameter->epsij );
+                    (void) fprintf( logFile, 
+		    "Parameters found for ligand type \"%s\" (grid map index = %d, weighted well depth, epsilon = %6.4f, Rij = %6.4f)", 
+		    foundParameter->autogrid_type, foundParameter->map_index, 
+		    foundParameter->epsij, foundParameter->Rij);
                     if (parameter_library_found) {
                         pr( logFile, " in parameter library \"%s\".\n", FN_parameter_library );
                     } else {
@@ -1212,6 +1215,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 		// j
 		double Rj, epsj, Rj_hb, epsj_hb, epsij, Rij;
 		hbond_type hbondj;
+		Boole is_hbond;
                 //  Find internal energy parameters, i.e.  epsilon and r-equilibrium values...
                 //  Lennard-Jones and Hydrogen Bond Potentials
 
@@ -1235,6 +1239,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     //epsij = geometric_mean(epsi_hb, epsj_hb);// not in this Universe...  :-(
                     epsij = epsj_hb;
                     xB = 10;
+		    is_hbond = TRUE;
                 } else if ( ((hbondi == AS) || (hbondi == A1) || (hbondi == A2)) && ((hbondj == DS) || (hbondj == D1))) {
                     // i is an acceptor and j is a donor.
                     // i is a heteroatom, j is a hydrogen
@@ -1245,11 +1250,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     //epsij = geometric_mean(epsi_hb, epsj_hb);// not in this Universe...  :-(
                     epsij = epsi_hb;
                     xB = 10;
+		    is_hbond = TRUE;
                 } else {
                     // we need to calculate the arithmetic mean of Ri and Rj
                     Rij = arithmetic_mean(Ri, Rj);
                     // we need to calculate the geometric mean of epsi and epsj
                     epsij = geometric_mean(epsi, epsj);
+		    is_hbond = FALSE;
                 }
 
                 /* Check that the Rij is reasonable */
@@ -1270,19 +1277,23 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 }
                 /* Defend against division by zero... */
                 if (xA != xB) {
-		    Real tmpconst;
+		    double tmpconst;
                     cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
                     cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
 
 		    if(outlev >= LOGETABLES) {
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;");
-                    pr(logFile, "\n smoothing range is %.4f\n", r_smooth);
+                    pr(logFile, "\n smoothing range is %.4f (i.e., d - %2f to d + %.2f Angstrom)\n", 
+		     r_smooth, r_smooth/2, r_smooth/2);
 		    }
-                    ///@@intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION );
-                    intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
+                    intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, is_hbond, 
+		      r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION, 
+		      logFile, outlev);
 		    if(outlev>=LOGETABLES)
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-                    intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, r_smooth, AD4.coeff_desolv,  sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev);
+                    intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, is_hbond,
+		      r_smooth, AD4.coeff_desolv,  sigma, unbound_energy_tables, UNBOUND_CALCULATION, 
+		      logFile, outlev);
                     // Increment the atom type numbers, a1 and a2, for the internal non-bond table
                     a2++;
                     if (a2 >= info->num_atom_types) {
@@ -1571,13 +1582,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                        ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[atm1])
                        + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[atm2]) );
                 nonbondlist[i].q1q2 = charge[atm1] * charge[atm2];
+		nonbondlist[i].is_hbond = ad_energy_tables->is_hbond[t1][t2];  // MPique untested @@
                 if (outlev >= LOGLIGREAD) {
-                    pr(logFile,"   %4d     %5d-%-5d    %5.2f",i+1,atm1+1,atm2+1,nonbondlist[i].q1q2);
+                    pr(logFile,"   %4d     %5d-%-5d  %7.4f",i+1,atm1+1,atm2+1,nonbondlist[i].q1q2);
                 }//outlev
                 nonbondlist[i].q1q2 *= ELECSCALE * AD4.coeff_estat;
                 if (outlev >= LOGLIGREAD) {
-                    pr(logFile,"     %6.2f\n",nonbondlist[i].q1q2);
-                    pr(logFile,"\n");
+                    pr(logFile,"   %8.4f\n",nonbondlist[i].q1q2);
                 }//outlev
             } // for
             } // if NNb > 0
@@ -2294,6 +2305,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
 
             int a[2]; /* atom types of this interaction pair */
+	    Boole is_hbond = FALSE;  // MPique 2012 not implemented here
             for (int i=0;i<2;i++) {
                 foundParameter = apm_find(param[i]);
                 if ( NULL == foundParameter ) {
@@ -2303,9 +2315,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 else a[i] = foundParameter->map_index;
             }
             pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
+            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, is_hbond, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
            pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-           intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, r_smooth, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev );
+           intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, is_hbond, r_smooth, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev );
         } else {
             stop("ERROR: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
             exit(EXIT_FAILURE);
@@ -4434,11 +4446,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         etot = 0.;
         for (i = 0;  i < natom;  i++) {
             etot = emap[i] + elec[i];
-            pr(logFile, "%4d  %10.2f  %10.2f  %10.2f  %7.3f  %8.4f  %8.4f  %8.4f\n", (type[i]+1), etot, emap[i], elec[i], charge[i], crdorig[i][X], crdorig[i][Y], crdorig[i][Z]);
+            pr(logFile, "%4d  %10.4f  %10.4f  %10.4f %8.4f  %8.4f  %8.4f  %8.4f\n", (type[i]+1), etot, emap[i], elec[i], charge[i], crdorig[i][X], crdorig[i][Y], crdorig[i][Z]);
             charge_total += charge[i];
         } /*i*/
         pr(logFile, "      __________  __________  __________  _______\n");
-        pr(logFile, "Total %10.2lf  %10.2lf  %10.2lf  %7.3lf\n",        (double)(emap_total + elec_total), (double)emap_total, (double)elec_total, (double)charge_total);
+        pr(logFile, "Total %10.4lf  %10.4lf  %10.4lf %8.4lf\n",        (double)(emap_total + elec_total), (double)emap_total, (double)elec_total, (double)charge_total);
         pr(logFile, "      __________  __________  __________  _______\n");
         pr(logFile, "      vdW+Hb+Elec  vdW+Hbond  Electrosta  Partial\n");
         pr(logFile, "        Energy      Energy    tic Energy  Charge\n\n");

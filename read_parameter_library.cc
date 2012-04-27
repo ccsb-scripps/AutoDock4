@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.26 2012/02/07 20:47:30 mp Exp $
+ $Id: read_parameter_library.cc,v 1.27 2012/04/27 07:03:08 mp Exp $
 
  AutoDock 
 
@@ -166,9 +166,21 @@ void read_parameter_library(
                 pr(logFile, "Parameters for the atom type \"%s\" were read in from \"%s\" as follows:\n\n", thisParameter.autogrid_type, FN_parameter_library);
 
                 if (outlev > LOGETABLES) {
-                    pr(logFile, "\tR-eqm = %5.2f Angstrom\n\tweighted epsilon = %5.3f\n\tAtomic fragmental volume = %5.3f\n\tAtomic solvation parameter = %5.3f\n\tH-bonding R-eqm = %5.3f\n\tweighted H-bonding epsilon = %5.3f\n\tH-bonding type = %d,  bond index = %d\n\n",
-                            thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
-                            thisParameter.Rij_hb, thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
+		    // high precision
+                    pr(logFile, "\tR-eqm = %.6f Angstrom\n",
+                            thisParameter.Rij);
+                    pr(logFile, "\tweighted epsilon = %.8f\n",
+                            thisParameter.epsij);
+                    pr(logFile, "\tAtomic fragmental volume = %.6f\n",
+                            thisParameter.vol);
+                    pr(logFile, "\tAtomic solvation parameter = %.8f\n",
+                            thisParameter.solpar);
+                    pr(logFile, "\tH-bonding R-eqm = %.6f\n",
+                            thisParameter.Rij_hb);
+                    pr(logFile, "\tweighted H-bonding epsilon = %.8f\n",
+                            thisParameter.epsij_hb);
+                    pr(logFile, "\tH-bonding type = %d,  bond index = %d\n",
+                            thisParameter.hbond, thisParameter.bond_index);
                 } else {
                     pr(logFile, "\tR-eqm = %.2f Angstrom,  weighted epsilon = %.3f,\n\tAt.frag.vol. = %.3f,  At.solv.par. = %.3f,\n\tHb R-eqm = %.3f,  weighted Hb epsilon = %.3f,\n\tHb type = %d,  bond index = %d\n\n",
                             thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,

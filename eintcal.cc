@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.28 2012/04/13 06:22:10 mp Exp $
+ $Id: eintcal.cc,v 1.29 2012/04/27 07:03:08 mp Exp $
 
  AutoDock  
 
@@ -135,6 +135,8 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 #ifdef EINTCALPRINT
     double total_e_elec=0.0L;
     double total_e_vdW_Hb=0.0L;
+    double total_e_vdW=0.0L;
+    double total_e_Hb=0.0L;
     double total_e_desolv=0.0L;
 #endif
 
@@ -165,11 +167,11 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
             pr(logFile,     "\t\t===================================================\n\n");
         }
         if (B_calcIntElec) {
-            pr( logFile, "Non-bond  Atom1-Atom2  Distance   Total     Elec      vdW+Hb    Desolv     Sol_fn   Type Dielectric\n"); // eintcalPrint 
-            pr( logFile, "________  ___________  ________   ______  ________  ________  ________   ________   ____ __________\n"); // eintcalPrint 
+            pr( logFile, "Non-bond  Atom1-Atom2  Distance   Total     Elec       vdW        Hb     Desolv     Sol_fn   Type Dielectric\n"); // eintcalPrint 
+            pr( logFile, "________  ___________  ________   ______  ________  ________ ________  ________   ________   ____ __________\n"); // eintcalPrint 
         } else {
-            pr( logFile, "Non-bond  Atom1-Atom2  Distance   Total     vdW+Hb    Desolv     Sol_fn   Type Dielectric\n"); // eintcalPrint 
-            pr( logFile, "________  ___________  ________   ______  ________  ________   ________   ____ __________\n"); // eintcalPrint 
+            pr( logFile, "Non-bond  Atom1-Atom2  Distance   Total        vdW       Hb    Desolv     Sol_fn   Type Dielectric\n"); // eintcalPrint 
+            pr( logFile, "________  ___________  ________   ______  ________ ________  ________   ________   ____ __________\n"); // eintcalPrint 
         }
 #endif
 
@@ -189,6 +191,10 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 	    double e_elec;
             double e_desolv;    // e_desolv = dpair
 	    double e_vdW_Hb=0;
+#ifdef EINTCALPRINT
+	    double e_vdW=0;
+	    double e_Hb=0;
+#endif
 
 	    double dx, dy, dz;
 	    register double r2;
@@ -241,10 +247,18 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 		t2 = nonbondlist[inb].t2; // t2 is a map_index
 		 int index_lt_NEINT = BoundedNeint(index);  // guarantees that index_lt_NEINT is never greater than (NEINT - 1) (scaled NBC, non-bond cutoff)
 		e_vdW_Hb= ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1];
+#ifdef EINTCALPRINT
+		if( nonbondlist[inb].is_hbond ) e_Hb = e_vdW_Hb;
+		else e_vdW = e_vdW_Hb;
+#endif
                 if (B_include_1_4_interactions && nonbond_type==4 ) {
                     //| Compute a scaled 1-4 interaction,
 		    e_vdW_Hb *= scale_1_4;
 		    e_desolv *= scale_1_4;
+#ifdef EINTCALPRINT
+		    e_vdW *=  scale_1_4;
+		    e_Hb  *=  scale_1_4;
+#endif
 		}
                 e_total += e_vdW_Hb + e_desolv;
 	   }
@@ -254,22 +268,26 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
           total_e_total += e_total;
 #ifdef EINTCALPRINT // eintcalPrint [
           total_e_vdW_Hb   += e_vdW_Hb;
+          total_e_vdW      += e_vdW;
+          total_e_Hb       += e_Hb;
           total_e_desolv   += e_desolv;
           total_e_elec     += e_elec;
           double dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
 
           if (B_calcIntElec) {
 
-              pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
+           // pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
+              pr( logFile, " %6d   %5d-%-5d %8.4lf %+9.4lf %+9.4lf %+9.4lf %+9.4lf %+9.4lf  %+9.4lf   %d  %8.3lf\n", 
                     (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
-                    (double)e_total, (double)e_elec, (double)e_vdW_Hb, (double)e_desolv, 
+                    (double)e_total, (double)e_elec, (double)e_vdW, (double) e_Hb, (double)e_desolv, 
                     (double)ptr_ad_energy_tables->sol_fn[index_lt_NDIEL], (int)nonbond_type, (double)dielectric 
                  );
           } else {
 
-              pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
+           // pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
+              pr( logFile, " %6d   %5d-%-5d %8.4lf %+9.4lf %+9.4lf %+9.4lf %+9.4lf  %+9.4lf   %d  %8.3lf\n", 
                     (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
-                    (double)e_total, (double)e_vdW_Hb, (double)e_desolv, 
+                    (double)e_total, (double)e_vdW, (double) e_Hb, (double)e_desolv, 
                     (double)ptr_ad_energy_tables->sol_fn[index_lt_NDIEL], (int)nonbond_type, (double)dielectric 
                  );
           }
@@ -279,6 +297,10 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 		grouptotal.total += e_total;
 		grouptotal.elec += e_elec;
 		grouptotal.vdW_Hb += e_vdW_Hb;
+#ifdef EINTCALPRINT
+		grouptotal.vdW += e_vdW;
+		grouptotal.Hb += e_Hb;
+#endif
 		grouptotal.desolv += e_desolv;
 		}
 
@@ -307,15 +329,15 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 
 #ifdef EINTCALPRINT
     if (B_calcIntElec) {
-        pr( logFile, "                                ________  ________  ________  ________\n");
-        pr( logFile, "Total                           %+8.3lf  %+8.3lf  %+8.3lf  %+8.3lf\n", total_e_total, total_e_elec, total_e_vdW_Hb, total_e_desolv);
-        pr( logFile, "                                ________  ________  ________  ________\n");
-        pr( logFile, "                                   Total      Elec    vdW+Hb    Desolv\n");
+        pr( logFile, "                                ________  ________  ________ ________  ________\n");
+        pr( logFile, "Total                          %+9.4lf %+9.4lf %+9.4lf %+9.4lf %+9.4lf\n", total_e_total, total_e_elec, total_e_vdW, total_e_Hb, total_e_desolv);
+        pr( logFile, "                                ________  ________  ________  ________ ________\n");
+        pr( logFile, "                                   Total      Elec       vdW        Hb   Desolv\n");
     } else {
-        pr( logFile, "                                ________  ________  ________\n");
-        pr( logFile, "Total                           %+8.3lf  %+8.3lf  %+8.3lf\n", total_e_total, total_e_vdW_Hb, total_e_desolv);
-        pr( logFile, "                                ________  ________  ________\n");
-        pr( logFile, "                                   Total    vdW+Hb    Desolv\n");
+        pr( logFile, "                                ________  ________  ________ ________\n");
+        pr( logFile, "Total                          %+9.4lf %+9.4lf %+9.4lf %+9.4lf\n", total_e_total, total_e_vdW, total_e_Hb, total_e_desolv);
+        pr( logFile, "                                ________  ________  ________ ________\n");
+        pr( logFile, "                                   Total       vdW        Hb   Desolv\n");
     }
 #endif
 
