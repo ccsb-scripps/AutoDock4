@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.22 2012/04/27 07:03:08 mp Exp $
+ $Id: intnbtable.cc,v 1.23 2012/05/01 00:22:29 mp Exp $
 
  AutoDock 
 
@@ -65,7 +65,7 @@ void intnbtable( Boole *const P_B_havenbp,
                  const int xB,
 		 Boole is_hbond,
                  ConstReal r_smooth,
-                 ConstDouble coeff_desolv,
+                 const Linear_FE_Model AD4,
                  ConstDouble sigma,
                  /* not const */ EnergyTables *const ad_tables,
                  const Boole B_is_unbound_calculation,
@@ -108,10 +108,20 @@ void intnbtable( Boole *const P_B_havenbp,
         pr( logFile, "     %2s,%-2s         %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA );
         pr( logFile, "                  r\n\n");
     } else {
-        pr( logFile, "\n            %12.5lf   %12.5lf \n", cA, cB );
-        pr( logFile, "    E      =  -----------  -  -----------\n");
-        pr( logFile, "     %2s,%-2s         %2d              %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA, xB );
-        pr( logFile, "                  r               r \n\n");
+	Real weight = is_hbond ? AD4.coeff_hbond: AD4.coeff_vdW;
+	const char * wname = is_hbond ? "coeff_hbond" : "coeff_vdW";
+	Real cA_unw = cA/weight;
+	Real cB_unw = cB/weight;
+        pr( logFile, "\n                            %12.5lf    %12.5lf    %12.5lf   %12.5lf \n", cA_unw, cB_unw, cA, cB );
+	 
+	pr( logFile, "    E      =  %11s * (-----------  -  -----------) =  -----------  -  -----------\n",
+	wname, weight );
+        pr( logFile, "     %2s,%-2s        %6.4f           %-2d               %-2d             %-2d            %-2d\n", info->atom_type_name[a1], info->atom_type_name[a2], weight, xA, xB , xA,xB);
+        pr( logFile, "                                  r                r              r             r \n\n");
+//      pr( logFile, "\n            %12.5lf   %12.5lf \n", cA, cB );
+//      pr( logFile, "    E      =  -----------  -  -----------\n");
+//      pr( logFile, "     %2s,%-2s         %2d              %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA, xB );
+//      pr( logFile, "                  r               r \n\n");
     }
     pr( logFile, "Calculating %s-%-s interaction energy versus atomic separation (%.3f to %.3f Ang, %d intervals: widths %.3f to %.3f).\n",
     info->atom_type_name[a1], info->atom_type_name[a2], 
@@ -237,8 +247,8 @@ void intnbtable( Boole *const P_B_havenbp,
         r = IndexToDistance(i); 
 
         // Compute the distance-dependent gaussian component of the desolvation energy, sol_fn[i];
-        // Weight this by the coefficient for desolvation, coeff_desolv.
-        ad_tables->sol_fn[i] = coeff_desolv * exp( minus_inv_two_sigma_sqd * sq(r) );
+        // Weight this by the coefficient for desolvation, AD4.coeff_desolv.
+        ad_tables->sol_fn[i] = AD4.coeff_desolv * exp( minus_inv_two_sigma_sqd * sq(r) );
     } // next i // for ( i = 1;  i < NDIEL;  i++ )
     
     if( outlev >= LOGETABLES ) {

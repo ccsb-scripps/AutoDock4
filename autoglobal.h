@@ -1,6 +1,6 @@
 /*
 
- $Id: autoglobal.h,v 1.19 2012/02/02 02:16:47 mp Exp $
+ $Id: autoglobal.h,v 1.20 2012/05/01 00:22:29 mp Exp $
 
  AutoDock 
 
@@ -88,10 +88,6 @@ FILE    *GPF;
 int     outlev;   // made global for debugging convenience
 FILE    *logFile;   // made global for debugging convenience
 FILE    *stateFile;
-
-Linear_FE_Model AD3;
-Linear_FE_Model AD4_wrt_3;
-Linear_FE_Model AD4;
 
 Unbound_Model ad4_unbound_model = Unbound_Default;
 

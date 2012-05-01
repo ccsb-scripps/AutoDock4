@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.27 2012/04/27 07:03:08 mp Exp $
+ $Id: read_parameter_library.cc,v 1.28 2012/05/01 00:22:29 mp Exp $
 
  AutoDock 
 
@@ -39,7 +39,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern char *programname;
 extern int debug;
-extern Linear_FE_Model AD4;
 
 
 static Boole string_begins_with(const char *const a, const char *const b);
@@ -51,7 +50,8 @@ static char parameter_library[MAX_CHARS];
 void read_parameter_library(
 	FILE *logFile,
 	const int outlev,
-        const char *const FN_parameter_library
+        const char *const FN_parameter_library,
+	Linear_FE_Model *AD4
         )
 {
     static ParameterEntry thisParameter;
@@ -82,13 +82,13 @@ void read_parameter_library(
 
 // define convenience macro for common processing
 #define process(term, string)  \
-  nfields = sscanf(parameter_library_line, "%*s %lf", &AD4.term); \
+  nfields = sscanf(parameter_library_line, "%*s %lf", &AD4->term); \
   if (nfields < 1) { \
                     sprintf( msg, "%s: ERROR:  Must supply a %s coefficient as a floating point number.\n\n", programname, string); \
                     stop(msg); \
                 } \
 		if( outlev >= LOGETABLES ) \
-                pr( logFile, "Free energy coefficient for the %s term = \t%.4lf\n\n", string, AD4.term);
+                pr( logFile, "Free energy coefficient for the %s term = \t%.4lf\n\n", string, AD4->term);
 
         switch (param_keyword) {
             case PAR_:
@@ -158,8 +158,8 @@ void read_parameter_library(
                     thisParameter.hbond = NON;
                 }
 
-                thisParameter.epsij    *= AD4.coeff_vdW;
-                thisParameter.epsij_hb *= AD4.coeff_hbond;
+                thisParameter.epsij    *= AD4->coeff_vdW;
+                thisParameter.epsij_hb *= AD4->coeff_hbond;
 
                 apm_enter(thisParameter.autogrid_type, thisParameter);
 		if(outlev >= LOGETABLES) {
@@ -195,7 +195,9 @@ void read_parameter_library(
     } // while there is another line of parameters to read in
 }
 
-void setup_parameter_library( FILE *logFile, const int outlev, const char *const model_text, const Unbound_Model unbound_model )
+void setup_parameter_library( FILE *logFile, const int outlev, 
+ const char *const model_text, const Unbound_Model unbound_model,
+ Linear_FE_Model *AD4)
 {
     static ParameterEntry thisParameter;
     char parameter_library_line[LINE_LEN];
@@ -310,8 +312,8 @@ void setup_parameter_library( FILE *logFile, const int outlev, const char *const
                     thisParameter.hbond = NON;
                 }
 
-                thisParameter.epsij    *= AD4.coeff_vdW;
-                thisParameter.epsij_hb *= AD4.coeff_hbond;
+                thisParameter.epsij    *= AD4->coeff_vdW;
+                thisParameter.epsij_hb *= AD4->coeff_hbond;
 #ifdef ADVINA // {
 // experimental 
     struct xs_vdw_lookup { char name[4]; float value;};

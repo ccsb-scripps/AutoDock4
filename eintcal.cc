@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.29 2012/04/27 07:03:08 mp Exp $
+ $Id: eintcal.cc,v 1.30 2012/05/01 00:22:29 mp Exp $
 
  AutoDock  
 
@@ -166,13 +166,19 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
             pr(logFile, "\n\n\t\tReceptor Moving-Atom Intramolecular Energy Analysis\n");
             pr(logFile,     "\t\t===================================================\n\n");
         }
-        if (B_calcIntElec) {
-            pr( logFile, "Non-bond  Atom1-Atom2  Distance   Total     Elec       vdW        Hb     Desolv     Sol_fn   Type Dielectric\n"); // eintcalPrint 
-            pr( logFile, "________  ___________  ________   ______  ________  ________ ________  ________   ________   ____ __________\n"); // eintcalPrint 
-        } else {
-            pr( logFile, "Non-bond  Atom1-Atom2  Distance   Total        vdW       Hb    Desolv     Sol_fn   Type Dielectric\n"); // eintcalPrint 
-            pr( logFile, "________  ___________  ________   ______  ________ ________  ________   ________   ____ __________\n"); // eintcalPrint 
-        }
+#define H1 "Non-bond  Atom1-Atom2  Distance   Total    vdW     "
+#define U1 "________  ___________  ________   ______  ________ "
+#define H2 "     vdW        Hb     Desolv     Sol_fn   Type Dielectric"
+#define U2 "  ________ ________  ________   ________   ____ __________"
+
+        pr( logFile, "%s", H1);
+        if (B_calcIntElec) pr( logFile, "      Elec");
+        pr( logFile, "%s\n", H2);
+
+        pr( logFile, "%s", U1);
+        if (B_calcIntElec) pr( logFile, " _________");
+        pr( logFile, "%s\n", U2);
+
 #endif
 
         if (nb_group == 0) inb_from = 0;
@@ -274,23 +280,16 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
           total_e_elec     += e_elec;
           double dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
 
-          if (B_calcIntElec) {
 
-           // pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
-              pr( logFile, " %6d   %5d-%-5d %8.4lf %+9.4lf %+9.4lf %+9.4lf %+9.4lf %+9.4lf  %+9.4lf   %d  %8.3lf\n", 
-                    (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
-                    (double)e_total, (double)e_elec, (double)e_vdW, (double) e_Hb, (double)e_desolv, 
-                    (double)ptr_ad_energy_tables->sol_fn[index_lt_NDIEL], (int)nonbond_type, (double)dielectric 
-                 );
-          } else {
+          pr( logFile, " %6d   %5d-%-5d %8.4lf %+9.4lf ",
+                    (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), (double)e_total);
 
-           // pr( logFile, " %6d   %5d-%-5d  %7.2lf  %+8.3lf  %+8.3lf  %+8.3lf   %+8.3lf   %d  %8.3lf\n", 
-              pr( logFile, " %6d   %5d-%-5d %8.4lf %+9.4lf %+9.4lf %+9.4lf %+9.4lf  %+9.4lf   %d  %8.3lf\n", 
-                    (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), 
-                    (double)e_total, (double)e_vdW, (double) e_Hb, (double)e_desolv, 
-                    (double)ptr_ad_energy_tables->sol_fn[index_lt_NDIEL], (int)nonbond_type, (double)dielectric 
-                 );
-          }
+          if (B_calcIntElec) pr( logFile, " %+9.4lf", (double)e_elec);
+
+          pr( logFile, " %+9.4lf %+9.4lf %+9.4lf  %+9.4lf   %d  %8.3lf\n", 
+                    (double)e_vdW, (double) e_Hb, (double)e_desolv, 
+                    (double)ptr_ad_energy_tables->sol_fn[index_lt_NDIEL], 
+		    (int)nonbond_type, (double)dielectric);
 
 #endif // eintcalPrint ]
 	if(group_energy!=NULL) {

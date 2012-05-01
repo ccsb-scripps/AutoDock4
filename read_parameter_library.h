@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.h,v 1.12 2011/09/17 00:01:33 mp Exp $
+ $Id: read_parameter_library.h,v 1.13 2012/05/01 00:22:29 mp Exp $
 
  AutoDock 
 
@@ -32,14 +32,16 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 void read_parameter_library(
 	FILE *logFile,
         const int outlev,
-        const char *const FN_parameter_library
+        const char *const FN_parameter_library,
+	Linear_FE_Model *AD4
         );
 
 void setup_parameter_library(
 	FILE *logFile,
         const int outlev,
         const char * model_text,
-        const Unbound_Model unbound_model
+        const Unbound_Model unbound_model,
+	Linear_FE_Model *AD4
         );
 
 // The returned string is not supposed to be changed

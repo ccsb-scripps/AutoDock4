@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.174 2012/04/27 07:03:08 mp Exp $
+ $Id: main.cc,v 1.175 2012/05/01 00:22:29 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -113,11 +113,10 @@ extern int debug;
 extern int keepresnum;
 extern Real idct;
 extern Eval evaluate;
-extern Linear_FE_Model AD4;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.174 2012/04/27 07:03:08 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.175 2012/05/01 00:22:29 mp Exp $"};
 
 
 
@@ -354,10 +353,14 @@ Boole B_calcIntElec = FALSE;
 Boole B_calcIntElec_saved = FALSE;
 Real r_smooth=0.5; // vdw nonbond smoothing range, not radius, Ang - default 0.5 matches AutoGrid recommendations
 Real WallEnergy = 1000; /* Energy barrier beyond walls of gridmaps. 1000 is ADT default  */
+
 int xA = 12;
 int xB = 6;
 Real cA_unbound = 392586.8;  // repulsive
 Real cB_unbound = 0.0; // attractive
+
+// set by read_parameter_library:
+Linear_FE_Model AD4;
 
 
 // Distance-dependence in Desolvation Term
@@ -746,7 +749,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.174 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.175 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -782,7 +785,7 @@ if(outlev>=LOGFORADT) {
 //
 // Read in default parameters
 //
-setup_parameter_library(logFile, outlev, "default Unbound_Same_As_Bound", Unbound_Same_As_Bound);
+setup_parameter_library(logFile, outlev, "default Unbound_Same_As_Bound", Unbound_Same_As_Bound, &AD4);
 
 //
 // Compute the look-up table for the distance-dependent dielectric function
@@ -970,7 +973,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         */
 
         parameter_library_found = 1==sscanf( line, "%*s %s", FN_parameter_library );
-        read_parameter_library(logFile, outlev, FN_parameter_library);
+        read_parameter_library(logFile, outlev, FN_parameter_library, &AD4);
 
         break;
 
@@ -1193,7 +1196,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         // Calculate the internal energy table
 
-        // loop over atom types, i, from 1 to number of atom types
+        // loop over atom types, i
         for (i=0; i<num_atom_types; i++) {
 
             //  Find internal energy parameters, i.e.  epsilon and r-equilibrium values...
@@ -1232,22 +1235,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 if ( ((hbondi == DS) || (hbondi == D1)) && ((hbondj == AS) || (hbondj == A1) || (hbondj == A2)) ) {
                     // i is a donor and j is an acceptor.
                     // i is a hydrogen, j is a heteroatom
-                    // we need to calculate the arithmetic mean of Ri_hb and Rj_hb  // not in this Universe...  :-(
-                    //Rij = arithmetic_mean(Ri_hb, Rj_hb);// not in this Universe...  :-(
                     Rij = Rj_hb;
-                    // we need to calculate the geometric mean of epsi_hb and epsj_hb  // not in this Universe...  :-(
-                    //epsij = geometric_mean(epsi_hb, epsj_hb);// not in this Universe...  :-(
                     epsij = epsj_hb;
                     xB = 10;
 		    is_hbond = TRUE;
                 } else if ( ((hbondi == AS) || (hbondi == A1) || (hbondi == A2)) && ((hbondj == DS) || (hbondj == D1))) {
                     // i is an acceptor and j is a donor.
                     // i is a heteroatom, j is a hydrogen
-                    // we need to calculate the arithmetic mean of Ri_hb and Rj_hb// not in this Universe...  :-(
-                    //Rij = arithmetic_mean(Ri_hb, Rj_hb);// not in this Universe...  :-(
                     Rij = Ri_hb;
-                    // we need to calculate the geometric mean of epsi_hb and epsj_hb// not in this Universe...  :-(
-                    //epsij = geometric_mean(epsi_hb, epsj_hb);// not in this Universe...  :-(
                     epsij = epsi_hb;
                     xB = 10;
 		    is_hbond = TRUE;
@@ -1277,8 +1272,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 }
                 /* Defend against division by zero... */
                 if (xA != xB) {
-		    double tmpconst;
-                    cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
+		    double tmpconst = epsij / (Real)(xA - xB);
+                    cA = tmpconst * pow( (double)Rij, (double)xA ) * (Real)xB;
                     cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
 
 		    if(outlev >= LOGETABLES) {
@@ -1287,12 +1282,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 		     r_smooth, r_smooth/2, r_smooth/2);
 		    }
                     intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, is_hbond, 
-		      r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION, 
+		      r_smooth, AD4, sigma, ad_energy_tables, BOUND_CALCULATION, 
 		      logFile, outlev);
 		    if(outlev>=LOGETABLES)
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
                     intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, is_hbond,
-		      r_smooth, AD4.coeff_desolv,  sigma, unbound_energy_tables, UNBOUND_CALCULATION, 
+		      r_smooth, AD4,  sigma, unbound_energy_tables, UNBOUND_CALCULATION, 
 		      logFile, outlev);
                     // Increment the atom type numbers, a1 and a2, for the internal non-bond table
                     a2++;
@@ -2295,13 +2290,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         /* Defend against division by zero... */
         if (xA != xB) {
             if ( dpf_keyword == DPF_INTNBP_REQM_EPS ) {
-            // Calculate the coefficients from Rij and epsij
-    	    Real tmpconst;
-            cA = (tmpconst = epsij / (Real)(xA - xB)) * pow( (double)Rij, (double)xA ) * (Real)xB;
-            cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
+               // Calculate the coefficients from Rij and epsij
+    	       double tmpconst = epsij / (Real)(xA - xB);
+               cA = tmpconst * pow( (double)Rij, (double)xA ) * (Real)xB;
+               cB = tmpconst * pow( (double)Rij, (double)xB ) * (Real)xA;
             } else {
-            cA = Rij;
-            cB = epsij;
+               cA = Rij;
+               cB = epsij;
             }
 
             int a[2]; /* atom types of this interaction pair */
@@ -2315,9 +2310,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 else a[i] = foundParameter->map_index;
             }
             pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, is_hbond, r_smooth, AD4.coeff_desolv, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
+            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, is_hbond, r_smooth, AD4, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
            pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-           intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, is_hbond, r_smooth, AD4.coeff_desolv, sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev );
+           intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, is_hbond, r_smooth, AD4, sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev );
         } else {
             stop("ERROR: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
             exit(EXIT_FAILURE);
@@ -3938,7 +3933,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         || streq( unbound_model_type, "same_as_bound")
         || streq( unbound_model_type, "unbound_same_as_bound")) {
             if (ad4_unbound_model != Unbound_Same_As_Bound)  // default for Autodock 4.1
-                setup_parameter_library(logFile, outlev, "Unbound_Same_As_Bound", Unbound_Same_As_Bound);
+                setup_parameter_library(logFile, outlev, "Unbound_Same_As_Bound", Unbound_Same_As_Bound, &AD4);
             ad4_unbound_model = Unbound_Same_As_Bound;
         } else if (streq( unbound_model_type, "extended")) {
             if (ad4_unbound_model != Unbound_Default) { //illegal to set extended after other
@@ -3948,7 +3943,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             }
             if ( (1== sscanf( line, "%*s extended energy " FDFMT, &unbound_internal_FE ))){
                 ad4_unbound_model = Extended;
-                setup_parameter_library(logFile, outlev, "unbound_extended", ad4_unbound_model);
+                setup_parameter_library(logFile, outlev, "unbound_extended", ad4_unbound_model, &AD4);
             }
             else goto process_DPF_COMPUTE_UNBOUND_EXTENDED; // case DPF_COMPUTE_UNBOUND_EXTENDED below
         } else if (streq( unbound_model_type, "compact")) {
@@ -3999,7 +3994,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 stop("");
             }
             ad4_unbound_model = Extended;
-            setup_parameter_library(logFile, outlev, "unbound_extended", ad4_unbound_model);
+            setup_parameter_library(logFile, outlev, "unbound_extended", ad4_unbound_model, &AD4);
 
             pr(logFile, "Computing the energy of the unbound state of the ligand,\ngiven the torsion tree defined in the ligand file.\n\n");
             (void) fflush( logFile );
@@ -4706,7 +4701,7 @@ if (NULL != programname) free(programname); programname=(char *) NULL;
     boinc_finish(0);       /* should not return */
 #endif
 
-return 0;
+return EXIT_SUCCESS;
 
 } /* END OF PROGRAM */
 

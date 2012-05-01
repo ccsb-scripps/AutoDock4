@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.h,v 1.16 2012/04/27 07:03:08 mp Exp $
+ $Id: intnbtable.h,v 1.17 2012/05/01 00:22:29 mp Exp $
 
  AutoDock 
 
@@ -40,7 +40,7 @@ void intnbtable(/* not const */ Boole *const P_B_havenbp,
                 const int   xB,
 		const Boole is_hbond,
                 ConstReal   r_smooth,
-                ConstDouble coeff_desolv,
+                const Linear_FE_Model AD4,
                 ConstDouble sigma,
                 /* not const */ EnergyTables *const ad_tables,
                 const Boole B_is_unbound_calculation,
