@@ -1,6 +1,6 @@
 /*
 
- $Id: prTorConList.cc,v 1.7 2010/08/27 00:05:08 mp Exp $
+ $Id: prTorConList.cc,v 1.8 2012/05/04 20:26:26 mp Exp $
 
  AutoDock 
 
@@ -33,6 +33,18 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include <string.h>
 #include "prTorConList.h"
+
+/*
+ * Number of columns for torsion profile output.
+ * Keep NCOLS less than 72, to ensure whole line
+ * fits into 80 columns.
+ */
+
+#define NCOLS 64
+
+/* Number of rows for torsion profile output. */
+
+#define NROWS 16
 
 
 #define AddNewHardCon(iCon,low,upp)  F_TorConRange[i][iCon][LOWER]=low;F_TorConRange[i][iCon][UPPER]=upp

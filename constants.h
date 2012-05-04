@@ -1,12 +1,13 @@
 /*
 
- $Id: constants.h,v 1.37 2012/02/28 00:18:40 mp Exp $
+ $Id: constants.h,v 1.38 2012/05/04 20:26:26 mp Exp $
 
  AutoDock 
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  AutoDock is a Trade Mark of The Scripps Research Institute.
+ AutoGrid is a Trade Mark of The Scripps Research Institute.
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -60,6 +61,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  * 06/11/92 GMM     New command mode, allowing communication between Autodock *
  *                    and other, invoking programs.                           *
  ******************************************************************************/
+
+// note: this file is shared by AutoDock and AutoGrid
 
 #ifndef CONSTANTS
 #define CONSTANTS
@@ -136,7 +139,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 
 #define ENERGY_CUTOFF 500.    /* Arbitrary intermolecular cutoff, above 
-                                 which intramolecular energy is not calculated. */
+                                 which intramolecular energy is not calculated. 
+				 (appears unused in AD code - perhaps great idea - MP 2012)
+				 */
 #define HI_NRG_JUMP_FACTOR 2. /* Scale up the range of random jumps by this when the 
                                  last energy was higher than ENERGY_CUTOFF. */
 
@@ -204,29 +209,17 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define EPSIJ_MAX 10.0
 
 
-/* Number of cluster-energies per line of output. */
-
-#define OUTNUMCLUST     5     /* Number of cluster-energies per line of output. */
-
-/*
- * Number of columns for torsion profile output.
- * Keep NCOLS less than 72, to ensure whole line
- * fits into 80 columns.
- */
-
-#define NCOLS 64
-
-/* Number of rows for torsion profile output. */
-
-#define NROWS 16
-
 /* Statistics output frequency in GAs */
  
 #define OUTLEV0_GENS 0   /* Never output based on number of generations */
 #define OUTLEV1_GENS 100 /* output every 100 generations */
 #define OUTLEV2_GENS 1 /* output every generation */
 
-/* logFile outlev handling: low to high */
+/* logFile outlev handling: low to high
+ * This is AutoDock only, not AutoGrid so not certain it should be here 
+ * in constants.h but that's where I'm putting it for now - MPique 2012
+ */
+
 #define LOGMIN -2
 #define LOGMINCLUST -1
 #define LOGBASIC 0
@@ -238,6 +231,25 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define LOGRUNVVV 6
 #define LOGETABLES 7
 #define LOGNBINTE 8   // analysis.cc nonbond internal energy table
+#define LOGNBINTEV 9   // analysis.cc nonbond internal energy table verbose
+const struct {
+	int value;
+	char *key;
+	} outlev_lookup[] = { 
+ {LOGMIN, "min"},
+ {LOGMINCLUST, "mincluster"},
+ {LOGBASIC, "basic"},
+ {LOGFORADT, "adt"},
+ {LOGFORADT, "default"},
+ {LOGRUNV, "runv"},
+ {LOGLIGREAD, "ligread"},
+ {LOGRECREAD, "recread"},
+ {LOGRUNVV, "runvv"},
+ {LOGRUNVVV, "runvvv"},
+ {LOGETABLES, "etables"},
+ {LOGNBINTE, "nbint"}, 
+ {LOGNBINTEV, "nbintv"}, 
+ {0, ""} /* last */ };
 #endif  /* CONSTANTS */
 
 
