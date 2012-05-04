@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.38 2012/05/04 20:26:26 mp Exp $
+ $Id: constants.h,v 1.39 2012/05/04 22:23:23 mp Exp $
 
  AutoDock 
 
@@ -247,8 +247,8 @@ const struct {
  {LOGRUNVV, "runvv"},
  {LOGRUNVVV, "runvvv"},
  {LOGETABLES, "etables"},
- {LOGNBINTE, "nbint"}, 
- {LOGNBINTEV, "nbintv"}, 
+ {LOGNBINTE, "nbinte"}, 
+ {LOGNBINTEV, "nbintev"}, 
  {0, ""} /* last */ };
 #endif  /* CONSTANTS */
 

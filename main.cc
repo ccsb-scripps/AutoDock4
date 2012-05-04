@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.175 2012/05/01 00:22:29 mp Exp $
+ $Id: main.cc,v 1.176 2012/05/04 22:23:23 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -75,6 +75,9 @@ using std::string;
 // convenience macro for parsing the (many) single-argument DPF lines:
 //  if not 1 (non-ignored) argument, stop, reporting fatal error
 #define get1arg(line, fmt, addr, token) if(1!=sscanf(line, fmt, addr))stop("syntax error in " token " line")
+// convenience macro for reporting syntax errors in DPF lines:
+#define syntaxstop(s) {char ss[LINE_LEN+50];sprintf(ss,"syntax error or illegal value in %s line",s);stop(ss);}
+
 // convenience macro for making value boolean (in place)
 #define mkbool(x) (x=((x)!=0))
 
@@ -116,7 +119,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.175 2012/05/01 00:22:29 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.176 2012/05/04 22:23:23 mp Exp $"};
 
 
 
@@ -138,6 +141,7 @@ static Boole B_have_flexible_residues = FALSE;  // does the receptor have flexib
 
 
 static void exit_if_missing_elecmap_desolvmap_about(string keyword); // see bottom of main.cc
+static int getoutlev(char *line, int *outlev); // see bottom of main.cc  0==fail, 1==OK
 static int true_ligand_atoms = 0; // used by exit_if ... 
 
 // PSO  - Particle Swarm Optimization  - not officially supported
@@ -606,6 +610,8 @@ jobStart = times( &tms_jobStart );
 #endif
 #endif
 
+// set initial outlev value
+(void) getoutlev("default", &outlev); // see bottom of main.cc and constanst.h
 
 //______________________________________________________________________________
 /*
@@ -621,6 +627,7 @@ if ( setflags(argc,argv,version_num.c_str()) == -1) {
 /*
 ** Initialize torsion arrays and constants.
 */
+
 
 int ltorfmt = 4;
 (void) strcpy( torfmt, "%*s" ); /* len(torfmt) is 3 chars */
@@ -707,7 +714,7 @@ F_lnH = ((Real)log(0.5));
 
 //______________________________________________________________________________
 /*
-** Determine output level before we output anything.
+** Determine initial output level before we output anything.
 ** We must parse the entire DPF -- silently -- for any outlev settings
 ** or flexible residues file specification
 */
@@ -715,14 +722,22 @@ F_lnH = ((Real)log(0.5));
 while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     (void) fflush(logFile);
     dpf_keyword = parse_dpf_line( line );
+    if(line[strlen(line)-1]=='\n') line[strlen(line)-1]='\0';  // remove newline if last char in line
 
     switch( dpf_keyword ) {
     case DPF_OUTLEV:
         /*
         **  outlev
         **  Output level,
+	**  syntax errors found in this first pass could lead to crypic error
+	**  messages since the DPF lines are not echoed in the first pass
+	**  
         */
-        get1arg( line, "%*s %d", &outlev, "OUTLEV" );
+	if(! getoutlev(line, &outlev)) {
+	char msg[LINE_LEN+60];
+	sprintf(msg, "syntax error or illegal value in DPF outlev setting '%s'", line);
+	stop(msg);
+	}
         break;
 
     case DPF_FLEXRES:
@@ -749,7 +764,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.175 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.176 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -834,7 +849,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
         case DPF_BLANK_LINE:
         case DPF_COMMENT:
-	    if(outlev>=LOGBASIC) pr( logFile, "DPF> %s", line );
+	    if(outlev>=LOGBASIC) pr( logFile, "DPF> %s\n", line );
             break;
 
         default:
@@ -912,14 +927,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  outlev
         **  Output level,
         */
-        get1arg( line, "%*s %d", &outlev, "OUTLEV" );
+	if(! getoutlev(line, &outlev)) syntaxstop("outlev");
         output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS; // default
-	// MP TODO  this could be improved
         pr( logFile, "Output Level = %d " , outlev);
         switch ( outlev ) {
 	case LOGMIN:
-	case LOGMINCLUST:
             pr( logFile, "ONLY STATE VARIABLES OUTPUT, NO COORDINATES.\n" );
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
+            break;
+	case LOGMINCLUST:
+            pr( logFile, "ONLY STATE VARIABLES AND CLUSTERING OUTPUT, NO COORDINATES.\n" );
             output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
             break;
         case LOGBASIC:
@@ -937,6 +954,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             output_pop_stats.everyNgens = (unsigned int) OUTLEV2_GENS;
 	    break;
 	case LOGLIGREAD:
+	    pr(logFile, " EXPANDED OUTPUT DURING LIGAND SETUP.\n" );
+	    break;
 	case LOGRECREAD:
 	    pr(logFile, " EXPANDED OUTPUT DURING LIGAND/RECEPTOR SETUP.\n" );
             break;
@@ -949,6 +968,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	    break;
 	case LOGETABLES:
 	case LOGNBINTE:
+	case LOGNBINTEV:
 	    pr(logFile, " EXPANDED OUTPUT DURING ENERGY TABLE SETUP.\n" );
 	    break;
 	default:
@@ -1790,7 +1810,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         **  Rotation center for current ligand,
         */
         nfields = sscanf( line, "%*s " FDFMT3, &lig_center[X], &lig_center[Y], &lig_center[Z]);
-	if(nfields!=3) stop("syntax error in ABOUT line");
+	if(nfields!=3) syntaxstop("ABOUT");
         pr( logFile, "Small molecule center of rotation =\t" );
         pr( logFile, "(%+.3f, %+.3f, %+.3f)\n\n", lig_center[X], lig_center[Y], lig_center[Z]);
         B_found_about_keyword = TRUE; //set false by 'move' true by 'about'
@@ -4723,6 +4743,20 @@ static void exit_if_missing_elecmap_desolvmap_about(string keyword)
     }
 }
 
+static int getoutlev(char *line, int *outlev) {
+ /* set *outlev either numerically or symbolically. return 1 if OK, 0 for fail */
+	char s[LINE_LEN];
+
+	if(1==sscanf(line, "%*s %d", outlev)) return 1;
+	// if not integer, look for symbolic outlev, see constants.h
+	if(1 != sscanf(line, "%*s %s", s)) return 0;
+	for(int i=0;strlen(outlev_lookup[i].key)>0;i++)  \
+	  if(streq(s,outlev_lookup[i].key)) {
+	    *outlev=outlev_lookup[i].value;
+	    return 1;
+	  }
+	return 0;
+}
 
 #ifdef BOINC
 /*  Dummy graphics API entry points.
