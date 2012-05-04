@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.50 2012/04/27 07:03:09 mp Exp $
+# $Id: test_autodock4.py,v 1.51 2012/05/04 22:22:42 mp Exp $
 #
 
 """
@@ -425,6 +425,36 @@ class AutoDock4_1pgp_epdb_etables_test( AutoDock_simple_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_numoutlev_test( AutoDock_simple_test ):
+    """Test autodock 4.3 numeric outlev detail settings."""
+    dpf_stem = "1pgp_numoutlev"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_no_outlev_test( AutoDock_simple_test ):
+    """Test autodock 4.3 default outlev detail setting."""
+    dpf_stem = "1pgp_no_outlev"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_illegal_outlev_test( AutoDock_simple_test ):
+    """Test autodock 4.3 outlev with no argument setting."""
+    dpf_stem = "1pgp_illegal_outlev"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_symoutlev_test( AutoDock_simple_test ):
+    """Test autodock 4.3 symbolic and numeric outlev detail settings."""
+    dpf_stem = "1pgp_symoutlev"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_illegal_symoutlev_test( AutoDock_simple_test ):
+    """Test autodock 4.3 symbolic outlev incorrect setting."""
+    dpf_stem = "1pgp_illegal_symoutlev"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_smaller_test( AutoDock_test ):
     """Test that autodock4 executes using fewer parameters and an extremely short run."""
     dpf_stem = "1pgp_smaller"
@@ -664,6 +694,11 @@ if __name__ == '__main__':
         # simple tests:
         'AutoDock4_1pgp_timepid_test',
         'AutoDock4_1pgp_epdb_etables_test',
+        'AutoDock4_1pgp_numoutlev_test',
+        'AutoDock4_1pgp_symoutlev_test',
+	'AutoDock4_1pgp_no_outlev_test',
+	'AutoDock4_1pgp_illegal_outlev_test',
+        'AutoDock4_1pgp_illegal_symoutlev_test',
         'AutoDock4_1pgp_ligand_types_map_mismatch',
         'AutoDock4_1pgp_illegal_keyword_test',
         'AutoDock4_1pgp_no_elecmap_test',
