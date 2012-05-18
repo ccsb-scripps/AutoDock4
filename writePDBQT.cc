@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.38 2012/04/13 06:22:10 mp Exp $
+ $Id: writePDBQT.cc,v 1.39 2012/05/18 01:01:25 mp Exp $
 
  AutoDock  
 
@@ -139,16 +139,20 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 	printState(logFile, state, 6); // detailed, include center, ntor, no newline
 	pr(logFile, "\n");
 
-	if (outlev >= LOGBASIC) {
-        // "outlev" is the level of detail: 2 is high, 0 is low
+        // "outlev" is the level of detail: >2 is high, 0 is low
+	if (outlev >= LOGRUNVV) {
         pr(logFile, "QState:\t");
         printState(logFile, state, 5); // short format, as quaternion
         pr(logFile, "\n");
+	}
 
+	if (outlev >= LOGFORADT) {
+	// MP I believe ADT write_models_from_states.py expects this line  2012-05
         pr(logFile, "State:\t"); // various possibly longer formats, as axis-angle
         printState(logFile, state, outlev);
-        pr(logFile, "\n\n");
+        pr(logFile, "\n");
 	}
+        pr(logFile, "\n"); // separator before DOCKED: ...  lines
 
     // Convert state variables to x, y, z-coordinates
 	cnv_state_to_coords( state, vt, tlist, ntor, crdpdb, crd, natom,

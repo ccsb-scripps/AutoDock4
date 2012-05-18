@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.176 2012/05/04 22:23:23 mp Exp $
+ $Id: main.cc,v 1.177 2012/05/18 01:01:25 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -119,7 +119,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.176 2012/05/04 22:23:23 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.177 2012/05/18 01:01:25 mp Exp $"};
 
 
 
@@ -719,8 +719,7 @@ F_lnH = ((Real)log(0.5));
 ** or flexible residues file specification
 */
 
-while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
-    (void) fflush(logFile);
+while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile */
     dpf_keyword = parse_dpf_line( line );
     if(line[strlen(line)-1]=='\n') line[strlen(line)-1]='\0';  // remove newline if last char in line
 
@@ -764,7 +763,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.176 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.177 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -825,14 +824,14 @@ if(outlev>LOGFORADT) {
 /*
 ** (Note: "dock_param_fn" set in "setflags.c"...)
 */
-pr( logFile, "Docking parameter file (DPF) used for this docking:\t\t%s\n\n", dock_param_fn );
+pr( logFile, "Docking parameter file (DPF) used for this docking:\t\t%s\n", dock_param_fn );
 
 //______________________________________________________________________________
 /*
 ** Start reading in the DPF parameter/run-control file,
 */
 
-while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
+while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile */
     // "line" is a string containing the current line of the input DPF.
 
     (void) fflush(logFile);
@@ -1212,8 +1211,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             } // if / else apm_find
         } // for i
 
-        (void) fflush( logFile);
-
         // Calculate the internal energy table
 
         // loop over atom types, i
@@ -1320,7 +1317,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                     pr(logFile,"ERROR: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
 		    stop("exponent would cause division by zero");
                 }
-                (void) fflush(logFile);
 
             } // for j
         } // for i
@@ -3210,7 +3206,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             for (j=0; j<nruns; j++) {
 
                 (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
-                (void) fflush( logFile );
                 pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
 
                 pr(logFile, "Date:\t");
@@ -3252,10 +3247,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                 timesyshms( gaEnd - gaStart, &tms_gaStart, &tms_gaEnd );
                 pr( logFile, "\n");
                 printdate( logFile, 1 );
-                (void) fflush( logFile );
 
                 pr(logFile, "Total number of Energy Evaluations: %lu\n", evaluate.evals() );
                 pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
+                (void) fflush( logFile );
 
                 pr( logFile, "\n\n\tFINAL %s ALGORITHM DOCKED STATE\n", GlobalSearchMethod->longname());
                 pr( logFile,     "\t_______________________________________________\n\n\n" );
@@ -3351,7 +3346,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 
                (void) fprintf( logFile, "\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
                pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
-               (void) fflush( logFile );
 
                pr(logFile, "Date:\t");
                printdate( logFile, 2 );
@@ -3460,7 +3454,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
     case GA_mutation_rate:
        get1arg(line, "%*s " FDFMT, &m_rate, "GA_MUTATION_RATE");
        pr(logFile, "The mutation rate is %f.\n", m_rate);
-        (void) fflush(logFile);
       // if m_rate is out of range, make_table will fail 
       if (m_rate < 0 || m_rate > 1) {
 	prStr(error_message, "mutation rate must be within range 0 to 1 (inclusive).\n");
@@ -3757,7 +3750,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         ((ParticleSwarmGS*)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
 	  					   
       pr(logFile, "GlobalSearchMethod is set to PSO.\n\n");     
-      fflush(logFile);      
    	 
 
 	    // set lig_center if not already set, use to center "crdpdb" ligand
@@ -3784,7 +3776,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 	   {	 
 	 		//(void) fprintf( logFile, "\n\tBEGINNING PARTICLE SWARM OPTIMIZATION (PSO) \n");
             (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
-	 		(void) fflush( logFile );
 
 	 		pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
 	 		pr(logFile, "Date:\t");
@@ -4017,7 +4008,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             setup_parameter_library(logFile, outlev, "unbound_extended", ad4_unbound_model, &AD4);
 
             pr(logFile, "Computing the energy of the unbound state of the ligand,\ngiven the torsion tree defined in the ligand file.\n\n");
-            (void) fflush( logFile );
 
             // The initial goal is to obtain an extended conformation of the ligand.
 
@@ -4091,7 +4081,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
             //
             (void) fprintf( logFile, "\n\tBEGINNING COMPUTATION OF UNBOUND EXTENDED STATE USING LGA\n");
             (void) fprintf( logFile,     "\t_________________________________________________________\n\n\n");
-            (void) fflush( logFile );
             //
             pr(logFile, "Date:\t");
             printdate( logFile, 2 );
@@ -4243,7 +4232,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
                  */
                 (void) fprintf( logFile, "\n\tBEGINNING COMPUTATION OF UNBOUND AUTODOCK STATE USING LGA\n");
                 (void) fprintf( logFile,     "\t_________________________________________________________\n\n\n");
-                (void) fflush( logFile );
                 //
                 pr(logFile, "Date:\t");
                 printdate( logFile, 2 );
@@ -4553,7 +4541,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         //pr(logFile, "Tournament selection will be used in GA and LGA searches.\n");
          prStr( error_message, "%s:  ERROR! Tournament selection is not yet implemented!\n", programname);
          pr_2x( logFile, stderr, error_message );
-         (void) fflush(logFile);
 	 stop(error_message);
          break;
 
@@ -4595,7 +4582,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
         
         prStr( error_message, "%s:  ERROR! Boltzman selection is not yet implemented! \n", programname);
         pr_2x( logFile, stderr, error_message );
-        (void) fflush(logFile);
 	stop(error_message);
         break;
 
@@ -4682,8 +4668,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* PARSING-DPF parFile */
 ** Close the docking parameter file...
 ** __________________________________________________________________________
 */
-pr( logFile, ">>> Closing the docking parameter file (DPF)...\n\n" );
-//pr( logFile, UnderLine );
+pr( logFile, ">>> Closing the docking parameter file (DPF)...\n" );
 (void) fclose( parFile );
 
 
@@ -4694,7 +4679,7 @@ pr( logFile, ">>> Closing the docking parameter file (DPF)...\n\n" );
 
 pr( logFile, "This docking finished at:\t\t\t" );
 printdate( logFile, 1 );
-pr( logFile, "\n\n\n" );
+pr( logFile, "\n" );
 
 success( hostnm, jobStart, tms_jobStart );
 
@@ -4706,9 +4691,6 @@ success( hostnm, jobStart, tms_jobStart );
 
 // delete arrays
 delete []nonbondlist;
-
-if (NULL != programname) free(programname); programname=(char *) NULL;
-
 
 //________________________________________________________________________________
 /*
