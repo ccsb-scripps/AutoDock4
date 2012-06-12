@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.15 2012/04/13 06:22:10 mp Exp $
+ $Id: prInitialState.cc,v 1.16 2012/06/12 22:19:32 mp Exp $
 
  AutoDock 
 
@@ -38,7 +38,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern int keepresnum;
 extern FILE *logFile;
-extern char *programname;
 
 
 void prInitialState(
@@ -57,7 +56,7 @@ void prInitialState(
     )
 
 {
-    char descriptor[17];
+    char *descriptor = "INITIAL STATE:  ";
     register int i = 0;
     int a = 0;
     Real emap_total = 0.0;
@@ -65,7 +64,6 @@ void prInitialState(
     Real emap_flexres_total = 0;
     Real elec_flexres_total = 0;
 
-    strncpy(descriptor, "INITIAL STATE:  ", (size_t)16);
 
     pr( logFile, "\n\t\t%s\n\t\t______________\n\n\n", descriptor );
 

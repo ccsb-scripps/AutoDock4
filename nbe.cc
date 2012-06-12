@@ -1,6 +1,6 @@
 /*
 
- $Id: nbe.cc,v 1.8 2010/08/27 00:05:07 mp Exp $
+ $Id: nbe.cc,v 1.9 2012/06/12 22:19:32 mp Exp $
 
  AutoDock 
 
@@ -62,15 +62,18 @@ void nbe( const GridMapSetInfo *const info,
 
 {
  
-    static int NUMPTS = 640;
+    static int NUMPTS = 640; // MPique - arbitrary limit for output table
     register int i = 0;
     register int j = 0;
     register int k = 0;
     Real r = 0.;
 
+    // MPique - the formatting depends on handling of tabs so may not look
+    // right on every system but not worth fixing all of it.  2012-06
+
     pr( logFile,"SUMMARY OF PAIRWISE-ATOMIC NON-BONDED INTERNAL ENERGIES\n" );
     pr( logFile,"________________________________________________________\n\n");
-    pr( logFile,"Clamp pairwise-atomic interaction energies at:\t%.2f\n", EINTCLAMP );
+    pr( logFile,"Clamp pairwise-atomic interaction energies at:\t%.2f kcal/mol\n", EINTCLAMP );
  
     pr( logFile, "    \t\n r  \tLook-up\t" );
     for ( i = 0; i < num_atm_maps; i++) {
@@ -81,7 +84,7 @@ void nbe( const GridMapSetInfo *const info,
     pr( logFile, "\n /Ang\tIndex\t" );
     for ( i = 0; i < num_atm_maps; i++) {
         for ( j = i; j < num_atm_maps; j++) {
-            pr( logFile, "   %2s,%-2s ", info->atom_type_name[i], info->atom_type_name[j] );
+            pr( logFile, " %2s,%-2s ", info->atom_type_name[i], info->atom_type_name[j] );
         }
     }
     pr( logFile, "\n______\t_____\t" );
@@ -96,7 +99,7 @@ void nbe( const GridMapSetInfo *const info,
         pr( logFile, "%6.3f\t%5d\t", r, k );
         for ( i = 0;  i < num_atm_maps; i++) {
             for ( j = i;  j < num_atm_maps; j++) {
-                pr( logFile, "%7.2f", ptr_ad_energy_tables->e_vdW_Hb[k][j][i] );
+                pr( logFile, " %6.2f", ptr_ad_energy_tables->e_vdW_Hb[k][j][i] );
             } /*  j  */
         } /*  i  */
         pr( logFile, "\n" );

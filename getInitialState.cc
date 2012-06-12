@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.35 2012/04/18 01:30:19 mp Exp $
+ $Id: getInitialState.cc,v 1.36 2012/06/12 22:19:32 mp Exp $
 
  AutoDock  
 
@@ -239,15 +239,16 @@ void getInitialState(
     copyState( sMinm, *sInit );
     copyState( sLast, *sInit );
 
-    prInitialState( &eb, natom, true_ligand_atoms, crd, atomstuff, type, emap, elec, charge, ligand_is_inhibitor, B_have_flexible_residues, ad4_unbound_model );
-
-    initEnd = times( &tms_initEnd );
-    pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);
-    pr(logFile, "Time spent initializing: (Real, CPU, System): ");
-    timesys( initEnd - initStart, &tms_initStart, &tms_initEnd );
+    if(outlev>=LOGRUNVV) {
+      prInitialState( &eb, natom, true_ligand_atoms, crd, atomstuff, type, emap, elec, charge, 
+       ligand_is_inhibitor, B_have_flexible_residues, ad4_unbound_model );
+      initEnd = times( &tms_initEnd );
+      pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);
+      pr(logFile, "Time spent initializing: (Real, CPU, System): ");
+      timesys( initEnd - initStart, &tms_initStart, &tms_initEnd );
+    }
 
     *Addr_e0total = eb.e_inter + eb.e_intra;
-    fflush( logFile );
 
 }
 /* EOF */

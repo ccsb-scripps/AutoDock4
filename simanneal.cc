@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.39 2012/04/18 01:30:19 mp Exp $
+ $Id: simanneal.cc,v 1.40 2012/06/12 22:19:32 mp Exp $
 
  AutoDock  
 
@@ -256,10 +256,9 @@ void simanneal ( int   *const Addr_nconf,
         irun1 = 1 + irun;
 
 
-        if (outlev >= LOGBASIC) {
+        if (outlev >= LOGFORADT) {
             pr(logFile, "\n\tINITIALIZING AUTOMATED DOCKING SIMULATION\n" );
-            pr(logFile, "\t_________________________________________\n\n" );
-            pr( logFile, "RUN %d...\n\n", irun1);
+            pr( logFile, "RUN %d\n", irun1); // MP removed ... OK? TODO
         }
 
         if ( B_writeTrj ) {
@@ -598,28 +597,30 @@ void simanneal ( int   *const Addr_nconf,
             sSave.tor[i] = WrpRad( ModRad( sSave.tor[i] ) );
         }
    
-        pr( logFile, UnderLine );
-        pr( logFile, "\n\n\t\tFINAL DOCKED STATE\n" );
-        pr( logFile,     "\t\t__________________\n\n\n" );
-        pr( logFile, "Run Number %d, \n\nFinal Energy = %+.2f\n", irun1, eLast);
+        pr( logFile, "\tFINAL DOCKED STATE\n" );
+        pr( logFile, "Run Number %d\nFinal Energy = %+.2f\n", irun1, eLast);
 
+	if(outlev>=LOGRUNV) {
         pr( logFile, "Final Translation = %.2f, %.2f, %.2f\n", sSave.T.x, sSave.T.y, sSave.T.z );
         pr( logFile, "Final Quaternion = ( %+.2f, %+.2f, %+.2f, %+.2f )\n", sSave.Q.x, sSave.Q.y, sSave.Q.z, sSave.Q.w );
 	AxisAngle aa = QuatToAxisAngle( sSave.Q );
         pr( logFile, "Final Rotation Axis = ( %+.2f, %+.2f, %+.2f )\n", aa.nx, aa.ny, aa.nz );
         pr( logFile, "Final Rotation Angle = %5.1f deg\n", RadiansToDegrees(WrpRad( ModRad(aa.ang))) );
+	}
 
         copyState( &sHist[ *Addr_nconf ], sSave );
 
-        if (ntor > 0) {
-            pr( logFile, "Final Torsions:\n" );
+        for (i=0; i<ntor; i++) sHist[ *Addr_nconf ].tor[i] = sSave.tor[i];
+
+        if (ntor > 0 && outlev>=LOGRUNVV) {
+	    pr( logFile, "Final Torsions:\n" );
             for (i=0; i<ntor; i++) {
                 torTmp = RadiansToDegrees( sSave.tor[i] );
                 torTmp = ModDeg( torTmp );
                 torTmp = WrpDeg( torTmp );
                 sHist[ *Addr_nconf ].tor[i] = sSave.tor[i];
                 pr( logFile, "          %2d = %7.2f deg", i+1, torTmp);
-                if ((B_isTorConstrained[i] == 1) && B_ShowTorE) {
+                if (B_isTorConstrained[i] && B_ShowTorE) {
                     pr(logFile, ", Energetic penalty = %uhd\n", US_TorE[i]);
                 } else {
                     pr(logFile, "\n");

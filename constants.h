@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.39 2012/05/04 22:23:23 mp Exp $
+ $Id: constants.h,v 1.40 2012/06/12 22:19:32 mp Exp $
 
  AutoDock 
 
@@ -231,7 +231,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define LOGRUNVVV 6
 #define LOGETABLES 7
 #define LOGNBINTE 8   // analysis.cc nonbond internal energy table
-#define LOGNBINTEV 9   // analysis.cc nonbond internal energy table verbose
+#define LOGNBINTEV 9   // analysis.cc;nbe.cc nonbond internal energy table verbose
 const struct {
 	int value;
 	char *key;

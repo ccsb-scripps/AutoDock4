@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.177 2012/05/18 01:01:25 mp Exp $
+ $Id: main.cc,v 1.178 2012/06/12 22:19:32 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -80,6 +80,8 @@ using std::string;
 
 // convenience macro for making value boolean (in place)
 #define mkbool(x) (x=((x)!=0))
+// convenience macro for plural noun string
+#define pl(i) ((i==1)?"":"s")
 
 #include <sys/param.h>
 #include <ctype.h> // tolower
@@ -119,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.177 2012/05/18 01:01:25 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.178 2012/06/12 22:19:32 mp Exp $"};
 
 
 
@@ -763,7 +765,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.177 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.178 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1086,7 +1088,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         nfields = sscanf( line, "%*s %s %s", param[0], param[1]);
         timeSeedIsSet[0] = 'F';
         timeSeedIsSet[1] = 'F';
-        //pr(logFile, "%d seed%c found.\n", nfields, ((nfields==1)? ' ' : 's'));
+        //pr(logFile, "%d seed%s found.\n", nfields, pl(nfields));
         if ((nfields==2) || (nfields==1)) {
             for (i=0; i<nfields ; i++ ) {
                 if (streq(param[i], "time")||streq(param[i],"tim")) {
@@ -1689,7 +1691,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             } else {
                 sprintf(domain,"[%f,%f] [%f,%f] [%f,%f] [-1000.0,1000.0]^3 [-3.1416,3.1416]",(double)info->lo[X], (double)info->hi[X], (double)info->lo[Y], (double)info->hi[Y], (double)info->lo[Z], (double)info->hi[Z]);
             }
-            pr(logFile, "Number of Coliny %s dockings = %d run%c\n", algname, nruns, (nruns>1)?'s':' ');
+            pr(logFile, "Number of Coliny %s dockings = %d run%s\n", algname, nruns, pl(nruns))
             pr(logFile, "Search Domain: %s\n", domain);
 
             //
@@ -2405,7 +2407,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             prStr( error_message, "%s:  ERROR: %d runs were requested, but AutoDock is only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
             stop( error_message );
         }
-        pr( logFile, "Number of runs =\t\t\t\t%8d run%c\n", nruns, (nruns > 1)?'s':' ');
+        pr( logFile, "Number of runs = %d run%s\n", nruns, pl(nruns));
         break;
 
 //______________________________________________________________________________
@@ -2418,7 +2420,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         get1arg( line, "%*s %d", &ncycles, "CYCLES" );
         if (ncycles < 0) stop("Negative number of cycles in CYCLES line");
 	if (outlev >= LOGBASIC)  {
-           pr( logFile, "Maximum number of cycles =\t\t\t%8d cycles\n\n", ncycles);
+           pr( logFile, "Maximum number of cycles = %8d cycles\n", ncycles);
         }
         break;
 
@@ -2956,14 +2958,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             ** Number of ligands read in...
             */
             if (nlig > 0) {
-                pr( logFile, "\nTotal number of ligands read in by the DPF \"move\" command = %d\n", nlig );
+                pr( logFile, "Total number of ligands read in by the DPF \"move\" command = %d\n", nlig );
             }
             if (nres > 0) {
-                pr( logFile, "\nTotal number of residues read in by the DPF \"flex\" command = %d\n", nres );
+                pr( logFile, "Total number of residues read in by the DPF \"flex\" command = %d\n", nres );
             }
             if (outlev >= LOGBASIC) {
-                   pr( logFile, "                                           \t_________\n" );
-                   pr( logFile, "Maximum possible number of steps per cycle =\t%8d\tsteps\n\n", naccmax+nrejmax);
+                   pr( logFile, "Maximum possible number of steps per cycle = %d steps\n", naccmax+nrejmax);
             }
 
 	    if (outlev >= LOGBASIC) {
@@ -2976,7 +2977,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	      tlist, ntor, crdpdb, lig_center, &sInit.T, &ligand.S.T,
 	      outlev>=LOGBASIC, outlev, logFile);
 
-            if (B_havenbp)  nbe( info, ad_energy_tables, num_atom_types );
+            if (B_havenbp && outlev>=LOGNBINTEV)  nbe( info, ad_energy_tables, num_atom_types );
             if (B_cluster_mode) {
                 clmode( num_atom_types, clus_rms_tol,
                         hostnm, jobStart, tms_jobStart,
@@ -3177,7 +3178,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		    B_found_tran0_keyword = TRUE;
 	    }
 
-            pr( logFile, "Number of requested %s dockings = %d run%c\n", GlobalSearchMethod->shortname(), nruns, (nruns > 1)?'s':' ');
+            pr( logFile, "Number of requested %s dockings = %d run%s\n", GlobalSearchMethod->shortname(), nruns, pl(nruns));
             if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
             pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
 
@@ -3320,7 +3321,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		    ligand.S.T.x, ligand.S.T.y, ligand.S.T.z);
 		    B_found_tran0_keyword = TRUE;
 	    }
-           pr( logFile, "Number of Local Search (LS) only dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
+           pr( logFile, "Number of Local Search (LS) only dockings = %d run%s\n", nruns, pl(nruns));
            if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
            pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
@@ -3691,7 +3692,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	 	pr( logFile, "\nTotal number of torsions in system = %d \n", sInit.ntor);
 	 	D = 7 + ntor; //Dimension D of degree of freedom for a ligand
 	 	pr(logFile, "\nTotal number of dimension is equal to the number of Degrees of Freedom = %d\n", D);	 
-	    pr( logFile, "Number of requested PSO dockings = %d run%c\n", nruns, (nruns > 1)?'s':' ');
+	    pr( logFile, "Number of requested PSO dockings = %d run%s\n", nruns, pl(nruns));
 	 		 
 	 	//No. of Particles, size of the Swarm 
 	 	S = pop_size; //S - Swarm Size
