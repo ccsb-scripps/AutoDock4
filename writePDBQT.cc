@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.39 2012/05/18 01:01:25 mp Exp $
+ $Id: writePDBQT.cc,v 1.40 2012/06/20 00:48:56 mp Exp $
 
  AutoDock  
 
@@ -193,7 +193,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         eb.e_inter_moving_moving = 0.0;
     }
 
-	if (outlev >= LOGMIN ) {
+	if (outlev >= LOGFORADT ) {
 		AxisAngle aa = QuatToAxisAngle( state.Q );
 		// output of coordinates
         pr( logFile, "%s: MODEL     %4d\n", state_type_string, irun+1 );
@@ -325,8 +325,8 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         (void) fprintf(logFile, "%s: TER\n", state_type_string);
         (void) fprintf(logFile, "%s: ENDMDL\n", state_type_string);
         //(void) fprintf(logFile, UnderLine);
-        (void) fflush(logFile);
-    } // outlev > -1
+    } // outlev >= LOGMIN
+   (void) fflush(logFile);
 } // writePDBQT()
 
 void print_PDBQT( FILE *const logFile, 

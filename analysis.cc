@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.51 2012/04/13 06:22:10 mp Exp $
+ $Id: analysis.cc,v 1.52 2012/06/20 00:48:56 mp Exp $
 
  AutoDock  
 
@@ -109,7 +109,7 @@ void analysis( const int   Nnb,
 {
     /* register int   imol = 0; */
     char  filename[PATH_MAX];
-    static char  label[MAX_CHARS];
+    char  *label;
 
     static Real clu_rms[MAX_RUNS][MAX_RUNS];
     static Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
@@ -188,8 +188,8 @@ void analysis( const int   Nnb,
     // Generate coordinates for each final transformation,
     for ( k=0; k<nconf; k++ ) {
 
-        /* fprintf( logFile, "\n\nState hist[%d].\n", k); */
-        if (outlev >= LOGMIN) {
+        if (outlev >= LOGRUNVV) {
+	    fprintf( logFile, "\nState hist[%d] ", k); // no newline so will flow into STATE VARIABLES:
 	    // pass center to printState - could be improved MPique 2010
 	    hist[k].Center.x = sml_center[X];
 	    hist[k].Center.y = sml_center[Y];
@@ -201,10 +201,9 @@ void analysis( const int   Nnb,
         cnv_state_to_coords( save, vt, tlist, ntor, crdpdb, crd, natom,
 	 true_ligand_atoms, outlev, logFile);
         /* Save coordinates in crdSave array...  */
+	// MP TODO why not just pass crdSave[k] to cnv_state_to_coords?
         (void)memcpy(crdSave[k], crd, natom*SPACE*sizeof(Real));
     } /*k*/
-
-    flushLog;
 
     // Sort conformations by energy and perform cluster analysis,
     if (nconf > 1) {
@@ -219,12 +218,12 @@ void analysis( const int   Nnb,
                     h_index);
 
 	if (outlev >= LOGMIN) {
-        pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
+            pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
 
-        prClusterHist( ncluster, irunmax, clus_rms_tol,num_in_clu, cluster, econf, clu_rms, ref_rms);
-	}
+            if (outlev >= LOGMINCLUST ) {
+	       prClusterHist( ncluster, irunmax, clus_rms_tol,num_in_clu, cluster, econf, clu_rms, ref_rms);
+	    }
 
-        if (outlev >= LOGMINCLUST ) {
             pr( logFile, "\n\tLOWEST ENERGY DOCKED CONFORMATION from EACH CLUSTER");
             pr( logFile, "\n\t___________________________________________________\n\n\n" );
 
@@ -235,7 +234,7 @@ void analysis( const int   Nnb,
             }
         }
     } else {
-        pr( logFile, "\nSorry!  Unable to perform cluster analysis, because not enough conformations were generated.\n\n\n" );
+        pr( logFile, "\nSorry!  Unable to perform cluster analysis, because not enough conformations were generated.\n" );
 
         ncluster = 1;
         ref_rms[0] = getrms( crd, ref_crds, B_symmetry_flag, B_unique_pair_flag, n_rms_atoms, type, B_rms_heavy_atoms_only, h_index);
@@ -261,7 +260,7 @@ void analysis( const int   Nnb,
             c = cluster[i][k];
             c1 = c + 1;
 
-            (void)memcpy(crd, crdSave[c], natom*3*sizeof(Real));
+            (void)memcpy(crd, crdSave[c], natom*SPACE*sizeof(Real));
 
             EnergyBreakdown eb;
 
@@ -295,9 +294,7 @@ void analysis( const int   Nnb,
             pr( logFile, "USER    NEWDPF axisangle0\t%f %f %f %f\n", aa.nx, aa.ny, aa.nz, RadiansToDegrees(aa.ang) );
             pr( logFile, "USER    NEWDPF quaternion0\t%f %f %f %f\n", hist[c].Q.x, hist[c].Q.y, hist[c].Q.z, hist[c].Q.w );
             if (ntor > 0) {
-                // Deprecated in AutoDock 4 // pr( logFile, "USER    NEWDPF ndihe\t%d\n", hist[c].ntor );
                 pr( logFile, "USER    NEWDPF dihe0\t" );
-                flushLog;
                 for ( t = 0;  t < hist[c].ntor;  t++ ) {
                     torDeg = RadiansToDegrees(hist[c].tor[t]);
                     modtorDeg = ModDeg(torDeg);
@@ -335,7 +332,7 @@ void analysis( const int   Nnb,
             pr( logFile, "TER\n" );
             pr( logFile, "ENDMDL\n" );
             // End of outputting coordinates of this "MODEL"...
-//#ifdef EINTCALPRINT
+
 	    if(outlev >= LOGNBINTE ){
             // Print detailed breakdown of internal energies of all non-bonds
             (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, 
@@ -343,13 +340,12 @@ void analysis( const int   Nnb,
 	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues,
 	    outlev, logFile);
 	    }
-//#endif
             flushLog;
         } /*k*/
     } /*i   (Next cluster.) */
     pr( logFile, "\n\n" );
 
-    if(outlev >= LOGFORADT)  { // LOGTODO
+    if(outlev >= LOGFORADT)  {
     // AVS Field file 
     off[0]=5;
     off[1]=6;
@@ -360,17 +356,17 @@ void analysis( const int   Nnb,
     if (keepresnum > 0) {
         off[6]=11;
         veclen = 7;
-        strcpy( label, "x y z vdW Elec q RMS\0" );
+        label = "x y z vdW Elec q RMS";
     } else {
         off[6]=4;
         off[7]=11;
         veclen = 8;
-        strcpy( label, "x y z vdW Elec q Rank RMS\0" );
+        label = "x y z vdW Elec q Rank RMS";
     }
     indpf = strindex( dock_param_fn, ".dpf" );
     strncpy( filename, dock_param_fn, (size_t)indpf );
     filename[ indpf ] = '\0';
-    strcat( filename, ".dlg.pdb\0" );
+    strcat( filename, ".dlg.pdb" );
 
     print_avsfld( logFile, veclen, natom, ncluster, off, 12, label, filename );
     }

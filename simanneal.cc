@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.40 2012/06/12 22:19:32 mp Exp $
+ $Id: simanneal.cc,v 1.41 2012/06/20 00:48:56 mp Exp $
 
  AutoDock  
 
@@ -238,8 +238,10 @@ void simanneal ( int   *const Addr_nconf,
 
 /* Begin the automated docking simulation, ===================================*/
 
+    if(outlev>=LOGBASIC) {
     pr( logFile, "\n\n\t\tBEGINNING MONTE CARLO SIMULATED ANNEALING\n");
     pr( logFile, "     \t\t_________________________________________\n\n\n\n" );
+    }
 
 
     // Update the time-dependent seed just once, before we loop over the
@@ -295,7 +297,7 @@ void simanneal ( int   *const Addr_nconf,
         qtwStep = qtwStep0;        /* quaternion angle, w*/
         torStep = torStep0;        /* torsion angles*/
 
-        if (outlev >= LOGFORADT) {
+        if (outlev >= LOGRUNV) {
             pr( logFile, "\n\n\t\tBEGINNING SIMULATED ANNEALING");
             pr( logFile, "\n\t\t_____________________________\n\n");
             pr( logFile, "\n      \t      \tMinimum     Average     | Acc/    Accepted:    Rejected:     |          |  xyz-Translation  |        Time:        \n");
@@ -645,6 +647,7 @@ void simanneal ( int   *const Addr_nconf,
                     info, ignore_inter, elec, emap,
                     NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL_ENERGY_BREAKDOWN);
 
+	if(outlev>=LOGMIN)
         writePDBQT( irun, seed, FN_ligand, FN_dpf, lig_center, sSave, ntor,
                 &eintra, &einter, natom, atomstuff, crd, emap, elec, 
                 charge, abs_charge, qsp_abs_charge,
