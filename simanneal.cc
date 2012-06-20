@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.41 2012/06/20 00:48:56 mp Exp $
+ $Id: simanneal.cc,v 1.42 2012/06/20 04:11:49 mp Exp $
 
  AutoDock  
 
@@ -66,6 +66,7 @@ void simanneal ( int   *const Addr_nconf,
                 Real emap[MAX_ATOMS],
                 const int   NcycMax,
                 const int   irunmax,
+		FourByteLong seed[2],
                 const Clock& jobStart,
                 #include "map_declare.h"
                 const int   naccmax,
@@ -206,10 +207,6 @@ void simanneal ( int   *const Addr_nconf,
     Clock cycEnd;
     Clock jobEnd;
 
-    time_t time_seed;
-
-    FourByteLong seed[2];
-
     /* trnStepHi = HI_NRG_JUMP_FACTOR * trnStep; ** qtwStepHi = HI_NRG_JUMP_FACTOR * qtwStep; ** torStepHi = HI_NRG_JUMP_FACTOR * torStep; */
     /* lo[X] = xlo;  lo[Y] = ylo;  lo[Z] = zlo;*/
     /* xloTrn = xlo + maxrad; ** xhiTrn = xhi - maxrad; ** yloTrn = ylo + maxrad; ** yhiTrn = yhi - maxrad; ** zloTrn = zlo + maxrad; ** zhiTrn = zhi - maxrad; */
@@ -243,15 +240,6 @@ void simanneal ( int   *const Addr_nconf,
     pr( logFile, "     \t\t_________________________________________\n\n\n\n" );
     }
 
-
-    // Update the time-dependent seed just once, before we loop over the
-    // dockings; this will allow very short dockings that take less than
-    // 1 s to turn out differently.
-    time_seed = time( &time_seed );
-    seed[0] = time_seed;
-    seed[1] = 0;
-    seed_random( time_seed );
-    pr( logFile, "Time-dependent Seed:  %ld\n\n", time_seed);
 
     for ( irun = 0;  irun < irunmax;  irun++ ) { /*===========================*/
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.33 2012/04/18 01:30:19 mp Exp $
+ $Id: investigate.cc,v 1.34 2012/06/20 04:11:49 mp Exp $
 
  AutoDock  
 
@@ -121,8 +121,6 @@ void investigate( const int   Nnb, int Nnb_array[3], GroupEnergy *group_energy,
     register int LocalTest = 0;
     int   mode;
 
-    time_t time_seed;
-
     State sNow; /* qtnNow, torNow */
 
 
@@ -160,11 +158,6 @@ void investigate( const int   Nnb, int Nnb_array[3], GroupEnergy *group_energy,
 
     pr( logFile, "\n\n\t\tBEGINNING INVESTIGATION OF FORCE FIELD\n");
     pr( logFile,     "\t\t______________________________________\n\n\n\n" );
-
-/*  Initialize random number generator with a time-dependent seed...  */
-
-    time_seed = time( &time_seed );
-    seed_random( time_seed );
 
     for ( Test = 0;  Test < maxTests;  Test++ ) {
 

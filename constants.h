@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.40 2012/06/12 22:19:32 mp Exp $
+ $Id: constants.h,v 1.41 2012/06/20 04:11:49 mp Exp $
 
  AutoDock 
 
@@ -338,26 +338,9 @@ const struct {
  * Random numbers,                                                            * 
  *----------------------------------------------------------------------------*/
 
-#ifdef HARDWARE_RNG // HARDWARE_RNG = hardware random number generator
-/* 
- *  local_random is >= 0.0 and <1.0
- */
-#ifdef __ppc__
-#include <stdlib.h>
-#include <limits.h>
-#define seed_random(t)      srandom( (t) )
-#define local_random()      ( (double)random() / (double)LONG_MAX )
-#else
-#include <stdlib.h>
-#define seed_random(t)      srand48( (FourByteLong)(t) )
-#define local_random()      drand48()
-#endif
-#else 
 // This is platform-independent RNG-based.
 #include "ranlib.h"
-#define seed_random(t)      setall( (FourByteLong)(t), (FourByteLong)(t) ); initgn(-1)
 #define local_random()      genunf(0., 1.)
-#endif
 
 #ifdef sgi
     #include <ieeefp.h>

@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.h,v 1.23 2012/04/13 06:22:10 mp Exp $
+ $Id: simanneal.h,v 1.24 2012/06/20 04:11:49 mp Exp $
 
  AutoDock  
 
@@ -61,6 +61,7 @@ void simanneal( int   *const P_nconf,
                 Real emap[MAX_ATOMS], 
                 const int   icyclemax, 
                 const int   irunmax, 
+		FourByteLong seed[2],
                 const Clock& jobStart, 
                 #include "map_declare.h"
                 const int   naccmax, 

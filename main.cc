@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.178 2012/06/12 22:19:32 mp Exp $
+ $Id: main.cc,v 1.179 2012/06/20 04:11:49 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.178 2012/06/12 22:19:32 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.179 2012/06/20 04:11:49 mp Exp $"};
 
 
 
@@ -142,9 +142,12 @@ static Boole B_have_flexible_residues = FALSE;  // does the receptor have flexib
 
 
 
+ /* local-to-main functions: */
 static void exit_if_missing_elecmap_desolvmap_about(string keyword); // see bottom of main.cc
 static int getoutlev(char *line, int *outlev); // see bottom of main.cc  0==fail, 1==OK
 static int true_ligand_atoms = 0; // used by exit_if ... 
+static void set_seeds( FourByteLong seed[2], char seedIsSet[2], const int outlev, FILE *logFile ); // see below
+static int processid();
 
 // PSO  - Particle Swarm Optimization  - not officially supported
 // State Structure Variable DECLARATION
@@ -248,7 +251,7 @@ ParameterEntry parameterArray[MAX_ATOM_TYPES]; // input  nonbond and desolvation
 static ParameterEntry * foundParameter;
 
 // internal DPF-parsing state variables
-char timeSeedIsSet[2];
+static char seedIsSet[2]; // starts out empty (NULL chars)
 
 // gaussian torsion dihedral contraints
 Boole B_isGaussTorCon = FALSE;
@@ -419,7 +422,7 @@ int indcom = 0;
 Real torsdoffac = 0.3113;
 int ligand_is_inhibitor = 1;
 
-int nruns = 50; // for GA GALS and SIMANNEAL
+int nruns = 50; // for GA/GALS and SIMANNEAL
 
 int natom = 0;
 
@@ -499,7 +502,6 @@ Clock  jobStart;
 Clock  gaStart;
 Clock  gaEnd;
 
-time_t time_seed;
 
 EnergyTables *ad_energy_tables;  // Holds vdw+Hb, desolvation & dielectric lookup tables
 EnergyTables *unbound_energy_tables;  // Use for computing unbound energy & conformation
@@ -507,7 +509,7 @@ EnergyTables *unbound_energy_tables;  // Use for computing unbound energy & conf
 Statistics map_stats;
 
 //  GA parameters controlled in DPF
-FourByteLong seed[2];
+static FourByteLong seed[2]; // also used by simanneal & investigate as of 4.3 release (default is process id, time)
 unsigned int pop_size = 150; // 150 is ADT default
 unsigned int num_generations = 0;  //  Don't terminate on the basis of number of generations
 unsigned int num_evals = 250000;
@@ -688,9 +690,6 @@ B_constrain_dist = B_haveCharges = FALSE;
 ntor = atomC1 = atomC2 = 0;
 sqlower = squpper = 0.0;
 
-timeSeedIsSet[0] = 'F';
-timeSeedIsSet[1] = 'F';
-
 if (clktck == 0) {        /* fetch clock ticks per second first time */
     if ( (clktck = sysconf(_SC_CLK_TCK)) < (FourByteLong)0L) {
         stop("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
@@ -713,6 +712,8 @@ if (clktck == 0) {        /* fetch clock ticks per second first time */
 */
 
 F_lnH = ((Real)log(0.5));
+
+
 
 //______________________________________________________________________________
 /*
@@ -757,6 +758,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 // Rewind DPF, so we can resume normal parsing
 (void) rewind( parFile );
 
+
 //______________________________________________________________________________
 /*
 ** Output banner...
@@ -765,7 +767,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.178 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.179 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -813,6 +815,9 @@ if(outlev >= LOGETABLES)
 (void) fprintf(logFile, "Preparing Energy Tables for Unbound Calculation:\n\n");
 setup_distdepdiel(logFile, outlev, unbound_energy_tables);
 
+
+// set initial default seeds for random number generator (function is below, at end of main.cc)
+set_seeds( seed, seedIsSet, outlev, logFile);
 
 //______________________________________________________________________________
 
@@ -1083,43 +1088,31 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
     case DPF_SEED:
         /*
         **  seed
-        **  Set the random-number gerator's seed value,
+        **  Set the random-number generator's seed value,
         */
         nfields = sscanf( line, "%*s %s %s", param[0], param[1]);
-        timeSeedIsSet[0] = 'F';
-        timeSeedIsSet[1] = 'F';
         //pr(logFile, "%d seed%s found.\n", nfields, pl(nfields));
         if ((nfields==2) || (nfields==1)) {
             for (i=0; i<nfields ; i++ ) {
                 if (streq(param[i], "time")||streq(param[i],"tim")) {
-                    timeSeedIsSet[i] = 'T';
+		    time_t time_seed;
+                    seedIsSet[i] = 'T';
                     seed[i] = (FourByteLong)time( &time_seed );
-                    seed_random(seed[i]);
-                    pr(logFile,"Random number generator was seeded with the current time, value = %ld\n",seed[i]);
+		    if(outlev>=LOGRUNV)
+                    pr(logFile,"Random number generator seed %d was seeded with the current time, value = %ld\n",i,seed[i]);
                 } else if (streq(param[i], "pid")) {
-                    timeSeedIsSet[i] = 'F';
-#ifdef HAVE_GETPID
-                    seed[i] = getpid();
-#elif HAVE_GETPROCESSID
-                    seed[i] = GetProcessId(); // Windows WIN32
-#else
-		    stop("cannot determine process id for random number seed");
-#endif
-                    seed_random(seed[i]);
-                    pr(logFile,"Random number generator was seeded with the process ID, value   = %ld\n",seed[i]);
+                    seedIsSet[i] = 'P';
+                    seed[i] = processid();
+		    if(outlev>=LOGRUNV)
+                    pr(logFile,"Random number generator seed %d was seeded with the process ID, value   = %ld\n",i,seed[i]);
                 } else {
-                    timeSeedIsSet[i] = 'F';
+                    seedIsSet[i] = 'U';
                     seed[i] = atol(param[i]);
-                    seed_random(seed[i]);
-                    pr(logFile,"Random number generator was seeded with the user-specified value  %ld\n",seed[i]);
+		    if(outlev>=LOGRUNV)
+                    pr(logFile,"Random number generator seed %d was seeded with the user-specified value  %ld\n",i,seed[i]);
                 }
             }/*i*/
-            pr(logFile, "\n");
-            if (nfields==2) {
-                setall(seed[0], seed[1]);
-                initgn(-1);  // Reinitializes the state of the current random number generator
-                pr(logFile,"Portable random number generator was seeded with the user-specified values  %ld, %ld\n", seed[0], seed[1]);
-            }
+	set_seeds( seed, seedIsSet, outlev, logFile);
         } else stop("Error encountered reading SEED line");
 
         break;
@@ -2400,7 +2393,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
     case DPF_RUNS:
         /*
         **  runs
-        **  Number of docking runs,
+        **  Number of docking runs: GA or simanneal
         */
         get1arg( line, "%*s %d", &nruns, "RUNS" );
         if ( nruns > MAX_RUNS ) {
@@ -2916,7 +2909,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
 		}
-            pr( logFile, "Maximum number of cycles =\t\t\t%8d cycles\n\n", ncycles);
+	    //set_seeds( seed, seedIsSet, outlev, logFile);
+            pr( logFile, "Number of simanneal runs  = %d nruns\n\n", nruns);
+            pr( logFile, "Maximum number of cycles per run = %d cycles\n\n", ncycles);
 	    if (B_linear_schedule) {
 	       RTreduc = RT0 / ncycles;
 	       if (outlev >= LOGBASIC) {
@@ -3002,7 +2997,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                         ad_energy_tables,
                         econf, B_either,
                         elec, emap,
-                        ncycles, nruns, jobStart,
+                        ncycles, nruns, seed, jobStart,
                         map,
                         naccmax, natom, nonbondlist, nrejmax, ntor, 
                         sInit, sHist,   qtwFac, B_qtwReduc, qtwStep0,
@@ -3012,7 +3007,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                         B_trnReduc, trnStep0, type, vt, B_write_trj,
                         B_constrain_dist, atomC1, atomC2, sqlower, squpper,
                         B_linear_schedule, RTreduc,
-                        /*maxrad,*/
                         B_watch, FN_watch,
                         B_isGaussTorCon, US_torProfile, B_isTorConstrained,
                         B_ShowTorE, US_TorE, F_TorConRange, N_con,
@@ -3159,6 +3153,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                //  stop(error_message);
              //}
             exit_if_missing_elecmap_desolvmap_about("gals");
+	    //set_seeds( seed, seedIsSet, outlev, logFile);
 
 	    // set lig_center if not already set, use to center "crdpdb" ligand
 	    center_ligand(crdorig, !B_found_about_keyword, natom, true_ligand_atoms,
@@ -3305,6 +3300,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                stop(error_message);
             }
            exit_if_missing_elecmap_desolvmap_about("ls");
+	   //set_seeds( seed, seedIsSet, outlev, logFile);
 
 	    // set lig_center if not already set, use to center "crdpdb" ligand
 	    center_ligand(crdorig, !B_found_about_keyword, natom, true_ligand_atoms,
@@ -3699,6 +3695,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	 	pr( logFile, "\nTotal number of particles in swarm = %d\n", S);	          	
 	 	fflush(logFile);  
 
+	    //set_seeds( seed, seedIsSet, outlev, logFile);
         
 	  
 	  if(outlev>LOGBASIC) {
@@ -3902,6 +3899,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         (void) fprintf( logFile, "OutputEveryNTests= %d\n", OutputEveryNTests);
         (void) fprintf( logFile, "maxTests= %d\n", maxTests );
         (void) fprintf( logFile, "NumLocalTests= %d\n\n", NumLocalTests );
+	//set_seeds( seed, seedIsSet, outlev, logFile);
 	// M Pique TODO this probably should not use B_unique_pair_flag 2010
         (void) investigate( Nnb, Nnb_array, &group_energy,
 	                    charge, abs_charge, qsp_abs_charge, B_calcIntElec,
@@ -4042,6 +4040,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 stop(error_message);
             }
             exit_if_missing_elecmap_desolvmap_about("compute_unbound_extended");
+	    //set_seeds( seed, seedIsSet, outlev, logFile);
 
             //
             // Do not use a non-bond cutoff, this helps to produce the "most" extended conformation
@@ -4739,6 +4738,25 @@ static int getoutlev(char *line, int *outlev) {
 	    return 1;
 	  }
 	return 0;
+}
+static void set_seeds( FourByteLong seed[2], char seedIsSet[2], const int outlev, FILE *logFile ) {
+	    time_t time_seed;
+	 if( ! seedIsSet[0] ) seed[0] = (FourByteLong) processid();
+	 if( ! seedIsSet[1] ) seed[1] = (FourByteLong) time( &time_seed );
+	 seedIsSet[0]  = seedIsSet[1] = 'D';
+         setall(seed[0], seed[1]);  // see com.cc
+         if(outlev>=LOGMIN) pr(logFile,"Random number generator was seeded with values  %ld, %ld\n", seed[0], seed[1]);
+	 }
+
+static int processid() {
+#ifdef HAVE_GETPID
+                    return getpid();
+#elif HAVE_GETPROCESSID
+                    return GetProcessId(); // Windows WIN32
+#else
+		    pr(logFile, "Cannot determine process id for random number seed, using dummy '12345'");
+		    return 12345;
+#endif
 }
 
 #ifdef BOINC
