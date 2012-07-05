@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.h,v 1.15 2012/04/13 06:22:10 mp Exp $
+ $Id: trilinterp.h,v 1.16 2012/07/05 21:26:03 mp Exp $
 
  AutoDock  
 
@@ -28,7 +28,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define TRILINTERP
 
 #define ENERGYPENALTY 500.0	/* Energy factor which is multiplied by distance
-				   from centre of grid, to penalize atoms
+				   squared from centre of grid, to penalize atoms
 				   outside grid */
 
 #define NULL_EVDW ((Real *)NULL)
