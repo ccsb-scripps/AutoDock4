@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.51 2012/05/04 22:22:42 mp Exp $
+# $Id: test_autodock4.py,v 1.52 2012/07/05 23:06:41 mp Exp $
 #
 
 """
@@ -413,6 +413,15 @@ class AutoDock4_1pgp_test( AutoDock_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+# next test not installed yet as I do not have a way I know of to pass
+# different expected values to the superclass - M Pique  July 2012
+class AutoDock4_1pgp_intelec_off_test( AutoDock_test ):
+    """Test autodock4.3 internal energy off option yields 4.2 value."""
+    dpf_stem = "1pgp_intelec_off"
+    expected_intermol = -7.72
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_timepid_test( AutoDock_simple_test ):
     """Test that autodock4 executes using seed set by time and process-id"""
     dpf_stem = "1pgp_timepid"
@@ -458,6 +467,12 @@ class AutoDock4_1pgp_illegal_symoutlev_test( AutoDock_simple_test ):
 class AutoDock4_1pgp_smaller_test( AutoDock_test ):
     """Test that autodock4 executes using fewer parameters and an extremely short run."""
     dpf_stem = "1pgp_smaller"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_gals_use_defaults_test( AutoDock_test ):
+    """Test that autodock4 executes using default gals parameters."""
+    dpf_stem = "1pgp_gals_use_defaults"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -725,7 +740,11 @@ if __name__ == '__main__':
         ## tests which check for specific value
         'AutoDock4_1pgp_test',
         'AutoDock4_1pgp_smaller_test',
+## next test not installed yet as I do not have a way I know of to pass
+## different expected values to the superclass - M Pique  July 2012
+	# 'AutoDock4_1pgp_intelec_off_test',
         'AutoDock4_1pgp_no_parameter_file_test',
+	'AutoDock4_1pgp_gals_use_defaults_test',
         #'AutoDock4_1pgp_ga_only_value_test',
         ## tests for unbound values 
         'AutoDock4_1pgp_unbound_default_test',
