@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.23 2012/04/24 20:59:31 mp Exp $
+ $Id: mkTorTree.cc,v 1.24 2012/07/05 21:26:34 mp Exp $
 
  AutoDock 
 
@@ -326,13 +326,13 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 pr( logFile, "Constrain the distance between atom %d and atom %d to be within %.3f and %.3f Angstroms.\n\n", *P_atomC1, *P_atomC2, lower, upper);
 
                 if (lower > upper) {
-                    pr( logFile, "WARNING!  The lower bound was larger than the upper bound. I will switch these around.\n\n");
+                    pr( logFile, "WARNING!  The lower distance constraint bound was larger than the upper bound. I will switch these around.\n");
                     temp = upper;
                     upper = lower;
                     lower = temp;
 
                 } else if (lower == upper) {
-                    pr( logFile, "WARNING!  The lower bound is the same as the upper bound.\n\n");
+                    pr( logFile, "WARNING!  The lower distance constraint bound is the same as the upper bound.\n");
                     upper += 0.01;
                 }
                 *P_sqlower = lower * lower;
