@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.179 2012/06/20 04:11:49 mp Exp $
+ $Id: main.cc,v 1.180 2012/07/06 00:09:55 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.179 2012/06/20 04:11:49 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.180 2012/07/06 00:09:55 mp Exp $"};
 
 
 
@@ -284,8 +284,8 @@ Real cB;
 Real eintra = 0.0;  // sum of intramolecular energy for the ligand plus that of the protein
 Real einter = 0.0; // intermolecular energy between the ligand and the protein
 Real etotal = 0.0;
-Real AD3_FE_coeff_estat   = 1.000;
 Real torsFreeEnergy = 0.0;
+Real AD3_FE_coeff_estat   = 1.000; // obsolete option in intelec 
 
 
 // ligand setup - these must (should be..) reset for each serial ligand (not really supported - MPique)
@@ -358,7 +358,7 @@ Real scale_1_4 = 0.5;
 Real scale_eintermol = 1.0; // scale factor for intermolecular energy term vs intra
 Boole B_include_1_4_interactions = FALSE;  // FALSE was the default behaviour in AutoDock versions 1 to 3.
 Boole B_use_non_bond_cutoff = TRUE;
-Boole B_calcIntElec = FALSE;
+Boole B_calcIntElec = TRUE;
 Boole B_calcIntElec_saved = FALSE;
 Real r_smooth=0.5; // vdw nonbond smoothing range, not radius, Ang - default 0.5 matches AutoGrid recommendations
 Real WallEnergy = 1000; /* Energy barrier beyond walls of gridmaps. 1000 is ADT default  */
@@ -767,7 +767,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.179 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.180 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1058,16 +1058,22 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
     case DPF_INTELEC:
         /*
-        **  intelec
+        **  intelec  [ off ]
         **  Calculate internal electrostatic energies...
         */
-        B_calcIntElec = TRUE;
-        if (outlev >= LOGBASIC) {
-            pr( logFile, "Electrostatic energies will be calculated for all non-bonds between moving atoms.\n\n");
+        nfields = sscanf( line, "%*s %s", param[0]);
+	if ( streq(param[0], "off")) {
+	   B_calcIntElec = FALSE;
+	   if (outlev >= LOGBASIC) pr( logFile,
+	   "Electrostatic energies will not be calculated for interactions between moving atoms.\n");
+	} else {
+	   B_calcIntElec = TRUE;
+	   if (outlev >= LOGBASIC) pr( logFile, 
+	   "Electrostatic energies will be calculated for all non-bonds between moving atoms.\n");
         }
+	// check for obsolete numeric parameter
         nfields = sscanf( line, "%*s " FDFMT, &AD3_FE_coeff_estat );
         if (nfields == 1) {
-            if (outlev >= LOGBASIC) {
                 pr(logFile, "NOTE!  Internal electrostatics will NOT be scaled by the factor specified by this command,  %.4f -- the coefficient set by this command is ignored in AutoDock 4;\n", AD3_FE_coeff_estat);
                 pr(logFile, "       the coefficient that will actually be used should be set in the parameter library file.\n");
                 pr(logFile, "       The coefficient for the electrostatic energy term is %.4f", AD4.coeff_estat);
@@ -1076,11 +1082,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 } else {
                     pr( logFile, ", the factory default value.\n");
                 }
-            }
-        } else {
-            AD3_FE_coeff_estat = 1.0;
-        }
 
+	    stop("illegal obsolete numeric value in intelec line");
+            }
         break;
 
 //______________________________________________________________________________
