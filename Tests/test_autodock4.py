@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.52 2012/07/05 23:06:41 mp Exp $
+# $Id: test_autodock4.py,v 1.53 2012/07/09 22:34:19 mp Exp $
 #
 
 """
@@ -428,6 +428,18 @@ class AutoDock4_1pgp_timepid_test( AutoDock_simple_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_seed01_test( AutoDock_simple_test ):
+    """Test that autodock4 executes using seeds  set to 0 1"""
+    dpf_stem = "1pgp_seed01"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_seedinttime_test( AutoDock_simple_test ):
+    """Test that autodock4 executes using seeds  set to integer and time"""
+    dpf_stem = "1pgp_seedinttime"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_epdb_etables_test( AutoDock_simple_test ):
     """Test autodock 4.3 high outlev detail for epdb and energy tables."""
     dpf_stem = "1pgp_epdb_etables"
@@ -708,6 +720,8 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_two_extensions',
         # simple tests:
         'AutoDock4_1pgp_timepid_test',
+	'AutoDock4_1pgp_seed01_test',
+	'AutoDock4_1pgp_seedinttime_test',
         'AutoDock4_1pgp_epdb_etables_test',
         'AutoDock4_1pgp_numoutlev_test',
         'AutoDock4_1pgp_symoutlev_test',
