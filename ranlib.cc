@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.11 2012/04/24 23:35:36 mp Exp $
+ $Id: ranlib.cc,v 1.12 2012/07/09 22:35:21 mp Exp $
 
  AutoDock 
 
@@ -34,6 +34,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdlib.h>
 #include "structs.h"
 #include "stop.h"
+
+/* this software can be configured to provide multiple concurrent
+ random number generators (e.g., 32), however, AutoDock uses only one
+ at present.  This number must also be defined in com.cc M Pique 2012-07
+ */
+#define NUMG 1
 
 // C++ equivalents of Fortran functions:
 inline Real ABS(ConstReal x) { return ((x) >= 0 ? (x) : -(x)) ; }
@@ -634,20 +640,19 @@ extern void gscgn(const FourByteLong getset, FourByteLong *const g)
                               Arguments
      getset --> 0 Get
                 1 Set
-     g <-- Number of the current random number generator (1..32)
+     g <-- Number of the current random number generator (1..NUMG)
 **********************************************************************
 */
 {
-#define numg 32L
     static FourByteLong curntg = 1;
     if(getset == 0) *g = curntg;
-    else  {
-        if(*g < 0 || *g > numg) {
-            stop(" Generator number out of range in GSCGN");
+    else if( *g > 0 && *g <= NUMG) curntg = *g;
+    else {
+	    char errmsg[200];
+            sprintf(errmsg, 
+	    "BUG: Generator number %ld out of range %d to %d in GSCGN",*g,1,NUMG);
+	    stop(errmsg);
         }
-        curntg = *g;
-    }
-#undef numg
 }
 
 extern void gsrgs(const FourByteLong getset, /* not const */ FourByteLong *const qvalue)
@@ -674,8 +679,8 @@ extern void gssst(const FourByteLong getset, /* not const */ FourByteLong *const
           Get or Set whether Seed is Set
      Initialize to Seed not Set
      If getset is 1 sets state to Seed Set
-     If getset is 0 returns T in qset if Seed Set
-     Else returns F in qset
+     If getset is 0 returns 1 in qset if Seed Set
+     Else returns 0 in qset
 **********************************************************************
 */
 {
@@ -684,7 +689,7 @@ extern void gssst(const FourByteLong getset, /* not const */ FourByteLong *const
     else  *qset = qstate;
 }
 
-static FourByteLong ignbin(const FourByteLong n, ConstReal pp)
+static FourByteLong ignbin(const FourByteLong n, ConstReal pp) // not used in AutoDock code
 /*
 **********************************************************************
      FourByteLong ignbin(FourByteLong n,Real pp)
@@ -1317,11 +1322,17 @@ static FourByteLong mltmod,a0,a1,k,p,q,qh,rh;
      H = 2**((b-2)/2) where b = 32 because we are using a 32 bit
       machine. On a different machine recompute H
 */
-    if(!(a <= 0 || a >= m || s <= 0 || s >= m)) goto S10;
+    if((a <= 0 || a >= m || s <= 0 || s >= m)) {
+     char errmsg[300];
     fputs(" a, m, s out of order in mltmod - ABORT!",stderr);
-    fprintf(stderr," a = %12ld s = %12ld m = %12ld\n",a,s,m);
-    stop("ERROR in mltmod :  mltmod requires: 0 < a < m; 0 < s < m");
-S10:
+
+    sprintf(errmsg, "BUG: a, s, m out of order in mltmod - ABORT! \n"  \
+    " a = %12ld s = %12ld m = %12ld sizeof(FourByteLong)= %d\n"  \
+    " ERROR in mltmod :  mltmod requires: 0 < a < m; 0 < s < m", \
+    (long) a, (long) s, (long) m, sizeof mltmod);
+    stop(errmsg);
+    }
+
     if(!(a < h)) goto S20;
     a0 = a;
     p = 0;

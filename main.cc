@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.180 2012/07/06 00:09:55 mp Exp $
+ $Id: main.cc,v 1.181 2012/07/09 22:35:21 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.180 2012/07/06 00:09:55 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.181 2012/07/09 22:35:21 mp Exp $"};
 
 
 
@@ -767,7 +767,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.180 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.181 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -2913,7 +2913,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
 		}
-	    //set_seeds( seed, seedIsSet, outlev, logFile);
             pr( logFile, "Number of simanneal runs  = %d nruns\n\n", nruns);
             pr( logFile, "Maximum number of cycles per run = %d cycles\n\n", ncycles);
 	    if (B_linear_schedule) {
@@ -3157,7 +3156,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                //  stop(error_message);
              //}
             exit_if_missing_elecmap_desolvmap_about("gals");
-	    //set_seeds( seed, seedIsSet, outlev, logFile);
 
 	    // set lig_center if not already set, use to center "crdpdb" ligand
 	    center_ligand(crdorig, !B_found_about_keyword, natom, true_ligand_atoms,
@@ -3304,7 +3302,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                stop(error_message);
             }
            exit_if_missing_elecmap_desolvmap_about("ls");
-	   //set_seeds( seed, seedIsSet, outlev, logFile);
 
 	    // set lig_center if not already set, use to center "crdpdb" ligand
 	    center_ligand(crdorig, !B_found_about_keyword, natom, true_ligand_atoms,
@@ -3699,7 +3696,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	 	pr( logFile, "\nTotal number of particles in swarm = %d\n", S);	          	
 	 	fflush(logFile);  
 
-	    //set_seeds( seed, seedIsSet, outlev, logFile);
         
 	  
 	  if(outlev>LOGBASIC) {
@@ -3903,7 +3899,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         (void) fprintf( logFile, "OutputEveryNTests= %d\n", OutputEveryNTests);
         (void) fprintf( logFile, "maxTests= %d\n", maxTests );
         (void) fprintf( logFile, "NumLocalTests= %d\n\n", NumLocalTests );
-	//set_seeds( seed, seedIsSet, outlev, logFile);
 	// M Pique TODO this probably should not use B_unique_pair_flag 2010
         (void) investigate( Nnb, Nnb_array, &group_energy,
 	                    charge, abs_charge, qsp_abs_charge, B_calcIntElec,
@@ -4044,7 +4039,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 stop(error_message);
             }
             exit_if_missing_elecmap_desolvmap_about("compute_unbound_extended");
-	    //set_seeds( seed, seedIsSet, outlev, logFile);
 
             //
             // Do not use a non-bond cutoff, this helps to produce the "most" extended conformation
@@ -4745,6 +4739,8 @@ static int getoutlev(char *line, int *outlev) {
 }
 static void set_seeds( FourByteLong seed[2], char seedIsSet[2], const int outlev, FILE *logFile ) {
 	    time_t time_seed;
+	 if ( ! seedIsSet[0] ) pr(logFile, "Sizeof FourByteLong = %d\n",
+	   sizeof seed[0]); // DEBUG 2012-07 M Pique
 	 if( ! seedIsSet[0] ) seed[0] = (FourByteLong) processid();
 	 if( ! seedIsSet[1] ) seed[1] = (FourByteLong) time( &time_seed );
 	 seedIsSet[0]  = seedIsSet[1] = 'D';

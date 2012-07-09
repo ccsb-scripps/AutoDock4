@@ -1,6 +1,6 @@
 /*
 
- $Id: com.cc,v 1.6 2012/02/07 20:47:30 mp Exp $
+ $Id: com.cc,v 1.7 2012/07/09 22:35:21 mp Exp $
 
  AutoDock 
 
@@ -34,6 +34,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "structs.h"
 #include "stop.h"
 
+/* this software can be configured to provide multiple concurrent
+ random number generators (e.g., 32), however, AutoDock uses only one
+ at present.  This number must also be defined in ranlib.cc M Pique 2012-07
+ */
+#define NUMG 1
 
 void advnst(const FourByteLong k)
 /*
@@ -52,7 +57,6 @@ void advnst(const FourByteLong k)
 **********************************************************************
 */
 {
-#define numg 32L
 extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xm1,Xm2,Xa1,Xa2,Xcg1[],Xcg2[];
@@ -76,7 +80,6 @@ S10:
 /*
      NOW, IB1 = A1**K AND IB2 = A2**K
 */
-#undef numg
 }
 void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2)
 /*
@@ -95,7 +98,6 @@ void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2)
 **********************************************************************
 */
 {
-#define numg 32L
 extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xcg1[],Xcg2[];
@@ -111,7 +113,6 @@ S10:
     gscgn(0L,&g);
     *iseed1 = *(Xcg1+g-1);
     *iseed2 = *(Xcg2+g-1);
-#undef numg
 }
 FourByteLong ignlgi(void)
 /*
@@ -128,7 +129,6 @@ FourByteLong ignlgi(void)
 **********************************************************************
 */
 {
-#define numg 32L
 extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
 extern void gssst(const FourByteLong getset,FourByteLong *const qset);
 extern void gscgn(const FourByteLong getset,FourByteLong *const g);
@@ -165,7 +165,6 @@ static FourByteLong qqssd,qrgnin;
     if(*(Xqanti+curntg-1)) z = Xm1-z;
     ignlgi = z;
     return ignlgi;
-#undef numg
 }
 void initgn(const FourByteLong isdtyp)
 /*
@@ -188,7 +187,6 @@ void initgn(const FourByteLong isdtyp)
 **********************************************************************
 */
 {
-#define numg 32L
 extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xm1,Xm2,Xa1w,Xa2w,Xig1[],Xig2[],Xlg1[],Xlg2[],Xcg1[],Xcg2[];
@@ -222,7 +220,6 @@ S40:
 S50:
     *(Xcg1+g-1) = *(Xlg1+g-1);
     *(Xcg2+g-1) = *(Xlg2+g-1);
-#undef numg
 }
 void inrgcm(void)
 /*
@@ -236,7 +233,6 @@ void inrgcm(void)
 **********************************************************************
 */
 {
-#define numg 32L
 extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
 extern FourByteLong Xm1,Xm2,Xa1,Xa2,Xa1w,Xa2w,Xa1vw,Xa2vw;
 extern FourByteLong Xqanti[];
@@ -258,13 +254,12 @@ static FourByteLong i;
     Xa2w = 1494757890L;
     Xa1vw = 2082007225L;
     Xa2vw = 784306273L;
-    for (i=0; i<numg; i++) *(Xqanti+i) = 0;
+    for (i=0; i<NUMG; i++) *(Xqanti+i) = 0;
     T1 = 1;
 /*
      Tell the world that common has been initialized
 */
     gsrgs(1L,&T1);
-#undef numg
 }
 void setall(const FourByteLong iseed1,const FourByteLong iseed2)
 /*
@@ -285,7 +280,6 @@ void setall(const FourByteLong iseed1,const FourByteLong iseed2)
 **********************************************************************
 */
 {
-#define numg 32L
 extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
 extern void gssst(const FourByteLong getset,FourByteLong *const qset);
 extern void gscgn(const FourByteLong getset,FourByteLong *const g);
@@ -308,14 +302,13 @@ static FourByteLong qrgnin;
     *Xig1 = iseed1;
     *Xig2 = iseed2;
     initgn(-1L);
-    for (g=2; g<=numg; g++) {
+    for (g=2; g<=NUMG; g++) {
         *(Xig1+g-1) = mltmod(Xa1vw,*(Xig1+g-2),Xm1);
         *(Xig2+g-1) = mltmod(Xa2vw,*(Xig2+g-2),Xm2);
         gscgn(1L,&g);
         initgn(-1L);
     }
     gscgn(1L,&ocgn);
-#undef numg
 }
 void setant(const FourByteLong qvalue)
 /*
@@ -339,7 +332,6 @@ void setant(const FourByteLong qvalue)
 **********************************************************************
 */
 {
-#define numg 32L
 extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xqanti[];
@@ -354,7 +346,6 @@ static FourByteLong qrgnin;
 S10:
     gscgn(0L,&g);
     Xqanti[g-1] = qvalue;
-#undef numg
 }
 void setsd(const FourByteLong iseed1,const FourByteLong iseed2)
 /*
@@ -374,7 +365,6 @@ void setsd(const FourByteLong iseed1,const FourByteLong iseed2)
 **********************************************************************
 */
 {
-#define numg 32L
 extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
 extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xig1[],Xig2[];
@@ -391,7 +381,6 @@ S10:
     *(Xig1+g-1) = iseed1;
     *(Xig2+g-1) = iseed2;
     initgn(-1L);
-#undef numg
 }
 FourByteLong Xm1,Xm2,Xa1,Xa2,Xcg1[32],Xcg2[32],Xa1w,Xa2w,Xig1[32],Xig2[32],Xlg1[32],
     Xlg2[32],Xa1vw,Xa2vw;
