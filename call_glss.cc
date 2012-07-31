@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.66 2012/04/18 01:30:19 mp Exp $ 
+ $Id: call_glss.cc,v 1.67 2012/07/31 01:50:59 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -268,16 +268,17 @@ State call_glss(/* not const */ Global_Search *global_method,
     FILE *pop_fileptr;
 
 
-    // DEBUG MP 201105
-    (void)fprintf(logFile, "call_glss  global_method %s   local_method %s\n",
+    if(outlev>=LOGRUNV) \
+    (void)fprintf(logFile, "call_glss:  global_method %s   local_method %s\n",
       global_method?global_method->shortname():"NULL",
-      local_method?"Non-NULL":"NULL");
+      local_method?local_method->shortname():"NULL");
 
     if (global_method) global_method->reset(output_pop_stats);
     if (local_method) local_method->reset();
     evaluate.reset();
 
-    (void)fprintf( logFile, "\nCreating an initial population of %u individuals.\n", pop_size);
+    if(outlev>=LOGRUNV) \
+    (void)fprintf( logFile, "Creating an initial population of %u individuals.\n", pop_size);
     Population thisPop(pop_size);
     //  Pass in the end_of_branch tree for Branch Crossover Mode.
     thisPop.set_eob( end_of_branch );
@@ -416,7 +417,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 	Clock genEnd;
 	Clock genStart = times( &tms_genStart );
 
-        if (outlev >= LOGRUNV ) (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", generation);
+        if (outlev >= LOGRUNVV ) (void)fprintf( logFile, "Global-Local Search Iteration: %d\n", generation);
 
       if(generation>0) {
         if (outlev >= LOGRUNVV)  (void)fprintf( logFile, "Performing Global Search.\n"); 

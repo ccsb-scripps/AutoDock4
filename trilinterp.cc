@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.20 2012/04/13 06:22:10 mp Exp $
+ $Id: trilinterp.cc,v 1.21 2012/07/31 01:50:59 mp Exp $
 
  AutoDock  
 
@@ -114,7 +114,13 @@ Real trilinterp(
                 y -= info->center[Y];
                 z -= info->center[Z];
                 // sqhypotenuse(x,y,z) is the square of the distance from grid's centre to atom
+//#define GRIDEHACK
+#ifdef GRIDEHACK
+// TODO note GRIDEHACK
+		epenalty = hypotenuse(x,y,z);
+#else
                 epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
+#endif
                 if (elec != NULL) elec[i] = epenalty;
                 if (emap != NULL) emap[i] = epenalty;
                 elec_total += epenalty;

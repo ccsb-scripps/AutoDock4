@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.53 2012/07/09 22:34:19 mp Exp $
+# $Id: test_autodock4.py,v 1.54 2012/07/31 01:50:59 mp Exp $
 #
 
 """
@@ -494,6 +494,12 @@ class AutoDock4_1pgp_no_parameter_file_test( AutoDock_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_output_pop_file_test( AutoDock_simple_test ):
+    """Test that autodock4 executes while writing out popfile"""
+    dpf_stem = "1pgp_output_pop_file"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_rmsmode_heavy_atoms_only_test( AutoDock_test ):
     """Test that autodock4 works using new keyword rmsmode heavy_atoms_only."""
     dpf_stem = "1pgp_rmsmode_heavy_atoms_only"
@@ -749,6 +755,7 @@ if __name__ == '__main__':
         #next dpf sets tran0,quaternion0,dihe0 to random
         'AutoDock4_1pgp_ligrand_ga_only_test', 
         'AutoDock4_1pgp_ga_only_test',
+	'AutoDock4_1pgp_output_pop_file_test',
         # tests using flexible residues 
         'AutoDock4_1pgp_flexres_test',
         ## tests which check for specific value

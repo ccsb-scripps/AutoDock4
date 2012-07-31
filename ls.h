@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.h,v 1.12 2011/06/18 05:05:00 mp Exp $
+ $Id: ls.h,v 1.13 2012/07/31 01:50:59 mp Exp $
 
  AutoDock 
 
@@ -47,6 +47,8 @@ class Local_Search
       Local_Search(void);
       virtual ~Local_Search(void);
       virtual void reset(void) = 0;
+      virtual char * shortname(void) = 0;
+      virtual char * longname(void) = 0;
       virtual int terminate(void) const = 0;
       virtual int search(Individual &) = 0;
       unsigned int ls_count;//search invocation count, for run statistics
@@ -76,9 +78,21 @@ class Pattern_Search : public Local_Search
       Pattern_Search(const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, ConstReal, ConstReal);
       ~Pattern_Search(void);
       void reset(void);
+      char * shortname(void);
+      char * longname(void);
       int terminate(void) const;
       int search(/* not const */ Individual &);
 };
+inline char * Pattern_Search::shortname(void)
+{
+	return "PS";
+}
+
+inline char * Pattern_Search::longname(void)
+{
+	return "Pattern-Search";
+}
+
 
 class Solis_Wets_Base : public Local_Search
 {
@@ -109,6 +123,8 @@ class Solis_Wets : public Solis_Wets_Base
       virtual ~Solis_Wets(void);
       virtual double gen_deviates(ConstReal) const = 0;
       Boole SW(/* not const */ Phenotype &);
+      char * shortname(void);
+      char * longname(void);
 };
 
 class Pseudo_Solis_Wets : public Solis_Wets_Base
@@ -124,6 +140,8 @@ class Pseudo_Solis_Wets : public Solis_Wets_Base
       virtual ~Pseudo_Solis_Wets(void);
       virtual double gen_deviates(ConstReal) const = 0;
       Boole SW(Phenotype &);
+      char * shortname(void);
+      char * longname(void);
 };
 
 class Solis_Wets1 : public Solis_Wets
@@ -229,6 +247,16 @@ inline Solis_Wets::~Solis_Wets(void)
 {
 }
 
+inline char * Solis_Wets::shortname(void)
+{
+	return "SW";
+}
+
+inline char * Solis_Wets::longname(void)
+{
+	return "Solis-Wets";
+}
+
 inline Pseudo_Solis_Wets::Pseudo_Solis_Wets(void)
 :  Solis_Wets_Base(), rho(NULL), lower_bound_on_rho(NULL), temp_rho(NULL)
 {
@@ -268,6 +296,15 @@ inline Pseudo_Solis_Wets::~Pseudo_Solis_Wets(void)
    {
       delete [] temp_rho;
    }
+}
+inline char * Pseudo_Solis_Wets::shortname(void)
+{
+	return "PSW";
+}
+
+inline char * Pseudo_Solis_Wets::longname(void)
+{
+	return "Pseudo-Solis-Wets";
 }
 
 inline Solis_Wets1::Solis_Wets1(void)
