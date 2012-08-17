@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.54 2012/07/31 01:50:59 mp Exp $
+# $Id: test_autodock4.py,v 1.55 2012/08/17 02:55:12 mp Exp $
 #
 
 """
@@ -440,6 +440,18 @@ class AutoDock4_1pgp_seedinttime_test( AutoDock_simple_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_epdb_flexres_intelec_test( AutoDock_simple_test ):
+    """Test autodock 4.3 epdb output flexres with intelec on."""
+    dpf_stem = "1pgp_epdb_flexres_intelec"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_epdb_flexres_nointelec_test( AutoDock_simple_test ):
+    """Test autodock 4.3 epdb output flexres with intelec off."""
+    dpf_stem = "1pgp_epdb_flexres_nointelec"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_epdb_etables_test( AutoDock_simple_test ):
     """Test autodock 4.3 high outlev detail for epdb and energy tables."""
     dpf_stem = "1pgp_epdb_etables"
@@ -728,6 +740,8 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_timepid_test',
 	'AutoDock4_1pgp_seed01_test',
 	'AutoDock4_1pgp_seedinttime_test',
+        'AutoDock4_1pgp_epdb_flexres_intelec_test',
+        'AutoDock4_1pgp_epdb_flexres_nointelec_test',
         'AutoDock4_1pgp_epdb_etables_test',
         'AutoDock4_1pgp_numoutlev_test',
         'AutoDock4_1pgp_symoutlev_test',
