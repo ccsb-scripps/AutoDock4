@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.67 2012/07/31 01:50:59 mp Exp $ 
+ $Id: call_glss.cc,v 1.68 2012/08/17 23:54:33 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -265,7 +265,7 @@ State call_glss(/* not const */ Global_Search *global_method,
     int max_numTries = 1000;
     double firstEnergy = 0.0;
     EvalMode localEvalMode = Normal_Eval;
-    FILE *pop_fileptr;
+    static FILE *pop_fileptr = NULL;
 
 
     if(outlev>=LOGRUNV) \
@@ -554,11 +554,23 @@ State call_glss(/* not const */ Global_Search *global_method,
 
 	// MP TODO won't this put all generations into the same file, not appended?
         if (strlen(FN_pop_file) > 0) { // YES, do print!
-            if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
-                pr(logFile, "\n%s: ERROR:  I'm sorry, I cannot create\"%s\".\n\n", programname, FN_pop_file);
+            if (pop_fileptr==NULL) {
+	       // attempt open 
+	       if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
+	        char msg[PATH_MAX+200];
+                sprintf(msg, "%s: ERROR:  I'm sorry, I cannot create\"%s\".", programname, FN_pop_file);
+		stop(msg);
+		} else {
+		fprintf(logFile, "Opened population file \"%s\" for writing.\n",FN_pop_file);
+		fprintf(pop_fileptr, "Opened from call_glss\n");
+		fflush(pop_fileptr);
+		}
+
             } else {
+		fprintf(pop_fileptr, "Generation %d\n", generation);
+                fflush( pop_fileptr ); // debug
                 thisPop.printPopulationAsCoordsEnergies( pop_fileptr, pop_size, sInit.ntor); 
-                fclose( pop_fileptr );
+                fflush( pop_fileptr );
             }
         }
 

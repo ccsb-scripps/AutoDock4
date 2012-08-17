@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.55 2012/08/17 02:55:12 mp Exp $
+# $Id: test_autodock4.py,v 1.56 2012/08/17 23:54:33 mp Exp $
 #
 
 """
@@ -508,7 +508,7 @@ class AutoDock4_1pgp_no_parameter_file_test( AutoDock_test ):
 
 class AutoDock4_1pgp_output_pop_file_test( AutoDock_simple_test ):
     """Test that autodock4 executes while writing out popfile"""
-    dpf_stem = "1pgp_output_pop_file"
+    dpf_stem = "1pgp_outpopfil"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
