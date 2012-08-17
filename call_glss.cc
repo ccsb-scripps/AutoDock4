@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.68 2012/08/17 23:54:33 mp Exp $ 
+ $Id: call_glss.cc,v 1.69 2012/08/17 23:58:29 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -552,7 +552,6 @@ State call_glss(/* not const */ Global_Search *global_method,
 		 thisPop.nevals_last_pop_stats = evaluate.evals();
 		 }
 
-	// MP TODO won't this put all generations into the same file, not appended?
         if (strlen(FN_pop_file) > 0) { // YES, do print!
             if (pop_fileptr==NULL) {
 	       // attempt open 
@@ -569,7 +568,7 @@ State call_glss(/* not const */ Global_Search *global_method,
             } else {
 		fprintf(pop_fileptr, "Generation %d\n", generation);
                 fflush( pop_fileptr ); // debug
-                thisPop.printPopulationAsCoordsEnergies( pop_fileptr, pop_size, sInit.ntor); 
+                // TODO FAILS 2012-08-17 thisPop.printPopulationAsCoordsEnergies( pop_fileptr, pop_size, sInit.ntor); 
                 fflush( pop_fileptr );
             }
         }
