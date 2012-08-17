@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcalPrint.h,v 1.18 2012/04/13 06:22:10 mp Exp $
+ $Id: eintcalPrint.h,v 1.19 2012/08/17 02:25:05 mp Exp $
 
  AutoDock  
 
@@ -39,6 +39,9 @@ Real  eintcalPrint( const NonbondParam * const nonbondlist,
                      const Real qsp_abs_charge[MAX_ATOMS],
                      const Boole B_use_non_bond_cutoff,
                      const Boole B_have_flexible_residues, // if the receptor has flexibile residues, this will be set to TRUE
+		     int natom,
+		     const int type[],
+		     char const atom_type_name[MAX_MAPS][3],
 		     const int outlev,
 		     FILE *logFile);  
 

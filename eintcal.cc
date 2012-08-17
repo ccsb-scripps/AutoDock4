@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.30 2012/05/01 00:22:29 mp Exp $
+ $Id: eintcal.cc,v 1.31 2012/08/17 02:25:05 mp Exp $
 
  AutoDock  
 
@@ -85,6 +85,9 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
                    const Real qsp_abs_charge[MAX_ATOMS],
                    const Boole B_use_non_bond_cutoff,
                    const Boole B_have_flexible_residues, // if the receptor has flexibile residues, this will be set to TRUE
+		   const int natom,
+		   const int type[],
+		   char const atom_type_name[MAX_MAPS][3],
 		   const int outlev,
 		   FILE *logFile
                   )
@@ -138,6 +141,12 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
     double total_e_vdW=0.0L;
     double total_e_Hb=0.0L;
     double total_e_desolv=0.0L;
+
+    double peratom_e_elec[MAX_ATOMS];
+    double peratom_e_vdW[MAX_ATOMS];
+    double peratom_e_Hb[MAX_ATOMS];
+    double peratom_e_desolv[MAX_ATOMS];
+    for(int a=0;a<MAX_ATOMS;a++) peratom_e_elec[a]=peratom_e_vdW[a]=peratom_e_Hb[a]=peratom_e_desolv[a]=0;
 #endif
 
     int nb_group_max;
@@ -166,8 +175,8 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
             pr(logFile, "\n\n\t\tReceptor Moving-Atom Intramolecular Energy Analysis\n");
             pr(logFile,     "\t\t===================================================\n\n");
         }
-#define H1 "Non-bond  Atom1-Atom2  Distance   Total    vdW     "
-#define U1 "________  ___________  ________   ______  ________ "
+#define H1 "Non-bond  Atom1-Atom2  Distance   Total  "
+#define U1 "________  ___________  ________   ______ "
 #define H2 "     vdW        Hb     Desolv     Sol_fn   Type Dielectric"
 #define U2 "  ________ ________  ________   ________   ____ __________"
 
@@ -280,6 +289,15 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
           total_e_elec     += e_elec;
           double dielectric = ptr_ad_energy_tables->epsilon_fn[index_lt_NDIEL];
 
+	  peratom_e_vdW[a1] += e_vdW/2;
+	  peratom_e_vdW[a2] += e_vdW/2;
+	  peratom_e_Hb[a1]  += e_Hb/2;
+	  peratom_e_Hb[a2]  += e_Hb/2;
+	  peratom_e_desolv[a1] += e_desolv/2;
+	  peratom_e_desolv[a2] += e_desolv/2;
+	  peratom_e_elec[a1] += e_elec/2;
+	  peratom_e_elec[a2] += e_elec/2;
+
 
           pr( logFile, " %6d   %5d-%-5d %8.4lf %+9.4lf ",
                     (int)(inb+1), (int)(a1+1), (int)(a2+1), (double)sqrt(r2), (double)e_total);
@@ -328,16 +346,44 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 
 #ifdef EINTCALPRINT
     if (B_calcIntElec) {
-        pr( logFile, "                                ________  ________  ________ ________  ________\n");
-        pr( logFile, "Total                          %+9.4lf %+9.4lf %+9.4lf %+9.4lf %+9.4lf\n", total_e_total, total_e_elec, total_e_vdW, total_e_Hb, total_e_desolv);
+        pr( logFile, "                                ________   ________  ________  ________  ________\n");
+        pr( logFile, "Total                          %+9.4lf  %+9.4lf %+9.4lf  %+9.4lf %+9.4lf\n", total_e_total, total_e_elec, total_e_vdW, total_e_Hb, total_e_desolv);
         pr( logFile, "                                ________  ________  ________  ________ ________\n");
-        pr( logFile, "                                   Total      Elec       vdW        Hb   Desolv\n");
+        pr( logFile, "                                   Total       Elec       vdW        Hb    Desolv\n");
     } else {
-        pr( logFile, "                                ________  ________  ________ ________\n");
-        pr( logFile, "Total                          %+9.4lf %+9.4lf %+9.4lf %+9.4lf\n", total_e_total, total_e_vdW, total_e_Hb, total_e_desolv);
-        pr( logFile, "                                ________  ________  ________ ________\n");
-        pr( logFile, "                                   Total       vdW        Hb   Desolv\n");
+        pr( logFile, "                                ________   ________  ________ ________\n");
+        pr( logFile, "Total                          %+9.4lf  %+9.4lf %+9.4lf %+9.4lf\n", total_e_total, total_e_vdW, total_e_Hb, total_e_desolv);
+        pr( logFile, "                                ________   ________  ________ ________\n");
+        pr( logFile, "                                   Total        vdW        Hb    Desolv\n");
     }
+#endif
+
+#ifdef EINTCALPRINT
+            pr(logFile, "\n\n\tPer-atom Intramolecular Energy Analysis\n");
+            pr(logFile,     "\t=======================================\n\n");
+#define PAH1 "Atom Type   Total  "
+#define PAU1 "____ ___  ________ "
+#define PAH2 "    vdW        Hb     Desolv "
+#define PAU2 " ________  ________  ________"
+
+        pr( logFile, "%s", PAH1);
+        if (B_calcIntElec) pr( logFile, "   Elec   ");
+        pr( logFile, "%s\n", PAH2);
+
+        pr( logFile, "%s", PAU1);
+        if (B_calcIntElec) pr( logFile, " ________ ");
+        pr( logFile, "%s\n", PAU2);
+
+	for(int a=0;a<natom;a++) {
+	 // print atom number, atom type (chars), Total E, [optional] e_elec, vdW, Hb, Desolv
+	pr( logFile, "%4d  %-2s %+9.4lf ", a+1, atom_type_name[type[a]], 
+	  peratom_e_vdW[a]+peratom_e_Hb[a]+peratom_e_elec[a]+peratom_e_desolv[a]);
+	if(B_calcIntElec) pr( logFile, "%+9.4lf ", peratom_e_elec[a]);
+	pr( logFile, "%+9.4lf %+9.4lf %+9.4lf\n", 
+	  peratom_e_vdW[a],peratom_e_Hb[a],peratom_e_desolv[a]);
+	}
+   pr(logFile,"\n");
+
 #endif
 
 #ifdef EINTCALPRINT

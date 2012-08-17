@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.181 2012/07/09 22:35:21 mp Exp $
+ $Id: main.cc,v 1.182 2012/08/17 02:25:05 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.181 2012/07/09 22:35:21 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.182 2012/08/17 02:25:05 mp Exp $"};
 
 
 
@@ -767,7 +767,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.181 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.182 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -4194,7 +4194,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             // Calculate the unbound internal energy using the standard AutoDock energy function
             (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, Nnb_array, &group_energy,
 	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge,
-	    B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile);
+	    B_use_non_bond_cutoff, B_have_flexible_residues, natom, type, info->atom_type_name, outlev, logFile);
             //
             // eintcal() and eintcalPrint() set the values of group_energy[]
             unbound_ext_internal_FE = 
@@ -4273,7 +4273,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 // Calculate the unbound internal energy using the standard AutoDock energy function
                 (void) eintcalPrint(nonbondlist, ad_energy_tables, crd, Nnb, Nnb_array, &group_energy,
 		B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
-		B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile);
+		B_use_non_bond_cutoff, B_have_flexible_residues, natom, type, info->atom_type_name, outlev, logFile);
                 //
                 // eintcal() and eintcalPrint() set the values of group_energy[]
                 unbound_ad_internal_FE = 
@@ -4424,7 +4424,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         if (ntor > 0) {
             (void) eintcalPrint(nonbondlist, ad_energy_tables, crdorig, Nnb, Nnb_array, &group_energy,
 	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
-	    B_use_non_bond_cutoff, B_have_flexible_residues, outlev, logFile);
+	    B_use_non_bond_cutoff, B_have_flexible_residues, natom, type, info->atom_type_name, outlev, logFile);
         }
 
         pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());

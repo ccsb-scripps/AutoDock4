@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.52 2012/06/20 00:48:56 mp Exp $
+ $Id: analysis.cc,v 1.53 2012/08/17 02:25:05 mp Exp $
 
  AutoDock  
 
@@ -338,6 +338,7 @@ void analysis( const int   Nnb,
             (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, 
 	    Nnb, Nnb_array, group_energy, 
 	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues,
+	    natom, type, info->atom_type_name,
 	    outlev, logFile);
 	    }
             flushLog;
