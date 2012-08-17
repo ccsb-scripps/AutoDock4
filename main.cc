@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.182 2012/08/17 02:25:05 mp Exp $
+ $Id: main.cc,v 1.183 2012/08/17 05:14:07 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.182 2012/08/17 02:25:05 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.183 2012/08/17 05:14:07 mp Exp $"};
 
 
 
@@ -767,7 +767,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.182 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.183 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -862,9 +862,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	    if(outlev>LOGFORADT) pr(logFile, "\n\n");
             if(outlev>=LOGBASIC) pr( logFile, "DPF> %s\n", line );
             indcom = strindex( line, "#" );
-            if (indcom != -1) {
-                line[ indcom ] = '\0'; /* Truncate "line" at the comment */
-            }
+	    /* truncate line at comment - # mark must be first character
+	     * in line, or else preceded by white space (blank or tab)
+	     */
+            if (indcom != -1 && 
+	      (indcom==0 || (isascii(line[indcom-1]) && isspace(line[indcom-1]))) 
+	      ) line[ indcom ] = '\0';
             break;
     } /* switch */
 
