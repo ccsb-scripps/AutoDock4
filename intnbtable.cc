@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.23 2012/05/01 00:22:29 mp Exp $
+ $Id: intnbtable.cc,v 1.24 2012/08/17 02:31:04 mp Exp $
 
  AutoDock 
 
@@ -115,7 +115,7 @@ void intnbtable( Boole *const P_B_havenbp,
         pr( logFile, "\n                            %12.5lf    %12.5lf    %12.5lf   %12.5lf \n", cA_unw, cB_unw, cA, cB );
 	 
 	pr( logFile, "    E      =  %11s * (-----------  -  -----------) =  -----------  -  -----------\n",
-	wname, weight );
+	wname);
         pr( logFile, "     %2s,%-2s        %6.4f           %-2d               %-2d             %-2d            %-2d\n", info->atom_type_name[a1], info->atom_type_name[a2], weight, xA, xB , xA,xB);
         pr( logFile, "                                  r                r              r             r \n\n");
 //      pr( logFile, "\n            %12.5lf   %12.5lf \n", cA, cB );
