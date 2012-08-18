@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.40 2012/06/20 00:48:56 mp Exp $
+ $Id: writePDBQT.cc,v 1.41 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -53,8 +53,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 		 const int natom, 
 		 const char atomstuff[MAX_ATOMS][MAX_CHARS], 
 		 /* not const */ Real crd[MAX_ATOMS][SPACE], 
-		 /* not const */ Real emap[MAX_ATOMS], 
-		 /* not const */ Real elec[MAX_ATOMS], 
+		    EnergyComponent	peratomE[MAX_ATOMS],
 		 const Real charge[MAX_ATOMS], 
 		 const Real abs_charge[MAX_ATOMS], 
 		 const Real qsp_abs_charge[MAX_ATOMS], 
@@ -92,8 +91,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 	int i = 0;
     EnergyBreakdown eb;
 
-	Real emap_total = 0.0L;
-	Real elec_total = 0.0L;
+	EnergyComponent totalE;
 	Real MaxValue = 99.99L;
 	Real MinValue = -99.99L;
 
@@ -114,7 +112,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     char state_type_string[MAX_CHARS];
     char state_type_prefix_string[MAX_CHARS];
     char state_type_prefix_USER_string[MAX_CHARS];
-    Real this_emap = 0.;
+    Real this_emap = 0.; // includes desolv
     Real this_elec = 0.;
 
     // Initialise various character strings
@@ -161,7 +159,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     // Calculate the energy breakdown
     eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues, 
          crd, charge, abs_charge, type, map, info, 
-         ignore_inter, elec, emap, &elec_total, &emap_total, 
+         ignore_inter, peratomE, &totalE,
          nonbondlist, ptr_ad_energy_tables, 
 	 Nnb, Nnb_array, group_energy, true_ligand_atoms, B_calcIntElec, 
          B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
@@ -185,10 +183,10 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     } else {
         // UNBOUND
         // "intermolecular" energy is meaningless for unbound state, so set this to zero
+	static EnergyComponent zeroEC;
         *Ptr_einter = 0.0;
         eb.e_inter = 0.0;
-        emap_total = 0.0;
-        elec_total = 0.0;
+        totalE = zeroEC;
         eb.e_inter_moving_fixed = 0.0;
         eb.e_inter_moving_moving = 0.0;
     }
@@ -202,7 +200,8 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         pr( logFile, "%s: USER  \n", state_type_string );
         
 	// see also main.cc and analysis.cc for similar code:
-        printEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor, emap_total, elec_total, 
+        printEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor, 
+	totalE.vdW_Hb+totalE.desolv, totalE.elec, 
 	 B_have_flexible_residues,  // next two terms are meaningful only if have flexible residues...
 	 group_energy->inter_moving_moving.vdW_Hb + group_energy->inter_moving_moving.desolv,
 	 group_energy->inter_moving_moving.elec,
@@ -286,8 +285,11 @@ writePDBQT(const int irun, const FourByteLong seed[2],
                 // emap and elec values; set these to 0.
                 if (state_type == 1) {
                     // DOCKED
-                    this_emap = (emap[i] >= 0.) ? min(emap[i], MaxValue) : max(emap[i], MinValue);
-                    this_elec = (elec[i] >= 0.) ? min(elec[i], MaxValue) : max(elec[i], MinValue);
+                    this_emap = (peratomE[i].vdW_Hb+peratomE[i].desolv >= 0.) ? 
+		        min(peratomE[i].vdW_Hb+peratomE[i].desolv, MaxValue) 
+		      : max(peratomE[i].vdW_Hb+peratomE[i].desolv, MinValue);
+                    this_elec = (peratomE[i].elec >= 0.) ? 
+		        min(peratomE[i].elec, MaxValue) : max(peratomE[i].elec, MinValue);
                 } else {
                     // UNBOUND
                     this_emap = 0.;

@@ -1,6 +1,6 @@
 /*
 
- $Id: print_atomic_energies.h,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: print_atomic_energies.h,v 1.7 2012/08/18 00:00:29 mp Exp $
 
  AutoDock 
 
@@ -28,11 +28,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define PRINT_ATOMIC_ENERGIES
 
 #include "constants.h"
+#include "structs.h"
 
 void  print_atomic_energies(const int   natom,
                             const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                             const int   type[MAX_ATOMS],
-                            const Real emap[MAX_ATOMS],
-                            const Real elec[MAX_ATOMS],
+			    const EnergyComponent peratomE[MAX_ATOMS],
                             const Real charge[MAX_ATOMS] );
 #endif

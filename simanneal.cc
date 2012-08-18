@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.42 2012/06/20 04:11:49 mp Exp $
+ $Id: simanneal.cc,v 1.43 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -62,8 +62,7 @@ void simanneal ( int   *const Addr_nconf,
 
                 /* not const */ Real econf[MAX_RUNS],
                 const Boole B_either,
-                Real elec[MAX_ATOMS],
-                Real emap[MAX_ATOMS],
+		EnergyComponent	*peratomE,
                 const int   NcycMax,
                 const int   irunmax,
 		FourByteLong seed[2],
@@ -260,7 +259,7 @@ void simanneal ( int   *const Addr_nconf,
                      &sInit, &sMin, &sLast, 
                      B_RandomTran0, B_RandomQuat0, B_RandomDihe0, 
                      charge, abs_charge, qsp_abs_charge, crd, crdpdb, atomstuff,
-                     elec, emap, ptr_ad_energy_tables, B_calcIntElec,
+                     peratomE, ptr_ad_energy_tables, B_calcIntElec,
                      map, natom, Nnb, Nnb_array, group_energy, 
 		     true_ligand_atoms, nonbondlist,
                      ntor, tlist, type, vt, irun1, MaxRetries,
@@ -391,8 +390,8 @@ void simanneal ( int   *const Addr_nconf,
                         ** MORE ACCURATE METHOD, (SLOWER):
                         */
                         e = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-                                        info, ignore_inter, NULL_ELEC, NULL_EVDW,
-                                        NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL_ENERGY_BREAKDOWN)
+                                        info, ignore_inter, NULL, NULL,
+                                        NULL_ENERGY_BREAKDOWN)
                            + (eintra = eintcal(nonbondlist, ptr_ad_energy_tables, crd, Nnb,
 				   Nnb_array, group_energy,  // perhaps no breakdown needed
                                    B_calcIntElec, B_include_1_4_interactions,
@@ -502,7 +501,7 @@ void simanneal ( int   *const Addr_nconf,
                          &sInit, &sMin, &sLast, 
                          TRUE, TRUE, TRUE, 
                          charge, abs_charge, qsp_abs_charge, crd, crdpdb, atomstuff,
-                         elec, emap, ptr_ad_energy_tables, B_calcIntElec,
+                         peratomE, ptr_ad_energy_tables, B_calcIntElec,
                          map, natom, 
 			 Nnb, Nnb_array, group_energy, true_ligand_atoms,
 			 nonbondlist, ntor, tlist, type, vt, irun1, MaxRetries,
@@ -632,12 +631,12 @@ void simanneal ( int   *const Addr_nconf,
             eintra = 0.0 ;
         }
         einter = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-                    info, ignore_inter, elec, emap,
-                    NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL_ENERGY_BREAKDOWN);
+                    info, ignore_inter, peratomE, NULL,
+                    NULL_ENERGY_BREAKDOWN);
 
 	if(outlev>=LOGMIN)
         writePDBQT( irun, seed, FN_ligand, FN_dpf, lig_center, sSave, ntor,
-                &eintra, &einter, natom, atomstuff, crd, emap, elec, 
+                &eintra, &einter, natom, atomstuff, crd, peratomE,
                 charge, abs_charge, qsp_abs_charge,
                 ligand_is_inhibitor, torsFreeEnergy, 
                 vt, tlist, crdpdb, nonbondlist, 

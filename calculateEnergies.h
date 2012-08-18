@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.h,v 1.14 2012/04/13 06:22:10 mp Exp $
+ $Id: calculateEnergies.h,v 1.15 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -46,10 +46,8 @@ EnergyBreakdown calculateEnergies(
     #include "map_declare.h"
     GridMapSetInfo       *info,                     // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
     const int                  ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
-    Real                 elec[MAX_ATOMS],           // output if not NULL - electrostatic energies, atom by atom
-    Real                 emap[MAX_ATOMS],           // output if not NULL - intermolecular energies
-    Real                 *p_elec_total,             // output if not NULL - total electrostatic energy
-    Real                 *p_emap_total,             // output if not NULL - total intermolecular energy
+    EnergyComponent	peratomE[MAX_ATOMS],        // output if not NULL - intermolecular energies
+    EnergyComponent	*p_totalE,        // output if not NULL - total energy components
 
     // eintcal
     const NonbondParam * const         nonbondlist,       // input  list of nonbonds
@@ -88,10 +86,8 @@ EnergyBreakdown calculateBindingEnergies(
     #include "map_declare.h"
     const GridMapSetInfo *const info,               // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
     const int            ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
-    /* not const */ Real elec[MAX_ATOMS],           // output if not NULL - electrostatic energies, atom by atom
-    /* not const */ Real emap[MAX_ATOMS],           // output if not NULL - intermolecular energies
-    /* not const */ Real *p_elec_total,             // output if not NULL - total electrostatic energy
-    /* not const */ Real *p_emap_total,             // output if not NULL - total intermolecular energy
+    EnergyComponent	peratomE[MAX_ATOMS],        // output if not NULL - intermolecular energies
+    EnergyComponent	*p_totalE,        // output if not NULL - total energy components
 
     // eintcal
     const NonbondParam *const nonbondlist,          // input  list of nonbonds

@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.21 2012/07/31 01:50:59 mp Exp $
+ $Id: trilinterp.cc,v 1.22 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -55,10 +55,8 @@ Real trilinterp(
  #include "map_declare.h"
  const GridMapSetInfo *const info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
  const int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
- /* not const */ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
- /* not const */ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
- /* not const */ Real *p_elec_total, // set if not NULL - total electrostatic energy
- /* not const */ Real *p_emap_total, // set if not NULL - total intermolecular energy
+    EnergyComponent	peratomE[MAX_ATOMS],        // output if not NULL - intermolecular energies
+    EnergyComponent	*p_totalE,        // output if not NULL - total energy components
  /* not const */ EnergyComponent *energy_component // set if not NULL - breakdown by elec/vdW_Hb/desolv
 
  )
@@ -86,8 +84,9 @@ Real trilinterp(
 /******************************************************************************/
 
 {
-    double elec_total=0, emap_total=0, vdW_Hb_total=0, desolv_total=0;
+    double elec_total=0, emap_total=0, dmap_total=0, vdW_Hb_total=0, desolv_total=0;
     register int i;               /* i-th atom */
+    static EnergyComponent ECzero;
 
     for (i=first_atom; i<last_atom; i++) {
         register double e, m, d; 
@@ -100,8 +99,7 @@ Real trilinterp(
 	register double x,y,z;
 
         if (ignore_inter[i]) {
-            if (elec != NULL) elec[i] = 0;
-            if (emap != NULL) emap[i] = 0;
+            if (peratomE != NULL) peratomE[i] = ECzero;
             continue;
         }
 
@@ -121,8 +119,7 @@ Real trilinterp(
 #else
                 epenalty = sqhypotenuse(x,y,z) * ENERGYPENALTY;
 #endif
-                if (elec != NULL) elec[i] = epenalty;
-                if (emap != NULL) emap[i] = epenalty;
+                if (peratomE != NULL) peratomE[i].elec = peratomE[i].vdW_Hb = peratomE[i].total = epenalty;
                 elec_total += epenalty;
                 emap_total += epenalty;
                 continue;
@@ -211,20 +208,30 @@ Real trilinterp(
  
 
         elec_total += e * charge[i];
-        emap_total += m + d * abs_charge[i]; 
+        emap_total += m;
+        dmap_total += d * abs_charge[i]; 
 
 	if (energy_component != NULL)  {
 	   desolv_total += d * abs_charge[i];
 	   vdW_Hb_total += m;
 	   }
 
-        if (elec != NULL) elec[i] = e * charge[i];
-        if (emap != NULL) emap[i] = m + d * abs_charge[i];
+        if (peratomE != NULL) {
+		peratomE[i].elec = e * charge[i];
+		peratomE[i].vdW_Hb = m;
+		peratomE[i].desolv = d * abs_charge[i];
+		peratomE[i].total =  e * charge[i]  + m + d * abs_charge[i];
+		}
+
 
     } // for (i=first_atom; i<last_atom; i++)
 
-    if (p_elec_total != NULL) *p_elec_total = elec_total;
-    if (p_emap_total != NULL) *p_emap_total = emap_total;
+    if (p_totalE != NULL) {
+    	p_totalE->elec = elec_total;
+    	p_totalE->vdW_Hb = emap_total;
+    	p_totalE->desolv = desolv_total;
+	p_totalE->total = elec_total + emap_total + desolv_total;
+	}
     if (energy_component != NULL)  {
     	energy_component->elec = elec_total;
     	energy_component->vdW_Hb = vdW_Hb_total;
@@ -232,7 +239,7 @@ Real trilinterp(
 	energy_component->total = elec_total + vdW_Hb_total + desolv_total;
 	}
 
-    return( (Real)elec_total+emap_total );
+    return( (Real)elec_total+emap_total+desolv_total );
 }
 
 /*----------------------------------------------------------------------------*/

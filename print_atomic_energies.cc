@@ -1,6 +1,6 @@
 /*
 
- $Id: print_atomic_energies.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: print_atomic_energies.cc,v 1.7 2012/08/18 00:00:29 mp Exp $
 
  AutoDock 
 
@@ -39,14 +39,12 @@ extern FILE *logFile;
 void print_atomic_energies( const int natom, 
 			    const char atomstuff[MAX_ATOMS][MAX_CHARS],
 			    const int type[MAX_ATOMS],
-			    const Real emap[MAX_ATOMS],
-			    const Real elec[MAX_ATOMS],
+			    const EnergyComponent peratomE[MAX_ATOMS],
 			    const Real charge[MAX_ATOMS] )
 
 /*----------------------------------------------------------------------------*/
 {
     char rec[16];
-    register int i;
 
     fprintf( logFile, 
      "Small Molecule  Atom  Non-bonded   Electrostatic  Partial\n" );
@@ -55,9 +53,10 @@ void print_atomic_energies( const int natom,
     fprintf( logFile, 
      "______________  ____  ___________  _____________  ______\n" );
 
-    for (i = 0;  i < natom;  i++) {
+    for (int i = 0;  i < natom;  i++) {
         strncpy( rec, &atomstuff[i][6], (size_t)14 );
-        fprintf( logFile, "%.14s   %1d  %+11.2f  %+11.2f      %+6.3f\n", rec, (type[i]+1), emap[i], elec[i], charge[i] );
+        fprintf( logFile, "%.14s   %1d  %+11.2f  %+11.2f      %+6.3f\n", rec, (type[i]+1),
+	peratomE[i].vdW_Hb+peratomE[i].desolv, peratomE[i].elec, charge[i] );
     }
 }
 /* EOF */

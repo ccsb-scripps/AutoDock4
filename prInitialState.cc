@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.16 2012/06/12 22:19:32 mp Exp $
+ $Id: prInitialState.cc,v 1.17 2012/08/18 00:00:29 mp Exp $
 
  AutoDock 
 
@@ -47,8 +47,7 @@ void prInitialState(
     const Real crd[MAX_ATOMS][SPACE],
     const char atomstuff[MAX_ATOMS][MAX_CHARS],
     const int type[MAX_ATOMS],
-    const Real emap[MAX_ATOMS],
-    const Real elec[MAX_ATOMS],
+    EnergyComponent peratomE[MAX_ATOMS],
     const Real charge[MAX_ATOMS],
     const int ligand_is_inhibitor,
     const Boole B_have_flexible_residues,
@@ -80,15 +79,15 @@ void prInitialState(
     pr( logFile, "\t\t________________________\n" );
     pr( logFile, "\n\nEnergy of starting position of Small Molecule by atom: \n\n" );
 
-    print_atomic_energies( natom, atomstuff, type, emap, elec, charge );
+    print_atomic_energies( natom, atomstuff, type, peratomE, charge );
 
     for (a=0; a<true_ligand_atoms; a++) {
-        emap_total += emap[a];
-        elec_total += elec[a];
+        emap_total += peratomE[a].vdW_Hb+peratomE[a].desolv;
+        elec_total += peratomE[a].elec;
     }
     for (a=true_ligand_atoms; a<natom; a++) {
-        emap_flexres_total += emap[a];
-        elec_flexres_total += elec[a];
+        emap_flexres_total += peratomE[a].vdW_Hb+peratomE[a].desolv;
+        elec_flexres_total += peratomE[a].elec;
     }
     
 	pr( logFile, "\n\n" );

@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.h,v 1.10 2012/04/13 06:22:10 mp Exp $
+ $Id: prInitialState.h,v 1.11 2012/08/18 00:00:29 mp Exp $
 
  AutoDock 
 
@@ -38,8 +38,7 @@ void  prInitialState(
     const Real crd[MAX_ATOMS][SPACE],
     const char atomstuff[MAX_ATOMS][MAX_CHARS],
     const int type[MAX_ATOMS],
-    const Real emap[MAX_ATOMS],
-    const Real elec[MAX_ATOMS],
+    EnergyComponent peratomE[MAX_ATOMS],
     const Real charge[MAX_ATOMS],
     const int ligand_is_inhibitor,
     const Boole B_have_flexible_residues,

@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.36 2012/06/12 22:19:32 mp Exp $
+ $Id: getInitialState.cc,v 1.37 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -62,8 +62,7 @@ void getInitialState(
             /* not const */ Real crd[MAX_ATOMS][SPACE],
             const Real crdpdb[MAX_ATOMS][SPACE],
             const char  atomstuff[MAX_ATOMS][MAX_CHARS],
-            /* not const */ Real elec[MAX_ATOMS],
-            /* not const */ Real emap[MAX_ATOMS],
+            /* not const */ EnergyComponent	*peratomE,        // output if not NULL - intermolecular energies
 
             const EnergyTables *const ptr_ad_energy_tables,
 
@@ -178,8 +177,8 @@ void getInitialState(
                 natom, ntor, sInit, tlist, vt, true_ligand_atoms,outlev, info);
             
             e0inter = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-                        info, ignore_inter, elec, emap,
-                        NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL_ENERGY_BREAKDOWN);
+                        info, ignore_inter, peratomE, NULL,
+                        NULL_ENERGY_BREAKDOWN);
             e0intra = eintcal( nonbondlist, ptr_ad_energy_tables, crd,
 			  Nnb, Nnb_array, group_energy,
                           B_calcIntElec, B_include_1_4_interactions,
@@ -230,7 +229,7 @@ void getInitialState(
 
     eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
          crd, charge, abs_charge, type, map, info,
-         ignore_inter, elec, emap, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
+         ignore_inter, peratomE, NULL,
          nonbondlist, ptr_ad_energy_tables,
 	 Nnb, Nnb_array, group_energy, true_ligand_atoms,
          B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model,
@@ -240,7 +239,7 @@ void getInitialState(
     copyState( sLast, *sInit );
 
     if(outlev>=LOGRUNVV) {
-      prInitialState( &eb, natom, true_ligand_atoms, crd, atomstuff, type, emap, elec, charge, 
+      prInitialState( &eb, natom, true_ligand_atoms, crd, atomstuff, type, peratomE, charge, 
        ligand_is_inhibitor, B_have_flexible_residues, ad4_unbound_model );
       initEnd = times( &tms_initEnd );
       pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);

@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.53 2012/08/17 02:25:05 mp Exp $
+ $Id: analysis.cc,v 1.54 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -114,10 +114,7 @@ void analysis( const int   Nnb,
     static Real clu_rms[MAX_RUNS][MAX_RUNS];
     static Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
     static Real crd[MAX_ATOMS][SPACE];
-    static Real elec[MAX_ATOMS];
-    static Real elec_total;
-    static Real emap[MAX_ATOMS];
-    static Real emap_total;
+    static EnergyComponent  peratomE[MAX_ATOMS];
     // Real lo[3];
     static Real ref_crds[MAX_ATOMS][SPACE];
     static Real ref_rms[MAX_RUNS];
@@ -266,7 +263,7 @@ void analysis( const int   Nnb,
 
             eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
                  crd, charge, abs_charge, type, map, info,
-                 ignore_inter, elec, emap, &elec_total, &emap_total,
+                 ignore_inter, peratomE, NULL,
                  nonbondlist, ptr_ad_energy_tables, Nnb, Nnb_array, group_energy, true_ligand_atoms,
 		 B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
      
@@ -313,7 +310,9 @@ void analysis( const int   Nnb,
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     for (j = 0;  j < natom;  j++) {
                         print_PDBQT_atom_resstr( logFile, "", j, atomstuff[j],  crd, 
-                          min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j],"", "");
+                          min(peratomE[j].vdW_Hb+peratomE[j].desolv, MaxValue), 
+			  min(peratomE[j].elec, MaxValue), 
+			  charge[j],"", "");
                         pr(logFile," %6.3f\n", ref_rms[c]); 
                     }
                     //]
@@ -323,7 +322,9 @@ void analysis( const int   Nnb,
                     pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
                     for (j = 0;  j < natom;  j++) {
                         print_PDBQT_atom_resnum( logFile, "", j, atomstuff[j],  i1, crd, 
-                          min(emap[j], MaxValue), min(elec[j], MaxValue), charge[j],"", "");
+                          min(peratomE[j].vdW_Hb+peratomE[j].desolv, MaxValue), 
+			  min(peratomE[j].elec, MaxValue), 
+                          charge[j],"", "");
                         pr(logFile," %6.3f\n", ref_rms[c]); 
                     }/*j*/
                     //]

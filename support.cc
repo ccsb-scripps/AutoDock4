@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.43 2012/02/07 20:47:30 mp Exp $
+ $Id: support.cc,v 1.44 2012/08/18 00:00:29 mp Exp $
 
  AutoDock 
 
@@ -408,7 +408,8 @@ void Population::printPopulationAsCoordsEnergies(FILE *const output, const int n
    (void)fprintf(logFile, "support.cc/void Population::printPopulationAsCoordsEnergies(FILE *const output, int num=%d, int ntor=%d)\n", num, ntor);
 #endif // DEBUG
 
-   //(void)fprintf( output, "The top %d individuals in the population:\n\n", num);
+   if( output == NULL) stop("printPopulationAsCoordsEnergies received NULL file pointer");
+   (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
    for (i=0; i<num; i++) {
 
       // Print the number of this individual in the population (counting from 1, not 0)

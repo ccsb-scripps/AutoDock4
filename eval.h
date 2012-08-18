@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.30 2012/04/13 06:22:10 mp Exp $
+ $Id: eval.h,v 1.31 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -60,8 +60,7 @@ class Eval
       GroupEnergy  *group_energy;
       GridMapSetInfo *info;
       MapType *map;
-      Real eval_elec[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
-      Real eval_emap[MAX_ATOMS]; // gmm added 21-Jan-1998, for writePDBQState
+      EnergyComponent	*peratomE;        // output if not NULL - intermolecular energies
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
       State stateNow;
       unsigned short *US_TorE, (*US_torProfile)[NTORDIVS];
@@ -95,8 +94,7 @@ class Eval
                   GridMapSetInfo *init_info,
                   MapType  *init_map,
 
-                  /* not const */ Real  init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-                  /* not const */ Real  init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+		    EnergyComponent	*peratomE,        // output if not NULL - intermolecular energies
 
                   /* not const */ NonbondParam *init_nonbondlist,
                   /* not const */ EnergyTables   *init_ptr_ad_energy_tables,
@@ -154,8 +152,7 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
                         GridMapSetInfo *const init_info,
                         MapType *init_map,
 
-                        /* not const */ Real init_elec[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
-                        /* not const */ Real init_emap[MAX_ATOMS], // gmm added 21-Jan-1998, for writePDBQState
+			    EnergyComponent	*init_peratomE,        // output if not NULL - intermolecular energies
                         /* not const */ NonbondParam *const init_nonbondlist,
                         /* not const */ EnergyTables   *const init_ptr_ad_energy_tables,
                         const int init_Nnb,
@@ -220,8 +217,11 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
     printState( logFile, stateNow, 2 );
 #endif
     num_evals = 0;
+    peratomE = init_peratomE;
+    static EnergyComponent zeroEC;
     for (i=0; i<MAX_ATOMS; i++) {
-       init_elec[i] = init_emap[i] = 0.0;
+       //init_peratomE[i] = zeroEC;
+       peratomE[i] = zeroEC;
        ignore_inter[i] = init_ignore_inter[i];
     }
     mol = molInit;

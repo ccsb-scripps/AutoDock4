@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.h,v 1.24 2012/06/20 04:11:49 mp Exp $
+ $Id: simanneal.h,v 1.25 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -57,8 +57,7 @@ void simanneal( int   *const P_nconf,
 
                 /* not const */ Real econf[MAX_RUNS], 
                 const Boole B_either, 
-                Real elec[MAX_ATOMS], 
-                Real emap[MAX_ATOMS], 
+		    EnergyComponent	peratomE[MAX_ATOMS],        // output if not NULL - intermolecular energies
                 const int   icyclemax, 
                 const int   irunmax, 
 		FourByteLong seed[2],

@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.h,v 1.17 2012/04/13 06:22:10 mp Exp $
+ $Id: writePDBQT.h,v 1.18 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -45,8 +45,7 @@ void writePDBQT(const int irun, const FourByteLong seed[2],
                     const int   natom,
                     const char  atomstuff[MAX_ATOMS][MAX_CHARS],
                     /* not const */ Real crd[MAX_ATOMS][SPACE],
-                    /* not const */ Real emap[MAX_ATOMS],
-                    /* not const */ Real elec[MAX_ATOMS],
+		    EnergyComponent	peratomE[MAX_ATOMS],        // output if not NULL - intermolecular energies
                     const Real charge[MAX_ATOMS],
                     const Real abs_charge[MAX_ATOMS],
                     const Real qsp_abs_charge[MAX_ATOMS],

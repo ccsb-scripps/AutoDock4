@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.h,v 1.16 2012/07/05 21:26:03 mp Exp $
+ $Id: trilinterp.h,v 1.17 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -50,10 +50,8 @@ Real  trilinterp( CONST_INT first_atom,
  #include "map_declare.h"
  const GridMapSetInfo *const info, // info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
  const int ignore_inter[MAX_ATOMS], // array of booleans, says to ignore computation intermolecular energies per atom
- /* not const */ Real elec[MAX_ATOMS], // set if not NULL - electrostatic energies, atom by atom
- /* not const */ Real emap[MAX_ATOMS],  // set if not NULL - intermolecular energies
- /* not const */ Real *p_elec_total, // set if not NULL - total electrostatic energy
- /* not const */ Real *p_emap_total, // set if not NULL - total intermolecular energy
+    EnergyComponent	peratomE[MAX_ATOMS],        // output if not NULL - intermolecular energies
+    EnergyComponent	*p_totalE,        // output if not NULL - total energy components
  /* not const */ EnergyComponent *energy_component // set if not NULL - breakdown by elec/vdW_Hb/desolv
  );
 

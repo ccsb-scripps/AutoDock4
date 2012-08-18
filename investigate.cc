@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.34 2012/06/20 04:11:49 mp Exp $
+ $Id: investigate.cc,v 1.35 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -210,7 +210,7 @@ void investigate( const int   Nnb, int Nnb_array[3], GroupEnergy *group_energy,
             } while (rms > MaxRms);
             /* Calculate Energy of System, */
             e = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, info, 
-                ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL, NULL_ENERGY_BREAKDOWN)
+                ignore_inter, NULL, NULL, NULL_ENERGY_BREAKDOWN)
                  + eintcal( nonbondlist, ptr_ad_energy_tables, crd,
 		     Nnb, Nnb_array, NULL_GROUP_ENERGY,
                      B_calcIntElec, B_include_1_4_interactions,

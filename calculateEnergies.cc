@@ -1,6 +1,6 @@
 /*
 
- $Id: calculateEnergies.cc,v 1.20 2012/04/13 06:22:10 mp Exp $
+ $Id: calculateEnergies.cc,v 1.21 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -55,10 +55,8 @@ EnergyBreakdown calculateEnergies(
     #include "map_declare.h"
     const GridMapSetInfo *const info,               // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
     const int            ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
-    Real                 elec[MAX_ATOMS],           // output if not NULL - electrostatic energies, atom by atom
-    Real                 emap[MAX_ATOMS],           // output if not NULL - intermolecular energies
-    Real                 *const p_elec_total,       // output if not NULL - total electrostatic energy
-    Real                 *const p_emap_total,       // output if not NULL - total intermolecular energy
+    EnergyComponent	peratomE[MAX_ATOMS],        // output if not NULL - intermolecular energies
+    EnergyComponent	*p_totalE,        // output if not NULL - total energy components
 
     // eintcal
     const NonbondParam *const nonbondlist,          // input  list of nonbonds
@@ -86,7 +84,7 @@ EnergyBreakdown calculateEnergies(
     // computing trilinear-interpolated energies from atom = 0 to atom < true_ligand_atoms
     // gives the intermolecular energy between the ligand and the protein
     eb.e_inter_moving_fixed = scale_eintermol * trilinterp( 0, true_ligand_atoms, tcoord, charge, abs_charge, type, map, 
-	 info, ignore_inter, elec, emap, p_elec_total, p_emap_total, 
+	 info, ignore_inter, peratomE, p_totalE,
 	 &group_energy->inter_moving_fixed);
 
     if (B_have_flexible_residues) {
@@ -94,7 +92,7 @@ EnergyBreakdown calculateEnergies(
         // gives the intramolecular energy within the protein
         // we can ignore the elec_total and emap_total breakdown here
         eb.e_intra_moving_fixed_rec = trilinterp( true_ligand_atoms, natom, tcoord, charge, abs_charge, type, map, 
-	     info, ignore_inter, elec, emap, NULL, NULL, &group_energy->intra_moving_fixed_rec);
+	     info, ignore_inter, peratomE, NULL, &group_energy->intra_moving_fixed_rec);
     }
 
     if (ntor > 0) {
@@ -174,10 +172,8 @@ EnergyBreakdown calculateBindingEnergies(
     #include "map_declare.h"
     const GridMapSetInfo *const info,               // input  info->lo[X],info->lo[Y],info->lo[Z],    minimum coordinates in x,y,z
     const int            ignore_inter[MAX_ATOMS],   // input  array of booleans, says to ignore computation intermolecular energies per atom
-    Real                 elec[MAX_ATOMS],           // output if not NULL - electrostatic energies, atom by atom
-    Real                 emap[MAX_ATOMS],           // output if not NULL - intermolecular energies
-    Real                 *const p_elec_total,       // output if not NULL - total electrostatic energy
-    Real                 *const p_emap_total,       // output if not NULL - total intermolecular energy
+    EnergyComponent	peratomE[MAX_ATOMS],        // output if not NULL - intermolecular energies
+    EnergyComponent	*p_totalE,        // output if not NULL - total energy components
 
     // eintcal
     const NonbondParam *const nonbondlist,          // input  list of nonbonds
@@ -205,7 +201,7 @@ EnergyBreakdown calculateBindingEnergies(
     // computing trilinear-interpolated energies from atom = 0 to atom < true_ligand_atoms
     // gives the intermolecular energy between the ligand and the protein
     eb.e_inter_moving_fixed = trilinterp( 0, true_ligand_atoms, tcoord, charge, abs_charge, type, map, 
-	 info, ignore_inter, elec, emap, p_elec_total, p_emap_total,
+	 info, ignore_inter, peratomE, p_totalE,
 	 &group_energy->inter_moving_fixed);
 
     if (B_have_flexible_residues) {
@@ -213,7 +209,7 @@ EnergyBreakdown calculateBindingEnergies(
         // gives the intramolecular energy within the protein
         // we can ignore the elec_total and emap_total breakdown here
         eb.e_intra_moving_fixed_rec = trilinterp( true_ligand_atoms, natom, tcoord, charge, abs_charge, type, map, 
-	     info, ignore_inter, elec, emap, NULL, NULL, &group_energy->intra_moving_fixed_rec);
+	     info, ignore_inter, peratomE, NULL, &group_energy->intra_moving_fixed_rec);
     }
 
     if (ntor > 0) {

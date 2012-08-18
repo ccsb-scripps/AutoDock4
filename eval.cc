@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.35 2012/04/13 06:22:10 mp Exp $
+ $Id: eval.cc,v 1.36 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -139,10 +139,8 @@ double Eval::eval(const int term)
    double energy = 0.0L;
    double retval = 0.0L;
 
-	Real emap_total = 0.0L;
-	Real elec_total = 0.0L;
-	Real emap[MAX_ATOMS] = { 0.0L };
-	Real elec[MAX_ATOMS] = { 0.0L };
+        EnergyComponent	*peratomE;        // per atom intermolecular energies
+        EnergyComponent	totalE;        // total energy components
 
 
 #ifdef DEBUG
@@ -184,11 +182,11 @@ double Eval::eval(const int term)
     if (B_compute_intermol_energy) {
         if(term==3) // do not need energy breakdown in this eval() case
         energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-	     info, ignore_inter, NULL_ELEC, NULL_EVDW, NULL_ELEC_TOTAL, NULL_EVDW_TOTAL,
+	     info, ignore_inter, NULL, NULL,
 	     NULL_ENERGY_BREAKDOWN);
         else
         energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-	     info, ignore_inter, elec, emap, &elec_total, &emap_total,
+	     info, ignore_inter, peratomE, &totalE,
 	     NULL_ENERGY_BREAKDOWN);
     }
     
@@ -235,16 +233,16 @@ double Eval::eval(const int term)
     default:
     case 0:
     case 3:
-        // Return the total energy.
+        // Return the total energy, scaled by e_intermol
         retval = energy;
         break;
     case 1:
-        // Return the non-bonded energy, vdW+Hb+desolv.
-        retval = (double)emap_total;
+        // Return the non-bonded energy, vdW+Hb+desolv, not scaled by e_intermol
+        retval = (double)totalE.vdW_Hb+totalE.desolv;
         break;
     case 2:
-        // Return the electrostatics energy.
-        retval = (double)elec_total;
+        // Return the electrostatics energy, not scaled by e_intermol
+        retval = (double)totalE.elec;
         break;
     }
 

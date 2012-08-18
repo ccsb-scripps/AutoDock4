@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.h,v 1.22 2012/04/13 06:22:10 mp Exp $
+ $Id: getInitialState.h,v 1.23 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -55,8 +55,7 @@ void getInitialState(
             /* not const */ Real crd[MAX_ATOMS][SPACE],
             const Real crdpdb[MAX_ATOMS][SPACE],
             const char  atomstuff[MAX_ATOMS][MAX_CHARS],
-            /* not const */ Real elec[MAX_ATOMS],
-            /* not const */ Real emap[MAX_ATOMS],
+            EnergyComponent	*peratomE,        // output if not NULL - intermolecular energies
 
             const EnergyTables *const ptr_ad_energy_tables,
 

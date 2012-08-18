@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.183 2012/08/17 05:14:07 mp Exp $
+ $Id: main.cc,v 1.184 2012/08/18 00:00:29 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.183 2012/08/17 05:14:07 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.184 2012/08/18 00:00:29 mp Exp $"};
 
 
 
@@ -178,8 +178,7 @@ Real crd[MAX_ATOMS][SPACE];     // current coordinates
 Real charge[MAX_ATOMS];
 Real abs_charge[MAX_ATOMS];
 Real qsp_abs_charge[MAX_ATOMS];
-Real elec[MAX_ATOMS];
-Real emap[MAX_ATOMS];
+EnergyComponent peratomE[MAX_ATOMS];
 int type[MAX_ATOMS];
 int bond_index[MAX_ATOMS];
 int ignore_inter[MAX_ATOMS];
@@ -767,7 +766,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.183 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.184 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1669,7 +1668,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             exit_if_missing_elecmap_desolvmap_about("coliny");
 
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
-                            info, map, elec, emap, nonbondlist, ad_energy_tables,
+                            info, map, peratomE, nonbondlist, ad_energy_tables,
                             Nnb, Nnb_array, &group_energy,
 			    B_calcIntElec, B_isGaussTorCon, B_isTorConstrained, B_ShowTorE,
                             US_TorE, US_torProfile,
@@ -1757,7 +1756,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
                   writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
                               sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                              crd, emap, elec,
+                              crd, peratomE,
                               charge, abs_charge, qsp_abs_charge,
                               ligand_is_inhibitor,
                               torsFreeEnergy,
@@ -3002,7 +3001,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                         crd, crdpdb, dock_param_fn,
                         ad_energy_tables,
                         econf, B_either,
-                        elec, emap,
+                        peratomE,
                         ncycles, nruns, seed, jobStart,
                         map,
                         naccmax, natom, nonbondlist, nrejmax, ntor, 
@@ -3189,7 +3188,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
 
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
-                            info, map, elec, emap, nonbondlist, ad_energy_tables, Nnb,
+                            info, map, peratomE, nonbondlist, ad_energy_tables, Nnb,
                             Nnb_array, &group_energy,
 			    B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
@@ -3258,7 +3257,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
                 writePDBQT( j, seed,  FN_ligand, dock_param_fn, lig_center,
                             sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                            crd, emap, elec,
+                            crd, peratomE,
                             charge, abs_charge, qsp_abs_charge,
                             ligand_is_inhibitor,
                             torsFreeEnergy,
@@ -3325,7 +3324,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
            if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
            pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
-                           info, map, elec, emap,
+                           info, map, peratomE,
                            nonbondlist,
                            ad_energy_tables,
                            Nnb, Nnb_array, &group_energy,
@@ -3369,7 +3368,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
                writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
                            sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                           crd, emap, elec,
+                           crd, peratomE,
                            charge, abs_charge, qsp_abs_charge,
                            ligand_is_inhibitor,
                            torsFreeEnergy,
@@ -3762,7 +3761,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	      crd[a][xyz]=crdpdb[a][xyz];
 
 	   evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
-                        info, map, elec, emap, nonbondlist, ad_energy_tables, Nnb,
+                        info, map, peratomE, nonbondlist, ad_energy_tables, Nnb,
 			Nnb_array, &group_energy,
                         B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                         B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
@@ -3809,7 +3808,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	 		
              writePDBQT( j, seed,  FN_ligand, dock_param_fn, lig_center,
                        sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                       crd, emap, elec, charge, 
+                       crd, peratomE, charge, 
                        abs_charge, qsp_abs_charge,
                        ligand_is_inhibitor,
                        torsFreeEnergy,
@@ -4066,7 +4065,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             // Use the repulsive unbound energy tables, "unbound_energy_tables",
             // to drive the molecule into an extended conformation
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
-                            info, map, elec, emap, nonbondlist, unbound_energy_tables, Nnb,
+                            info, map, peratomE, nonbondlist, unbound_energy_tables, Nnb,
 			    Nnb_array, &group_energy,
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
@@ -4126,7 +4125,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             // Use the standard AutoDock energy tables to compute the internal energy
             // Use this value to set unbound_internal_FE
             //// evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom, info, map,
-                            //// elec, emap, nonbondlist, ad_energy_tables, Nnb,
+                            //// peratomE, nonbondlist, ad_energy_tables, Nnb,
                             //// B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             //// B_ShowTorE, US_TorE, US_torProfile, vt, tlist, sInit, ligand,
                             //// ignore_inter,
@@ -4174,7 +4173,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             // Use the standard AutoDock energy tables to compute the internal energy
             // Use this value to set unbound_internal_FE
             evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
-                            info, map, elec, emap, nonbondlist, ad_energy_tables, Nnb,
+                            info, map, peratomE, nonbondlist, ad_energy_tables, Nnb,
 			    Nnb_array, &group_energy,
                             B_calcIntElec, B_isGaussTorCon, B_isTorConstrained,
                             B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
@@ -4320,7 +4319,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             //
             writePDBQT( -1, seed,  FN_ligand, dock_param_fn, lig_center,
                         sUnbound, ntor, &eintra, &einter, natom, atomstuff,
-                        crd, emap, elec,
+                        crd, peratomE,
                         charge, abs_charge, qsp_abs_charge,
                         ligand_is_inhibitor,
                         torsFreeEnergy,
@@ -4368,10 +4367,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
          *  1 = OLD, or   PDBQT-55 (old PDBq format).
          */
 	{ // block for epdb locals:
-	Real emap_total = 0.;
+	static EnergyComponent zeroEC;
+	EnergyComponent totalE = zeroEC;
+	Real emap_total = 0.; // includes desolv
 	Real elec_total = 0.;
 	Real charge_total = 0.;
-	Real etot = 0.;
 
         eintra = 0.0L;
         einter = 0.0L;
@@ -4434,7 +4434,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         // calculate the energy breakdown for the input coordinates, "crdorig"
         eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
                                 crdorig, charge, abs_charge, type, map, info,
-                                ignore_inter, elec, emap, &elec_total, &emap_total,
+                                ignore_inter, peratomE, &totalE,
                                 nonbondlist, ad_energy_tables, Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 				B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
                                 B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
@@ -4447,10 +4447,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         //          "1234  0123456789  0123456789  0123456789  1234567  12345678  12345678  12345678"
 
         charge_total = 0.;
-        etot = 0.;
-        for (i = 0;  i < natom;  i++) {
-            etot = emap[i] + elec[i];
-            pr(logFile, "%4d  %10.4f  %10.4f  %10.4f %8.4f  %8.4f  %8.4f  %8.4f\n", (type[i]+1), etot, emap[i], elec[i], charge[i], crdorig[i][X], crdorig[i][Y], crdorig[i][Z]);
+        for (int i = 0;  i < natom;  i++) {
+            pr(logFile, "%4d  %10.4f  %10.4f  %10.4f %8.4f  %8.4f  %8.4f  %8.4f\n", (type[i]+1),
+	    peratomE[i].total, peratomE[i].vdW_Hb+peratomE[i].desolv, peratomE[i].elec, 
+	    charge[i], crdorig[i][X], crdorig[i][Y], crdorig[i][Z]);
             charge_total += charge[i];
         } /*i*/
         pr(logFile, "      __________  __________  __________  _______\n");

@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.34 2012/04/27 07:03:08 mp Exp $
+ $Id: structs.h,v 1.35 2012/08/18 00:00:29 mp Exp $
 
  AutoDock  
 
@@ -336,7 +336,7 @@ typedef struct energy_breakdown
 
 } EnergyBreakdown;
 
-/* component-level energy breakdowns  - added April 2012 */
+/* component-level energy breakdowns  -  can be per-atom or for totals */
 typedef struct energy_component
 {
    Real total;
