@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.24 2012/08/17 02:31:04 mp Exp $
+ $Id: intnbtable.cc,v 1.25 2012/08/20 22:08:48 mp Exp $
 
  AutoDock 
 
@@ -207,10 +207,10 @@ void intnbtable( Boole *const P_B_havenbp,
             energy_smooth[i] = 100000.;
 #ifdef NOSQRT
             for (int j = max(0, BoundedSqAng_to_index(rlow*rlow)); 
-	      j < min(NEINT, BoundedSqAng_to_index(rhigh*rhigh));  j++)
+	      j < min(NEINT, BoundedSqAng_to_index(rhigh*rhigh)+1);  j++)
 #else
             for (int j = max(0, BoundedAng_to_index(rlow));
-	      j < min(NEINT, BoundedAng_to_index(rhigh));  j++) 
+	      j < min(NEINT, BoundedAng_to_index(rhigh)+1);  j++) 
 #endif
               energy_smooth[i] = min(energy_smooth[i], ad_tables->e_vdW_Hb[j][a1][a2]);
         }
