@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.25 2012/08/20 22:08:48 mp Exp $
+ $Id: intnbtable.cc,v 1.26 2012/10/02 22:04:43 mp Exp $
 
  AutoDock 
 
@@ -200,17 +200,17 @@ void intnbtable( Boole *const P_B_havenbp,
       r_smooth is Angstrom range of "smoothing" */
     if (r_smooth > 0) {
         Real energy_smooth[NEINT];
-        for (i = 1;  i <= NEINT-1;  i++) {
+        for (i = 0;  i <= NEINT-1;  i++) {
 	    double r = IndexToDistance(i);
 	    double rlow  = r - r_smooth/2;
 	    double rhigh = r + r_smooth/2;
             energy_smooth[i] = 100000.;
 #ifdef NOSQRT
             for (int j = max(0, BoundedSqAng_to_index(rlow*rlow)); 
-	      j < min(NEINT, BoundedSqAng_to_index(rhigh*rhigh)+1);  j++)
+	      j <= min(NEINT-1, BoundedSqAng_to_index(rhigh*rhigh));  j++)
 #else
             for (int j = max(0, BoundedAng_to_index(rlow));
-	      j < min(NEINT, BoundedAng_to_index(rhigh)+1);  j++) 
+	      j =< min(NEINT-1, BoundedAng_to_index(rhigh));  j++) 
 #endif
               energy_smooth[i] = min(energy_smooth[i], ad_tables->e_vdW_Hb[j][a1][a2]);
         }
