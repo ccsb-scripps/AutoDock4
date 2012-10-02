@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.185 2012/08/18 01:14:32 mp Exp $
+ $Id: main.cc,v 1.186 2012/10/02 22:05:53 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.185 2012/08/18 01:14:32 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.186 2012/10/02 22:05:53 mp Exp $"};
 
 
 
@@ -766,7 +766,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.185 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.186 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3153,10 +3153,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             if ( nruns > MAX_RUNS ) {
                 prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
                 stop( error_message );
-            } // else if ((GlobalSearchMethod==NULL)||(LocalSearchMethod==NULL)) {
-               //  prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate both Global Optimization object AND Local Optimization object.\n", programname);
-               //  stop(error_message);
-             //}
+            }  
+	    if (GlobalSearchMethod==NULL) {
+               prStr(error_message, "%s:  ERROR:  You must use \"set_ga\" to allocate a Global Optimization method.\n", programname);
+                 stop(error_message);
+             }
+	    if (dpf_keyword==DPF_GALS && LocalSearchMethod==NULL) {
+               prStr(error_message, "%s:  ERROR:  You must use \"set_psw1\" to allocate a Local Optimization method.\n", programname);
+                 stop(error_message);
+             }
             exit_if_missing_elecmap_desolvmap_about("gals");
 
 	    // set lig_center if not already set, use to center "crdpdb" ligand
