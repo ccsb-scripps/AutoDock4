@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.69 2012/08/17 23:58:29 mp Exp $ 
+ $Id: call_glss.cc,v 1.70 2012/10/04 23:28:12 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -284,13 +284,7 @@ State call_glss(/* not const */ Global_Search *global_method,
     thisPop.set_eob( end_of_branch );
     thisPop.nevals_last_pop_stats = 0;  // reset last time stats were printed
 
-    if (sInit.ntor > 0) {
-	// TODO @@ MP this next is misleading as depends on B_RandomTran0 etc
-        (void)fprintf( logFile, "\nAssigning a random translation, a random orientation and %d random torsions to each of the %u individuals.\n\n", sInit.ntor, pop_size);
-    } else {
-        (void)fprintf( logFile, "\nAssigning a random translation and a random orientation to each of the %u individuals.\n\n", pop_size);
-    }
-    global_ntor = sInit.ntor; //debug (can be removed when call_gs goes away  MP)
+    global_ntor = sInit.ntor; //debug (can be removed when call_gs goes away  MP) TODO
 #ifdef DEBUG
     (void)fprintf(logFile,"\ncall_glss.cc/State call_glss():  {\n");
 #endif

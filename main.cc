@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.186 2012/10/02 22:05:53 mp Exp $
+ $Id: main.cc,v 1.187 2012/10/04 23:28:12 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.186 2012/10/02 22:05:53 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.187 2012/10/04 23:28:12 mp Exp $"};
 
 
 
@@ -766,7 +766,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.186 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.187 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3210,8 +3210,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             }
             for (j=0; j<nruns; j++) {
 
+		if(outlev>=LOGBASIC) 
                 (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
-                pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
+
+                pr( logFile, "Run:\t%d / %d\n", j+1, nruns );
 
                 pr(logFile, "Date:\t");
                 printdate( logFile, 2 );
@@ -3248,17 +3250,21 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 // Finished Lamarckian GA run
                 
                 gaEnd = times( &tms_gaEnd );
-                pr( logFile, "\nRun completed;  time taken for this run:\n");
+                if(outlev>=LOGRUNV) pr( logFile, "\nRun completed;  time taken for this run:\n");
                 timesyshms( gaEnd - gaStart, &tms_gaStart, &tms_gaEnd );
-                pr( logFile, "\n");
-                printdate( logFile, 1 );
+                if(outlev>=LOGRUNV) {
+			pr( logFile, "\n");
+			printdate( logFile, 1 );
 
-                pr(logFile, "Total number of Energy Evaluations: %lu\n", evaluate.evals() );
-                pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
-                (void) fflush( logFile );
+			pr(logFile, "Total number of Energy Evaluations: %lu\n", evaluate.evals() );
+			pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
+			}
+		(void) fflush( logFile );
 
+		if(outlev>=LOGBASIC) {
                 pr( logFile, "\n\n\tFINAL %s ALGORITHM DOCKED STATE\n", GlobalSearchMethod->longname());
                 pr( logFile,     "\t_______________________________________________\n\n\n" );
+		}
 
                 writePDBQT( j, seed,  FN_ligand, dock_param_fn, lig_center,
                             sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
@@ -3286,7 +3292,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
                 ++nconf;
 
-                pr( logFile, UnderLine );
+                if(outlev>LOGBASIC) pr( logFile, UnderLine );
             } // Next LGA run
             if(write_stateFile){
                fprintf(stateFile,"\t</runs>\n");
@@ -3349,6 +3355,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
            for (j=0; j<nruns; j++) {
 
+	       if(outlev>=LOGBASIC)
                (void) fprintf( logFile, "\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
                pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
 
@@ -3780,6 +3787,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	   for (j = 0; j < nruns; j++)
 	   {	 
 	 		//(void) fprintf( logFile, "\n\tBEGINNING PARTICLE SWARM OPTIMIZATION (PSO) \n");
+	    if(outlev>=LOGBASIC)
             (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
 
 	 		pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
