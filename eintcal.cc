@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.31 2012/08/17 02:25:05 mp Exp $
+ $Id: eintcal.cc,v 1.32 2012/10/15 17:05:53 mp Exp $
 
  AutoDock  
 
@@ -38,15 +38,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern Linear_FE_Model AD4;
 
-// convenience function to add energy components and compute total
-static EnergyComponent ecadd(EnergyComponent a, EnergyComponent b) {
-	EnergyComponent sum;
-	sum.elec = a.elec + b.elec;
-	sum.vdW_Hb = a.vdW_Hb + b.vdW_Hb;
-	sum.desolv = a.desolv + b.desolv;
-	sum.total = sum.elec + sum.vdW_Hb + sum.desolv;
-	return sum;
-	}
 
 #ifndef EINTCALPRINT
 
@@ -327,15 +318,12 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 	if(group_energy!=NULL)  switch ( nb_group ) {
 	case INTRA_LIGAND:  // [0] Intramolecular energy of ligand
             group_energy->intra_moving_moving_lig = grouptotal;
-	    //systemtotal = ecadd(grouptotal, zero_components); // sets total within structure
 	    break;
 	case INTER: // [1]  intermolecular energy
             group_energy->inter_moving_moving = grouptotal;
-	    //systemtotal = ecadd( systemtotal, grouptotal);
 	    break;
         case INTRA_RECEPTOR:  // [2]  intramolecular energy of receptor
             group_energy->intra_moving_moving_rec = grouptotal;
-	    //systemtotal = ecadd( systemtotal, grouptotal);
 	    break;
 	default: stop("bug: bad group index in eintcal");
         }
