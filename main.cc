@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.188 2012/10/15 17:48:28 mp Exp $
+ $Id: main.cc,v 1.189 2012/10/15 20:18:49 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.188 2012/10/15 17:48:28 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.189 2012/10/15 20:18:49 mp Exp $"};
 
 
 
@@ -299,21 +299,21 @@ Boole B_linear_schedule = TRUE; /* TRUE is ADT default */
 Boole B_selectmin = TRUE; // adopt min instead of last state - ADT default TRUE
 Real e0max = 0; // minimum energy for simanneal initial state - 0 is ADT default
 int MaxRetries = 10000; // maximum number of retries for simanneal ligand init. 10000 is ADT default
-Real RT0 = /* 616.0*/ 100.; /* 616.0 was pre-4.3 default */
-Real RTFac = 0.90; /* 0.95 was pre-4.3 default */
+Real RT0 = /* 616.0*/ 100.; /* 616.0 was pre-4.2.5 default */
+Real RTFac = 0.90; /* 0.95 was pre-4.2.5 default */
 int ncycles = 50; /* 50 is ADT default */
-int naccmax = 30000; /* 100 was pre-4.3 default */
-int nrejmax = 30000; /* 100 was pre-4.3 default */
+int naccmax = 30000; /* 100 was pre-4.2.5 default */
+int nrejmax = 30000; /* 100 was pre-4.2.5 default */
 
  // note: trnStep0, qtwStep0, torStep0 also control 'investigate'
  // but (despite appearances) do not control GA mutations (MP 2012)
 Real trnFac = 1.0; /* 1.0 is ADT default: i.e., no reduction in geom sched */
-Real trnStep0 = 0.2;  /* 2 was pre-4.3 default */
+Real trnStep0 = 0.2;  /* 2 was pre-4.2.5 default */
 Real trnStepFinal = 0; // no default value, must be set in DPF
 Real qtwFac = 1.0; /* 1.0 is ADT default: i.e., no reduction in geom sched */
-Real qtwStep0 = DegreesToRadians( 5.0 );  /* 50 was pre-4.3 default */
+Real qtwStep0 = DegreesToRadians( 5.0 );  /* 50 was pre-4.2.5 default */
 Real qtwStepFinal = 0; // no default value, must be set in DPF
-Real torStep0 = DegreesToRadians( 5.0 );  /* 50 was pre-4.3 default */
+Real torStep0 = DegreesToRadians( 5.0 );  /* 50 was pre-4.2.5 default */
 Real torStepFinal = 0; // no default value, must be set in DPF
 Real torFac = 1.0; /* 1.0 is ADT default: i.e., no reduction in geom sched */
  // simanneal file-based or real-time monitoring
@@ -508,7 +508,7 @@ EnergyTables *unbound_energy_tables;  // Use for computing unbound energy & conf
 Statistics map_stats;
 
 //  GA parameters controlled in DPF
-static FourByteLong seed[2]; // also used by simanneal & investigate as of 4.3 release (default is process id, time)
+static FourByteLong seed[2]; // also used by simanneal & investigate as of 4.2.5 release (default is process id, time)
 unsigned int pop_size = 150; // 150 is ADT default
 unsigned int num_generations = 0;  //  Don't terminate on the basis of number of generations
 unsigned int num_evals = 250000;
@@ -766,7 +766,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.188 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.189 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
