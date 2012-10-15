@@ -1,5 +1,5 @@
 autodock_parameter_version 4.1       # used by autodock to validate parameter set
-outlev 0
+outlev 1
 parameter_file AD4.1_bound.dat       # New parameter library
 intelec                              # calculate internal electrostatic energy
 
@@ -15,7 +15,7 @@ elecmap 1pgp_rec.e.map               # electrostatics map
 desolvmap 1pgp_rec.d.map             # desolvation map
 
 move 1pgp_lig.pdbqt                  # small molecule
-about 22.894 28.598 40.259           # small molecule center
+#about 22.894 28.598 40.259           # small molecule center
 torsdof 6
 
 rmstol 2.0                           # cluster_tolerance/A
@@ -27,7 +27,7 @@ ga_elitism 1                         # number of top individuals to survive to n
 set_ga                               # set the above parameters for GA or LGA
 
 sw_max_its 30                      # iterations of Solis & Wets local search
-set_psw1                             # set the above Pseudo Solis & Wets parameters
+#set_psw1                             # set the above Pseudo Solis & Wets parameters
 
-ga_run 1                     # do this many hybrid GA-LS runs
+gals_run 1                     # do this many hybrid GA-LS runs
 analysis           

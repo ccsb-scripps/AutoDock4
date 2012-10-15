@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.56 2012/08/17 23:54:33 mp Exp $
+# $Id: test_autodock4.py,v 1.57 2012/10/15 17:48:28 mp Exp $
 #
 
 """
@@ -299,6 +299,20 @@ class AutoDock4_1pgp_unbound_model_illegal_test( AutoDock_simple_test ):
     expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_ga_run_maxruns_test( AutoDock_simple_test ):
+    """Test that autodock 4 runs with max number of runs"""
+    dpf_stem = "1pgp_ga_run_maxruns"
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_ga_run_maxruns_analysis_test( AutoDock_simple_test ):
+    """Test that autodock 4 runs with max number of runs followed by cluster analysis"""
+    dpf_stem = "1pgp_ga_run_maxruns_analysis"
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_ga_select_tournament_test( AutoDock_simple_test ):
     """Test that autodock 4.2 stops when ga_select_tournament is set in the DPF."""
     dpf_stem = "1pgp_ga_select_tournament"
@@ -347,6 +361,56 @@ class AutoDock4_1pgp_about_only_test( AutoDock_simple_test ):
 
 #______________________________________________________________________________
 
+
+class AutoDock4_1pgp_simanneal_small( AutoDock_simple_test ):
+    """Test that autodock 4.2 simanneal works (at all). """
+    dpf_stem = "1pgp_simanneal_small"
+        #expected_binding_energy = +843.59     -5.87
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -3.23
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_about_auto_simanneal( AutoDock_simple_test ):
+    """Test that autodock 4.2 simanneal works when about, tran0, dihe0, and quat0 are missing."""
+    dpf_stem = "1pgp_about_auto_simanneal"
+        #expected_binding_energy = +843.59     -5.87
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -3.23
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_about_auto_ga_only( AutoDock_simple_test ):
+    """Test that autodock 4.2 ga_only works when about, tran0, dihe0, and quat0 are missing."""
+    dpf_stem = "1pgp_about_auto_ga_only"
+        #expected_binding_energy = +843.59     -5.87
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -3.23
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_about_auto_gals( AutoDock_simple_test ):
+    """Test that autodock 4.2 ga_ls works when about, tran0, dihe0, and quat0 are missing."""
+    dpf_stem = "1pgp_about_auto_gals"
+        #expected_binding_energy = +843.59     -5.87
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -3.23
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_about_auto_local_only( AutoDock_simple_test ):
+    """Test that autodock 4.2 local_only works when about, tran0, dihe0, and quat0 are missing."""
+    dpf_stem = "1pgp_about_auto_local_only"
+        #expected_binding_energy = +843.59     -5.87
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -3.23
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
 
 class AutoDock4_1pgp_flexres_test( AutoDock_simple_test ):
     """Test that autodock 4.2 works when flexres is set in the DPF."""
@@ -488,6 +552,12 @@ class AutoDock4_1pgp_illegal_symoutlev_test( AutoDock_simple_test ):
     expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_gals_set_sw1_test( AutoDock_simple_test ):
+    """Test that autodock4 gals_run succeeds with older sw1 rather than psw1."""
+    dpf_stem = "1pgp_gals_set_sw1"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_smaller_test( AutoDock_test ):
     """Test that autodock4 executes using fewer parameters and an extremely short run."""
     dpf_stem = "1pgp_smaller"
@@ -498,6 +568,18 @@ class AutoDock4_1pgp_gals_use_defaults_test( AutoDock_test ):
     """Test that autodock4 executes using default gals parameters."""
     dpf_stem = "1pgp_gals_use_defaults"
     expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_gals_no_set_ga_test( AutoDock_simple_test ):
+    """Test that autodock4 ga_run fails when set_ga command is omitted."""
+    dpf_stem = "1pgp_no_set_ga"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_gals_no_set_psw1_test( AutoDock_simple_test ):
+    """Test that autodock4 gals_run fails when set_psw1 command is omitted."""
+    dpf_stem = "1pgp_no_set_psw1"
+    expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_no_parameter_file_test( AutoDock_test ):
@@ -760,12 +842,15 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_two_mapsets_test',
         'AutoDock4_1pgp_unbound_set_illegal_test',
         'AutoDock4_1pgp_unbound_model_illegal_test', #1
+	'AutoDock4_1pgp_ga_run_maxruns_test',
+	'AutoDock4_1pgp_ga_run_maxruns_analysis_test',
         'AutoDock4_1pgp_ga_select_tournament_test',
         'AutoDock4_1pgp_ga_select_linear_ranking_test',
         #'AutoDock4_1pgp_rmsmode_heavy_atoms_only_test',
         'AutoDock4_1pgp_rmsmode_heavy_atoms_only_noH_test',
         'AutoDock4_1pgp_rmsmode_all_heavy_atom_pairs_only_test',
         'AutoDock4_1pgp_rmsmode_unique_heavy_atom_pairs_only_test',
+        'AutoDock4_1pgp_simanneal_small', 
         #next dpf sets tran0,quaternion0,dihe0 to random
         'AutoDock4_1pgp_ligrand_ga_only_test', 
         'AutoDock4_1pgp_ga_only_test',
@@ -779,6 +864,9 @@ if __name__ == '__main__':
 ## different expected values to the superclass - M Pique  July 2012
 	# 'AutoDock4_1pgp_intelec_off_test',
         'AutoDock4_1pgp_no_parameter_file_test',
+	'AutoDock4_1pgp_gals_set_sw1_test',
+	'AutoDock4_1pgp_gals_no_set_psw1_test',
+	'AutoDock4_1pgp_gals_no_set_ga_test',
 	'AutoDock4_1pgp_gals_use_defaults_test',
         #'AutoDock4_1pgp_ga_only_value_test',
         ## tests for unbound values 
@@ -804,6 +892,11 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_1_4_100_test',
         # tests for setting tran0 from about
         'AutoDock4_1pgp_about_only_test', 
+        # tests for setting 'about' automatically
+        'AutoDock4_1pgp_about_auto_simanneal', 
+        'AutoDock4_1pgp_about_auto_ga_only', 
+        'AutoDock4_1pgp_about_auto_local_only', 
+        'AutoDock4_1pgp_about_auto_gals', 
     ]
     unittest.main( argv=( [__name__ ,] + test_cases ) )
     #  The call "unittest.main()" automatically runs all the TestCase classes in

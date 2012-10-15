@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.187 2012/10/04 23:28:12 mp Exp $
+ $Id: main.cc,v 1.188 2012/10/15 17:48:28 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.187 2012/10/04 23:28:12 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.188 2012/10/15 17:48:28 mp Exp $"};
 
 
 
@@ -766,7 +766,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.187 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.188 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -956,9 +956,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             output_pop_stats.everyNgens = (unsigned int) OUTLEV1_GENS;
             break;
         case LOGRUNV:
-	    sprintf(message, 
-	     " EXPANDED OUTPUT DURING DOCKING.\n");
-            pr( logFile, message );
+            pr( logFile, " EXPANDED OUTPUT DURING DOCKING.\n");
             output_pop_stats.everyNgens = (unsigned int) OUTLEV2_GENS;
 	    break;
 	case LOGLIGREAD:
@@ -969,9 +967,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             break;
         case LOGRUNVV:
         case LOGRUNVVV:
-	    sprintf(message, 
-	     " FULL OUTPUT DURING DOCKING.\n");
-            pr( logFile, message );
+            pr( logFile, " FULL OUTPUT DURING DOCKING.\n");
             output_pop_stats.everyNgens = (unsigned int) OUTLEV2_GENS;
 	    break;
 	case LOGETABLES:
@@ -4802,13 +4798,16 @@ static int getoutlev(char *line, int *outlev) {
 }
 static void set_seeds( FourByteLong seed[2], char seedIsSet[2], const int outlev, FILE *logFile ) {
 	    time_t time_seed;
-	 if ( ! seedIsSet[0] ) pr(logFile, "Sizeof FourByteLong = %d\n",
-	   sizeof seed[0]); // DEBUG 2012-07 M Pique
+	 if ( (!seedIsSet[0]) && (sizeof seed[0])!=4) 
+	   pr(logFile, "Sizeof FourByteLong = %d, not 4.\n",
+	   (int) (sizeof seed[0])); // DEBUG 2012-07 M Pique
 	 if( ! seedIsSet[0] ) seed[0] = (FourByteLong) processid();
 	 if( ! seedIsSet[1] ) seed[1] = (FourByteLong) time( &time_seed );
 	 seedIsSet[0]  = seedIsSet[1] = 'D';
          setall(seed[0], seed[1]);  // see com.cc
-         if(outlev>=LOGMIN) pr(logFile,"Random number generator was seeded with values  %ld, %ld\n", seed[0], seed[1]);
+         if(outlev>=LOGMIN) pr(logFile,
+	  "Random number generator was seeded with values" FBL_FMT ", " FBL_FMT "\n",
+	  seed[0], seed[1]);
 	 }
 
 static int processid() {

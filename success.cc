@@ -1,6 +1,6 @@
 /*
 
- $Id: success.cc,v 1.9 2012/04/18 01:30:19 mp Exp $
+ $Id: success.cc,v 1.10 2012/10/15 17:48:28 mp Exp $
 
  AutoDock 
 
@@ -50,12 +50,12 @@ void success( const char *const hostnm,
     pr( logFile, "\n" );
     pr( logFile, UnderLine );
     prStr( message, "%s: Successful Completion on \"%s\"\n\n", programname, hostnm );
-    pr( logFile, message );
+    pr( logFile, "%s", message );
 
     jobEnd = times( &tms_jobEnd );
 
     timesyshms( jobEnd - jobStart, &tms_jobStart, &tms_jobEnd );
 
-    pr( logFile, UnderLine );
+    pr( logFile, "%s", UnderLine );
 }
 /* EOF */

@@ -1,8 +1,12 @@
 #! /bin/bash
-# $Id: configure-universalDarwin,v 1.2 2010/01/27 00:41:28 mp Exp $
+# $Id: configure-universalDarwin,v 1.3 2012/10/15 17:48:28 mp Exp $
 
 # run configure (or ../configure) for universalDarwinNN
-# NN=8,9,10 (Tiger, Leopard, Snow Leopard)
+# NN=8  Mac OS X 10.4 Tiger  (no longer supported by AutoDock as of 2012)
+# NN=9  Mac OS X 10.5 Leopard
+# NN=10 Mac OS X 10.6 Snow Leopard
+# NN=11 Mac OS X 10.7 Lion
+# NN=12 OS X 10.8 Mountain Lion
 
 
 osrev=$(uname -r)  # example 9.8.0 is Darwin 9.8 or Mac OS 10.9.8
@@ -16,6 +20,8 @@ else
 	echo $0 cannot find configure script
 	exit 1
 fi
+
+# note that 10,11,12,... are Intel only
 
 case $ver in
   *8) 
@@ -33,6 +39,17 @@ case $ver in
 	archlist="-arch i386 -arch x86_64"
 	sdkver=6
 	;;
+  *11) 
+	# Lion (Intel 32/64-bit)
+	archlist="-arch i386 -arch x86_64"
+	sdkver=7
+	sdkver=0 # hack for TSRI since our only 10.7 machine has no SDK dir
+	;;
+  *12) 
+	# Mountain Lion (Intel 32/64-bit)
+	archlist="-arch i386 -arch x86_64"
+	sdkver=0 # hack for TSRI since our only 10.8 machine has no SDK dir
+	;;
   *)
   	echo $0 unrecogized Darwin version $ver \( osrev = $osrev \)
 	exit 1
@@ -41,7 +58,13 @@ esac
 
 configopts="--disable-dependency-tracking"
 
-rootdir=/Developer/SDKs/MacOSX10.$sdkver.sdk
+if [ $sdkver != 0 ]; then
+	rootdir=/Developer/SDKs/MacOSX10.$sdkver.sdk
+	isysroot="-isysroot $rootdir"
+else
+	rootdir=/usr
+	isysroot=""
+fi
 
 if [ ! -d $rootdir ]; then
 	echo Cannot find developer tool directory $rootdir
@@ -49,11 +72,11 @@ if [ ! -d $rootdir ]; then
 	exit 1
 fi
 
-echo running env CXXFLAGS="-O3 -isysroot $rootdir $archlist" \
+echo running env CXXFLAGS="-O3 $isysroot $archlist" \
     LDFLAGS="$archlist" \
     $config $configopts
 
-env CXXFLAGS="-O3 -isysroot $rootdir $archlist" \
+env CXXFLAGS="-O3 $isysroot $archlist" \
     LDFLAGS="$archlist" \
     $config $configopts
 

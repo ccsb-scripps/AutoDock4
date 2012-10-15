@@ -53,7 +53,7 @@ class ParticleSwarmGS : public Global_Search
 		Population *_Pi;	// best solution for each individual in its own searching history
 		Individual	*_Pg;	// current best solution
 		int best; // index in Pi of current global best solution
-		int pop_size;	// population size
+		unsigned int pop_size;	// population size
 		int size;	// number of dimensions (7*nlig + num_torsion)
 		float **v;	// velocity
 		float *vmax;	//max velocity 
@@ -113,7 +113,7 @@ inline ParticleSwarmGS::~ParticleSwarmGS()
 	if(_Pg)
 		delete _Pg;
 	if(v) {
-		for(int i=0;i < pop_size; i++)	
+		for(unsigned int i=0;i < pop_size; i++)	
 			delete [] v[i];
 		delete [] v;
 	}
@@ -183,7 +183,7 @@ inline void ParticleSwarmGS::reset(void)
 	if(_Pg)
 		delete _Pg;
 	if(v) {
-		for(int i=0;i < pop_size; i++)	
+		for(unsigned int i=0;i < pop_size; i++)	
 			delete [] v[i];
 		delete [] v;
 	}

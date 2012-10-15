@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.28 2012/05/01 00:22:29 mp Exp $
+ $Id: read_parameter_library.cc,v 1.29 2012/10/15 17:48:28 mp Exp $
 
  AutoDock 
 
@@ -218,8 +218,7 @@ void setup_parameter_library( FILE *logFile, const int outlev,
     // so far we have param_string_4_0 and param_string_4_1
     // remember this choice for report_parameter_library()
 
-    const char *const *param_string;
-    //if (string_begins_with(version_num, "4.0")) param_string=param_string_4_0;
+    const char *const *param_string = param_string_4_1; // default
     if (unbound_model==Extended) {
         param_string=param_string_4_0;
         strncpy(parameter_library, "'extended' [AutoDock 4.0 default]", sizeof parameter_library);

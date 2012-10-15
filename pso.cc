@@ -37,7 +37,7 @@ inline float Norm(float *x, int n)
  ***********************************************************************/
 int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 {
-	int i, j;
+	int j;
 	double curVal;
 	double newVal;
 	double Pop_best_value;
@@ -52,11 +52,6 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	float c1 = pso_options.c1;
 	float c2 = pso_options.c2;
 	int pso_K = pso_options.pso_K;      // number of neighbor particles
-	float c = pso_options.c;    // constriction factor for cPSO
-	Boole pso_neighbors_dynamic = pso_options.pso_neighbors_dynamic; // MP
-	Boole pso_random_by_dimension = pso_options.pso_random_by_dimension; // MP
-	Boole pso_interpolate_as_scalars = pso_options.pso_interpolate_as_scalars; // MP
-	Boole pso_adaptive_velocity = pso_options.pso_adaptive_velocity; // MP
 
 	
 	// on first call per run, allocate Pi array, initialize velocity vectors, prevE, curE
@@ -90,37 +85,37 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 		pr(logFile, "PSO pop_size = %d\n", pop_size); // MP debug
 						
 		best = 0;
-		for(i = 1; i < pop_size; i++)
+		for(unsigned int i = 1; i < pop_size; i++)
 			if( (*_Pi)[i].value(Normal_Eval) < (*_Pi)[best].value(Normal_Eval) )
 				best = i;
 		_Pg = new Individual( (*_Pi)[best] );
 		
 		// allocate velocity 
 		v = new float * [pop_size];
-		for(i=0; i < pop_size; i++) {
+		for(unsigned int i=0; i < pop_size; i++) {
 			v[i] = new float [size];
 		}
 			
 		// initial velocity of particles
-		for(i = 0; i < pop_size; i++) {			
+		for(unsigned int i = 0; i < pop_size; i++) {			
 			for(j = 0; j < size; j++) {
 				v[i][j] = random_range(vmin[j], vmax[j]);				
 			}			
 		}
 		// MP: note that with adaptive velocity, the BIG will prevent the
 		//  first velocity update from occurring
-		for(i = 0; i < pop_size; i++) prevE[i] = curE[i] = BIG; // initially unfavorable
+		for(unsigned int i = 0; i < pop_size; i++) prevE[i] = curE[i] = BIG; // initially unfavorable
 
 		if(outlev>LOGRUNV) {
 		pr(logFile, "PSO Initial velocity V:\n");
-		for(i=0;i<pop_size;i++) {
+		for(unsigned int i=0;i<pop_size;i++) {
 			pr(logFile, " V[%d] ", i);
 			for(j=0;j<size;j++)
 				pr(logFile, "%+6.2f ", v[i][j]);
 			pr(logFile, "\n");
 		}				
 		pr(logFile, "Pi:\n");
-		for(i=0;i<pop_size;i++) {
+		for(unsigned int i=0;i<pop_size;i++) {
 			pr(logFile, "Pi[%d] ", i);
 			for(j=0;j<size;j++)
 				pr(logFile, "%+6.2f ", (*_Pi)[i].phenotyp.gread(j).real);
@@ -171,7 +166,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 		init_links=TRUE;
 	}
 
-	for(i = 0; i < pop_size; i++ ) {		
+	for(unsigned int i = 0; i < pop_size; i++ ) {		
 		curE[i] = Pop[i].value(Normal_Eval);
 		// update Pi from Pop
 		if( Pop[i].value(Normal_Eval) < Pi[i].value(Normal_Eval) )		
@@ -180,9 +175,9 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	}
 	// set Global Best Pg, which points to _Pg
 	best = 0;	
-	for(i = 1; i < pop_size; i++ ) {
+	for(unsigned int i = 1; i < pop_size; i++ ) {
 		if( Pi[i].value(Normal_Eval) < Pi[best].value(Normal_Eval) ) {
-			best = i;			
+			best = (int)i;			
 		}
 	}
 	Pg = Pi[best];
@@ -193,10 +188,10 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	//  dynamic option remakes neighborhoods if Pi not improved
 	//     this dynamic neighborhood is from the "other" PSO code
 	// if the entire population is the neighborhood, this table is not used
-        if (init_links && pso_K<pop_size) {
+        if (init_links && pso_K<(int)pop_size) {
             //Who informs who, at random
 	    // MP:note these are asymmetric links - unlike Huamengs I think
-            for (int s=0; s<pop_size; s++) {
+            for (unsigned int s=0; s<pop_size; s++) {
                 links[s][0]=s; // Each particle informs itself
 	        // K-1 other links (could possibly be self or repeated)
                 for(int i=1; i<pso_K;i++) links[s][i]= (int) random_range(0, pop_size-1);
@@ -207,9 +202,9 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 
 	// compute velocity vector for each particle
 	// Note - this loop uses Pop[i] but does not modify Pop[i]
-	for(i = 0; i < pop_size; i++) {
+	for(unsigned int i = 0; i < pop_size; i++) {
 				
-		if(pso_K < pop_size) {
+		if(pso_K < (int) pop_size) {
 			// get the best in neighborhood of "i", e.g., Neighborhood Best (nbBest)		
 			int g = i; // self
 			for(j =  1; j < pso_K; j++) {
@@ -222,14 +217,12 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 
 				
 		double r1, r2;
-		if(!pso_random_by_dimension) {
-			r1 = ranf();
-			r2 = ranf();
-		}
+		r1 = ranf();
+		r2 = ranf();
 
 		// size is the dimension of docking search (e.g, n*nlig + ntor)			
 		for(j = 0; j < size; j++) {
-			if(pso_random_by_dimension) {
+			if(pso_options.pso_random_by_dimension) {
 				r1 = ranf();
 				r2 = ranf();
 			}
@@ -257,7 +250,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	}	// end compute velocity 
 				
 	// update position (translation, rotation, torsions) Pop[i] of each particle			
-	for(i = 0; i < pop_size; i++) {
+	for(unsigned int i = 0; i < pop_size; i++) {
 		for(j = 0; j < size; j++) {
 
 			curVal = Pop[i].phenotyp.gread(j).real;
@@ -321,7 +314,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	//   see below. M Pique June 2011
 	best = 0;
 	Pop_best_value = BIG;
-	for(i = 0; i < pop_size; i++) {		
+	for(unsigned int i = 0; i < pop_size; i++) {		
 		double piCurE = Pop[i].value(Normal_Eval);
 		if(piCurE < Pop_best_value) {
 			best = i;

@@ -1,6 +1,6 @@
 /*
 
- $Id: print_2x.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: print_2x.cc,v 1.7 2012/10/15 17:48:28 mp Exp $
 
  AutoDock 
 
@@ -37,7 +37,7 @@ print_2x( FILE *const stream1,
 	  const char *const string )
 
 {
-	fprintf( stream1, string );
-	fprintf( stream2, string );
+	fprintf( stream1, "%s", string );
+	fprintf( stream2, "%s", string );
 }
 /* EOF */

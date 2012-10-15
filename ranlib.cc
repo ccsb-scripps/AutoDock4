@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.12 2012/07/09 22:35:21 mp Exp $
+ $Id: ranlib.cc,v 1.13 2012/10/15 17:48:28 mp Exp $
 
  AutoDock 
 
@@ -1329,7 +1329,7 @@ static FourByteLong mltmod,a0,a1,k,p,q,qh,rh;
     sprintf(errmsg, "BUG: a, s, m out of order in mltmod - ABORT! \n"  \
     " a = %12ld s = %12ld m = %12ld sizeof(FourByteLong)= %d\n"  \
     " ERROR in mltmod :  mltmod requires: 0 < a < m; 0 < s < m", \
-    (long) a, (long) s, (long) m, sizeof mltmod);
+    (long) a, (long) s, (long) m, (int) sizeof mltmod);
     stop(errmsg);
     }
 

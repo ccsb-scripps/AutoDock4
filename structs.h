@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.35 2012/08/18 00:00:29 mp Exp $
+ $Id: structs.h,v 1.36 2012/10/15 17:48:28 mp Exp $
 
  AutoDock  
 
@@ -46,16 +46,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  * Date     Inits   Comments                                                  *
  * 02/28/95 GMM     This header added                                         *
  ***************************************************************************** */
-
-/* ____________________________________________________________________________ */
-
-#ifdef USE_INT_AS_LONG
-typedef int FourByteLong;
-typedef unsigned int UnsignedFourByteLong;
-#else
-typedef long FourByteLong;
-typedef unsigned long UnsignedFourByteLong;
-#endif
 
 /* ____________________________________________________________________________ */
 

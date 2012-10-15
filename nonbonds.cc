@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.17 2012/02/04 02:22:05 mp Exp $
+ $Id: nonbonds.cc,v 1.18 2012/10/15 17:48:28 mp Exp $
 
  AutoDock 
 
@@ -242,7 +242,7 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
 void printbonds(const int natom, const int nbonds[MAX_ATOMS], const int bonded[MAX_ATOMS][MAX_NBONDS], const char *message, const int B_print_all_bonds,
 const int outlev, FILE *logFile)
 {
-    pr(logFile, message);
+    pr(logFile, "%s", message);
     for (int i = 0; i<natom; i++) {  // loop over atoms, "i", from 1 to natom
         pr(logFile, "DEBUG:  atom %d  bonded to ", i+1);
         for (int j=0; j< 
