@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.36 2012/08/18 00:00:29 mp Exp $
+ $Id: eval.cc,v 1.37 2012/10/24 23:28:03 mp Exp $
 
  AutoDock  
 
@@ -194,7 +194,7 @@ double Eval::eval(const int term)
 (void)fprintf(logFile,"eval.cc/double Eval::eval(int term=%d) after trilinterp, energy= %.5lf\n", term, energy);
 #endif /* DEBUG */
     energy += eintcal( nonbondlist, ptr_ad_energy_tables, crd, Nnb,
-		 Nnb_array, group_energy, /* perhaps do not need energy breakdown MP TODO 2012 */
+		 Nnb_array, NULL, /* group_energy,  perhaps do not need energy breakdown MP TODO 2012 */
                  B_calcIntElec, B_include_1_4_interactions, 
                  scale_1_4, qsp_abs_charge,
                  B_use_non_bond_cutoff, B_have_flexible_residues,

@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.22 2012/08/18 00:00:29 mp Exp $
+ $Id: trilinterp.cc,v 1.23 2012/10/24 23:28:03 mp Exp $
 
  AutoDock  
 
@@ -127,6 +127,14 @@ Real trilinterp(
 
         AtomType = type[i];
 
+	/* MP: note u0 is < u1, weight for u==u0 value is p1u (v,w same)
+	 *
+	 *    u0 ............. u1
+	 *    |                |
+	 *  p0u=0 increases  p0u=1
+	 *  p1u=1 decreases  p1u=0
+	 *  
+	 */
         u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
         p1u = 1.0L - (p0u = u - (double) u0);
 

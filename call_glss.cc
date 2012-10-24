@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.70 2012/10/04 23:28:12 mp Exp $ 
+ $Id: call_glss.cc,v 1.71 2012/10/24 23:28:03 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -284,7 +284,6 @@ State call_glss(/* not const */ Global_Search *global_method,
     thisPop.set_eob( end_of_branch );
     thisPop.nevals_last_pop_stats = 0;  // reset last time stats were printed
 
-    global_ntor = sInit.ntor; //debug (can be removed when call_gs goes away  MP) TODO
 #ifdef DEBUG
     (void)fprintf(logFile,"\ncall_glss.cc/State call_glss():  {\n");
 #endif
@@ -562,7 +561,7 @@ State call_glss(/* not const */ Global_Search *global_method,
             } else {
 		fprintf(pop_fileptr, "Generation %d\n", generation);
                 fflush( pop_fileptr ); // debug
-                // TODO FAILS 2012-08-17 thisPop.printPopulationAsCoordsEnergies( pop_fileptr, pop_size, sInit.ntor); 
+                // MP TODO FAILS 2012-08-17 thisPop.printPopulationAsCoordsEnergies( pop_fileptr, pop_size, sInit.ntor); 
                 fflush( pop_fileptr );
             }
         }

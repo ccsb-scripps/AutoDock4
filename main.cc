@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.189 2012/10/15 20:18:49 mp Exp $
+ $Id: main.cc,v 1.190 2012/10/24 23:28:03 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.189 2012/10/15 20:18:49 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.190 2012/10/24 23:28:03 mp Exp $"};
 
 
 
@@ -174,7 +174,7 @@ char atomstuff[MAX_ATOMS][MAX_CHARS];
 char pdbaname[MAX_ATOMS][5];
 Real crdorig[MAX_ATOMS][SPACE];  // original (possibly reoriented?) coords
 Real crdpdb[MAX_ATOMS][SPACE];  // PDB coordinates, recentered by "about"
-Real crd[MAX_ATOMS][SPACE];     // current coordinates
+Real crd[MAX_ATOMS][SPACE];     // current coordinates according to State
 Real charge[MAX_ATOMS];
 Real abs_charge[MAX_ATOMS];
 Real qsp_abs_charge[MAX_ATOMS];
@@ -182,7 +182,6 @@ EnergyComponent peratomE[MAX_ATOMS];
 int type[MAX_ATOMS];
 int bond_index[MAX_ATOMS];
 int ignore_inter[MAX_ATOMS];
-Atom atoms[MAX_ATOMS]; // MP  - why is this allocated and never? used TODO 2012
 
 //   MAX_TORS
 //
@@ -275,7 +274,7 @@ const Real ELECSCALE = 332.06363;
 // const Real ELECSCALE = 83.0159075;   this ELECSCALE (corresponding to eps(r) = 1/4r) gives -7.13 kcal/mol for 1pgp Tests/test_autodock4.py
 
 
-Real c=0.0;
+//Real c=0.0;
 
 // energy evaluation working storage:
 Real cA;
@@ -294,7 +293,7 @@ static Boole B_haveCharges=FALSE;
 
 
 // Simulated annealing  DPF-settable parameters:
-Boole B_linear_schedule = TRUE; /* TRUE is ADT default */
+Boole B_linear_schedule = TRUE; /* TRUE is ADT default, other is geometric  */
 	// ^^ MP TODO 2012 BY making TRUE default, there is no way to turn off
 Boole B_selectmin = TRUE; // adopt min instead of last state - ADT default TRUE
 Real e0max = 0; // minimum energy for simanneal initial state - 0 is ADT default
@@ -555,9 +554,11 @@ PSO_Options pso_options ; //  MP in progress
 
 
 info = (GridMapSetInfo *) calloc(1, sizeof(GridMapSetInfo) );
+if(info == NULL) stop("failed to allocate grid info structure");
 ad_energy_tables = (EnergyTables *) calloc(1, sizeof(EnergyTables) );
+if(ad_energy_tables == NULL)  stop("failed to allocate energy tables");
 unbound_energy_tables = (EnergyTables *) calloc(1, sizeof(EnergyTables) );
-// TODO make sure these worked
+if(unbound_energy_tables == NULL)  stop("failed to allocate unbound energy tables");
 
 // Create a coordinate at the origin:
 Coord origin;
@@ -766,7 +767,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.189 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.190 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1522,7 +1523,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                             jobStart, tms_jobStart, hostnm, &ntorsdof, 
                             ignore_inter,
                             B_include_1_4_interactions,
-                            atoms, PDBQT_record, end_of_branch,
+                            PDBQT_record, end_of_branch,
 			    debug, outlev, logFile);
 
 #ifdef DEBUGTLIST 
@@ -1814,13 +1815,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	    }
             /*
             **  Zero-out on central point...
-	    * TODO this will fail if "about" appears more than once - MPique
             */
             maxrad = 0;
             for ( i=0; i<true_ligand_atoms; i++ ) { /*new, gmm, 6-23-1998*/
                 r2sum=0.0;
                 for (xyz = 0;  xyz < SPACE;  xyz++) {
-                    c = crd[i][xyz] = (crdpdb[i][xyz] -= lig_center[xyz]);
+		    Real c;
+                    c = crdorig[i][xyz] - lig_center[xyz];
+                    crdpdb[i][xyz] = c;
+                    crd[i][xyz] = c;
                     r2sum += c*c;
                 } /* xyz */
                 maxrad = max(maxrad,sqrt(r2sum));
@@ -2042,9 +2045,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             if (dpf_keyword == DPF_QUATERNION0) {
                 pr( logFile, "Initial quaternion,  (x,y,z,w) =\t( %.3f, %.3f, %.3f, %.3f ),\n", sInit.Q.x, sInit.Q.y, sInit.Q.z, sInit.Q.w);
             } else {
-                //if (dpf_keyword == DPF_QUAT0 && B_RandomQuat0)  {
-                    //pr( logFile, "WARNING quat0 command is obsolete. Now use quaternion0 instead\n");
-                //}
                 if (dpf_keyword == DPF_QUAT0 && !B_RandomQuat0)  {
                     pr( logFile, "WARNING quat0 command is obsolete. Now use quaternion0 or axisangle0 instead\n");
                 }
@@ -4039,7 +4039,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             //  *  Turn off the use of the non-bond cutoff
             //  *  Turn off internal electrostatics
             //  *  Turn off intermolecular energy calculations
-            // TODO Do not translate or rotate the ligand in unbound searches
+            // TODO Need not translate or rotate the ligand in unbound searches
             //
             /*
              *  Genetic Algorithm-Local search,  a.k.a.
@@ -4233,7 +4233,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 //  *  Turn off the use of the non-bond cutoff
                 //  *  Turn off internal electrostatics
                 //  *  Turn off intermolecular energy calculations
-                // TODO Do not translate or rotate the ligand in unbound searches
+                // TODO Need not translate or rotate the ligand in unbound searches
                 //
                 /*
                  *  Genetic Algorithm-Local search,  a.k.a.
@@ -4806,7 +4806,7 @@ static void set_seeds( FourByteLong seed[2], char seedIsSet[2], const int outlev
 	 seedIsSet[0]  = seedIsSet[1] = 'D';
          setall(seed[0], seed[1]);  // see com.cc
          if(outlev>=LOGMIN) pr(logFile,
-	  "Random number generator was seeded with values" FBL_FMT ", " FBL_FMT "\n",
+	  "Random number generator was seeded with values " FBL_FMT ", " FBL_FMT ".\n",
 	  seed[0], seed[1]);
 	 }
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.h,v 1.19 2012/04/05 05:00:54 mp Exp $
+ $Id: readPDBQT.h,v 1.20 2012/10/24 23:28:03 mp Exp $
 
  AutoDock 
 
@@ -93,7 +93,6 @@ Molecule readPDBQT( char  line[LINE_LEN],
               
               const int   B_include_1_4_interactions,
               
-              Atom  atoms[MAX_ATOMS],
               /* not const */ char  PDBQT_record[MAX_RECORDS][LINE_LEN],
 
               /* not const */ int end_of_branch[MAX_TORS],
