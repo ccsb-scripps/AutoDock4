@@ -1,8 +1,8 @@
 #! /bin/bash
-# $Id: configure-universalDarwin,v 1.3 2012/10/15 17:48:28 mp Exp $
+# $Id: configure-universalDarwin,v 1.4 2012/10/24 23:26:56 mp Exp $
 
 # run configure (or ../configure) for universalDarwinNN
-# NN=8  Mac OS X 10.4 Tiger  (no longer supported by AutoDock as of 2012)
+# NN=8  Mac OS X 10.4 Tiger
 # NN=9  Mac OS X 10.5 Leopard
 # NN=10 Mac OS X 10.6 Snow Leopard
 # NN=11 Mac OS X 10.7 Lion
