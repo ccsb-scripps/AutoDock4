@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.57 2012/10/15 17:48:28 mp Exp $
+# $Id: test_autodock4.py,v 1.58 2012/10/24 23:24:24 mp Exp $
 #
 
 """
@@ -353,6 +353,17 @@ class AutoDock4_1pgp_about_only_test( AutoDock_simple_test ):
     """Test that autodock 4.2 works when about is set in the DPF but tran0,
     dihe0 and quat0 are missing."""
     dpf_stem = "1pgp_about_only"
+    #print "in new ga_only test"
+        #expected_binding_energy = +843.59     -5.87
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -3.23
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_multipleabouts_test( AutoDock_simple_test ):
+    """Test that autodock 4.2 works when about appears multiple times"""
+    dpf_stem = "1pgp_multipleabouts"
     #print "in new ga_only test"
         #expected_binding_energy = +843.59     -5.87
         #expected_intermol_energy = +21.00  -6.17
@@ -892,6 +903,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_1_4_100_test',
         # tests for setting tran0 from about
         'AutoDock4_1pgp_about_only_test', 
+        'AutoDock4_1pgp_multipleabouts_test', 
         # tests for setting 'about' automatically
         'AutoDock4_1pgp_about_auto_simanneal', 
         'AutoDock4_1pgp_about_auto_ga_only', 
