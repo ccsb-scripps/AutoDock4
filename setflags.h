@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.h,v 1.8 2010/08/27 00:05:08 mp Exp $
+ $Id: setflags.h,v 1.9 2012/10/25 16:59:53 mp Exp $
 
  AutoDock 
 
@@ -27,6 +27,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #ifndef SETFLAGS
 #define SETFLAGS
 #include "constants.h"
+#include "stop.h"
 #include "usage.h"
 
 int setflags( /* not const */int argc, 
