@@ -2,7 +2,7 @@
 # script to run AutoDock automated tests (if "make" is not available)
 # usage: (from source directory):  cd $ARCHOSV; ../makecheck
 #
-# $Ident$
+# $Id: makecheck,v 1.2 2012/10/25 16:55:21 mp Exp $
 #
 echo "Running the Python test_autodock4.py unit-tests on ../autodock4"
 outputdir=`pwd` ;\
