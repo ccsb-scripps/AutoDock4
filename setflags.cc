@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.25 2012/10/25 16:55:41 mp Exp $
+ $Id: setflags.cc,v 1.26 2012/10/25 17:04:00 mp Exp $
 
  AutoDock 
 
@@ -138,7 +138,9 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
         case 'k':
             // does the same as 'output_resnum_as ...' in dpf
             // removed as of 4.2.5
-	    stop("-k flag no longer supported, use \"output_resnum_as ...\" DPF keyword.");
+            fprintf(stderr, 
+	    "%s: The '-k' flag is no longer supported; use \"output_resnum_as ...\" DPF keyword.\n", programname);
+	    return(-1);
             break;
         case 'C':
             //show copyright
