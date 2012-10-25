@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.24 2012/04/24 20:59:31 mp Exp $
+ $Id: setflags.cc,v 1.25 2012/10/25 16:55:41 mp Exp $
 
  AutoDock 
 
@@ -48,7 +48,6 @@ extern char dock_param_fn[];
 extern int  debug;
 extern int  ignore_errors;
 extern int  parse_tors_mode;
-extern int  keepresnum;
 
 
 int setflags( /* not const */ int argc, const char ** /* not const */ argv, const char *const version_num)
@@ -104,7 +103,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
     static char * p_logFileName = strdup("stdout"); // change with -l <NAME> or defaults
      // to parFile name with last 3 chars changed from "dpf" to "dlg"
     /*
-     * see autoglobal.h for initialization of debug, keepresnum and logicals...
+     * see autoglobal.h for initialization of debug and logicals...
      */
     if (argc==1) { //No arguments provided
         usage(stdout, "AutoDock");
@@ -137,9 +136,9 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             ignore_errors = TRUE;
             break;
         case 'k':
-            // does the same as 'output_resnum_as runnum' in dpf
-            // default set in globals.h is 'output_resnum_as resnum' 
-            keepresnum = FALSE;
+            // does the same as 'output_resnum_as ...' in dpf
+            // removed as of 4.2.5
+	    stop("-k flag no longer supported, use \"output_resnum_as ...\" DPF keyword.");
             break;
         case 'C':
             //show copyright
