@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.58 2012/10/24 23:24:24 mp Exp $
+# $Id: test_autodock4.py,v 1.59 2012/10/30 20:15:10 mp Exp $
 #
 
 """
@@ -376,6 +376,16 @@ class AutoDock4_1pgp_multipleabouts_test( AutoDock_simple_test ):
 class AutoDock4_1pgp_simanneal_small( AutoDock_simple_test ):
     """Test that autodock 4.2 simanneal works (at all). """
     dpf_stem = "1pgp_simanneal_small"
+        #expected_binding_energy = +843.59     -5.87
+        #expected_intermol_energy = +21.00  -6.17
+        #expected_internal_energy = +820.50 -3.23
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_simanneal_small_geometric_schedule( AutoDock_simple_test ):
+    """Test that autodock 4.2 simanneal alternate cooling schedule """
+    dpf_stem = "1pgp_simanneal_small_geometric_schedule"
         #expected_binding_energy = +843.59     -5.87
         #expected_intermol_energy = +21.00  -6.17
         #expected_internal_energy = +820.50 -3.23
@@ -862,6 +872,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_rmsmode_all_heavy_atom_pairs_only_test',
         'AutoDock4_1pgp_rmsmode_unique_heavy_atom_pairs_only_test',
         'AutoDock4_1pgp_simanneal_small', 
+        'AutoDock4_1pgp_simanneal_small_geometric_schedule', 
         #next dpf sets tran0,quaternion0,dihe0 to random
         'AutoDock4_1pgp_ligrand_ga_only_test', 
         'AutoDock4_1pgp_ga_only_test',

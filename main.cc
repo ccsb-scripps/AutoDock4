@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.190 2012/10/24 23:28:03 mp Exp $
+ $Id: main.cc,v 1.191 2012/10/30 20:15:10 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.190 2012/10/24 23:28:03 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.191 2012/10/30 20:15:10 mp Exp $"};
 
 
 
@@ -767,7 +767,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.190 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.191 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -2722,14 +2722,29 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
 //______________________________________________________________________________
 
+    case DPF_SCHEDGEOMETRIC:
+        /*
+        **  geometric_schedule
+        **  Use a deprecated geometric temperature
+        **  reduction schedule.  This was the default before 4.2.5
+        */
+        B_linear_schedule = FALSE;
+        if (outlev >= LOGBASIC) {
+            pr( logFile, "A geometric temperature reduction schedule will be used...\n\n" );
+        }
+        break;
+
+//______________________________________________________________________________
+//______________________________________________________________________________
+
     case DPF_SCHEDLIN:
         /*
         **  linear_schedule
         **  Use a linear (arithmetic) temperature
         **  reduction schedule.  This is necessary for
         **  more accurate entropy estimations...
+	**  This is the default as of 4.2.5
         */
-	// MP TODO 2012 BY making TRUE default, there is no way to turn off
         B_linear_schedule = TRUE;
         if (outlev >= LOGBASIC) {
             pr( logFile, "A linear temperature reduction schedule will be used...\n\n" );

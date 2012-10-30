@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.40 2012/02/02 22:26:26 rhuey Exp $
+ $Id: parse_dpf_line.cc,v 1.41 2012/10/30 20:15:10 mp Exp $
 
  AutoDock 
 
@@ -104,6 +104,7 @@ int parse_dpf_line( const char line[] )
                       {"rmsref", DPF_RMSREF}, 
                       {"rmsmode", DPF_RMSMODE}, 
                       {"watch", DPF_WATCH}, 
+                      {"geometric_schedule", DPF_SCHEDGEOMETRIC}, 
                       {"linear_schedule", DPF_SCHEDLIN}, 
                       {"schedule_linear", DPF_SCHEDLIN}, 
                       {"linsched", DPF_SCHEDLIN}, 

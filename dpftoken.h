@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.35 2012/02/02 22:26:26 rhuey Exp $
+ $Id: dpftoken.h,v 1.36 2012/10/30 20:15:10 mp Exp $
 
  AutoDock 
 
@@ -85,6 +85,7 @@ enum DpfTokens {
   DPF_CLUSTER                  ,
   DPF_CLUSALL                  ,
   DPF_RMSNOSYM                 ,
+  DPF_SCHEDGEOMETRIC            ,
   DPF_SCHEDLIN                 ,
   DPF_RMSREF                   ,
   DPF_INTELEC                  ,
