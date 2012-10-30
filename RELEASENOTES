@@ -1,5 +1,54 @@
 =============================================================================
                    AutoDock Release Notes
+                  Release 4.2.5 (November XX 2012)
+=============================================================================
+
+The 4.2.4 release (7 July 2010) was a specialized release for "Fight Aids at Home"
+and other IBM World Community Grid projects.  The previous general release was
+Release 4.2.3, 29 January 2010. 
+
+The changes since the 4.2.3 release (1/29/2010):
+
+#new features
+-: new support for specifying output verbosity ranging from low (-2) up to high (8)
+   with symbolic settings for "outlev" defined in constants.h and used in main.cc
+-: new automatic calculation of 'about' as the center of the ligand root group
+-: new WIN32 MinGW portability - replacements for times() and getrusage()
+-: new desolvation term separate from vdW+Hbond term in epdb 
+     "Per-atom Intermolecular Energy Analysis" table 
+-: now intelec is on by default; off if "intelec off" in DPF
+-: Almost all AutoDock defaults now match defaults supplied by ADT, simplifying PDF files
+
+#improvements
+-: improved detailed output of Intermolecular Energy Analysis
+-: increased MAX_RUNS from 256 to 2000
+-: improved error detection and termination: 
+      replaced exit() by EXIT_SUCCESS/EXIT_FAILURE(win32) or stop(msg)
+-: increased precision of energy table
+-: implemented EnergyComponent structures
+-: integrated call_gs into call_glss
+-: improved input checking with ga_run/gals_run
+[Added checks to "ga_run/gals_run" for missing "set_ga" and missing "set_psw1" errors]
+-: simplified logic so more of the FATAL errors are simply handed to "stop()"
+-: now set random number seeds at beginning of simanneal execution; output reduced
+-: new compile-time option to print energy terms for each atom [for debugging]
+-: AutoDock intramolecular energy smoothing now matches that in AutoGrid
+-: Consolidated the "side effects" of trilinterp that record per-atom energy components
+   and total energy components into two sets of "EnergyComponent" structures instead
+   of two Real arrays and two pointers to Real.
+-: developed substitutes for WIN32 MinGW "times()" and "getpid()"
+-: modified mkTorTree.cc to fill in the root atom information
+-: Changed 'tlist' declaration to allow space for root atoms at end 
+
+#bug fixes
+-: corrected energy breakdown report when using flexible residues
+-: desolvation energy term is included even for distant pairs (r>nbc)
+-: corrected eintcal side effects of "outlev" setting
+-: removed support for unused DPF tokens
+
+
+=============================================================================
+                   AutoDock Release Notes
                   Release 4.2.3 (January 29 2010)
 =============================================================================
 The changes since the 4.2.2.1 release (9/16/2009):
