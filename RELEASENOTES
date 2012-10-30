@@ -3,9 +3,19 @@
                   Release 4.2.5 (November XX 2012)
 =============================================================================
 
-The 4.2.4 release (7 July 2010) was a specialized release for "Fight Aids at Home"
-and other IBM World Community Grid projects.  The previous general release was
-Release 4.2.3, 29 January 2010. 
+Please note that the previous general release was 4.2.3, 29 January 2010. 
+The 4.2.4 release (7 July 2010) was a specialized release for 
+"Fight Aids at Home" and other IBM World Community Grid projects.  
+
+Supported computer platforms in 4.2.5:
+
+Linux2 on Intel x86  remains supported, as does Solaris 8 on SPARC.
+Supported Macintosh platforms are OS X 10.4-10.5 (Tiger and Leopard) on
+Intel x86 and PowerPC, and OS X 10.6-10.8 (Snow Leopard, Lion, and
+Mountain Lion) on Intel x86.  The executable binaries for Windows on
+Intel x86 have been built on Windows 5 (XP) and have been tested on Windows 6
+and Windows 7.  Windows users no longer need to install the CygWin environment,
+but they may if they like.
 
 The changes since the 4.2.3 release (1/29/2010):
 
