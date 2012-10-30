@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.59 2012/10/30 20:15:10 mp Exp $
+# $Id: test_autodock4.py,v 1.60 2012/10/30 21:33:30 mp Exp $
 #
 
 """
@@ -674,18 +674,14 @@ class AutoDock4_1pgp_unbound_default_test( AutoDock4_unbound_test ):
 class AutoDock4_1pgp_unbound_model_extended( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound_model is set to extended."""
     dpf_stem = "1pgp_unbound_model_extended"
-    expected_unbound_energy = -0.97
-    #expected_unbound_energy = -0.98 1/2012; now desolvation always included
-    #expected_unbound_energy = -0.66 #prior to 4/2009
+    expected_unbound_energy = -0.75
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_unbound_compute_unbound_extended( AutoDock4_unbound_test ):
     """Test that autodock 4.1 works when unbound_model is set to extended."""
     dpf_stem = "1pgp_unbound_compute_unbound_extended"
-    expected_unbound_energy = -0.97
-    #expected_unbound_energy = -0.98 1/2012: now desolvation always included
-    #expected_unbound_energy = -0.66 #prior to 4/2009
+    expected_unbound_energy = -0.75
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -755,11 +751,7 @@ class AutoDock4_1pgp_ligrand_ga_only_energy_test( AutoDock4_energy_test ):
     """Test that autodock 4.2 works when ligand is randomized within autodock as set in the DPF.
                  and that expected energy is found"""
     dpf_stem = "1pgp_ligrand_ga_only"
-    #print "in new ligrand_ga_only test"
-        #expected_binding_energy = +843.59     -5.87
-        #expected_intermol_energy = +21.00  -6.17
-        #expected_internal_energy = +820.50 -3.15
-    expected_binding_energy = 101.85
+    expected_binding_energy = 1.39
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
