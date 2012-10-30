@@ -1,4 +1,4 @@
-AutoDock README $Id: README,v 1.5 2010/01/27 00:41:28 mp Exp $
+AutoDock README $Id: README,v 1.6 2012/10/30 23:01:50 mp Exp $
 
 
 What is AutoDock?
@@ -44,19 +44,24 @@ more information on copying AutoDock.
 From CVS
 =======================
 If you've just done a 'cvs co' then here are the commands
-necessary to make autodock:
+necessary to make autodock:  for ARCHOSV below, substitute your
+computer type and operating system version, such as "i86Linux2".
 
- % aclocal
- % autoconf
- % automake -a
- % ./configure    (* see below)
+ % autoreconf -i
+ % mkdir ARCHOSV
+ % cd ARCHOSV
+ % ../configure    (* see below)
  % make 
- % make test   ( optional, recommended, requires "python")
+
+ % (on Windows MINGW, you need to type:   rm -rf .deps; ../configure    here)
+ % make check   ( optional, recommended, requires "python")
  % make install
  
  This will create and install autodock4 executable.
+
+ Then do the same steps to configure, build, and install autogrid
  
- * On Macintosh Mac OS X, use instead "./configure-universalDarwin"
+ * On Macintosh Mac OS X, use instead "../configure-universalDarwin"
    if you wish to compile a "universal binary"
  
 
