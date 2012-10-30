@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.191 2012/10/30 20:15:10 mp Exp $
+ $Id: main.cc,v 1.192 2012/10/30 21:26:27 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.191 2012/10/30 20:15:10 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.192 2012/10/30 21:26:27 mp Exp $"};
 
 
 
@@ -767,7 +767,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.191 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.192 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -4464,8 +4464,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 				B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
                                 B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
 
-//#define PRE43INTERMOLECULAR_ANALYSIS
-#ifdef PRE43INTERMOLECULAR_ANALYSIS
+//#define PRE425INTERMOLECULAR_ANALYSIS
+#ifdef PRE425INTERMOLECULAR_ANALYSIS
+/* kept around temporarily for debugging */
         pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
         pr(logFile,     "\t\t==============================\n\n");
         pr(logFile, "Atom  vdW+Hb+Elec  vdW+Hbond  Electrosta  Partial          Coordinates         \n");
@@ -4543,7 +4544,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 #endif
 
 	// see also writePDBQT.cc and analysis.cc for similar code:
-        printEnergies( &eb, "epdb: USER    ", ligand_is_inhibitor, emap_total, elec_total, 
+        printEnergies( &eb, "epdb: USER    ", ligand_is_inhibitor, emap_total+desolv_total, elec_total, 
 	 B_have_flexible_residues,  // next two terms are meaningful only if have flexible residues...
 	 group_energy.inter_moving_moving.vdW_Hb + group_energy.inter_moving_moving.desolv,
 	 group_energy.inter_moving_moving.elec,
