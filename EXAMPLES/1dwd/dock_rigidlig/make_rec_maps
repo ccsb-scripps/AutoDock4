@@ -1,0 +1,8 @@
+#! /bin/bash
+
+if [ ! -e ../1dwd_rec_maps/1dwd_rec.maps.fld ]; then
+	echo making maps in 1dwd_rec_maps
+	autogrid4 -p 1dwd_1dwd.gpf -l 1dwd_1dwd.glg
+
+	mv *.maps *.fld *.xyz ../1dwd_rec_maps
+fi
