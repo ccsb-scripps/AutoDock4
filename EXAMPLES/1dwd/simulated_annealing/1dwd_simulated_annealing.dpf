@@ -15,13 +15,7 @@ map 1dwd_rec.OA.map   # atom-specific affinity map
 map 1dwd_rec.S.map    # atom-specific affinity map
 elecmap 1dwd_rec.e.map # electrostatics map
 desolvmap 1dwd_rec.d.map # desolvation map
-
 move 1dwd_lig.pdbqt                  # small molecule
-
-## FREE ENERGY ENTROPY ADJUSTMENT SECTION
-torsdof 10                           # torsional degrees of freedom and coefficient
-
-
 
 ## SIMULATED ANNEALING SEARCH PARAMETERS SECTION
 e0max 10.0 1000                      # max initial energy; max number of retries
@@ -29,7 +23,7 @@ e0max 10.0 1000                      # max initial energy; max number of retries
 cycles 2
 
 ## PERFORM SEARCH SECTION
-simanneal 2
+simanneal 20
 
 
 ## ANALYSIS SECTION
