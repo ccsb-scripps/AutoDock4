@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.192 2012/10/30 21:26:27 mp Exp $
+ $Id: main.cc,v 1.193 2012/10/31 02:47:18 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.192 2012/10/30 21:26:27 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.193 2012/10/31 02:47:18 mp Exp $"};
 
 
 
@@ -615,7 +615,8 @@ jobStart = times( &tms_jobStart );
 #endif
 
 // set initial outlev value
-(void) getoutlev("default", &outlev); // see bottom of main.cc and constanst.h
+(void) getoutlev("default", &outlev); // see bottom of main.cc and constants.h
+if(outlev!=LOGFORADT) stop("default outlev fail"); // debug
 
 //______________________________________________________________________________
 /*
@@ -767,7 +768,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.192 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.193 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -954,11 +955,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             break;
         case LOGFORADT:
             pr( logFile, " ADT-COMPATIBLE OUTPUT DURING DOCKING.\n" );
-            output_pop_stats.everyNgens = (unsigned int) OUTLEV1_GENS;
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV0_GENS;
             break;
         case LOGRUNV:
             pr( logFile, " EXPANDED OUTPUT DURING DOCKING.\n");
-            output_pop_stats.everyNgens = (unsigned int) OUTLEV2_GENS;
+            output_pop_stats.everyNgens = (unsigned int) OUTLEV1_GENS;
 	    break;
 	case LOGLIGREAD:
 	    pr(logFile, " EXPANDED OUTPUT DURING LIGAND SETUP.\n" );
@@ -981,9 +982,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	    break;
         }
         if(output_pop_stats.everyNgens>0) pr( logFile, "\n\tOutput population statistics every %u generations.\n", output_pop_stats.everyNgens );
-        else if(outlev>LOGBASIC) pr( logFile, "\n\tNever output generation-based population statistics.\n");
+        else if(outlev>LOGFORADT) pr( logFile, "\n\tNever output generation-based population statistics.\n");
         if(output_pop_stats.everyNevals>0) pr( logFile, "\n\tOutput population statistics every %u energy evaluations.\n", output_pop_stats.everyNevals );
-        else if(outlev>LOGBASIC) pr( logFile, "\n\tNever output evaluation-count-based population statistics.\n");
+        else if(outlev>LOGFORADT) pr( logFile, "\n\tNever output evaluation-count-based population statistics.\n");
         break;
 
 /*____________________________________________________________________________*/
@@ -4799,17 +4800,21 @@ static void exit_if_missing_elecmap_desolvmap_about(string keyword)
 }
 
 static int getoutlev(char *line, int *outlev) {
- /* set *outlev either numerically or symbolically. return 1 if OK, 0 for fail */
+ /* set *outlev either numerically or symbolically. return 1 if OK, 0 for fail
+  * Allow either integers or symbolic values to appear first or second in line
+  *  e.g.   "outlev 1", "1", "outlev adt", "ADT"    with case not significant
+  */
 	char s[LINE_LEN];
 
-	if(1==sscanf(line, "%*s %d", outlev)) return 1;
+	if(1==sscanf(line, "%*s %d", outlev)||1==sscanf(line, "%d", outlev)) return 1;
 	// if not integer, look for symbolic outlev, see constants.h
-	if(1 != sscanf(line, "%*s %s", s)) return 0;
-	for(int i=0;strlen(outlev_lookup[i].key)>0;i++)  \
+	if(1!=sscanf(line, "%*s %s", s) && 1!= sscanf(line, "%s", s)) return 0;
+	for(int i=0;strlen(outlev_lookup[i].key)>0;i++) { 
 	  if(streq(s,outlev_lookup[i].key)) {
 	    *outlev=outlev_lookup[i].value;
 	    return 1;
 	  }
+	}
 	return 0;
 }
 static void set_seeds( FourByteLong seed[2], char seedIsSet[2], const int outlev, FILE *logFile ) {

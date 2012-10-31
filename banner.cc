@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.23 2012/02/07 05:14:55 mp Exp $
+ $Id: banner.cc,v 1.24 2012/10/31 02:47:18 mp Exp $
 
  AutoDock 
 
@@ -38,7 +38,7 @@ void banner( const char *const version_num, const int outlev, FILE *logFile )
 /* Output banner...                                                           */
 /*----------------------------------------------------------------------------*/
 
-if(outlev>=LOGFORADT) {
+if(outlev>=LOGRUNV) {
 
     (void) fprintf(logFile, "      ________________________________________________________________\n");
     (void) fprintf(logFile, "\n");
