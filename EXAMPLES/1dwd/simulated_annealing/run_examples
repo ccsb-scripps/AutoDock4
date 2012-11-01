@@ -6,5 +6,5 @@ fi
 
 autodock4 -p 1dwd_simulated_annealing.dpf -l 1dwd_simulated_annealing.dlg
 
-# autodock4 -p 1dwd_local_only_long.dpf -l 1dwd_local_only_long.dlg
 
+# autodock4 -p 1dwd_simulated_annealing_long.dpf -l 1dwd_simulated_annealing_long.dlg
