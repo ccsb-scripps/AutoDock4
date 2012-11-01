@@ -1,8 +1,8 @@
 #! /bin/bash
 # modify EXAMPLES directory for autodock distribution
 # note this is run after a clean CVS checkout 
-# see also autodock/mkdisttars
-# $Id: mkdist,v 1.1 2012/11/01 20:39:20 rhuey Exp $
+# see also autodock/mkdisttars (MP+RH)
+# $Id: mkdist,v 1.2 2012/11/01 20:40:29 rhuey Exp $
 
 # remove the big evals directories
  /bin/rm -rf *_25M
