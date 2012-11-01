@@ -29,6 +29,12 @@ The changes since the 4.2.3 release (1/29/2010):
 -: now intelec is on by default; off if "intelec off" in DPF
 -: Almost all AutoDock defaults now match defaults supplied by ADT, simplifying PDF files
 
+#code inspection and internal interface self-documentation
+-: We thank Steffen Moeller (steffen_moeller@gmx.de) for his enthusiastic
+   and expert detailed inspection of all function and method calls,
+   in particular identifying "constant" arguments and verifying
+   data type compatibiliy.
+
 #improvements
 -: improved detailed output of Intermolecular Energy Analysis
 -: increased MAX_RUNS from 256 to 2000
