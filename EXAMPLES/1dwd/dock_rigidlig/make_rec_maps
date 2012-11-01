@@ -1,6 +1,10 @@
 #! /bin/bash
 # link maps if available, otherwise run AutoGrid to make them
 
+if [ -e 1dwd_rec.maps.fld ]; then
+   exit 0  # OK
+fi
+
 if [ -e ../1dwd_rec_maps/1dwd_rec.maps.fld ]; then
 	ln ../1dwd_rec_maps/*.{fld,map,xyz} .
 else
