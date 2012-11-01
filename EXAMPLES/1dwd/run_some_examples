@@ -11,9 +11,6 @@ for d in \
 	dock_rigidlig  \
 	dock_flexlig  \
 	dock_flexlig_flexres  \
-	dock_flexlig_25M  \
-	dock_flexlig_flexres_25M  \
-	dock_rigidlig_25M  \
 	; do
 
 	echo "$(date)  running examples in $d"
