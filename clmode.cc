@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.19 2012/04/24 20:59:31 mp Exp $
+ $Id: clmode.cc,v 1.20 2012/11/02 02:22:41 mp Exp $
 
  AutoDock 
 
@@ -62,7 +62,6 @@ void  clmode( const int   num_atm_maps,
     register int xyz = 0;
     int   anum = 0;
     char  atomstuff[MAX_ATOMS][MAX_CHARS];
-    Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
     Real econf[MAX_RUNS];
     Real eSave[2];
     Boole haveAtoms = FALSE;
@@ -82,8 +81,11 @@ void  clmode( const int   num_atm_maps,
     int   nsaved = 0;
     char  anumStr[5];
     int   type[MAX_ATOMS];
-    Real clu_rms[MAX_RUNS][MAX_RUNS];
-    int   cluster[MAX_RUNS][MAX_RUNS];
+    // the next three arrays are "static" solely to prevent stack size
+    // failures on some computers when MAX_RUNS is large (e.g. 2000)
+    static Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
+    static Real clu_rms[MAX_RUNS][MAX_RUNS];
+    static int   cluster[MAX_RUNS][MAX_RUNS];
     register int i = 0;
     register int j = 0;
     int   irunmax = -1;
