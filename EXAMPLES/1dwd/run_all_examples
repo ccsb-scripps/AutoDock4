@@ -8,6 +8,7 @@ for d in \
 	eval_lig  \
 	local_search_lig  \
 	simulated_annealing \
+	recluster \
 	dock_rigidlig  \
 	dock_flexlig  \
 	dock_flexlig_flexres  \
