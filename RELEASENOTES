@@ -62,6 +62,11 @@ The changes since the 4.2.3 release (1/29/2010):
 -: corrected eintcal side effects of "outlev" setting
 -: removed support for unused DPF tokens
 
+#autogrid
+AutoGrid 4.2.5 has no functional changes from AutoGrid 4.2.3. 
+The only significant code changes were those required for porting to Windows.o
+We added 'copyfilesfromAD', a maintenance script that copies key shared source files 
+from AutoDock to AutoGrid.
 
 =============================================================================
                    AutoDock Release Notes
