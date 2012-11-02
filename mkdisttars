@@ -1,13 +1,13 @@
 #! /bin/bash
-# $Id: mkdisttars,v 1.6 2010/02/09 00:20:47 rhuey Exp $
+# $Id: mkdisttars,v 1.7 2012/11/02 20:37:30 rhuey Exp $
 # Usage example:
 # 
 #cd /mgl/works/rhuey/autodocksuite_4.2.2.1
 #/mgl/works/rhuey/autodock_1/autodock/mkdisttars
 
-archlist="i86Cygwin i86Linux2 sun4SunOS5 ia64Linux2 universalDarwin8 universalDarwin9 universalDarwin10"
+archlist="i86Windows i86Linux2 sun4SunOS5 universalDarwin9 universalDarwin11"
 version=4
-release=4.2.3
+release=4.2.5
 umask 0
 
 # name for "arch" tar files is 
@@ -18,7 +18,7 @@ umask 0
 for arch in $archlist; do
    archok=y
    case $arch in 
-    i86Cygwin) exeext=.exe ;;
+    i86Cygwin|i86Windows) exeext=.exe ;;
     *) exeext="";;
     esac
     for prog in autodock autogrid; do
@@ -50,12 +50,19 @@ done
 # how to create src directory:
 #
 # cd  autodocksuite-${release}
-# mkdir src
-# cd src
-# cvs co autodock autogrid
-# cd autodock; autoreconf -i; cd ..
-# cd autogrid; autoreconf -i; cd ..
-# find . \( -name CVS -o -name test -o -name testdir \) -exec /bin/rm -rf {}  \;
+ mkdir src
+ cd src
+ cvs co autodock autogrid
+ cd autodock; autoreconf -i; cd ..
+ cd autogrid; autoreconf -i; cd ..
+ find . \( -name CVS -o -name test -o -name testdir \) -exec /bin/rm -rf {}  \;
+ cd ..  # 
 # 
+mv src/autodock/EXAMPLES/1dwd ./examples  # cwd is autodocksuite-x
+rm -rf src/autodock/EXAMPLES
+( cd examples; bash mkdist; rm mkdist )
+tar cf autodocksuite-${release}-examples.tar examples
+gzip autodocksuite-${release}-examples.tar
+
 tar cf autodocksuite-${release}-src.tar src
 gzip autodocksuite-${release}-src.tar
