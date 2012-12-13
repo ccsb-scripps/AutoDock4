@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.60 2012/10/30 21:33:30 mp Exp $
+# $Id: test_autodock4.py,v 1.61 2012/12/13 06:44:43 mp Exp $
 #
 
 """
@@ -483,8 +483,8 @@ class AutoDock_test( AutoDock_base_test ):
             print "Testing that DLG exists and AutoDock did not complete."
         self.assertEqual( self.computed, self.expected_outcome )
         # Check the final energy is expected value.
-        expected_intermol_energy = -6.17
-        expected_internal_energy = -3.23
+        expected_intermol_energy = -6.44  
+        expected_internal_energy = -3.28  # 3.17? MP
         (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename, ['intermol_energy','total_internal'] )
         print "Testing that intermolecular energy = %.2f kcal/mol." % (expected_intermol_energy,)
         self.assertEqual( round(intermol_energy,6), round(expected_intermol_energy,6))
@@ -579,9 +579,13 @@ class AutoDock4_1pgp_gals_set_sw1_test( AutoDock_simple_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
-class AutoDock4_1pgp_smaller_test( AutoDock_test ):
+class AutoDock4_1pgp_smaller_test( AutoDock_simple_test ):
+    expected_intermol_energy = -6.17  
+    expected_internal_energy = -3.23
     """Test that autodock4 executes using fewer parameters and an extremely short run."""
     dpf_stem = "1pgp_smaller"
+    #expected_intermol_energy = -6.17  
+    #expected_internal_energy = -3.23
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -814,7 +818,7 @@ class AutoDock4_1pgp_ga_smooth0_energy_test( AutoDock4_energy_test ):
     #restores former values (less negative)
     expected_binding_energy =  -5.87
     expected_intermol_energy = -6.17
-    expected_internal_energy = -1.80
+    expected_internal_energy = -1.78
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________

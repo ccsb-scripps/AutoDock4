@@ -1,6 +1,8 @@
-# test 4.3 defaults give same result as 1pgp.pdf which lists them explicitly
+# test 4.2.5 defaults give same result as 1pgp.dpf which lists them explicitly
 autodock_parameter_version 4.1       # used by autodock to validate parameter set
 outlev 0
+#parameter_file AD4.1_bound.dat       # New parameter library
+#intelec                              # calculate internal electrostatic energy
 
 seed 28641 1106107140                # seeds for random generator
 
@@ -20,6 +22,8 @@ quaternion0 0 0 0 1                  # initial quaternion
 dihe0 0 0 0 0 0 0 0 0 0 0 0          # initial dihedrals (relative) or random
 unbound 0.0                          # free energy of the unbound state
 
+epdb                                 # compute energy of PDBQT specified by 'move' 
+
 #ga_pop_size 150                      # number of individuals in population
 ga_num_evals 250                     # maximum number of energy evaluations
 ga_num_generations 4                 # maximum number of generations
@@ -27,13 +31,11 @@ ga_num_generations 4                 # maximum number of generations
 #ga_mutation_rate 0.02                # rate of gene mutation
 #ga_crossover_rate 0.8                # rate of crossover
 #ga_window_size 10                    # 
-#ga_cauchy_alpha 0.0                  # Alpha parameter of Cauchy distribution
-#ga_cauchy_beta 1.0                   # Beta parameter Cauchy distribution
 set_ga                               # set the above parameters for GA or LGA
 
-#sw_max_its 30                        # iterations of Solis & Wets local search
-#sw_max_succ 2                        # consecutive successes before changing rho
-#sw_max_fail 2                        # consecutive failures before changing rho
+#sw_max_its 300                       # iterations of Solis & Wets local search
+#sw_max_succ 4                        # consecutive successes before changing rho
+#sw_max_fail 4                        # consecutive failures before changing rho
 #sw_rho 1.0                           # size of local search space to sample
 #sw_lb_rho 0.01                       # lower bound on rho
 #ls_search_freq 0.06                  # probability of performing local search on individual

@@ -26,7 +26,6 @@ ga_num_generations 4                 # maximum number of generations
 ga_elitism 1                         # number of top individuals to survive to next generation
 set_ga                               # set the above parameters for GA or LGA
 
-sw_max_its 30                      # iterations of Solis & Wets local search
 set_psw1                             # set the above Pseudo Solis & Wets parameters
 
 ga_run 1                     # do this many hybrid GA-LS runs
