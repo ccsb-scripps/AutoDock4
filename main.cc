@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.193 2012/10/31 02:47:18 mp Exp $
+ $Id: main.cc,v 1.194 2012/12/13 03:47:28 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.193 2012/10/31 02:47:18 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.194 2012/12/13 03:47:28 mp Exp $"};
 
 
 
@@ -768,7 +768,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.193 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.194 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -4451,7 +4451,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
         // Calculate the internal energy
         if (ntor > 0) {
-            (void) eintcalPrint(nonbondlist, ad_energy_tables, crdorig, Nnb, Nnb_array, &group_energy,
+            eintra= eintcalPrint(nonbondlist, ad_energy_tables, crdorig, Nnb, Nnb_array, &group_energy,
 	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
 	    B_use_non_bond_cutoff, B_have_flexible_residues, natom, type, info->atom_type_name, outlev, logFile);
         }
@@ -4540,8 +4540,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         "Total Intermolecular vdW + Hbond + desolv Energy = %+8.4lf kcal/mol\n",
 	   (double) emap_total + desolv_total);
         pr(logFile, 
-	 "Total Intermolecular Electrostatic Energy        = %+8.4lf kcal/mol\n\n\n", 
+	 "Total Intermolecular Electrostatic Energy        = %+8.4lf kcal/mol\n", 
 	   (double) elec_total );
+        pr(logFile, "Total Intermolecular + Intramolecular Energy     = %+8.4lf kcal/mol\n", (double)eb.e_inter+eintra);
+	pr(logFile, "\n\n");
 #endif
 
 	// see also writePDBQT.cc and analysis.cc for similar code:

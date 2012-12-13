@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.23 2012/10/24 23:28:03 mp Exp $
+ $Id: trilinterp.cc,v 1.24 2012/12/13 03:47:28 mp Exp $
 
  AutoDock  
 
@@ -247,7 +247,7 @@ Real trilinterp(
 	energy_component->total = elec_total + vdW_Hb_total + desolv_total;
 	}
 
-    return( (Real)elec_total+emap_total+desolv_total );
+    return( (Real)elec_total+emap_total+dmap_total );
 }
 
 /*----------------------------------------------------------------------------*/
