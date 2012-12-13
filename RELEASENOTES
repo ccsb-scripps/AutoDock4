@@ -1,8 +1,17 @@
 =============================================================================
                    AutoDock Release Notes
-                  Release 4.2.5 (November XX 2012)
+                  Release 4.2.5.1 (December 2012)
 =============================================================================
+The changes since the 4.2.5 release (11/02/2012):
+#bug fix
+4.2.5 incorrectly calculated part of the intermolecular desolvation
+energy term; 4.2.5.1 corrects this.  All 4.2.5 users should upgrade
+to 4.2.5.1 and re-do any runs.
 
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.5 (November 2, 2012)
+=============================================================================
 Please note that the previous general release was 4.2.3, 29 January 2010. 
 The 4.2.4 release (7 July 2010) was a specialized release for 
 "Fight Aids at Home" and other IBM World Community Grid projects.  
