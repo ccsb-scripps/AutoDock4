@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.37 2012/10/24 23:28:03 mp Exp $
+ $Id: eval.cc,v 1.38 2012/12/13 22:41:05 mp Exp $
 
  AutoDock  
 
@@ -139,7 +139,6 @@ double Eval::eval(const int term)
    double energy = 0.0L;
    double retval = 0.0L;
 
-        EnergyComponent	*peratomE;        // per atom intermolecular energies
         EnergyComponent	totalE;        // total energy components
 
 
@@ -186,7 +185,7 @@ double Eval::eval(const int term)
 	     NULL_ENERGY_BREAKDOWN);
         else
         energy = scale_eintermol * trilinterp( 0, natom, crd, charge, abs_charge, type, map, 
-	     info, ignore_inter, peratomE, &totalE,
+	     info, ignore_inter, NULL, &totalE,
 	     NULL_ENERGY_BREAKDOWN);
     }
     
