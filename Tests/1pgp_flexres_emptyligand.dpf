@@ -1,14 +1,13 @@
 autodock_parameter_version 4.2       # used by autodock to validate parameter set
 outlev 0                             # diagnostic output level
 intelec                              # calculate internal electrostatics
-seed 28641 1106107140                         # seeds for random generator
-ligand_types P C HD OA N             # atoms types in ligand
+seed 28641 1106107140                # seeds for random generator
+ligand_types  C N HD OA              # atoms types in ligand
 fld 1pgp_rigid.maps.fld              # grid_data_file
-map 1pgp_rigid.P.map                 # atom-specific affinity map
 map 1pgp_rigid.C.map                 # atom-specific affinity map
+map 1pgp_rigid.N.map                 # atom-specific affinity map
 map 1pgp_rigid.HD.map                # atom-specific affinity map
 map 1pgp_rigid.OA.map                # atom-specific affinity map
-map 1pgp_rigid.N.map                 # atom-specific affinity map
 elecmap 1pgp_rigid.e.map             # electrostatics map
 desolvmap 1pgp_rigid.d.map           # desolvation map
 move empty.pdbqt                     # small molecule
