@@ -1,7 +1,8 @@
-AutoDock README $Id: README,v 1.6 2012/10/30 23:01:50 mp Exp $
+AutoDock README $Id: README,v 1.7 2013/02/26 23:59:48 mp Exp $
 
 
 What is AutoDock?
+=================
 
 AutoDock is a suite of automated docking tools. It is designed to
 predict how small molecules, such as substrates or drug candidates,
@@ -29,40 +30,91 @@ AutoDock has applications in:
     protein-protein docking; 
     chemical mechanism studies.
 
+Web site and email help for AutoDock Suite
+===========================
+
+ http://autodock.scripps.edu
+ autodock@scripps.edu
 
 Installing AutoDock
+===================
 
-Read the INSTALL file in this directory for instructions on
-installing AutoDock.
+The web site offers pre-compiled executables for several
+popular computers and operating systems.  If you wish
+to modify AutoDock or build it for other platforms, see
+"Building AutoDock from Source Tar File" below.
 
 
-Copying AutoDock
+Bootstrapping Installation from CVS
+===================================
+Make sure you checkout both "autodock" and "autogrid" at the same 
+time and into the same directory.  The compilation of "autogrid" 
+depends on certain files in the "../autodock" directory.
 
-Please refer to the file "COPYING" in this directory for
-more information on copying AutoDock.
+The CVS repository does not include the 'configure' file;  'configure'
+is used to create a Makefile that is platform-specific.
+To generate the `./configure' file, it is necessary to run 'autoreconf -i'.
+Once this file has been generated, see "From SOURCE Tar File" below,
+and read the INSTALL file in this directory for more options.
+This will explain how to use '../configure' to create 
+the necessary Makefile and how to use it to make the executables.
 
-From CVS
-=======================
-If you've just done a 'cvs co' then here are the commands
-necessary to make autodock:  for ARCHOSV below, substitute your
+After the 'cvs co autodock; cvs co autogrid' do:
+
+ % cd autodock; autoreconf -i
+ % cd ../autogrid; autoreconf -i
+
+Then continue the installation "Building from Source Tar File".
+
+Building AutoDock from source tar File
+======================================
+
+Download the "src" tar file from the web site.
+Unzip the downloaded tar file into a directory of your choice;
+this will create directories src/autodock and src/autogrid.
+
+For ARCHOSV below, substitute your
 computer type and operating system version, such as "i86Linux2".
 
- % autoreconf -i
+First, build autodock.
+
+ % cd src/autodock
  % mkdir ARCHOSV
  % cd ARCHOSV
  % ../configure    (* see below)
  % make 
 
- % (on Windows MINGW, you need to type:   rm -rf .deps; ../configure    here)
+ # (on Microsoft Windows when building for MINGW within Cygwin, 
+ #  you need to type here:   rm -rf .deps; ../configure
+ #  to run "configure" a second time for reasons we do not understand)
+
  % make check   ( optional, recommended, requires "python")
  % make install
  
  This will create and install autodock4 executable.
 
- Then do the same steps to configure, build, and install autogrid
+Second, in the src/autogrid directory, do the same steps 
+to configure, build, and install autogrid4.
  
- * On Macintosh Mac OS X, use instead "../configure-universalDarwin"
-   if you wish to compile a "universal binary"
- 
+ * On Mac OS X, use instead "../configure-universalDarwin"
+   if you wish to compile a "universal binary" for PPC/Intel 32/64 bit
+   as appropriate for your OS X version.
+
+Configuration notes
+==================
+
+By default, AutoDock 4.2 uses the AD4.1_bound.dat parameter file,
+so AD4.1_compact.dat and AD4.1_extended.dat would not be used,
+but if "../autodock/paramdat2h.csh" is changed to use either of
+these 4.1 scoring functions, then either of these other two ".dat"
+files would become necessary:
+
+    ../autodock/AD4.1_compact.dat
+    ../autodock/AD4.1_extended.dat
 
 
+Copying AutoDock and AutoGrid
+=============================
+
+Please refer to the file "COPYING" in this directory for
+more information on copying AutoDock.
