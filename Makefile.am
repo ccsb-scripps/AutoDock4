@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.41 2013/02/26 23:59:48 mp Exp $
+# $Id: Makefile.am,v 1.42 2013/03/05 23:09:39 mp Exp $
 # 
 # AutoDock  
 # 
@@ -378,9 +378,10 @@ test : autodock4 $(srcdir)/Tests/test_autodock4.py
 	umask 0 ;\
 	test -d $$outputdir/Testruns && chmod -fR a+w $$outputdir/Testruns;\
 	test -d $$outputdir/Testruns || mkdir $$outputdir/Testruns ;\
+	cp $(srcdir)/AD4.1_bound.dat   $$outputdir/Testruns;\
+	cp $(srcdir)/AD4_parameters.dat   $$outputdir/Testruns;\
 	cp $(srcdir)/Tests/*.py   $$outputdir/Testruns;\
 	cp $(srcdir)/Tests/*.dpf  $$outputdir/Testruns;\
-	cp $(srcdir)/Tests/*.dat  $$outputdir/Testruns;\
 	cp $(srcdir)/Tests/*.pdbqt  $$outputdir/Testruns;\
 	cp $(srcdir)/Tests/*.map*  $$outputdir/Testruns;\
 	chmod -fR a+w $$outputdir/Testruns;\
