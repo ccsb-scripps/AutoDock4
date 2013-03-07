@@ -1,4 +1,4 @@
-AutoDock README $Id: README,v 1.7 2013/02/26 23:59:48 mp Exp $
+AutoDock README $Id: README,v 1.8 2013/03/07 22:21:46 mp Exp $
 
 
 What is AutoDock?
@@ -75,6 +75,14 @@ this will create directories src/autodock and src/autogrid.
 
 For ARCHOSV below, substitute your
 computer type and operating system version, such as "i86Linux2".
+You can use any name you like; nothing in the build process depends
+on the name. We suggest:
+  i86Linux2 : 32-bit Intel Linux
+  x86_64Linux2 : 64-bit Intel Linux
+  universalDarwin9 : Mac OS X 10.5 and 10.6 Intel or PPC
+  universalDarwin11 : Mac OS X 10.7 and 10.8 Intel
+  i86Windows : Microsoft Windows Intel
+  sun4SunOS5 : SPARC Solaris
 
 First, build autodock.
 
