@@ -1,5 +1,5 @@
 #! /bin/bash
-# $Id: mkdisttars,v 1.9 2013/02/27 00:03:36 mp Exp $
+# $Id: mkdisttars,v 1.10 2013/05/07 19:36:20 mp Exp $
 # Usage example:
 # 
 #cd /mgl/works/rhuey/autodocksuite_4.2.2.1
@@ -62,6 +62,7 @@ done
 mv src/autodock/EXAMPLES/1dwd ./examples  # cwd is autodocksuite-x
 rm -rf src/autodock/EXAMPLES
 ( cd examples; bash mkdist; rm mkdist )
+mv  src/autodock/USERGUIDES src   # more noticeable to users
 tar cf autodocksuite-${release}-examples.tar examples
 gzip autodocksuite-${release}-examples.tar
 

@@ -1,8 +1,8 @@
 #! /bin/bash
-# $Id: mkdistbins,v 1.3 2010/02/09 00:20:47 rhuey Exp $
+# $Id: mkdistbins,v 1.4 2013/05/07 19:36:20 mp Exp $
 distdir=/mgl/works/rhuey/autodocksuite-4.2.3
 #archlist="sun4SunOS5 ia64Linux2 universalDarwin8 universalDarwin9"
-archlist="i86Cygwin i86Linux2 sun4SunOS5 ia64Linux2 universalDarwin8 universalDarwin9 universalDarwin10"
+archlist="i86Cygwin i86Linux2 x86_64Linux2 sun4SunOS5 ia64Linux2 universalDarwin8 universalDarwin9 universalDarwin10"
 proglist="autodock autogrid"
 version=4
 umask 0
@@ -19,12 +19,14 @@ for arch in $archlist; do
     
     case $arch in
     i86Cygwin) host=hao;; # dummy
-    i86Linux2) host=saul;;
+    i86Linux2) host=enos;;   # 32-bit Intel Linux
+    x86_64Linux2) host=saul;;   # 64-bit Intel Linux
     sun4SunOS5) host=riscfs2;;
     ia64Linux2) host=abraham;;
-    universalDarwin8) host=rapa;;
-    universalDarwin9) host=esau;;
-    universalDarwin10) host=luna;;
+    universalDarwin9) host=esau;;   # 10.5 Leopard
+    universalDarwin10) host=rapa;;  # 10.6 Snow Leopard
+    universalDarwin11) host=ubl;;    # 10.7 Lion
+    universalDarwin12) host=luna;;    # 10.8 Mountain Lion
     *) host=dummy;;
     esac
 
