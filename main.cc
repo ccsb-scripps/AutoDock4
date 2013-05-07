@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.194 2012/12/13 03:47:28 mp Exp $
+ $Id: main.cc,v 1.195 2013/05/07 21:54:49 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.194 2012/12/13 03:47:28 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.195 2013/05/07 21:54:49 mp Exp $"};
 
 
 
@@ -768,7 +768,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.194 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.195 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -4465,46 +4465,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 				B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
                                 B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
 
-//#define PRE425INTERMOLECULAR_ANALYSIS
-#ifdef PRE425INTERMOLECULAR_ANALYSIS
-/* kept around temporarily for debugging */
-        pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
-        pr(logFile,     "\t\t==============================\n\n");
-        pr(logFile, "Atom  vdW+Hb+Elec  vdW+Hbond  Electrosta  Partial          Coordinates         \n");
-        pr(logFile, "Type    Energy      Energy    tic Energy  Charge      x         y         z    \n");
-        pr(logFile, "____  __________  __________  __________  _______  ________  ________  ________\n");
-        //          "1234  0123456789  0123456789  0123456789  1234567  12345678  12345678  12345678"
-
-        for (int i = 0;  i < natom;  i++) {
-            pr(logFile, "%4d  %10.4f  %10.4f  %10.4f %8.4f  %8.4f  %8.4f  %8.4f\n", (type[i]+1),
-	    peratomE[i].total, peratomE[i].vdW_Hb+peratomE[i].desolv, peratomE[i].elec, 
-	    charge[i], crdorig[i][X], crdorig[i][Y], crdorig[i][Z]);
-
-	    emap_total += peratomE[i].vdW_Hb;
-	    desolv_total += peratomE[i].desolv;
-	    elec_total += peratomE[i].elec;
-            charge_total += charge[i];
-        } /*i*/
-        pr(logFile, "      __________  __________  __________  _______\n");
-        pr(logFile, "Total %10.4lf  %10.4lf  %10.4lf %8.4lf\n",        
-	 (double)(emap_total + elec_total+desolv_total), 
-	 (double)emap_total + desolv_total, (double)elec_total, (double)charge_total);
-        pr(logFile, "      __________  __________  __________  _______\n");
-        pr(logFile, "      vdW+Hb+Elec  vdW+Hbond  Electrosta  Partial\n");
-        pr(logFile, "        Energy      Energy    tic Energy  Charge\n\n");
-
-        pr(logFile, "Total Intermolecular Interaction Energy          = %+8.4lf kcal/mol\n", (double)eb.e_inter);
-        pr(logFile, 
-        "Total Intermolecular vdW + Hbond + desolv Energy = %+8.4lf kcal/mol\n",
-	  //"Total Intermolecular vdW + Hbond Energy   = %+.3lf kcal/mol\n",
-	   (double) emap_total +desolv_total); //+ 
-	    //group_energy.inter_moving_moving.vdW_Hb + // lig x flex res
-	      //group_energy.inter_moving_moving.desolv); // lig x flex res
-        pr(logFile, 
-	 "Total Intermolecular Electrostatic Energy        = %+8.4lf kcal/mol\n\n\n", 
-	   (double) elec_total +
-	    group_energy.inter_moving_moving.elec);
-#else
         pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
         pr(logFile,     "\t\t==============================\n\n");
         pr(logFile, "Atom Atom    Total      vdW+Hbond  Electrosta  Desolvation Partial          Coordinates         \n");
@@ -4544,7 +4504,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	   (double) elec_total );
         pr(logFile, "Total Intermolecular + Intramolecular Energy     = %+8.4lf kcal/mol\n", (double)eb.e_inter+eintra);
 	pr(logFile, "\n\n");
-#endif
 
 	// see also writePDBQT.cc and analysis.cc for similar code:
         printEnergies( &eb, "epdb: USER    ", ligand_is_inhibitor, emap_total+desolv_total, elec_total, 
