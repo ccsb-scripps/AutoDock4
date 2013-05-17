@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.41 2012/08/18 00:00:29 mp Exp $
+ $Id: writePDBQT.cc,v 1.42 2013/05/17 18:13:56 mp Exp $
 
  AutoDock  
 
@@ -94,20 +94,6 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 	EnergyComponent totalE;
 	Real MaxValue = 99.99L;
 	Real MinValue = -99.99L;
-
-    Real e_inter_moving_fixed      = 0.0L;  // (1)  // trilinterp( 0, true_ligand_atoms, ...)
-    Real e_intra_moving_fixed_rec  = 0.0L;  // (2)  // trilinterp( true_ligand_atoms, natom, ...)
-    Real e_intra_moving_moving_lig = 0.0L;  // (3)  // eintcal( 0, nb_array[0], ...)            // group_energy[INTRA_LIGAND]
-    Real e_inter_moving_moving     = 0.0L;  // (4)  // eintcal( nb_array[0], nb_array[1], ...)  // group_energy[INTER]
-    Real e_intra_moving_moving_rec = 0.0L;  // (5)  // eintcal( nb_array[1], nb_array[2], ...)  // group_energy[INTRA_RECEPTOR]
-
-    Real e_inter = 0.0;      // total    intermolecular energy = (1) + (4)
-    Real e_intra_lig = 0.0;  // ligand   intramolecular energy = (3)
-    Real e_intra_rec = 0.0;  // receptor intramolecular energy = (2) + (5)
-
-    e_inter     = e_inter_moving_fixed + e_inter_moving_moving;          // total    intermolecular energy = (1) + (4)
-    e_intra_lig = e_intra_moving_moving_lig;                             // ligand   intramolecular energy = (3)
-    e_intra_rec = e_intra_moving_fixed_rec + e_intra_moving_moving_rec;  // receptor intramolecular energy = (2) + (5)
 
     char state_type_string[MAX_CHARS];
     char state_type_prefix_string[MAX_CHARS];
