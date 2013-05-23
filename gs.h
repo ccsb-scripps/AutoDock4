@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.24 2011/07/13 05:08:26 mp Exp $
+ $Id: gs.h,v 1.25 2013/05/23 20:06:02 mp Exp $
 
  AutoDock 
 
@@ -100,8 +100,8 @@ class Genetic_Algorithm : public Global_Search
       double *worst_window;
       Real linear_ranking_selection_probability_ratio;
 
-      double worst_this_generation(const Population &);
-      void set_worst(const Population &);
+      double worst_this_generation(const Population &, FILE *logFile);
+      void set_worst(const Population &, FILE *logFile);
       void make_table(int, ConstReal );
       int check_table(ConstReal );
       M_mode m_type(const RepType) const;

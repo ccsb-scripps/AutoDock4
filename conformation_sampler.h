@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.h,v 1.12 2012/04/05 01:39:31 mp Exp $
+ $Id: conformation_sampler.h,v 1.13 2013/05/23 20:06:02 mp Exp $
 
  AutoDock 
 
@@ -102,7 +102,7 @@ void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf,
 		GridMapSetInfo *const init_info,
 		int true_ligand_atoms, int outlev, FILE *logFile);
 
-Individual set_ind(GridMapSetInfo *const info, const State state);
+Individual set_ind(GridMapSetInfo *const info, const State state, FILE *logFile);
 void raaEuler(const Real raa[4], /* not const */ Real euler[3]);
 void testMatrix(void);
 void raaMatrix(Real raa[4], Real matrix[3][3]);

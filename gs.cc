@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.53 2012/04/05 01:39:32 mp Exp $
+ $Id: gs.cc,v 1.54 2013/05/23 20:06:02 mp Exp $
 
  AutoDock 
 
@@ -62,7 +62,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern FILE *logFile;
 extern class Eval evaluate;
 extern int sel_prop_count;//debug
-extern int global_ntor;//debug
 extern int debug;//debug
 //#define DEBUG
 //#define DEBUG2
@@ -70,7 +69,8 @@ extern int debug;//debug
 //#define DEBUG_MUTATION
 
 
-double worst_in_window(const double *const window, const int size) 
+static double
+worst_in_window(const double *const window, const int size, FILE *logFile) 
 {
    register int i;
 
@@ -103,7 +103,8 @@ double worst_in_window(const double *const window, const int size)
    return(worst);
 }
 
-double avg_in_window(const double *const window, const int size) 
+static double
+avg_in_window(const double *const window, const int size, FILE *logFile) 
 {
    register int i;
    double mysum = 0.0;
@@ -126,13 +127,13 @@ double avg_in_window(const double *const window, const int size)
 }
 
 //  Also set avg -- and because of avg this is not a const function
-double Genetic_Algorithm::worst_this_generation(const Population &pop)
+double Genetic_Algorithm::worst_this_generation(const Population &pop, FILE *logFile)
 {
    register unsigned int i;
    double worstval, avgval;
 
 #ifdef DEBUG2
-   (void)fprintf(logFile, "gs.cc/worst_this_generation(Population &pop)_________________________\n");
+   (void)fprintf(logFile, "gs.cc/worst_this_generation(Population &pop, logFile)_________________________\n");
 #endif
 
 #ifdef DEBUG
@@ -223,7 +224,7 @@ int Genetic_Algorithm::set_linear_ranking_selection_probability_ratio(ConstReal 
 
 
 
-void Genetic_Algorithm::set_worst(const Population &currentPop)
+void Genetic_Algorithm::set_worst(const Population &currentPop, FILE *logFile)
 {
    double temp = 0.0;
 
@@ -231,7 +232,7 @@ void Genetic_Algorithm::set_worst(const Population &currentPop)
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::set_worst(Population &currentPop)\n");
 #endif /* DEBUG */
 
-   worst_window[generations%window_size] = worst_this_generation(currentPop);
+   worst_window[generations%window_size] = worst_this_generation(currentPop, logFile);
    switch(w_mode)
    {
       //  Assume for this case that there's a window_size of 1
@@ -245,16 +246,16 @@ void Genetic_Algorithm::set_worst(const Population &currentPop)
          break;
       case OfN:
          if (generations>=window_size) {
-            worst = worst_in_window(worst_window, window_size);
+            worst = worst_in_window(worst_window, window_size, logFile);
          } else {
-            worst = worst_in_window(worst_window, generations+1);
+            worst = worst_in_window(worst_window, generations+1, logFile);
          }
          break;
       case AverageOfN:
          if (generations>=window_size) {
-            worst = avg_in_window(worst_window, window_size);
+            worst = avg_in_window(worst_window, window_size, logFile);
          } else {
-            worst = avg_in_window(worst_window, generations+1);
+            worst = avg_in_window(worst_window, generations+1, logFile);
          }
          break;
       default:
@@ -1002,7 +1003,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
 #ifdef DEBUG2
    (void)fprintf(logFile, "gs.cc/At the start of sel_prop:  sel_prop_count= %d, start_index= %d\n\n",sel_prop_count, start_index); //debug
 
-   original_population.printPopulationAsStates(logFile, original_population.num_individuals(), global_ntor);//debug
+   //original_population.printPopulationAsStates(logFile, original_population.num_individuals(), global_ntor);//old debug
 #endif
 
 #ifdef CHECK_ISNAN
@@ -1385,7 +1386,7 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
 
    next_generation = new Individual[solutions.num_individuals()];
    
-   set_worst(solutions);
+   set_worst(solutions, logFile);
    switch(s_mode)
    {
       case Proportional:

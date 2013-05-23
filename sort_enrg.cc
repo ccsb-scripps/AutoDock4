@@ -1,6 +1,6 @@
 /*
 
- $Id: sort_enrg.cc,v 1.7 2010/08/27 00:05:08 mp Exp $
+ $Id: sort_enrg.cc,v 1.8 2013/05/23 20:06:02 mp Exp $
 
  AutoDock 
 
@@ -30,7 +30,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "sort_enrg.h"
 
-extern FILE *logFile;
 
 void sort_enrg( const Real econf[MAX_RUNS],
       /* not const */ int  isort[MAX_RUNS],

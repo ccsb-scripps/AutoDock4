@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.195 2013/05/07 21:54:49 mp Exp $
+ $Id: main.cc,v 1.196 2013/05/23 20:06:02 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.195 2013/05/07 21:54:49 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.196 2013/05/23 20:06:02 mp Exp $"};
 
 
 
@@ -768,7 +768,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.195 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.196 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3235,10 +3235,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
                 if (B_reorient_random == TRUE) {
                     // create a new random orientation before docking
-                    q_reorient = randomQuat();
                     // reorient the ligand
                     reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type,
-                              parameterArray, q_reorient, origin, ntor, tlist, vt, &ligand, debug, outlev );
+                              parameterArray, randomQuat(), origin, ntor, tlist, vt, &ligand, debug, outlev );
                     // update the evaluate object
                     evaluate.update_crds( crdpdb, vt );
                 }
@@ -3254,7 +3253,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 sHist[nconf] = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                           sInit,
                                           num_evals, pop_size,
-                                          outlev,
+                                          outlev, logFile,
                                           output_pop_stats, &ligand,
                                           B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                                           info, FN_pop_file, end_of_branch );
@@ -3813,7 +3812,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 sHist[j] = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                           sInit,
                                           num_evals, pop_size,
-                                          outlev,
+                                          outlev, logFile,
                                           output_pop_stats, &ligand,
                                           B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                                           info, FN_pop_file, end_of_branch );
@@ -4119,7 +4118,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             sUnbound_ext = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                       sInit,
                                       num_evals_unbound, pop_size,
-                                      outlev,
+                                      outlev, logFile,
                                       output_pop_stats, &ligand,
                                       // B_RandomDihe0, // use this line with call_glss_tors()
                                       B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
@@ -4270,7 +4269,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 sUnbound_ad = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                          sInit,
                                          num_evals_unbound, pop_size,
-                                         outlev,
+                                         outlev, logFile,
                                          output_pop_stats, &ligand,
                                          B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                                          info, FN_pop_file, end_of_branch );

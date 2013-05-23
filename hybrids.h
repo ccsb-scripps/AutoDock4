@@ -1,6 +1,6 @@
 /*
 
- $Id: hybrids.h,v 1.21 2011/07/13 05:08:26 mp Exp $
+ $Id: hybrids.h,v 1.22 2013/05/23 20:06:02 mp Exp $
 
  AutoDock 
 
@@ -46,7 +46,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 State call_glss(Global_Search *const global_method, Local_Search *const local_method, 
 		const State& now, const unsigned int num_evals, const unsigned int pop_size, 
-		const int outlev, const Output_pop_stats& extOutput_pop_stats, Molecule *const mol,
+		const int outlev, FILE *logFile, const Output_pop_stats& extOutput_pop_stats, Molecule *const mol,
 		const Boole B_RandomTran0, const Boole B_RandomQuat0, const Boole B_RandomDihe0,
         const GridMapSetInfo *const info, const char *const FN_pop_file,
         /* not const */ int end_of_branch[MAX_TORS]);
@@ -56,11 +56,11 @@ Representation **generate_R(int num_torsions, GridMapSetInfo *info );
 
 Representation **generate_R_quaternion(int num_torsions, GridMapSetInfo *info );
 
-Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info );
+Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile);
 
-Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const info );
+Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile);
 
-Individual random_ind(const int num_torsions, const GridMapSetInfo *const info );
+Individual random_ind(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile );
 
 #endif
 
@@ -70,7 +70,7 @@ Individual random_ind(const int num_torsions, const GridMapSetInfo *const info )
 
 State call_glss_tors(Global_Search *const global_method, Local_Search *const local_method, 
 		const State& now, const unsigned int num_evals, const unsigned int pop_size, 
-		const int outlev, const Output_pop_stats& extOutput_pop_stats, Molecule *const mol,
+		const int outlev, FILE *logFile, const Output_pop_stats& extOutput_pop_stats, Molecule *const mol,
 		const Boole B_RandomDihe0,
         const GridMapSetInfo *const info, const char *const FN_pop_file);
 

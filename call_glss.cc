@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.71 2012/10/24 23:28:03 mp Exp $ 
+ $Id: call_glss.cc,v 1.72 2013/05/23 20:06:02 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -51,15 +51,12 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <time.h>           /*time_t time(time_t *tloc); */
 #include "timesyshms.h"
 
-extern FILE *logFile;
 extern char *programname;
 extern int debug;
 
-int global_ntor;
-
 Eval evaluate;
 
-Representation **generate_R(const int num_torsions, GridMapSetInfo *const info)
+Representation **generate_R(const int num_torsions, GridMapSetInfo *const info, FILE *logFile)
 {
    Representation **retval;
    Quat q;
@@ -97,7 +94,7 @@ Representation **generate_R(const int num_torsions, GridMapSetInfo *const info)
    return(retval);
 }
 
-Representation **generate_R_quaternion(const int num_torsions, const GridMapSetInfo *const info)
+Representation **generate_R_quaternion(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile)
 {
    Representation **retval;
    Quat q;
@@ -145,14 +142,14 @@ Representation **generate_R_quaternion(const int num_torsions, const GridMapSetI
    return(retval);
 }
 
-Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info)
+Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile)
 {
 #ifdef DEBUG
     // (void)fprintf(logFile,"\ncall_glss.cc/Genotype generate_Gtype() about to call Genotype temp(5, generate_R())...\n");
     (void)fprintf(logFile,"\ncall_glss.cc/Genotype generate_Gtype() about to call Genotype temp(5, generate_R_quaternion())...\n");
 #endif
    // Genotype temp((unsigned int)5, generate_R(num_torsions, info));
-   Genotype temp((unsigned int)5, generate_R_quaternion(num_torsions, info));
+   Genotype temp((unsigned int)5, generate_R_quaternion(num_torsions, info, logFile));
 #ifdef DEBUG
    // (void)fprintf(logFile,"call_glss.cc/Genotype generate_Gtype() done calling  Genotype temp(5, generate_R())...\n\n");
    (void)fprintf(logFile,"call_glss.cc/Genotype generate_Gtype() done calling  Genotype temp(5, generate_R_quaternion())...\n\n");
@@ -161,14 +158,14 @@ Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info
    return(temp);
 }
 
-Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const info) 
+Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile) 
 {
 #ifdef DEBUG
     // (void)fprintf(logFile,"\ncall_glss.cc/Genotype generate_Ptype() about to call Phenotype temp(5, generate_R())...\n");
     (void)fprintf(logFile,"\ncall_glss.cc/Genotype generate_Ptype() about to call Phenotype temp(5, generate_R_quaternion())...\n");
 #endif
    // Phenotype temp((unsigned int)5, generate_R(num_torsions, info));
-   Phenotype temp((unsigned int)5, generate_R_quaternion(num_torsions, info));
+   Phenotype temp((unsigned int)5, generate_R_quaternion(num_torsions, info, logFile));
 #ifdef DEBUG
    // (void)fprintf(logFile,"call_glss.cc/Genotype generate_Ptype() done calling  Phenotype temp(5, generate_R())...\n\n");
    (void)fprintf(logFile,"call_glss.cc/Genotype generate_Ptype() done calling  Phenotype temp(5, generate_R_quaternion())...\n\n");
@@ -177,17 +174,17 @@ Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const inf
    return(temp);
 }
 
-Individual random_ind(const int num_torsions,  const GridMapSetInfo *const info) 
+Individual random_ind(const int num_torsions,  const GridMapSetInfo *const info, FILE *logFile) 
 {
 
 #ifdef DEBUG
     (void)fprintf(logFile,"\ncall_glss.cc/Individual random_ind()  About to generate_Gtype()...\n");
 #endif
-   Genotype temp_Gtype = generate_Gtype(num_torsions, info);
+   Genotype temp_Gtype = generate_Gtype(num_torsions, info, logFile);
 #ifdef DEBUG
    (void)fprintf(logFile,"call_glss.cc/Individual random_ind()  About to generate_Ptype()...\n");
 #endif
-   Phenotype temp_Ptype = generate_Ptype(num_torsions, info); 
+   Phenotype temp_Ptype = generate_Ptype(num_torsions, info, logFile); 
 
 #ifdef DEBUG
    (void)fprintf(logFile,"call_glss.cc/Individual random_ind()  About to Individual temp(temp_Gtype, temp_Ptype)...\n");
@@ -204,15 +201,15 @@ Individual random_ind(const int num_torsions,  const GridMapSetInfo *const info)
 }
 
 #ifdef FALSE
-Individual set_ind(const int num_torsions,  const GridMapSetInfo *const info, const State state)
+Individual set_ind(const int num_torsions,  const GridMapSetInfo *const info, const State state, FILE *logFile)
 {
    Genotype temp_Gtype;
    Phenotype temp_Ptype;
    Quat q;
    int i;
 
-   temp_Gtype = generate_Gtype(num_torsions, info);
-   temp_Ptype = generate_Ptype(num_torsions, info);
+   temp_Gtype = generate_Gtype(num_torsions, info, logFile);
+   temp_Ptype = generate_Ptype(num_torsions, info, logFile);
 
    // use the state to generate a Genotype
    temp_Gtype.write(state.T.x, 0);
@@ -251,7 +248,7 @@ State call_glss(/* not const */ Global_Search *global_method,
                 /* not const */ Local_Search *local_method, 
                 const State& sInit, 
                 const unsigned int num_evals, const unsigned int pop_size, 
-                const int outlev, 
+                const int outlev,  FILE *logFile,
 		const Output_pop_stats& output_pop_stats,
                 Molecule * const mol, 
                 const Boole B_RandomTran0, const Boole B_RandomQuat0, const Boole B_RandomDihe0,
@@ -294,7 +291,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 #ifdef DEBUG
     (void)fprintf(logFile,"\ncall_glss.cc/State call_glss():  Creating individual thisPop[i=%d] using random_ind(%d,info)...\n", i, sInit.ntor);
 #endif
-            thisPop[i] = random_ind( sInit.ntor, info );
+            thisPop[i] = random_ind( sInit.ntor, info, logFile);
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/State call_glss(): Created  individual i= %d in thisPop[i]\n\n", i);
 #endif

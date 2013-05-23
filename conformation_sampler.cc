@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.17 2012/04/05 01:39:31 mp Exp $
+ $Id: conformation_sampler.cc,v 1.18 2013/05/23 20:06:02 mp Exp $
 
  AutoDock 
 
@@ -73,7 +73,7 @@ const Real vertices[12][3] = {{-ICO_X, 0., ICO_Y}, {ICO_X, 0., ICO_Y}, {-ICO_X, 
 ConformationSampler::ConformationSampler(const State& init_state, 
  int true_ligand_atoms, int outlev, FILE *logFile) {
 	base_state = init_state;
-	base_ind = set_ind(info, init_state);
+	base_ind = set_ind(info, init_state, logFile);
 	base_point = base_ind.phenotyp;	
 	base_energy = base_point.evaluate(Normal_Eval);
 	cnv_state_to_coords(init_state, vt, tlist, init_state.ntor, crdpdb, base_crd, natom,
@@ -442,14 +442,14 @@ void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /*
 
 
 /* copied (and slightly modified) from non-included code in call_glss.cc */
-Individual set_ind(GridMapSetInfo *const info, const State state)
+Individual set_ind(GridMapSetInfo *const info, const State state, FILE *logFile)
 {
    Genotype temp_Gtype;
    Phenotype temp_Ptype;
    int i;
 
-   temp_Gtype = generate_Gtype(state.ntor, info);
-   temp_Ptype = generate_Ptype(state.ntor, info);
+   temp_Gtype = generate_Gtype(state.ntor, info, logFile);
+   temp_Ptype = generate_Ptype(state.ntor, info, logFile);
 
    // use the state to generate a Genotype
    temp_Gtype.write( state.T.x, 0 );
