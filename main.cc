@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.196 2013/05/23 20:06:02 mp Exp $
+ $Id: main.cc,v 1.197 2013/06/11 00:06:31 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.196 2013/05/23 20:06:02 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.197 2013/06/11 00:06:31 mp Exp $"};
 
 
 
@@ -235,6 +235,7 @@ Real lig_center[SPACE];
 //
 Real econf[MAX_RUNS];  // this is the list of energies printed in the histogram in "analysis"
 State sHist[MAX_RUNS];  /* qtnHist[MAX_RUNS][QUAT],torHist[MAX_RUNS][MAX_TORS];*/
+
 State sUnbound; // State of the unbound ligand's conformation
 State sUnbound_ext; // State of the unbound ligand's conformation after extended-conformation search
 //// UNCOMMENT if using Step 2 in unbound calculation ---> State sUnbound_ls; // State of the unbound ligand's conformation after a local search
@@ -281,7 +282,6 @@ Real cA;
 Real cB;
 Real eintra = 0.0;  // sum of intramolecular energy for the ligand plus that of the protein
 Real einter = 0.0; // intermolecular energy between the ligand and the protein
-Real etotal = 0.0;
 Real torsFreeEnergy = 0.0;
 Real AD3_FE_coeff_estat   = 1.000; // obsolete option in intelec 
 
@@ -429,7 +429,7 @@ int     Nnb_array[3] = {0};    // number of nonbonds in the ligand, intermolecul
 static GroupEnergy group_energy; // energy components of each of the five groups (intra-ligand, inter, and intra-receptor...)
 Boole B_havenbp = FALSE;
 
-int nconf = 0;
+int nconf = 0;  // overall count of number of runs so far, must < MAX_RUNS
 int nlig = 0;
 int nres = 0;
 int nmol = 0;
@@ -768,7 +768,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.196 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.197 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1658,8 +1658,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         }
 
 
-            if (nruns>MAX_RUNS) {
-                prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
+            if (nruns+nconf>MAX_RUNS) {
+                prStr(error_message, "%s:  ERROR:  %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", 
+		programname, nruns+nconf, MAX_RUNS);
                 stop(error_message);
                 exit(EXIT_FAILURE);
             }
@@ -1712,7 +1713,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 }
                 coliny_init(algname, domain, sInit.ntor+7);
 
-                for (j=0; j<nruns; j++) {
+                for (j=nconf; j<nruns; j++) {
                   fprintf( logFile, "\n\tBEGINNING Coliny %s DOCKING\n",algname);
                   pr(logFile, "\nDoing %s run:  %d/%d.\n", algname, j+1, nruns);
 
@@ -2320,6 +2321,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 if ( NULL == foundParameter ) {
                     prStr( error_message,"%s: ERROR:  Unknown ligand atom type \"%s\"; add parameters for it to the parameter library first!\n", programname, param[i]);
                     stop(" unknown ligand atom type");
+		    /* NOTREACHED */
                 }
                 else a[i] = foundParameter->map_index;
             }
@@ -2397,6 +2399,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         /*
         **  runs
         **  Number of docking runs: GA or simanneal
+	**  Note this need not be checked here against MAX_RUNS-nconf as DPF could
+	**  modify it before triggering runs M Pique
         */
         get1arg( line, "%*s %d", &nruns, "RUNS" );
         if ( nruns > MAX_RUNS ) {
@@ -2923,8 +2927,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	    /* optional argument is alternate way to specify nruns : */
     	    nfields = sscanf( line, "%*s %d",&nruns);
 
-            if ( nruns > MAX_RUNS ) {
-                prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
+            if ( nruns+nconf > MAX_RUNS ) {
+                prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", 
+		programname, nruns+nconf, MAX_RUNS);
                 stop( error_message );
 		}
             pr( logFile, "Number of simanneal runs  = %d nruns\n\n", nruns);
@@ -2997,7 +3002,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                         B_symmetry_flag, B_unique_pair_flag, FN_rms_ref_crds,
                         B_rms_heavy_atoms_only, h_index, outlev, logFile);
             }
-            for (j = 0; j < MAX_RUNS; j++) {
+            for (j = nconf; j < MAX_RUNS; j++) {
                 econf[j] = torsFreeEnergy;
             }
             if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
@@ -3162,8 +3167,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         ** Genetic Algorithm-Local search,  a.k.a. Lamarckian Genetic Algorithm
         */
             nfields= sscanf(line, "%*s %d",&nruns); // optional way to specify nruns
-            if ( nruns > MAX_RUNS ) {
-                prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
+            if ( nruns+nconf > MAX_RUNS ) {
+                prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns+nconf, MAX_RUNS);
                 stop( error_message );
             }  
 	    if (GlobalSearchMethod==NULL) {
@@ -3316,9 +3321,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
     case DPF_LS:
        // ls_run  |  do_local_only
 	       nfields = sscanf(line, "%*s %d", &nruns); // optional way to specify nruns
-            if ( nruns > MAX_RUNS ) {
+            if ( nruns+nconf > MAX_RUNS ) {
 
-               prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns, MAX_RUNS);
+               prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns+nconf, MAX_RUNS);
                stop( error_message );
            } else if (LocalSearchMethod==NULL) {
 
@@ -3848,7 +3853,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		       outlev, logFile);
        	
 
-            econf[nconf] = eintra + einter; //
+            //econf[nconf] = eintra + einter; // changed to next line M Pique June 2013
+                  econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 	 		++nconf;	 
 	 		pr( logFile, UnderLine );	
 	 		 			 			 				
@@ -3872,11 +3878,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         /* _____________________________________________________________________
         **
         ** Perform Cluster analysis on results of docking,
+	** across all "nconf" runs so far, which might be a series of local, global,
+	** simanneal, or hybrid runs
         ** _____________________________________________________________________
         */
             analysis( Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 	              atomstuff, charge, abs_charge, qsp_abs_charge, B_calcIntElec, clus_rms_tol,
-                      crdpdb, ad_energy_tables, map, econf, nruns,
+                      crdpdb, ad_energy_tables, map, econf, nconf,
                       natom, nonbondlist, nconf, ntor, sHist, FN_ligand,
                       lig_center, B_symmetry_flag, B_unique_pair_flag, tlist, type, vt, FN_rms_ref_crds,
                       torsFreeEnergy, B_write_all_clusmem, ligand_is_inhibitor,
@@ -4400,7 +4408,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
         eintra = 0.0L;
         einter = 0.0L;
-        etotal = 0.0L;
 
         nfields = sscanf(line, "%*s %s", dummy_FN_ligand);
         if (nfields >= 1) {

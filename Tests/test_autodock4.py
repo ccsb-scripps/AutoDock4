@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.61 2012/12/13 06:44:43 mp Exp $
+# $Id: test_autodock4.py,v 1.62 2013/06/11 00:06:31 mp Exp $
 #
 
 """
@@ -310,6 +310,26 @@ class AutoDock4_1pgp_ga_run_maxruns_analysis_test( AutoDock_simple_test ):
     """Test that autodock 4 runs with max number of runs followed by cluster analysis"""
     dpf_stem = "1pgp_ga_run_maxruns_analysis"
     expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+class AutoDock4_1pgp_mixed_maxruns_test( AutoDock_simple_test ):
+    """Test that autodock 4 runs with max number of runs mixed between search methods"""
+    dpf_stem = "1pgp_mixed_maxruns"
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_mixed_maxruns_analysis_test( AutoDock_simple_test ):
+    """Test that autodock 4 runs with max number of runs  mixed between search methods followed by cluster analysis"""
+    dpf_stem = "1pgp_mixed_maxruns_analysis"
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_overmaxruns_test( AutoDock_simple_test ):
+    """Test that autodock 4 stops with over max number of runs  mixed between search methods"""
+    dpf_stem = "1pgp_overmaxruns"
+    expected_outcome = False # True means Successful Completion!
 
 #______________________________________________________________________________
 
@@ -861,6 +881,9 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_unbound_model_illegal_test', #1
 	'AutoDock4_1pgp_ga_run_maxruns_test',
 	'AutoDock4_1pgp_ga_run_maxruns_analysis_test',
+	'AutoDock4_1pgp_mixed_maxruns_test',
+	'AutoDock4_1pgp_mixed_maxruns_analysis_test',
+	'AutoDock4_1pgp_overmaxruns_test',
         'AutoDock4_1pgp_ga_select_tournament_test',
         'AutoDock4_1pgp_ga_select_linear_ranking_test',
         #'AutoDock4_1pgp_rmsmode_heavy_atoms_only_test',
