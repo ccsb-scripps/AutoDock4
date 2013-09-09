@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.19 2011/06/03 05:31:36 mp Exp $
+ $Id: qmultiply.cc,v 1.20 2013/09/09 20:38:51 rhuey Exp $
 
  AutoDock 
 
@@ -323,7 +323,7 @@ randomQuatByAmount( ConstReal amount )
     // amount is an angle in radians
     Quat q = randomQuat();
     AxisAngle aa = QuatToAxisAngle( q ); // will not be 3-element normalized
-    return axisRadianToQuat( q.x, q.y, q.z, amount );
+    return axisRadianToQuat( aa.x, aa.y, aa.z, amount );
 }
 
 void print_q_reorient_message( FILE *const logFile, const Quat& q_reorient )
