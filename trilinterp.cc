@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.25 2013/05/17 18:09:25 mp Exp $
+ $Id: trilinterp.cc,v 1.26 2013/09/09 20:38:56 rhuey Exp $
 
  AutoDock  
 
@@ -91,10 +91,11 @@ Real trilinterp(
     for (i=first_atom; i<last_atom; i++) {
         register double e, m, d; 
         register double u,   v,   w;
-        register MapType p0u, p0v, p0w;
-        register MapType p1u, p1v, p1w;
+        float p0u, p0v, p0w;
+        float p1u, p1v, p1w;
         register int AtomType;        /* atom type */
         register int u0,  v0,  w0;
+        register int u1,  v1,  w1;
 	register double x,y,z;
 
         if (ignore_inter[i]) {
@@ -128,26 +129,26 @@ Real trilinterp(
 
 	/* MP: note u0 is < u1, weight for u==u0 value is p1u (v,w same)
 	 *
-	 *    u0 ............. u1=u0+1
+	 *    u0 ............. u1
 	 *    |                |
 	 *  p0u=0 increases  p0u=1
 	 *  p1u=1 decreases  p1u=0
 	 *  
 	 */
-        u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing);
+        u1  = (u0 = (int) (u = ((double)tcoord[i][X]-(double)info->lo[X]) * (double)info->inv_spacing)) + 1;
         p1u = 1.0L - (p0u = u - (double) u0);
 
-        v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing);
+        v1  = (v0 = (int) (v = ((double)tcoord[i][Y]-(double)info->lo[Y]) * (double)info->inv_spacing)) + 1;
         p1v = 1.0L - (p0v = v - (double) v0);
 
-        w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing);
+        w1  = (w0 = (int) (w = ((double)tcoord[i][Z]-(double)info->lo[Z]) * (double)info->inv_spacing)) + 1;
         p1w = 1.0L - (p0w = w - (double) w0);
 
 #ifdef MINPOINT
         register int ix,iy,iz;                      /*MINPOINT*/
-        ix = (p0u < p1u)? u0 : u0+1;				    /*MINPOINT*/
-        iy = (p0v < p1v)? v0 : v0+1;				    /*MINPOINT*/
-        iz = (p0w < p1w)? w0 : w0+1;				    /*MINPOINT*/
+        ix = (p0u < p1u)? u0 : u1;				    /*MINPOINT*/
+        iy = (p0v < p1v)? v0 : v1;				    /*MINPOINT*/
+        iz = (p0w < p1w)? w0 : w1;				    /*MINPOINT*/
 
 #ifdef MAPSUBSCRIPT
         e = map[iz][iy][ix][ElecMap];               /*MINPOINT*/
@@ -156,16 +157,12 @@ Real trilinterp(
 #else
 	e = GetMap(map, info, iz, iy, ix, ElecMap); // MINPOINT
 	m = GetMap(map, info, iz, iy, ix, AtomType); // MINPOINT
-	d = GetMap(map, info, iz, iy, ix, DesolvMap); // MIDPOINT
+	d = GetMap(map, info, iz, iy, ix, DesolvMap); // MINPOINT
 
 #endif
 #else
         e = m = d = 0.0L;
 #ifdef MAPSUBSCRIPT
-	double u1, v1, w1;
-	u1 = u0+1;
-	v1 = v0+1;
-	w1 = w0+1;
         e += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][ElecMap];
         m += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][AtomType];
         d += p1u * p1v * p1w * map[ w0 ][ v0 ][ u0 ][DesolvMap];
@@ -198,10 +195,9 @@ Real trilinterp(
         m += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][AtomType];
         e += p0u * p0v * p0w * map[ w1 ][ v1 ][ u1 ][ElecMap];
 #else
-	// TODO study unrolling loop, caching subscripts
-	MapType pu[2] = { p1u, p0u };
-	MapType pv[2] = { p1v, p0v };
-	MapType pw[2] = { p1w, p0w };
+	float pu[2] = { p1u, p0u };
+	float pv[2] = { p1v, p0v };
+	float pw[2] = { p1w, p0w };
 	for(int w=0;w<=1;w++) for(int v=0;v<=1;v++) for(int u=0;u<=1;u++) {
 	 e += pu[u]*pv[v]*pw[w]*GetMap(map,info,w0+w, v0+v, u0+u, ElecMap);
 	 m += pu[u]*pv[v]*pw[w]*GetMap(map,info,w0+w, v0+v, u0+u, AtomType);
