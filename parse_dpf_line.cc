@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.41 2012/10/30 20:15:10 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.42 2013/09/16 21:11:00 mp Exp $
 
  AutoDock 
 
@@ -173,6 +173,7 @@ int parse_dpf_line( const char line[] )
               , {"flexres", DPF_FLEXRES} 
               , {"elecmap", DPF_ELECMAP} 
               , {"desolvmap", DPF_DESOLVMAP} 
+              , {"dsolvmap", DPF_DESOLVMAP} 
               , {"unbound_intnbp_coeffs", DPF_UNBOUND_INTNBP_COEFFS} 
               , {"rmsatoms", DPF_RMSATOMS} 
               , {"confsampler", DPF_CONFSAMPLER} 
