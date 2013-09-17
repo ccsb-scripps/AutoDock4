@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.26 2012/10/02 22:04:43 mp Exp $
+ $Id: intnbtable.cc,v 1.27 2013/09/17 23:58:25 mp Exp $
 
  AutoDock 
 
@@ -131,8 +131,8 @@ void intnbtable( Boole *const P_B_havenbp,
     IndexToDistance(NEINT-1)-IndexToDistance(NEINT-2) );
     flushLog;
 
-    nbeStart = times( &tms_nbeStart );
     } // end if outlev
+    nbeStart = times( &tms_nbeStart );
 
     // loop up to a maximum distance of  (NEINT * INV_A_DIV), 
     //                          usually    2048 * 0.01,       or 20.48 Angstroms
