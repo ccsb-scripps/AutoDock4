@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.62 2013/06/11 00:06:31 mp Exp $
+# $Id: test_autodock4.py,v 1.63 2013/10/09 18:16:06 mp Exp $
 #
 
 """
@@ -331,6 +331,30 @@ class AutoDock4_1pgp_overmaxruns_test( AutoDock_simple_test ):
     dpf_stem = "1pgp_overmaxruns"
     expected_outcome = False # True means Successful Completion!
 
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_intnbpreps_test( AutoDock_simple_test ):
+    """Test that autodock 4 handles intnbp_r_eps OK """
+    dpf_stem = "1pgp_intnbpreps"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_intnbpreps_toofew_test( AutoDock_simple_test ):
+    """Test that autodock 4 handles intnbp_r_eps with too few tokens """
+    dpf_stem = "1pgp_intnbpreps_toofew"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_intnbpreps_illegal_atom_test( AutoDock_simple_test ):
+    """Test that autodock 4 handles intnbp_r_eps with bad atom name """
+    dpf_stem = "1pgp_intnbpreps_illegal_atom"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_intnbcoeffs_test( AutoDock_simple_test ):
+    """Test that autodock 4 handles intnbp_coeffs OK """
+    dpf_stem = "1pgp_intnbcoeffs"
+    expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_ga_select_tournament_test( AutoDock_simple_test ):
@@ -884,6 +908,10 @@ if __name__ == '__main__':
 	'AutoDock4_1pgp_mixed_maxruns_test',
 	'AutoDock4_1pgp_mixed_maxruns_analysis_test',
 	'AutoDock4_1pgp_overmaxruns_test',
+	'AutoDock4_1pgp_intnbpreps_test',
+	'AutoDock4_1pgp_intnbpreps_toofew_test',
+	'AutoDock4_1pgp_intnbpreps_illegal_atom_test',
+	'AutoDock4_1pgp_intnbcoeffs_test',
         'AutoDock4_1pgp_ga_select_tournament_test',
         'AutoDock4_1pgp_ga_select_linear_ranking_test',
         #'AutoDock4_1pgp_rmsmode_heavy_atoms_only_test',
