@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.h,v 1.9 2011/03/08 04:18:37 mp Exp $
+ $Id: ranlib.h,v 1.10 2013/10/11 23:09:44 mp Exp $
 
  AutoDock 
 
@@ -45,18 +45,16 @@ extern Real gennor(ConstReal  av,ConstReal  sd); // referenced by ls.h
 extern void genprm(/* not const */FourByteLong *const iarray,const int larray);
 extern Real genunf(ConstReal  low,ConstReal  high); // referenced by ls.h
 //extern void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2);
-extern void gscgn(const FourByteLong getset,const FourByteLong *g); // implemented and used by com.cc
 //extern FourByteLong ignbin(const FourByteLong n,ConstReal  pp);
 extern FourByteLong ignnbn(const FourByteLong n,ConstReal  p);
 extern FourByteLong ignlgi(void); // referenced by gs.cc
 //extern FourByteLong ignpoi(ConstReal  mu);
 extern FourByteLong ignuin(const FourByteLong low,const FourByteLong high); // referenced by gs.cc
-extern void initgn(const FourByteLong isdtyp); // referenced by main.cc
 extern FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourByteLong m); // referenced by com.cc
 //extern void phrtsd(const char *const phrase,FourByteLong *const seed1,FourByteLong *const seed2);
 extern Real ranf(void); // referenced by gs.cc
 extern void setall(const FourByteLong iseed1,const FourByteLong iseed2); // referenced by main.cc
-//extern void setant(const FourByteLong qvalue);
+//extern void setant(const int qvalue);
 //extern void setgmn(const Real *const meanv,Real *const covm,const FourByteLong p,Real *const parm);
 extern void setsd(const FourByteLong iseed1,const FourByteLong iseed2); // reference by com.cc
 //extern Real sexpo(void);

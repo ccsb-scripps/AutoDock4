@@ -1,6 +1,6 @@
 /*
 
- $Id: com.cc,v 1.7 2012/07/09 22:35:21 mp Exp $
+ $Id: com.cc,v 1.8 2013/10/11 23:09:44 mp Exp $
 
  AutoDock 
 
@@ -39,8 +39,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  at present.  This number must also be defined in ranlib.cc M Pique 2012-07
  */
 #define NUMG 1
+static int qrgnin=false; /* has generator package (common) been initialized? */
+static int qqssd=false; /* have seeds been set (was gsssd() in code MP */
+static int curntg=0; /* global: current generator (was 'g' from gscgn() in code) MP */
 
-void advnst(const FourByteLong k)
+void advnst(const int k)
 /*
 **********************************************************************
      void advnst(const FourByteLong k)
@@ -53,30 +56,25 @@ void advnst(const FourByteLong k)
      with  Splitting   Facilities."  ACM  Transactions  on Mathematical
      Software, 17:98-111 (1991)
                               Arguments
-     k -> The generator is advanced by2^K values
+     k -> The generator is advanced by 2^K values
 **********************************************************************
 */
 {
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
-extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xm1,Xm2,Xa1,Xa2,Xcg1[],Xcg2[];
-static FourByteLong g,i,ib1,ib2;
-static FourByteLong qrgnin;
+static FourByteLong i,ib1,ib2;
 /*
      Abort unless random number generator initialized
 */
-    gsrgs(0L,&qrgnin);
-    if(qrgnin) goto S10;
+    if(!qrgnin) 
     stop(" ADVNST called before random generator initialized - ABORT");
-S10:
-    gscgn(0L,&g);
+
     ib1 = Xa1;
     ib2 = Xa2;
-    for (i=1; i<=k; i++) {
+    for (i=0; i<k; i++) {
         ib1 = mltmod(ib1,ib1,Xm1);
         ib2 = mltmod(ib2,ib2,Xm2);
     }
-    setsd(mltmod(ib1,*(Xcg1+g-1),Xm1),mltmod(ib2,*(Xcg2+g-1),Xm2));
+    setsd(mltmod(ib1,Xcg1[curntg],Xm1),mltmod(ib2,Xcg2[curntg],Xm2));
 /*
      NOW, IB1 = A1**K AND IB2 = A2**K
 */
@@ -98,21 +96,15 @@ void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2)
 **********************************************************************
 */
 {
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
-extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xcg1[],Xcg2[];
-static FourByteLong g;
-static FourByteLong qrgnin;
 /*
      Abort unless random number generator initialized
 */
-    gsrgs(0L,&qrgnin);
-    if(qrgnin) goto S10;
+    if(!qrgnin) 
     stop(" GETSD called before random number generator  initialized -- abort!");
-S10:
-    gscgn(0L,&g);
-    *iseed1 = *(Xcg1+g-1);
-    *iseed2 = *(Xcg2+g-1);
+   
+    *iseed1 = Xcg1[curntg];
+    *iseed2 = Xcg2[curntg];
 }
 FourByteLong ignlgi(void)
 /*
@@ -129,47 +121,39 @@ FourByteLong ignlgi(void)
 **********************************************************************
 */
 {
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
-extern void gssst(const FourByteLong getset,FourByteLong *const qset);
-extern void gscgn(const FourByteLong getset,FourByteLong *const g);
 extern void inrgcm(void);
 extern FourByteLong Xm1,Xm2,Xa1,Xa2,Xcg1[],Xcg2[];
-extern FourByteLong Xqanti[];
-static FourByteLong ignlgi,curntg,k,s1,s2,z;
-static FourByteLong qqssd,qrgnin;
+extern int Xqanti[];
+static FourByteLong k,s1,s2,z;
 /*
      IF THE RANDOM NUMBER PACKAGE HAS NOT BEEN INITIALIZED YET, DO SO.
      IT CAN BE INITIALIZED IN ONE OF TWO WAYS : 1) THE FIRST CALL TO
      THIS ROUTINE  2) A CALL TO SETALL.
 */
-    gsrgs(0L,&qrgnin);
     if(!qrgnin) inrgcm();
-    gssst(0,&qqssd);
     if(!qqssd) setall(1234567890L,123456789L);
 /*
      Get Current Generator
 */
-    gscgn(0L,&curntg);
-    s1 = *(Xcg1+curntg-1);
-    s2 = *(Xcg2+curntg-1);
+    s1 = Xcg1[curntg];
+    s2 = Xcg2[curntg];
     k = s1/53668L;
     s1 = Xa1*(s1-k*53668L)-k*12211;
     if(s1 < 0) s1 += Xm1;
     k = s2/52774L;
     s2 = Xa2*(s2-k*52774L)-k*3791;
     if(s2 < 0) s2 += Xm2;
-    *(Xcg1+curntg-1) = s1;
-    *(Xcg2+curntg-1) = s2;
+    Xcg1[curntg] = s1;
+    Xcg2[curntg] = s2;
     z = s1-s2;
     if(z < 1) z += (Xm1-1);
-    if(*(Xqanti+curntg-1)) z = Xm1-z;
-    ignlgi = z;
-    return ignlgi;
+    if(Xqanti[curntg]) z = Xm1-z;
+    return z;
 }
-void initgn(const FourByteLong isdtyp)
+void initgn(const int isdtyp)
 /*
 **********************************************************************
-     void initgn(FourByteLong isdtyp)
+     void initgn(const int isdtyp)
           INIT-ialize current G-e-N-erator
      Reinitializes the state of the current generator
      This is a transcription from Pascal to Fortran of routine
@@ -187,39 +171,30 @@ void initgn(const FourByteLong isdtyp)
 **********************************************************************
 */
 {
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
-extern void gscgn(FourByteLong getset,FourByteLong *g);
-extern FourByteLong Xm1,Xm2,Xa1w,Xa2w,Xig1[],Xig2[],Xlg1[],Xlg2[],Xcg1[],Xcg2[];
-static FourByteLong g;
-static FourByteLong qrgnin;
+extern FourByteLong Xlg1[],Xlg2[],Xig1[],Xig2[],Xcg1[],Xcg2[],Xm1,Xm2,Xa1w,Xa2w;
 /*
      Abort unless random number generator initialized
 */
-    gsrgs(0L,&qrgnin);
-    if(qrgnin) goto S10;
+    if(!qrgnin) 
     stop( " INITGN called before random number generator  initialized -- abort!");
-S10:
-    gscgn(0L,&g);
-    if(-1 != isdtyp) goto S20;
-    *(Xlg1+g-1) = *(Xig1+g-1);
-    *(Xlg2+g-1) = *(Xig2+g-1);
-    goto S50;
-S20:
-    if(0 != isdtyp) goto S30;
-    goto S50;
-S30:
-/*
-     do nothing
-*/
-    if(1 != isdtyp) goto S40;
-    *(Xlg1+g-1) = mltmod(Xa1w,*(Xlg1+g-1),Xm1);
-    *(Xlg2+g-1) = mltmod(Xa2w,*(Xlg2+g-1),Xm2);
-    goto S50;
-S40:
-    stop("isdtyp not in range in INITGN");
-S50:
-    *(Xcg1+g-1) = *(Xlg1+g-1);
-    *(Xcg2+g-1) = *(Xlg2+g-1);
+
+    switch (isdtyp) {
+    case -1:
+	Xlg1[curntg] = Xig1[curntg];
+	Xlg2[curntg] = Xig2[curntg];
+	break;
+    case 1:
+	Xlg1[curntg] = mltmod(Xa1w,Xlg1[curntg],Xm1);
+	Xlg2[curntg] = mltmod(Xa2w,Xlg2[curntg],Xm2);
+	break;
+    case 0:
+	break;
+    default:
+        stop("isdtyp not in range in INITGN");
+    }
+
+    Xcg1[curntg] = Xlg1[curntg];
+    Xcg2[curntg] = Xlg2[curntg];
 }
 void inrgcm(void)
 /*
@@ -233,11 +208,9 @@ void inrgcm(void)
 **********************************************************************
 */
 {
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
 extern FourByteLong Xm1,Xm2,Xa1,Xa2,Xa1w,Xa2w,Xa1vw,Xa2vw;
 extern FourByteLong Xqanti[];
-static FourByteLong T1;
-static FourByteLong i;
+int i;
 /*
      V=20;                            W=30;
      A1W = MOD(A1**(2**W),M1)         A2W = MOD(A2**(2**W),M2)
@@ -254,12 +227,11 @@ static FourByteLong i;
     Xa2w = 1494757890L;
     Xa1vw = 2082007225L;
     Xa2vw = 784306273L;
-    for (i=0; i<NUMG; i++) *(Xqanti+i) = 0;
-    T1 = 1;
+    for (i=0; i<NUMG; i++) Xqanti[i] = 0;
 /*
      Tell the world that common has been initialized
 */
-    gsrgs(1L,&T1);
+    qrgnin=true;
 }
 void setall(const FourByteLong iseed1,const FourByteLong iseed2)
 /*
@@ -280,35 +252,30 @@ void setall(const FourByteLong iseed1,const FourByteLong iseed2)
 **********************************************************************
 */
 {
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
-extern void gssst(const FourByteLong getset,FourByteLong *const qset);
-extern void gscgn(const FourByteLong getset,FourByteLong *const g);
 extern FourByteLong Xm1,Xm2,Xa1vw,Xa2vw,Xig1[],Xig2[];
-static FourByteLong T1;
-static FourByteLong g,ocgn;
-static FourByteLong qrgnin;
-    T1 = 1;
+int g;
+int ogn;
 /*
      TELL IGNLGI, THE ACTUAL NUMBER GENERATOR, THAT THIS ROUTINE
       HAS BEEN CALLED.
 */
-    gssst(1,&T1);
-    gscgn(0L,&ocgn);
+    qqssd=true;
 /*
      Initialize Common Block if Necessary
 */
-    gsrgs(0L,&qrgnin);
     if(!qrgnin) inrgcm();
-    *Xig1 = iseed1;
-    *Xig2 = iseed2;
-    initgn(-1L);
-    for (g=2; g<=NUMG; g++) {
-        *(Xig1+g-1) = mltmod(Xa1vw,*(Xig1+g-2),Xm1);
-        *(Xig2+g-1) = mltmod(Xa2vw,*(Xig2+g-2),Xm2);
-        gscgn(1L,&g);
-        initgn(-1L);
+
+    Xig1[0] = iseed1;
+    Xig2[0] = iseed2;
+    initgn(-1);
+    ogn= curntg;
+    for (g=1; g<NUMG; g++) {
+        Xig1[g] = mltmod(Xa1vw,Xig1[g-1],Xm1);
+        Xig2[g] = mltmod(Xa2vw,Xig2[g-1],Xm2);
+        curntg=g;
+        initgn(-1);
     }
-    gscgn(1L,&ocgn);
+    curntg=ogn;
 }
 void setant(const FourByteLong qvalue)
 /*
@@ -332,20 +299,14 @@ void setant(const FourByteLong qvalue)
 **********************************************************************
 */
 {
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
-extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xqanti[];
-static FourByteLong g;
-static FourByteLong qrgnin;
 /*
      Abort unless random number generator initialized
 */
-    gsrgs(0L,&qrgnin);
-    if(qrgnin) goto S10;
+    if(!qrgnin) 
     stop( " SETANT called before random number generator  initialized -- abort!");
-S10:
-    gscgn(0L,&g);
-    Xqanti[g-1] = qvalue;
+
+    Xqanti[curntg] = qvalue;
 }
 void setsd(const FourByteLong iseed1,const FourByteLong iseed2)
 /*
@@ -365,23 +326,40 @@ void setsd(const FourByteLong iseed1,const FourByteLong iseed2)
 **********************************************************************
 */
 {
-extern void gsrgs(const FourByteLong getset,FourByteLong *const qvalue);
-extern void gscgn(FourByteLong getset,FourByteLong *g);
 extern FourByteLong Xig1[],Xig2[];
-static FourByteLong g;
-static FourByteLong qrgnin;
 /*
      Abort unless random number generator initialized
 */
-    gsrgs(0L,&qrgnin);
-    if(qrgnin) goto S10;
+    if(!qrgnin) 
     stop( " SETSD called before random number generator  initialized -- abort!");
-S10:
-    gscgn(0L,&g);
-    *(Xig1+g-1) = iseed1;
-    *(Xig2+g-1) = iseed2;
-    initgn(-1L);
+
+    Xig1[curntg] = iseed1;
+    Xig2[curntg] = iseed2;
+    initgn(-1);
 }
-FourByteLong Xm1,Xm2,Xa1,Xa2,Xcg1[32],Xcg2[32],Xa1w,Xa2w,Xig1[32],Xig2[32],Xlg1[32],
-    Xlg2[32],Xa1vw,Xa2vw;
-FourByteLong Xqanti[32];
+int gscgn(int g)
+/*
+**********************************************************************
+     int gscgn(int g)
+                         Get/Set GeNerator
+     Sets the global number of the current generator
+     Returns previous value 
+                              Arguments
+     g <-- Number of the current random number generator (0..NUMG-1)
+**********************************************************************
+*/
+{
+int otg = curntg;
+    if( g >= 0 && g < NUMG) curntg = g;
+    else {
+	    char errmsg[200];
+            sprintf(errmsg, 
+	    "BUG: Generator number %d out of range %d to %d in GSCGN",g,0,NUMG-1);
+	    stop(errmsg);
+        }
+    return otg;
+}
+
+FourByteLong Xm1,Xm2,Xa1,Xa2,Xcg1[NUMG],Xcg2[NUMG],Xa1w,Xa2w,Xig1[NUMG],Xig2[NUMG],Xlg1[NUMG],
+    Xlg2[NUMG],Xa1vw,Xa2vw;
+int Xqanti[NUMG];
