@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.15 2013/10/17 00:58:14 mp Exp $
+ $Id: ranlib.cc,v 1.16 2013/10/17 23:39:06 mp Exp $
 
  AutoDock 
 
@@ -1384,6 +1384,8 @@ FourByteLong lennob(const char *const str);
 #undef twop30
 }
 
+#ifdef RANF_AS_FUNCTION
+ /* changed to macro in ranlib.h to avoid extra function call */
 extern Real ranf(void)
 /*
 **********************************************************************
@@ -1408,6 +1410,7 @@ Real ranf;
     ranf = ignlgi()*4.656613057E-10;
     return ranf;
 }
+#endif
 
 void setgmn(const Real *const meanv, Real *const covm, const FourByteLong p, Real *const parm) // not used in AutoDock code
 /*

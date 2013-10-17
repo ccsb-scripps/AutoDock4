@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.h,v 1.10 2013/10/11 23:09:44 mp Exp $
+ $Id: ranlib.h,v 1.11 2013/10/17 23:39:06 mp Exp $
 
  AutoDock 
 
@@ -24,7 +24,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
  */
 
-/* Prototypes for all user accessible RANLIB routines: note only a few are used in AutoDock  */
+/* Prototypes for all user accessible RANLIB routines: 
+   note only a few are used in AutoDock 
+   Most are functions in ranlib.cc, a few are from the underlying com.cc
+ */
 
 #ifndef _RANLIB_H
 #define _RANLIB_H
@@ -52,9 +55,16 @@ extern FourByteLong ignlgi(void); // referenced by gs.cc
 extern FourByteLong ignuin(const FourByteLong low,const FourByteLong high); // referenced by gs.cc
 extern FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourByteLong m); // referenced by com.cc
 //extern void phrtsd(const char *const phrase,FourByteLong *const seed1,FourByteLong *const seed2);
-extern Real ranf(void); // referenced by gs.cc
+
+/* ranf() changed to macro to avoid extra function call, M Pique 2013, see ranlib.cc */
+//extern Real ranf(void); // referenced by gs.cc
+/*
+     4.656613057E-10 is 1/M1  M1 is set in a data statement in IGNLGI
+      and is currently 2147483563. If M1 changes, change this also.
+*/
+#define ranf() ((Real)(ignlgi()*4.656613057E-10))
+
 extern void setall(const FourByteLong iseed1,const FourByteLong iseed2); // referenced by main.cc
-//extern void setant(const int qvalue);
 //extern void setgmn(const Real *const meanv,Real *const covm,const FourByteLong p,Real *const parm);
 extern void setsd(const FourByteLong iseed1,const FourByteLong iseed2); // reference by com.cc
 //extern Real sexpo(void);
