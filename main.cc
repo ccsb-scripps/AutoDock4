@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.198 2013/10/17 00:58:14 mp Exp $
+ $Id: main.cc,v 1.199 2013/10/17 01:07:08 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.198 2013/10/17 00:58:14 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.199 2013/10/17 01:07:08 mp Exp $"};
 
 
 
@@ -769,7 +769,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.198 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.199 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -4804,13 +4804,16 @@ static void set_seeds( FourByteLong seed[2], char seedIsSet[2], FourByteLong run
 
 	 /* set seeds now for all possible runs - so each run's results will be
           * independent of other runs, for parallelization 
+	  * Note that the first run will use the DPF-specified seed, if any.
 	  */
-         for(int i=0;i<MAX_RUNS;i++) {
+         setall(seed[0], seed[1]);  // see com.cc
+	 runseed[0][0] = seed[0];
+	 runseed[1][0] = seed[1];
+         for(int i=1;i<MAX_RUNS;i++) {
 		runseed[i][0] = ignlgi();
 		runseed[i][1] = ignlgi();
 		}
 		
-         setall(seed[0], seed[1]);  // see com.cc
          if(outlev>=LOGMIN) pr(logFile,
 	  "Random number generator was seeded with values " FBL_FMT ", " FBL_FMT ".\n",
 	  seed[0], seed[1]);
