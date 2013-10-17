@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.199 2013/10/17 01:07:08 mp Exp $
+ $Id: main.cc,v 1.200 2013/10/17 01:27:07 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.199 2013/10/17 01:07:08 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.200 2013/10/17 01:27:07 mp Exp $"};
 
 
 
@@ -769,7 +769,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.199 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.200 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1753,7 +1753,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                   pr( logFile,     "\t____________________________________\n\n\n" );
                   (void) fflush(logFile);
 
-                  writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
+                  writePDBQT( j, runseed[nconf], FN_ligand, dock_param_fn, lig_center,
                               sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
                               crd, peratomE,
                               charge, abs_charge, qsp_abs_charge,
@@ -3285,7 +3285,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 pr( logFile,     "\t_______________________________________________\n\n\n" );
 		}
 
-                writePDBQT( j, seed,  FN_ligand, dock_param_fn, lig_center,
+                writePDBQT( j, runseed[nconf],  FN_ligand, dock_param_fn, lig_center,
                             sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
                             crd, peratomE,
                             charge, abs_charge, qsp_abs_charge,
@@ -3400,7 +3400,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                pr( logFile, "\n\n\tFINAL LOCAL SEARCH DOCKED STATE\n" );
                pr( logFile,     "\t_______________________________\n\n\n" );
 
-               writePDBQT( j, seed, FN_ligand, dock_param_fn, lig_center,
+               writePDBQT( j, runseed[nconf], FN_ligand, dock_param_fn, lig_center,
                            sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
                            crd, peratomE,
                            charge, abs_charge, qsp_abs_charge,
@@ -3844,7 +3844,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	 		pr( logFile, "\n\n\tFINAL PSO DOCKED STATE\n" );
 	 		pr( logFile, "\t____________________________________________________________\n\n\n" );
 	 		
-             writePDBQT( j, seed,  FN_ligand, dock_param_fn, lig_center,
+             writePDBQT( j, runseed[nconf],  FN_ligand, dock_param_fn, lig_center,
                        sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
                        crd, peratomE, charge, 
                        abs_charge, qsp_abs_charge,
@@ -4358,7 +4358,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             pr( logFile, "\n\n\tFINAL UNBOUND STATE\n" );
             pr( logFile,     "\t___________________\n\n\n" );
             //
-            writePDBQT( -1, seed,  FN_ligand, dock_param_fn, lig_center,
+            writePDBQT( -1, runseed[nconf],  FN_ligand, dock_param_fn, lig_center,
                         sUnbound, ntor, &eintra, &einter, natom, atomstuff,
                         crd, peratomE,
                         charge, abs_charge, qsp_abs_charge,
@@ -4808,10 +4808,10 @@ static void set_seeds( FourByteLong seed[2], char seedIsSet[2], FourByteLong run
 	  */
          setall(seed[0], seed[1]);  // see com.cc
 	 runseed[0][0] = seed[0];
-	 runseed[1][0] = seed[1];
-         for(int i=1;i<MAX_RUNS;i++) {
-		runseed[i][0] = ignlgi();
-		runseed[i][1] = ignlgi();
+	 runseed[0][1] = seed[1];
+         for(int j=1;j<MAX_RUNS;j++) {
+		runseed[j][0] = ignlgi();
+		runseed[j][1] = ignlgi();
 		}
 		
          if(outlev>=LOGMIN) pr(logFile,
