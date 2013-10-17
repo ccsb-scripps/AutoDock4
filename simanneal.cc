@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.43 2012/08/18 00:00:29 mp Exp $
+ $Id: simanneal.cc,v 1.44 2013/10/17 00:58:14 mp Exp $
 
  AutoDock  
 
@@ -43,7 +43,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern char *programname;
 
 
-void simanneal ( int   *const Addr_nconf,
+void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", modified here */
                 const int   Nnb,
 		int Nnb_array[3],
 		GroupEnergy *group_energy,
@@ -65,7 +65,7 @@ void simanneal ( int   *const Addr_nconf,
 		EnergyComponent	*peratomE,
                 const int   NcycMax,
                 const int   irunmax,
-		FourByteLong seed[2],
+		FourByteLong runseed[][2], /* [MAX_RUNS] */
                 const Clock& jobStart,
                 #include "map_declare.h"
                 const int   naccmax,
@@ -242,12 +242,16 @@ void simanneal ( int   *const Addr_nconf,
 
     for ( irun = 0;  irun < irunmax;  irun++ ) { /*===========================*/
 
+	int nconf = *(Addr_nconf); /* absolute serial number of this run */
+	setsd( runseed[nconf][0], runseed[nconf][1]); /* see com.cc */
+
         irun1 = 1 + irun;
 
 
         if (outlev >= LOGFORADT) {
             pr(logFile, "\n\tINITIALIZING AUTOMATED DOCKING SIMULATION\n" );
-            pr( logFile, "RUN %d\n", irun1); // MP removed ... OK? TODO
+            pr( logFile, "RUN %d  SEED %ld %ld\n", irun1, 
+		(long)runseed[nconf][0], (long)runseed[nconf][1]);
         }
 
         if ( B_writeTrj ) {
@@ -401,7 +405,7 @@ void simanneal ( int   *const Addr_nconf,
                                );
 
                         if (B_isGaussTorCon) {
-                            /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++) { MP ***/
+                            /*** This looks wrong... for (Itor = 0; Itor <= ntor; Itor++)   MP ***/
                             for (Itor = 0; Itor < ntor; Itor++) {
                                 if (B_isTorConstrained[Itor] == 1) {
                                     indx = RadiansToDivs( sNow.tor[Itor] );
@@ -635,7 +639,7 @@ void simanneal ( int   *const Addr_nconf,
                     NULL_ENERGY_BREAKDOWN);
 
 	if(outlev>=LOGMIN)
-        writePDBQT( irun, seed, FN_ligand, FN_dpf, lig_center, sSave, ntor,
+        writePDBQT( irun, runseed[nconf], FN_ligand, FN_dpf, lig_center, sSave, ntor,
                 &eintra, &einter, natom, atomstuff, crd, peratomE,
                 charge, abs_charge, qsp_abs_charge,
                 ligand_is_inhibitor, torsFreeEnergy, 

@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.197 2013/06/11 00:06:31 mp Exp $
+ $Id: main.cc,v 1.198 2013/10/17 00:58:14 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.197 2013/06/11 00:06:31 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.198 2013/10/17 00:58:14 mp Exp $"};
 
 
 
@@ -146,7 +146,7 @@ static Boole B_have_flexible_residues = FALSE;  // does the receptor have flexib
 static void exit_if_missing_elecmap_desolvmap_about(string keyword); // see bottom of main.cc
 static int getoutlev(char *line, int *outlev); // see bottom of main.cc  0==fail, 1==OK
 static int true_ligand_atoms = 0; // used by exit_if ... 
-static void set_seeds( FourByteLong seed[2], char seedIsSet[2], const int outlev, FILE *logFile ); // see below
+static void set_seeds( FourByteLong seed[2], char seedIsSet[2], FourByteLong runseed[][2], const int outlev, FILE *logFile ); // see below
 static int processid();
 
 // PSO  - Particle Swarm Optimization  - not officially supported
@@ -235,6 +235,7 @@ Real lig_center[SPACE];
 //
 Real econf[MAX_RUNS];  // this is the list of energies printed in the histogram in "analysis"
 State sHist[MAX_RUNS];  /* qtnHist[MAX_RUNS][QUAT],torHist[MAX_RUNS][MAX_TORS];*/
+FourByteLong runseed[MAX_RUNS][2]; /* initial seed for each run, computed ahead of time */
 
 State sUnbound; // State of the unbound ligand's conformation
 State sUnbound_ext; // State of the unbound ligand's conformation after extended-conformation search
@@ -768,7 +769,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.197 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.198 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -818,7 +819,7 @@ setup_distdepdiel(logFile, outlev, unbound_energy_tables);
 
 
 // set initial default seeds for random number generator (function is below, at end of main.cc)
-set_seeds( seed, seedIsSet, outlev, logFile);
+set_seeds( seed, seedIsSet, runseed, outlev, logFile);
 
 //______________________________________________________________________________
 
@@ -1116,7 +1117,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                     pr(logFile,"Random number generator seed %d was seeded with the user-specified value  %ld\n",i,seed[i]);
                 }
             }/*i*/
-	set_seeds( seed, seedIsSet, outlev, logFile);
+	set_seeds( seed, seedIsSet, runseed, outlev, logFile);
         } else stop("Error encountered reading SEED line");
 
         break;
@@ -1718,9 +1719,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                   pr(logFile, "\nDoing %s run:  %d/%d.\n", algname, j+1, nruns);
 
                   //coliny uses a single seed
-                  coliny_seed = seed[0]+seed[1]+j;
-                  pr(logFile, "Seed: %d [%ld+%ld+%d]\n", coliny_seed, seed[0], seed[1], j);
-                  //pr(logFile, "Seeds:  %ld %ld\n", seed[0], seed[1]);
+                  coliny_seed = runseed[j][0]+runseed[j][1];
+                  pr(logFile, "Seed: %d [%ld+%ld]\n", coliny_seed, runseed[j][0], runseed[j][1], j);
                   (void) fflush(logFile);
 
                   colinyStart = times(&tms_colinyStart);
@@ -3019,7 +3019,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                         ad_energy_tables,
                         econf, B_either,
                         peratomE,
-                        ncycles, nruns, seed, jobStart,
+                        ncycles, nruns, runseed, jobStart,
                         map,
                         naccmax, natom, nonbondlist, nrejmax, ntor, 
                         sInit, sHist,   qtwFac, B_qtwReduc, qtwStep0,
@@ -3230,7 +3230,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		if(outlev>=LOGBASIC) 
                 (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
 
-                pr( logFile, "Run:\t%d / %d\n", j+1, nruns );
+		setsd(runseed[nconf][0], runseed[nconf][1]); /* set RNG seed using global run number */
+
+                pr( logFile, "Run:\t%d / %d   Seed: %ld %ld \n", j+1, nruns, 
+		 (long)runseed[nconf][0], (long)runseed[nconf][1] );
 
                 pr(logFile, "Date:\t");
                 printdate( logFile, 2 );
@@ -3371,9 +3374,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
            for (j=0; j<nruns; j++) {
 
+		setsd(runseed[nconf][0], runseed[nconf][1]); /* set RNG seed using global run number */
+
 	       if(outlev>=LOGBASIC)
                (void) fprintf( logFile, "\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
-               pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
+                pr( logFile, "Run:\t%d / %d   Seed: %ld %ld \n", j+1, nruns, 
+		 (long)runseed[nconf][0], (long)runseed[nconf][1] );
 
                pr(logFile, "Date:\t");
                printdate( logFile, 2 );
@@ -3806,7 +3812,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	    if(outlev>=LOGBASIC)
             (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
 
-	 		pr( logFile, "\nRun:\t%d / %d\n", j+1, nruns );
+		setsd(runseed[nconf][0], runseed[nconf][1]); /* set RNG seed using global run number */
+
+                pr( logFile, "Run:\t%d / %d   Seed: %ld %ld \n", j+1, nruns, 
+		 (long)runseed[nconf][0], (long)runseed[nconf][1] );
 	 		pr(logFile, "Date:\t");
 	        printdate(logFile, 2 );
 	 		(void)fflush(logFile);
@@ -4784,7 +4793,7 @@ static int getoutlev(char *line, int *outlev) {
 	}
 	return 0;
 }
-static void set_seeds( FourByteLong seed[2], char seedIsSet[2], const int outlev, FILE *logFile ) {
+static void set_seeds( FourByteLong seed[2], char seedIsSet[2], FourByteLong runseed[MAX_RUNS][2], const int outlev, FILE *logFile ) {
 	    time_t time_seed;
 	 if ( (!seedIsSet[0]) && (sizeof seed[0])!=4) 
 	   pr(logFile, "Sizeof FourByteLong = %d, not 4.\n",
@@ -4792,6 +4801,15 @@ static void set_seeds( FourByteLong seed[2], char seedIsSet[2], const int outlev
 	 if( ! seedIsSet[0] ) seed[0] = (FourByteLong) processid();
 	 if( ! seedIsSet[1] ) seed[1] = (FourByteLong) time( &time_seed );
 	 seedIsSet[0]  = seedIsSet[1] = 'D';
+
+	 /* set seeds now for all possible runs - so each run's results will be
+          * independent of other runs, for parallelization 
+	  */
+         for(int i=0;i<MAX_RUNS;i++) {
+		runseed[i][0] = ignlgi();
+		runseed[i][1] = ignlgi();
+		}
+		
          setall(seed[0], seed[1]);  // see com.cc
          if(outlev>=LOGMIN) pr(logFile,
 	  "Random number generator was seeded with values " FBL_FMT ", " FBL_FMT ".\n",

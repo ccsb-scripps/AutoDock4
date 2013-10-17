@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.14 2013/10/11 23:09:44 mp Exp $
+ $Id: ranlib.cc,v 1.15 2013/10/17 00:58:14 mp Exp $
 
  AutoDock 
 
@@ -1186,20 +1186,13 @@ extern FourByteLong ignuin(const FourByteLong low, const FourByteLong high)
 #define maxnum 2147483561L
 FourByteLong ignuin,ign,maxnow,range,ranp1;
 
-    if(!(low > high)) goto S10;
-    stop("ERROR low > high in ignuin");
+    if(low > high) stop("ERROR low > high in ignuin");
 
-S10:
     range = high-low;
-    if(!(range > maxnum)) goto S20;
-    stop("ERROR high - low too large in ignuin");
+    if((range > maxnum)) stop("ERROR high - low too large in ignuin");
 
-S20:
-    if(!(low == high)) goto S30;
-    ignuin = low;
-    return ignuin;
+    if(low == high) return low;
 
-S30:
 /*
      Number to be generated should be in range 0..RANGE
      Set MAXNOW so that the number of integers in 0..MAXNOW is an
@@ -1209,10 +1202,7 @@ S30:
     maxnow = maxnum/ranp1*ranp1;
 S40:
     ign = ignlgi()-1;
-    if(!(ign <= maxnow)) goto S50;
-    ignuin = low+ign%ranp1;
-    return ignuin;
-S50:
+    if((ign <= maxnow)) return low+ign%ranp1;
     goto S40;
 #undef maxnum
 #undef err1
@@ -1399,7 +1389,7 @@ extern Real ranf(void)
 **********************************************************************
      Real ranf(void)
                 RANDom number generator as a Function
-     Returns a random Realing point number from a uniform distribution
+     Returns a random floating point number from a uniform distribution
      over 0 - 1 (endpoints of this interval are not returned) using the
      current generator
      This is a transcription from Pascal to Fortran of routine

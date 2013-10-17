@@ -1,6 +1,6 @@
 /*
 
- $Id: com.cc,v 1.8 2013/10/11 23:09:44 mp Exp $
+ $Id: com.cc,v 1.9 2013/10/17 00:58:14 mp Exp $
 
  AutoDock 
 
@@ -150,18 +150,20 @@ static FourByteLong k,s1,s2,z;
     if(Xqanti[curntg]) z = Xm1-z;
     return z;
 }
-void initgn(const int isdtyp)
+
+void initgn(const int g, const int isdtyp)
 /*
 **********************************************************************
-     void initgn(const int isdtyp)
+     void initgn(const int g, const int isdtyp)
           INIT-ialize current G-e-N-erator
-     Reinitializes the state of the current generator
+     Reinitializes the state of the generator g
      This is a transcription from Pascal to Fortran of routine
      Init_Generator from the paper
      L'Ecuyer, P. and Cote, S. "Implementing a Random Number Package
      with Splitting Facilities." ACM Transactions on Mathematical
      Software, 17:98-111 (1991)
                               Arguments
+     g the generator index 0..NUMG-1
      isdtyp -> The state to which the generator is to be set
           isdtyp = -1  => sets the seeds to their initial value
           isdtyp =  0  => sets the seeds to the first value of
@@ -180,14 +182,14 @@ extern FourByteLong Xlg1[],Xlg2[],Xig1[],Xig2[],Xcg1[],Xcg2[],Xm1,Xm2,Xa1w,Xa2w;
 
     switch (isdtyp) {
     case -1:
-	Xlg1[curntg] = Xig1[curntg];
-	Xlg2[curntg] = Xig2[curntg];
-	break;
-    case 1:
-	Xlg1[curntg] = mltmod(Xa1w,Xlg1[curntg],Xm1);
-	Xlg2[curntg] = mltmod(Xa2w,Xlg2[curntg],Xm2);
+	Xlg1[g] = Xig1[g];
+	Xlg2[g] = Xig2[g];
 	break;
     case 0:
+	break;
+    case 1:
+	Xlg1[g] = mltmod(Xa1w,Xlg1[g],Xm1);
+	Xlg2[g] = mltmod(Xa2w,Xlg2[g],Xm2);
 	break;
     default:
         stop("isdtyp not in range in INITGN");
@@ -219,6 +221,8 @@ int i;
     An efficient way to precompute a**(2*j) MOD m is to start with
     a and square it j times modulo m using the function MLTMOD.
 */
+#pragma omp critical
+{
     Xm1 = 2147483563L;
     Xm2 = 2147483399L;
     Xa1 = 40014L;
@@ -232,6 +236,7 @@ int i;
      Tell the world that common has been initialized
 */
     qrgnin=true;
+    }
 }
 void setall(const FourByteLong iseed1,const FourByteLong iseed2)
 /*
@@ -259,6 +264,8 @@ int ogn;
      TELL IGNLGI, THE ACTUAL NUMBER GENERATOR, THAT THIS ROUTINE
       HAS BEEN CALLED.
 */
+#pragma omp critical
+{
     qqssd=true;
 /*
      Initialize Common Block if Necessary
@@ -267,15 +274,13 @@ int ogn;
 
     Xig1[0] = iseed1;
     Xig2[0] = iseed2;
-    initgn(-1);
-    ogn= curntg;
+    initgn(0, -1);
     for (g=1; g<NUMG; g++) {
         Xig1[g] = mltmod(Xa1vw,Xig1[g-1],Xm1);
         Xig2[g] = mltmod(Xa2vw,Xig2[g-1],Xm2);
-        curntg=g;
-        initgn(-1);
+        initgn(g, -1);
     }
-    curntg=ogn;
+    }
 }
 void setant(const FourByteLong qvalue)
 /*
@@ -335,7 +340,7 @@ extern FourByteLong Xig1[],Xig2[];
 
     Xig1[curntg] = iseed1;
     Xig2[curntg] = iseed2;
-    initgn(-1);
+    initgn(curntg, -1);
 }
 int gscgn(int g)
 /*
