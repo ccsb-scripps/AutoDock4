@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.44 2013/10/17 00:58:14 mp Exp $
+ $Id: simanneal.cc,v 1.45 2013/10/18 21:07:26 mp Exp $
 
  AutoDock  
 
@@ -243,16 +243,16 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
     for ( irun = 0;  irun < irunmax;  irun++ ) { /*===========================*/
 
 	int nconf = *(Addr_nconf); /* absolute serial number of this run */
-	setsd( runseed[nconf][0], runseed[nconf][1]); /* see com.cc */
+	if(nconf>0) setsd( runseed[nconf][0], runseed[nconf][1]); /* see main.cc and com.cc */
 
         irun1 = 1 + irun;
 
 
-        if (outlev >= LOGFORADT) {
+        if (outlev >= LOGFORADT) 
             pr(logFile, "\n\tINITIALIZING AUTOMATED DOCKING SIMULATION\n" );
-            pr( logFile, "RUN %d  SEED %ld %ld\n", irun1, 
+        if (outlev >= LOGBASIC) 
+            pr( logFile, "Run: %d / %d  Seed: %ld %ld\n", irun1, irunmax,
 		(long)runseed[nconf][0], (long)runseed[nconf][1]);
-        }
 
         if ( B_writeTrj ) {
             pr( FP_trj, "ntorsions %d\nrun %d\n", ntor, irun1 );

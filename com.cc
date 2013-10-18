@@ -1,6 +1,6 @@
 /*
 
- $Id: com.cc,v 1.10 2013/10/17 23:39:06 mp Exp $
+ $Id: com.cc,v 1.11 2013/10/18 21:07:26 mp Exp $
 
  AutoDock 
 
@@ -298,10 +298,10 @@ void setsd(const FourByteLong iseed1,const FourByteLong iseed2)
     Xig2[curntg] = iseed2;
     initgn(curntg, -1);
 }
-int gscgn(int g)
+int gscgn(const int g)
 /*
 **********************************************************************
-     int gscgn(int g)
+     int gscgn(const int g)
                          Get/Set GeNerator
      Sets the global number of the current generator curntg to g
      Returns previous value 

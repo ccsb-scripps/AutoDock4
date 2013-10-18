@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.h,v 1.11 2013/10/17 23:39:06 mp Exp $
+ $Id: ranlib.h,v 1.12 2013/10/18 21:07:26 mp Exp $
 
  AutoDock 
 
@@ -50,7 +50,8 @@ extern Real genunf(ConstReal  low,ConstReal  high); // referenced by ls.h
 //extern void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2);
 //extern FourByteLong ignbin(const FourByteLong n,ConstReal  pp);
 extern FourByteLong ignnbn(const FourByteLong n,ConstReal  p);
-extern FourByteLong ignlgi(void); // referenced by gs.cc
+extern FourByteLong ignlgi(void); // in com.cc, referenced by gs.cc
+extern int gscgn(const int g); // in com.cc, referenced by main.cc (sets index of current generator)
 //extern FourByteLong ignpoi(ConstReal  mu);
 extern FourByteLong ignuin(const FourByteLong low,const FourByteLong high); // referenced by gs.cc
 extern FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourByteLong m); // referenced by com.cc
