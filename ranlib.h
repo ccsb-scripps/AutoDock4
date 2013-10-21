@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.h,v 1.12 2013/10/18 21:07:26 mp Exp $
+ $Id: ranlib.h,v 1.13 2013/10/21 21:52:04 mp Exp $
 
  AutoDock 
 
@@ -47,11 +47,12 @@ extern Real gennf(ConstReal  dfn, ConstReal  dfd, ConstReal  xnonc);
 extern Real gennor(ConstReal  av,ConstReal  sd); // referenced by ls.h
 extern void genprm(/* not const */FourByteLong *const iarray,const int larray);
 extern Real genunf(ConstReal  low,ConstReal  high); // referenced by ls.h
-//extern void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2);
 //extern FourByteLong ignbin(const FourByteLong n,ConstReal  pp);
 extern FourByteLong ignnbn(const FourByteLong n,ConstReal  p);
-extern FourByteLong ignlgi(void); // in com.cc, referenced by gs.cc
+extern FourByteLong ignlgi(void); // in com.cc, referenced by gs.cc (get random long integer)
 extern int gscgn(const int g); // in com.cc, referenced by main.cc (sets index of current generator)
+extern void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2); // in com.cc (get seeds)
+extern void setsd(const FourByteLong iseed1,const FourByteLong iseed2); // in com.cc (set seeds)
 //extern FourByteLong ignpoi(ConstReal  mu);
 extern FourByteLong ignuin(const FourByteLong low,const FourByteLong high); // referenced by gs.cc
 extern FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourByteLong m); // referenced by com.cc
@@ -67,7 +68,6 @@ extern FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourB
 
 extern void setall(const FourByteLong iseed1,const FourByteLong iseed2); // referenced by main.cc
 //extern void setgmn(const Real *const meanv,Real *const covm,const FourByteLong p,Real *const parm);
-extern void setsd(const FourByteLong iseed1,const FourByteLong iseed2); // reference by com.cc
 //extern Real sexpo(void);
 //extern Real sgamma(ConstReal a);
 //extern Real snorm(void);

@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.201 2013/10/18 21:07:26 mp Exp $
+ $Id: main.cc,v 1.202 2013/10/21 21:52:04 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.201 2013/10/18 21:07:26 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.202 2013/10/21 21:52:04 mp Exp $"};
 
 
 
@@ -769,7 +769,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.201 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.202 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3235,9 +3235,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		 *   randomizations done during job setup but after "seed" DPF token,
 		 *   (e.g. tran0/dihe0 or extended conformation search). The sole reason
 		 *   for excepting the first run is for compatibility with existing tests.
+		 *   The reason for the "getsd()" is so the real first-run seeds will be
+		 *   correctly reported so the run can be reproduced if necessary.
 		 *   M Pique Oct 2013
 		 */
-		if(nconf>0) setsd(runseed[nconf][0], runseed[nconf][1]); 
+		if(nconf==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
+		else setsd(runseed[nconf][0], runseed[nconf][1]); 
 
                 pr( logFile, "Run:\t%d / %d   Seed: %ld %ld \n", j+1, nruns, 
 		 (long)runseed[nconf][0], (long)runseed[nconf][1] );
@@ -3381,7 +3384,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
            for (j=0; j<nruns; j++) {
 
-		if(nconf>0) setsd(runseed[nconf][0], runseed[nconf][1]); /* set RNG seed using global run number */
+		/* set RNG seed using global run number */
+		if(nconf==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
+		else setsd(runseed[nconf][0], runseed[nconf][1]); 
 
 	       if(outlev>=LOGBASIC)
                (void) fprintf( logFile, "\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
@@ -3819,7 +3824,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	    if(outlev>=LOGBASIC)
             (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
 
-		if(nconf>0) setsd(runseed[nconf][0], runseed[nconf][1]); /* set RNG seed using global run number */
+		/* set RNG seed using global run number */
+		if(nconf==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
+		else setsd(runseed[nconf][0], runseed[nconf][1]); 
 
                 pr( logFile, "Run:\t%d / %d   Seed: %ld %ld \n", j+1, nruns, 
 		 (long)runseed[nconf][0], (long)runseed[nconf][1] );
