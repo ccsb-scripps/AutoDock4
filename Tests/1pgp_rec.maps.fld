@@ -21,10 +21,10 @@ field=uniform		# field type (uniform, rectilinear, irregular)
 coord 1 file=1pgp_rec.maps.xyz filetype=ascii offset=0
 coord 2 file=1pgp_rec.maps.xyz filetype=ascii offset=2
 coord 3 file=1pgp_rec.maps.xyz filetype=ascii offset=4
-label=-affinity	# component label for variable 1
-label=-affinity	# component label for variable 2
-label=-affinity	# component label for variable 3
-label=-affinity	# component label for variable 4
+label=C-affinity	# component label for variable 1
+label=HD-affinity	# component label for variable 2
+label=OA-affinity	# component label for variable 3
+label=P-affinity	# component label for variable 4
 label=Electrostatics	# component label for variable 4
 label=Desolvation	# component label for variable 5
 #
