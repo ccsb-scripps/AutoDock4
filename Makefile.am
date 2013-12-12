@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.42 2013/03/05 23:09:39 mp Exp $
+# $Id: Makefile.am,v 1.43 2013/12/12 02:07:10 mp Exp $
 # 
 # AutoDock  
 # 
@@ -189,7 +189,6 @@ autodock4_SOURCES += \
 		mkNewState.h \
 		mkRandomState.h \
 		mkTorTree.h \
-		molstruct.h \
 		nbe.h \
 		nonbonds.h \
 		openfile.h \
