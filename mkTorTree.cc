@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.24 2012/07/05 21:26:34 mp Exp $
+ $Id: mkTorTree.cc,v 1.25 2014/01/28 01:51:19 mp Exp $
 
  AutoDock 
 
@@ -199,6 +199,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 
     /*____________________________________________________________*/
             case PDBQ_BRANCH:
+		int i2; /* index in Rec_line of ending atom for torsion */
                 if (ntor >= MAX_TORS) {
     		    char  error_message[ LINE_LEN ];
                     prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
@@ -210,11 +211,34 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 } else {
                     sscanf(Rec_line[ i ],"%*s %d %*d", &tlist[ ntor ][ ATM1 ] );
                 }
-                tlist[ ntor ][ ATM2 ] = atomnumber[ i+1 ];
+		/* find next atom/hetatm record after BRANCH */
+		for(i2=i+1;i2<nrecord;i2++) {
+		  int keyword = parse_PDBQT_line(Rec_line[i2]);
+#ifdef DEBUG
+	/* MPique Jan 2014 */
+	fprintf(stderr, " hunting next atom after BRANCH type=%d, (%s)\n",
+	keyword, Rec_line[i2]);
+#endif /* DEBUG */
+		  if(keyword==PDBQ_ATOM || keyword==PDBQ_HETATM) {
+                    tlist[ ntor ][ ATM2 ] = atomnumber[ i2 ];
+#ifdef DEBUG
+	/* MPique Jan 2014 */
+	fprintf(stderr, " found #%d, (%s)\n",
+	atomnumber[i2], Rec_line[i2]);
+#endif /* DEBUG */
+		    break;
+		    }
+		  }
+		if(i2>=nrecord) {
+                    char  error_message[ LINE_LEN ];
+                    prStr( error_message, "ERROR: line %d: no atom within branch\n%s\n", (i+1), Rec_line[ i ]);
+                    stop( error_message );
+		    }
                 --tlist[ ntor ][ ATM1 ];
                 if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
                     char  error_message[ LINE_LEN ];
-                    prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
+                    prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same! (%d and %d)", (i+1), Rec_line[ i ], (ntor+1),
+ tlist[ ntor ][ ATM1 ], tlist[ ntor ][ ATM2 ] );
                     stop( error_message );
                 } /* endif */
                 nbranches = 0;
@@ -226,9 +250,9 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 pr( logFile, "]\n" );
 #endif /* DEBUG */
 
-                for ( j = (i+2); j < nrecord; j++) {
+                for ( j = (i2+1); j < nrecord; j++) {
                     for ( ii = 0; ii < 4; ii++ ) {
-                        rec5[ii] = (char)tolower( (int)Rec_line[ j ][ ii ] );
+                        rec5[ii] = isalpha(Rec_line[ j ][ ii])?(char)tolower( (int)Rec_line[ j ][ ii ]):Rec_line[ j ][ ii ];
                     }
                     rec5[4] = '\0';
 #ifdef DEBUG
