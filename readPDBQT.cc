@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.42 2012/10/24 23:28:03 mp Exp $
+ $Id: readPDBQT.cc,v 1.43 2014/02/01 05:16:14 mp Exp $
 
  AutoDock 
 
@@ -112,7 +112,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	Real   uq = 0.;
 
     int             branch_last_piece[MAX_TORS+2];//0 unused, 1 means ROOT
-	static int      atomnumber[MAX_RECORDS];
+	static int      atomnumber[MAX_RECORDS]; /* -1 for non-ATOM/HETATM */
 	int             iq = 0;
 	int             natom = 0;
 	static int      nbmatrix[MAX_ATOMS][MAX_ATOMS];
@@ -151,7 +151,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	ParameterEntry  this_parameter_entry;
 
 	for (i = 0; i < MAX_RECORDS; i++) {
-		atomnumber[i] = 0;
+		atomnumber[i] = -1;
 	}
 
 	for (i = 0; i < MAX_ATOMS; i++) {
@@ -178,13 +178,13 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
     //  Attempt to open the ligand PDBQT file...
 	sscanf(input_line, "%*s %s", FN_ligand);
-	if (openFile(FN_ligand, "r", &FP_ligand, jobStart, tms_jobStart, TRUE)) {
+	if (openFile(FN_ligand, "r", &FP_ligand, jobStart, tms_jobStart, TRUE, logFile)) {
 		pr(logFile, "Ligand PDBQT file = \"%s\"\n\n", FN_ligand);
 	}
 
     if (B_have_flexible_residues) {
         //  Attempt to open the flexible residue PDBQT file...
-        if (openFile(FN_flexres, "r", &FP_flexres, jobStart, tms_jobStart, TRUE)) {
+        if (openFile(FN_flexres, "r", &FP_flexres, jobStart, tms_jobStart, TRUE, logFile)) {
             if(outlev>=LOGBASIC)
             pr(logFile, "Flexible Residues PDBQT file = \"%s\"\n\n", FN_flexres);
         }
@@ -217,7 +217,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 		stop(error_message);
 	} else {
         // Read in the input Ligand PDBQT file...
-		if (openFile(FN_ligand, "r", &FP_ligand, jobStart, tms_jobStart, TRUE)) {
+		if (openFile(FN_ligand, "r", &FP_ligand, jobStart, tms_jobStart, TRUE, logFile)) {
 			if(outlev>=LOGFORADT){
 			  pr(logFile,   "INPUT LIGAND PDBQT FILE:");
 			  pr(logFile, "\n________________________\n\n");
@@ -234,7 +234,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
         if (B_have_flexible_residues) {
             // Read in the input Flexible Residues PDBQT file...
-            if (openFile(FN_flexres, "r", &FP_flexres, jobStart, tms_jobStart, TRUE)) {
+            if (openFile(FN_flexres, "r", &FP_flexres, jobStart, tms_jobStart, TRUE, logFile)) {
                 pr(logFile,   "INPUT FLEXIBLE RESIDUES PDBQT FILE:");
                 pr(logFile, "\n___________________________________\n\n");
                 for (i = nligand_record; i < nrecord; i++) {
@@ -650,7 +650,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     //  End program if just parsing torsions...
 	if (parse_tors_mode) {
 		prStr(message, "\n\n *** PARSE TORSIONS MODE - Stopping here ***\n\n");
-		success(hostnm, jobStart, tms_jobStart);
+		success(hostnm, jobStart, tms_jobStart, logFile);
 		exit(EXIT_SUCCESS);
 	}
 	return mol;

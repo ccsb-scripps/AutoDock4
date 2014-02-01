@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.25 2014/01/28 01:51:19 mp Exp $
+ $Id: mkTorTree.cc,v 1.26 2014/02/01 05:16:14 mp Exp $
 
  AutoDock 
 
@@ -39,6 +39,13 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 extern char  *programname;
     
+/* local functions: */
+static
+int check_atomnumber( const int number, 
+ const int atomnumber[], const int nrecord, const int natoms, FILE *logFile);
+#define check_atomnumber_ok(a) check_atomnumber((a), atomnumber, nrecord, natoms, logFile)
+
+/* #define check_atomnumber_ok( a )  (((a) >= 0) && ((a) < natoms)) */
 
 void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 const char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
@@ -199,7 +206,7 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 
     /*____________________________________________________________*/
             case PDBQ_BRANCH:
-		int i2; /* index in Rec_line of ending atom for torsion */
+	    case PDBQ_TORS:  /* obsolete synonym for "branch" */
                 if (ntor >= MAX_TORS) {
     		    char  error_message[ LINE_LEN ];
                     prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
@@ -209,38 +216,19 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                     sscanf(Rec_line[ i ],"%*s %d %*d", &nrestor );
                     tlist[ ntor ][ ATM1 ]= nrestor + true_ligand_atoms;
                 } else {
-                    sscanf(Rec_line[ i ],"%*s %d %*d", &tlist[ ntor ][ ATM1 ] );
+		    int nfields;
+                    nfields=sscanf(Rec_line[ i ],"%*s %d %d", 
+			&tlist[ ntor ][ ATM1 ], &tlist[ ntor ][ ATM2 ] );
                 }
-		/* find next atom/hetatm record after BRANCH */
-		for(i2=i+1;i2<nrecord;i2++) {
-		  int keyword = parse_PDBQT_line(Rec_line[i2]);
-#ifdef DEBUG
-	/* MPique Jan 2014 */
-	fprintf(stderr, " hunting next atom after BRANCH type=%d, (%s)\n",
-	keyword, Rec_line[i2]);
-#endif /* DEBUG */
-		  if(keyword==PDBQ_ATOM || keyword==PDBQ_HETATM) {
-                    tlist[ ntor ][ ATM2 ] = atomnumber[ i2 ];
-#ifdef DEBUG
-	/* MPique Jan 2014 */
-	fprintf(stderr, " found #%d, (%s)\n",
-	atomnumber[i2], Rec_line[i2]);
-#endif /* DEBUG */
-		    break;
-		    }
-		  }
-		if(i2>=nrecord) {
-                    char  error_message[ LINE_LEN ];
-                    prStr( error_message, "ERROR: line %d: no atom within branch\n%s\n", (i+1), Rec_line[ i ]);
-                    stop( error_message );
-		    }
-                --tlist[ ntor ][ ATM1 ];
                 if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
                     char  error_message[ LINE_LEN ];
                     prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same! (%d and %d)", (i+1), Rec_line[ i ], (ntor+1),
  tlist[ ntor ][ ATM1 ], tlist[ ntor ][ ATM2 ] );
                     stop( error_message );
                 } /* endif */
+		/* convert from 1-origin to internal 0-origin */
+                --tlist[ ntor ][ ATM1 ];
+                --tlist[ ntor ][ ATM2 ];
                 nbranches = 0;
 
 #ifdef DEBUG
@@ -250,22 +238,24 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 pr( logFile, "]\n" );
 #endif /* DEBUG */
 
-                for ( j = (i2+1); j < nrecord; j++) {
-                    for ( ii = 0; ii < 4; ii++ ) {
-                        rec5[ii] = isalpha(Rec_line[ j ][ ii])?(char)tolower( (int)Rec_line[ j ][ ii ]):Rec_line[ j ][ ii ];
-                    }
-                    rec5[4] = '\0';
+		/* mark atoms within this branch and any internally nested branches.
+		 * Note the atoms will be seen once for each branch they
+		 * are within, from the "i" loop.
+		 */
+                for ( j = (i+1); j < nrecord; j++) {
+		    int keyword;
 #ifdef DEBUG
                     C = 'b';
                     PrintDebugTors;
                     PrintDebugTors2;
                     pr( logFile, "]\n" );
 #endif /* DEBUG */
+		    keyword= parse_PDBQT_line(Rec_line[j]);
 
-                    if (equal(rec5,"endb", 4) && (nbranches == 0))  break;
-                    if (equal(rec5,"endb", 4) && (nbranches != 0))  --nbranches;
-                    if (equal(rec5,"bran", 4))                      ++nbranches;
-                    if (equal(rec5,"atom", 4) || equal(rec5,"heta", 4)) {
+                    if (keyword==PDBQ_ENDBRANCH && nbranches == 0)  break;
+                    if (keyword==PDBQ_ENDBRANCH && nbranches != 0) --nbranches;
+                    if (keyword==PDBQ_BRANCH) ++nbranches;
+                    if (keyword==PDBQ_ATOM||keyword==PDBQ_HETATM) {
                         tlist[ ntor ][ tlist[ ntor ][ NUM_ATM_MOVED ] + 3 ] = atomnumber[ j ];
                         ++tlist[ ntor ][ NUM_ATM_MOVED ];
                     } /* endif */
@@ -273,62 +263,6 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 ++ntor;
 
 #ifdef DEBUG
-                PrintDebugTors;
-                PrintDebugTors2;
-                pr( logFile, "]\n" );
-#endif /* DEBUG */
-
-                break;
-
-    /*____________________________________________________________*/
-            case PDBQ_TORS:
-
-                tlist[ ntor ][ ATM2 ] = atomnumber[ i+1 ];
-                tlist[ ntor ][ ATM1 ] = atomlast;
-                if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
-                    char  error_message[ LINE_LEN ];
-                    prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same!", (i+1), Rec_line[ i ], (ntor+1) );
-                    stop( error_message );
-                }
-                nbranches = 0;
-
-#ifdef DEBUG
-                C = 'T';
-                PrintDebugTors;
-                PrintDebugTors2;
-                pr( logFile, "]\n" );
-#endif /* DEBUG */
-
-                for ( j = (i+2); j < nrecord; j++) {
-                    for (ii = 0; ii < 4; ii++) {
-                        rec5[ ii ] = (char)tolower( (int)Rec_line[ j ][ ii ] );
-                    }
-#ifdef DEBUG
-                    C = 't';
-                    PrintDebugTors;
-                    PrintDebugTors2;
-                    pr( logFile, "]\n" );
-#endif /* DEBUG */
-
-                    if (equal(rec5,"endb", 4) && (nbranches == 0))  break;
-                    if (equal(rec5,"endb", 4) && (nbranches != 0))  --nbranches;
-                    if (equal(rec5,"bran", 4))                      ++nbranches;
-                    if (equal(rec5,"atom", 4) || equal(rec5,"heta", 4)) {
-                        tlist[ ntor ][ tlist[ ntor ][ NUM_ATM_MOVED ] + 3 ] = atomnumber[ j ];
-                        ++tlist[ ntor ][ NUM_ATM_MOVED ];
-                    } /* endif */
-
-#ifdef DEBUG
-                    PrintDebugTors;
-                    PrintDebugTors2;
-                    pr( logFile, "]\n" );
-#endif /* DEBUG */
-
-                } /* j */
-                ++ntor;
-
-#ifdef DEBUG
-                C = 't';
                 PrintDebugTors;
                 PrintDebugTors2;
                 pr( logFile, "]\n" );
@@ -413,7 +347,6 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
          *P_ntor_ligand = ntor;
     }
 
-#define check_atomnumber_ok( a )  (((a) >= 0) && ((a) < natoms))
 
     Boole B_atom_number_OK = TRUE;
 
@@ -496,4 +429,42 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
         pr( logFile, "\n*** No Rotatable Bonds detected in Small Molecule. ***\n\n" );
     }
 }
+
+static
+int check_atomnumber( const int number, const int *atomnumber, const int nrecord, 
+const int natoms, FILE *logFile) {
+	/* Check that number is within range and exists.
+	 * Note that the number passed is zero-origin 
+	 * as is the "atomnum" array content (which is -1 for non ATOM/HETATM)
+	 * but the original input PDB file is one-origin
+ 	 *
+         *  Error return 0 for:
+         *  negative
+	 *  too large
+	 *  entry not found in any record
+         *  duplicate entry found 
+	 */
+	int i;
+	int found_count;
+	if(number<0) {
+		pr(logFile, "ERROR: Atom number %d is < 0.\n", 1+number);
+		return 0;
+		}
+	if(number>natoms) {
+		pr(logFile, "ERROR: Atom number %d is > natoms (%d).\n", 1+number, natoms);
+		return 0;
+		}
+	found_count=0;
+	for(i=0;i<nrecord;i++) if(atomnumber[i]==number) found_count++;
+	if(found_count==1) return 1; /* OK */
+	if(found_count==0) {
+		pr(logFile, "ERROR: Atom number %d not found in PDBQT file.\n", 1+number);
+		}
+	if(found_count>1) {
+		pr(logFile, "ERROR: Atom number %d found multiple times (%d)in PDBQT file.\n", 1+number, found_count);
+		}
+	return 0;
+	}
+		
+	
 /* EOF */

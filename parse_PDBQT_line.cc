@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_PDBQT_line.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: parse_PDBQT_line.cc,v 1.7 2014/02/01 05:16:14 mp Exp $
 
  AutoDock 
 
@@ -81,7 +81,7 @@ int parse_PDBQT_line( const char line[LINE_LEN] )
         } else if (strncmp(c,"heta",4)==0) {
             token = PDBQ_HETATM;
         } else if ((strncmp(c,"tors",4)==0) && (strncmp(c,"torsdof",7)!=0)) {
-            token = PDBQ_TORS;
+            token = PDBQ_TORS; // obsolete synonym for "branch"
         } else if ((strlen(c) >= 7) && (strncmp(c,"torsdof",7)==0)) {
             token = PDBQ_TORSDOF;
         } else if (strncmp(c,"tdof",4)==0) {
