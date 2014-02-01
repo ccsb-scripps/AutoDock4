@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.cc,v 1.9 2012/02/07 20:47:30 mp Exp $
+ $Id: openfile.cc,v 1.10 2014/02/01 05:14:53 mp Exp $
 
  AutoDock 
 
@@ -26,7 +26,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 
- $Id: openfile.cc,v 1.9 2012/02/07 20:47:30 mp Exp $
+ $Id: openfile.cc,v 1.10 2014/02/01 05:14:53 mp Exp $
 
 */
 
@@ -49,10 +49,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 
 extern char *programname;
-extern FILE *logFile;
 /*----------------------------------------------------------------------------*/
 /* fopen rewrite to either use BOINC api or normal system call */
-FILE *ad_fopen(const char *const path, const char *const mode)
+FILE *ad_fopen(const char *const path, const char *const mode, FILE *logFile)
 {
   FILE *filep;
 #ifdef BOINC
@@ -73,10 +72,11 @@ FILE *ad_fopen(const char *const path, const char *const mode)
 /*----------------------------------------------------------------------------*/
 int openfile( const char *const filename,
 	      const char mode[],
-	      FILE **const fp )
+	      FILE **const fp,
+	      FILE *logFile)
 
 {
-	if ( (*fp = ad_fopen(filename, mode)) == NULL ) {
+	if ( (*fp = ad_fopen(filename, mode, logFile)) == NULL ) {
 		fprintf(stderr, "\n%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
 		fprintf(logFile,"\n%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
 		return( FALSE );
@@ -90,18 +90,19 @@ int openFile( const char *const filename,
 	      FILE      **const fp,
 	      const Clock&      start,
 	      const struct tms& tms_start,
-	      const Boole       mayExit)
+	      const Boole       mayExit,
+	      FILE *logFile)
 
 {
     Clock  jobEnd;
     struct tms tms_jobEnd;
 
-    if ( (*fp = ad_fopen(filename, mode)) == NULL ) {
+    if ( (*fp = ad_fopen(filename, mode, logFile)) == NULL ) {
 	char error_message[400];
 	sprintf(error_message, "%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
 
 	jobEnd = times( &tms_jobEnd );
-	timesys( jobEnd - start, &tms_start, &tms_jobEnd );
+	timesys( jobEnd - start, &tms_start, &tms_jobEnd, logFile );
 	pr_2x( logFile, stderr, error_message );
 
 	if (mayExit) {

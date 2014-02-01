@@ -1,6 +1,6 @@
 /*
 
- $Id: getpdbcrds.cc,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: getpdbcrds.cc,v 1.8 2014/02/01 05:14:53 mp Exp $
 
  AutoDock 
 
@@ -36,12 +36,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "getpdbcrds.h"
 
 
-extern FILE *logFile;
 extern char *programname;
 
 
 int getpdbcrds( const char *const rms_ref_crds_FN,
-		/* not const */ Real ref_crds[MAX_ATOMS][SPACE] )
+		/* not const */ Real ref_crds[MAX_ATOMS][SPACE], FILE *logFile)
 {
     int ii=0;
     int natoms=0;
@@ -50,7 +49,7 @@ int getpdbcrds( const char *const rms_ref_crds_FN,
     char rec5[5];
     FILE *rms_ref_FilePtr;
 
-    if ( !openfile( rms_ref_crds_FN, "r", &rms_ref_FilePtr )) {
+    if ( !openfile( rms_ref_crds_FN, "r", &rms_ref_FilePtr, logFile)) {
 	fprintf( logFile, "%s: ERROR!  Sorry, could not open file \"%s\" for reading.\n", programname,  rms_ref_crds_FN );
 	return -1;
     }

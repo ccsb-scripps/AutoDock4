@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.19 2012/04/18 01:30:19 mp Exp $
+ $Id: readmap.cc,v 1.20 2014/02/01 05:14:53 mp Exp $
 
  AutoDock 
 
@@ -41,7 +41,6 @@ extern char dock_param_fn[];
 extern char *programname;
 extern int ignore_errors;
 extern int ElecMap;
-extern FILE *logFile;
 extern int debug;
 
 Statistics readmap( char           line[LINE_LEN],
@@ -53,7 +52,8 @@ Statistics readmap( char           line[LINE_LEN],
                     const int      num_maps, 
                     const GridMapSetInfo *const info,
 		    #include "map_declare.h"
-                    const char     map_type
+                    const char     map_type,
+		    FILE *logFile
                   )
 
 {
@@ -64,7 +64,7 @@ Statistics readmap( char           line[LINE_LEN],
     char GpfName[PATH_MAX];
     char ExtGpfName[PATH_MAX];
     char mmFileName[PATH_MAX];
-    char xyz_str[4];
+    static char xyz_str[]="xyz";
     char C_mapValue;
     char map_line[LINE_LEN];
     char inputline[LINE_LEN];
@@ -96,7 +96,6 @@ Statistics readmap( char           line[LINE_LEN],
 
     Statistics map_stats;
 
-    strcpy( xyz_str, "xyz\0" );
 
     //maps->atom_type = num_maps;
 
@@ -107,7 +106,7 @@ Statistics readmap( char           line[LINE_LEN],
      */
 
     (void) sscanf( line, "%*s %s", FileName );
-    if ( openFile( FileName, "r", &map_file, jobStart,tmsJobStart,TRUE )) {
+    if ( openFile( FileName, "r", &map_file, jobStart,tmsJobStart,TRUE, logFile)) {
         *P_B_HaveMap = TRUE;
         if (debug > 0) {
             for (i=0; i < info->num_atom_types; i++) {
@@ -289,7 +288,7 @@ Statistics readmap( char           line[LINE_LEN],
     pr( logFile, "Time taken (s): " );
 
     loadEnd = times( &tms_loadEnd );
-    timesys( loadEnd - loadStart, &tms_loadStart, &tms_loadEnd );
+    timesys( loadEnd - loadStart, &tms_loadStart, &tms_loadEnd, logFile);
 
     pr( logFile, "\n" );
     } // if outlev
@@ -300,7 +299,7 @@ Statistics readmap( char           line[LINE_LEN],
         pr_2x( stderr, logFile, message );
 
         jobEnd = times( &tms_jobEnd );
-        timesys( jobEnd - jobStart, &tmsJobStart, &tms_jobEnd );
+        timesys( jobEnd - jobStart, &tmsJobStart, &tms_jobEnd, logFile);
         pr_2x( logFile, stderr, UnderLine );
 
         /* END PROGRAM */
@@ -324,7 +323,4 @@ Real mapc2f(const char numin)
     }
     return numout;
 }
-
-
-
 /* EOF */

@@ -1,6 +1,6 @@
 /*
 
- $Id: getpdbcrds.h,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: getpdbcrds.h,v 1.8 2014/02/01 05:14:53 mp Exp $
 
  AutoDock 
 
@@ -31,5 +31,5 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "openfile.h"
 
 int   getpdbcrds( const char  *const rms_ref_crds_FN,
-		/* not const */ Real ref_crds[MAX_ATOMS][SPACE] );
+		/* not const */ Real ref_crds[MAX_ATOMS][SPACE], FILE *logFile);
 #endif

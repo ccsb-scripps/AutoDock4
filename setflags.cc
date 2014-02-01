@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.26 2012/10/25 17:04:00 mp Exp $
+ $Id: setflags.cc,v 1.27 2014/02/01 05:14:53 mp Exp $
 
  AutoDock 
 
@@ -160,7 +160,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             argindex++;
             break;
         case 's':
-            if ( (stateFile = ad_fopen(argv[2], "w")) == NULL ) {
+            if ( (stateFile = ad_fopen(argv[2], "w", logFile)) == NULL ) {
 #ifdef DEBUG
                 fprintf(stderr, "\n State file name = %s\n", argv[2]); 
 #endif /* DEBUG */
@@ -188,7 +188,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
                 return(-1);
             }
 
-            if ( (parFile = ad_fopen(dock_param_fn, "r")) == NULL ) {
+            if ( (parFile = ad_fopen(dock_param_fn, "r", logFile)) == NULL ) {
 #ifdef DEBUG
                 fprintf(stderr, "\n Parameter file name = %s\n", dock_param_fn);
 #endif /* DEBUG */
@@ -232,7 +232,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
 	    }
     else snprintf(logFileName, sizeof logFileName, "%s", p_logFileName);
 
-    if ( (logFile = ad_fopen(logFileName, "w")) == NULL ) {
+    if ( (logFile = ad_fopen(logFileName, "w", logFile)) == NULL ) {
 #ifdef DEBUG
                 fprintf(stderr, "\n Log file name = %s\n", logFileName); 
 #endif /* DEBUG */

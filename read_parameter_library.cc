@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.29 2012/10/15 17:48:28 mp Exp $
+ $Id: read_parameter_library.cc,v 1.30 2014/02/01 05:14:53 mp Exp $
 
  AutoDock 
 
@@ -66,7 +66,7 @@ void read_parameter_library(
 
     // Open and read the parameter library
     //
-    if ((parameter_library_file = ad_fopen(FN_parameter_library, "r")) == NULL) {
+    if ((parameter_library_file = ad_fopen(FN_parameter_library, "r", logFile)) == NULL) {
          sprintf(msg,"Sorry, I can't find or open %s\n", FN_parameter_library);
          stop(msg); // exits
     }

@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.20 2012/11/02 02:22:41 mp Exp $
+ $Id: clmode.cc,v 1.21 2014/02/01 05:14:53 mp Exp $
 
  AutoDock 
 
@@ -106,7 +106,7 @@ void  clmode( const int   num_atm_maps,
     /*
      * Open file containing coordinates to be clustered...
      */
-    if ( openFile( clusFN , "r", &clusFile, jobStart, tms_jobStart, TRUE ) ) {
+    if ( openFile( clusFN , "r", &clusFile, jobStart, tms_jobStart, TRUE, logFile) ) {
         pr( logFile, "Conformations to be clustered are in this file: \"%s\"\n\n", clusFN );
     }
     /*
@@ -269,7 +269,7 @@ void  clmode( const int   num_atm_maps,
         /*
          * Read in reference structure, specified by the "rmsref" command...
          */
-        if ((ref_natoms = getpdbcrds( rms_ref_crds, ref_crds)) == -1) {
+        if ((ref_natoms = getpdbcrds( rms_ref_crds, ref_crds, logFile)) == -1) {
      
             fprintf( logFile, "%s: Problems while reading \"%s\".\n", programname, rms_ref_crds);
             fprintf( logFile, "Will attempt to use the input PDBQ file coordinates as reference.\n");
@@ -329,7 +329,7 @@ void  clmode( const int   num_atm_maps,
 /*
  *  End cluster_mode and END PROGRAM...
  */
-    success( hostnm, jobStart, tms_jobStart );
+    success( hostnm, jobStart, tms_jobStart, logFile);
 
     exit(EXIT_SUCCESS); // POSIX, defined in stdlib.h
 }

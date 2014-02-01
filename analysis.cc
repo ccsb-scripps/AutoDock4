@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.54 2012/08/18 00:00:29 mp Exp $
+ $Id: analysis.cc,v 1.55 2014/02/01 05:14:53 mp Exp $
 
  AutoDock  
 
@@ -168,7 +168,7 @@ void analysis( const int   Nnb,
 
     // Read in reference coordinates...
     if (strncmp(FN_rms_ref_crds,"unspecified filename",20) != 0) {
-        if ((ref_natoms = getpdbcrds( FN_rms_ref_crds, ref_crds)) == -1) {
+        if ((ref_natoms = getpdbcrds( FN_rms_ref_crds, ref_crds, logFile)) == -1) {
             fprintf( logFile, "%s: Problems while reading the ligand reference coordinates file \"%s\".\n", programname, FN_rms_ref_crds);
             fprintf( logFile, "%s: Will attempt to use the input ligand PDBQT coordinates as reference instead.\n", programname);
         } else if (ref_natoms != natom) {

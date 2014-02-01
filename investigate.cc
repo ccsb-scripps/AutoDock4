@@ -1,6 +1,6 @@
 /*
 
- $Id: investigate.cc,v 1.35 2012/08/18 00:00:29 mp Exp $
+ $Id: investigate.cc,v 1.36 2014/02/01 05:14:53 mp Exp $
 
  AutoDock  
 
@@ -137,7 +137,7 @@ void investigate( const int   Nnb, int Nnb_array[3], GroupEnergy *group_energy,
 /*  Read in reference coordinates
 */
     if (strncmp(FN_rms_ref_crds,"unspecified filename",20) != 0) {
-        if ((ref_natoms = getpdbcrds( FN_rms_ref_crds, ref_crds)) == -1) {
+        if ((ref_natoms = getpdbcrds( FN_rms_ref_crds, ref_crds, logFile)) == -1) {
             fprintf( logFile, "%s: Problems while reading \"%s\".\n", programname, FN_rms_ref_crds);
             fprintf( logFile, "Will attempt to use the input PDBQ file coordinates as reference.\n");
         } else if (ref_natoms != natom) {

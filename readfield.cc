@@ -1,6 +1,6 @@
 /*
 
- $Id: readfield.cc,v 1.10 2012/04/18 01:30:19 mp Exp $
+ $Id: readfield.cc,v 1.11 2014/02/01 05:14:53 mp Exp $
 
  AutoDock 
 
@@ -55,7 +55,7 @@ void readfield( /* not const */ GridMapSetInfo *const info,
     **/
     (void) sscanf( line, "%*s %s", info->FN_gdfld);
      
-    if ( openFile( info->FN_gdfld, "r", &fldFile, jobStart, tms_jobStart, TRUE )) {
+    if ( openFile( info->FN_gdfld, "r", &fldFile, jobStart, tms_jobStart, TRUE, logFile)) {
 	if(outlev >= LOGFORADT) 
         pr( logFile, "Opening Grid Map Dimensions file:\t\t%s\n", info->FN_gdfld);
     }

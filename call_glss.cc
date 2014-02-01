@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.72 2013/05/23 20:06:02 mp Exp $ 
+ $Id: call_glss.cc,v 1.73 2014/02/01 05:14:53 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -429,7 +429,7 @@ State call_glss(/* not const */ Global_Search *global_method,
                 (void)fprintf( logFile, " %d",i+1); 
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
            }
-           global_method->localsearch(thisPop, local_method, outlev, logFile);
+           global_method->localsearch(thisPop, local_method, evaluate, outlev, logFile);
 	   if (outlev >= LOGRUNVVV ) for (i=0; i<pop_size; i++) {
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
                 (void)fprintf( logFile, " \n"); 
@@ -491,7 +491,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 #endif /* DEBUG3 */
          (void)fprintf(logFile,"    Num.evals.: %ld   Timing: ", 
                evaluate.evals() );
-         timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd );
+         timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd, logFile);
        }
 
        // Print extended generational population statistics, when "due" :
@@ -545,7 +545,7 @@ State call_glss(/* not const */ Global_Search *global_method,
         if (strlen(FN_pop_file) > 0) { // YES, do print!
             if (pop_fileptr==NULL) {
 	       // attempt open 
-	       if ((pop_fileptr = ad_fopen( FN_pop_file, "w")) == NULL) {
+	       if ((pop_fileptr = ad_fopen( FN_pop_file, "w", logFile)) == NULL) {
 	        char msg[PATH_MAX+200];
                 sprintf(msg, "%s: ERROR:  I'm sorry, I cannot create\"%s\".", programname, FN_pop_file);
 		stop(msg);
