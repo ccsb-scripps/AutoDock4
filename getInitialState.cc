@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.38 2014/02/01 05:14:53 mp Exp $
+ $Id: getInitialState.cc,v 1.39 2014/02/15 01:45:56 mp Exp $
 
  AutoDock  
 
@@ -244,7 +244,7 @@ void getInitialState(
       initEnd = times( &tms_initEnd );
       pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);
       pr(logFile, "Time spent initializing: (Real, CPU, System): ");
-      timesys( initEnd - initStart, &tms_initStart, &tms_initEnd, logFile);
+      timesys( initEnd - initStart, &tms_initStart, &tms_initEnd);
     }
 
     *Addr_e0total = eb.e_inter + eb.e_intra;

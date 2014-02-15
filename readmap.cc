@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.20 2014/02/01 05:14:53 mp Exp $
+ $Id: readmap.cc,v 1.21 2014/02/15 01:45:56 mp Exp $
 
  AutoDock 
 
@@ -288,7 +288,7 @@ Statistics readmap( char           line[LINE_LEN],
     pr( logFile, "Time taken (s): " );
 
     loadEnd = times( &tms_loadEnd );
-    timesys( loadEnd - loadStart, &tms_loadStart, &tms_loadEnd, logFile);
+    timesys( loadEnd - loadStart, &tms_loadStart, &tms_loadEnd);
 
     pr( logFile, "\n" );
     } // if outlev
@@ -299,7 +299,7 @@ Statistics readmap( char           line[LINE_LEN],
         pr_2x( stderr, logFile, message );
 
         jobEnd = times( &tms_jobEnd );
-        timesys( jobEnd - jobStart, &tmsJobStart, &tms_jobEnd, logFile);
+        timesys( jobEnd - jobStart, &tmsJobStart, &tms_jobEnd);
         pr_2x( logFile, stderr, UnderLine );
 
         /* END PROGRAM */

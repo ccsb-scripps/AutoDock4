@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.28 2014/02/01 05:14:53 mp Exp $
+ $Id: intnbtable.cc,v 1.29 2014/02/15 01:45:56 mp Exp $
 
  AutoDock 
 
@@ -254,7 +254,7 @@ void intnbtable( Boole *const P_B_havenbp,
     if( outlev >= LOGETABLES ) {
 	    nbeEnd = times( &tms_nbeEnd );
 	    pr( logFile, "Time taken: ");
-	    timesys( nbeEnd - nbeStart, &tms_nbeStart, &tms_nbeEnd, logFile);
+	    timesys( nbeEnd - nbeStart, &tms_nbeStart, &tms_nbeEnd);
     }
 }
 /* end of intnbtable */

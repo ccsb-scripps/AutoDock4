@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.73 2014/02/01 05:14:53 mp Exp $ 
+ $Id: call_glss.cc,v 1.74 2014/02/15 01:45:56 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -429,7 +429,7 @@ State call_glss(/* not const */ Global_Search *global_method,
                 (void)fprintf( logFile, " %d",i+1); 
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
            }
-           global_method->localsearch(thisPop, local_method, evaluate, outlev, logFile);
+           global_method->localsearch(thisPop, local_method, outlev, logFile);
 	   if (outlev >= LOGRUNVVV ) for (i=0; i<pop_size; i++) {
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
                 (void)fprintf( logFile, " \n"); 
@@ -491,7 +491,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 #endif /* DEBUG3 */
          (void)fprintf(logFile,"    Num.evals.: %ld   Timing: ", 
                evaluate.evals() );
-         timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd, logFile);
+         timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd);
        }
 
        // Print extended generational population statistics, when "due" :

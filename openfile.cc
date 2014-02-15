@@ -1,6 +1,6 @@
 /*
 
- $Id: openfile.cc,v 1.10 2014/02/01 05:14:53 mp Exp $
+ $Id: openfile.cc,v 1.11 2014/02/15 01:45:56 mp Exp $
 
  AutoDock 
 
@@ -26,7 +26,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 
- $Id: openfile.cc,v 1.10 2014/02/01 05:14:53 mp Exp $
+ $Id: openfile.cc,v 1.11 2014/02/15 01:45:56 mp Exp $
 
 */
 
@@ -102,7 +102,7 @@ int openFile( const char *const filename,
 	sprintf(error_message, "%s: I'm sorry; I can't find or open \"%s\"\n", programname, filename);
 
 	jobEnd = times( &tms_jobEnd );
-	timesys( jobEnd - start, &tms_start, &tms_jobEnd, logFile );
+	timesys( jobEnd - start, &tms_start, &tms_jobEnd);
 	pr_2x( logFile, stderr, error_message );
 
 	if (mayExit) {

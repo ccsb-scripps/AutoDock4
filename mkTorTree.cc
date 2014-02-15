@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.26 2014/02/01 05:16:14 mp Exp $
+ $Id: mkTorTree.cc,v 1.27 2014/02/15 01:45:56 mp Exp $
 
  AutoDock 
 
@@ -40,12 +40,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern char  *programname;
     
 /* local functions: */
+/*** MP in progress
 static
 int check_atomnumber( const int number, 
  const int atomnumber[], const int nrecord, const int natoms, FILE *logFile);
 #define check_atomnumber_ok(a) check_atomnumber((a), atomnumber, nrecord, natoms, logFile)
 
-/* #define check_atomnumber_ok( a )  (((a) >= 0) && ((a) < natoms)) */
+**/
+#define check_atomnumber_ok( a )  (((a) >= 0) && ((a) < natoms))
 
 void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                 const char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
@@ -217,8 +219,15 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                     tlist[ ntor ][ ATM1 ]= nrestor + true_ligand_atoms;
                 } else {
 		    int nfields;
-                    nfields=sscanf(Rec_line[ i ],"%*s %d %d", 
-			&tlist[ ntor ][ ATM1 ], &tlist[ ntor ][ ATM2 ] );
+                    // MP in progress nfields=sscanf(Rec_line[ i ],"%*s %d %d", 
+			// MP in progress &tlist[ ntor ][ ATM1 ], &tlist[ ntor ][ ATM2 ] );
+			// MP in progress &tlist[ ntor ][ ATM1 ], &tlist[ ntor ][ ATM2 ] );
+		    tlist[ntor][ATM2] = atomnumber[i+1];//atomlast;
+                    nfields=sscanf(Rec_line[ i ],"%*s %d %*d", 
+			 &tlist[ ntor ][ ATM1 ] );
+		/* convert from 1-origin to internal 0-origin */
+                 --tlist[ ntor ][ ATM1 ];
+
                 }
                 if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
                     char  error_message[ LINE_LEN ];
@@ -227,8 +236,8 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                     stop( error_message );
                 } /* endif */
 		/* convert from 1-origin to internal 0-origin */
-                --tlist[ ntor ][ ATM1 ];
-                --tlist[ ntor ][ ATM2 ];
+                 //--tlist[ ntor ][ ATM1 ];
+                 //--tlist[ ntor ][ ATM2 ];
                 nbranches = 0;
 
 #ifdef DEBUG
@@ -354,11 +363,14 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 	char error_msg[LINE_LEN];
         B_atom_number_OK &= check_atomnumber_ok( tlist[ itor ][ ATM1 ] );
         B_atom_number_OK &= check_atomnumber_ok( tlist[ itor ][ ATM2 ] );
+/** MPique in progress
         if (B_atom_number_OK) for (int i=0;  i < tlist[ itor ][ NUM_ATM_MOVED ]; i++ ) {
                 B_atom_number_OK &= check_atomnumber_ok( tlist[ itor ][ 3+i ] );
             }
+***/
         if (B_atom_number_OK) continue;
-        prStr(error_msg, "%s: ERROR:  Torsion number %d between atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n", programname, itor+1, 1+tlist[itor][ATM1], 1+tlist[itor][ATM2], tlist[itor][NUM_ATM_MOVED] );
+        prStr(error_msg, "%s: ERROR:  Torsion number %d between atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n",
+ programname, itor+1, 1+tlist[itor][ATM1], 1+tlist[itor][ATM2], tlist[itor][NUM_ATM_MOVED] );
 	stop(error_msg); // exits
     }
 

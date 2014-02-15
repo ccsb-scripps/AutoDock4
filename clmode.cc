@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.21 2014/02/01 05:14:53 mp Exp $
+ $Id: clmode.cc,v 1.22 2014/02/15 01:45:56 mp Exp $
 
  AutoDock 
 
@@ -329,7 +329,7 @@ void  clmode( const int   num_atm_maps,
 /*
  *  End cluster_mode and END PROGRAM...
  */
-    success( hostnm, jobStart, tms_jobStart, logFile);
+    success( hostnm, jobStart, tms_jobStart);
 
     exit(EXIT_SUCCESS); // POSIX, defined in stdlib.h
 }

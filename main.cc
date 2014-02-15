@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.202 2013/10/21 21:52:04 mp Exp $
+ $Id: main.cc,v 1.203 2014/02/15 01:45:56 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -121,7 +121,7 @@ extern Eval evaluate;
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.202 2013/10/21 21:52:04 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.203 2014/02/15 01:45:56 mp Exp $"};
 
 
 
@@ -769,7 +769,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.202 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.203 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1378,7 +1378,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         if (B_atom_types_found == TRUE) {
             // Read in the AutoGrid atomic affinity map
             // map_index could be incremented here if we had the atom_type stored in each map...
-            map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'a' );
+            map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'a', logFile);
             if( outlev >= LOGRECREAD ) pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                     map_stats.minimum, map_stats.mean, map_stats.maximum);
             num_maps++;
@@ -1398,7 +1398,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         /*
          *  elecmap file.e.map
          */
-        map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'e' );
+        map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'e', logFile);
         if( outlev >= LOGRECREAD ) pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                 map_stats.minimum, map_stats.mean, map_stats.maximum);
         ElecMap = num_maps;
@@ -1412,7 +1412,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         /*
          *  desolvmap file.d.map
          */
-        map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'd' );
+        map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'd', logFile);
         if( outlev >= LOGRECREAD ) pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                 map_stats.minimum, map_stats.mean, map_stats.maximum);
         DesolvMap = num_maps;
@@ -1431,7 +1431,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         B_charMap = TRUE;
         if (B_atom_types_found == TRUE) {
             // map_index could be incremented here if we had the atom_type stored in each map...
-            map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'c' );
+            map_stats = readmap( line, outlev, jobStart, tms_jobStart, B_charMap, &B_havemap, num_maps, info, map, 'c', logFile);
             if( outlev >= LOGRECREAD ) pr(logFile, "Min= %.3lf Mean= %.3lf Max= %.3lf\n\n",
                     map_stats.minimum, map_stats.mean, map_stats.maximum);
             num_maps++;
