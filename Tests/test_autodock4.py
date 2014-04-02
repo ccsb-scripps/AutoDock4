@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.63 2013/10/09 18:16:06 mp Exp $
+# $Id: test_autodock4.py,v 1.64 2014/04/02 00:22:31 mp Exp $
 #
 
 """
@@ -218,11 +218,15 @@ class AutoDock4_1pgp_two_extensions( AutoDock_simple_test ):
 
 #______________________________________________________________________________
 
-
 class AutoDock4_1pgp_ligand_types_map_mismatch( AutoDock_simple_test ):
     """Test that autodock4 stops early if number of maps do not equal number
     of ligand types"""
     dpf_stem = "1pgp_ligand_types_map_mismatch"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+class AutoDock4_1pgp_map_truncated( AutoDock_simple_test ):
+    """Test that autodock4 stops early if map data is incomplete"""
+    dpf_stem = "1pgp_map_truncated"
     expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -892,6 +896,7 @@ if __name__ == '__main__':
 	'AutoDock4_1pgp_illegal_outlev_test',
         'AutoDock4_1pgp_illegal_symoutlev_test',
         'AutoDock4_1pgp_ligand_types_map_mismatch',
+        'AutoDock4_1pgp_map_truncated',
         'AutoDock4_1pgp_illegal_keyword_test',
         'AutoDock4_1pgp_no_elecmap_test',
         'AutoDock4_1pgp_no_desolvmap_test',

@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.21 2014/02/15 01:45:56 mp Exp $
+ $Id: readmap.cc,v 1.22 2014/04/02 00:22:31 mp Exp $
 
  AutoDock 
 
@@ -65,7 +65,7 @@ Statistics readmap( char           line[LINE_LEN],
     char ExtGpfName[PATH_MAX];
     char mmFileName[PATH_MAX];
     static char xyz_str[]="xyz";
-    char C_mapValue;
+    char C_mapValue;  // Caution: may be unsigned on some platforms. M Pique
     char map_line[LINE_LEN];
     char inputline[LINE_LEN];
     char atom_type_name[MAX_CHARS];
@@ -79,7 +79,7 @@ Statistics readmap( char           line[LINE_LEN],
     int indpf = 0;
     int nel[SPACE];
     int nv=0;
-    int nvExpected = 0;
+    int nvExpected;
 
     register int xyz = 0;
     register int i = 0;
@@ -230,15 +230,12 @@ Statistics readmap( char           line[LINE_LEN],
         for ( j = 0;  j < info->num_points1[Y];  j++) {
             for ( i = 0;  i < info->num_points1[X];  i++) {
 		float thisval;
+	        if (fgets( map_line, LINE_LEN, map_file) == NULL) continue; // eof or error
                 if (B_charMap) {
-                    if (fgets(map_line, LINE_LEN, map_file) != NULL) { /*new*/
-                        if (sscanf( map_line,  "%c",  &C_mapValue ) != 1) continue;
-			thisval=mapc2f(C_mapValue);
-                    }
+                    if (sscanf( map_line,  "%c",  &C_mapValue ) != 1) continue;
+		    thisval=mapc2f(C_mapValue);
                 } else {
-                    if (fgets( map_line, LINE_LEN, map_file) != NULL) { /*new*/
-                        if (sscanf( map_line,  "%f",  &thisval) != 1) continue;
-                    }
+                    if( sscanf( map_line,  "%f",  &thisval) != 1) continue;
                 }
 		SetMap(map,info,k,j,i,num_maps,thisval);
 		map_max = max( map_max, thisval );
@@ -295,7 +292,8 @@ Statistics readmap( char           line[LINE_LEN],
 
     if (nv != nvExpected ) {
         char message[LINE_LEN];
-        prStr( message, "\n%s: wrong number of values read in. Check grid map!\n\n", programname  );
+        prStr( message, "\n%s: too few values read in. Check grid map '%c' !\n\n",
+		 programname, map_type  );
         pr_2x( stderr, logFile, message );
 
         jobEnd = times( &tms_jobEnd );
