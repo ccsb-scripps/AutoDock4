@@ -1,7 +1,7 @@
 autodock_parameter_version 4.1       # used by autodock to validate parameter set
 outlev 1
 
-seed 0 1                        # seeds for random generator
+seed 0 1                        # seeds for random generator (0 is illegal)
 
 ligand_types C HD OA P               # ligand atom type names
 fld 1pgp_rec.maps.fld                # grid_data_file

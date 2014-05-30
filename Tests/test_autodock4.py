@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.64 2014/04/02 00:22:31 mp Exp $
+# $Id: test_autodock4.py,v 1.65 2014/05/30 01:27:21 mp Exp $
 #
 
 """
@@ -562,8 +562,14 @@ class AutoDock4_1pgp_timepid_test( AutoDock_simple_test ):
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_seed01_test( AutoDock_simple_test ):
-    """Test that autodock4 executes using seeds  set to 0 1"""
+    """Test that autodock4 stops using seeds  set to 0 1"""
     dpf_stem = "1pgp_seed01"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_seed37_test( AutoDock_simple_test ):
+    """Test that autodock4 executes using seeds  set to 3 7"""
+    dpf_stem = "1pgp_seed37"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -886,6 +892,7 @@ if __name__ == '__main__':
         # simple tests:
         'AutoDock4_1pgp_timepid_test',
 	'AutoDock4_1pgp_seed01_test',
+	'AutoDock4_1pgp_seed37_test',
 	'AutoDock4_1pgp_seedinttime_test',
         'AutoDock4_1pgp_epdb_flexres_intelec_test',
         'AutoDock4_1pgp_epdb_flexres_nointelec_test',
@@ -908,11 +915,6 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_two_mapsets_test',
         'AutoDock4_1pgp_unbound_set_illegal_test',
         'AutoDock4_1pgp_unbound_model_illegal_test', #1
-	'AutoDock4_1pgp_ga_run_maxruns_test',
-	'AutoDock4_1pgp_ga_run_maxruns_analysis_test',
-	'AutoDock4_1pgp_mixed_maxruns_test',
-	'AutoDock4_1pgp_mixed_maxruns_analysis_test',
-	'AutoDock4_1pgp_overmaxruns_test',
 	'AutoDock4_1pgp_intnbpreps_test',
 	'AutoDock4_1pgp_intnbpreps_toofew_test',
 	'AutoDock4_1pgp_intnbpreps_illegal_atom_test',
@@ -972,6 +974,12 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_about_auto_ga_only', 
         'AutoDock4_1pgp_about_auto_local_only', 
         'AutoDock4_1pgp_about_auto_gals', 
+	# tests that take a long time to run 
+	'AutoDock4_1pgp_ga_run_maxruns_test',
+	'AutoDock4_1pgp_ga_run_maxruns_analysis_test',
+	'AutoDock4_1pgp_mixed_maxruns_test',
+	'AutoDock4_1pgp_mixed_maxruns_analysis_test',
+	'AutoDock4_1pgp_overmaxruns_test',
     ]
     unittest.main( argv=( [__name__ ,] + test_cases ) )
     #  The call "unittest.main()" automatically runs all the TestCase classes in
