@@ -1,4 +1,4 @@
-AutoDock README $Id: README,v 1.9 2014/03/27 22:38:13 mp Exp $
+AutoDock README $Id: README,v 1.10 2014/06/12 17:36:34 mp Exp $
 
 
 What is AutoDock?
@@ -54,6 +54,10 @@ depends on certain files in the "../autodock" directory.
 The CVS repository does not include the 'configure' file;  'configure'
 is used to create a Makefile that is platform-specific.
 To generate the `./configure' file, it is necessary to run 'autoreconf -i'.
+You will need autoconf version 2.62 or later; both autoconf and autoreconf
+are from the Free Software Foundation's Autotools system, available at
+http://www.gnu.org/software/autoconf
+
 Once this file has been generated, see "From SOURCE Tar File" below,
 and read the INSTALL file in this directory for more options.
 This will explain how to use '../configure' to create 
@@ -76,11 +80,11 @@ this will create directories src/autodock and src/autogrid.
 For ARCHOSV below, substitute your
 computer type and operating system version, such as "i86Linux2".
 You can use any name you like; nothing in the build process depends
-on the name. We suggest:
+on the name. We suggest following these patterns:
   i86Linux2 : 32-bit Intel Linux
   x86_64Linux2 : 64-bit Intel Linux
-  universalDarwin9 : Mac OS X 10.5 and 10.6 Intel or PPC
-  universalDarwin11 : Mac OS X 10.7 and 10.8 Intel
+  universalDarwin9 : Mac OS X 10.5 (Leopard) Intel or PPC
+  universalDarwin11 : Mac OS X 10.7 (Lion) Intel
   i86Windows : Microsoft Windows Intel
   sun4SunOS5 : SPARC Solaris
 
@@ -140,6 +144,27 @@ csh $(srcdir)/../autodock/paramdat2h.csh $(srcdir)/../autodock/AD4_parameters.da
 to
 csh $(srcdir)/../autodock/paramdat2h.csh  $(srcdir)/../autodock/AD4_parameters.dat /home/myusername/AD4.1_bound_plusK.dat > $@
 and again run "autoreconf -i; cd $ARCHOSV; ../configure;  make"
+
+
+Modifying AutoDock and AutoGrid
+=============================
+Please feel free to change the programs to suit your needs.
+If you have suggestions for improvements, please email us.
+
+If you add source files you will need to modify Makefile.am to include any
+new source files.  If you add source files or change the dependencies
+of one source file upon another, you will need to re-run autoconf in the source
+directory.  You will then need to install automake, a companion
+program to autoconf, also from the Free Software Foundation, available at
+http://www.gnu.org/software/automake
+
+The general process, then, is
+ cd to autodock source directory
+ autoreconf -i
+ cd to your architecture's build directory (such as x86_64Linux3)
+ ../configure
+ make
+ make check
 
 
 Copying AutoDock and AutoGrid
