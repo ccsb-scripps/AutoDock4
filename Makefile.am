@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.45 2014/06/12 05:05:58 mp Exp $
+# $Id: Makefile.am,v 1.46 2014/06/12 17:35:26 mp Exp $
 # 
 # AutoDock  
 # 
@@ -622,13 +622,13 @@ endif
 	cp $(srcdir)/Tests/*.pdbqt  $$outputdir/Testruns;\
 	cp $(srcdir)/Tests/*.map*  $$outputdir/Testruns;\
 	chmod -fR a+w $$outputdir/Testruns;
-	-cd Testruns;\
+	-cd Testruns; rm -f test_*.dlg ; \
 	python ./test_autodock4.py -d . -e ../autodock4$(EXEEXT) -o . ;
 if WANT_OMP
 	@echo " "
 	@echo "Running the Python test_autodock4.py unit-tests on autodock4.omp"
 	@echo " "
-	-cd Testruns;\
+	-cd Testruns; rm -f test_*.dlg ; \
 	python ./test_autodock4.py -d . -e ../autodock4.omp$(EXEEXT) -o . ;
 endif
 
