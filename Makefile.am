@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.43 2013/12/12 02:07:10 mp Exp $
+# $Id: Makefile.am,v 1.44 2014/06/12 01:30:18 mp Exp $
 # 
 # AutoDock  
 # 
@@ -34,17 +34,21 @@ EXTRA_DIST = AD4_PARM99.dat AD4_parameters.dat AD4.1_bound.dat AD4.1_extended.da
 dist-hook:
 	rm -rf `find $(distdir)/Tests -name CVS -o -name '*.dlg'` 
 
-bin_PROGRAMS = autodock4 
-
-# Define the AutoDock 4 source code files:
-
-autodock4_SOURCES = \
-    main.cc
+if WANT_OMP
+bin_PROGRAMS = autodock4   autodock4.omp
+else
+bin_PROGRAMS = autodock4   
+endif
 
 
 CLEANFILES = default_parameters.h
 
 noinst_LIBRARIES = 
+
+# Define the AutoDock 4 source code files:
+
+autodock4_SOURCES = \
+    main.cc
 
 autodock4_SOURCES += \
     alea.cc \
@@ -125,6 +129,7 @@ autodock4_SOURCES += \
     success.cc \
     support.cc \
     swap.cc \
+    threadlog.cc \
     timesys.cc \
     timesyshms.cc \
     torNorVec.cc \
@@ -232,6 +237,210 @@ autodock4_SOURCES += \
 		success.h \
 		support.h \
 		swap.h \
+		threadlog.h \
+		timesys.h \
+		timesyshms.h \
+		torNorVec.h \
+		torsion.h \
+		trilinterp.h \
+		trjtokens.h \
+		typedefs.h \
+		usage.h \
+		version.h \
+		warn_bad_file.h \
+		weedbonds.h \
+		writePDBQT.h
+if WANT_OMP
+autodock4_omp_SOURCES = \
+     main.cc 
+autodock4_omp_SOURCES += \
+   alea.cc \
+    analysis.cc \
+	atom_parameter_manager.cc \
+    banner.cc \
+    bestpdb.cc \
+	calculateEnergies.cc \
+    call_glss.cc \
+    call_ls.cc \
+    center_ligand.cc \
+    changeState.cc \
+    check_header_float.cc \
+    check_header_int.cc \
+    check_header_line.cc \
+    cluster_analysis.cc \
+    clmode.cc \
+    cnv_state_to_coords.cc \
+    com.cc \
+    conformation_sampler.cc \
+    dimLibrary.cc\
+	distdepdiel.cc \
+    stateLibrary.cc \
+    readfield.cc \
+    readmap.cc \
+    readPDBQT.cc \
+	read_parameter_library.cc \
+    eval.cc \
+    gencau.cc \
+    getrms.cc \
+    get_atom_type.cc \
+    getInitialState.cc \
+    getpdbcrds.cc \
+    gs.cc \
+    initautodock.cc \
+    input_state.cc \
+    investigate.cc \
+    linpack.cc \
+    ls.cc \
+    mapping.cc \
+    mingw_getrusage.cc \
+    minmeanmax.cc \
+    mkNewState.cc \
+    mkTorTree.cc \
+    mkRandomState.cc \
+    nonbonds.cc \
+    openfile.cc \
+    output_state.cc \
+    parse_dpf_line.cc \
+    parse_param_line.cc \
+    parse_PDBQT_line.cc \
+    parse_trj_line.cc \
+	parsetypes.cc \
+    print_2x.cc \
+    print_atomic_energies.cc \
+    print_avsfld.cc \
+    writePDBQT.cc \
+    print_rem.cc \
+    printdate.cc \
+    printEnergies.cc \
+    printhms.cc \
+    prClusterHist.cc \
+    prInitialState.cc \
+    prTorConList.cc \
+    pso.cc \
+    qmultiply.cc \
+    qtransform.cc \
+    quicksort.cc \
+    ranlib.cc \
+    rep.cc \
+    scauchy.cc \
+    setflags.cc \
+    simanneal.cc \
+    sort_enrg.cc \
+    stack.cc \
+    stop.cc \
+    strindex.cc \
+    success.cc \
+    support.cc \
+    swap.cc \
+    threadlog.cc \
+    timesys.cc \
+    timesyshms.cc \
+    torNorVec.cc \
+    torsion.cc \
+    trilinterp.cc \
+    usage.cc \
+    weedbonds.cc \
+    warn_bad_file.cc \
+    coliny.cc \
+    eintcal.cc \
+    eintcalPrint.cc \
+    intnbtable.cc \
+    nbe.cc \
+		PDBQT_tokens.h \
+		analysis.h \
+		atom_parameter_manager.h \
+		alea.h \
+		autocomm.h \
+		autoglobal.h \
+		banner.h \
+		bestpdb.h \
+		calculateEnergies.h \
+		call_glss.h \
+		call_ls.h \
+		center_ligand.h \
+		changeState.h \
+		check_header_float.h \
+		check_header_int.h \
+		check_header_line.h \
+		clmode.h \
+		cluster_analysis.h \
+		cnv_state_to_coords.h \
+		coliny.h \
+		conformation_sampler.h \
+		constants.h \
+		default_parameters.h \
+		dimLibrary.h \
+		distdepdiel.h \
+		dpftoken.h \
+		eintcal.h \
+		eintcalPrint.h \
+		energy.h \
+		eval.h \
+		gencau.h \
+		getInitialState.h \
+		get_atom_type.h \
+		getpdbcrds.h \
+		getrms.h \
+		globals.h \
+		grid.h \
+		gs.h \
+		hybrids.h \
+		initautodock.h \
+		input_state.h \
+		intnbtable.h \
+		investigate.h \
+		ls.h \
+		main.h \
+		mdist.h \
+		mingw_sysconf.h \
+		mingw_sys_times.h \
+		mkNewState.h \
+		mkRandomState.h \
+		mkTorTree.h \
+		nbe.h \
+		nonbonds.h \
+		openfile.h \
+		output_state.h \
+		parameters.h \
+		parse_PDBQT_line.h \
+		parse_dpf_line.h \
+		parse_param_line.h \
+		parse_trj_line.h \
+		parsetypes.h \
+		partokens.h \
+		prClusterHist.h \
+		prInitialState.h \
+		prTorConList.h \
+		printEnergies.h \
+		print_2x.h \
+		print_atomic_energies.h \
+		print_avsfld.h \
+		print_rem.h \
+		printdate.h \
+		printhms.h \
+        pso.h \
+		qmultiply.h \
+		qtransform.h \
+		quicksort.h \
+		ranlib.h \
+		readPDBQT.h \
+		read_parameter_library.h \
+		readfield.h \
+		readmap.h \
+		rep.h \
+		rep_constants.h \
+		setflags.h \
+		simanneal.h \
+		sort_enrg.h \
+		stateLibrary.h \
+		stack.h \
+		stop.h \
+		strindex.h \
+		structs.h \
+		success.h \
+		support.h \
+		swap.h \
+		threadlog.h \
 		timesys.h \
 		timesyshms.h \
 		torNorVec.h \
@@ -245,29 +454,54 @@ autodock4_SOURCES += \
 		weedbonds.h \
 		writePDBQT.h
 
+endif
+
+
 BUILT_SOURCES = $(autodock4_SOURCES) default_parameters.h
 
-AM_CXXFLAGS = -O3 # Agressive optimization
+if WANT_OMP  
+# M Pique - I'm not sure which of these are really necessary
+# could this be replaced by :  AC_SUBST(AM_CXXFLAGS,"$OPENMP_CXXFLAGS")
+autodock4_omp_CFLAGS = $(AM_CFLAGS)  -fopenmp  $(OPENMP_CXXFLAGS)
+autodock4_omp_CPPFLAGS = $(AM_CPPFLAGS)  $(OPENMP_CXXFLAGS)
+autodock4_omp_LDFLAGS = $(AM_LDFLAGS) -fopenmp  $(OPENMP_CXXFLAGS)
+
+autodock4_omp_CXXFLAGS = $(autodock4_CXXFLAGS) -fopenmp  $(OPENMP_CXXFLAGS)
+autodock4_omp_LDADD = $(autodock4_LDADD)
+endif
+
+
+
+#MP AM_CXXFLAGS = -O3 # Agressive optimization
+AM_CXXFLAGS = -g # MP debug
 
     # if gnu c++ compiler
 AM_CXXFLAGS += -Wall # All warnings
 AM_CXXFLAGS += -Wno-write-strings # increase compatibility with pre 4.x compilers for string handling
 
 #  M Pique - add ASSERTQUATOK if you want error checking in qmultiply.cc
+#  M Pique - USE_INT_AS_FOURBYTELONG is for random number seeds only and is appropriate for
+#     all post-2005 computers, which treat "int" as four bytes.
 AM_CPPFLAGS = -DNOSQRT \
               -DUSE_8A_NBCUTOFF \
-              -DWRITEPDBQSTATE
+	      -DUSE_INT_AS_FOURBYTELONG \
+              -DWRITEPDBQSTATE -g # -g is MP debug
+AM_LDFLAGS = -g # -g is MP debug
 
 
 #autodock4_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
 #autodock4_CXXFLAGS = -Wall -O3 -ftree-vectorize # All warnings, Agressive optimization + GCC vectorization # MacOSX only?
 
+autodock4_CPPFLAGS = $(AM_CPPFLAGS)
+autodock4_LDFLAGS = $(AM_LDFLAGS)
+
 
 autodock4_LDADD = $(COLINY_LDFLAGS) -lm
 
 if WANT_BIGSTACK
-    autodock4_LDFLAGS = -Wl,--stack,8388608 # Cygwin, big stacksize
+    autodock4_LDFLAGS += -Wl,--stack,8388608 # Cygwin, big stacksize
 endif
+
 
 #
 # If you need to use debugging or profiling, these should also be 
@@ -372,7 +606,7 @@ test : autodock4 $(srcdir)/Tests/test_autodock4.py
 # test files reside because it writes its logs into its current directory
 # and expects to find AD4.1_bound.dat in that same directory.
 # We create a run-time Testruns directory for this purpose.
-# The name is different to allow "configure;make;make check" in the source dir.
+# The name is different from Tests to allow "configure;make;make check" in the source dir.
 	outputdir=`pwd` ;\
 	umask 0 ;\
 	test -d $$outputdir/Testruns && chmod -fR a+w $$outputdir/Testruns;\
@@ -383,9 +617,16 @@ test : autodock4 $(srcdir)/Tests/test_autodock4.py
 	cp $(srcdir)/Tests/*.dpf  $$outputdir/Testruns;\
 	cp $(srcdir)/Tests/*.pdbqt  $$outputdir/Testruns;\
 	cp $(srcdir)/Tests/*.map*  $$outputdir/Testruns;\
-	chmod -fR a+w $$outputdir/Testruns;\
-	cd $$outputdir/Testruns;\
-	python ./test_autodock4.py -d . -e ../autodock4$(EXEEXT) -o .
+	chmod -fR a+w $$outputdir/Testruns;
+	-cd Testruns;\
+	python ./test_autodock4.py -d . -e ../autodock4$(EXEEXT) -o . ;
+if WANT_OMP
+	@echo " "
+	@echo "Running the Python test_autodock4.py unit-tests on autodock4.omp"
+	@echo " "
+	-cd Testruns;\
+	python ./test_autodock4.py -d . -e ../autodock4.omp$(EXEEXT) -o . ;
+endif
 
 #else
 #	@echo " "

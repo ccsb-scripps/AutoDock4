@@ -1,11 +1,11 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-# $Id: configure.ac,v 1.87 2014/04/02 00:22:31 mp Exp $
+# $Id: configure.ac,v 1.88 2014/06/12 01:30:18 mp Exp $
 
 # for release replace x with appropriate version (4.2.4 was 2010-Jul-7)
 #     release 4.2.5 was 2012-Nov-2
 #     release 4.2.5.1 was 2012-Dec-13
-AC_INIT([autodock], [4.2.5.x.20140401], [autodock@scripps.edu])
+AC_INIT([autodock], [4.2.5.x.20140611], [autodock@scripps.edu])
 AC_CONFIG_SRCDIR([analysis.cc])
 
 AM_INIT_AUTOMAKE()
@@ -53,6 +53,16 @@ case $host_os in
          * ) CYGWIN=no;;
 esac
 AM_CONDITIONAL([WANT_BIGSTACK], [test "$CYGWIN" = yes])
+
+# M Pique: Open MP detection taken from Joachim Wuttke at
+# http://stackoverflow.com/questions/9037434/enable-openmp-checks-and-flags-in-autoconf-and-automake
+# who suggests also:   AC_SUBST(AM_CXXFLAGS,"$OPENMP_CXXFLAGS")
+AC_LANG(C++)
+AC_PROG_CXX
+AC_OPENMP  # requires autoconf 2.62 or newer, sets OPENMP_CXXFLAGS if successful
+
+AM_CONDITIONAL([WANT_OMP], [test "x$OPENMP_CXXFLAGS" != "x"])
+
 
 # See "automake" manual, version 1.10, section 10.5 (Python)
 #AM_PATH_PYTHON([2.1],, [:])
