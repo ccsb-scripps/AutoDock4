@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.203 2014/02/15 01:45:56 mp Exp $
+ $Id: main.cc,v 1.204 2014/06/12 01:41:57 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -105,6 +105,7 @@ using std::string;
 #include "calculateEnergies.h"
 #include "conformation_sampler.h"
 #include "main.h"
+#include "threadlog.h"
 #include "alea.h"
 #include "timesys.h" // for struct tms
 // PSO
@@ -117,11 +118,11 @@ using std::string;
 extern int debug;
 extern int keepresnum;
 extern Real idct;
-extern Eval evaluate;
+Eval evaluate; // used by the search methods that are not yet thread-safe 
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.203 2014/02/15 01:45:56 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.204 2014/06/12 01:41:57 mp Exp $"};
 
 
 
@@ -140,12 +141,13 @@ static Boole B_found_ligand_types = FALSE;
 static Boole B_found_autodock_parameter_version = FALSE;
 static Boole B_have_flexible_residues = FALSE;  // does the receptor have flexible residues
 
+static int true_ligand_atoms = 0; // used by exit_if ... 
+
 
 
  /* local-to-main functions: */
 static void exit_if_missing_elecmap_desolvmap_about(string keyword); // see bottom of main.cc
 static int getoutlev(char *line, int *outlev); // see bottom of main.cc  0==fail, 1==OK
-static int true_ligand_atoms = 0; // used by exit_if ... 
 static void set_seeds( FourByteLong seed[2], char seedIsSet[2], FourByteLong runseed[][2], const int outlev, FILE *logFile ); // see below
 static int processid();
 
@@ -154,6 +156,13 @@ static int processid();
 int S ; // Swarm size
 double pso_xmin[PSO_D_MAX], pso_xmax[PSO_D_MAX]; // Intervals defining the search space
 
+#ifdef _OPENMP
+/* M Pique */
+#include <omp.h>
+#else
+#define omp_get_thread_num() (0)
+#define omp_get_max_threads() (1)
+#endif
 
 
 int main (int argc, const char ** argv)
@@ -172,19 +181,20 @@ GridMapSetInfo *info;  // this information is from the AVS field file
 //
 char atomstuff[MAX_ATOMS][MAX_CHARS];
 char pdbaname[MAX_ATOMS][5];
-Real crdorig[MAX_ATOMS][SPACE];  // original (possibly reoriented?) coords
-Real crdpdb[MAX_ATOMS][SPACE];  // PDB coordinates, recentered by "about"
-Real crd[MAX_ATOMS][SPACE];     // current coordinates according to State
+Real crdorig[MAX_ATOMS][SPACE];  // original coords
+Real crdpdb[MAX_ATOMS][SPACE];  // PDB coordinates, recentered by "about", possibly reoriented
 Real charge[MAX_ATOMS];
 Real abs_charge[MAX_ATOMS];
 Real qsp_abs_charge[MAX_ATOMS];
-EnergyComponent peratomE[MAX_ATOMS];
 int type[MAX_ATOMS];
 int bond_index[MAX_ATOMS];
 int ignore_inter[MAX_ATOMS];
+/* the following are modified according to state: */
+Real crd[MAX_ATOMS][SPACE];     // current coordinates according to State
+EnergyComponent peratomE[MAX_ATOMS];
 
 //   MAX_TORS
-//
+// These are all constant for any given ligand and torsion tree combination
 int  tlist[MAX_TORS+1][MAX_ATOMS];
 Real vt[MAX_TORS][SPACE];
 Real F_TorConRange[MAX_TORS][MAX_TOR_CON][2];
@@ -281,8 +291,6 @@ const Real ELECSCALE = 332.06363;
 // energy evaluation working storage:
 Real cA;
 Real cB;
-Real eintra = 0.0;  // sum of intramolecular energy for the ligand plus that of the protein
-Real einter = 0.0; // intermolecular energy between the ligand and the protein
 Real torsFreeEnergy = 0.0;
 Real AD3_FE_coeff_estat   = 1.000; // obsolete option in intelec 
 
@@ -485,7 +493,7 @@ static Real F_A_to;
 static Real F_lnH;
 static Real F_W;
 static Real F_hW;
-static FourByteLong clktck = 0;
+static long clktck = 0;
 
 #ifndef VERSION
 static string version_num = "4.2.2";
@@ -494,12 +502,7 @@ static string version_num = VERSION;
 #endif
 
 struct tms tms_jobStart;
-struct tms tms_gaStart;
-struct tms tms_gaEnd;
-
 Clock  jobStart;
-Clock  gaStart;
-Clock  gaEnd;
 
 
 EnergyTables *ad_energy_tables;  // Holds vdw+Hb, desolvation & dielectric lookup tables
@@ -574,6 +577,18 @@ origin.z = 0.;
 
 jobStart = times( &tms_jobStart );
 
+#ifdef _OPENMP
+/*
+** OpenMP initialization
+*/
+
+ /* make sure we use no more than compile-time max number of threads,
+  * controlled by size of arrays in the per-thread random number generators, com.cc.
+  * For example, if NUMG is 8, multi-core or multi-CPU processors up to 8
+  * hardware threads are supported.
+  */
+   if(omp_get_max_threads()>NUMG) omp_set_num_threads(NUMG);
+#endif
 
 //_____________________________________________________________________________
 /*
@@ -632,6 +647,7 @@ if ( setflags(argc,argv,version_num.c_str()) == -1) {
 //______________________________________________________________________________
 /*
 ** Initialize torsion arrays and constants.
+** This should be done for each new ligand read 
 */
 
 
@@ -693,7 +709,7 @@ ntor = atomC1 = atomC2 = 0;
 sqlower = squpper = 0.0;
 
 if (clktck == 0) {        /* fetch clock ticks per second first time */
-    if ( (clktck = sysconf(_SC_CLK_TCK)) < (FourByteLong)0L) {
+    if ( (clktck = sysconf(_SC_CLK_TCK)) < (long)0L) {
         stop("\"sysconf(_SC_CLK_TCK)\" command failed in \"main.c\"\n");
     } else {
         idct = (Real)1.0 / (Real)clktck;
@@ -769,7 +785,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.203 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.204 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1103,18 +1119,25 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		    time_t time_seed;
                     seedIsSet[i] = 'T';
                     seed[i] = (FourByteLong)time( &time_seed );
+		    /* seeds==0 are invalid */
+		    while ( seed[i]==0 ) {
+			sleep(1);
+                        seed[i] = (FourByteLong)time( &time_seed );
+			}
+		
 		    if(outlev>=LOGRUNV)
-                    pr(logFile,"Random number generator seed %d was seeded with the current time, value = %ld\n",i,seed[i]);
+                    pr(logFile,"Random number generator seed %d was seeded with the current time, value = " FBL_FMT "\n",i,seed[i]);
                 } else if (streq(param[i], "pid")) {
                     seedIsSet[i] = 'P';
                     seed[i] = processid();
 		    if(outlev>=LOGRUNV)
-                    pr(logFile,"Random number generator seed %d was seeded with the process ID, value   = %ld\n",i,seed[i]);
+                    pr(logFile,"Random number generator seed %d was seeded with the process ID, value   = " FBL_FMT "\n",i,seed[i]);
                 } else {
                     seedIsSet[i] = 'U';
                     seed[i] = atol(param[i]);
+		    if(seed[i]==0) stop("Random number seed cannot be zero");
 		    if(outlev>=LOGRUNV)
-                    pr(logFile,"Random number generator seed %d was seeded with the user-specified value  %ld\n",i,seed[i]);
+                    pr(logFile,"Random number generator seed %d was seeded with the user-specified value  " FBL_FMT "\n",i,seed[i]);
                 }
             }/*i*/
 	set_seeds( seed, seedIsSet, runseed, outlev, logFile);
@@ -1531,7 +1554,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 #ifdef DEBUGTLIST 
 // MP 2012-04
 	for(int t=0;t<=ntor;t++) {
-	fprintf(logFile, "@@@ tlist[%2d] = %3d %3d %3d : ", t, tlist[t][0]+1, tlist[t][1]+1, tlist[t][2]);
+	fprintf(logFile, " tlist[%2d] = %3d %3d %3d : ", t, tlist[t][0]+1, tlist[t][1]+1, tlist[t][2]);
 	for(int aii=0;aii<tlist[t][2];aii++) fprintf(logFile,"%2d ",tlist[t][3+aii]+1);
 	fprintf(logFile, "\n");
 	}
@@ -1715,12 +1738,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 coliny_init(algname, domain, sInit.ntor+7);
 
                 for (j=nconf; j<nruns; j++) {
+		  Real eintra = 0.0;  // sum of intramolecular energy for the ligand plus that of the protein
+		  Real einter = 0.0; // intermolecular energy between the ligand and the protein
                   fprintf( logFile, "\n\tBEGINNING Coliny %s DOCKING\n",algname);
                   pr(logFile, "\nDoing %s run:  %d/%d.\n", algname, j+1, nruns);
 
                   //coliny uses a single seed
                   coliny_seed = runseed[j][0]+runseed[j][1];
-                  pr(logFile, "Seed: %d [%ld+%ld]\n", coliny_seed, runseed[j][0], runseed[j][1], j);
+                  pr(logFile, "Seed: %d ["FBL_FMT"+"FBL_FMT"]\n", coliny_seed, runseed[j][0], runseed[j][1], j);
                   (void) fflush(logFile);
 
                   colinyStart = times(&tms_colinyStart);
@@ -1741,7 +1766,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
                   colinyEnd = times(&tms_colinyEnd);
                   pr(logFile, "Time taken for this %s run:\n", algname);
-                  timesyshms(colinyEnd-colinyStart, &tms_colinyStart, &tms_colinyEnd);
+                  timesyshms(colinyEnd-colinyStart, &tms_colinyStart, &tms_colinyEnd, logFile);
                   pr(logFile, "\n");
 
                   pr(logFile, "Total number of Energy Evaluations: %d\n", (int)evaluate.evals() );
@@ -2398,7 +2423,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
     case DPF_RUNS:
         /*
         **  runs
-        **  Number of docking runs: GA or simanneal
+        **  Number of docking runs: GA or LS or simanneal
 	**  Note this need not be checked here against MAX_RUNS-nconf as DPF could
 	**  modify it before triggering runs M Pique
         */
@@ -2994,7 +3019,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	      tlist, ntor, crdpdb, lig_center, &sInit.T, &ligand.S.T,
 	      outlev>=LOGBASIC, outlev, logFile);
 
-            if (B_havenbp && outlev>=LOGNBINTEV)  nbe( info, ad_energy_tables, num_atom_types );
+            if (B_havenbp && outlev>=LOGNBINTEV)  nbe( info, ad_energy_tables, num_atom_types, outlev, logFile );
             if (B_cluster_mode) {
                 clmode( num_atom_types, clus_rms_tol,
                         hostnm, jobStart, tms_jobStart,
@@ -3070,7 +3095,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
       // According to gs.cc, alpha and beta are unused
       //   - M Pique  April 2012
       ((Genetic_Algorithm *)GlobalSearchMethod)->mutation_values( low, high, alpha, beta, trnStep0, qtwStep0, torStep0  );
-      ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
+      ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor, outlev, logFile);
 
       if (s_mode==LinearRanking){
         (void)((Genetic_Algorithm *)GlobalSearchMethod)->set_linear_ranking_selection_probability_ratio(linear_ranking_selection_probability_ratio);
@@ -3227,76 +3252,97 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             }
             for (j=0; j<nruns; j++) {
 
+		Real eintra = 0.0;  // sum of intramolecular energy for the ligand plus that of the protein
+		Real einter = 0.0; // intermolecular energy between the ligand and the protein
+		struct tms tms_runStart, tms_runEnd;
+		Clock  runStart, runEnd;
+		FILE *tlogFile;
+#ifdef _OPENMP
+/* MPique TODO*/
+		int thread_num=omp_get_thread_num();
+		if(nruns>1) tlogFile = threadLogOpen( j );
+		else tlogFile=logFile;
+		if(tlogFile==NULL) stop("failed to create thread log file");
+		fprintf(tlogFile, "run %2d nconf %2d GALS/GS on thread_num %d\n",
+	          nconf+j+1, nconf, thread_num);
+		fflush(tlogFile);
+		/* MPique TODO add interrupt handler to remove all tlog files */
+#else
+		tlogFile=logFile;
+#endif
+		
 		if(outlev>=LOGBASIC) 
-                (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
+                (void) fprintf( tlogFile, "\n\tBEGINNING %s DOCKING %d of %d\n", 
+		GlobalSearchMethod->longname(), j+1, nruns);
 
 		/* set RNG seed using global run number, except for the first run in the job 
 		 *   which continues on with seeds as possibly modified by ligand state
 		 *   randomizations done during job setup but after "seed" DPF token,
 		 *   (e.g. tran0/dihe0 or extended conformation search). The sole reason
 		 *   for excepting the first run is for compatibility with existing tests.
-		 *   The reason for the "getsd()" is so the real first-run seeds will be
+		 *   The reason for the "getsd()" is so the actual first-run seeds will be
 		 *   correctly reported so the run can be reproduced if necessary.
 		 *   M Pique Oct 2013
 		 */
-		if(nconf==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
-		else setsd(runseed[nconf][0], runseed[nconf][1]); 
+		if(j==0&&nconf==0) getsd(&runseed[0][0], &runseed[0][1]);
+		setsd(runseed[nconf+j][0], runseed[nconf+j][1]); 
 
-                pr( logFile, "Run:\t%d / %d   Seed: %ld %ld \n", j+1, nruns, 
-		 (long)runseed[nconf][0], (long)runseed[nconf][1] );
+                pr( tlogFile, "Run:\t%d Seed: %ld %ld \n", nconf+j+1,
+		 (long)runseed[nconf+j][0], (long)runseed[nconf+j][1] );
 
-                pr(logFile, "Date:\t");
-                printdate( logFile, 2 );
-                (void) fflush( logFile );
+                pr(tlogFile, "Date:\t");
+                printdate( tlogFile, 2 );
+                (void) fflush( tlogFile );
 
-                gaStart = times( &tms_gaStart );
+                runStart = times( &tms_runStart );
 
+		// MP TODO what does this do? should it be per-thread?
                 if (B_reorient_random == TRUE) {
                     // create a new random orientation before docking
                     // reorient the ligand
-                    reorient( logFile, true_ligand_atoms, atomstuff, crdpdb, charge, type,
+                    reorient( tlogFile, true_ligand_atoms, atomstuff, crdpdb, charge, type,
                               parameterArray, randomQuat(), origin, ntor, tlist, vt, &ligand, debug, outlev );
                     // update the evaluate object
-                    evaluate.update_crds( crdpdb, vt );
+                    evaluate.update_crdpdb( crdpdb, vt );
                 }
 
                 //  Can get rid of the following line
-                ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
+                ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor, outlev, logFile);
 
                 // Reiterate output level...
 		if(outlev>=LOGRUNV)
-                pr(logFile, "Output level is set to %d.\n\n", outlev);
+                pr(tlogFile, "Output level is set to %d.\n\n", outlev);
 
                 // Start Lamarckian GA run -- Bound simulation
-                sHist[nconf] = call_glss( GlobalSearchMethod, LocalSearchMethod,
+                sHist[nconf+j] = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                           sInit,
                                           num_evals, pop_size,
-                                          outlev, logFile,
-                                          output_pop_stats, &ligand,
+                                          outlev, tlogFile,
+                                          output_pop_stats, &ligand, &evaluate,
                                           B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                                           info, FN_pop_file, end_of_branch );
                 // State of best individual at end of GA-LS run is returned.
                 // Finished Lamarckian GA run
                 
-                gaEnd = times( &tms_gaEnd );
-                if(outlev>=LOGRUNV) pr( logFile, "\nRun completed;  time taken for this run:\n");
-                timesyshms( gaEnd - gaStart, &tms_gaStart, &tms_gaEnd );
+                runEnd = times( &tms_runEnd );
+                if(outlev>=LOGRUNV) pr( tlogFile, "\nRun completed;  time taken for this run:\n");
+                timesyshms( runEnd - runStart, &tms_runStart, &tms_runEnd, tlogFile);
                 if(outlev>=LOGRUNV) {
-			pr( logFile, "\n");
-			printdate( logFile, 1 );
+			pr( tlogFile, "\n");
+			printdate( tlogFile, 1 );
 
-			pr(logFile, "Total number of Energy Evaluations: %lu\n", evaluate.evals() );
-			pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
+			pr(tlogFile, "Total number of Energy Evaluations: %u\n", evaluate.evals() );
+			pr(tlogFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
 			}
-		(void) fflush( logFile );
+		(void) fflush( tlogFile );
 
 		if(outlev>=LOGBASIC) {
-                pr( logFile, "\n\n\tFINAL %s ALGORITHM DOCKED STATE\n", GlobalSearchMethod->longname());
-                pr( logFile,     "\t_______________________________________________\n\n\n" );
+                pr( tlogFile, "\n\n\tFINAL %s ALGORITHM DOCKED STATE\n", GlobalSearchMethod->longname());
+                pr( tlogFile,     "\t_______________________________________________\n\n\n" );
 		}
 
-                writePDBQT( j, runseed[nconf],  FN_ligand, dock_param_fn, lig_center,
-                            sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
+                writePDBQT( nconf+j, runseed[nconf+j],  FN_ligand, dock_param_fn, lig_center,
+                            sHist[nconf+j], ntor, &eintra, &einter, natom, atomstuff,
                             crd, peratomE,
                             charge, abs_charge, qsp_abs_charge,
                             ligand_is_inhibitor,
@@ -3310,19 +3356,32 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                             ignore_inter,
                             B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
                             info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues, ad4_unbound_model,
-			    outlev, logFile);
+			    outlev, tlogFile);
 
                 // See also "calculateEnergies.cc", switch(ad4_unbound_model)
                 if (ad4_unbound_model == Unbound_Same_As_Bound) {
-                    // Update the unbound internal energy, setting it to the current internal energy
-                    unbound_internal_FE = eintra;
+                    // Treat the unbound internal energy as the current internal energy
+                    econf[nconf+j] = einter + torsFreeEnergy;
                 }
-                econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
+                else econf[nconf+j] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 
-                ++nconf;
-
-                if(outlev>LOGBASIC) pr( logFile, UnderLine );
+                if(outlev>LOGBASIC) pr( tlogFile, UnderLine );
+#ifdef _OPENMP
+		if(nruns>1) threadLogClose(j);
+#endif
             } // Next LGA run
+	    nconf += nruns;
+#ifdef _OPENMP
+		if(nruns>1) {
+			fprintf(stderr," concat %d log files...",nruns); fflush(stderr); /* MP debug */
+			for(j=0;j<nruns;j++) {
+				threadLogConcat(logFile, j);
+				threadLogFree(j);
+				}
+			fprintf(stderr," done.\n"); fflush(stderr); /* MP debug */
+		}
+#endif
+
             if(write_stateFile){
                fprintf(stateFile,"\t</runs>\n");
                (void) fflush(stateFile);
@@ -3338,7 +3397,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
                prStr( error_message, "%s:  ERROR: %d runs requested, but only dimensioned for %d.\nChange \"MAX_RUNS\" in \"constants.h\".", programname, nruns+nconf, MAX_RUNS);
                stop( error_message );
-           } else if (LocalSearchMethod==NULL) {
+           } 
+	   if (LocalSearchMethod==NULL) {
 
                prStr(error_message, "%s:  ERROR:  You must use \"set_sw1\", \"set_psw1\" or \"set_pattern\" to create a Local Optimization object.\n", programname);
                stop(error_message);
@@ -3363,6 +3423,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
            pr( logFile, "Number of Local Search (LS) only dockings = %d run%s\n", nruns, pl(nruns));
            if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
            pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
+/* MP experimental TODO  moved into per-thread code
            evaluate.setup( crd, charge, abs_charge, qsp_abs_charge, type, natom,
                            info, map, peratomE,
                            nonbondlist,
@@ -3376,70 +3437,194 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 			   true_ligand_atoms, outlev, logFile);
 
             evaluate.compute_intermol_energy(TRUE);
+*/
 
            if(write_stateFile){
              fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
              fprintf(stateFile,"\t<runs>\n");
            }
 
+		{ // MP begin storage allocation for hacks...
+
+	   // MP hack: create all necessary rho_ptrs, lb_rho_ptrs, tLocalSearchMethods
+	   Real *trho_ptr[NUMG], *tlb_rho_ptr[NUMG];
+	   Pseudo_Solis_Wets1 *tLocalSearchMethod[NUMG]; 
+	   Eval *tevaluate[NUMG];
+
+	   for(int t=0;t<NUMG;t++) {
+		trho_ptr[t] = new Real[7+sInit.ntor];
+		tlb_rho_ptr[t] = new Real[7+sInit.ntor];
+		tLocalSearchMethod[t] = 
+                   new Pseudo_Solis_Wets1(7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, trho_ptr[t], tlb_rho_ptr[t]);
+ 		tevaluate[t] = new Eval;
+	   }
+#pragma omp parallel for \
+   shared(crdpdb,nconf) \
+   private(j) \
+   schedule(static)
            for (j=0; j<nruns; j++) {
 
+		/* per-thread private locals: */
+		EnergyComponent tperatomE[MAX_ATOMS];
+		GroupEnergy tgroup_energy; // energy components of each of the five groups (intra-ligand, inter, and intra-receptor...)
+		Real tcrd[MAX_ATOMS][SPACE];     // current coordinates according to State
+		//Eval tevaluate;
+		FILE *tlogFile;
+		Real eintra = 0.0;  // sum of intramolecular energy for the ligand plus that of the protein
+		Real einter = 0.0; // intermolecular energy between the ligand and the protein
+		struct tms tms_runStart, tms_runEnd;
+		Clock  runStart, runEnd;
+		int tn; // thread number 0..NUMG
+		//Pseudo_Solis_Wets1 *tLocalSearchMethod; // TODO clone of *LocalSearchMethod
+		Real *rho_ptr ; // for PSW array of rho
+		Real *lb_rho_ptr ; // for PSW array of lb_rho
+		int d; // PSW variable index
+		
+		tn=omp_get_thread_num();
+
+		if(nruns>1 && omp_get_max_threads()>1) tlogFile = threadLogOpen( j );
+		else tlogFile=logFile;
+		if(tlogFile==NULL) stop("failed to create thread log file");
+
+	    // save centered crdpdb coords as crd (not sure is needed - MP 2012
+	    for(int a=0;a<natom;a++) for(int xyz=0;xyz<SPACE;xyz++)  
+	      tcrd[a][xyz]=crdpdb[a][xyz];
+
+	   tevaluate[tn]->reset();
+           tevaluate[tn]->setup( tcrd, charge, abs_charge, qsp_abs_charge, type, natom,
+                           info, map, tperatomE,
+                           nonbondlist,
+                           ad_energy_tables,
+                           Nnb, Nnb_array, &tgroup_energy,
+			   B_calcIntElec, B_isGaussTorCon,B_isTorConstrained,
+                           B_ShowTorE, US_TorE, US_torProfile, vt, tlist, crdpdb, sInit, ligand,
+                           ignore_inter,
+                           B_include_1_4_interactions, scale_1_4, scale_eintermol,
+                           unbound_internal_FE, B_use_non_bond_cutoff, B_have_flexible_residues, 
+			   true_ligand_atoms, outlev, tlogFile);
+
+            /* this is the default:*/ tevaluate[tn]->compute_intermol_energy(TRUE);
 		/* set RNG seed using global run number */
-		if(nconf==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
-		else setsd(runseed[nconf][0], runseed[nconf][1]); 
+		if(nconf+j==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
+		setsd(runseed[nconf+j][0], runseed[nconf+j][1]); 
 
 	       if(outlev>=LOGBASIC)
-               (void) fprintf( logFile, "\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
-                pr( logFile, "Run:\t%d / %d   Seed: %ld %ld \n", j+1, nruns, 
-		 (long)runseed[nconf][0], (long)runseed[nconf][1] );
+               (void) fprintf( tlogFile, "\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
+                pr( tlogFile, "Run:\t%d Seed: %ld %ld \n", nconf+j+1,
+		 (long)runseed[nconf+j][0], (long)runseed[nconf+j][1] );
 
-               pr(logFile, "Date:\t");
-               printdate( logFile, 2 );
-               (void) fflush( logFile );
+               pr(tlogFile, "Date:\t");
+               printdate( tlogFile, 2 );
+               (void) fflush( tlogFile );
 
-               gaStart = times( &tms_gaStart );
+               runStart = times( &tms_runStart );
 
-               sHist[nconf] = call_ls(LocalSearchMethod, sInit, pop_size, &ligand);
+ 	       //tLocalSearchMethod = *LocalSearchMethod;  // copy and assign MP TODO 2014 not enough
+		// start hacks here: MP TODO
+      //  Allocate space for the variable rho's
+      //  The lb_rho_ptr[] values are really const
+      //rho_ptr = new Real[7+sInit.ntor];
+      //lb_rho_ptr = new Real[7+sInit.ntor];
 
-               pr(logFile, "There were %lu Energy Evaluations.\n", evaluate.evals());
+      //  Initialize the rho's corresponding to the translation
+      //  0,1,2   x,y,z
+      //  3,4,5,6 qx,qy,qz,qw
+      //  7,...   tor1
+//These scale values can be changed in the dpf, officially unsupported 4/2009
+//Real psw_trans_scale = 1.0;//1 angstrom
+//Real psw_rot_scale = 0.05;  //about 3 degrees, we think
+//Real psw_tors_scale = 0.1; //about 6 degrees
 
-               gaEnd = times( &tms_gaEnd );
-               pr( logFile, "Time taken for this Local Search (LS) run:\n");
-               timesyshms( gaEnd - gaStart, &tms_gaStart, &tms_gaEnd );
-               pr( logFile, "\n");
-               (void) fflush( logFile );
+      for (d=0; d<3; d++) {
+         // d=0,1,2
+         trho_ptr[tn][d] = rho * psw_trans_scale;// formerly trnStep0;
+         tlb_rho_ptr[tn][d] = lb_rho * psw_trans_scale; //once trnStepFinal;
+      }
 
-               pr( logFile, "\n\n\tFINAL LOCAL SEARCH DOCKED STATE\n" );
-               pr( logFile,     "\t_______________________________\n\n\n" );
+      //  Initialize the rho's corresponding to the quaterion
+      for (; d<7; d++) {
+         // d=3,4,5,6
+         trho_ptr[tn][d] = rho * psw_rot_scale;// formerly qtwStep0;
+         tlb_rho_ptr[tn][d] = lb_rho * psw_rot_scale; //once qtwStepFinal;
+      }
 
-               writePDBQT( j, runseed[nconf], FN_ligand, dock_param_fn, lig_center,
-                           sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
-                           crd, peratomE,
+      //  Initialize the rho's corresponding to the torsions
+      for (; d<7+sInit.ntor; d++) {
+         // d=7,...
+         trho_ptr[tn][d] = rho * psw_tors_scale;// formerly torStep0;
+         tlb_rho_ptr[tn][d] = lb_rho * psw_tors_scale;//formerly torStepFinal;
+      }
+
+      //tLocalSearchMethod = new Pseudo_Solis_Wets1(7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, rho_ptr, lb_rho_ptr);
+
+
+               sHist[nconf+j] = call_ls(tLocalSearchMethod[tn], sInit, pop_size, &ligand,
+		tevaluate[tn], outlev, tlogFile);
+
+   // hacks here TODO MP
+	// dumps core if you try...    delete tLocalSearchMethod;
+	//delete [] rho_ptr;
+	//delete [] lb_rho_ptr;
+	
+               pr(tlogFile, "There were %u Energy Evaluations.\n", tevaluate[tn]->evals());
+
+	       if(outlev>=LOGRUNV) {
+                  runEnd = times( &tms_runEnd );
+                  pr( tlogFile, "Time taken for this Local Search (LS) run:\n");
+                  timesyshms( runEnd - runStart, &tms_runStart, &tms_runEnd, tlogFile );
+                  pr( tlogFile, "\n");
+		  }
+
+	       if(outlev>=LOGBASIC) {
+                  pr( tlogFile, "\n\n\tFINAL LOCAL SEARCH DOCKED STATE\n" );
+                  pr( tlogFile,     "\t_______________________________\n\n\n" );
+		  }
+
+               writePDBQT( nconf+j, runseed[nconf+j], FN_ligand, dock_param_fn, lig_center,
+                           sHist[nconf+j], ntor, &eintra, &einter, natom, atomstuff,
+                           tcrd, tperatomE,
                            charge, abs_charge, qsp_abs_charge,
                            ligand_is_inhibitor,
                            torsFreeEnergy,
                            vt, tlist, crdpdb, nonbondlist,
                            ad_energy_tables,
-                           type, Nnb, Nnb_array, &group_energy, true_ligand_atoms,
+                           type, Nnb, Nnb_array, &tgroup_energy, true_ligand_atoms,
 			   B_calcIntElec,
                            map,
                            ignore_inter,
-                           B_include_1_4_interactions, scale_1_4, parameterArray, unbound_internal_FE,
+                           B_include_1_4_interactions, scale_1_4, parameterArray, /*MP unbound_internal_FE*/0.,
                            info, DOCKED, PDBQT_record, B_use_non_bond_cutoff, B_have_flexible_residues, ad4_unbound_model,
-			   outlev, logFile);
+			   outlev, tlogFile);
 
                // See also "calculateEnergies.cc", switch(ad4_unbound_model)
                if (ad4_unbound_model == Unbound_Same_As_Bound) {
-                   // Update the unbound internal energy, setting it to the current internal energy
-                   unbound_internal_FE = eintra;
+                   // Treat the unbound internal energy as the current internal energy
+                   econf[nconf+j] =  einter + torsFreeEnergy;
                }
-               econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
+               else econf[nconf+j] =  einter + eintra + torsFreeEnergy - unbound_internal_FE;
 
-               ++nconf;
+               pr( tlogFile, UnderLine );
+               (void) fflush( tlogFile );
+		if(nruns>1 && omp_get_max_threads()>1) threadLogClose( j );
 
-               pr( logFile, UnderLine );
-
-           } // Next run
+           } // Next run - also close of 'parallel for' region
+	   // MP hack:
+	   for(int t=0;t<NUMG;t++) {
+		if(tevaluate[t]!=NULL) delete tevaluate[t];
+		if(tLocalSearchMethod[t]!=NULL) delete tLocalSearchMethod[t];
+		// done by PSWLocalSearchMethod destructor:  delete [] trho_ptr[t];
+		// done by PSWLocalSearchMethod destructor:  delete [] tlb_rho_ptr[t];
+	   }
+       	} // MP end storage allocation for hacks...
+	   nconf += nruns;
+		if(nruns>1 && omp_get_max_threads()>1) {
+			fprintf(stderr," concat log files..."); fflush(stderr); /* MP debug */
+			for(int j=0;j<nruns;j++) {
+				threadLogConcat(logFile, j);
+				threadLogFree(j);
+				}
+			fprintf(stderr," done.\n"); fflush(stderr); /* MP debug */
+		}
            if(write_stateFile){
              fprintf(stateFile,"\t</runs>\n");
              (void) fflush(stateFile);
@@ -3793,7 +3978,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 						num_evals,
 	  					num_generations, 
 	  					output_pop_stats);  
-        ((ParticleSwarmGS*)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
+        ((ParticleSwarmGS*)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor, outlev, logFile);
 	  					   
       pr(logFile, "GlobalSearchMethod is set to PSO.\n\n");     
    	 
@@ -3820,45 +4005,49 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	   //BEGINNING PARTICLE SWARM OPTIMIZATION run
 	   for (j = 0; j < nruns; j++)
 	   {	 
-	 		//(void) fprintf( logFile, "\n\tBEGINNING PARTICLE SWARM OPTIMIZATION (PSO) \n");
+		Real eintra = 0.0;  // sum of intramolecular energy for the ligand plus that of the protein
+		Real einter = 0.0; // intermolecular energy between the ligand and the protein
+		struct tms tms_runStart, tms_runEnd;
+		Clock  runStart, runEnd;
+		//(void) fprintf( logFile, "\n\tBEGINNING PARTICLE SWARM OPTIMIZATION (PSO) \n");
 	    if(outlev>=LOGBASIC)
             (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
 
 		/* set RNG seed using global run number */
-		if(nconf==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
-		else setsd(runseed[nconf][0], runseed[nconf][1]); 
+		if(nconf==0&&j==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
+		else setsd(runseed[nconf+j][0], runseed[nconf+j][1]); 
 
-                pr( logFile, "Run:\t%d / %d   Seed: %ld %ld \n", j+1, nruns, 
-		 (long)runseed[nconf][0], (long)runseed[nconf][1] );
+                pr( logFile, "Run:\t%d Seed: %ld %ld \n", nconf+j+1,
+		 (long)runseed[nconf+j][0], (long)runseed[nconf+j][1] );
 	 		pr(logFile, "Date:\t");
 	        printdate(logFile, 2 );
 	 		(void)fflush(logFile);
 		 										
-	 		gaStart = times(&tms_gaStart); //using ga to mean global search: ie. pso here
+	 		runStart = times(&tms_runStart);
 	 		//pr( logFile, "\nTotal number of torsions in system = %d \n", sInit.ntor);
 	 		//Start Particle Swarm Optimization Run	               	 		
-                sHist[j] = call_glss( GlobalSearchMethod, LocalSearchMethod,
+                sHist[nconf+j] = call_glss( GlobalSearchMethod, LocalSearchMethod,
                                           sInit,
                                           num_evals, pop_size,
                                           outlev, logFile,
-                                          output_pop_stats, &ligand,
+                                          output_pop_stats, &ligand, &evaluate,
                                           B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                                           info, FN_pop_file, end_of_branch );
 	 		//Finished Particle Swarm Optimization Run	 	 		
-	 		gaEnd = times(&tms_gaEnd);
+	 		runEnd = times(&tms_runEnd);
             pr(logFile, "Time taken for this PSO run:\n");
-            timesyshms(gaEnd-gaStart, &tms_gaStart, &tms_gaEnd);
+            timesyshms(runEnd-runStart, &tms_runStart, &tms_runEnd, logFile);
             pr(logFile, "\n");
             (void) fflush(logFile);
 	 				
 	 				        
-	        pr(logFile, "Total number of Energy Evaluations: %ld\n", evaluate.evals());	        	        
+	        pr(logFile, "Total number of Energy Evaluations: %u\n", evaluate.evals());	        	        
             pr(logFile, "Total number of Generations:        %u\n", ((ParticleSwarmGS*)GlobalSearchMethod)->num_generations()); // TSRI 20101101 added by M Pique
 	 							 		
 	 		pr( logFile, "\n\n\tFINAL PSO DOCKED STATE\n" );
 	 		pr( logFile, "\t____________________________________________________________\n\n\n" );
 	 		
-             writePDBQT( j, runseed[nconf],  FN_ligand, dock_param_fn, lig_center,
+             writePDBQT( nconf+j, runseed[nconf],  FN_ligand, dock_param_fn, lig_center,
                        sHist[nconf], ntor, &eintra, &einter, natom, atomstuff,
                        crd, peratomE, charge, 
                        abs_charge, qsp_abs_charge,
@@ -3876,12 +4065,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		       outlev, logFile);
        	
 
-            //econf[nconf] = eintra + einter; // changed to next line M Pique June 2013
-                  econf[nconf] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
-	 		++nconf;	 
+            //econf[nconf+j] = eintra + einter; // changed to next line M Pique June 2013
+                  econf[nconf+j] = eintra + einter + torsFreeEnergy - unbound_internal_FE;
 	 		pr( logFile, UnderLine );	
 	 		 			 			 				
 	 	} // next PSO run j
+	    nconf += nruns;
 	 	
 	 	if(write_stateFile){
            fprintf(stateFile,"\t</runs>\n");
@@ -4140,9 +4329,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             pr(logFile, "Date:\t");
             printdate( logFile, 2 );
             (void) fflush( logFile );
-            gaStart = times( &tms_gaStart );
             //  Can get rid of the following line
-            ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
+            ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor, outlev, logFile);
             //
             // Start Lamarckian GA run searching only torsions -- Unbound simulation
             // sUnbound_ext = call_glss_tors( GlobalSearchMethod, LocalSearchMethod,
@@ -4150,19 +4338,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                                       sInit,
                                       num_evals_unbound, pop_size,
                                       outlev, logFile,
-                                      output_pop_stats, &ligand,
+                                      output_pop_stats, &ligand, &evaluate,
                                       // B_RandomDihe0, // use this line with call_glss_tors()
                                       B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                                       info, FN_pop_file, end_of_branch );
             // State of best individual at end of GA-LS run, sUnbound_ext, is returned.
             // Finished Lamarckian GA run
-            gaEnd = times( &tms_gaEnd );
-            pr( logFile, "\nFinished Lamarckian Genetic Algorithm (LGA), time taken:\n");
-            timesyshms( gaEnd - gaStart, &tms_gaStart, &tms_gaEnd );
-            pr( logFile, "\n");
+            pr( logFile, "\nFinished Lamarckian Genetic Algorithm (LGA)\n");
             printdate( logFile, 1 );
             (void) fflush( logFile );
-            pr(logFile, "\nTotal number of Energy Evaluations: %lu\n", evaluate.evals() );
+            pr(logFile, "\nTotal number of Energy Evaluations: %u\n", evaluate.evals() );
             pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
             // end of Step 1 // }
 
@@ -4291,9 +4476,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 pr(logFile, "Date:\t");
                 printdate( logFile, 2 );
                 (void) fflush( logFile );
-                gaStart = times( &tms_gaStart );
                 //  Can get rid of the following line
-                ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor);
+                ((Genetic_Algorithm *)GlobalSearchMethod)->initialize(pop_size, 7+sInit.ntor, outlev, logFile);
                 //
                 // Start Lamarckian GA run searching only torsions -- Unbound simulation
                 // sUnbound_ad = call_glss_tors( GlobalSearchMethod, LocalSearchMethod,
@@ -4301,18 +4485,15 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                                          sInit,
                                          num_evals_unbound, pop_size,
                                          outlev, logFile,
-                                         output_pop_stats, &ligand,
+                                         output_pop_stats, &ligand, &evaluate,
                                          B_RandomTran0, B_RandomQuat0, B_RandomDihe0,
                                          info, FN_pop_file, end_of_branch );
                 // State of best individual at end of GA-LS run, sUnbound_ad, is returned.
                 // Finished Lamarckian GA run
-                gaEnd = times( &tms_gaEnd );
-                pr( logFile, "\nFinished Lamarckian Genetic Algorithm (LGA), time taken:\n");
-                timesyshms( gaEnd - gaStart, &tms_gaStart, &tms_gaEnd );
-                pr( logFile, "\n");
+                pr( logFile, "\nFinished Lamarckian Genetic Algorithm (LGA)\n");
                 printdate( logFile, 1 );
                 (void) fflush( logFile );
-                pr(logFile, "\nTotal number of Energy Evaluations: %lu\n", evaluate.evals() );
+                pr(logFile, "\nTotal number of Energy Evaluations: %u\n", evaluate.evals() );
                 pr(logFile, "Total number of Generations:        %u\n", ((Genetic_Algorithm *)GlobalSearchMethod)->num_generations());
                 // Restore the number of torsions in the state variable "sUnbound_ad"
                 sUnbound_ad.ntor = saved_sInit_ntor;
@@ -4373,7 +4554,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
             pr( logFile,     "\t___________________\n\n\n" );
             //
             writePDBQT( -1, runseed[nconf],  FN_ligand, dock_param_fn, lig_center,
-                        sUnbound, ntor, &eintra, &einter, natom, atomstuff,
+                        sUnbound, ntor, NULL, NULL, natom, atomstuff,
                         crd, peratomE,
                         charge, abs_charge, qsp_abs_charge,
                         ligand_is_inhibitor,
@@ -4422,15 +4603,14 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
          *  1 = OLD, or   PDBQT-55 (old PDBq format).
          */
 	{ // block for epdb locals:
-	static EnergyComponent zeroEC;
+	static EnergyComponent zeroEC; // const, always all zeros
 	EnergyComponent totalE = zeroEC;
 	Real emap_total = 0.; // does not include desolv
 	Real desolv_total = 0.; 
 	Real elec_total = 0.;
 	Real charge_total = 0.;
 
-        eintra = 0.0L;
-        einter = 0.0L;
+	Real eintra=0;  // sum of intramolecular energy for the ligand plus that of the protein
 
         nfields = sscanf(line, "%*s %s", dummy_FN_ligand);
         if (nfields >= 1) {
@@ -4469,15 +4649,6 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
         sInit.ntor = ligand.S.ntor;
 
-        // save any currently-computed unbound internal FE
-        //unbound_internal_FE_saved = unbound_internal_FE;
-        //ad4_unbound_model_saved = ad4_unbound_model;
-        //ad4_unbound_model = User;
-
-        // Initialise to zero, since we may call "epdb" more than once in a single DPF
-        // Set the unbound free energy -- assume it is zero, since this is a "single-point energy calculation"
-        unbound_internal_FE = 0.0;
-
         // Calculate the internal energy
         if (ntor > 0) {
             eintra= eintcalPrint(nonbondlist, ad_energy_tables, crdorig, Nnb, Nnb_array, &group_energy,
@@ -4487,12 +4658,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
         pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());
         // calculate the energy breakdown for the input coordinates, "crdorig"
-        eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
+        // Use 0.0 for the unbound internal free energy -- since this is a "single-point energy calculation"
+        eb = calculateBindingEnergies( natom, ntor, 0.0 /*unbound_internal_FE*/, torsFreeEnergy, B_have_flexible_residues,
                                 crdorig, charge, abs_charge, type, map, info,
                                 ignore_inter, peratomE, &totalE,
                                 nonbondlist, ad_energy_tables, Nnb, Nnb_array, &group_energy, true_ligand_atoms,
 				B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, 
-                                B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
+                                B_use_non_bond_cutoff, User /*ad4_unbound_model*/, outlev, logFile);
 
         pr(logFile, "\n\n\t\tIntermolecular Energy Analysis\n");
         pr(logFile,     "\t\t==============================\n\n");
@@ -4539,12 +4711,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	 B_have_flexible_residues,  // next two terms are meaningful only if have flexible residues...
 	 group_energy.inter_moving_moving.vdW_Hb + group_energy.inter_moving_moving.desolv,
 	 group_energy.inter_moving_moving.elec,
-	 ad4_unbound_model);
+	 User /*ad4_unbound_model*/,
+	 outlev, logFile);
         pr(logFile, "\n");
 
-        // restore the saved unbound internal FE
-        //unbound_internal_FE = unbound_internal_FE_saved;
-        //ad4_unbound_model = ad4_unbound_model_saved;
 	} // block for epdb locals:
 
         break;
@@ -4681,12 +4851,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
         if (streq(confsampler_type, "systematic")) {
             systematic_conformation_sampler(sHist, nconf, vt, crdpdb, tlist,
-	     lig_center, natom, type, info, true_ligand_atoms, outlev, logFile);
+	     lig_center, natom, type, info, true_ligand_atoms, &evaluate, outlev, logFile);
         } 
 	else if (streq(confsampler_type, "random")) {
 	    if(nfields<2) stop("syntax error in CONFSAMPLER RANDOM line");
             random_conformation_sampler(sHist, nconf, confsampler_samples, vt, crdpdb, tlist,
-	    lig_center, natom, type, info, true_ligand_atoms, outlev, logFile);
+	    lig_center, natom, type, info, true_ligand_atoms, &evaluate, outlev, logFile);
         }
         else stop("unrecognized mode in in CONFSAMPLER line");
         break;
@@ -4745,7 +4915,7 @@ pr( logFile, "This docking finished at:\t\t\t" );
 printdate( logFile, 1 );
 pr( logFile, "\n" );
 
-success( hostnm, jobStart, tms_jobStart );
+success( hostnm, jobStart, tms_jobStart, logFile);
 
  if(write_stateFile){
    fprintf(stateFile,"</autodock>\n");
@@ -4818,9 +4988,12 @@ static void set_seeds( FourByteLong seed[2], char seedIsSet[2], FourByteLong run
 
 	 /* set seeds now for all possible runs - so each run's results will be
           * independent of other runs, for parallelization 
-	  * Note that the first run will use the DPF-specified seed, if any.
+	  * Note that the first run will use the DPF-specified seed, if any,
+	  * possibly as modified by population setup work, see comment above.
+	  * The setall() assures that every random number generator (thread)
+	  * will have these seeds.
 	  */
-         setall(seed[0], seed[1]);  // see com.cc
+         setall(seed[0], seed[1]);  // see com.cc 
 	 runseed[0][0] = seed[0];
 	 runseed[0][1] = seed[1];
          for(int j=1;j<MAX_RUNS;j++) {
@@ -4830,7 +5003,7 @@ static void set_seeds( FourByteLong seed[2], char seedIsSet[2], FourByteLong run
 		
 	 /* make sure RNG #0 is set back to DPF-specified seed for compatibility with existing tests */
 	 (void) gscgn(0);
-	 setsd( seed[0], seed[1]);
+	 setsd_t( seed[0], seed[1],0 );
 
          if(outlev>=LOGMIN) pr(logFile,
 	  "Random number generator was seeded with values " FBL_FMT ", " FBL_FMT ".\n",
