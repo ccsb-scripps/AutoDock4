@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.42 2013/05/17 18:13:56 mp Exp $
+ $Id: writePDBQT.cc,v 1.43 2014/06/12 01:36:45 mp Exp $
 
  AutoDock  
 
@@ -153,24 +153,24 @@ writePDBQT(const int irun, const FourByteLong seed[2],
     // Set the total intramolecular energy (sum of intramolecular energies of ligand and of protein)
     if (ntor > 0) {
         // Add the intramolecular energy of the receptor, for the (moving, fixed) atom pairs // (2)
-        *Ptr_eintra = 
+        if(Ptr_eintra!=NULL) *Ptr_eintra = 
 	  group_energy->intra_moving_moving_lig.total + 
 	   group_energy->intra_moving_moving_rec.total +
 	     eb.e_intra_moving_fixed_rec;
     } else {
-        *Ptr_eintra = 0.0;
+        if(Ptr_eintra!=NULL) *Ptr_eintra = 0.0;
     }
 
     // Set the total intermolecular energy
     if (state_type == 1) {
         // DOCKED
         // Set *Ptr_einter, the intermolecular energy, only for DOCKED states, not for UNBOUND states
-        *Ptr_einter = eb.e_inter;
+        if(Ptr_einter!=NULL) *Ptr_einter = eb.e_inter;
     } else {
         // UNBOUND
         // "intermolecular" energy is meaningless for unbound state, so set this to zero
-	static EnergyComponent zeroEC;
-        *Ptr_einter = 0.0;
+	static EnergyComponent zeroEC; // const
+        if(Ptr_einter!=NULL) *Ptr_einter = 0.0;
         eb.e_inter = 0.0;
         totalE = zeroEC;
         eb.e_inter_moving_fixed = 0.0;
@@ -191,15 +191,15 @@ writePDBQT(const int irun, const FourByteLong seed[2],
 	 B_have_flexible_residues,  // next two terms are meaningful only if have flexible residues...
 	 group_energy->inter_moving_moving.vdW_Hb + group_energy->inter_moving_moving.desolv,
 	 group_energy->inter_moving_moving.elec,
-	 ad4_unbound_model);
+	 ad4_unbound_model, outlev, logFile);
 
         // Write part of the "XML" state file
 		if (write_stateFile) {
 			pr(stateFile, "\n");
 			pr(stateFile, "\t<run id=\"%4d\">\n", irun + 1);
-			pr(stateFile, "\t\t<seed>%ld %ld</seed>\n", seed[0], seed[1]);
+			pr(stateFile, "\t\t<seed>" FBL_FMT " " FBL_FMT "</seed>\n", seed[0], seed[1]);
 			pr(stateFile, "\t\t<dpf>%s</dpf>\n", dpfFN);
-            printStateEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor );
+            printStateEnergies( &eb, state_type_prefix_USER_string, ligand_is_inhibitor, outlev, stateFile);
 		} // End write state file
 
 		(void) fprintf(logFile, "%s: USER    NEWDPF move %s\n", state_type_string, smFileName);
