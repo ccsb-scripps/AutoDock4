@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.22 2011/03/08 04:18:37 mp Exp $
+ $Id: support.h,v 1.23 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -38,6 +38,11 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 ** $Log: support.h,v $
+** Revision 1.23  2014/06/12 01:44:08  mp
+** General updates to accommodate OpenMP parallelization, mostly to pass
+** logFile references and to make the timesys and random-number functions
+** thread-safe.  New "threadlog" utility functions added to code.
+**
 ** Revision 1.22  2011/03/08 04:18:37  mp
 ** Incorporation of Steffan Moeller patch set 20101104 and 2010114.
 ** Virtually all changes proposed are incorporated except for declaring "static"
@@ -229,6 +234,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "eval.h"
 #include "structs.h"
 
+extern FILE *logFile; // for DEBUG only
+
 enum EvalMode { Reset, Always_Eval, Normal_Eval, Always_Eval_Nonbond, Always_Eval_Elec };
 
 typedef struct
@@ -254,11 +261,6 @@ class Genotype
 
    public:
       Genotype(void);
-#if 0
-	# Steffen thinks this is redundant with the const variant
-	# http://en.wikipedia.org/wiki/Copy_constructor
-      Genotype(Genotype &); /* copy constructor */
-#endif
       Genotype(const Genotype &);
       Genotype(unsigned int, Representation **const); /* creates a genotype from the
 					     representation & total # vectors */
@@ -273,7 +275,7 @@ class Genotype
       const Representation *vread(int) const;
       void write(const Element&, const int); /* not const */
       void write(const unsigned char&, const int); /* not const */
-      void write(const FourByteLong&, const int); /* not const */
+      void write(const int&, const int); /* not const */
       void write(ConstDouble, const int); /* not const */
       void write(const Representation &, const int); /* not const */
       Quat readQuat() const;
@@ -294,17 +296,20 @@ class Phenotype
 
    public:
       Phenotype(void);
+      Phenotype(Eval *);
       Phenotype(const Phenotype &);
       //Phenotype(const Genotype &);//to do
       Phenotype(const unsigned int, Representation **const);
+      Phenotype(const unsigned int, Representation **const, Eval *);
       ~Phenotype(void);
       Phenotype &operator=(const Phenotype &);
+      Eval *pevaluate; // MPique 2014  could be friend of Individual I think
       RepType gtype(int) const;
       const Element gread(const int) const;
       const Representation *vread(int) const;
       void write(const Element&, const int); /* not const */
       void write(const unsigned char&, const int); /* not const */
-      void write(const FourByteLong& value, const int gene_number); /* not const */
+      void write(const int& value, const int gene_number); /* not const */
       void write(ConstDouble value, const int gene_number); /* not const */
       void write(const Representation &, const int);
       double evaluate(const EvalMode&) /* not const */ ;  //  This should return evaluation if that's the right answer, and it should evaluate otherwise.
@@ -323,9 +328,11 @@ class Individual
       Genotype genotyp;   /* Genotype  is operated upon by *global search* operators */
       Phenotype phenotyp; /* Phenotype  "     "      "   " *local search*  operators, eg SW */
       Molecule *mol;		/* molecule */
+      Eval *ievaluate; /* evaluation object from Phenotype  MPique 2014 */
       unsigned long age;	/* age of this individual; gmm, 1998-07-10 */
 
       Individual(void);
+      Individual(Eval *);
       Individual(Individual &); /* copy constructor */
       Individual(Individual const &);
       Individual(Genotype &, Phenotype &);
@@ -357,9 +364,12 @@ class Population
       int end_of_branch[MAX_TORS]; // For Branch Crossover Mode
 
    public:
+      Eval *evaluate; /* evaluation object for individuals within population */
       Population(void);
       Population(int); /* create a pop. with this many individuals */
-      Population(int, Individual *); /* takes an array of ind's and turns into pop. */
+      Population(int, Eval *); /* create a pop. with this many individuals and eval fcn */
+      Population(int, Eval *, Individual *); /* takes an array of ind's and turns into pop. */
+      Population(int, Eval *, Individual &); /* takes a prototype ind and turns into pop. */
       Population(const Population &); /* copy constructor */
       ~Population(void); /* destructor */
       Individual &operator[](const int) const;  /* for accessing a particular indiv.in pop*/
@@ -425,12 +435,23 @@ inline Phenotype::Phenotype(void)
 {
    value_vector = (Representation **)NULL;
    lookup = (Lookup *)NULL;
+   pevaluate = (Eval *)NULL;
    number_of_dimensions = 0;
    number_of_points = 0;
    value = 0;
    evalflag = 0;
 }
-
+inline Phenotype::Phenotype(Eval *init_pevaluate)
+: pevaluate(init_pevaluate)
+{
+   value_vector = (Representation **)NULL;
+   lookup = (Lookup *)NULL;
+   pevaluate = init_pevaluate;
+   number_of_dimensions = 0;
+   number_of_points = 0;
+   value = 0;
+   evalflag = 0;
+}
 inline RepType Phenotype::gtype(int gene_number) const
 {
    return(value_vector[lookup[gene_number].vector]->type());
@@ -454,18 +475,25 @@ inline unsigned int Phenotype::num_pts(void) const
 //  Constructs an Individual using the default constructors
 inline Individual::Individual(void)
 {
+   ievaluate = (Eval *) NULL;
+   age = 0;
+}
+inline Individual::Individual(Eval *init_evaluate)
+{
    age = 0L;
+   ievaluate = init_evaluate;
+   phenotyp.pevaluate = init_evaluate; // copy Eval reference into phenotype
 }
 
 
-inline Individual::Individual(Individual &original)
-: genotyp(original.genotyp), phenotyp(original.phenotyp)
+inline Individual::Individual(Individual &original) // 'copy' constructor Individual i = oldi;
+: genotyp(original.genotyp), phenotyp(original.phenotyp), ievaluate(original.ievaluate)
 {
 }
 
 // caution, does not do mapping
 inline Individual::Individual(Genotype &init_genotyp, Phenotype &init_phenotyp)
-: genotyp(init_genotyp), phenotyp(init_phenotyp)
+: genotyp(init_genotyp), phenotyp(init_phenotyp), ievaluate(init_phenotyp.pevaluate)
 {
 }
 
@@ -473,6 +501,7 @@ inline Individual::~Individual(void)
 {
 }
 
+// MPique TODO how is this different from copy constructor above??
 inline Individual &Individual::operator=(const Individual &original)
 {
    if (this == &original) {//Prevent self assignment
@@ -480,13 +509,14 @@ inline Individual &Individual::operator=(const Individual &original)
    }
    genotyp = original.genotyp;
    phenotyp = original.phenotyp;
+   ievaluate = original.ievaluate;
    mol = original.mol;
    age = original.age;
    return(*this);
 }
 
 inline double Individual::value(EvalMode mode) /* not const */
-{ // TO DO: check if mapping from genotyp to phenotyp is up-to-date
+{ // TODO: check if mapping from genotyp to phenotyp is up-to-date
   // note that phenotyp.evaluate only does evaluation if evalflag is false
    return(phenotyp.evaluate(mode));
 }
@@ -494,23 +524,46 @@ inline double Individual::value(EvalMode mode) /* not const */
 inline Population::Population(void)
 :lhb(-1), size(0), heap((Individual *)NULL)
 {
+fprintf(logFile, "support.h %d Population::Population(void)\n",  __LINE__); // DEBUG MPique
+    evaluate = (Eval *) NULL;
     for (int i=0; i<MAX_TORS; i++) {
         end_of_branch[i] = -1;
     }
 }
 
-inline Population::Population(const int num_inds)
-: lhb(num_inds-1), size(num_inds)
+inline Population::Population(const int num_inds, Eval *init_evaluate)
+: lhb(num_inds-1), size(num_inds), evaluate(init_evaluate)
 {
-   heap = new Individual[num_inds];
+    heap = new Individual[num_inds];
+    for (int i=0; i<num_inds; i++) heap[i] = Individual(evaluate);
     for (int i=0; i<MAX_TORS; i++) {
         end_of_branch[i] = -1;
     }
 }
 
-inline Population::Population(const int newpopsize, Individual *const newpop)
-: size(newpopsize), heap(newpop)
+inline Population::Population(const int num_inds, Eval *init_evaluate, 
+ Individual & prototype)
+: size(num_inds), evaluate(init_evaluate)
 {
+fprintf(logFile, "support.h %d Population::Population(%d/%d,Eval*,Indiv&)\n",
+ __LINE__, size, num_inds); // DEBUG MPique
+    heap = new Individual[num_inds];
+    for (int i=0; i<num_inds; i++) {
+	heap[i] = Individual(prototype);
+	heap[i].ievaluate = evaluate;
+	heap[i].phenotyp.pevaluate = evaluate;
+    }
+ //  Do initialization stuff
+    for (int i=0; i<MAX_TORS; i++) {
+        end_of_branch[i] = -1;
+    }
+}
+
+inline Population::Population(const int newpopsize, Eval *init_evaluate, 
+ Individual *const newpop)
+: size(newpopsize), heap(newpop), evaluate(init_evaluate)
+{
+fprintf(logFile, "support.h %d Population::Population(%d/%d,Eval*,Indiv*)\n",__LINE__,size,newpopsize); // DEBUG MPique
    //  Do initialization stuff
     for (int i=0; i<MAX_TORS; i++) {
         end_of_branch[i] = -1;

@@ -1,6 +1,6 @@
 /*
 
- $Id: prTorConList.cc,v 1.8 2012/05/04 20:26:26 mp Exp $
+ $Id: prTorConList.cc,v 1.9 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -49,13 +49,13 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #define AddNewHardCon(iCon,low,upp)  F_TorConRange[i][iCon][LOWER]=low;F_TorConRange[i][iCon][UPPER]=upp
 
-extern FILE *logFile;
-
 void prTorConList( const int    ntor,
 		    const Boole B_isTorConstrained[MAX_TORS],
 		    const unsigned short US_torProfile[MAX_TORS][NTORDIVS],
 		    /* not const */ Real  F_TorConRange[MAX_TORS][MAX_TOR_CON][2],
-		    /* not const */ int   N_con[MAX_TORS])
+		    /* not const */ int   N_con[MAX_TORS], 
+		    const int outlev,
+		    FILE *logFile)
 
 {
     char graph[NROWS][LINE_LEN];

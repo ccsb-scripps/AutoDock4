@@ -1,6 +1,6 @@
 /*
 
- $Id: mapping.cc,v 1.5 2009/05/08 23:02:14 rhuey Exp $
+ $Id: mapping.cc,v 1.6 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -36,7 +36,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 ********************************************************************/
 #include "support.h"
 
-extern FILE *logFile;
+extern FILE *logFile; // DEBUG only
 
 //  This should be made more efficient.  As it is now, we (de facto) AlwaysEval!!!!
 //Phenotype Individual::mapping(void)

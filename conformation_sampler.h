@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.h,v 1.13 2013/05/23 20:06:02 mp Exp $
+ $Id: conformation_sampler.h,v 1.14 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -65,7 +65,7 @@ class ConformationSampler {
 		Real bin_Boltzmann_sum[NUM_BINS];
 
 		ConformationSampler(const State&,
-		  int true_ligand_atoms, int outlev, FILE *logFile);
+		  int true_ligand_atoms, Eval *evaluate, int outlev, FILE *logFile);
 		~ConformationSampler(void);
 
 		void random_sample(int true_ligand_atoms, int outlev, FILE *logFile);
@@ -93,16 +93,16 @@ void systematic_conformation_sampler(const State hist[MAX_RUNS],
 		const int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE],
 		int init_tlist[MAX_TORS+1][MAX_ATOMS], Real init_lig_center[SPACE],
 		const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info,
-		int true_ligand_atoms, int outlev, FILE *logFile);
+		int true_ligand_atoms, Eval *evaluate, int outlev, FILE *logFile);
 
 void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf,
 		/* const */ int num_samples, Real init_vt[MAX_TORS][SPACE],
 		Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS+1][MAX_ATOMS],
 		Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS],
 		GridMapSetInfo *const init_info,
-		int true_ligand_atoms, int outlev, FILE *logFile);
+		int true_ligand_atoms, Eval *evaluate, int outlev, FILE *logFile);
 
-Individual set_ind(GridMapSetInfo *const info, const State state, FILE *logFile);
+Individual set_ind(GridMapSetInfo *const info, const State state, Eval *evaluate, int outlev, FILE *logFile);
 void raaEuler(const Real raa[4], /* not const */ Real euler[3]);
 void testMatrix(void);
 void raaMatrix(Real raa[4], Real matrix[3][3]);

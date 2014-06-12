@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.h,v 1.11 2012/08/18 00:00:29 mp Exp $
+ $Id: prInitialState.h,v 1.12 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -42,7 +42,9 @@ void  prInitialState(
     const Real charge[MAX_ATOMS],
     const int ligand_is_inhibitor,
     const Boole B_have_flexible_residues,
-    const Unbound_Model ad4_unbound_model
+    const Unbound_Model ad4_unbound_model,
+    int outlev,
+    FILE *logFile
     );
 
 #endif

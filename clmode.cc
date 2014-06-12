@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.22 2014/02/15 01:45:56 mp Exp $
+ $Id: clmode.cc,v 1.23 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -319,10 +319,10 @@ void  clmode( const int   num_atm_maps,
         flushLog;
 
         prClusterHist( ncluster, irunmax, clus_rms_tol, num_in_clu, 
-                       cluster, econf, clu_rms, ref_rms);
+                       cluster, econf, clu_rms, ref_rms, outlev, logFile);
 
         bestpdb( ncluster, num_in_clu, cluster, econf, crdSave, 
-                 atomstuff, natom, write_all_clusmem, ref_rms);
+                 atomstuff, natom, write_all_clusmem, ref_rms, outlev, logFile);
 
     }/*if we have more than 1 conformation... */
 

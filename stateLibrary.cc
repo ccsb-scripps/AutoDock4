@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.22 2011/06/03 05:31:36 mp Exp $
+ $Id: stateLibrary.cc,v 1.23 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -33,7 +33,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "stateLibrary.h"
 #include "qmultiply.h"
 
-extern FILE *logFile;
 static void writeStateAQ( FILE *const fp, /* not const */ State S, const char);
 
 void initialiseState( /* not const */ State *const S )
@@ -193,7 +192,7 @@ void writeState( FILE *const fp, /* not const */ State S )
 	writeStateAQ( fp, S, 'A');
 }
 
-int checkState( const State *const D )
+int checkState( FILE *const logFile, const State *const D)
 {
 // return 0 if failure   1 if OK
     register int i;

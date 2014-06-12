@@ -1,6 +1,6 @@
 /*
 
- $Id: printhms.cc,v 1.9 2012/04/20 01:28:58 mp Exp $
+ $Id: printhms.cc,v 1.10 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -31,9 +31,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include "printhms.h"
 
-extern FILE *logFile;
-
-void printhms( const Real t )
+// MPique I don't think this is used
+void printhms( const Real t, FILE *logFile)
 
 {
     int   h,

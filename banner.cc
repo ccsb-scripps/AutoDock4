@@ -1,6 +1,6 @@
 /*
 
- $Id: banner.cc,v 1.24 2012/10/31 02:47:18 mp Exp $
+ $Id: banner.cc,v 1.25 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -30,6 +30,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include <stdio.h>
 #include "banner.h"
+
+/* local convenience function to return "OpenMP" or "" depending on C option */
+static char* str_openmp(void); 
 
 void banner( const char *const version_num, const int outlev, FILE *logFile )
 {
@@ -64,7 +67,7 @@ if(outlev>=LOGRUNV) {
     (void) fprintf(logFile, "\n");
     (void) fprintf(logFile, "                  ______________________________________ \n");
     (void) fprintf(logFile, "                 |                                      |\n");
-    (void) fprintf(logFile, "                 |      AutoDock %-3.3s Release %-8s   |\n", version_num, version_num );
+    (void) fprintf(logFile, "                 |    AutoDock %-3.3s Release %-8s%s  |\n", version_num, version_num, str_openmp());
     (void) fprintf(logFile, "                 |            (C) 1989-2012             |\n");
     (void) fprintf(logFile, "                 |    The Scripps Research Institute    |\n");
     (void) fprintf(logFile, "                 |                                      |\n");
@@ -94,7 +97,7 @@ if(outlev>=LOGRUNV) {
     (void) fprintf(logFile, "\n\n");
 }
 else {
-    (void) fprintf(logFile, "          AutoDock %-3.3s Release %-8s\n", version_num, version_num );
+    (void) fprintf(logFile, "          AutoDock %-3.3s Release %-8s%s\n", version_num, version_num, str_openmp());
     (void) fprintf(logFile, "         (C) 1989-2012 The Scripps Research Institute\n");
 }
 
@@ -105,6 +108,16 @@ else {
     (void) fprintf(logFile, "        for details type 'autodock4 -C'\n\n");
 // GNU END   (see maintenance script update_license_de-GNU)
 
+}
+
+static char* str_openmp(void) 
+{ 
+#ifdef _OPENMP
+static char s[] = " [OpenMP]";
+#else
+static char s[] = "";
+#endif
+return s;
 }
 
 /*----------------------------------------------------------------------------*/

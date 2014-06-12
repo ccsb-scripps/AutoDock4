@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.h,v 1.13 2013/10/21 21:52:04 mp Exp $
+ $Id: ranlib.h,v 1.14 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -34,6 +34,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include "typedefs.h"
 
+// set configuration of max number of random number generators, see com.cc
+// In the OpenMP (OMP) version, this is also the max number of threads allowed
+#define NUMG 8
+
 //extern void advnst(const FourByteLong k);
 extern Real genbet(ConstReal  aa,ConstReal  bb);
 //extern Real genchi(ConstReal  df);
@@ -49,14 +53,25 @@ extern void genprm(/* not const */FourByteLong *const iarray,const int larray);
 extern Real genunf(ConstReal  low,ConstReal  high); // referenced by ls.h
 //extern FourByteLong ignbin(const FourByteLong n,ConstReal  pp);
 extern FourByteLong ignnbn(const FourByteLong n,ConstReal  p);
-extern FourByteLong ignlgi(void); // in com.cc, referenced by gs.cc (get random long integer)
+extern FourByteLong ignlgi_t(int); // in com.cc, referenced by gs.cc (get random long integer)
+
+#ifdef _OPENMP
+/* redefine random number functions to be thread-safe */
+#include <omp.h>
+#define ignlgi() ignlgi_t(omp_get_thread_num())
+#define setsd(i,j) setsd_t((i),(j), omp_get_thread_num())
+#define getsd(i,j) getsd_t((i),(j), omp_get_thread_num())
+#else
+#define ignlgi() ignlgi_t(0)
+#define setsd(i,j) setsd_t((i),(j),0)
+#define getsd(i,j) getsd_t((i),(j),0)
+#endif
 extern int gscgn(const int g); // in com.cc, referenced by main.cc (sets index of current generator)
-extern void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2); // in com.cc (get seeds)
-extern void setsd(const FourByteLong iseed1,const FourByteLong iseed2); // in com.cc (set seeds)
+extern void getsd_t(FourByteLong *const iseed1,FourByteLong *const iseed2, int thread); // in com.cc (get seeds)
+extern void setsd_t(const FourByteLong iseed1,const FourByteLong iseed2, int thread); // in com.cc (set seeds)
 //extern FourByteLong ignpoi(ConstReal  mu);
-extern FourByteLong ignuin(const FourByteLong low,const FourByteLong high); // referenced by gs.cc
+extern int ignuin(const int low,const int high); // referenced by gs.cc
 extern FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourByteLong m); // referenced by com.cc
-//extern void phrtsd(const char *const phrase,FourByteLong *const seed1,FourByteLong *const seed2);
 
 /* ranf() changed to macro to avoid extra function call, M Pique 2013, see ranlib.cc */
 //extern Real ranf(void); // referenced by gs.cc
@@ -67,12 +82,6 @@ extern FourByteLong mltmod(const FourByteLong a,const FourByteLong s,const FourB
 #define ranf() ((Real)(ignlgi()*4.656613057E-10))
 
 extern void setall(const FourByteLong iseed1,const FourByteLong iseed2); // referenced by main.cc
-//extern void setgmn(const Real *const meanv,Real *const covm,const FourByteLong p,Real *const parm);
-//extern Real sexpo(void);
-//extern Real sgamma(ConstReal a);
-//extern Real snorm(void);
-//extern Real rcauchy(ConstReal , ConstReal );
-//extern Real scauchy1(void); // referenced by gencau.cc
 extern Real scauchy2(void); // referenced by gencau.cc
 
 #endif

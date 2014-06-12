@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.h,v 1.14 2012/04/13 06:22:10 mp Exp $
+ $Id: printEnergies.h,v 1.15 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -39,9 +39,13 @@ void printEnergies( const EnergyBreakdown *const eb,
                     const Boole B_have_flexible_residues,
                     ConstReal emap_flexres_total,
                     ConstReal elec_flexres_total,
-                    const Unbound_Model ad4_unbound_model);
+                    const Unbound_Model ad4_unbound_model,
+		    int outlev,
+		    FILE *logFile);
 
 void printStateEnergies( const EnergyBreakdown *eb,
 			 const char *const prefixString, 
-			 const int ligand_is_inhibitor);
+			 const int ligand_is_inhibitor,
+			 int outlev,
+			 FILE *stateFile);
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.32 2012/10/15 17:05:53 mp Exp $
+ $Id: eintcal.cc,v 1.33 2014/06/12 01:44:07 mp Exp $
 
  AutoDock  
 
@@ -122,7 +122,6 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 
     // strutures for tallying and reporting energy components by atom group
     static EnergyComponent zero_components; // always all zero
-    static EnergyComponent grouptotal;  // component totals for current group (0, 1, or 2)
 
     // totals over entire system - all groups
     double total_e_total=0.0L; // total_e_total = eint
@@ -152,6 +151,7 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
     // or (intramolecular ligand nonbonds, intermolecular nonbonds, and intramolecular receptor nonbonds)
     for (int nb_group = 0;  nb_group < nb_group_max;  nb_group++) {
         int inb_from, inb_to;
+        EnergyComponent grouptotal=zero_components;  // component totals for current group (0, 1, or 2)
 
 #ifdef EINTCALPRINT
         if (nb_group == 0) {
@@ -327,7 +327,6 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 	    break;
 	default: stop("bug: bad group index in eintcal");
         }
-	grouptotal = zero_components;
 
     } // nb_group -- intra lig, inter, intra rec
 

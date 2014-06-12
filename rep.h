@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.h,v 1.19 2011/03/08 04:18:37 mp Exp $
+ $Id: rep.h,v 1.20 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -65,7 +65,7 @@ enum RepType { T_BASE, T_IntV, T_RealV, T_CRealV, T_BitV, T_Orientation };
 typedef union 
 {
    double real;
-   FourByteLong integer;
+   int integer;
    unsigned char bit;
 } Element;
 
@@ -87,7 +87,7 @@ class Representation
       void set_normalized_false(void);
       virtual RepType type(void) const; 
       virtual void write(const unsigned char& value, const int) = 0; /* not const, e.g. in bitvector */
-      virtual void write(const FourByteLong& value,  const int) = 0;
+      virtual void write(const int& value,  const int) = 0;
       virtual void write(ConstDouble value,          const int) = 0; /* not const, e.g. in RealVector */
       virtual void write(const Element& value,       const int) = 0;
       virtual const Element gene(const unsigned int) const = 0;
@@ -99,8 +99,8 @@ class IntVector : public Representation
 {
 //   friend void debug(IntVector &);
    protected:
-      static FourByteLong low, high;
-      FourByteLong *vector;
+      static int low, high;
+      int *vector;
 
       const void *internals(void) const;
       Representation *clone(void) const;
@@ -108,12 +108,12 @@ class IntVector : public Representation
    public:
       IntVector(void);
       IntVector(const int);
-      IntVector(const int, FourByteLong *const);
-      IntVector(const int, const FourByteLong, const FourByteLong);
+      IntVector(const int, int *const);
+      IntVector(const int, const int, const int);
       IntVector(const IntVector &);
       ~IntVector(void);
       void write(const unsigned char& value, const int); /* not const - inherited */
-      void write(const FourByteLong&  value, const int); /* not const */
+      void write(const int&  value, const int); /* not const */
       void write(ConstDouble          value, const int);
       void write(const Element&       value, const int); /* not const */
       Representation &operator=(const Representation &);
@@ -150,7 +150,7 @@ class RealVector : public Representation
       RealVector(const RealVector &);
       ~RealVector(void);
       void write(const unsigned char&, const int) /* not const - inherited */;
-      void write(const FourByteLong&, const int); /* not const, e.g. in IntVector */
+      void write(const int&, const int); /* not const, e.g. in IntVector */
 //    void write(const void *, int);
       void write(const Element&, const int) /* not const */;
       Representation &operator=(const Representation &);
@@ -202,7 +202,7 @@ class ConstrainedRealVector : public Representation
       ConstrainedRealVector(const ConstrainedRealVector &);
       ~ConstrainedRealVector(void);
       void write(const unsigned char& value, const int gene); /* not const - inherited */
-      void write(const FourByteLong& value,  const int gene); /* not const - e.g. in IntVector */
+      void write(const int& value,  const int gene); /* not const - e.g. in IntVector */
       void write(ConstDouble value,          const int gene); /* not const */
       void write(const Element&,             const int gene); /* not const */
       void write(ConstDouble a, ConstDouble b, ConstDouble c, ConstDouble d);
@@ -228,7 +228,7 @@ class BitVector : public Representation
       BitVector(const BitVector &);
       ~BitVector(void);
       void write(const unsigned char&, const int); /* not const */
-      void write(const FourByteLong&, const int); /* not const - inherited */
+      void write(const int&, const int); /* not const - inherited */
       void write(ConstDouble, const int); /* not const - inherited */
 //      void write(const void *, int);
       void write(const Element&, const int); /* not const */
@@ -289,12 +289,12 @@ inline Representation *Representation::clone(void) const
 inline IntVector::IntVector(void)
 : Representation(0)
 {
-   vector = (FourByteLong *)NULL;
+   vector = (int *)NULL;
    mytype = T_IntV;
 }
 
 //  This constructor does a shallow copy of the array
-inline IntVector::IntVector(const int num_els, FourByteLong *const array)
+inline IntVector::IntVector(const int num_els, int *const array)
 : Representation(num_els), vector(array)
 {
     mytype = T_IntV;
@@ -302,7 +302,7 @@ inline IntVector::IntVector(const int num_els, FourByteLong *const array)
 
 inline IntVector::~IntVector(void)
 {
-   if(vector!=(FourByteLong *)NULL)
+   if(vector!=(int *)NULL)
    {
       delete [] vector;
    }

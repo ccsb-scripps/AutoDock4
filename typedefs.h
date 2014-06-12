@@ -1,6 +1,6 @@
 /*
 
- $Id: typedefs.h,v 1.12 2012/10/15 17:48:28 mp Exp $
+ $Id: typedefs.h,v 1.13 2014/06/12 01:44:08 mp Exp $
 
  AutoDock  
 
@@ -45,7 +45,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
  ******************************************************************************/
 
 
-#ifdef USE_INT_AS_LONG
+#ifdef USE_INT_AS_FOURBYTELONG
     typedef int  FourByteLong;
     typedef unsigned int UnsignedFourByteLong;
 #define FBL_FMT "%d"

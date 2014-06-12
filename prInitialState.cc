@@ -1,6 +1,6 @@
 /*
 
- $Id: prInitialState.cc,v 1.17 2012/08/18 00:00:29 mp Exp $
+ $Id: prInitialState.cc,v 1.18 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -37,8 +37,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 
 extern int keepresnum;
-extern FILE *logFile;
-
 
 void prInitialState(
     const EnergyBreakdown *p_eb,
@@ -51,7 +49,9 @@ void prInitialState(
     const Real charge[MAX_ATOMS],
     const int ligand_is_inhibitor,
     const Boole B_have_flexible_residues,
-    const Unbound_Model ad4_unbound_model
+    const Unbound_Model ad4_unbound_model,
+    const int outlev,
+    FILE *logFile
     )
 
 {
@@ -79,7 +79,7 @@ void prInitialState(
     pr( logFile, "\t\t________________________\n" );
     pr( logFile, "\n\nEnergy of starting position of Small Molecule by atom: \n\n" );
 
-    print_atomic_energies( natom, atomstuff, type, peratomE, charge );
+    print_atomic_energies( natom, atomstuff, type, peratomE, charge, outlev, logFile);
 
     for (a=0; a<true_ligand_atoms; a++) {
         emap_total += peratomE[a].vdW_Hb+peratomE[a].desolv;
@@ -92,7 +92,7 @@ void prInitialState(
     
 	pr( logFile, "\n\n" );
     printEnergies( p_eb, "Initial ", ligand_is_inhibitor, emap_total, elec_total,
-     B_have_flexible_residues, emap_flexres_total, elec_flexres_total, ad4_unbound_model );
+     B_have_flexible_residues, emap_flexres_total, elec_flexres_total, ad4_unbound_model, outlev, logFile );
     pr( logFile, "\n\n" );
 
     flushLog;

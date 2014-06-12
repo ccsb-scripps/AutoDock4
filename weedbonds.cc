@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.23 2012/04/24 20:59:31 mp Exp $
+ $Id: weedbonds.cc,v 1.24 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -255,7 +255,7 @@ void print_nonbonds(
     int i_atmnum = 0;
     int j_atmnum = 0;
     int Nnbonds[MAX_ATOMS];
-    static int OUTNUMATM = 10;
+    const static int OUTNUMATM = 10;
     int repflag = FALSE;
     int n_a = 0;
 

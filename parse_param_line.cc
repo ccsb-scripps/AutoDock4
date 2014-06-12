@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_param_line.cc,v 1.7 2011/03/08 04:18:37 mp Exp $
+ $Id: parse_param_line.cc,v 1.8 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -33,8 +33,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <ctype.h>
 #include "parse_param_line.h"
 
+#ifdef DEBUG
 extern int debug;
-extern FILE *logFile;
+extern FILE *logFile; // DEBUG only
+#endif 
 
 int parse_param_line( const char *const line)
 
@@ -79,13 +81,13 @@ int parse_param_line( const char *const line)
     for (j=0; ((line[j]!='\0')&&(line[j]!=' ')&&(line[j]!='\t')&&(line[j]!='\n')); j++) { //FIXME: check on j<LINE_LEN missing
         /*  Ignore case */
         c[j] = (char)tolower((int)line[j]);
-        if (debug > 0) {
-            (void)fprintf(logFile,"%c",c[j]);
-        }
+#ifdef DEBUG
+        if (debug > 0) (void)fprintf(logFile,"%c",c[j]);
+#endif 
     }
-    if (debug > 0) {
-        (void)fprintf(logFile,"\nj = %d\n",j);
-    }
+#ifdef DEBUG
+    if (debug > 0) (void)fprintf(logFile,"\nj = %d\n",j);
+#endif 
 
     /*  Recognize one character tokens  */
 
@@ -98,9 +100,11 @@ int parse_param_line( const char *const line)
     /*  Recognize token strings  */
 
     for (i=0;  (i < tokentablesize) && (token == PAR_);  i++) {
+#ifdef DEBUG
         if (debug > 0) {
             (void)fprintf(logFile,"i = %d, tokentable[i].lexeme = %s, tokentable[i].value = %d, c = %s\n",i,tokentable[i].lexeme,tokentable[i].tokenvalue,c);
         }
+#endif 
         if (strncasecmp(tokentable[i].lexeme, c, j) == 0) {
             token = tokentable[i].tokenvalue;
         }

@@ -1,6 +1,6 @@
 /*
 
- $Id: call_ls.cc,v 1.10 2012/01/25 00:10:29 mp Exp $
+ $Id: call_ls.cc,v 1.11 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -33,7 +33,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
      Call_ls:  Invokes a local searcher on a docking to try and 
                find the locally optimal solution.  So, the docking
                must be specified BEFORE calling this routine.
-               Assumes a population size of 1.
 
 				rsh 2/5/96
 ********************************************************************/
@@ -44,10 +43,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
    #include "constants.h"
    #include "structs.h"
-//   extern FILE *logFile;
    #include "qmultiply.h"
-
-extern Eval evaluate;
 
 Representation **cnv_state_to_rep(const State &state)
 {
@@ -74,7 +70,7 @@ Representation **cnv_state_to_rep(const State &state)
    return(retval);
 }
 
-Individual cnv_state_to_ind(const State &original)
+Individual cnv_state_to_ind(const State &original, Eval *evaluate)
 {
    // BEGIN DELETION
    // return(Individual(Genotype(5, cnv_state_to_rep(original)), Phenotype(5, cnv_state_to_rep(original))));
@@ -91,7 +87,7 @@ Individual cnv_state_to_ind(const State &original)
    Phenotype temp_Ptype;
 
    temp_Gtype = Genotype(5, cnv_state_to_rep(original));
-   temp_Ptype = Phenotype(5, cnv_state_to_rep(original));
+   temp_Ptype = Phenotype(5, cnv_state_to_rep(original), evaluate);
 
    Individual temp(temp_Gtype, temp_Ptype);
 
@@ -100,22 +96,46 @@ Individual cnv_state_to_ind(const State &original)
 
 }
 
-State call_ls(Local_Search *const local_method, const State& now, const unsigned int pop_size, Molecule *const mol) 
+State
+call_ls(Local_Search *const local_method, const State& now, 
+ const unsigned int pop_size, Molecule *const mol, 
+  Eval *evaluate, const int outlev, FILE *logFile) 
 {
-   register unsigned int i;
+   unsigned int i;
 
-   evaluate.reset();
+   evaluate->reset();
    local_method->reset();
+   //MP Individual prototype;
 
-   Population thisPop(pop_size);
-   for(i=0; i<pop_size; i++)
-   {
-      thisPop[i] = cnv_state_to_ind(now); 
-      thisPop[i].mol = mol;
-   }
+   //MP prototype = cnv_state_to_ind(now, evaluate);
+   //MPPopulation thisPop(pop_size, evaluate, &prototype); // MPique TODO this evaluate is redundant
+   Population thisPop(pop_size, evaluate);
+
+   // MPique 2013:
+   // for thread-safety, each population must have its own local search workspaces
+   // MP TODO how know if SW or PSW? Ask Ruth
+
+
+/*
+   Real (*ibias)[pop_size], (*irho)[pop_size], (*idev)[pop_size]; 
+   local_method (*iSearch)[pop_size];
+   ibias = new *Real[pop_size];
+   irho= new *Real[pop_size];
+   idev= new *Real[pop_size];
+   iSearch= new *local_method[pop_size];
+*/
+
+
+
+      for(i=0;i<pop_size;i++)
+      {
+	thisPop[i] = cnv_state_to_ind(now, evaluate);  // MP 2014 need this ??
+	thisPop[i].mol = mol;
+      }
+
+
 #ifdef DEBUG0
 // MP Sept 2011
-extern FILE *logFile;
 double e_start;
 #endif
 
@@ -126,7 +146,7 @@ for(i=0; i<pop_size; i++)
 if(i==0)fprintf(logFile, "LS:: ->call_ls(thisPop[%3d]) %10.6f\n", i,
 e_start=thisPop[i].value(Normal_Eval));
 #endif
-      local_method->search( thisPop[i] );
+      local_method->search( thisPop[i], evaluate, outlev, logFile );
 #ifdef DEBUG0
 fprintf(logFile, "LS:: <-call_ls(thisPop[%3d]) %10.6f\n", i,
 thisPop[i].value(Normal_Eval));
@@ -135,6 +155,7 @@ thisPop[i].value(Normal_Eval));
 
    if (pop_size > 1)
 	 	thisPop.msort(1);
+    (void)fprintf(logFile,"Final-Value: %.3f\n", thisPop[0].value(Normal_Eval));
 #ifdef DEBUG0
 double e_final = thisPop[0].value(Normal_Eval);
 fprintf(logFile, "LS:: orig %10.6f best %10.6f (improvement %10.6f) \n", 

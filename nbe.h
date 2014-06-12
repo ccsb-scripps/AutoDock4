@@ -1,6 +1,6 @@
 /*
 
- $Id: nbe.h,v 1.7 2010/08/27 00:05:07 mp Exp $
+ $Id: nbe.h,v 1.8 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -32,5 +32,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 void nbe( const GridMapSetInfo *const info,
            const EnergyTables *const ptr_ad_energy_tables,
-           const int   num_atm_maps );
+           const int   num_atm_maps,
+	   const int outlev,
+	   FILE *const logFile);
 #endif

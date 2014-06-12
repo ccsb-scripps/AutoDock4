@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.43 2013/06/11 00:06:31 mp Exp $
+ $Id: constants.h,v 1.44 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -338,7 +338,7 @@ const struct {
  * Random numbers,                                                            * 
  *----------------------------------------------------------------------------*/
 
-// This is platform-independent RNG-based.
+// This is platform-independent RNG-based.  All are wrappers around ignlgi() - I think! MPique 2014
 #include "ranlib.h"
 #define local_random()      genunf(0., 1.)
 
@@ -352,7 +352,7 @@ const struct {
 #define random_sign        ( (local_random() < 0.5) ?  (-1.0) : (+1.0) )
 #define random_pm1()    ( 2.*local_random() - 1. ) /* ..."pm"="Plus or Minus" */
 #define Randpm1                random_pm1()
-#define RandpmPI        PI * Randpm1
+#define RandpmPI        (PI * Randpm1)
 #define random_pm(x)    ( (x) * Randpm1 )    /* ...random num. between +/- x; */
 /* Return a random number in the range a to b...  */
 #define random_range(a,b)    ( (a) + (((b)-(a))*local_random()) )

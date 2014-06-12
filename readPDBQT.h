@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.h,v 1.20 2012/10/24 23:28:03 mp Exp $
+ $Id: readPDBQT.h,v 1.21 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -41,7 +41,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "stack.h"
 
 void  readPDBQTLine( char line[LINE_LEN],
-                     int  *const ptr_serial,
+                     int  *const ptr_pdbatomnumber,
                      Real crd[SPACE], 
                      Real *const P_q,
                      ParameterEntry *thisparm,

@@ -1,6 +1,6 @@
 /*
 
- $Id: linpack.cc,v 1.4 2010/08/27 00:05:07 mp Exp $
+ $Id: linpack.cc,v 1.5 2014/06/12 01:44:07 mp Exp $
 
 */
 
@@ -13,10 +13,11 @@
 #include <math.h>
 #include "structs.h"
 
-Real sdot(const FourByteLong n,const Real *const sx,const FourByteLong incx,const Real *const sy,const FourByteLong incy)
+/* sdot() not used in AutoDock code */
+Real sdot(const int n,const Real *const sx,const long incx,const Real *const sy,const long incy)
 {
-static FourByteLong i,ix,iy,m,mp1;
-static Real sdot,stemp;
+long i,ix,iy,m,mp1;
+Real sdot,stemp;
     stemp = sdot = 0.0;
     if(n <= 0) return sdot;
     if(incx == 1 && incy == 1) goto S20;
@@ -28,8 +29,7 @@ static Real sdot,stemp;
         ix += incx;
         iy += incy;
     }
-    sdot = stemp;
-    return sdot;
+    return stemp;
 S20:
     m = n % 5L;
     if(m == 0) goto S40;
@@ -40,10 +40,10 @@ S40:
     for (i=mp1; i<=n; i+=5) stemp += (*(sx+i-1)**(sy+i-1)+*(sx+i)**(sy+i)+*(sx+i
       +1)**(sy+i+1)+*(sx+i+2)**(sy+i+2)+*(sx+i+3)**(sy+i+3));
 S60:
-    sdot = stemp;
-    return sdot;
+    return stemp;
 }
-void spofa(/* not const */ Real *const a,const FourByteLong lda,const FourByteLong n,/* not const */ FourByteLong *const info)
+/* spofa() not used in AutoDock code */
+void spofa(/* not const */ Real *const a,const int lda,const int n,/* not const */ int *const info)
 /*
      SPOFA FACTORS A REAL SYMMETRIC POSITIVE DEFINITE MATRIX.
      SPOFA IS USUALLY CALLED BY SPOCO, BUT IT CAN BE CALLED
@@ -74,9 +74,9 @@ void spofa(/* not const */ Real *const a,const FourByteLong lda,const FourByteLo
      INTERNAL VARIABLES
 */
 {
-extern Real sdot(const FourByteLong n,const Real *const sx,const FourByteLong incx,const Real *const sy,const FourByteLong incy);
-static FourByteLong j,jm1,k;
-static Real t,s;
+extern Real sdot(const int n,const Real *const sx,const long incx,const Real *const sy,const long incy);
+int j,jm1,k;
+Real t,s;
 /*
      BEGIN BLOCK WITH ...EXITS TO 40
 */

@@ -1,6 +1,6 @@
 /*
 
- $Id: quicksort.cc,v 1.6 2010/08/27 00:05:08 mp Exp $
+ $Id: quicksort.cc,v 1.7 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -42,7 +42,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 */
 
 #ifdef DEBUG
-extern FILE *logFile;
+extern FILE *logFile; // DEBUG only
 #endif /* DEBUG */
 
 void quicksort( const Real e[], 

@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.h,v 1.13 2012/07/31 01:50:59 mp Exp $
+ $Id: ls.h,v 1.14 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -50,8 +50,9 @@ class Local_Search
       virtual char * shortname(void) = 0;
       virtual char * longname(void) = 0;
       virtual int terminate(void) const = 0;
-      virtual int search(Individual &) = 0;
+      virtual int search(Individual &, Eval *evaluate, int outlev, FILE *logFile) = 0;
       unsigned int ls_count;//search invocation count, for run statistics
+   protected:
 };
 
 class Pattern_Search : public Local_Search
@@ -81,7 +82,7 @@ class Pattern_Search : public Local_Search
       char * shortname(void);
       char * longname(void);
       int terminate(void) const;
-      int search(/* not const */ Individual &);
+      int search(/* not const */ Individual &, Eval *evaluate, int outlev, FILE *logFile);
 };
 inline char * Pattern_Search::shortname(void)
 {
@@ -106,10 +107,10 @@ class Solis_Wets_Base : public Local_Search
       Solis_Wets_Base(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal);
       virtual ~Solis_Wets_Base(void);
       virtual double gen_deviates(ConstReal) const = 0;
-      virtual Boole SW(/* not const */ Phenotype &) = 0;
+      virtual Boole SW(/* not const */ Phenotype &, int outlev, FILE *logFile) = 0;
       virtual void reset(void);
       virtual int terminate(void) const;
-      int search(Individual &);
+      int search(Individual &, Eval *evaluate, int outlev, FILE *logFile);
 };
 
 class Solis_Wets : public Solis_Wets_Base
@@ -122,7 +123,7 @@ class Solis_Wets : public Solis_Wets_Base
       Solis_Wets(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, ConstReal, ConstReal);
       virtual ~Solis_Wets(void);
       virtual double gen_deviates(ConstReal) const = 0;
-      Boole SW(/* not const */ Phenotype &);
+      Boole SW(/* not const */ Phenotype &, int outlev, FILE *logFile);
       char * shortname(void);
       char * longname(void);
 };
@@ -139,7 +140,7 @@ class Pseudo_Solis_Wets : public Solis_Wets_Base
       Pseudo_Solis_Wets(const unsigned int, const unsigned int, const unsigned int, const unsigned int, ConstReal, ConstReal, Real* const, Real* const);
       virtual ~Pseudo_Solis_Wets(void);
       virtual double gen_deviates(ConstReal) const = 0;
-      Boole SW(Phenotype &);
+      Boole SW(Phenotype &, int outlev, FILE *logFile);
       char * shortname(void);
       char * longname(void);
 };

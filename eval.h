@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.h,v 1.31 2012/08/18 00:00:29 mp Exp $
+ $Id: eval.h,v 1.32 2014/06/12 01:44:07 mp Exp $
 
  AutoDock  
 
@@ -54,24 +54,23 @@ void make_state_from_rep(const Representation *const *const rep, State *const st
 class Eval
 {
    private:
-      UnsignedFourByteLong num_evals;
+	// the following are constant for a particular receptor-ligand docking
+	//  and so can be shared read-only by concurrent evaluations:
+      unsigned int num_evals;
       int natom, Nnb;
       int *Nnb_array;
-      GroupEnergy  *group_energy;
       GridMapSetInfo *info;
       MapType *map;
-      EnergyComponent	*peratomE;        // output if not NULL - intermolecular energies
       Boole B_calcIntElec, B_isGaussTorCon, B_ShowTorE;
-      State stateNow;
-      unsigned short *US_TorE, (*US_torProfile)[NTORDIVS];
+      unsigned short *US_TorE, (*US_torProfile)[NTORDIVS]; // unused? M Pique
       int *type, (*tlist)[MAX_ATOMS];
       NonbondParam *nonbondlist;
       Real *charge, *abs_charge, *qsp_abs_charge;
-      Real (*crd)[SPACE], (*vt)[SPACE], (*crdpdb)[SPACE];
+      Real (*crd)[SPACE], (*vt)[SPACE];
       EnergyTables *ptr_ad_energy_tables;
       Boole *B_isTorConstrained;
       Molecule mol;
-      int ignore_inter[MAX_ATOMS]; // gmm 2002-05-21, for CA, CB in flexible sidechains
+      int *ignore_inter;  // [MAX_ATOMS] gmm 2002-05-21, for CA, CB in flexible sidechains
       Boole         B_include_1_4_interactions; // gmm 2005-01-8, for scaling 1-4 nonbonds
       Real scale_1_4;                  // gmm 2005-01-8, for scaling 1-4 nonbonds
       Real scale_eintermol;  // for scaling intermolecular energy term
@@ -82,6 +81,12 @@ class Eval
       Boole B_have_flexible_residues;
       int true_ligand_atoms;
       int outlev;
+	// the following are not constant for a particular ligand docking
+	//  and so must be allocated in cases of concurrent evaluations:
+      State stateNow;
+      Real (*crdpdb)[SPACE];
+      EnergyComponent	*peratomE;        // output if not NULL - intermolecular energies
+      GroupEnergy  *group_energy;
       FILE *logFile;
 
    public:
@@ -107,11 +112,12 @@ class Eval
                   const Boole          init_B_ShowTorE,
 		  /* not const */ unsigned short init_US_TorE[MAX_TORS],
                   /* not const */ unsigned short init_US_torProfile[MAX_TORS][NTORDIVS],
-                  /* not const */ Real  init_vt[MAX_TORS][SPACE], int init_tlist[MAX_TORS+1][MAX_ATOMS],
+                  /* not const */ Real  init_vt[MAX_TORS][SPACE],
+		  /* not const */ int init_tlist[MAX_TORS+1][MAX_ATOMS],
                   /* not const */ Real  init_crdpdb[MAX_ATOMS][SPACE], 
                   const State& stateInit, 
 		  const Molecule& molInit,
-                  const int            init_ignore_inter[MAX_ATOMS], // values are copied
+                  /* not const */ int            init_ignore_inter[MAX_ATOMS], // values are copied
                   const Boole          init_B_include_1_4_interactions, // gmm 2005-01-8, for scaling 1-4 nonbonds
                   ConstReal   init_scale_1_4,                   // gmm 2005-01-8, for scaling 1-4 nonbonds
                   ConstReal   init_scale_eintermol,
@@ -122,7 +128,7 @@ class Eval
 		  int init_outlev,
 		  FILE *init_logFile
                   );
-      void update_crds( Real init_crd[MAX_ATOMS][SPACE], 
+      void update_crdpdb( Real init_crdpdb[MAX_ATOMS][SPACE], 
                         Real init_vt[MAX_TORS][SPACE] );
 
       double operator()(const Representation *const *const );
@@ -132,7 +138,7 @@ class Eval
 #endif
       double eval();    // WEH - a basic change that facilitates the use of Coliny
       double eval(const int); // GMM - allows calculation of a particular term of the total energy
-      UnsignedFourByteLong evals(void);
+      unsigned int evals(void);
       void reset(void);
       int write(const Representation *const *const rep, const int true_ligand_atoms, const int outlev, FILE *logFile);
       void compute_intermol_energy(const Boole init_B_compute_intermol_energy); // for computing unbound state
@@ -170,7 +176,7 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
                         const State& stateInit,
                         const Molecule& molInit,
 
-                        const int init_ignore_inter[MAX_ATOMS],
+                        /* not const */ int init_ignore_inter[MAX_ATOMS],
 
                         const Boole init_B_include_1_4_interactions,
                         ConstReal  init_scale_1_4,
@@ -217,12 +223,11 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
     printState( logFile, stateNow, 2 );
 #endif
     num_evals = 0;
+    ignore_inter = init_ignore_inter;
     peratomE = init_peratomE;
     static EnergyComponent zeroEC;
     for (i=0; i<MAX_ATOMS; i++) {
-       //init_peratomE[i] = zeroEC;
        peratomE[i] = zeroEC;
-       ignore_inter[i] = init_ignore_inter[i];
     }
     mol = molInit;
 
@@ -245,10 +250,10 @@ inline void Eval::setup(/* not const */ Real init_crd[MAX_ATOMS][SPACE], // not 
     logFile = init_logFile;
 }
 
-inline void Eval::update_crds( Real init_crd[MAX_ATOMS][SPACE], 
+inline void Eval::update_crdpdb( Real init_crdpdb[MAX_ATOMS][SPACE], 
                                Real init_vt[MAX_TORS][SPACE])
 {
-    crd = init_crd;
+    crdpdb = init_crdpdb;
     vt = init_vt;
 }
 
@@ -259,7 +264,7 @@ inline void Eval::compute_intermol_energy(const Boole init_B_compute_intermol_en
 }
 
 
-inline UnsignedFourByteLong Eval::evals(void)
+inline unsigned int Eval::evals(void)
 {
    return(num_evals);
 }

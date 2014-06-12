@@ -1,6 +1,6 @@
 /*
 
- $Id: printEnergies.cc,v 1.22 2012/04/13 06:22:10 mp Exp $
+ $Id: printEnergies.cc,v 1.23 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -34,10 +34,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <string.h>
 #include "printEnergies.h"
 #include "constants.h"
-
-extern FILE *logFile;
-extern FILE *stateFile;
-extern int write_stateFile;
 
 static inline void  print1000(FILE *file, ConstReal x) {
 	pr(file,  ((fabs((x)) >= 0.0) && ((fabs(x)) <= 1000.)) ? "%+7.2f" : "%+11.2e" , (x));
@@ -86,7 +82,8 @@ void printEnergies( const EnergyBreakdown *const eb,
                     const Boole B_have_flexible_residues, 
 		    ConstReal emap_flexres_total,
 		    ConstReal elec_flexres_total,
-                    const Unbound_Model ad4_unbound_model
+                    const Unbound_Model ad4_unbound_model,
+		    int outlev, FILE *logFile
                    )
 
 {
@@ -184,7 +181,9 @@ item("(3) Torsional Free Energy           = ", eb->e_torsFreeEnergy);
 }
 #undef item
 
-void printStateEnergies( const EnergyBreakdown *const eb, const char  *const prefixString, const int ligand_is_inhibitor )
+void printStateEnergies( const EnergyBreakdown *const eb, 
+  const char  *const prefixString, const int ligand_is_inhibitor,
+  int outlev, FILE *stateFile)
 {
     // Real deltaG = 0.0;
     Real Ki = 1.0;

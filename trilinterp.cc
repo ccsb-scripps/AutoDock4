@@ -1,6 +1,6 @@
 /*
 
- $Id: trilinterp.cc,v 1.26 2013/09/09 20:38:56 rhuey Exp $
+ $Id: trilinterp.cc,v 1.27 2014/06/12 01:44:08 mp Exp $
 
  AutoDock  
 
@@ -41,7 +41,7 @@ extern int DesolvMap;
 
 #ifdef DEBUG
 #include <stdio.h>
-extern FILE *logFile;
+extern FILE *logFile; // DEBUG only
 #endif
 
 Real trilinterp( 
@@ -86,7 +86,7 @@ Real trilinterp(
 {
     double elec_total=0, emap_total=0, dmap_total=0, vdW_Hb_total=0, desolv_total=0;
     register int i;               /* i-th atom */
-    static EnergyComponent ECzero;
+    static EnergyComponent ECzero; // const
 
     for (i=first_atom; i<last_atom; i++) {
         register double e, m, d; 

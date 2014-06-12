@@ -1,6 +1,6 @@
 /*
 
- $Id: rep.cc,v 1.20 2011/03/08 04:18:37 mp Exp $
+ $Id: rep.cc,v 1.21 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -41,15 +41,16 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "rep.h"
 #include "ranlib.h"
 #include "structs.h"
+#include "stop.h"
 
-extern FILE *logFile;
+extern FILE *logFile; // DEBUG and bug check messages only
 extern int debug;
 
 //______________________________________________________________________________
 //
 //  Initializations
-FourByteLong IntVector::low = -INT_MAX/4;
-FourByteLong IntVector::high = INT_MAX/4;
+int IntVector::low = -INT_MAX/4;
+int IntVector::high = INT_MAX/4;
 /* A nonstatic data member cannot be defined outside its class:
  * Real RealVector::low = REALV_LOW;
  * Real RealVector::high = REALV_HIGH;
@@ -80,7 +81,7 @@ IntVector::IntVector(const int number_of_els)
 #endif /* DEBUG */
 
    mytype = T_IntV;
-   vector = new FourByteLong[number_of_els];
+   vector = new int[number_of_els];
    for (i=0; i<number_of_els; i++) {
       vector[i] = ignuin(low, high);
    }
@@ -88,18 +89,18 @@ IntVector::IntVector(const int number_of_els)
 
 //______________________________________________________________________________
 //
-IntVector::IntVector(const int num_els, const FourByteLong init_low, const FourByteLong init_high)
+IntVector::IntVector(const int num_els, const int init_low, const int init_high)
 : Representation(num_els)
 {
    register int i;
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/IntVector::IntVector(int num_els=%d, FourByteLong init_low=%ld, FourByteLong init_high=%ld) \n",num_els,init_low,init_high);
+    (void)fprintf(logFile, "rep.cc/IntVector::IntVector(int num_els=%d, int init_low=%d, int init_high=%d) \n",num_els,init_low,init_high);
 #endif /* DEBUG */
 
 
    mytype = T_IntV;
-   vector = new FourByteLong[num_els];
+   vector = new int[num_els];
    for (i=0; i<num_els; i++) {
       vector[i] = ignuin(init_low, init_high);
    }
@@ -120,7 +121,7 @@ IntVector::IntVector(const IntVector &original)
 
    mytype = T_IntV;
    if (original.vector!=NULL) {
-      vector = new FourByteLong[number_of_pts];
+      vector = new int[number_of_pts];
    } else {
       vector = NULL;
    }
@@ -145,11 +146,11 @@ void IntVector::write(const unsigned char& value, const int gene)
 
 //______________________________________________________________________________
 //
-void IntVector::write(const FourByteLong& value, const int gene) /* not const */ 
+void IntVector::write(const int& value, const int gene) /* not const */ 
 {
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/void IntVector::write(FourByteLong value=%ld, int gene=%d)` \n",value,gene);
+    (void)fprintf(logFile, "rep.cc/void IntVector::write(int value=%d, int gene=%d)` \n",value,gene);
 #endif /* DEBUG */
 
    if (value<low) {
@@ -207,9 +208,10 @@ const Element IntVector::gene(const unsigned int gene_number) const
 
 
    if (gene_number>=number_of_pts) {
-      (void)fprintf(logFile,"ERROR: Trying to access an out-of-bounds IntVector gene! (gene_number=%d >= number_of_pts=%d)\n", gene_number, number_of_pts); // used to be "stderr"
-      retval.integer = 0;
-      return(retval);
+      char error_message[200];
+      (void)sprintf(error_message, "ERROR: BUGCHECK: Trying to access an out-of-bounds IntVector gene! (gene_number=%d >= number_of_pts=%d)\n", gene_number, number_of_pts); // used to be "stderr"
+      stop(error_message);
+      return(retval); // NOTREACHED
    } else {
       retval.integer = vector[gene_number];
       return(retval);  // typecast int as Element
@@ -239,7 +241,7 @@ Representation &IntVector::operator=(const Representation &original)
 #endif /* DEBUG */
 
 
-   const FourByteLong *const array = (FourByteLong *)original.internals();
+   const int *const array = (int *)original.internals();
    if (original.type()==T_IntV) {
       number_of_pts = original.number_of_points();
       if (vector!=NULL) {
@@ -247,7 +249,7 @@ Representation &IntVector::operator=(const Representation &original)
       }
 
       if (array!=NULL) {
-         vector = new FourByteLong[number_of_pts];
+         vector = new int[number_of_pts];
       } else {
          vector = NULL;
       }
@@ -256,7 +258,7 @@ Representation &IntVector::operator=(const Representation &original)
          vector[i] = array[i];
       }
    } else {
-      (void)fprintf(logFile,"Unable to invoke operator= because Representations don't match!\n"); // used to be "stderr"
+      stop("Unable to invoke Representation &IntVector operator= because Representations don't match!\n");
    }
 
    return(*this);
@@ -446,15 +448,15 @@ void RealVector::write(const unsigned char& value, const int gene) /* not const 
 
 //______________________________________________________________________________
 //
-void RealVector::write(const FourByteLong& value, const int gene) /* not const ... in sibling classes */
+void RealVector::write(const int& value, const int gene) /* not const ... in sibling classes */
 {
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/void RealVector::write(FourByteLong value=%ld, int gene=%d) \n",value,gene);
+    (void)fprintf(logFile, "rep.cc/void RealVector::write(int value=%d, int gene=%d) \n",value,gene);
 #endif /* DEBUG */
 
    (void)fprintf(logFile,"Writing an Int to a Real!\n"); // used to be "stderr"
-   (void)fprintf(logFile,"value= %ld, gene= %d\n", value, gene); // used to be "stderr"
+   (void)fprintf(logFile,"value= %ld, gene= %d\n", (long)value, gene); // used to be "stderr"
 }
 
 //______________________________________________________________________________
@@ -656,15 +658,15 @@ void ConstrainedRealVector::write(const unsigned char& value, const int gene) /*
 
 //______________________________________________________________________________
 //
-void ConstrainedRealVector::write(const FourByteLong& value, const int gene) 
+void ConstrainedRealVector::write(const int& value, const int gene) 
 {
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/void ConstrainedRealVector::write(FourByteLong value=%ld, int gene=%d) \n",value,gene);
+    (void)fprintf(logFile, "rep.cc/void ConstrainedRealVector::write(int value=%ld, int gene=%d) \n",(long)value,gene);
 #endif /* DEBUG */
 
    (void)fprintf(logFile,"Writing an Integer to a Constrained Real\n"); // used to be "stderr"
-   (void)fprintf(logFile,"value= %ld, gene= %d\n",value,gene); // used to be "stderr"
+   (void)fprintf(logFile,"value= %ld, gene= %d\n",(long)value,gene); // used to be "stderr"
 }
 
 //______________________________________________________________________________
@@ -914,15 +916,15 @@ void BitVector::write(const unsigned char& value, const int gene) /* not const *
 
 //______________________________________________________________________________
 //
-void BitVector::write(const FourByteLong& value, const int gene) 
+void BitVector::write(const int& value, const int gene) 
 {
 
 #ifdef DEBUG
-    (void)fprintf(logFile, "rep.cc/void BitVector::write(FourByteLong value=%ld, int gene=%d) \n",value,gene);
+    (void)fprintf(logFile, "rep.cc/void BitVector::write(int value=%d, int gene=%d) \n",value,gene);
 #endif /* DEBUG */
 
    (void)fprintf(logFile,"Writing Int to Bit!\n"); // used to be "stderr"
-   (void)fprintf(logFile,"value= %ld, gene= %d\n",value,gene); // used to be "stderr"
+   (void)fprintf(logFile,"value= %ld, gene= %d\n",(long)value,gene); // used to be "stderr"
 }
 
 //______________________________________________________________________________

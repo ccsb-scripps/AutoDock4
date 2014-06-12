@@ -1,6 +1,6 @@
 /*
 
- $Id: timesys.cc,v 1.11 2012/04/18 03:00:03 mp Exp $
+ $Id: timesys.cc,v 1.12 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -33,14 +33,13 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdio.h>
 #include "timesys.h"
 
-extern  FILE    *logFile;
 extern	Real	idct;
 
 /*----------------------------------------------------------------------------*/
 
 void timesys( const Clock&            duration,
               const struct tms *const start,
-              const struct tms *const end)
+              const struct tms *const end, FILE *logFile)
 
 /*----------------------------------------------------------------------------*/
 

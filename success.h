@@ -1,6 +1,6 @@
 /*
 
- $Id: success.h,v 1.5 2010/10/01 22:51:40 mp Exp $
+ $Id: success.h,v 1.6 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -34,5 +34,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 void  success( const char  hostnm[MAX_CHARS],
                const Clock& jobStart,
-               const struct tms& tms_jobStart );
+               const struct tms& tms_jobStart,
+		FILE *logFile);
 #endif

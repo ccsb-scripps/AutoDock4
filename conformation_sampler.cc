@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.18 2013/05/23 20:06:02 mp Exp $
+ $Id: conformation_sampler.cc,v 1.19 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -53,7 +53,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define ICO_X 0.525731112119133606
 #define ICO_Y 0.850650808352039932
 
-extern class Eval evaluate;
+//extern class Eval evaluate;
 
 Real (*vt)[SPACE], (*crdpdb)[SPACE];
 int (*tlist)[MAX_ATOMS];
@@ -71,9 +71,9 @@ const Real vertices[12][3] = {{-ICO_X, 0., ICO_Y}, {ICO_X, 0., ICO_Y}, {-ICO_X, 
                               {ICO_Y, ICO_X, 0.}, {-ICO_Y, ICO_X, 0.}, {ICO_Y, -ICO_X, 0.}, {-ICO_Y, -ICO_X, 0.}};
 
 ConformationSampler::ConformationSampler(const State& init_state, 
- int true_ligand_atoms, int outlev, FILE *logFile) {
+ int true_ligand_atoms, Eval *evaluate, int outlev, FILE *logFile) {
 	base_state = init_state;
-	base_ind = set_ind(info, init_state, logFile);
+	base_ind = set_ind(info, init_state, evaluate, outlev, logFile);
 	base_point = base_ind.phenotyp;	
 	base_energy = base_point.evaluate(Normal_Eval);
 	cnv_state_to_coords(init_state, vt, tlist, init_state.ntor, crdpdb, base_crd, natom,
@@ -391,7 +391,7 @@ void ConformationSampler::output_statistics(int outlev, FILE *logFile) const {
 }
 
 void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS+1][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info,
- int true_ligand_atoms, int outlev, FILE *logFile) {
+ int true_ligand_atoms, Eval *evaluate, int outlev, FILE *logFile) {
 	vt = init_vt;
 	crdpdb = init_crdpdb;
 	tlist = init_tlist;
@@ -406,7 +406,7 @@ void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf
 	for (int i=0; i < nconf; i++) {
 		fprintf(logFile, "\nConformation %d:\n", i+1);
 		State base_state = hist[i];
-		ConformationSampler CS(base_state, true_ligand_atoms, outlev, logFile);
+		ConformationSampler CS(base_state, true_ligand_atoms, evaluate, outlev, logFile);
 		//CS.systematic_search(CS.dimensionality-1, true_ligand_atoms, outlev, logFile);
 		CS.systematic_search(BASE_DIMENSIONS-1, true_ligand_atoms, outlev, logFile);
 		CS.output_statistics(outlev, logFile);
@@ -415,7 +415,7 @@ void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf
 }
 
 void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /* not const */ int num_samples, Real init_vt[MAX_TORS][SPACE], Real init_crdpdb[MAX_ATOMS][SPACE], int init_tlist[MAX_TORS+1][MAX_ATOMS], Real init_lig_center[SPACE], const int init_natom, int init_type[MAX_ATOMS], GridMapSetInfo *const init_info,
- int true_ligand_atoms, int outlev, FILE *logFile) {
+ int true_ligand_atoms, Eval *evaluate, int outlev, FILE *logFile) {
 	vt = init_vt;
 	crdpdb = init_crdpdb;
 	tlist = init_tlist;
@@ -432,7 +432,7 @@ void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /*
 	for (int i=0; i < nconf; i++) {
 		fprintf(logFile, "\nConformation %d:\n", i+1);
 		State base_state = hist[i];
-		ConformationSampler CS(base_state, true_ligand_atoms, outlev, logFile);
+		ConformationSampler CS(base_state, true_ligand_atoms, evaluate, outlev, logFile);
 		CS.random_sample(num_samples, true_ligand_atoms, outlev, logFile);
 		CS.output_statistics(outlev, logFile);
 	}
@@ -442,14 +442,14 @@ void random_conformation_sampler(const State hist[MAX_RUNS], const int nconf, /*
 
 
 /* copied (and slightly modified) from non-included code in call_glss.cc */
-Individual set_ind(GridMapSetInfo *const info, const State state, FILE *logFile)
+Individual set_ind(GridMapSetInfo *const info, const State state, Eval *evaluate, int outlev, FILE *logFile)
 {
    Genotype temp_Gtype;
    Phenotype temp_Ptype;
    int i;
 
-   temp_Gtype = generate_Gtype(state.ntor, info, logFile);
-   temp_Ptype = generate_Ptype(state.ntor, info, logFile);
+   temp_Gtype = generate_Gtype(state.ntor, info, outlev, logFile);
+   temp_Ptype = generate_Ptype(state.ntor, info, evaluate, outlev, logFile);
 
    // use the state to generate a Genotype
    temp_Gtype.write( state.T.x, 0 );

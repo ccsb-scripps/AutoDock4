@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.cc,v 1.54 2013/05/23 20:06:02 mp Exp $
+ $Id: gs.cc,v 1.55 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -59,8 +59,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "qmultiply.h"
 
 
-extern FILE *logFile;
-extern class Eval evaluate;
 extern int sel_prop_count;//debug
 extern int debug;//debug
 //#define DEBUG
@@ -70,7 +68,7 @@ extern int debug;//debug
 
 
 static double
-worst_in_window(const double *const window, const int size, FILE *logFile) 
+worst_in_window(const double *const window, const int size, int outlev, FILE *logFile) 
 {
    register int i;
 
@@ -127,7 +125,7 @@ avg_in_window(const double *const window, const int size, FILE *logFile)
 }
 
 //  Also set avg -- and because of avg this is not a const function
-double Genetic_Algorithm::worst_this_generation(const Population &pop, FILE *logFile)
+double Genetic_Algorithm::worst_this_generation(const Population &pop, int outlev, FILE *logFile)
 {
    register unsigned int i;
    double worstval, avgval;
@@ -224,7 +222,7 @@ int Genetic_Algorithm::set_linear_ranking_selection_probability_ratio(ConstReal 
 
 
 
-void Genetic_Algorithm::set_worst(const Population &currentPop, FILE *logFile)
+void Genetic_Algorithm::set_worst(const Population &currentPop, int outlev, FILE *logFile)
 {
    double temp = 0.0;
 
@@ -232,7 +230,7 @@ void Genetic_Algorithm::set_worst(const Population &currentPop, FILE *logFile)
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::set_worst(Population &currentPop)\n");
 #endif /* DEBUG */
 
-   worst_window[generations%window_size] = worst_this_generation(currentPop, logFile);
+   worst_window[generations%window_size] = worst_this_generation(currentPop, outlev, logFile);
    switch(w_mode)
    {
       //  Assume for this case that there's a window_size of 1
@@ -246,9 +244,9 @@ void Genetic_Algorithm::set_worst(const Population &currentPop, FILE *logFile)
          break;
       case OfN:
          if (generations>=window_size) {
-            worst = worst_in_window(worst_window, window_size, logFile);
+            worst = worst_in_window(worst_window, window_size, outlev, logFile);
          } else {
-            worst = worst_in_window(worst_window, generations+1, logFile);
+            worst = worst_in_window(worst_window, generations+1, outlev, logFile);
          }
          break;
       case AverageOfN:
@@ -279,12 +277,12 @@ M_mode Genetic_Algorithm::m_type(const RepType type) const
       case T_IntV:
          return(IUniformSub);
       default:
-         (void)fprintf(logFile,"gs.cc/Unrecognized Type (The allowed types are:  T_BitV, T_RealV, T_CRealV and T_IntV)!\n");
-         return(ERR);
+         stop("gs.cc/Unrecognized Type (The allowed types are:  T_BitV, T_RealV, T_CRealV and T_IntV)!\n");
+         return(ERR); // NOTREACHED
    }
 }
 
-void Genetic_Algorithm::make_table(const int size, ConstReal  prob)
+void Genetic_Algorithm::make_table(const int size, ConstReal  prob, int outlev, FILE *logFile)
 {
    register int i, j;
    double L = 0.0L;
@@ -351,7 +349,7 @@ void Genetic_Algorithm::make_table(const int size, ConstReal  prob)
 #endif
 }
 
-int Genetic_Algorithm::check_table(ConstReal  prob)
+int Genetic_Algorithm::check_table(ConstReal  prob, int outlev, FILE *logFile)
 {
    int low, high;
 
@@ -393,7 +391,7 @@ int Genetic_Algorithm::check_table(ConstReal  prob)
    return(low);
 }
 
-void Genetic_Algorithm::initialize(const unsigned int pop_size, const unsigned int num_poss_mutations)
+void Genetic_Algorithm::initialize(const unsigned int pop_size, const unsigned int num_poss_mutations, int outlev, FILE *logFile)
 {
    register unsigned int i;
 
@@ -423,10 +421,10 @@ void Genetic_Algorithm::initialize(const unsigned int pop_size, const unsigned i
       alloc[i] = 1.0; // changed by gmm, 12-sep-1997.
    }
 
-   make_table(pop_size*num_poss_mutations, m_rate);
+   make_table(pop_size*num_poss_mutations, m_rate, outlev, logFile);
 }
 
-void Genetic_Algorithm::mutate(Genotype &mutant, const int gene_number)
+void Genetic_Algorithm::mutate(Genotype &mutant, const int gene_number, int outlev, FILE *logFile)
 {
    Element tempvar;
 
@@ -549,7 +547,7 @@ void Genetic_Algorithm::mutate(Genotype &mutant, const int gene_number)
    }
 }
 
-void Genetic_Algorithm::mutation(Population &pure)
+void Genetic_Algorithm::mutation(Population &pure, int outlev, FILE *logFile)
 {
    int num_mutations, individual, gene_number;
 
@@ -561,7 +559,7 @@ void Genetic_Algorithm::mutation(Population &pure)
    (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::mutation(Population &pure)\n");
 #endif /* DEBUG */
 
-   num_mutations = check_table(ranf());
+   num_mutations = check_table(ranf(), outlev, logFile);
 #ifdef DEBUG_MUTATION
    (void)fprintf(logFile, "num_mutations= %d\n", num_mutations );
 #endif /* DEBUG */
@@ -580,7 +578,7 @@ void Genetic_Algorithm::mutation(Population &pure)
 #ifdef DEBUG_MUTATION
       (void)fprintf(logFile, "  @__@  mutate(pure[individual=%d].genotyp, gene_number=%d);\n\n", individual, gene_number );
 #endif /* DEBUG */
-      mutate(pure[individual].genotyp, gene_number);
+      mutate(pure[individual].genotyp, gene_number, outlev, logFile);
       pure[individual].age = 0L;
       pure[individual].mapping();//map genotype to phenotype and evaluate
 
@@ -593,7 +591,7 @@ void Genetic_Algorithm::mutation(Population &pure)
    delete [] individual_mutated;
 }
 
-void Genetic_Algorithm::crossover(Population &original_population)
+void Genetic_Algorithm::crossover(Population &original_population, int outlev, FILE *logFile)
 {
    register unsigned int i;
    int first_point, second_point, temp_index, temp_ordering;
@@ -671,7 +669,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
                 crossover_2pt( original_population[fi].genotyp, 
                                original_population[mi].genotyp,
                                first_point, 
-                               original_population[fi].genotyp.num_genes());//either one works
+                               original_population[fi].genotyp.num_genes(), outlev, logFile);//either one works
                 break;
             case TwoPt:
                 // To guarantee 2-point always creates 3 non-empty partitions,
@@ -688,7 +686,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
                 crossover_2pt( original_population[fi].genotyp, 
                                original_population[mi].genotyp, 
                                min( first_point, second_point ),
-                               max( first_point, second_point) );
+                               max( first_point, second_point), outlev, logFile );
                 break;
             case Branch:
                 // New crossover mode, designed to exchange just one corresponding sub-trees (or "branch")
@@ -706,13 +704,13 @@ void Genetic_Algorithm::crossover(Population &original_population)
                     crossover_2pt( original_population[fi].genotyp, 
                                    original_population[mi].genotyp, 
                                    min( first_point, second_point ),
-                                   max( first_point, second_point) );
+                                   max( first_point, second_point ), outlev, logFile );
                     break;
                  }
             case Uniform:
                 crossover_uniform( original_population[fi].genotyp, 
                                    original_population[mi].genotyp,
-                                   original_population[mi].genotyp.num_genes());
+                                   original_population[mi].genotyp.num_genes(), outlev, logFile);
                 break;
             case Arithmetic:
                // select the parents A and B
@@ -725,7 +723,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
 #endif /* DEBUG */
                crossover_arithmetic( original_population[fi].genotyp, 
                                      original_population[mi].genotyp, 
-                                     alpha );
+                                     alpha, outlev, logFile );
                break;
             default:
                 (void)fprintf(logFile,"gs.cc/ Unrecognized crossover mode!\n");
@@ -742,7 +740,7 @@ void Genetic_Algorithm::crossover(Population &original_population)
 }
 
 
-void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, const unsigned int pt1, const unsigned int pt2)
+void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, const unsigned int pt1, const unsigned int pt2, int outlev, FILE *logFile)
 {
     // Assumes that 0<=pt1<=pt2<=number_of_pts
 
@@ -797,7 +795,7 @@ void Genetic_Algorithm::crossover_2pt(Genotype &father, Genotype &mother, const 
 }
 
 
-void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, const unsigned int num_genes)
+void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, const unsigned int num_genes, int outlev, FILE *logFile)
 {
 #ifdef DEBUG
     (void)fprintf(logFile, "gs.cc/void Genetic_Algorithm::crossover_uniform(Genotype");
@@ -874,7 +872,7 @@ void Genetic_Algorithm::crossover_uniform(Genotype &father, Genotype &mother, co
     } // next i
 }
 
-void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, ConstReal  alpha)
+void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, ConstReal  alpha, int outlev, FILE *logFile)
 {
    register unsigned int i;
    Element temp_A, temp_B;
@@ -980,7 +978,7 @@ void Genetic_Algorithm::crossover_arithmetic(Genotype &A, Genotype &B, ConstReal
  */
 
 /* not static */
-void Genetic_Algorithm::selection_proportional(Population &original_population, Individual *const new_pop)
+void Genetic_Algorithm::selection_proportional(Population &original_population, Individual *const new_pop, int outlev, FILE *logFile)
 {
    register unsigned int i=0, start_index = 0;
    int temp_ordering, temp_index;
@@ -1259,7 +1257,7 @@ void Genetic_Algorithm::selection_proportional(Population &original_population, 
  * between the best and worst individual.  Since 2P = C,
  * P = K/(1+K).
  */
-void Genetic_Algorithm::selection_tournament(Population &original_population, Individual *const new_pop)
+void Genetic_Algorithm::selection_tournament(Population &original_population, Individual *const new_pop, int outlev, FILE *logFile)
 {
    register unsigned int i = 0, start_index = 0;
    int temp_ordering, temp_index;
@@ -1323,7 +1321,8 @@ void Genetic_Algorithm::selection_tournament(Population &original_population, In
 
  ***/
 void Genetic_Algorithm::selection_linear_ranking(/* not const (msort) */ Population &original_population,
-						 /* not const */ Individual *const new_pop) 
+						 /* not const */ Individual *const new_pop,
+						int outlev, FILE *logFile) 
 {
    register unsigned int i = 0, start_index = 0;
 //#define DEBUG
@@ -1376,7 +1375,7 @@ void Genetic_Algorithm::selection_linear_ranking(/* not const (msort) */ Populat
    }
 }
 
-Individual *Genetic_Algorithm::selection(Population &solutions)
+Individual *Genetic_Algorithm::selection(Population &solutions, int outlev, FILE *logFile)
 {
    Individual *next_generation;
 
@@ -1386,24 +1385,24 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
 
    next_generation = new Individual[solutions.num_individuals()];
    
-   set_worst(solutions, logFile);
+   set_worst(solutions, outlev, logFile);
    switch(s_mode)
    {
       case Proportional:
-         selection_proportional(solutions, next_generation);
+         selection_proportional(solutions, next_generation, outlev, logFile);
          break;
       case LinearRanking:
-         selection_linear_ranking(solutions, next_generation);
+         selection_linear_ranking(solutions, next_generation, outlev, logFile);
          break;
       case Tournament:
          // M Pique October 2009 - does not work so disallowing for now
 	 // selection_tournament(solutions, next_generation);
          (void)fprintf(logFile,"gs.cc/Unimplemented Selection Method - using proportional\n");
-         selection_proportional(solutions, next_generation);
+         selection_proportional(solutions, next_generation, outlev, logFile);
          break;
       case Boltzmann:
          (void)fprintf(logFile,"gs.cc/Unimplemented Selection Method - using proportional\n");
-         selection_proportional(solutions, next_generation);
+         selection_proportional(solutions, next_generation, outlev, logFile);
          break;
       default:
          (void)fprintf(logFile,"gs.cc/Unknown Selection Mode!\n");
@@ -1416,7 +1415,7 @@ Individual *Genetic_Algorithm::selection(Population &solutions)
 //
 //  This is where the action is... SEARCH!
 //
-int Genetic_Algorithm::search(Population &solutions, int outlev, FILE *logFile)
+int Genetic_Algorithm::search(Population &solutions, Eval *evaluate, int outlev, FILE *logFile)
 {
    register unsigned int i;
 
@@ -1445,7 +1444,7 @@ int Genetic_Algorithm::search(Population &solutions, int outlev, FILE *logFile)
    //
    // Perform selection
    //
-   Population newPop(solutions.num_individuals(), selection(solutions));
+   Population newPop(solutions.num_individuals(), solutions.evaluate, selection(solutions, outlev, logFile));
 
 #ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform Crossover on the population, newPop.\n");
@@ -1458,7 +1457,7 @@ int Genetic_Algorithm::search(Population &solutions, int outlev, FILE *logFile)
    //
    // Perform crossover
    // 
-   crossover(newPop);
+   crossover(newPop, outlev, logFile);
 
 #ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform mutation on the population, newPop.\n");
@@ -1471,7 +1470,7 @@ int Genetic_Algorithm::search(Population &solutions, int outlev, FILE *logFile)
    //
    // Perform mutation
    // 
-   mutation(newPop);
+   mutation(newPop, outlev, logFile);
 
 #ifdef DEBUG3 /* DEBUG3 { */
    (void)fprintf(logFile,"About to perform elitism, newPop.\n");
@@ -1518,7 +1517,7 @@ int Genetic_Algorithm::search(Population &solutions, int outlev, FILE *logFile)
    return(0);
 }
 int Genetic_Algorithm::localsearch(Population &thisPop, Local_Search *local_method, 
- int outlev, FILE *logFile)
+ Eval *evaluate, int outlev, FILE *logFile)
 {
 	// apply local search (if not NULL) to population with 
 	// frequency search_freq
@@ -1533,7 +1532,8 @@ int Genetic_Algorithm::localsearch(Population &thisPop, Local_Search *local_meth
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
            }
 #endif
-           if(ranf() < localsearch_freq ) local_method->search(thisPop[i]);
+           if(ranf() < localsearch_freq ) local_method->search(thisPop[i], 
+	    evaluate, outlev, logFile);
 #ifdef LOCALSEARCHDEBUG
            if (outlev >= LOGRUNV) {
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 

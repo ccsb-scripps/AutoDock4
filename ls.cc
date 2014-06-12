@@ -1,6 +1,6 @@
 /*
 
- $Id: ls.cc,v 1.22 2012/01/25 00:10:29 mp Exp $
+ $Id: ls.cc,v 1.23 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -38,12 +38,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
       Modifications to the class heirarchy made 2/21/96 rsh
 ********************************************************************/
 #include "ls.h"
-extern class Eval evaluate;
-
-extern FILE *logFile;
 
 //  This function adds sign * (deviates + bias) to all the reals in the representation
-Phenotype genPh(const Phenotype &original, ConstReal sign, const Real *const deviates, Real *const bias)
+Phenotype genPh(const Phenotype &original, ConstReal sign, const Real *const deviates, Real *const bias, int outlev, FILE *logFile)
 {
    RepType genetype;
    register unsigned int i, index = 0;
@@ -86,12 +83,13 @@ Phenotype genPh(const Phenotype &original, ConstReal sign, const Real *const dev
 //  This has only one value of rho, for all genes.
 // SW mapped individual
 // SW returns TRUE if it modifies the individual
-Boole Solis_Wets::SW(/* not const */ Phenotype &vector)
+Boole Solis_Wets::SW(/* not const */ Phenotype &vector, int outlev, FILE *logFile)
 {
    register unsigned int i, j, num_successes = 0, num_failures = 0;
    register Real temp_rho = rho;
    Phenotype newPh;
    Boole modified = FALSE;
+   Quat thisQuat, prevQuat, startQuat;
    
 #ifdef DEBUG
    (void)fprintf(logFile, "ls.cc/void Solis_Wets::SW(Phenotype &vector)\n");
@@ -114,7 +112,6 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
    Real xyz[3];
    Real prevxyz[3];
    Real startxyz[3];
-   static Quat thisQuat, prevQuat, startQuat;
    //save previous values of state
    if (i>0) {
       prevQuat = thisQuat;
@@ -139,7 +136,7 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
 #ifdef INTERNAL
    Real dt; // translation step scalar
    Real ct; // cumulative translation from step 0
-   static Quat thisQuat, prevQuat, startQuat;
+   static Quat thisQuat, prevQuat, startQuat; // for DEBUG only
    dt=0;
    for ( int d=0;d<3;d++) dt += (prevxyz[d]- xyz[d])*(prevxyz[d]- xyz[d]);
    dt = sqrt(dt);
@@ -181,7 +178,7 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
       }
 
       // zeta = x + bias + deviates
-      newPh = genPh(vector, +1., deviates, bias); // zeta; +1 means 'forward' step
+      newPh = genPh(vector, +1., deviates, bias, outlev, logFile); // zeta; +1 means 'forward' step
       // Evaluate
       if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
          num_successes++;
@@ -198,7 +195,7 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
          }
       } else {
          // We need to check if the opposite move does any good (move = bias[j] + deviates[j])
-         newPh = genPh(vector, -1., deviates, bias); // 2x - zeta = x - move
+         newPh = genPh(vector, -1., deviates, bias, outlev, logFile); // 2x - zeta = x - move
          if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
             num_successes++;
             num_failures = 0;
@@ -246,7 +243,7 @@ void printDState(FILE *const logFile, const char *const msg, Phenotype &newPh, c
 //  This has a different value of rho for each gene.
 // PSW mapped individual
 // PSW returns TRUE if it modifies the individual
-Boole Pseudo_Solis_Wets::SW(/* not const */ Phenotype &vector)
+Boole Pseudo_Solis_Wets::SW(/* not const */ Phenotype &vector, int outlev, FILE *logFile)
 {
    register unsigned int i, j, num_successes = 0, num_failures = 0,  all_rho_stepsizes_too_small = 1;
     
@@ -279,7 +276,7 @@ Boole Pseudo_Solis_Wets::SW(/* not const */ Phenotype &vector)
          deviates[j] = gen_deviates(temp_rho[j]);
       }
 
-      newPh = genPh(vector, +1., deviates, bias);
+      newPh = genPh(vector, +1., deviates, bias, outlev, logFile);
       // Evaluate
       if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
          num_successes++;
@@ -291,8 +288,8 @@ Boole Pseudo_Solis_Wets::SW(/* not const */ Phenotype &vector)
             bias[j] = 0.60*bias[j] + 0.40*deviates[j]; // strict Solis+Wets
          }
       } else  {
-         //  We need to check if the opposite move does any good (move = bias[j] + deviates[j])
-         newPh = genPh(vector, -1., deviates, bias);
+         //  We need to check if the opposite move does any good (move = bias[j] - deviates[j])
+         newPh = genPh(vector, -1., deviates, bias, outlev, logFile);
          if (newPh.evaluate(Normal_Eval) < vector.evaluate(Normal_Eval)) {
             num_successes++;
             num_failures = 0;
@@ -344,7 +341,7 @@ Boole Pseudo_Solis_Wets::SW(/* not const */ Phenotype &vector)
 } // Boole Pseudo_Solis_Wets::SW(Phenotype &vector)
 
 
-int Solis_Wets_Base::search(Individual &solution)
+int Solis_Wets_Base::search(Individual &solution, Eval *evaluate, int outlev, FILE *logFile)
 {
 
 #ifdef DEBUG2
@@ -352,7 +349,7 @@ int Solis_Wets_Base::search(Individual &solution)
 #endif /* DEBUG */
 
       // Do inverse mapping if SW changed phenotyp 
-   if (SW(solution.phenotyp)) {
+   if (SW(solution.phenotyp, outlev, logFile)) {
       solution.inverse_mapping();
       }
    ls_count++;      
@@ -416,9 +413,10 @@ int Pattern_Search::terminate(void) const
    return (0);
 }
 
-int Pattern_Search::search(Individual &solution)
+int Pattern_Search::search(Individual &solution, Eval *evaluate, int outlev, FILE * logFile)
 {
   // TODO: implement scaling?
+  // MP TODO I dont think the Eval parm is used.
 
   if (ranf() >= localsearch_frequency) {
     return(0);
@@ -529,7 +527,7 @@ void printDState(FILE *logFile, const char *const msg,Phenotype &newPh, const in
 #ifdef DEBUG
    Real dt; // translation step scalar
    Real ct; // cumulative translation from step 0
-   static Quat thisQuat;
+   static Quat thisQuat; // for DEBUG only
    Real xyz[3];
    for ( int d=0;d<3;d++) xyz[d] = newPh.gread(d).real;
    dt=0;

@@ -1,6 +1,6 @@
 /*
 
- $Id: prClusterHist.h,v 1.7 2010/10/01 22:51:39 mp Exp $
+ $Id: prClusterHist.h,v 1.8 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -36,5 +36,7 @@ void  prClusterHist(const int   ncluster,
                     const int   cluster[MAX_RUNS][MAX_RUNS],
                     const Real econf[MAX_RUNS],
                     const Real clu_rms[MAX_RUNS][MAX_RUNS],
-		    const Real ref_rms[MAX_RUNS]);
+		    const Real ref_rms[MAX_RUNS],
+		    const int outlev,
+		    FILE *const logFile);
 #endif

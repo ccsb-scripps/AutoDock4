@@ -1,6 +1,6 @@
 /*
 
- $Id: eval.cc,v 1.38 2012/12/13 22:41:05 mp Exp $
+ $Id: eval.cc,v 1.39 2014/06/12 01:44:07 mp Exp $
 
  AutoDock  
 
@@ -271,7 +271,7 @@ int Eval::write(const Representation *const *const rep,
     return retval;
 }
 
-#if defined(USING_COLINY) // {
+#ifdef USING_COLINY // {
 double Eval::operator()(const double* const vec, const int len, const int outlev, FILE *logFile)
 {
    make_state_from_rep(vec, len, &stateNow, outlev, logFile);
@@ -305,6 +305,7 @@ void make_state_from_rep(const double *const rep, const int n, /* not const */ S
     //mkUnitQuat(&(now->Q));
 }
 
+/* next function is for Coliny only */
 extern Eval evaluate;
 
 double ADEvalFn(/* not const */ double *const x, const int n)

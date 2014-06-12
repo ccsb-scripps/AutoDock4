@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.29 2014/02/15 01:45:56 mp Exp $
+ $Id: intnbtable.cc,v 1.30 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -82,8 +82,8 @@ void intnbtable( Boole *const P_B_havenbp,
 
     register int i;
 
-    static Clock  nbeStart; // static to keep lint quiet
-    static struct tms tms_nbeStart; // static to keep lint quiet
+    Clock  nbeStart; // can be made static to keep lint quiet
+    struct tms tms_nbeStart; // can be made static to keep lint quiet
     Clock  nbeEnd;
     struct tms tms_nbeEnd;
 
@@ -254,7 +254,7 @@ void intnbtable( Boole *const P_B_havenbp,
     if( outlev >= LOGETABLES ) {
 	    nbeEnd = times( &tms_nbeEnd );
 	    pr( logFile, "Time taken: ");
-	    timesys( nbeEnd - nbeStart, &tms_nbeStart, &tms_nbeEnd);
+	    timesys( nbeEnd - nbeStart, &tms_nbeStart, &tms_nbeEnd, logFile);
     }
 }
 /* end of intnbtable */

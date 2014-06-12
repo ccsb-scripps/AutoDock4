@@ -1,6 +1,6 @@
 /*
 
- $Id: hybrids.h,v 1.22 2013/05/23 20:06:02 mp Exp $
+ $Id: hybrids.h,v 1.23 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -40,6 +40,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "gs.h"
 #include "ls.h"
 #include "support.h"
+#include <stdio.h>
 
 #ifndef CALL_GLSS
 #define CALL_GLSS
@@ -47,6 +48,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 State call_glss(Global_Search *const global_method, Local_Search *const local_method, 
 		const State& now, const unsigned int num_evals, const unsigned int pop_size, 
 		const int outlev, FILE *logFile, const Output_pop_stats& extOutput_pop_stats, Molecule *const mol,
+		Eval *const evaluate,
 		const Boole B_RandomTran0, const Boole B_RandomQuat0, const Boole B_RandomDihe0,
         const GridMapSetInfo *const info, const char *const FN_pop_file,
         /* not const */ int end_of_branch[MAX_TORS]);
@@ -56,11 +58,11 @@ Representation **generate_R(int num_torsions, GridMapSetInfo *info );
 
 Representation **generate_R_quaternion(int num_torsions, GridMapSetInfo *info );
 
-Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile);
+Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info, int outlev, FILE *logFile);
 
-Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile);
+Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const info, Eval *evaluate, int outlev, FILE *logFile);
 
-Individual random_ind(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile );
+Individual random_ind(const int num_torsions, const GridMapSetInfo *const info, Eval *evaluate, int outlev, FILE *logFile );
 
 #endif
 
@@ -68,6 +70,7 @@ Individual random_ind(const int num_torsions, const GridMapSetInfo *const info, 
 #ifndef CALL_GLSS_TORS
 #define CALL_GLSS_TORS
 
+/* currently unused in AutoDock 2014: ***
 State call_glss_tors(Global_Search *const global_method, Local_Search *const local_method, 
 		const State& now, const unsigned int num_evals, const unsigned int pop_size, 
 		const int outlev, FILE *logFile, const Output_pop_stats& extOutput_pop_stats, Molecule *const mol,
@@ -75,19 +78,17 @@ State call_glss_tors(Global_Search *const global_method, Local_Search *const loc
         const GridMapSetInfo *const info, const char *const FN_pop_file);
 
 Representation **generate_R_tors(int num_torsions, GridMapSetInfo *info );
-
 Genotype generate_Gtype_tors(int num_torsions, GridMapSetInfo *info );
-
 Phenotype generate_Ptype_tors(int num_torsions, GridMapSetInfo *info );
-
 Individual random_ind_tors(const int num_torsions, const GridMapSetInfo *const info );
+ ***/
 
 #endif
 
 #ifndef CALL_LS
 #define CALL_LS
 
-State call_ls(Local_Search *local_method, const State& now, unsigned int pop_size, Molecule *mol);
+State call_ls(Local_Search *local_method, const State& now, unsigned int pop_size, Molecule *mol, Eval *evaluate, int outlev, FILE *logFile);
 
 #endif
 

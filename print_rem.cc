@@ -1,6 +1,6 @@
 /*
 
- $Id: print_rem.cc,v 1.7 2010/10/01 22:51:39 mp Exp $
+ $Id: print_rem.cc,v 1.8 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -32,18 +32,18 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "print_rem.h"
 
 
-void print_rem( FILE *const outFile,
+void print_rem( FILE *const logFile,
 		const int Rank,
 		const int NumMem,
 		const int Run,
 		ConstReal ref_rms)
 {
-    fprintf( outFile, "MODEL     %4d\n", Run );
-    fprintf( outFile, "USER    Run = %d\n", Run );
-    fprintf( outFile, "USER    Cluster Rank = %d\n", Rank );
-    fprintf( outFile, "USER    Number of conformations in this cluster = %d\n", NumMem );
-    fprintf( outFile, "USER  \n");
-    fprintf( outFile, "USER    RMSD from reference structure       = %.3f A\n", ref_rms );
-    fprintf( outFile, "USER  \n");
+    fprintf( logFile, "MODEL     %4d\n", Run );
+    fprintf( logFile, "USER    Run = %d\n", Run );
+    fprintf( logFile, "USER    Cluster Rank = %d\n", Rank );
+    fprintf( logFile, "USER    Number of conformations in this cluster = %d\n", NumMem );
+    fprintf( logFile, "USER  \n");
+    fprintf( logFile, "USER    RMSD from reference structure       = %.3f A\n", ref_rms );
+    fprintf( logFile, "USER  \n");
 }
 /* EOF */

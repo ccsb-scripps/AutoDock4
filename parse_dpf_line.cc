@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.42 2013/09/16 21:11:00 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.43 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -229,7 +229,10 @@ int parse_dpf_line( const char line[] )
         token = DPF_COMMENT;
     } else for (i=0;  i<(int)(sizeof(tokentable)/sizeof(*tokentable)); i++) {
     /*  Recognize token strings  */
-        /*(void)fprintf(stderr,"i = %d, tokentable[i].lexeme = %s, tokentable[i].value = %d, c = %s\n",i,tokentable[i].lexeme,tokentable[i].tokenvalue,c);*/
+#ifdef DEBUG
+extern FILE *logFile; // DEBUG only
+        /*(void)fprintf(logFile,"i = %d, tokentable[i].lexeme = %s, tokentable[i].value = %d, c = %s\n",i,tokentable[i].lexeme,tokentable[i].tokenvalue,c);*/
+#endif
         // short match version: if (strncasecmp(tokentable[i].lexeme, c, j) == 0) {
         if (strcasecmp(tokentable[i].lexeme, c) == 0) {
             token = tokentable[i].tokenvalue;

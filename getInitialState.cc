@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.39 2014/02/15 01:45:56 mp Exp $
+ $Id: getInitialState.cc,v 1.40 2014/06/12 01:44:07 mp Exp $
 
  AutoDock  
 
@@ -240,7 +240,8 @@ void getInitialState(
 
     if(outlev>=LOGRUNVV) {
       prInitialState( &eb, natom, true_ligand_atoms, crd, atomstuff, type, peratomE, charge, 
-       ligand_is_inhibitor, B_have_flexible_residues, ad4_unbound_model );
+       ligand_is_inhibitor, B_have_flexible_residues, ad4_unbound_model,
+	outlev, logFile);
       initEnd = times( &tms_initEnd );
       pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);
       pr(logFile, "Time spent initializing: (Real, CPU, System): ");

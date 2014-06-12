@@ -1,6 +1,6 @@
 /*
 
- $Id: bestpdb.h,v 1.6 2010/10/01 22:51:39 mp Exp $
+ $Id: bestpdb.h,v 1.7 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -40,5 +40,7 @@ void  bestpdb( const int   ncluster,
                const char  atomstuff[MAX_ATOMS][MAX_CHARS], 
                const int   natom, 
                const Boole B_write_all_clusmem, 
-               const Real ref_rms[MAX_RUNS]);
+               const Real ref_rms[MAX_RUNS],
+	       const int outlev,
+	       FILE *const logFile);
 #endif

@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.27 2014/02/15 01:45:56 mp Exp $
+ $Id: mkTorTree.cc,v 1.28 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -40,16 +40,17 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern char  *programname;
     
 /* local functions: */
-/*** MP in progress
 static
 int check_atomnumber( const int number, 
  const int atomnumber[], const int nrecord, const int natoms, FILE *logFile);
-#define check_atomnumber_ok(a) check_atomnumber((a), atomnumber, nrecord, natoms, logFile)
+//MP in progress #define check_atomnumber_ok(a) check_atomnumber((a), atomnumber, nrecord, natoms, logFile)
 
-**/
 #define check_atomnumber_ok( a )  (((a) >= 0) && ((a) < natoms))
 
+static int pdbatomnum_find_record( int pdbn, int pdbatomnumber[], int nrecord);
+
 void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
+		const int   pdbatomnumber[2][MAX_RECORDS],
                 const char  Rec_line[ MAX_RECORDS ][ LINE_LEN ],
                 const int   nrecord,
 
@@ -73,25 +74,21 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 
 {
 
-    int   atomlast = 0;
-    int   ii = 0;
     int   itor = 0;
     int   keyword_id = -1;
     int   nbranches = 0;
     int   ntor=0;
     int   tlistsort[ MAX_TORS+1][ MAX_ATOMS ];
-    int   found_new_res = 0;
+    Boole   found_new_res = false;
     int   nres = 0;
     int   natoms_in_res = 0;
     int   natoms = 0;
-    int   nrestor=0;
-    int   found_first_res=0;
+    Boole   found_first_res=false;
 
     register int   i = 0;
     register int   j = 0;
     register int   k = 0;
 
-    char  rec5[ 5 ];
 
     Real lower = 0.;
     Real temp  = 0.;
@@ -171,8 +168,6 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 
              /* This is an ATOM or HETATM. */
 
-             atomlast = atomnumber[ i ];
-
              if (found_new_res) {
                     /* We are in a residue. */
                     if (natoms_in_res < 2) {
@@ -214,30 +209,41 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
                     prStr( error_message, "ERROR: Too many torsions have been found (i.e. %d); maximum allowed is %d.\n Either: change the \"#define MAX_TORS\" line in constants.h\n Or:     edit \"%s\" to reduce the number of torsions defined.", (ntor+1), MAX_TORS, smFileName );
                     stop( error_message );
                 }
-                if (found_first_res) {
-                    sscanf(Rec_line[ i ],"%*s %d %*d", &nrestor );
-                    tlist[ ntor ][ ATM1 ]= nrestor + true_ligand_atoms;
-                } else {
-		    int nfields;
-                    // MP in progress nfields=sscanf(Rec_line[ i ],"%*s %d %d", 
-			// MP in progress &tlist[ ntor ][ ATM1 ], &tlist[ ntor ][ ATM2 ] );
-			// MP in progress &tlist[ ntor ][ ATM1 ], &tlist[ ntor ][ ATM2 ] );
-		    tlist[ntor][ATM2] = atomnumber[i+1];//atomlast;
-                    nfields=sscanf(Rec_line[ i ],"%*s %d %*d", 
-			 &tlist[ ntor ][ ATM1 ] );
-		/* convert from 1-origin to internal 0-origin */
-                 --tlist[ ntor ][ ATM1 ];
 
-                }
+		// read ATM1 and ATM2 for this BRANCH, convert from PDB to index
+		for(int a=0;a<2;a++) { 
+		  int pdbnum, recnum;
+                    sscanf(Rec_line[ i ],(a==0)?"%*s %d %*d":"%*s %*d %d",
+			&pdbnum );
+		    recnum = pdbatomnum_find_record(pdbnum, 
+		      (int *)pdbatomnumber[found_first_res?1:0], nrecord); 
+#ifdef DEBUG
+fprintf(logFile, "DEBUG find(pdbnum=%2d,a=%d nrecord=%3d) at recnum=%d (%s) anum=%d\n",
+   pdbnum, a, nrecord, recnum, Rec_line[recnum], atomnumber[recnum]);
+#endif /* DEBUG */
+		    if (recnum<0) {
+                        char  error_message[ LINE_LEN ];
+			prStr(error_message, 
+			"ERROR: line %d:\n%s\ntorsion %d, no atom numbered %d found in %s\n",
+			 (i+1),Rec_line[i], (ntor+1), pdbnum, (a==0)?"ligand file":"flexres file");
+			stop(error_message);
+			}
+                    tlist[ ntor ][ (a==0)?ATM1:ATM2]= atomnumber[recnum];
+#ifdef DEBUG
+fprintf(logFile, "    tlist[ntor=%d][a=%d %d] = %d \n", ntor,a,((a==0)?ATM1:ATM2),tlist[ntor][(a==0)?ATM1:ATM2]);
+#endif /* DEBUG */
+		}
+
+		// check for degenerate torsion selection
                 if ( tlist[ ntor ][ ATM2 ] == tlist[ ntor ][ ATM1 ]) {
                     char  error_message[ LINE_LEN ];
-                    prStr( error_message, "ERROR: line %d:\n%s\nThe two atoms defining torsion %d are the same! (%d and %d)", (i+1), Rec_line[ i ], (ntor+1),
+                    prStr( error_message, "ERROR: line %d:\n%sThe two atoms defining torsion %d are the same! (%d and %d)", (i+1), Rec_line[ i ], (ntor+1),
  tlist[ ntor ][ ATM1 ], tlist[ ntor ][ ATM2 ] );
                     stop( error_message );
                 } /* endif */
 		/* convert from 1-origin to internal 0-origin */
-                 //--tlist[ ntor ][ ATM1 ];
-                 //--tlist[ ntor ][ ATM2 ];
+                //MP --tlist[ ntor ][ ATM1 ];
+                //MP --tlist[ ntor ][ ATM2 ];
                 nbranches = 0;
 
 #ifdef DEBUG
@@ -308,18 +314,18 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 
     /*____________________________________________________________*/
             case PDBQ_BEGIN_RES:
-                found_new_res = 1;
+                found_new_res = true;
                 // if this is the first BEGIN_RES tag, then set the number of torsions in the ligand
-                if (found_first_res == 0) {
+                if (!found_first_res) {
                     *P_ntor_ligand = ntor;
                 }
-                found_first_res++;
+                found_first_res=true;
                 natoms_in_res = 0; /* reset number of atoms in this residue */
                 break;
 
     /*____________________________________________________________*/
             case PDBQ_END_RES:
-                found_new_res = 0;
+                found_new_res = false;
                 nres++;
 		if(outlev>=LOGLIGREAD)
                 pr(logFile, "Residue number %d has %d moving atoms.\n\n", nres, natoms_in_res-2);
@@ -352,13 +358,13 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
         *P_ntor = ntor;
     }
     //if there are no flexible residues, still need to set P_ntor_ligand
-    if (found_first_res == 0) {
-         *P_ntor_ligand = ntor;
-    }
+    if (!found_first_res) *P_ntor_ligand = ntor;
 
 
     Boole B_atom_number_OK = TRUE;
 
+    // M Pique - really need to check only ATM1 & ATM2 for PDB number existence
+    //  since the range is determined by contiguous atom serial number range
     for (itor=0; itor<ntor; itor++ ) {
 	char error_msg[LINE_LEN];
         B_atom_number_OK &= check_atomnumber_ok( tlist[ itor ][ ATM1 ] );
@@ -369,8 +375,12 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
             }
 ***/
         if (B_atom_number_OK) continue;
-        prStr(error_msg, "%s: ERROR:  Torsion number %d between atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n",
- programname, itor+1, 1+tlist[itor][ATM1], 1+tlist[itor][ATM2], tlist[itor][NUM_ATM_MOVED] );
+        prStr(error_msg, "%s: ERROR:  Torsion number %d between %s atom %d and atom %d has one or more atoms (out of %d atoms) that are out of range.\n\n",
+ programname, itor+1, 
+ ((itor<=*P_ntor_ligand)?"ligand":"flexres"),
+  1+tlist[itor][ATM1],
+  1+tlist[itor][ATM2],
+  tlist[itor][NUM_ATM_MOVED] );
 	stop(error_msg); // exits
     }
 
@@ -445,10 +455,9 @@ void mkTorTree( const int   atomnumber[ MAX_RECORDS ],
 static
 int check_atomnumber( const int number, const int *atomnumber, const int nrecord, 
 const int natoms, FILE *logFile) {
-	/* Check that number is within range and exists.
+	/* Check that the 0-origin serial number is within range and exists.
 	 * Note that the number passed is zero-origin 
 	 * as is the "atomnum" array content (which is -1 for non ATOM/HETATM)
-	 * but the original input PDB file is one-origin
  	 *
          *  Error return 0 for:
          *  negative
@@ -477,6 +486,15 @@ const int natoms, FILE *logFile) {
 		}
 	return 0;
 	}
+
+static int pdbatomnum_find_record( int pdbn, int pdbatomnumber[], int nrecord ) {
+	/* return record number of atom (in passed name space) that has PDB
+	 * atom number pdbn, or -1 if not found 
+	 */
 		
+	for(int i=0;i<nrecord;i++) if(pdbn==pdbatomnumber[i]) return i;
+	return -1;
+	}
+
 	
 /* EOF */

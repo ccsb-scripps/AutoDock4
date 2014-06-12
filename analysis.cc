@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.55 2014/02/01 05:14:53 mp Exp $
+ $Id: analysis.cc,v 1.56 2014/06/12 01:44:07 mp Exp $
 
  AutoDock  
 
@@ -218,7 +218,7 @@ void analysis( const int   Nnb,
             pr( logFile, "\nOutputting structurally similar clusters, ranked in order of increasing energy.\n" );
 
             if (outlev >= LOGMINCLUST ) {
-	       prClusterHist( ncluster, irunmax, clus_rms_tol,num_in_clu, cluster, econf, clu_rms, ref_rms);
+	       prClusterHist( ncluster, irunmax, clus_rms_tol,num_in_clu, cluster, econf, clu_rms, ref_rms, outlev, logFile);
 	    }
 
             pr( logFile, "\n\tLOWEST ENERGY DOCKED CONFORMATION from EACH CLUSTER");
@@ -281,7 +281,8 @@ void analysis( const int   Nnb,
 	      B_have_flexible_residues,  // next two terms are meaningful only if have flexible residues...
 	      group_energy->inter_moving_moving.vdW_Hb + group_energy->inter_moving_moving.desolv,
 	      group_energy->inter_moving_moving.elec,
-	      ad4_unbound_model);
+	      ad4_unbound_model,
+	      outlev, logFile);
      
             pr( logFile, "USER  \n");
             pr( logFile, "USER    DPF = %s\n", dock_param_fn);

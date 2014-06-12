@@ -1,6 +1,6 @@
 /*
 
- $Id: print_atomic_energies.cc,v 1.7 2012/08/18 00:00:29 mp Exp $
+ $Id: print_atomic_energies.cc,v 1.8 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -32,15 +32,14 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <string.h>
 #include "print_atomic_energies.h"
 
-
-extern FILE *logFile;
-
 /*----------------------------------------------------------------------------*/
 void print_atomic_energies( const int natom, 
 			    const char atomstuff[MAX_ATOMS][MAX_CHARS],
 			    const int type[MAX_ATOMS],
 			    const EnergyComponent peratomE[MAX_ATOMS],
-			    const Real charge[MAX_ATOMS] )
+			    const Real charge[MAX_ATOMS],
+			    int outlev,
+			    FILE *logFile)
 
 /*----------------------------------------------------------------------------*/
 {

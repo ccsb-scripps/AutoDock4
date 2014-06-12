@@ -2,7 +2,7 @@
 
 /*
 
- $Id: threadlog.cc,v 1.1 2014/06/11 03:45:44 mp Exp $
+ $Id: threadlog.cc,v 1.2 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -33,6 +33,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "threadlog.h"
 #include "constants.h"
 #include "stop.h"
+/* include stdlib.h for "free" and unistd.h for "unlink"  */ 
+/* tempnam is in <stdio.h>  */
+#include <stdlib.h>
 #include <unistd.h>
 
 static char *tfilename[MAX_RUNS];

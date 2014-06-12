@@ -1,6 +1,6 @@
 /*
 
- $Id: test_times.cc,v 1.9 2012/04/17 04:06:10 mp Exp $
+ $Id: test_times.cc,v 1.10 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -54,13 +54,14 @@ typedef float Real;
 
 void  timesyshms( const Clock&  duration,
                   const struct tms *const start,
-                  const struct tms *const end );
+                  const struct tms *const end,
+		  FILE *logFile);
 
 
 Real idct;
 
 
-#ifdef USE_INT_AS_LONG
+#ifdef USE_INT_AS_FOURBYTELONG
     typedef int  FourByteLong;
     typedef unsigned int UnsignedFourByteLong;
 #else
@@ -101,7 +102,7 @@ int main( int argc, char **argv)
 */
     jobEnd = times( &tms_jobEnd );
     (void) printf( "\nRun completed;  time taken for this run:\n");
-    timesyshms( jobEnd - jobStart, &tms_jobStart, &tms_jobEnd );
+    timesyshms( jobEnd - jobStart, &tms_jobStart, &tms_jobEnd, logFile);
 
 
 return 0;

@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.21 2013/09/09 21:14:06 rhuey Exp $
+ $Id: qmultiply.cc,v 1.22 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -34,10 +34,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <assert.h>
 #include "qmultiply.h"
 
-extern  FILE    *logFile;
-
-static Quat sidentityQuat = { 0., 0., 0., 1.}; // x,y,z,w
-static AxisAngle sidentityAxisAngle = { 1., 0., 0., 0.}; // x,y,z,angle
+static Quat sidentityQuat = { 0., 0., 0., 1.}; // x,y,z,w  const
+static AxisAngle sidentityAxisAngle = { 1., 0., 0., 0.}; // x,y,z,angle  const
 
 
 void qmultiply( /* not const */  Quat *const q, //result

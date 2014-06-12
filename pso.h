@@ -83,7 +83,7 @@ class ParticleSwarmGS : public Global_Search
 		
 		Individual& getBest();	
 
-      void initialize(const unsigned int, const unsigned int);
+      void initialize(const unsigned int, const unsigned int, const int, FILE *);
       unsigned int num_generations(void) const;
 		
 		// The following part are derived virtual functions
@@ -92,8 +92,8 @@ class ParticleSwarmGS : public Global_Search
 		void reset(void);
         void reset(const Output_pop_stats&);
         int terminate(void);
-        int search(Population &, int outlev, FILE * logFile); 
-	int localsearch(Population &, Local_Search *, int outlev, FILE * logFile);
+        int search(Population &, Eval *, int outlev, FILE * logFile); 
+	int localsearch(Population &, Local_Search *, Eval *evaluate, int outlev, FILE * logFile);
 };
 
 inline char * ParticleSwarmGS::shortname(void)
@@ -148,7 +148,7 @@ inline Individual& ParticleSwarmGS:: getBest()
 {
 	return *_Pg;
 }
-inline void ParticleSwarmGS::initialize(const unsigned int init_pop_size, const unsigned int ndims)
+inline void ParticleSwarmGS::initialize(const unsigned int init_pop_size, const unsigned int ndims, int outlev, FILE *logFile)
 {
 
     pop_size = init_pop_size;
@@ -162,7 +162,7 @@ inline unsigned int ParticleSwarmGS::num_generations(void) const
 }
 
 // The following part are derived virtual functions
-//int search(Population &, int outlev, FILE * logFile);
+//int search(Population &, Eval *evaluate, int outlev, FILE * logFile);
 
 inline int ParticleSwarmGS::terminate(void)
 {

@@ -1,6 +1,6 @@
 /*
 
- $Id: com.cc,v 1.11 2013/10/18 21:07:26 mp Exp $
+ $Id: com.cc,v 1.12 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -36,9 +36,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /* this software can be configured to provide multiple concurrent
  random number generators (e.g., 32), however, AutoDock uses only one
- at present.  This number must also be defined in ranlib.cc M Pique 2012-07
+ at present unless compiled for OpenMP (OMP).
+ This number NUMG is defined in ranlib.h M Pique 2014-02
  */
-#define NUMG 1
 
 /* this software can be configured to optionally return antithetic values,
  * see function Xqanti below. Not used in AutoDock.
@@ -75,10 +75,10 @@ static int Xqanti[NUMG]; /* boolean, initially zero */
 static int qqssd=false; /* have seeds been set (was gsssd() in code MP */
 static int curntg=0; /* global: current generator (was 'g' from gscgn() in code) MP */
 
-void advnst(const int k)
+void advnst(const int k)  // not used in AutoDock code
 /*
 **********************************************************************
-     void advnst(const FourByteLong k)
+     void advnst(const int k)
                ADV-a-N-ce ST-ate
      Advances the state  of  the current  generator  by 2^K values  and
      resets the initial seed to that value.
@@ -101,15 +101,15 @@ FourByteLong ib1,ib2;
         ib1 = mltmod(ib1,ib1,Xm1);
         ib2 = mltmod(ib2,ib2,Xm2);
     }
-    setsd(mltmod(ib1,Xcg1[curntg],Xm1),mltmod(ib2,Xcg2[curntg],Xm2));
+    setsd_t(mltmod(ib1,Xcg1[curntg],Xm1),mltmod(ib2,Xcg2[curntg],Xm2),curntg);
 /*
      NOW, IB1 = A1**K AND IB2 = A2**K
 */
 }
-void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2)
-/*
+void getsd_t(FourByteLong *const iseed1,FourByteLong *const iseed2, int curntg)
+/* thread-safe if curntg is current thread number
 **********************************************************************
-     void getsd(FourByteLong *iseed1,FourByteLong *iseed2)
+     void getsd_t(FourByteLong *iseed1,FourByteLong *iseed2)
                GET SeeD
      Returns the value of two integer seeds of the current generator
      This  is   a  transcription from  Pascal   to  Fortran  of routine
@@ -127,8 +127,8 @@ void getsd(FourByteLong *const iseed1,FourByteLong *const iseed2)
     *iseed1 = Xcg1[curntg];
     *iseed2 = Xcg2[curntg];
 }
-FourByteLong ignlgi(void)
-/*
+FourByteLong ignlgi_t(int curntg)
+/* thread-safe if curntg is thread index (0 to NUMG-1)
 **********************************************************************
      FourByteLong ignlgi(void)
                GeNerate LarGe Integer
@@ -234,6 +234,7 @@ void setall(const FourByteLong iseed1,const FourByteLong iseed2)
      TELL IGNLGI, THE ACTUAL NUMBER GENERATOR, THAT THIS ROUTINE
       HAS BEEN CALLED.
 */
+// MPique - omp critical probably not needed but being on the safe side 2014
 #pragma omp critical
 {
     qqssd=true;
@@ -275,10 +276,10 @@ void setant(const FourByteLong qvalue)
     Xqanti[curntg] = qvalue;
 }
 #endif
-void setsd(const FourByteLong iseed1,const FourByteLong iseed2)
-/*
+void setsd_t(const FourByteLong iseed1,const FourByteLong iseed2, int curntg)
+/* thread-safe if curntg is current thread number
 **********************************************************************
-     void setsd(FourByteLong iseed1,FourByteLong iseed2)
+     void setsd_t(FourByteLong iseed1,FourByteLong iseed2,curntg)
                SET S-ee-D of current generator
      Resets the initial  seed of  the current  generator to  ISEED1 and
      ISEED2. The seeds of the other generators remain unchanged.
@@ -294,6 +295,13 @@ void setsd(const FourByteLong iseed1,const FourByteLong iseed2)
 */
 {
 
+    if(iseed1==0 || iseed2==0) {
+	    char errmsg[200];
+            sprintf(errmsg, 
+	    "BUG: random number seed is zero in setsd_t(iseed1=%ld, iseed2=%ld, g=%d)",
+ 		(long) iseed1, (long) iseed2, curntg);
+	    stop(errmsg);
+	    }
     Xig1[curntg] = iseed1;
     Xig2[curntg] = iseed2;
     initgn(curntg, -1);

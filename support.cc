@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.44 2012/08/18 00:00:29 mp Exp $
+ $Id: support.cc,v 1.45 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -37,29 +37,32 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "structs.h"
 
 //#define DEBUG 
-extern FILE *logFile;
+extern FILE *logFile;  // DEBUG only
 extern int outlev;
 
-extern class Eval evaluate;
+//extern class Eval evaluate;
 
 
 //  These are the member functions for the support classes.
 
 
 Population::Population(const Population &original)
-: lhb(original.lhb), size(original.size)
+: lhb(original.lhb), size(original.size), evaluate(original.evaluate)
 {
    register int i;
 
-#ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/Population::Population(Population &original)\n");
-#endif /* DEBUG */
+//MP #ifdef DEBUG
+   (void)fprintf(logFile, 
+ "support.cc %d /Population::Population(Population &original) size=%d\n",
+  __LINE__, size);
+//MP #endif /* DEBUG */
 
    heap = new Individual[size];
    for (i=0; i<size; i++) {
       heap[i] = original.heap[i];
       heap[i].age = 0L; // gmm, 1998-07-14
    }
+   // MPique 2014 TODO should this also copy the end_of_branch ?
 }
 
 /*  Heap Functions:  In this case, the heap condition means the maximal 
@@ -180,26 +183,11 @@ void Population::msort(const int m) /* not const */
    //  Assert: heap[0..m-1] sorted
 }
 
-//void Population::print(ostream &output, int num)
-//{
-   //register int i;
-
-//#ifdef DEBUG
-   //(void)fprintf(logFile, "support.cc/void Population::print(ostream &output, int num=%d)\n", num);
-//#endif /* DEBUG */
-
-
-   //(void)fprintf(logFile, "The top %d individuals in the population:\n", num);
-   //for (i=0; i<num; i++) {
-      //(void)fprintf(logFile, "%lf\n", heap[i].value(Normal_Eval));
-   //}
-//}
-
 void Population::print(FILE *const output, const int num) const {
    register int i;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Population::print(FILE *const output, int num=%d)\n", num);
+   (void)fprintf(output, "support.cc/void Population::print(FILE *const output, int num=%d)\n", num);
 #endif /* DEBUG */
 
    (void)fprintf( output, "The top %d individuals in the population:\n\n", num);
@@ -295,7 +283,7 @@ int oldestIndividual;
 	double sum_squares, median, stddev;
 	//double q14, q34; // 1st and 3rd quartiles
 	//double q15, q45; // 1st and 4th quintiles
-	double *energy= new double[size]; // array for sorting
+	double energy[size]; // array for sorting
 	const double mean = sum/size;
 	sum_squares=0;
 	for (int i=0; i<size; i++) energy[i] = heap[i].value(Normal_Eval);
@@ -331,7 +319,6 @@ int oldestIndividual;
 #undef quantile
 	  // debug print every energy:
 	if(level>3) for(int i=0; i<size; i++) fprintf(output, " %.3f", energy[i]);
-	delete [] energy;
 	}
 	break;
     }
@@ -355,7 +342,7 @@ int returnCode=0;
    (void) fprintf(output," State0: ");
    heap[best_i].printIndividualsState( output, ntor, 4); // 4 means print compact state
 
-   (void) fprintf(logFile, " Num.evals: %ld%s", nevals, suffix );
+   (void) fprintf(output, " Num.evals: %ld%s", nevals, suffix );
     return returnCode; 
 }
  	
@@ -369,7 +356,7 @@ void Population::printPopulationAsStates(FILE *const output, const int num, cons
    double thisValue;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsStates(FILE *const output, int num=%d, int ntor=%d)\n", num, ntor);
+   (void)fprintf(output, "support.cc/void Population::printPopulationAsStates(FILE *const output, int num=%d, int ntor=%d)\n", num, ntor);
 #endif /* DEBUG */
 
    // Print an XML-like tag indicating this is a population, with attribute size
@@ -386,13 +373,13 @@ void Population::printPopulationAsStates(FILE *const output, const int num, cons
       // to print only infinite or NaN structures // if (!finite(thisValue) || ISNAN(thisValue)) {//debug
       // Convert state to coords and print it out...//debug
       cnv_state_to_coords(heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom,
-       true_ligand_atoms, outlev, logFile);//debug
-      (void)fprintf(logFile, "MODEL     %4d\n", i+1);
+       true_ligand_atoms, outlev, output);//debug
+      (void)fprintf(output, "MODEL     %4d\n", i+1);
       for (j=0; j<heap[i].mol->natom; j++) {//debug
-            print_PDBQT_atom_resnum( logFile, "", j, DUMMYATOMSTUFFINF,   1,  // replace 1 with i+1 for incrementing residue numbers.
+            print_PDBQT_atom_resnum( output, "", j, DUMMYATOMSTUFFINF,   1,  // replace 1 with i+1 for incrementing residue numbers.
             heap[i].mol->crd, 0.0, 0.0, 0.0, "", "\n"); //debug
       }/*j*///debug
-      (void)fprintf(logFile, "ENDMDL\n");
+      (void)fprintf(output, "ENDMDL\n");
       // to print only infinite or NaN structures // }// thisValue is either infinite or not-a-number.//debug
 #endif /* DEBUG2 */
 
@@ -405,7 +392,7 @@ void Population::printPopulationAsCoordsEnergies(FILE *const output, const int n
    double thisValue;
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Population::printPopulationAsCoordsEnergies(FILE *const output, int num=%d, int ntor=%d)\n", num, ntor);
+   (void)fprintf(output, "support.cc/void Population::printPopulationAsCoordsEnergies(FILE *const output, int num=%d, int ntor=%d)\n", num, ntor);
 #endif // DEBUG
 
    if( output == NULL) stop("printPopulationAsCoordsEnergies received NULL file pointer");
@@ -437,7 +424,7 @@ void Population::printPopulationAsCoordsEnergies(FILE *const output, const int n
 
       // We need the coordinates of this individual to compute the electrostatic and nonbond energies
       //cnv_state_to_coords( heap[i].state(ntor), heap[i].mol->vt,  heap[i].mol->tlist,  ntor, heap[i].mol->crdpdb,  heap[i].mol->crd,  heap[i].mol->natom,
-       //true_ligand_atoms, outlev, logFile);
+       //true_ligand_atoms, outlev, output);
 
    }// i
    (void)fprintf( output, "\n");
@@ -454,10 +441,10 @@ void Population::set_eob(/* not const */ int init_end_of_branch[MAX_TORS])
 int Population::get_eob(const int init_tor) const
 // Get the end_of_branch[] value for the supplied torsion number, init_tor
 {
-char error_message[200];
     if ((init_tor >= 0) && (init_tor < MAX_TORS)) {
         return end_of_branch[init_tor];
     } else {
+	char error_message[200];
         (void)sprintf(error_message, "support.cc/Population::get_eob(int init_tor=%d) -- ERROR!  Attempt to access out-of-bounds torsion!\n", init_tor);
         stop(error_message);
 	return(0); // dummy to keep lint happy NOTREACHED
@@ -495,37 +482,6 @@ const init_rep_vector)
    }
 }
 
-#if 0
-     # steffen thinks this is redundant with the const variant
-     # http://en.wikipedia.org/wiki/Copy_constructor
-Genotype::Genotype(Genotype &original)
-{
-   register unsigned int i;
-
-#ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/Genotype::Genotype(Genotype &original)\n");
-#endif /* DEBUG */
-   number_of_genes = original.number_of_genes;
-   number_of_vectors = original.number_of_vectors;
-   modified = original.modified;
-   if (original.rep_vector!=NULL) {
-      rep_vector = new Representation*[number_of_vectors];
-      lookup = new Lookup[number_of_genes];
-   } else {
-      rep_vector = NULL;
-      lookup = NULL;
-   }
-
-   for (i=0; i<number_of_vectors; i++) {
-      rep_vector[i] = original.rep_vector[i]->clone();
-   }
-
-   for (i=0; i<number_of_genes; i++) {
-      lookup[i] = original.lookup[i];
-   }
-}
-#endif
-
 Genotype::Genotype(const Genotype &original)
 {
    register unsigned int i;
@@ -540,17 +496,17 @@ Genotype::Genotype(const Genotype &original)
    if (original.rep_vector!=NULL) {
       rep_vector = new Representation*[number_of_vectors];
       lookup = new Lookup[number_of_genes];
+
+      for (i=0; i<number_of_vectors; i++) {
+         rep_vector[i] = original.rep_vector[i]->clone();
+      }
+
+      for (i=0; i<number_of_genes; i++) {
+         lookup[i] = original.lookup[i];
+      }
    } else {
       rep_vector = NULL;
       lookup = NULL;
-   }
-
-   for (i=0; i<number_of_vectors; i++) {
-      rep_vector[i] = original.rep_vector[i]->clone();
-   }
-
-   for (i=0; i<number_of_genes; i++) {
-      lookup[i] = original.lookup[i];
    }
 }
 
@@ -574,7 +530,7 @@ Genotype::~Genotype(void)
 
 Genotype &Genotype::operator=(const Genotype &original)
 {
-   register unsigned int i;
+   unsigned int i;
 
 #ifdef DEBUG
    (void)fprintf(logFile, "\nsupport.cc/Genotype &Genotype::operator=(const Genotype &original): this==original is %d\n\n", this==&original);
@@ -584,6 +540,10 @@ Genotype &Genotype::operator=(const Genotype &original)
       return *this;
    }
 
+/*** MP 2014 This is dumping core - not sure what it does wrong 
+*** seems to be to remove old rep from "A" in "A=B" expression
+*** I do not know what number_of_vectors is supposed to be - it seems to be theppopulation size though
+
    if (rep_vector!=NULL) {
       for (i=0; i<number_of_vectors; i++) {
          delete rep_vector[i];
@@ -591,6 +551,8 @@ Genotype &Genotype::operator=(const Genotype &original)
       delete [] rep_vector;
       delete [] lookup;
    }
+
+***/
 
    number_of_vectors = original.number_of_vectors;
    number_of_genes = original.number_of_genes;
@@ -600,17 +562,17 @@ Genotype &Genotype::operator=(const Genotype &original)
    if (original.rep_vector!=NULL) {
       rep_vector = new Representation *[number_of_vectors];
       lookup = new Lookup[number_of_genes];
+
+      for (i=0; i<number_of_vectors; i++) {
+         rep_vector[i] = original.rep_vector[i]->clone();
+      }
+
+      for (i=0; i<number_of_genes; i++) {
+         lookup[i] = original.lookup[i];
+      }
    } else {
       rep_vector = NULL;
       lookup = NULL;
-   }
-
-   for (i=0; i<number_of_vectors; i++) {
-      rep_vector[i] = original.rep_vector[i]->clone();
-   }
-
-   for (i=0; i<number_of_genes; i++) {
-      lookup[i] = original.lookup[i];
    }
    return(*this);
 }
@@ -638,11 +600,11 @@ void Genotype::write(const unsigned char& value, const int gene_number) /* not c
    rep_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Genotype::write(const FourByteLong& value, const int gene_number) /* not const */
+void Genotype::write(const int& value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Genotype::write(FourByteLong value=%ld, int gene_number=%d)\n", value, gene_number);
+   (void)fprintf(logFile, "support.cc/void Genotype::write(int value=%ld, int gene_number=%d)\n", value, gene_number);
 #endif /* DEBUG */
 
    modified = 1;
@@ -708,10 +670,9 @@ void Phenotype::writeQuat( const Quat& q ) /* not const */
     write( q.w, 6 );
 }
 
-//  Maybe we should evaluate the Phenotype?
-Phenotype::Phenotype(const unsigned int init_number_of_dimensions, Representation **const init_value_vector)
+Phenotype::Phenotype(const unsigned int init_number_of_dimensions, Representation **const init_value_vector, Eval *init_pevaluate)
 : number_of_dimensions(init_number_of_dimensions), value_vector(init_value_vector), 
-  value(0.0), evalflag(0)
+  value(0.0), evalflag(0), pevaluate(init_pevaluate)
 {
    register unsigned int i, j, k;
 
@@ -750,21 +711,21 @@ Phenotype::Phenotype(const Phenotype &original)
    number_of_points = original.number_of_points;
    evalflag = original.evalflag;
    value = original.value;
+   pevaluate= original.pevaluate;
 
    if (original.value_vector!=NULL) {
       value_vector = new Representation *[number_of_dimensions];
       lookup = new Lookup[number_of_points];
+
+      for (i=0; i<number_of_dimensions; i++) {
+         value_vector[i] = original.value_vector[i]->clone();
+      }
+      for (i=0; i<number_of_points; i++) {
+         lookup[i] = original.lookup[i];
+      }
    } else {
       value_vector = NULL;
       lookup = NULL;
-   }
-
-   for (i=0; i<number_of_dimensions; i++) {
-      value_vector[i] = original.value_vector[i]->clone();
-   }
-   
-   for (i=0; i<number_of_points; i++) {
-      lookup[i] = original.lookup[i];
    }
 }
 
@@ -780,6 +741,8 @@ Phenotype &Phenotype::operator=(const Phenotype &original)
       return *this;
    }
 
+/** MPique 2014 - removed for now as is dumping core
+*/
    //  Do the destructors get called on each element of value_vector?
    if (value_vector!=NULL) {
       for (i=0; i<number_of_dimensions; i++) {
@@ -788,11 +751,14 @@ Phenotype &Phenotype::operator=(const Phenotype &original)
       delete [] value_vector;
       delete [] lookup;
    }
+/*
+****/
 
    number_of_dimensions = original.number_of_dimensions;
    number_of_points = original.number_of_points;
    value = original.value;
    evalflag = original.evalflag;
+   pevaluate = original.pevaluate;
 
    if (original.value_vector!=NULL) {
       value_vector = new Representation *[number_of_dimensions];
@@ -853,11 +819,11 @@ void Phenotype::write(const unsigned char& value, const int gene_number) /* not 
    value_vector[lookup[gene_number].vector]->write(value, lookup[gene_number].index);
 }
 
-void Phenotype::write(const FourByteLong& value, const int gene_number) /* not const */
+void Phenotype::write(const int& value, const int gene_number) /* not const */
 {
 
 #ifdef DEBUG
-   (void)fprintf(logFile, "support.cc/void Phenotype::write(FourByteLong value=%ld, int gene_number=%d)\n", value, gene_number);
+   (void)fprintf(logFile, "support.cc/void Phenotype::write(int value=%ld, int gene_number=%d)\n", value, gene_number);
 #endif /* DEBUG */
 
    evalflag = 0;
@@ -894,23 +860,30 @@ double Phenotype::evaluate(const EvalMode& mode) /* not const */
    (void)fprintf(logFile, "support.cc/double Phenotype::evaluate(EvalMode mode)\n");
 #endif /* DEBUG */
 
+// MPique - the pevaluate is an "Eval *" member of the Phenotype object
+//  and this code calls its () operator, see eval.cc,
+//  which calls make_state_from_ind and then its eval() function.
    switch(mode)
    {
       case Always_Eval:
-         value = ::evaluate(value_vector);
+         //value = ::evaluate(value_vector);
+         value = (*pevaluate)(value_vector);
          evalflag = 1;
          break;
       case Always_Eval_Nonbond:
-         value = ::evaluate(value_vector, 1); // term=1 as total non-bonded energy, i.e. vdW+Hb+desolv
+         //value = ::evaluate(value_vector, 1); // term=1 as total non-bonded energy, i.e. vdW+Hb+desolv
+         value = (*pevaluate)(value_vector, 1); // term=1 as total non-bonded energy, i.e. vdW+Hb+desolv
          evalflag = 0;
          break;
       case Always_Eval_Elec:
-         value = ::evaluate(value_vector, 2); // term=2 as total electrostatic energy
+         //value = ::pevaluate(value_vector, 2); // term=2 as total electrostatic energy
+         value = (*pevaluate)(value_vector, 2); // term=2 as total electrostatic energy
          evalflag = 0;
          break;
       case Normal_Eval:
          if (!evalflag) {
-            value = ::evaluate(value_vector);
+            //value = ::evaluate(value_vector);
+            value = (*pevaluate)(value_vector);
             evalflag = 1;
          }
          break;
@@ -918,7 +891,7 @@ double Phenotype::evaluate(const EvalMode& mode) /* not const */
          evalflag = 0;
          break;
       default:
-         (void)fprintf(logFile, "Unknown Evaluation Mode!\n");
+         stop("BUGCHECK: Phenotype::evaluate(const EvalMode& mode) Unknown mode!\n");
          break;
    }
 
@@ -948,8 +921,10 @@ Individual &Population::operator[](const int ind_num) const
 #endif /* DEBUG */
 
    if ((ind_num<0)||(ind_num>=size)) {
-      (void)fprintf(logFile, "ERROR: support.cc/Trying to access %d, an out of bounds individual! (0<i<%d)\n", ind_num, size);
-      return(heap[0]);
+	char error_message[200];
+      prStr( error_message,  "ERROR: BUGCHECK support.cc/Trying to access %d, an out of bounds individual! (0<i<%d)\n", ind_num, size);
+      //stop(error_message);
+      return(heap[0]); // notreached
    } else {
       return(heap[ind_num]);
    }
@@ -1013,6 +988,7 @@ Population &Population::operator=(const Population &original)
    for (i=0; i<size; i++) {
       heap[i] = original.heap[i];
    }
+   // MPique 2014 TODO should this also copy the end_of_branch info?
 
    return(*this);
 }

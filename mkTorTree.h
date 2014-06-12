@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.h,v 1.12 2012/04/05 01:39:32 mp Exp $
+ $Id: mkTorTree.h,v 1.13 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -32,6 +32,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "stop.h"
 
 void  mkTorTree(const int   atomnumber[MAX_RECORDS],
+		const int   pdbatomnumber[2][MAX_RECORDS],
                 const char  record[MAX_RECORDS][LINE_LEN],
                 const int   nrecord,
                 int   tlist[MAX_TORS+1][MAX_ATOMS],

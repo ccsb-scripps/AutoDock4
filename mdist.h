@@ -1,6 +1,6 @@
 /*
 
- $Id: mdist.h,v 1.11 2009/05/08 23:02:14 rhuey Exp $
+ $Id: mdist.h,v 1.12 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -29,8 +29,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 // expand the allowed bond length ranges by the BOND_LENGTH_TOLERANCE
 #define BOND_LENGTH_TOLERANCE 0.1
 #define set_minmax( a1, a2, min, max)  \
-    mindist[(a1)][(a2)] = mindist[(a2)][(a1)] = (min)-BOND_LENGTH_TOLERANCE;\
-    maxdist[(a1)][(a2)] = maxdist[(a2)][(a1)] = (max)+BOND_LENGTH_TOLERANCE
+    mindist[(a1)][(a2)] = (mindist[(a2)][(a1)] = (min)-BOND_LENGTH_TOLERANCE);\
+    maxdist[(a1)][(a2)] = (maxdist[(a2)][(a1)] = (max)+BOND_LENGTH_TOLERANCE)
 
 void mdist();
 

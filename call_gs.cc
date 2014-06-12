@@ -1,6 +1,6 @@
 /*
 
- $Id: call_gs.cc,v 1.15 2011/07/13 05:08:26 mp Exp $
+ $Id: call_gs.cc,v 1.16 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -45,10 +45,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
    #include "constants.h"
    #include "structs.h"
 
-extern Eval evaluate;
 
 State call_gs(Global_Search *global_method, State& now, unsigned int num_evals, unsigned int pop_size,
               Molecule *mol,
+	      Eval *evaluate,
               Output_pop_stats& extOutput_pop_stats,
               GridMapSetInfo *info,
               int end_of_branch[MAX_TORS], int outlev, FILE * logFile)
@@ -56,9 +56,9 @@ State call_gs(Global_Search *global_method, State& now, unsigned int num_evals, 
    register unsigned int i;
 
    global_method->reset(extOutput_pop_stats);
-   evaluate.reset();
+   evaluate->reset();
 
-   Population thisPop(pop_size);
+   Population thisPop(pop_size, evaluate);
    thisPop.set_eob(end_of_branch);
 
    for (i=0; i<pop_size; i++) {
@@ -66,7 +66,7 @@ State call_gs(Global_Search *global_method, State& now, unsigned int num_evals, 
       thisPop[i].mol = mol;
    }
 
-    while ((evaluate.evals() < num_evals) && (!global_method->terminate()))
+    while ((evaluate->evals() < num_evals) && (!global_method->terminate()))
       global_method->search(thisPop, outlev, logFile);
 
    if (pop_size>1) thisPop.msort(1);

@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.45 2013/10/18 21:07:26 mp Exp $
+ $Id: simanneal.cc,v 1.46 2014/06/12 01:44:08 mp Exp $
 
  AutoDock  
 
@@ -64,7 +64,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
                 const Boole B_either,
 		EnergyComponent	*peratomE,
                 const int   NcycMax,
-                const int   irunmax,
+                const int   nruns,
 		FourByteLong runseed[][2], /* [MAX_RUNS] */
                 const Clock& jobStart,
                 #include "map_declare.h"
@@ -170,7 +170,6 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
     Real etot = 0.0;
     Real inv_RT = 0.;
     Real qtwStep;
-    Real rsqC1C2;
     Real RT = 616.;
     Real torTmp;
     Real torStep;
@@ -183,10 +182,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
 
     int count = 0;
     int Itor = 0;
-    int icycle = -1;
-    int icycle1 = -1;
-    int irun = -1;
-    int irun1 = -1;
+    int irun;
     int indx;
 
     register int i = 0;
@@ -195,8 +191,6 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
     register int nAccProb = 0;
     register int nedge = 0;
     register int nrej = 0;
-    register int ntot = 1;
-    register int xyz = 0;
 
     struct tms tms_cycStart;
     struct tms tms_cycEnd;
@@ -226,7 +220,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
             prStr( error_message, "\n%s: can't create trajectory file %s\n", programname, FN_trj);
             pr_2x( stderr, logFile, error_message );
             jobEnd = times( &tms_jobEnd );
-            timesys( jobEnd - jobStart, &tms_jobStart, &tms_jobEnd );
+            timesys( jobEnd - jobStart, &tms_jobStart, &tms_jobEnd, logFile);
             pr_2x( logFile, stderr, UnderLine );
             stop(error_message);
         }/*END PROGRAM*/
@@ -240,22 +234,22 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
     }
 
 
-    for ( irun = 0;  irun < irunmax;  irun++ ) { /*===========================*/
+    int nconf = *(Addr_nconf); /* absolute serial number of this run */
+    for ( irun = 0;  irun < nruns;  irun++ ) { /*===========================*/
 
-	int nconf = *(Addr_nconf); /* absolute serial number of this run */
-	if(nconf>0) setsd( runseed[nconf][0], runseed[nconf][1]); /* see main.cc and com.cc */
-
-        irun1 = 1 + irun;
+	/* set RNG seed using global run number, see main.cc and com.cc */
+	if(nconf==0&&irun==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
+	else setsd(runseed[nconf+irun][0], runseed[nconf+irun][1]); 
 
 
         if (outlev >= LOGFORADT) 
             pr(logFile, "\n\tINITIALIZING AUTOMATED DOCKING SIMULATION\n" );
         if (outlev >= LOGBASIC) 
-            pr( logFile, "Run: %d / %d  Seed: %ld %ld\n", irun1, irunmax,
+            pr( logFile, "Run: %d Seed: %ld %ld\n", nconf+irun,
 		(long)runseed[nconf][0], (long)runseed[nconf][1]);
 
         if ( B_writeTrj ) {
-            pr( FP_trj, "ntorsions %d\nrun %d\n", ntor, irun1 );
+            pr( FP_trj, "ntorsions %d\nrun %d\n", ntor, nconf+irun );
             fflush( FP_trj );
         }
 
@@ -266,7 +260,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
                      peratomE, ptr_ad_energy_tables, B_calcIntElec,
                      map, natom, Nnb, Nnb_array, group_energy, 
 		     true_ligand_atoms, nonbondlist,
-                     ntor, tlist, type, vt, irun1, MaxRetries,
+                     ntor, tlist, type, vt, nconf+irun, MaxRetries,
                      torsFreeEnergy, ligand_is_inhibitor,
                      ignore_inter,
                      B_include_1_4_interactions, scale_1_4, scale_eintermol,
@@ -302,14 +296,15 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
         fflush(logFile);
 /*____________________________________________________________________________*/
 
-        for ( icycle = 0;  icycle < NcycMax;  icycle++ ) {
+        for ( int icycle = 0;  icycle < NcycMax;  icycle++ ) {
 
+	    int ntot;
             cycStart = times( &tms_cycStart );
 
-            icycle1 = icycle + (ntot = 1);
+	    ntot = 1;
             B_inRange = (icycle >= trj_cyc_min) && (icycle <= trj_cyc_max);
             if ( B_writeTrj && B_inRange ) {
-                pr( FP_trj, "cycle %d\ntemp %f\n", icycle1, RT );
+                pr( FP_trj, "cycle %d\ntemp %f\n", icycle+1, RT );
                 fflush(  FP_trj  );
             }
             nAcc = nAccProb = nacc = nrej = nedge = 0;
@@ -334,7 +329,8 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
 		    outlev, logFile);
 
                 if (B_constrain) {
-                    for (xyz = 0;  xyz < SPACE;  xyz++) {
+		    Real rsqC1C2;
+                    for (int xyz = 0;  xyz < SPACE;  xyz++) {
                         d[xyz] = crd[atomC1][xyz] - crd[atomC2][xyz];
                     }
                     rsqC1C2 = sqhypotenuse(d[X],  d[Y], d[Z]);
@@ -508,7 +504,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
                          peratomE, ptr_ad_energy_tables, B_calcIntElec,
                          map, natom, 
 			 Nnb, Nnb_array, group_energy, true_ligand_atoms,
-			 nonbondlist, ntor, tlist, type, vt, irun1, MaxRetries,
+			 nonbondlist, ntor, tlist, type, vt, nconf+irun, MaxRetries,
                          torsFreeEnergy, ligand_is_inhibitor,
                          ignore_inter,
                          B_include_1_4_interactions, scale_1_4, scale_eintermol,
@@ -528,9 +524,9 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
                 */
                 if (outlev >= LOGRUNV) {
                     /*pr(logFile, "\n"); / *###*/
-                    pr( logFile, "%d /%d\t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", irun1, irunmax, icycle1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (Real)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
+                    pr( logFile, "%d \t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", nconf+irun, icycle+1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (Real)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
                     cycEnd = times( &tms_cycEnd );
-                    timesys( cycEnd - cycStart, &tms_cycStart, &tms_cycEnd );
+                    timesys( cycEnd - cycStart, &tms_cycStart, &tms_cycEnd, logFile);
                     if (outlev > LOGRUNV ) {
                         pr( logFile, "\tEnergy:   \tState:\n\t__________\t____________________________________________________________\nMinimum\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [x,y,z,w] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eMin, sMin.T.x, sMin.T.y, sMin.T.z, sMin.Q.x, sMin.Q.y, sMin.Q.z, sMin.Q.w );
                         pr( logFile, "\nLast\t%+6.2f\t(%+.2f,%+.2f,%+.2f), q = [x,y,z,w] = [%5.1f deg, (%+.2f,%+.2f,%+.2f)],\n", eLast, sLast.T.x, sLast.T.y, sLast.T.z, sLast.Q.x, sLast.Q.y, sLast.Q.z, sLast.Q.w );
@@ -591,7 +587,8 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
         }
    
         pr( logFile, "\tFINAL DOCKED STATE\n" );
-        pr( logFile, "Run Number %d\nFinal Energy = %+.2f\n", irun1, eLast);
+        pr( logFile, "Run Number %d\nFinal Energy = %+.2f\n", nconf+irun, eLast);
+	pr(logFile,"Final-Value: %.3f\n", eLast);
 
 	if(outlev>=LOGRUNV) {
         pr( logFile, "Final Translation = %.2f, %.2f, %.2f\n", sSave.T.x, sSave.T.y, sSave.T.z );
@@ -639,7 +636,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
                     NULL_ENERGY_BREAKDOWN);
 
 	if(outlev>=LOGMIN)
-        writePDBQT( irun, runseed[nconf], FN_ligand, FN_dpf, lig_center, sSave, ntor,
+        writePDBQT( nconf+irun, runseed[nconf], FN_ligand, FN_dpf, lig_center, sSave, ntor,
                 &eintra, &einter, natom, atomstuff, crd, peratomE,
                 charge, abs_charge, qsp_abs_charge,
                 ligand_is_inhibitor, torsFreeEnergy, 
@@ -661,11 +658,11 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
         } else {
             local_unbound_internal_FE = unbound_internal_FE;
         }
-        // originally: econf[(*Addr_nconf)] = eLast;
-        econf[(*Addr_nconf)] = eintra + einter + torsFreeEnergy - local_unbound_internal_FE;
-        ++(*Addr_nconf);
+        // originally: econf[nconf+irun] = eLast;
+        econf[nconf+irun] = eintra + einter + torsFreeEnergy - local_unbound_internal_FE;
 
     } /* Loop over runs ======================================================*/
+    *Addr_nconf += nruns;
 
     if ( B_writeTrj ) {
             fclose( FP_trj );

@@ -1,6 +1,6 @@
 /*
 
- $Id: gs.h,v 1.25 2013/05/23 20:06:02 mp Exp $
+ $Id: gs.h,v 1.26 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -46,8 +46,8 @@ class Global_Search
    public:
       Global_Search(unsigned int init_max_evals, unsigned int init_max_generations);
       virtual ~Global_Search(void);
-      virtual int search(Population &, int, FILE *) = 0;
-      virtual int localsearch(Population &, Local_Search *, int, FILE *) = 0;
+      virtual int search(Population &, Eval *, int, FILE *) = 0;
+      virtual int localsearch(Population &, Local_Search *, Eval *, int, FILE *) = 0;
       virtual int terminate(void) = 0;
       virtual void reset(void) = 0;
       virtual void reset(const Output_pop_stats&) = 0;
@@ -100,21 +100,21 @@ class Genetic_Algorithm : public Global_Search
       double *worst_window;
       Real linear_ranking_selection_probability_ratio;
 
-      double worst_this_generation(const Population &, FILE *logFile);
-      void set_worst(const Population &, FILE *logFile);
-      void make_table(int, ConstReal );
-      int check_table(ConstReal );
+      double worst_this_generation(const Population &, int outlev, FILE *logFile);
+      void set_worst(const Population &, int outlev, FILE *logFile);
+      void make_table(int, ConstReal, int outlev, FILE *logFile);
+      int check_table(ConstReal, int outlev, FILE *logFile);
       M_mode m_type(const RepType) const;
-      void mutate(Genotype &, const int);
-      void mutation(Population &);
-      void crossover(Population &);
-      void crossover_2pt(Genotype &, Genotype &, const unsigned int, const unsigned int);
-      void crossover_uniform(Genotype &, Genotype &, const unsigned int);
-      void crossover_arithmetic(Genotype &, Genotype &, ConstReal );
-      void selection_proportional(Population &, Individual* const);
-      void selection_linear_ranking(/* sorted */ Population &, /* not const */ Individual *const);
-      void selection_tournament(Population &, Individual* const);
-      Individual *selection(Population &);
+      void mutate(Genotype &, const int, int outlev, FILE *logfile);
+      void mutation(Population &, int outlev, FILE *logfile);
+      void crossover(Population &, int outlev, FILE *logfile);
+      void crossover_2pt(Genotype &, Genotype &, const unsigned int, const unsigned int, int outlev, FILE *logFile);
+      void crossover_uniform(Genotype &, Genotype &, const unsigned int, int outlev, FILE *logFile);
+      void crossover_arithmetic(Genotype &, Genotype &, ConstReal, int outlev, FILE *logFile );
+      void selection_proportional(Population &, Individual* const, int outlev, FILE *logFile);
+      void selection_linear_ranking(/* sorted */ Population &, /* not const */ Individual *const, int outlev, FILE *logFile);
+      void selection_tournament(Population &, Individual* const, int outlev, FILE *logFile);
+      Individual *selection(Population &, int outlev, FILE *logfile);
 
    public:
       Genetic_Algorithm(void);
@@ -129,7 +129,7 @@ class Genetic_Algorithm : public Global_Search
 			const unsigned int init_max_generations,
                         const Output_pop_stats&); // after 2010.05
       ~Genetic_Algorithm(void);
-      void initialize(unsigned int, unsigned int);
+      void initialize(unsigned int, unsigned int, int, FILE *);
       void mutation_values(int, int, ConstReal, ConstReal, ConstReal, ConstReal, ConstReal);
       unsigned int num_generations(void) const;
       void reset(void);
@@ -137,8 +137,8 @@ class Genetic_Algorithm : public Global_Search
       char * shortname(void);
       char * longname(void);
       int terminate(void);
-      int search(Population &, int, FILE *);
-      int localsearch(Population &, Local_Search *, int, FILE *);
+      int search(Population &, Eval *, int, FILE *);
+      int localsearch(Population &, Local_Search *, Eval *, int, FILE *);
       int set_linear_ranking_selection_probability_ratio(ConstReal );
       
 };

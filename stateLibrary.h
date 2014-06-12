@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.h,v 1.7 2010/10/01 22:51:40 mp Exp $
+ $Id: stateLibrary.h,v 1.8 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -44,7 +44,7 @@ void printState( FILE *const fp,
 void writeState( /* not const */ FILE *const fp, 
 		 /* not const */ State state );
 
-int checkState( const State *const D );
+int checkState( FILE *const fp, const State *const D );
 
 Molecule copyStateToMolecule(const State *const source, /* not const */ Molecule *const mol);
 #endif

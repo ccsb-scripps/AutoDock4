@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.16 2013/10/17 23:39:06 mp Exp $
+ $Id: ranlib.cc,v 1.17 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -35,26 +35,32 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "structs.h"
 #include "stop.h"
 
-/* this software can be configured to provide multiple concurrent
- random number generators (e.g., 32), however, AutoDock uses only one
- at present.  This number must also be defined in com.cc M Pique 2012-07
+/* this software is configured to provide multiple concurrent
+ random number generators (e.g., 32), AutoDock uses one per OpenMP thread
+ at present.  This number is NUMG and is defined in ranlib.h
+ The OpenMP code depends on all random numbers being derived from calls
+ the ignlgi_t(), the per-thread "Integer GeNerate LarGe Integer" in com.cc.
+ The function ignlgi() is a macro defined in com.h that calls ignlgi_t()
+ with the current thread number, or 0 if not running in parallel.
+ M Pique 2014-02
+ 
  */
-#define NUMG 1
 
 // C++ equivalents of Fortran functions:
 inline Real ABS(ConstReal x) { return ((x) >= 0 ? (x) : -(x)) ; }
 inline Real MIN(ConstReal a, ConstReal b) { return ((a) <= (b) ? (a) : (b)) ; }
 inline Real MAX(ConstReal a, ConstReal b) { return ((a) >= (b) ? (a) : (b)) ; }
-inline FourByteLong IABS(const FourByteLong x) { return ((x) >= 0 ? (x) : -(x)) ; } 
-inline FourByteLong IMIN(const FourByteLong a, const FourByteLong b) { return ((a) <= (b) ? (a) : (b)) ; }
-inline FourByteLong IMAX(const FourByteLong a, const FourByteLong b) { return ((a) >= (b) ? (a) : (b)) ; }
+inline long IABS(const long x) { return ((x) >= 0 ? (x) : -(x)) ; } 
+inline long IMIN(const long a, const long b) { return ((a) <= (b) ? (a) : (b)) ; }
+inline long IMAX(const long a, const long b) { return ((a) >= (b) ? (a) : (b)) ; }
 
+// functions used only internally within this source file:
 static Real sgamma(ConstReal a);
 static Real sexpo(void);
 static Real fsign(ConstReal num, ConstReal sign);
 static Real snorm(void);
-static FourByteLong ignbin(const FourByteLong n, ConstReal pp);
-static FourByteLong ignpoi(ConstReal mu);
+static FourByteLong ignbin(const int n, ConstReal pp);
+static FourByteLong ignpoi(ConstReal mu); // not used in AutoDock code
 
 
 static const Real expmax=89.0;
@@ -252,11 +258,7 @@ static Real gengam(ConstReal a, ConstReal r)
 **********************************************************************
 */
 {
-Real gengam;
-
-    gengam = sgamma(r);
-    gengam /= a;
-    return gengam;
+    return sgamma(r)/a;
 }
 
 static Real genchi(ConstReal df)
@@ -407,7 +409,7 @@ static Real ae;
     }
 }
 
-void genmul(const FourByteLong n, const Real *const p, const FourByteLong ncat, /* not const */ FourByteLong *const ix) // not used in AutoDock code
+void genmul(const int n, const Real *const p, const int ncat, /* not const */ int *const ix) // not used in AutoDock code
 /*
 **********************************************************************
  
@@ -436,7 +438,7 @@ void genmul(const FourByteLong n, const Real *const p, const FourByteLong ncat, 
 */
 {
 static Real prob,ptot,sum;
-static FourByteLong i,icat,ntot;
+static int i,icat,ntot;
     if(n < 0) stop("N < 0 in GENMUL");
     if(ncat <= 1) stop("NCAT <= 1 in GENMUL");
     ptot = 0.0F;
@@ -522,7 +524,7 @@ Real gennf(ConstReal dfn, ConstReal dfd, ConstReal xnonc) // not used in AutoDoc
 */
 {
 static Real gennf,xden,xnum;
-static FourByteLong qcond;
+static int qcond;
 
     qcond = dfn <= 1.0 || dfd <= 0.0 || xnonc < 0.0;
     if(!qcond) goto S10;
@@ -588,7 +590,7 @@ void genprm(/* not const */ FourByteLong *const iarray, const int larray) // not
 **********************************************************************
 */
 {
-static FourByteLong i,itmp,iwhich,D1,D2;
+FourByteLong i,itmp,iwhich,D1,D2;
 
     for (i=1,D1=1,D2=(larray-i+D1)/D1; D2>0; D2--,i+=D1) {
         iwhich = ignuin(i,larray);
@@ -620,10 +622,10 @@ S10:
     return low+(high-low)*ranf();
 }
 
-static FourByteLong ignbin(const FourByteLong n, ConstReal pp) // not used in AutoDock code
+static FourByteLong ignbin(const int n, ConstReal pp) // not used in AutoDock code
 /*
 **********************************************************************
-     FourByteLong ignbin(FourByteLong n,Real pp)
+     FourByteLong ignbin(int n,Real pp)
                     GENerate BINomial random deviate
                               Function
      Generates a single random deviate from a binomial
@@ -727,7 +729,7 @@ static FourByteLong ignbin(const FourByteLong n, ConstReal pp) // not used in Au
 */
 {
 static Real psave = -1.0;
-static FourByteLong nsave = -1;
+static int nsave = -1;
 static FourByteLong ignbin,i,ix,ix1,k,m,mp,T1;
 static Real al,alv,amaxp,c,f,f1,f2,ffm,fm,g,p,p1,p2,p3,p4,q,qn,r,u,v,w,w2,x,x1,
     x2,xl,xll,xlr,xm,xnp,xnpq,xr,ynorm,z,z2;
@@ -878,7 +880,7 @@ S170:
     return ignbin;
 }
 
-FourByteLong ignnbn(const FourByteLong n, ConstReal p) // not used in AutoDock code
+FourByteLong ignnbn(const int n, ConstReal p) // not used in AutoDock code
 /*
 **********************************************************************
  
@@ -901,8 +903,8 @@ FourByteLong ignnbn(const FourByteLong n, ConstReal p) // not used in AutoDock c
 **********************************************************************
 */
 {
-static FourByteLong ignnbn;
-static Real y,a,r;
+static int ignnbn;
+Real y,a,r;
 /*
      ..
      .. Executable Statements ..
@@ -926,7 +928,7 @@ static Real y,a,r;
     return ignnbn;
 }
 
-static FourByteLong ignpoi(ConstReal mu)
+static FourByteLong ignpoi(ConstReal mu) // ignpoi() not used in AutoDock code
 /*
 **********************************************************************
      FourByteLong ignpoi(Real mu)
@@ -977,14 +979,14 @@ static FourByteLong ignpoi(ConstReal mu)
      SEPARATION OF CASES A AND B
 */
 {
-static Real a0 = -0.5;
-static Real a1 = 0.3333333;
-static Real a2 = -0.2500068;
-static Real a3 = 0.2000118;
-static Real a4 = -0.1661269;
-static Real a5 = 0.1421878;
-static Real a6 = -0.1384794;
-static Real a7 = 0.125006;
+const static Real a0 = -0.5;
+const static Real a1 = 0.3333333;
+const static Real a2 = -0.2500068;
+const static Real a3 = 0.2000118;
+const static Real a4 = -0.1661269;
+const static Real a5 = 0.1421878;
+const static Real a6 = -0.1384794;
+const static Real a7 = 0.125006;
 static Real muold = 0.0;
 static Real muprev = 0.0;
 static Real fact[10] = {
@@ -1165,10 +1167,10 @@ S180:
     return ignpoi;
 }
 
-extern FourByteLong ignuin(const FourByteLong low, const FourByteLong high)
+extern int ignuin(const int low, const int high)
 /*
 **********************************************************************
-     FourByteLong ignuin(FourByteLong low,FourByteLong high)
+     int ignuin(int low,int high)
                GeNerate Uniform INteger
                               Function
      Generates an integer uniformly distributed between LOW and HIGH.
@@ -1184,7 +1186,7 @@ extern FourByteLong ignuin(const FourByteLong low, const FourByteLong high)
 */
 {
 #define maxnum 2147483561L
-FourByteLong ignuin,ign,maxnow,range,ranp1;
+FourByteLong ign,maxnow,range,ranp1;
 
     if(low > high) stop("ERROR low > high in ignuin");
 
@@ -1209,13 +1211,13 @@ S40:
 #undef err2
 }
 
-FourByteLong lennob(const char *const str) // not used in AutoDock code
+int lennob(const char *const str) // not used in AutoDock code
 /* 
 Returns the length of str ignoring trailing blanks but not 
 other white space.
 */
 {
-FourByteLong i, i_nb;
+int i, i_nb;
 
 for (i=0, i_nb= -1L; *(str+i); i++)
     if ( *(str+i) != ' ' ) i_nb = i;
@@ -1237,12 +1239,13 @@ extern FourByteLong mltmod(const FourByteLong a, const FourByteLong s, const Fou
 **********************************************************************
 */
 {
-#define h 32768L
 FourByteLong mltmod,a0,a1,k,p,q,qh,rh;
 /*
      H = 2**((b-2)/2) where b = 32 because we are using a 32 bit
       machine. On a different machine recompute H
 */
+//#define h ((sizeof a0 == 4) ? (1<<((32-2)/2))  : (1<<((64-2)/2))  )
+#define h 32768L
     if((a <= 0 || a >= m || s <= 0 || s >= m)) {
      char errmsg[300];
     fputs(" a, m, s out of order in mltmod - ABORT!",stderr);
@@ -1347,7 +1350,7 @@ void phrtsd(const char *const phrase, FourByteLong *const seed1, FourByteLong *c
 */
 {
 
-static char table[] =
+const static char table[] =
 "abcdefghijklmnopqrstuvwxyz\
 ABCDEFGHIJKLMNOPQRSTUVWXYZ\
 0123456789\
@@ -1355,11 +1358,11 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ\
 
 FourByteLong ix;
 
-static FourByteLong twop30 = 1073741824L;
-static FourByteLong shift[5] = {
+const static FourByteLong twop30 = 1073741824L;
+const static FourByteLong shift[5] = {
     1L,64L,4096L,262144L,16777216L
 };
-static FourByteLong i,ichr,j,lphr,values[5];
+FourByteLong i,ichr,j,lphr,values[5];
 FourByteLong lennob(const char *const str);
 
     *seed1 = 1234567890L;
@@ -1412,10 +1415,10 @@ Real ranf;
 }
 #endif
 
-void setgmn(const Real *const meanv, Real *const covm, const FourByteLong p, Real *const parm) // not used in AutoDock code
+void setgmn(const Real *const meanv, Real *const covm, const int p, Real *const parm) // not used in AutoDock code
 /*
 **********************************************************************
-     void setgmn(Real *meanv,Real *covm,FourByteLong p,Real *parm)
+     void setgmn(Real *meanv,Real *covm,int p,Real *parm)
             SET Generate Multivariate Normal random deviate
                               Function
       Places P, MEANV, and the Cholesky factoriztion of COVM
@@ -1436,17 +1439,17 @@ void setgmn(const Real *const meanv, Real *const covm, const FourByteLong p, Rea
 **********************************************************************
 */
 {
-extern void spofa(/* not const */ Real *const a,const FourByteLong lda,const FourByteLong n,/* not const */ FourByteLong *const info);
+extern void spofa(/* not const */ Real *const a,const int lda,const int n,/* not const */ int *const info);
 /* not used: static FourByteLong T1; */
-static FourByteLong i,icount,info,j,D2,D3,D4,D5;
+int i,icount,info,j,D2,D3,D4,D5;
     /* not used: T1 = p*(p+3)/2+1; */
 /*
      TEST THE INPUT
 */
-    if(!(p <= 0)) goto S10;
-    fprintf(stderr,"Value of P: %12ld\n",p);
-    stop("ERROR P nonpos in setgmn");
-S10:
+    if(p <= 0) {
+      fprintf(stderr,"Value of P: %d\n",p);
+      stop("ERROR P nonpos in setgmn");
+      }
     *parm = p;
 /*
      PUT P AND MEANV INTO PARM
@@ -1508,9 +1511,9 @@ static Real sexpo(void)
 static Real q[8] = {
     0.6931472,0.9333737,0.9888778,0.9984959,0.9998293,0.9999833,0.9999986,1.0
 };
-static FourByteLong i;
-static Real sexpo,a,u,ustar,umin;
-static Real *q1 = q;
+FourByteLong i;
+Real a,u,ustar,umin;
+Real *q1 = q;
     a = 0.0;
     u = ranf();
     goto S30;
@@ -1521,8 +1524,7 @@ S30:
     if(u <= 1.0) goto S20;
     u -= 1.0;
     if(u > *q1) goto S60;
-    sexpo = a+u;
-    return sexpo;
+    return a+u;
 S60:
     i = 1;
     ustar = ranf();
@@ -1532,8 +1534,7 @@ S70:
     if(ustar < umin) umin = ustar;
     i += 1;
     if(u > *(q+i-1)) goto S70;
-    sexpo = a+umin**q1;
-    return sexpo;
+    return a+umin**q1;
 }
 
 static Real sgamma(ConstReal a)
@@ -1589,29 +1590,29 @@ static Real sgamma(ConstReal a)
      SQRT32 IS THE SQUAREROOT OF 32 = 5.656854249492380
 */
 {
-static Real q1 = 4.166669E-2;
-static Real q2 = 2.083148E-2;
-static Real q3 = 8.01191E-3;
-static Real q4 = 1.44121E-3;
-static Real q5 = -7.388E-5;
-static Real q6 = 2.4511E-4;
-static Real q7 = 2.424E-4;
-static Real a1 = 0.3333333;
-static Real a2 = -0.250003;
-static Real a3 = 0.2000062;
-static Real a4 = -0.1662921;
-static Real a5 = 0.1423657;
-static Real a6 = -0.1367177;
-static Real a7 = 0.1233795;
-static Real e1 = 1.0;
-static Real e2 = 0.4999897;
-static Real e3 = 0.166829;
-static Real e4 = 4.07753E-2;
-static Real e5 = 1.0293E-2;
+const static Real q1 = 4.166669E-2;
+const static Real q2 = 2.083148E-2;
+const static Real q3 = 8.01191E-3;
+const static Real q4 = 1.44121E-3;
+const static Real q5 = -7.388E-5;
+const static Real q6 = 2.4511E-4;
+const static Real q7 = 2.424E-4;
+const static Real a1 = 0.3333333;
+const static Real a2 = -0.250003;
+const static Real a3 = 0.2000062;
+const static Real a4 = -0.1662921;
+const static Real a5 = 0.1423657;
+const static Real a6 = -0.1367177;
+const static Real a7 = 0.1233795;
+const static Real e1 = 1.0;
+const static Real e2 = 0.4999897;
+const static Real e3 = 0.166829;
+const static Real e4 = 4.07753E-2;
+const static Real e5 = 1.0293E-2;
+const static Real sqrt32 = 5.656854;
+static Real sgamma,s2,s,d,t,x,u,r,q0,b,si,c,v,q,e,w,p;
 static Real aa = 0.0;
 static Real aaa = 0.0;
-static Real sqrt32 = 5.656854;
-static Real sgamma,s2,s,d,t,x,u,r,q0,b,si,c,v,q,e,w,p;
     if(a == aa) goto S10;
     if(a < 1.0) goto S120;
 /*

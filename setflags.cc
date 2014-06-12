@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.27 2014/02/01 05:14:53 mp Exp $
+ $Id: setflags.cc,v 1.28 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -205,6 +205,9 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             break;
         case 'v':
             fprintf(stdout, "AutoDock %-8s\n", version_num);
+#ifdef _OPENMP
+            fprintf(stdout, "Includes OpenMP multiprocessor support.");
+#endif
             fprintf(stdout, " Copyright (C) 2009 The Scripps Research Institute.\n");
 // GNU BEGIN   (see maintenance script update_license_de-GNU)
             fprintf(stdout, " License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>\n");

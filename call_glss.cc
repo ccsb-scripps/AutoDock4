@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.cc,v 1.74 2014/02/15 01:45:56 mp Exp $ 
+ $Id: call_glss.cc,v 1.75 2014/06/12 01:44:07 mp Exp $ 
  AutoDock  
 
 Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -54,7 +54,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 extern char *programname;
 extern int debug;
 
-Eval evaluate;
 
 Representation **generate_R(const int num_torsions, GridMapSetInfo *const info, FILE *logFile)
 {
@@ -142,7 +141,7 @@ Representation **generate_R_quaternion(const int num_torsions, const GridMapSetI
    return(retval);
 }
 
-Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile)
+Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info, int outlev, FILE *logFile)
 {
 #ifdef DEBUG
     // (void)fprintf(logFile,"\ncall_glss.cc/Genotype generate_Gtype() about to call Genotype temp(5, generate_R())...\n");
@@ -158,14 +157,14 @@ Genotype generate_Gtype(const int num_torsions, const GridMapSetInfo *const info
    return(temp);
 }
 
-Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const info, FILE *logFile) 
+Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const info, Eval *evaluate, int outlev, FILE *logFile) 
 {
 #ifdef DEBUG
     // (void)fprintf(logFile,"\ncall_glss.cc/Genotype generate_Ptype() about to call Phenotype temp(5, generate_R())...\n");
     (void)fprintf(logFile,"\ncall_glss.cc/Genotype generate_Ptype() about to call Phenotype temp(5, generate_R_quaternion())...\n");
 #endif
    // Phenotype temp((unsigned int)5, generate_R(num_torsions, info));
-   Phenotype temp((unsigned int)5, generate_R_quaternion(num_torsions, info, logFile));
+   Phenotype temp((unsigned int)5, generate_R_quaternion(num_torsions, info, logFile), evaluate);
 #ifdef DEBUG
    // (void)fprintf(logFile,"call_glss.cc/Genotype generate_Ptype() done calling  Phenotype temp(5, generate_R())...\n\n");
    (void)fprintf(logFile,"call_glss.cc/Genotype generate_Ptype() done calling  Phenotype temp(5, generate_R_quaternion())...\n\n");
@@ -174,17 +173,17 @@ Phenotype generate_Ptype(const int num_torsions, const GridMapSetInfo *const inf
    return(temp);
 }
 
-Individual random_ind(const int num_torsions,  const GridMapSetInfo *const info, FILE *logFile) 
+Individual random_ind(const int num_torsions,  const GridMapSetInfo *const info, Eval *evaluate, int outlev, FILE *logFile) 
 {
 
 #ifdef DEBUG
     (void)fprintf(logFile,"\ncall_glss.cc/Individual random_ind()  About to generate_Gtype()...\n");
 #endif
-   Genotype temp_Gtype = generate_Gtype(num_torsions, info, logFile);
+   Genotype temp_Gtype = generate_Gtype(num_torsions, info, outlev, logFile);
 #ifdef DEBUG
    (void)fprintf(logFile,"call_glss.cc/Individual random_ind()  About to generate_Ptype()...\n");
 #endif
-   Phenotype temp_Ptype = generate_Ptype(num_torsions, info, logFile); 
+   Phenotype temp_Ptype = generate_Ptype(num_torsions, info, evaluate, outlev, logFile); 
 
 #ifdef DEBUG
    (void)fprintf(logFile,"call_glss.cc/Individual random_ind()  About to Individual temp(temp_Gtype, temp_Ptype)...\n");
@@ -200,7 +199,8 @@ Individual random_ind(const int num_torsions,  const GridMapSetInfo *const info,
    return(temp);
 }
 
-#ifdef FALSE
+#ifdef MOVEDTOCONFORMATIONSAMPLER
+// this block moved to conformation_sampler.cc  
 Individual set_ind(const int num_torsions,  const GridMapSetInfo *const info, const State state, FILE *logFile)
 {
    Genotype temp_Gtype;
@@ -251,6 +251,7 @@ State call_glss(/* not const */ Global_Search *global_method,
                 const int outlev,  FILE *logFile,
 		const Output_pop_stats& output_pop_stats,
                 Molecule * const mol, 
+		Eval *evaluate,
                 const Boole B_RandomTran0, const Boole B_RandomQuat0, const Boole B_RandomDihe0,
                 const GridMapSetInfo *info, const char *const FN_pop_file,
                 /* not const */ int end_of_branch[MAX_TORS])
@@ -272,11 +273,11 @@ State call_glss(/* not const */ Global_Search *global_method,
 
     if (global_method) global_method->reset(output_pop_stats);
     if (local_method) local_method->reset();
-    evaluate.reset();
+    evaluate->reset();
 
     if(outlev>=LOGRUNV) \
     (void)fprintf( logFile, "Creating an initial population of %u individuals.\n", pop_size);
-    Population thisPop(pop_size);
+    Population thisPop(pop_size, evaluate);
     //  Pass in the end_of_branch tree for Branch Crossover Mode.
     thisPop.set_eob( end_of_branch );
     thisPop.nevals_last_pop_stats = 0;  // reset last time stats were printed
@@ -291,7 +292,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 #ifdef DEBUG
     (void)fprintf(logFile,"\ncall_glss.cc/State call_glss():  Creating individual thisPop[i=%d] using random_ind(%d,info)...\n", i, sInit.ntor);
 #endif
-            thisPop[i] = random_ind( sInit.ntor, info, logFile);
+            thisPop[i] = random_ind( sInit.ntor, info, evaluate, outlev, logFile);
 #ifdef DEBUG
     (void)fprintf(logFile,"call_glss.cc/State call_glss(): Created  individual i= %d in thisPop[i]\n\n", i);
 #endif
@@ -411,7 +412,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 
       if(generation>0) {
         if (outlev >= LOGRUNVV)  (void)fprintf( logFile, "Performing Global Search.\n"); 
-        global_method->search(thisPop, outlev, logFile);
+        global_method->search(thisPop, evaluate, outlev, logFile);
 
         if (outlev >= LOGRUNVVV) {
             (void)fprintf( logFile, "<generation t=\"%d\" after_performing=\"global search\">\n", generation);
@@ -429,7 +430,7 @@ State call_glss(/* not const */ Global_Search *global_method,
                 (void)fprintf( logFile, " %d",i+1); 
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
            }
-           global_method->localsearch(thisPop, local_method, outlev, logFile);
+           global_method->localsearch(thisPop, local_method, evaluate, outlev, logFile);
 	   if (outlev >= LOGRUNVVV ) for (i=0; i<pop_size; i++) {
                 (void)fprintf( logFile, " %f",thisPop[i].value(localEvalMode)); 
                 (void)fprintf( logFile, " \n"); 
@@ -447,7 +448,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 
     // note we terminate without searching if num_evals is 0
     // current global methods' "terminate()" are generation count or convergence based
-    terminate = global_method->terminate()  || evaluate.evals() >= num_evals;
+    terminate = global_method->terminate()  || evaluate->evals() >= num_evals;
 
     genEnd = times( &tms_genEnd );
 
@@ -489,9 +490,9 @@ State call_glss(/* not const */ Global_Search *global_method,
          // lowest output level, no newline at end
          (void) thisPop.printPopulationStatistics(logFile, 1, ""); 
 #endif /* DEBUG3 */
-         (void)fprintf(logFile,"    Num.evals.: %ld   Timing: ", 
-               evaluate.evals() );
-         timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd);
+         (void)fprintf(logFile,"    Num.evals.: %d   Timing: ", 
+               evaluate->evals() );
+         timesyshms( genEnd - genStart, &tms_genStart, &tms_genEnd, logFile);
        }
 
        // Print extended generational population statistics, when "due" :
@@ -521,7 +522,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 	       && generation%10 == 0) ||
             (generation%output_pop_stats.everyNgens == 0 ) ) )
 	  || (output_pop_stats.everyNevals != 0 &&
-	     evaluate.evals() - thisPop.nevals_last_pop_stats 
+	     evaluate->evals() - thisPop.nevals_last_pop_stats 
 	       >= output_pop_stats.everyNevals)
              )
 	 ) {
@@ -530,7 +531,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 	       // followed by GA global search stats (crossover count, mutation count)
 	       // and local search stats (invocation count)
 	       (void) thisPop.printPopulationStatisticsVerbose(logFile, 
-		 generation, evaluate.evals(), sInit.ntor, "");
+		 generation, evaluate->evals(), sInit.ntor, "");
 		 if (global_method) {
 		     fprintf(logFile, " cg_count: %u", global_method->cg_count);
 		     fprintf(logFile, " ci_count: %u", global_method->ci_count);
@@ -539,7 +540,7 @@ State call_glss(/* not const */ Global_Search *global_method,
 		    }
 		 if (local_method) fprintf(logFile, " ls_count: %u", local_method->ls_count);
 		 fprintf(logFile, "\n");
-		 thisPop.nevals_last_pop_stats = evaluate.evals();
+		 thisPop.nevals_last_pop_stats = evaluate->evals();
 		 }
 
         if (strlen(FN_pop_file) > 0) { // YES, do print!

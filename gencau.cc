@@ -1,6 +1,6 @@
 /*
 
- $Id: gencau.cc,v 1.10 2010/10/01 22:51:39 mp Exp $
+ $Id: gencau.cc,v 1.11 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -45,11 +45,8 @@ Real rcauchy(ConstReal  alpha, ConstReal  beta)
 **********************************************************************
 */
 {
-static Real gencau;
-
     // scauchy2 is faster than scauchy1
     // according to testing involving looping over the scauchy variants and timing each
-    gencau = beta*scauchy2()+alpha;
-    return gencau;
+    return beta*scauchy2()+alpha;
 }
 

@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.44 2014/02/15 01:45:56 mp Exp $
+ $Id: readPDBQT.cc,v 1.45 2014/06/12 01:44:08 mp Exp $
 
  AutoDock 
 
@@ -102,9 +102,9 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 {
 	FILE           *FP_ligand;
 	FILE           *FP_flexres;
-	static char     dummy[LINE_LEN];
-	static char     error_message[LINE_LEN];
-	static char     message[LINE_LEN];
+	char     dummy[LINE_LEN];
+	char     error_message[LINE_LEN];
+	char     message[LINE_LEN];
 
 	Real   aq = 0.;
 	Real   lq = 0.;
@@ -112,15 +112,16 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	Real   uq = 0.;
 
     int             branch_last_piece[MAX_TORS+2];//0 unused, 1 means ROOT
-	static int      atomnumber[MAX_RECORDS]; /* -1 for non-ATOM/HETATM */
+	static int      atomnumber[MAX_RECORDS]; /* -1 for non-ATOM/HETATM */ // static to save stack space
+	int pdbatomnumber[2][MAX_RECORDS]; /* two namespaces; each records's PDB atom number */
 	int             iq = 0;
 	int             natom = 0;
-	static int      nbmatrix[MAX_ATOMS][MAX_ATOMS];
+	static int      nbmatrix[MAX_ATOMS][MAX_ATOMS]; // static to save stack space
 	int             nrecord = 0;
     int             nligand_record = 0;
 	int             ntor = 0;
-	static int      ntype[MAX_ATOMS];
-	static int      rigid_piece[MAX_ATOMS];
+	static int      ntype[MAX_ATOMS]; // static to save stack space
+	static int      rigid_piece[MAX_ATOMS]; // static to save stack space
     int             keyword_id = -1;
 	int             nres = 0;
 	int             nrigid_piece = 0;
@@ -137,7 +138,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	register int    i = 0;
 	register int    j = 0;
 
-	static Real QTOL = 0.050;//rh increased from 0.005 4/2009
+	const static Real QTOL = 0.050;//rh increased from 0.005 4/2009
 
     // Definitions to help determine the end_of_branch array for "Branch Crossover Mode".
     // The "end_of_branch" array is like a dictionary, where the index corresponds to the key
@@ -152,6 +153,8 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 	for (i = 0; i < MAX_RECORDS; i++) {
 		atomnumber[i] = -1;
+		pdbatomnumber[0][i] = 9999999; // no PDB atom number 
+		pdbatomnumber[1][i] = 9999999; // no PDB atom number 
 	}
 
 	for (i = 0; i < MAX_ATOMS; i++) {
@@ -283,7 +286,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 }
 
                 ParameterEntry * found_parm;
-                int serial;
+                int pdbanum;
 
                 // Set up rigid_piece array by reading in the records of the PDBQT file;
                 // each "rigid_piece" is a self-contained rigid entity.
@@ -297,19 +300,26 @@ Molecule readPDBQT(char input_line[LINE_LEN],
                 // read the partial atomic charge and store it in charge[],
                 // and read the parameters of this atom and store them in this_parameter_entry,
                 // setting the "autogrid_type" in this_parameter_entry.
-                readPDBQTLine(input_line, &serial, crdpdb[natom], &charge[natom], &this_parameter_entry,outlev,logFile);
+                readPDBQTLine(input_line, &pdbanum, crdpdb[natom], &charge[natom], &this_parameter_entry,outlev,logFile);
 
                 /*
-                // Verify the serial number for this atom
-                if ( serial != (natom + 1) ) {
+                // Verify the pdb number for this atom
+                if ( pdbanum != (natom + 1) ) {
 		    prStr(error_message,
                     "%s: ERROR:  ATOM and HETATM records must be numbered sequentially from 1.  See line %d in PDBQT file \"%s\".\n\n", programname, i+1, FN_ligand);
                     stop(error_message);
                 }
                 */
 
-                // Set the serial atomnumber[i] for this atom
+                // Set the serial 0-origin index atomnumber[i] for this record
                 atomnumber[i] = natom;
+		// Save the record's PDB  atom number, in one of the two
+		// namespaces: 0 for true ligand, 1 for flex res
+		pdbatomnumber[ B_found_begin_res ? 1 : 0 ][i] =  pdbanum;
+#ifdef DEBUG
+	fprintf(logFile, "DEBUG pdbatomnumber[%d][rec %2d]= %d\n",
+	B_found_begin_res ? 1 : 0, i, pdbanum);
+#endif
 
                 for (j = 0; j < NTRN; j++) {
                     mol.crdpdb[natom][j] = crdpdb[natom][j];
@@ -572,7 +582,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	 * intermolecular energy calculation (ignore_inter[MAX_ATOMS]
 	 * array)
 	 */
-	mkTorTree(atomnumber, PDBQT_record, nrecord, tlist, &ntor, P_ntor_ligand, FN_ligand, pdbaname,
+	mkTorTree(atomnumber, pdbatomnumber, PDBQT_record, nrecord, tlist, &ntor, P_ntor_ligand, FN_ligand, pdbaname,
               P_B_constrain, P_atomC1, P_atomC2, P_sqlower, P_squpper, P_ntorsdof, ignore_inter,
 	      *P_true_ligand_atoms, outlev, logFile);
 
@@ -650,7 +660,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     //  End program if just parsing torsions...
 	if (parse_tors_mode) {
 		prStr(message, "\n\n *** PARSE TORSIONS MODE - Stopping here ***\n\n");
-		success(hostnm, jobStart, tms_jobStart);
+		success(hostnm, jobStart, tms_jobStart, logFile);
 		exit(EXIT_SUCCESS);
 	}
 	return mol;
@@ -662,7 +672,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 void
 readPDBQTLine( char line[LINE_LEN],
-               int  *const ptr_serial,
+               int  *const ptr_pdbatomnumber,
                Real crd[SPACE],
                Real *const ptr_q,
                ParameterEntry *const this_parameter_entry,
@@ -674,7 +684,7 @@ readPDBQTLine( char line[LINE_LEN],
     char char6[7];
     char char5[6];
     char char2[3];
-	static char message[LINE_LEN];
+	char message[LINE_LEN];
 
     // Initialise char5
     (void) strcpy( char5, "    0" );
@@ -696,10 +706,10 @@ readPDBQTLine( char line[LINE_LEN],
     prStr(message, "\n%s: WARNING! Could not read " fieldname " in PDBQT line \"%s\".\n", programname, line );\
     pr_2x(stderr, logFile, message); }
 
-    // Read in the serial number of this atom
+    // Read in the PDB record's number for this atom
     (void) strncpy( char5, &line[6], (size_t)5 );
     char5[5] = '\0';
-    check_sscanf( char5, "%d", ptr_serial, "serial number" );
+    check_sscanf( char5, "%d", ptr_pdbatomnumber, "PDB atom number" );
 
 	// Read in the X, Y, Z coordinates
     (void) strncpy( char8, &line[30], (size_t)8 );
@@ -731,7 +741,7 @@ readPDBQTLine( char line[LINE_LEN],
 #undef check_sscanf
 
 #ifdef DEBUG
-	fprintf(stderr, "readPDBQTLine:  %d, %.3f, %.3f, %.3f, %.3f, %s\n", *ptr_serial, crd[X], crd[Y], crd[Z], *ptr_q,
+	fprintf(stderr, "readPDBQTLine:  %d, %.3f, %.3f, %.3f, %.3f, %s\n", *ptr_pdbatomnumber, crd[X], crd[Y], crd[Z], *ptr_q,
     this_parameter_entry->autogrid_type);
 #endif				/* DEBUG */
 }

@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_PDBQT_line.cc,v 1.7 2014/02/01 05:16:14 mp Exp $
+ $Id: parse_PDBQT_line.cc,v 1.8 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -33,10 +33,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <ctype.h>
 #include "parse_PDBQT_line.h"
 
-extern FILE *logFile;
 
-
-int parse_PDBQT_line( const char line[LINE_LEN] )
+int parse_PDBQT_line( const char line[LINE_LEN])
 
 /******************************************************************************/
 /*      Name: parse_PDBQT_line                                                 */

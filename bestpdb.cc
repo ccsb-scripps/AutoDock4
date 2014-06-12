@@ -1,6 +1,6 @@
 /*
 
- $Id: bestpdb.cc,v 1.10 2011/05/19 22:03:12 rhuey Exp $
+ $Id: bestpdb.cc,v 1.11 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -39,7 +39,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "bestpdb.h"
 
 
-extern FILE *logFile;
 extern int keepresnum;
 extern char dock_param_fn[];
 
@@ -51,7 +50,9 @@ void bestpdb( const int ncluster,
 	      const char atomstuff[MAX_ATOMS][MAX_CHARS],
 	      const int natom,
 	      const Boole B_write_all_clusmem,
-	      const Real ref_rms[MAX_RUNS])
+	      const Real ref_rms[MAX_RUNS],
+	      const int outlev,
+	      FILE *const logFile)
 
 {
     register int  i=0,

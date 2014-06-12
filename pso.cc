@@ -3,8 +3,8 @@
 #include "support.h" // for evalmode and rep_constants
 #include <math.h>
 
-extern Eval evaluate;
- // MP - the following static vars should be put in the class...
+//extern Eval evaluate;
+ // MPique - the following static vars should be put in the class...
 static Boole init_links;
 static float prevBestE;
 static	float prevE[PSO_S_MAX];       // E array for particles in previous 
@@ -34,8 +34,11 @@ inline float Norm(float *x, int n)
  *     after each generation using our localsearch method, below.
  * Caution: do not reorder the Pop array outside of these functions. MP/RH
  * Packaged algorithm options into a structure to simplify signatures.
+ *
+ * Caution: not yet thread-safe (local Pi array) and does not delete
+ *  the "new"-created arrays, which are members of the ParticleSwarmGS class, see pso.h - M Pique 2014
  ***********************************************************************/
-int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
+int ParticleSwarmGS::search(Population &Pop, Eval *evaluate, int outlev, FILE * logFile)
 {
 	int j;
 	double curVal;
@@ -54,7 +57,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	int pso_K = pso_options.pso_K;      // number of neighbor particles
 
 	
-	// on first call per run, allocate Pi array, initialize velocity vectors, prevE, curE
+	// on first call per run, allocate Pi array, allocate and initialize velocity vectors, prevE, curE
 	// print pso options if outlev>0
 	if(_Pi == NULL) {
 #define bool(i)  ((i)?"true":"false")
@@ -79,7 +82,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 		}
 				
 		fprintf(logFile, "PSO Allocate initial velocity of particles...\n");
-		_Pi = new Population(Pop); // copy of Pop (? MP)
+		_Pi = new Population(Pop); // copy Pop
 		
 		pop_size = Pop.num_individuals();
 		pr(logFile, "PSO pop_size = %d\n", pop_size); // MP debug
@@ -136,7 +139,7 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	// Huameng had:  ratio = (float)evaluate.evals() / num_evals;
 	// TSRI (MP) uses larger of fraction of generations used & evaluations used...
 	g_ratio = max_generations>0 ? (float)generations / max_generations : 0;
-	e_ratio = max_evals>0 ? (float)evaluate.evals() / max_evals : 0;
+	e_ratio = max_evals>0 ? (float)evaluate->evals() / max_evals : 0;
 	ratio =  max(g_ratio, e_ratio);
 	if(pso_options.pso_stage2constriction && ratio>0.8) {
 		// Huameng: Incorporate stage 2 constriction PSO 
@@ -360,18 +363,18 @@ int ParticleSwarmGS::search(Population &Pop, int outlev, FILE * logFile)
 	// Output PSO statistics
 	if(outputEveryNgens > 0 && 
 	  (generations % outputEveryNgens == 0||generations==1)) {
-		//pr(logFile, "%d %8d %10.2f %10.2f %10.2f %6.2f %8.2f\n", generations, evaluate.evals(), Pg.value(Normal_Eval), Pop_avg, Pi_avg, w, v_avg);
-		//ORIG pr(logFile, "%8d %10ld %10.2f  \n", generations, evaluate.evals(), Pg.value(Normal_Eval));		
+		//pr(logFile, "%d %8d %10.2f %10.2f %10.2f %6.2f %8.2f\n", generations, evaluate->evals(), Pg.value(Normal_Eval), Pop_avg, Pi_avg, w, v_avg);
+		//ORIG pr(logFile, "%8d %10ld %10.2f  \n", generations, evaluate->evals(), Pg.value(Normal_Eval));		
 		fflush(logFile);
 	}
-	//pr(logFile, "%8d\t%6d\t%6.3f\t%6.3f\t%6.3f\n", generations, evaluate.evals(), Pop_best_value, Pg.value(Normal_Eval), dist);	
-	//pr(logFile, "%6d\t%6d\t%6.3f\t%6.3f\n\n", generations, evaluate.evals(), Pop_best_value, Pg.value(Normal_Eval));		
+	//pr(logFile, "%8d\t%6d\t%6.3f\t%6.3f\t%6.3f\n", generations, evaluate->evals(), Pop_best_value, Pg.value(Normal_Eval), dist);	
+	//pr(logFile, "%6d\t%6d\t%6.3f\t%6.3f\n\n", generations, evaluate->evals(), Pop_best_value, Pg.value(Normal_Eval));		
 	//fflush(logFile);
 	
 	return (0);
 }
 
-int ParticleSwarmGS::localsearch(Population &Pop, Local_Search *local_method, int outlev, FILE * logFile)
+int ParticleSwarmGS::localsearch(Population &Pop, Local_Search *local_method, Eval *evaluate, int outlev, FILE * logFile)
 {
 // does local search (unconditonally) on "best" (index) indiv, which may not be historic best
 
@@ -387,7 +390,7 @@ Individual &Pg = (Individual &)(*_Pg);
 	 best, Pop[best].value(Normal_Eval));
 
 	// If local seach method is defined, apply local search			
-	local_method->search(Pop[best]);
+	local_method->search(Pop[best], evaluate, outlev, logFile);
 
 	if(Pop[best].value(Normal_Eval) < Pi[best].value(Normal_Eval)) {
 		Pi[best] = Pop[best];			

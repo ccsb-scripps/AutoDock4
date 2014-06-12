@@ -1,6 +1,6 @@
 /*
 
- $Id: call_glss.h,v 1.3 2009/05/08 23:02:11 rhuey Exp $
+ $Id: call_glss.h,v 1.4 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -26,5 +26,5 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #ifndef _CALL_GLSS
 #define _CALL_GLSS
-
+/* call_glss() is declared in hybrids.h */
 #endif

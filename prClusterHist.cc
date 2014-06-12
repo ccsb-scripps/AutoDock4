@@ -1,6 +1,6 @@
 /*
 
- $Id: prClusterHist.cc,v 1.12 2010/10/01 22:51:39 mp Exp $
+ $Id: prClusterHist.cc,v 1.13 2014/06/12 01:44:07 mp Exp $
 
  AutoDock 
 
@@ -34,8 +34,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 
 
-extern FILE *logFile;
-
 void prClusterHist( const int ncluster,
                     const int irunmax,
                     ConstReal clus_rms_tol,
@@ -43,7 +41,9 @@ void prClusterHist( const int ncluster,
                     const int cluster[MAX_RUNS][MAX_RUNS],
                     const Real econf[MAX_RUNS],
                     const Real clu_rms[MAX_RUNS][MAX_RUNS],
-                    const Real ref_rms[MAX_RUNS])
+                    const Real ref_rms[MAX_RUNS],
+		    const int outlev,
+		    FILE *logFile)
 {
     Real          etot = 0.,
                   eavg = 0.;
