@@ -37,6 +37,7 @@ rejs  5
 cycles 10
 simanneal 500
 ga_run 1000                             # do this many hybrid GA-LS runs
+sw_max_its 16                        # iterations of Solis & Wets local search
 do_local_only  500                             # do this many hybrid GA-LS runs
 
 analysis
