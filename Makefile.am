@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.44 2014/06/12 01:30:18 mp Exp $
+# $Id: Makefile.am,v 1.45 2014/06/12 05:05:58 mp Exp $
 # 
 # AutoDock  
 # 
@@ -597,7 +597,11 @@ autodock4.html :
 
 check : test
 
+if WANT_OMP
+test : autodock4 autodock4.omp $(srcdir)/Tests/test_autodock4.py
+else
 test : autodock4 $(srcdir)/Tests/test_autodock4.py
+endif
 #if HAVE_PYTHON
 	@echo " "
 	@echo "Running the Python test_autodock4.py unit-tests on autodock4"
