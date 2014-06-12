@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.22 2014/04/02 00:22:31 mp Exp $
+ $Id: readmap.cc,v 1.23 2014/06/12 01:38:06 mp Exp $
 
  AutoDock 
 
@@ -64,7 +64,7 @@ Statistics readmap( char           line[LINE_LEN],
     char GpfName[PATH_MAX];
     char ExtGpfName[PATH_MAX];
     char mmFileName[PATH_MAX];
-    static char xyz_str[]="xyz";
+    const static char xyz_str[]="xyz";
     char C_mapValue;  // Caution: may be unsigned on some platforms. M Pique
     char map_line[LINE_LEN];
     char inputline[LINE_LEN];
@@ -285,7 +285,7 @@ Statistics readmap( char           line[LINE_LEN],
     pr( logFile, "Time taken (s): " );
 
     loadEnd = times( &tms_loadEnd );
-    timesys( loadEnd - loadStart, &tms_loadStart, &tms_loadEnd);
+    timesys( loadEnd - loadStart, &tms_loadStart, &tms_loadEnd, logFile);
 
     pr( logFile, "\n" );
     } // if outlev
@@ -297,7 +297,7 @@ Statistics readmap( char           line[LINE_LEN],
         pr_2x( stderr, logFile, message );
 
         jobEnd = times( &tms_jobEnd );
-        timesys( jobEnd - jobStart, &tmsJobStart, &tms_jobEnd);
+        timesys( jobEnd - jobStart, &tmsJobStart, &tms_jobEnd, logFile);
         pr_2x( logFile, stderr, UnderLine );
 
         /* END PROGRAM */
