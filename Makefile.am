@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.46 2014/06/12 17:35:26 mp Exp $
+# $Id: Makefile.am,v 1.47 2014/06/19 18:30:17 mp Exp $
 # 
 # AutoDock  
 # 
@@ -459,6 +459,13 @@ endif
 
 BUILT_SOURCES = $(autodock4_SOURCES) default_parameters.h
 
+#MP AM_CXXFLAGS = -O3 # Agressive optimization
+AM_CXXFLAGS = -g # MP debug
+
+    # if gnu c++ compiler
+AM_CXXFLAGS += -Wall # All warnings
+AM_CXXFLAGS += -Wno-write-strings # increase compatibility with pre 4.x compilers for string handling
+
 if WANT_OMP  
 # M Pique - I'm not sure which of these are really necessary
 # could this be replaced by :  AC_SUBST(AM_CXXFLAGS,"$OPENMP_CXXFLAGS")
@@ -466,18 +473,11 @@ autodock4_omp_CFLAGS = $(AM_CFLAGS)  -fopenmp  $(OPENMP_CXXFLAGS)
 autodock4_omp_CPPFLAGS = $(AM_CPPFLAGS)  $(OPENMP_CXXFLAGS)
 autodock4_omp_LDFLAGS = $(AM_LDFLAGS) -fopenmp  $(OPENMP_CXXFLAGS)
 
-autodock4_omp_CXXFLAGS = $(autodock4_CXXFLAGS) -fopenmp  $(OPENMP_CXXFLAGS)
+autodock4_omp_CXXFLAGS = $(AM_CXXFLAGS) $(autodock4_CXXFLAGS) -fopenmp  $(OPENMP_CXXFLAGS)
 autodock4_omp_LDADD = $(autodock4_LDADD)
 endif
 
 
-
-#MP AM_CXXFLAGS = -O3 # Agressive optimization
-AM_CXXFLAGS = -g # MP debug
-
-    # if gnu c++ compiler
-AM_CXXFLAGS += -Wall # All warnings
-AM_CXXFLAGS += -Wno-write-strings # increase compatibility with pre 4.x compilers for string handling
 
 #  M Pique - add ASSERTQUATOK if you want error checking in qmultiply.cc
 #  M Pique - USE_INT_AS_FOURBYTELONG is for random number seeds only and is appropriate for
