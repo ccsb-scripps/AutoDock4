@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.28 2014/06/12 01:44:08 mp Exp $
+ $Id: setflags.cc,v 1.29 2014/06/19 18:30:52 mp Exp $
 
  AutoDock 
 
@@ -199,16 +199,55 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             argv++;
             argc--;
             argindex++;
-            break;
-        case 't':
+            break; case 't':
             parse_tors_mode = TRUE;
             break;
         case 'v':
             fprintf(stdout, "AutoDock %-8s\n", version_num);
+	    fprintf(stdout, "compilation options:\n");
+            fprintf(stdout, "  OpenMP multiprocessor support: ");
 #ifdef _OPENMP
-            fprintf(stdout, "Includes OpenMP multiprocessor support.");
+	    fprintf(stdout, " yes\n");
+#else
+	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, " Copyright (C) 2009 The Scripps Research Institute.\n");
+            fprintf(stdout, "  ASSERTQUATOK: ");
+#ifdef ASSERTQUATOK
+	    fprintf(stdout, " yes\n");
+#else
+	    fprintf(stdout, " no\n");
+#endif
+            fprintf(stdout, "  NOSQRT: ");
+#ifdef NOSQRT
+	    fprintf(stdout, " yes\n");
+#else
+	    fprintf(stdout, " no\n");
+#endif
+            fprintf(stdout, "  USE_INT_AS_FOURBYTELONG: ");
+#ifdef USE_INT_AS_FOURBYTELONG
+	    fprintf(stdout, " yes\n");
+#else
+	    fprintf(stdout, " no\n");
+#endif
+            fprintf(stdout, "  USE_8A_NBCUTOFF: ");
+#ifdef USE_8A_NBCUTOFF
+	    fprintf(stdout, " yes\n");
+#else
+	    fprintf(stdout, " no\n");
+#endif
+            fprintf(stdout, "  WRITEPDBQSTATE: ");
+#ifdef WRITEPDBQSTATE
+	    fprintf(stdout, " yes\n");
+#else
+	    fprintf(stdout, " no\n");
+#endif
+
+	    /* print sizes of key types for this compilation */
+	    fprintf(stdout, "  size of int %d, long %d, FourByteLong %d, float %d, double %d, Real %d.\n",
+		(int)(sizeof(int)), (int)(sizeof(long)), (int)(sizeof(FourByteLong)),
+		(int)(sizeof(float)), (int)(sizeof(double)), (int)(sizeof(Real)) );
+
+            fprintf(stdout, "\n Copyright (C) 2009 The Scripps Research Institute.\n");
 // GNU BEGIN   (see maintenance script update_license_de-GNU)
             fprintf(stdout, " License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>\n");
             fprintf(stdout, " This is free software: you are free to change and redistribute it.\n");
