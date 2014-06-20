@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.47 2014/06/19 18:30:17 mp Exp $
+# $Id: Makefile.am,v 1.48 2014/06/20 23:14:59 mp Exp $
 # 
 # AutoDock  
 # 
@@ -480,12 +480,14 @@ endif
 
 
 #  M Pique - add ASSERTQUATOK if you want error checking in qmultiply.cc
+#  M Pique - add USE_DOUBLE to define Real as double instead of float, see typedefs.h
 #  M Pique - USE_INT_AS_FOURBYTELONG is for random number seeds only and is appropriate for
 #     all post-2005 computers, which treat "int" as four bytes.
 AM_CPPFLAGS = -DNOSQRT \
+	      -DUSE_DOUBLE \
               -DUSE_8A_NBCUTOFF \
 	      -DUSE_INT_AS_FOURBYTELONG \
-              -DWRITEPDBQSTATE -g # -g is MP debug
+               -g # -g is MP debug
 AM_LDFLAGS = -g # -g is MP debug
 
 

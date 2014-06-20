@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.29 2014/06/19 18:30:52 mp Exp $
+ $Id: setflags.cc,v 1.30 2014/06/20 23:14:59 mp Exp $
 
  AutoDock 
 
@@ -205,38 +205,38 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
         case 'v':
             fprintf(stdout, "AutoDock %-8s\n", version_num);
 	    fprintf(stdout, "compilation options:\n");
-            fprintf(stdout, "  OpenMP multiprocessor support: ");
+            fprintf(stdout, "  USE_DOUBLE double-precision calculations: ");
+#ifdef USE_DOUBLE
+	    fprintf(stdout, " yes\n");
+#else
+	    fprintf(stdout, " no\n");
+#endif
+            fprintf(stdout, "  _OPENMP OpenMP multiprocessor support: ");
 #ifdef _OPENMP
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, "  ASSERTQUATOK: ");
+            fprintf(stdout, "  ASSERTQUATOK quaternion arithmetic validation: ");
 #ifdef ASSERTQUATOK
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, "  NOSQRT: ");
+            fprintf(stdout, "  NOSQRT fast lookup of distance-dependent scoring terms: ");
 #ifdef NOSQRT
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, "  USE_INT_AS_FOURBYTELONG: ");
+            fprintf(stdout, "  USE_INT_AS_FOURBYTELONG for random number generator: ");
 #ifdef USE_INT_AS_FOURBYTELONG
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, "  USE_8A_NBCUTOFF: ");
+            fprintf(stdout, "  USE_8A_NBCUTOFF to speed internal energy scoring: ");
 #ifdef USE_8A_NBCUTOFF
-	    fprintf(stdout, " yes\n");
-#else
-	    fprintf(stdout, " no\n");
-#endif
-            fprintf(stdout, "  WRITEPDBQSTATE: ");
-#ifdef WRITEPDBQSTATE
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
