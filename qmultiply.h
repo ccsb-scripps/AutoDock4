@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.h,v 1.16 2011/06/03 05:31:36 mp Exp $
+ $Id: qmultiply.h,v 1.17 2014/06/20 23:03:52 mp Exp $
 
  AutoDock 
 
@@ -35,7 +35,7 @@ Quat randomQuat( void );
 AxisAngle QuatToAxisAngle( const Quat& q );
 Quat AxisAngleToQuat( const AxisAngle& aa );
 Quat raaToQuat( const Real raa[3], ConstReal angle );
-Quat raaToQuat( const double raa[3], ConstReal angle );
+Quat raaDoubleToQuat( const double raa[3], const double angle );
 int mkUnitQuat( Quat *const q ); // normalize in place, return 0 if error
 Quat normQuat( Quat q ); // return normalized copy of quat q
 AxisAngle normAxisAngle( const  AxisAngle& aa ); // return normalized axis, current angle

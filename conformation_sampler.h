@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.h,v 1.14 2014/06/12 01:44:07 mp Exp $
+ $Id: conformation_sampler.h,v 1.15 2014/06/20 23:03:52 mp Exp $
 
  AutoDock 
 
@@ -51,7 +51,7 @@ class ConformationSampler {
 		Real min_energy, min_energy_rmsd;
 		Real Boltzmann_sum, Boltzmann_diff_sum;
 		int dimensionality, evals, favorable_evals;
-		double temp_rotation_angle;
+		Real temp_rotation_angle;
 
 		Real min_values[BASE_DIMENSIONS-1];
 		Real max_values[BASE_DIMENSIONS-1];

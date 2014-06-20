@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.204 2014/06/12 01:41:57 mp Exp $
+ $Id: main.cc,v 1.205 2014/06/20 23:03:52 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.204 2014/06/12 01:41:57 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.205 2014/06/20 23:03:52 mp Exp $"};
 
 
 
@@ -785,7 +785,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.204 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.205 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1119,8 +1119,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		    time_t time_seed;
                     seedIsSet[i] = 'T';
                     seed[i] = (FourByteLong)time( &time_seed );
-		    /* seeds==0 are invalid */
-		    while ( seed[i]==0 ) {
+		    /* seeds<=1 are invalid */
+		    while ( seed[i]<=1 ) {
 			sleep(1);
                         seed[i] = (FourByteLong)time( &time_seed );
 			}
@@ -1135,13 +1135,28 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 } else {
                     seedIsSet[i] = 'U';
                     seed[i] = atol(param[i]);
-		    if(seed[i]==0) stop("Random number seed cannot be zero");
+		    if(seed[i]<=1) stop("Random number seed cannot be zero or one, or negative");
 		    if(outlev>=LOGRUNV)
                     pr(logFile,"Random number generator seed %d was seeded with the user-specified value  " FBL_FMT "\n",i,seed[i]);
                 }
             }/*i*/
 	set_seeds( seed, seedIsSet, runseed, outlev, logFile);
         } else stop("Error encountered reading SEED line");
+
+	
+	/* debugging extension: if a third field is present, write out that
+	 * many random numbers (as integers) to a private file then exit AutoDock
+	 */
+        nfields = sscanf( line, "%*s %*s %*s %d", &i);
+	if(nfields==1) {
+		FILE *rand_fd;
+		if(NULL!=(rand_fd=fopen("randoms", "w")) ) {
+			int j;
+			for(j=0;j<i;j++) fprintf(rand_fd, FBL_FMT "\n", ignlgi());
+			fclose(rand_fd);
+			exit(0);
+			}
+		}
 
         break;
 
@@ -1932,7 +1947,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                         // Set the rotation axis for reorientation
                         // Set the angle for reorientation of the first 3 atoms
                         // into the xy-plane
-                        q_reorient = raaToQuat(vec_reorient_axis, -angle_n1z);
+                        q_reorient = raaDoubleToQuat(vec_reorient_axis, -angle_n1z);
 
                         // Rotate ligand into the xy-plane...
                         // qtransform( origin, q_reorient, crdpdb, true_ligand_atoms );
@@ -1956,7 +1971,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                         // since the molecule's first 3 atoms are now in the xy-plane.
                         // Set the rotation angle:
                         // Build the quaternion from the axis-angle rotation values:
-                        q_reorient = raaToQuat(vec_z_axis, angle_01x);
+                        q_reorient = raaDoubleToQuat(vec_z_axis, angle_01x);
                     } // angle_012 is appropriate to align into xy-plane
 
                 } else {

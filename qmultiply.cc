@@ -1,6 +1,6 @@
 /*
 
- $Id: qmultiply.cc,v 1.22 2014/06/12 01:44:08 mp Exp $
+ $Id: qmultiply.cc,v 1.23 2014/06/20 23:03:52 mp Exp $
 
  AutoDock 
 
@@ -275,7 +275,7 @@ raaToQuat( const Real raa[3], ConstReal angle )   // "Real"type signature
     return AxisAngleToQuat( input );
 }
 Quat
-raaToQuat( const double raa[3], ConstReal angle ) // "double" type signature
+raaDoubleToQuat( const double raa[3], const double angle ) // "double" type signature
 {
     // input axis need not be normalized
     AxisAngle input;
