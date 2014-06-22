@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.205 2014/06/20 23:03:52 mp Exp $
+ $Id: main.cc,v 1.206 2014/06/22 20:52:50 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.205 2014/06/20 23:03:52 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.206 2014/06/22 20:52:50 mp Exp $"};
 
 
 
@@ -637,11 +637,19 @@ if(outlev!=LOGFORADT) stop("default outlev fail"); // debug
 //______________________________________________________________________________
 /*
 ** Parse the arguments in the command line...
+** setflags() conditionally sets globals dock_param_fn, parFile, logFile
+** and others
 */
 
 if ( setflags(argc,argv,version_num.c_str()) == -1) {
     exit(EXIT_FAILURE);
 } /* END PROGRAM */
+
+// do not allow parameter file reading from standard input (stdin)
+// when the standard input is a terminal - almost certainly an error
+if ( 0 == strlen(dock_param_fn) && isatty( fileno(stdin)) ) {
+	stop("no parameter file (.dpf) specified and AutoDock input is a terminal");
+}
 
 
 //______________________________________________________________________________
@@ -785,7 +793,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.205 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.206 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3491,8 +3499,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		Clock  runStart, runEnd;
 		int tn; // thread number 0..NUMG
 		//Pseudo_Solis_Wets1 *tLocalSearchMethod; // TODO clone of *LocalSearchMethod
-		Real *rho_ptr ; // for PSW array of rho
-		Real *lb_rho_ptr ; // for PSW array of lb_rho
+		//MP not needed here   Real *rho_ptr ; // for PSW array of rho
+		//MP not needed here   Real *lb_rho_ptr ; // for PSW array of lb_rho
 		int d; // PSW variable index
 		
 		tn=omp_get_thread_num();
