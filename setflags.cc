@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.30 2014/06/20 23:14:59 mp Exp $
+ $Id: setflags.cc,v 1.31 2014/06/22 20:52:26 mp Exp $
 
  AutoDock 
 
@@ -199,7 +199,8 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             argv++;
             argc--;
             argindex++;
-            break; case 't':
+            break;
+        case 't':
             parse_tors_mode = TRUE;
             break;
         case 'v':
