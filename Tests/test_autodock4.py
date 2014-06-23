@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.65 2014/05/30 01:27:21 mp Exp $
+# $Id: test_autodock4.py,v 1.66 2014/06/23 23:43:04 mp Exp $
 #
 
 """
@@ -531,8 +531,9 @@ class AutoDock_test( AutoDock_base_test ):
             print "Testing that DLG exists and AutoDock did not complete."
         self.assertEqual( self.computed, self.expected_outcome )
         # Check the final energy is expected value.
-        expected_intermol_energy = -6.44  
-        expected_internal_energy = -3.28  # 3.17? MP
+        # These values are for the quick GALS search in 1pgp.dpf and relatives
+        expected_intermol_energy = -6.17  # -6.44 for Real==float, -6.17 for Real==double
+        expected_internal_energy = -3.23  # -3.28 for Real==float, -3.23 for Real==double
         (intermol_energy, internal_energy) = parse_energy_from_DLG( self.dlg_filename, ['intermol_energy','total_internal'] )
         print "Testing that intermolecular energy = %.2f kcal/mol." % (expected_intermol_energy,)
         self.assertEqual( round(intermol_energy,6), round(expected_intermol_energy,6))
