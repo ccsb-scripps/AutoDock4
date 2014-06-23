@@ -1,6 +1,6 @@
 /*
 
- $Id: support.h,v 1.23 2014/06/12 01:44:08 mp Exp $
+ $Id: support.h,v 1.24 2014/06/23 23:41:28 mp Exp $
 
  AutoDock 
 
@@ -38,6 +38,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 /*
 ** $Log: support.h,v $
+** Revision 1.24  2014/06/23 23:41:28  mp
+** if-def'ing out some constructor debugging code
+**
 ** Revision 1.23  2014/06/12 01:44:08  mp
 ** General updates to accommodate OpenMP parallelization, mostly to pass
 ** logFile references and to make the timesys and random-number functions
@@ -524,7 +527,9 @@ inline double Individual::value(EvalMode mode) /* not const */
 inline Population::Population(void)
 :lhb(-1), size(0), heap((Individual *)NULL)
 {
-fprintf(logFile, "support.h %d Population::Population(void)\n",  __LINE__); // DEBUG MPique
+#ifdef DEBUGPOPCONSTRUCTORS
+fprintf(logFile, "support.h %d Population::Population(void)\n",  __LINE__); 
+#endif
     evaluate = (Eval *) NULL;
     for (int i=0; i<MAX_TORS; i++) {
         end_of_branch[i] = -1;
@@ -545,8 +550,10 @@ inline Population::Population(const int num_inds, Eval *init_evaluate,
  Individual & prototype)
 : size(num_inds), evaluate(init_evaluate)
 {
+#ifdef DEBUGPOPCONSTRUCTORS
 fprintf(logFile, "support.h %d Population::Population(%d/%d,Eval*,Indiv&)\n",
  __LINE__, size, num_inds); // DEBUG MPique
+#endif
     heap = new Individual[num_inds];
     for (int i=0; i<num_inds; i++) {
 	heap[i] = Individual(prototype);
@@ -563,7 +570,9 @@ inline Population::Population(const int newpopsize, Eval *init_evaluate,
  Individual *const newpop)
 : size(newpopsize), heap(newpop), evaluate(init_evaluate)
 {
+#ifdef DEBUGPOPCONSTRUCTORS
 fprintf(logFile, "support.h %d Population::Population(%d/%d,Eval*,Indiv*)\n",__LINE__,size,newpopsize); // DEBUG MPique
+#endif
    //  Do initialization stuff
     for (int i=0; i<MAX_TORS; i++) {
         end_of_branch[i] = -1;
