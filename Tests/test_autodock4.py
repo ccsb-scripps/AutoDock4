@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.66 2014/06/23 23:43:04 mp Exp $
+# $Id: test_autodock4.py,v 1.67 2014/06/23 23:59:59 mp Exp $
 #
 
 """
@@ -64,15 +64,17 @@ NOTE:  these may be relative to the directory where this script was invoked.
 
 def run_AutoDock( dpf_filename, dlg_filename ):
     """Launch AutoDock, using the specified AutoDock executable and DPF,
-    create the specified DLG, and trap all the outputs from standard output
-    and standard error."""
+    create the specified DLG. Silently discard all output from standard
+    output and standard error, so users are not bothered by the expected
+    and routine AutoDock error messages from many of the tests."""
     dpf = dpf_directory + os.sep + dpf_filename
     dlg = test_output_directory + os.sep + dlg_filename
     rm( dlg )
-    command =   [autodock_executable, '-p', dpf, '-l', dlg] 
+    command =   [autodock_executable, '-p', dpf, '-l', dlg ] 
     print '\nRunning ' + autodock_executable + ' using DPF "'+dpf+'", saving results in "'+dlg+'":'
     try:
-        rc = subprocess.call( command )
+        with open(os.devnull, "w") as fnull:
+          rc = subprocess.call( command, stdout = fnull, stderr = fnull )
 	#print 'autodock returned ', rc  # DEBUG
         return find_success_in_DLG( dlg_filename )
     except OSError,e:
