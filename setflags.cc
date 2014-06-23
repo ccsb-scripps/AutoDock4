@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.31 2014/06/22 20:52:26 mp Exp $
+ $Id: setflags.cc,v 1.32 2014/06/23 19:12:45 mp Exp $
 
  AutoDock 
 
@@ -60,7 +60,8 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
 
 /******************************************************************************/
 /*      Name: setflags                                                        */
-/*  Function: read flags from argv; return argindex of first non arg.   */
+/*  Function: read flags from argv; return count of arguments */
+/*    or -1 if error                                                    */
 /*Copyright (C) 2009 The Scripps Research Institute. All rights reserved. */
 /*----------------------------------------------------------------------------*/
 /*    Author: Garrett Matthew Morris, TSRI.                                   */
@@ -112,8 +113,13 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
 /*----------------------------------------------------------------------------*/
 /* Loop over arguments                                                        */
 /*----------------------------------------------------------------------------*/
-    while((argc > 1) && (argv[1][0] == '-')){
-        if (argv[1][1] == '-') argv[1]++;
+    for ( ; argc > 1; argc--, argv++, argindex++) {
+	if (argv[1][0] != '-') {
+		fprintf(stderr,"%s: unexpected argument \"%s\" ignored.\n",
+		  programname, argv[1]);
+		continue;
+		}
+        if (argv[1][1] == '-') argv[1]++; // allow flags to begin with -- or -
 
         switch(argv[1][1]){
 #ifdef FOO
@@ -261,10 +267,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             usage(stderr, programname);
             return(-1);
             /* break; */
-        }
-        argindex++;
-        argc--;
-        argv++;
+        } // end switch
     }
     // set docking log file name from parameter file name if
     // a "-p <DPF>" appeared but no "-l <DLG>" appeared
