@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.46 2014/06/12 01:44:08 mp Exp $
+ $Id: simanneal.cc,v 1.47 2014/06/23 23:41:59 mp Exp $
 
  AutoDock  
 
@@ -244,9 +244,9 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
 
         if (outlev >= LOGFORADT) 
             pr(logFile, "\n\tINITIALIZING AUTOMATED DOCKING SIMULATION\n" );
-        if (outlev >= LOGBASIC) 
-            pr( logFile, "Run: %d Seed: %ld %ld\n", nconf+irun,
-		(long)runseed[nconf][0], (long)runseed[nconf][1]);
+        pr( logFile, "Run: %d Seed: %ld %ld [ Run %d of %d SA ]\n", nconf+irun+1,
+		(long)runseed[nconf+irun][0], (long)runseed[nconf+irun][1],
+		irun+1, nruns);
 
         if ( B_writeTrj ) {
             pr( FP_trj, "ntorsions %d\nrun %d\n", ntor, nconf+irun );
@@ -586,8 +586,9 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
             sSave.tor[i] = WrpRad( ModRad( sSave.tor[i] ) );
         }
    
-        pr( logFile, "\tFINAL DOCKED STATE\n" );
-        pr( logFile, "Run Number %d\nFinal Energy = %+.2f\n", nconf+irun, eLast);
+	if(outlev>=LOGRUNV) pr( logFile, "\tFINAL DOCKED STATE\n" );
+        if(outlev>=LOGRUNVV)pr( logFile, "Run Number %d\n", nconf+irun);
+        if(outlev>=LOGRUNVV)pr( logFile, "Final Energy = %+.2f\n", eLast);
 	pr(logFile,"Final-Value: %.3f\n", eLast);
 
 	if(outlev>=LOGRUNV) {
