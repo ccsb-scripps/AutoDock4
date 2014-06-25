@@ -43,12 +43,16 @@ AutoGrid in the README file included in this distribution.
 
 We continue to improve AutoDock's robustness and stability.  AutoDock
 now verifies that all its input grid maps are the same size.  
-Reading and parsing the input PDBQT coordinate files has been made more robust.
+If AutoDock's standard input has not been redirected to come from a file 
+or from a pipe, you must specify a docking parameter file using 
+"-p <docking parameter file.dpf>".  Reading and parsing the input PDBQT
+coordinate files has been made more robust.
 
 Other changes since the 4.2.5.1 release (12/13/2012):
 Improved error checking of command-line arguments.
 Better checking of the atom numbers that define internal and "flexres" torsions.
 Better cross-platform compatibility of the internal random number generator.
+Running "autodock4 --version" reports compile-time configuration options.
 
 =============================================================================
                    AutoDock Release Notes
