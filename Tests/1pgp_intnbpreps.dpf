@@ -14,7 +14,7 @@ move 1pgp_lig.pdbqt                  # small molecule
 about 22.894 28.598 40.259           # small molecule center
 tran0 22.894 28.598 40.259           # small molecule center
 
-outlev etables
+outlev 7                             # outlev etables
 intnbp_r_eps 1.5 10.0 12 6 OA P
 
 epdb                                 # compute energy of PDBQT specified by 'move' 

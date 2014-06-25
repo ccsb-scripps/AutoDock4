@@ -14,7 +14,7 @@ move 1pgp_lig.pdbqt                  # small molecule
 about 22.894 28.598 40.259           # small molecule center
 tran0 22.894 28.598 40.259           # small molecule center
 
-outlev etables
+outlev 7                             # outlev etables
 intnbp_coeffs 1297.46337890625 227.8125 12 6 OA P  # Cn=m/(n-m)*e*r^n,  Cm=n/(n-m)*e*r^m   r=1.5  e=10.0
 
 
