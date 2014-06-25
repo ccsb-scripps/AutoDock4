@@ -1,6 +1,58 @@
 =============================================================================
                    AutoDock Release Notes
-                  Release 4.2.5.1 (December 2012)
+                  Release 4.2.6 (June 2014)
+=============================================================================
+
+Supported computer platforms in 4.2.6:
+
+Linux2 on Intel i86 (32-bit) and on Intel x86_64 (64-bit).
+Linux3 on Intel x86_64 (64-bit).
+Macintosh OS X 10.5 (Leopard) on Intel i86 and PowerPC (32- and 64-bit).
+Macintosh OS X 10.6-10.9 (Snow Leopard, Lion, Mountain Lion,
+ and Mavericks) on Intel x86_64.  
+Solaris 8 (SunOS 5) on SPARC.
+Windows 5-8.1 on Intel i86.
+
+The executable binaries for Windows on Intel i86 are built on
+Windows 5 (XP) and have been tested on Windows 6, Windows 7, and Windows 8.1.  
+Windows users do not need to install the CygWin environment,
+but they may if they like.
+
+To increase consistency across platforms, all executable programs (both
+autogrid and autodock) are compiled using double-precision arithmetic.
+
+Multiple search methods are now possible in a single AutoDock job:
+such as 20 runs using Simulated Annealing, 20 runs using the Genetic
+Algorithm, and 20 runs using local-search-only.  The runs are
+done serially and results do not "carry over" from one method to another.
+However, all results are ranked and clustered together in the
+analysis step at the end of the entire job.
+
+AutoDock calculations are normally done as a series of independent
+runs.  Users will occasionally need to repeat a run. For example,
+they might want to repeat a particular run to examine the search space
+and convergence of that run.  AutoDock now reports the specific random
+number seeds used for each run. Any specific run can be repeated
+exactly by using the random number seeds reported in the prior calculation. 
+
+Some advanced autodock users customize the program for
+their own specific needs.  We've improved and simplified building
+AutoDock and AutoGrid from source files.  We have documented the
+process of compiling new atomic parameter tables into AutoDock and
+AutoGrid in the README file included in this distribution.
+
+We continue to improve AutoDock's robustness and stability.  AutoDock
+now verifies that all its input grid maps are the same size.  
+Reading and parsing the input PDBQT coordinate files has been made more robust.
+
+Other changes since the 4.2.5.1 release (12/13/2012):
+Improved error checking of command-line arguments.
+Better checking of the atom numbers that define internal and "flexres" torsions.
+Better cross-platform compatibility of the internal random number generator.
+
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.5.1 (December 13, 2012)
 =============================================================================
 The changes since the 4.2.5 release (11/02/2012):
 #bug fix
