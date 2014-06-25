@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.67 2014/06/23 23:59:59 mp Exp $
+# $Id: test_autodock4.py,v 1.68 2014/06/25 01:09:53 mp Exp $
 #
 
 """
@@ -303,6 +303,13 @@ class AutoDock4_1pgp_unbound_model_illegal_test( AutoDock_simple_test ):
     in dpf """
     dpf_stem = "1pgp_unbound_model_illegal"
     expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_mixed_adt_analysis_test( AutoDock_simple_test ):
+    """Test that autodock 4 with outlevel ADT runs mixed between search methods followed by cluster analysis"""
+    dpf_stem = "1pgp_mixed_adt_analysis"
+    expected_outcome = True # True means Successful Completion!
+
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_ga_run_maxruns_test( AutoDock_simple_test ):
