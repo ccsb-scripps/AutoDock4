@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.32 2014/06/23 19:12:45 mp Exp $
+ $Id: setflags.cc,v 1.33 2014/06/25 04:03:16 mp Exp $
 
  AutoDock 
 
@@ -212,45 +212,50 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
         case 'v':
             fprintf(stdout, "AutoDock %-8s\n", version_num);
 	    fprintf(stdout, "compilation options:\n");
-            fprintf(stdout, "  USE_DOUBLE double-precision calculations: ");
+            fprintf(stdout, "  Double-precision calculations (USE_DOUBLE): ");
 #ifdef USE_DOUBLE
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, "  _OPENMP OpenMP multiprocessor support: ");
+            fprintf(stdout, "  OpenMP multiprocessor support (_OPENMP): ");
 #ifdef _OPENMP
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, "  ASSERTQUATOK quaternion arithmetic validation: ");
+            fprintf(stdout, "  Quaternion arithmetic validation(ASSERTQUATOK): ");
 #ifdef ASSERTQUATOK
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, "  NOSQRT fast lookup of distance-dependent scoring terms: ");
+            fprintf(stdout, "  Fast lookup of distance-dependent scoring terms (NOSQRT): ");
 #ifdef NOSQRT
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, "  USE_INT_AS_FOURBYTELONG for random number generator: ");
+            fprintf(stdout, "  Integer type for random number generator (USE_INT_AS_FOURBYTELONG): ");
 #ifdef USE_INT_AS_FOURBYTELONG
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, "  USE_8A_NBCUTOFF to speed internal energy scoring: ");
+	    fprintf(stdout, "  Non-bond cutoff for internal energy calculation (NBC): %.2f\n", NBC);
+            fprintf(stdout, "  Optimize internal energy scoring (USE_8A_NBCUTOFF): ");
 #ifdef USE_8A_NBCUTOFF
 	    fprintf(stdout, " yes\n");
 #else
 	    fprintf(stdout, " no\n");
 #endif
 
+	    fprintf(stdout, "  Maximum number of torsions in ligand and flexres (MAX_TORS): %d\n", MAX_TORS);
+	    fprintf(stdout, "  Maximum number of atoms in ligand and flexres (MAX_ATOMS): %d\n", MAX_ATOMS);
+	    fprintf(stdout, "  Maximum number of maps (MAX_MAPS): %d\n", MAX_MAPS);
+	    fprintf(stdout, "  Maximum dimension of map x, y, or z (MAX_GRID_PTS): %d\n", MAX_GRID_PTS);
 	    /* print sizes of key types for this compilation */
-	    fprintf(stdout, "  size of int %d, long %d, FourByteLong %d, float %d, double %d, Real %d.\n",
+	    fprintf(stdout, "  Size of int %d, long %d, FourByteLong %d, float %d, double %d, Real %d bytes.\n",
 		(int)(sizeof(int)), (int)(sizeof(long)), (int)(sizeof(FourByteLong)),
 		(int)(sizeof(float)), (int)(sizeof(double)), (int)(sizeof(Real)) );
 
