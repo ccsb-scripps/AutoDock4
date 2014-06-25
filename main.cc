@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.207 2014/06/23 23:41:59 mp Exp $
+ $Id: main.cc,v 1.208 2014/06/25 01:09:18 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.207 2014/06/23 23:41:59 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.208 2014/06/25 01:09:18 mp Exp $"};
 
 
 
@@ -793,7 +793,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.207 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.208 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1126,12 +1126,10 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 if (streq(param[i], "time")||streq(param[i],"tim")) {
 		    time_t time_seed;
                     seedIsSet[i] = 'T';
-                    seed[i] = (FourByteLong)time( &time_seed );
-		    /* seeds<=1 are invalid */
-		    while ( seed[i]<=1 ) {
-			sleep(1);
+		    do {
+		        /* seeds<=1 are invalid */
                         seed[i] = (FourByteLong)time( &time_seed );
-			}
+		    } while ( seed[i]<=1 );
 		
 		    if(outlev>=LOGRUNV)
                     pr(logFile,"Random number generator seed %d was seeded with the current time, value = " FBL_FMT "\n",i,seed[i]);
