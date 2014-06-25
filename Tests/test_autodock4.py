@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.68 2014/06/25 01:09:53 mp Exp $
+# $Id: test_autodock4.py,v 1.69 2014/06/25 01:13:36 mp Exp $
 #
 
 """
@@ -912,6 +912,7 @@ if __name__ == '__main__':
 	'AutoDock4_1pgp_no_outlev_test',
 	'AutoDock4_1pgp_illegal_outlev_test',
         'AutoDock4_1pgp_illegal_symoutlev_test',
+	'AutoDock4_1pgp_mixed_adt_analysis_test',
         'AutoDock4_1pgp_ligand_types_map_mismatch',
         'AutoDock4_1pgp_map_truncated',
         'AutoDock4_1pgp_illegal_keyword_test',
