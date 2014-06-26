@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.33 2014/06/25 04:03:16 mp Exp $
+ $Id: setflags.cc,v 1.34 2014/06/26 23:41:34 mp Exp $
 
  AutoDock 
 
@@ -108,7 +108,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
      */
     if (argc==1) { //No arguments provided
         usage(stdout, "AutoDock");
-        exit(EXIT_FAILURE); // POSIX, defined in stdlib.h, as is EXIT_SUCCESS
+        return(-1); // failure
     }
 /*----------------------------------------------------------------------------*/
 /* Loop over arguments                                                        */
@@ -159,6 +159,12 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             fprintf(stderr, "\n%s: command mode is not supported in this version of autodock\n", programname );
             break;
         case 'l':
+	    if(argc<=2) {
+		// -l with no argument past it, error
+		fprintf(stderr, 
+		"%s: no docking log file specified after -l.\n", programname);
+		return(-1);
+		}
 	    if (p_logFileName) free(p_logFileName);
 	    p_logFileName = strdup(argv[2]);
             argv++;
@@ -187,6 +193,12 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
             argindex++;
             break;    
         case 'p':
+	    if(argc<=2) {
+		// -p with no argument past it, error
+		fprintf(stderr, 
+		"%s: no docking parameter file specified after -p.\n", programname);
+		return(-1);
+		}
             snprintf(dock_param_fn, PATH_MAX -1, "%s", argv[2] );
             if ( strindex( dock_param_fn, ".dpf") != (int) strlen(dock_param_fn) - 4){
                 fprintf(stderr, "\n AutoDock needs the extension of the docking parameter file to be \".dpf\"");
@@ -278,8 +290,12 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
     // a "-p <DPF>" appeared but no "-l <DLG>" appeared
     if ( parFile != stdin  && 0==strcmp(p_logFileName, "stdout")) {
             strncpy(logFileName, dock_param_fn, strlen(dock_param_fn)-4);
-	    logFileName[strlen(dock_param_fn)] = '\0';
+	    logFileName[strlen(dock_param_fn)-4] = '\0';
             strcat(logFileName, ".dlg");
+	    // report this name since user may not expect this behavior
+	    fprintf(stderr,"%s: creating docking log file %s\n",
+ 		programname, logFileName);
+	    fflush(stderr);
 	    }
     else snprintf(logFileName, sizeof logFileName, "%s", p_logFileName);
 
@@ -287,7 +303,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
 #ifdef DEBUG
                 fprintf(stderr, "\n Log file name = %s\n", logFileName); 
 #endif /* DEBUG */
-                fprintf(stderr, "\n%s: can't create log file %s\n", programname, logFileName);
+                fprintf(stderr, "\n%s: can't create docking log file %s\n", programname, logFileName);
                 fprintf(stderr, "\n%s: Unsuccessful Completion.\n\n", programname);
                 return(-1);
             }
