@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.69 2014/06/25 01:13:36 mp Exp $
+# $Id: test_autodock4.py,v 1.70 2014/06/26 23:06:08 mp Exp $
 #
 
 """
@@ -658,7 +658,17 @@ class AutoDock4_1pgp_gals_use_defaults_test( AutoDock_test ):
     dpf_stem = "1pgp_gals_use_defaults"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
+class AutoDock4_1pgp_gals_use_defaults_test( AutoDock_test ):
+    """Test that autodock4 executes using default gals parameters."""
+    dpf_stem = "1pgp_gals_use_defaults"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
 
+class AutoDock4_1pgp_gals_10runs_test( AutoDock_simple_test ):
+    """Test that autodock4 executes using default gals parameters."""
+    dpf_stem = "1pgp_gals_10runs"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
 class AutoDock4_1pgp_gals_no_set_ga_test( AutoDock_simple_test ):
     """Test that autodock4 ga_run fails when set_ga command is omitted."""
     dpf_stem = "1pgp_no_set_ga"
@@ -955,6 +965,7 @@ if __name__ == '__main__':
 	'AutoDock4_1pgp_gals_no_set_psw1_test',
 	'AutoDock4_1pgp_gals_no_set_ga_test',
 	'AutoDock4_1pgp_gals_use_defaults_test',
+	'AutoDock4_1pgp_gals_10runs_test',
         #'AutoDock4_1pgp_ga_only_value_test',
         ## tests for unbound values 
         'AutoDock4_1pgp_unbound_default_test',
