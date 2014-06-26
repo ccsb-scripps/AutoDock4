@@ -1,4 +1,4 @@
-AutoDock README $Id: README,v 1.10 2014/06/12 17:36:34 mp Exp $
+AutoDock README $Id: README,v 1.11 2014/06/26 01:33:05 mp Exp $
 
 
 What is AutoDock?
@@ -51,24 +51,13 @@ Make sure you checkout both "autodock" and "autogrid" at the same
 time and into the same directory.  The compilation of "autogrid" 
 depends on certain files in the "../autodock" directory.
 
-The CVS repository does not include the 'configure' file;  'configure'
-is used to create a Makefile that is platform-specific.
-To generate the `./configure' file, it is necessary to run 'autoreconf -i'.
-You will need autoconf version 2.62 or later; both autoconf and autoreconf
-are from the Free Software Foundation's Autotools system, available at
-http://www.gnu.org/software/autoconf
+The CVS repository includes pre-made 'configure' files, one each
+for AutoDock and AutoGrid;  'configure' creates a Makefile that
+is customized to your particular computer platform.
 
-Once this file has been generated, see "From SOURCE Tar File" below,
-and read the INSTALL file in this directory for more options.
-This will explain how to use '../configure' to create 
-the necessary Makefile and how to use it to make the executables.
+Proceed to the next section, "Building AutoDock from source tar
+File", omitting the download and unzipping step.
 
-After the 'cvs co autodock; cvs co autogrid' do:
-
- % cd autodock; autoreconf -i
- % cd ../autogrid; autoreconf -i
-
-Then continue the installation "Building from Source Tar File".
 
 Building AutoDock from source tar File
 ======================================
@@ -151,10 +140,18 @@ Modifying AutoDock and AutoGrid
 Please feel free to change the programs to suit your needs.
 If you have suggestions for improvements, please email us.
 
+
 If you add source files you will need to modify Makefile.am to include any
 new source files.  If you add source files or change the dependencies
-of one source file upon another, you will need to re-run autoconf in the source
-directory.  You will then need to install automake, a companion
+of one source file upon another, you will need to generate a new 'configure'
+file (for AutoDock or for AutoGrid).
+
+To generate the `configure' file, you need to run 'autoreconf -i'.
+You will need autoconf version 2.62 or later; both autoconf and autoreconf
+are from the Free Software Foundation's Autotools system, available at
+http://www.gnu.org/software/autoconf
+
+You will then need to install automake, a companion
 program to autoconf, also from the Free Software Foundation, available at
 http://www.gnu.org/software/automake
 
