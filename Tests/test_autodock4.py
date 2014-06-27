@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.71 2014/06/27 00:41:24 mp Exp $
+# $Id: test_autodock4.py,v 1.72 2014/06/27 04:16:12 mp Exp $
 #
 
 """
@@ -23,6 +23,7 @@ from DlgParser import DlgParser
 autodock_executable = "../autodock4" # where the AutoDock executable resides
 dpf_directory = '.' # where the input DPF files reside
 test_output_directory = '.' # where the DLG files will be written
+fnull = open(os.devnull, "w")
 
 try:
     opts, argv = getopt.getopt(sys.argv[1:], "d:e:o:",
@@ -73,8 +74,7 @@ def run_AutoDock( dpf_filename, dlg_filename ):
     command =   [autodock_executable, '-p', dpf, '-l', dlg ] 
     print '\nRunning ' + autodock_executable + ' using DPF "'+dpf+'", saving results in "'+dlg+'":'
     try:
-        with open(os.devnull, "w") as fnull:
-          rc = subprocess.call( command, stdout = fnull, stderr = fnull )
+        rc = subprocess.call( command, stdout = fnull, stderr = fnull )
 	#print 'autodock returned ', rc  # DEBUG
         return find_success_in_DLG( dlg_filename )
     except OSError,e:
