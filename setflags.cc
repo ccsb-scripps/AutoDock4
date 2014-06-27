@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.34 2014/06/26 23:41:34 mp Exp $
+ $Id: setflags.cc,v 1.35 2014/06/27 01:18:21 mp Exp $
 
  AutoDock 
 
@@ -98,7 +98,8 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
     argindex = 1;
     if (programname) free(programname);
     programname = strdup(argv[0]); // argv is const, only executed once
-    parFile = stdin;
+    parFile = stdin; // changed with -p <DOCKPARMFILE>
+    strcpy(dock_param_fn, "stdin"); // changed with -p <DOCKPARMFILE>
     logFile = stdout;
     char logFileName[PATH_MAX+2];
     static char * p_logFileName = strdup("stdout"); // change with -l <NAME> or defaults
