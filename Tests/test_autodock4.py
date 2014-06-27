@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.70 2014/06/26 23:06:08 mp Exp $
+# $Id: test_autodock4.py,v 1.71 2014/06/27 00:41:24 mp Exp $
 #
 
 """
@@ -665,8 +665,20 @@ class AutoDock4_1pgp_gals_use_defaults_test( AutoDock_test ):
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_gals_10runs_test( AutoDock_simple_test ):
-    """Test that autodock4 executes using default gals parameters."""
+    """Test that autodock4 executes 'real world' gals parameters."""
     dpf_stem = "1pgp_gals_10runs"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_simanneal_10runs_test( AutoDock_simple_test ):
+    """Test that autodock4 executes using 'real world' SA parameters."""
+    dpf_stem = "1pgp_simanneal_10runs"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_lsonly_10runs_test( AutoDock_simple_test ):
+    """Test that autodock4 executes using 'real world' local search parameters."""
+    dpf_stem = "1pgp_lsonly_10runs"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 class AutoDock4_1pgp_gals_no_set_ga_test( AutoDock_simple_test ):
@@ -965,6 +977,8 @@ if __name__ == '__main__':
 	'AutoDock4_1pgp_gals_no_set_psw1_test',
 	'AutoDock4_1pgp_gals_no_set_ga_test',
 	'AutoDock4_1pgp_gals_use_defaults_test',
+	'AutoDock4_1pgp_simanneal_10runs_test',
+	'AutoDock4_1pgp_lsonly_10runs_test',
 	'AutoDock4_1pgp_gals_10runs_test',
         #'AutoDock4_1pgp_ga_only_value_test',
         ## tests for unbound values 

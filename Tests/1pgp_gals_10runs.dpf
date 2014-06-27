@@ -1,4 +1,4 @@
-# test 4.2.5 defaults give same result as 1pgp.dpf which lists them explicitly
+# "real world" test of LGA (GA/LS) to verify ADT compatibility
 autodock_parameter_version 4.1       # used by autodock to validate parameter set
 outlev 1
 #parameter_file AD4.1_bound.dat       # New parameter library
@@ -41,6 +41,7 @@ set_ga                               # set the above parameters for GA or LGA
 ls_search_freq 0.60                  # probability of performing local search on individual
 set_psw1                             # set the above pseudo-Solis & Wets parameters
 
-ga_run 10                             # do this many hybrid GA-LS runs
+ga_run 5                             # do this many hybrid GA-LS runs
+ga_run 5                             # do this many hybrid GA-LS runs
 
 analysis
