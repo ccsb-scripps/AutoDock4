@@ -1,6 +1,6 @@
 /*
 
- $Id: readmap.cc,v 1.23 2014/06/12 01:38:06 mp Exp $
+ $Id: readmap.cc,v 1.24 2014/06/27 01:17:43 mp Exp $
 
  AutoDock 
 
@@ -62,7 +62,6 @@ Statistics readmap( char           line[LINE_LEN],
     char FileName[PATH_MAX];
     char FldFileName[PATH_MAX];
     char GpfName[PATH_MAX];
-    char ExtGpfName[PATH_MAX];
     char mmFileName[PATH_MAX];
     const static char xyz_str[]="xyz";
     char C_mapValue;  // Caution: may be unsigned on some platforms. M Pique
@@ -76,7 +75,6 @@ Statistics readmap( char           line[LINE_LEN],
     double map_min;
     double map_total;
 
-    int indpf = 0;
     int nel[SPACE];
     int nv=0;
     int nvExpected;
@@ -105,6 +103,7 @@ Statistics readmap( char           line[LINE_LEN],
       \____________________________________________________________
      */
 
+    strcpy(FileName, "");
     (void) sscanf( line, "%*s %s", FileName );
     if ( openFile( FileName, "r", &map_file, jobStart,tmsJobStart,TRUE, logFile)) {
         *P_B_HaveMap = TRUE;
@@ -115,9 +114,9 @@ Statistics readmap( char           line[LINE_LEN],
         }
 
         if (map_type == 'e') {
-            strcpy(atom_type_name, "e\0");
+            strcpy(atom_type_name, "e");
         } else if (map_type == 'd') {
-            strcpy(atom_type_name, "d\0");
+            strcpy(atom_type_name, "d");
         } else {
             strcpy(atom_type_name, info->atom_type_name[num_maps]);
         }
@@ -136,17 +135,6 @@ Statistics readmap( char           line[LINE_LEN],
             warn_bad_file( FileName,"Could not read GRID_PARAMETER_FILE line." );
         } else {
             (void) sscanf(inputline, "%*s %s", GpfName);
-            if ( strindex( dock_param_fn, ".dpf" ) == -1) {
-                pr_2x( stderr, logFile,"Can't find \".dpf\" in the dock-parameter filename.\n\n" );
-                pr_2x( stderr, logFile,"AutoDock needs the extension of the grid parameter file to be \".gpf\"\nand that of the docking parameter file to be \".dpf\".\n\n" );
-            } else {
-                /*
-                \ replace ".dpf" with ".gpf".
-                */
-                indpf = strindex( dock_param_fn, "dpf" );
-                strcpy(ExtGpfName, dock_param_fn);
-                ExtGpfName[ indpf ] = 'g';
-            }
         } /* endif */
          /*
          \ :Line 2  GRID_DATA_FILE 
