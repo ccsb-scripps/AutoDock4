@@ -1,6 +1,6 @@
 /*
 
- $Id: nbe.cc,v 1.10 2014/06/12 01:44:07 mp Exp $
+ $Id: nbe.cc,v 1.11 2014/07/01 23:27:17 mp Exp $
 
  AutoDock 
 
@@ -66,26 +66,23 @@ void nbe( const GridMapSetInfo *const info,
     register int k = 0;
     Real r = 0.;
 
-    // MPique - the formatting depends on handling of tabs so may not look
-    // right on every system but not worth fixing all of it.  2012-06
-
     pr( logFile,"SUMMARY OF PAIRWISE-ATOMIC NON-BONDED INTERNAL ENERGIES\n" );
     pr( logFile,"________________________________________________________\n\n");
-    pr( logFile,"Clamp pairwise-atomic interaction energies at:\t%.2f kcal/mol\n", EINTCLAMP );
+    pr( logFile,"Clamp pairwise-atomic interaction energies at: %.2f kcal/mol\n", EINTCLAMP );
  
-    pr( logFile, "    \t\n r  \tLook-up\t" );
+    pr( logFile, "     \n r   Look-up " );
     for ( i = 0; i < num_atm_maps; i++) {
         for ( j = i; j < num_atm_maps; j++) {
             pr( logFile, "  E    " );
         }
     }
-    pr( logFile, "\n /Ang\tIndex\t" );
+    pr( logFile, "\n /Ang  Index" );
     for ( i = 0; i < num_atm_maps; i++) {
         for ( j = i; j < num_atm_maps; j++) {
-            pr( logFile, " %2s,%-2s ", info->atom_type_name[i], info->atom_type_name[j] );
+            pr( logFile, "  %2s,%-2s", info->atom_type_name[i], info->atom_type_name[j] );
         }
     }
-    pr( logFile, "\n______\t_____\t" );
+    pr( logFile, "\n______ _____ " );
     for ( i = 0; i < num_atm_maps; i++) {
         for ( j = i; j < num_atm_maps; j++) {
             pr( logFile, " ______" );
@@ -94,10 +91,17 @@ void nbe( const GridMapSetInfo *const info,
     pr( logFile, "\n" );
     for ( k = 10;  k <= NUMPTS;  k += 10 ) {
         r = LookUpProc( k );
-        pr( logFile, "%6.3f\t%5d\t", r, k );
+        pr( logFile, "%6.3f %5d ", r, k );
         for ( i = 0;  i < num_atm_maps; i++) {
             for ( j = i;  j < num_atm_maps; j++) {
-                pr( logFile, " %6.2f", ptr_ad_energy_tables->e_vdW_Hb[k][j][i] );
+		// confine to 6 digits, plus leading space
+		// We need worry only about positive values being of large magnitude
+                double e= ptr_ad_energy_tables->e_vdW_Hb[k][j][i];
+		char * fmt;
+		if(e>=10000) fmt=" %6.0f";  
+		else if(e>=1000) fmt=" %6.1f";
+		else fmt=" %6.2f";
+                pr( logFile, fmt, ptr_ad_energy_tables->e_vdW_Hb[k][j][i] );
             } /*  j  */
         } /*  i  */
         pr( logFile, "\n" );
