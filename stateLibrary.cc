@@ -1,6 +1,6 @@
 /*
 
- $Id: stateLibrary.cc,v 1.23 2014/06/12 01:44:08 mp Exp $
+ $Id: stateLibrary.cc,v 1.24 2014/07/02 20:25:40 mp Exp $
 
  AutoDock 
 
@@ -98,7 +98,8 @@ void printState( FILE *const fp,
 
         case 2:
         default:
-            (void)fprintf( fp, "\nSTATE VARIABLES:\n________________\n\n" );
+	    // comprehensive format, no initial newline
+            (void)fprintf( fp, "STATE VARIABLES:\n________________\n\n" );
             (void)fprintf( fp, "Translation x,y,z         = %.3f %.3f %.3f\n", S.T.x, S.T.y, S.T.z );
             (void)fprintf( fp, "Quaternion x,y,z,w        = %.6f %.6f %.6f %.6f\n", S.Q.x, S.Q.y, S.Q.z, S.Q.w );
 	    aa = QuatToAxisAngle( S.Q );
