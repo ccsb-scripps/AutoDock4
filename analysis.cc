@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.56 2014/06/12 01:44:07 mp Exp $
+ $Id: analysis.cc,v 1.57 2014/07/02 00:01:21 mp Exp $
 
  AutoDock  
 
@@ -186,7 +186,7 @@ void analysis( const int   Nnb,
     for ( k=0; k<nconf; k++ ) {
 
         if (outlev >= LOGRUNVV) {
-	    fprintf( logFile, "\nState hist[%d] ", k); // no newline so will flow into STATE VARIABLES:
+	    fprintf( logFile, "\nState hist[%d] ", k+1); // no newline so will flow into STATE VARIABLES:
 	    // pass center to printState - could be improved MPique 2010
 	    hist[k].Center.x = sml_center[X];
 	    hist[k].Center.y = sml_center[Y];

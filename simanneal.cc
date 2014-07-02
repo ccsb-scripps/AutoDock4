@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.47 2014/06/23 23:41:59 mp Exp $
+ $Id: simanneal.cc,v 1.48 2014/07/02 00:01:21 mp Exp $
 
  AutoDock  
 
@@ -249,7 +249,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
 		irun+1, nruns);
 
         if ( B_writeTrj ) {
-            pr( FP_trj, "ntorsions %d\nrun %d\n", ntor, nconf+irun );
+            pr( FP_trj, "ntorsions %d\nrun %d\n", ntor, nconf+irun+1 );
             fflush( FP_trj );
         }
 
@@ -524,7 +524,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
                 */
                 if (outlev >= LOGRUNV) {
                     /*pr(logFile, "\n"); / *###*/
-                    pr( logFile, "%d \t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", nconf+irun, icycle+1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (Real)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
+                    pr( logFile, "%d \t%d /%d\t%+11.2f %+11.2f   %6.2f %6d %6d %6d %6d   %8.1f   %5.2f %5.2f %5.2f   ", nconf+irun+1, icycle+1, NcycMax, eMin, etot/ntot, (nrej!=0) ? (Real)nacc/nrej : 999.99, nAcc, nAccProb, nrej, nedge, RT, sMin.T.x, sMin.T.y, sMin.T.z );
                     cycEnd = times( &tms_cycEnd );
                     timesys( cycEnd - cycStart, &tms_cycStart, &tms_cycEnd, logFile);
                     if (outlev > LOGRUNV ) {
@@ -587,7 +587,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
         }
    
 	if(outlev>=LOGRUNV) pr( logFile, "\tFINAL DOCKED STATE\n" );
-        if(outlev>=LOGRUNVV)pr( logFile, "Run Number %d\n", nconf+irun);
+        if(outlev>=LOGRUNVV)pr( logFile, "Run Number %d\n", nconf+irun+1);
         if(outlev>=LOGRUNVV)pr( logFile, "Final Energy = %+.2f\n", eLast);
 	pr(logFile,"Final-Value: %.3f\n", eLast);
 
@@ -599,9 +599,9 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
         pr( logFile, "Final Rotation Angle = %5.1f deg\n", RadiansToDegrees(WrpRad( ModRad(aa.ang))) );
 	}
 
-        copyState( &sHist[ *Addr_nconf ], sSave );
+        copyState( &sHist[ nconf+irun ], sSave );
 
-        for (i=0; i<ntor; i++) sHist[ *Addr_nconf ].tor[i] = sSave.tor[i];
+        for (i=0; i<ntor; i++) sHist[ nconf+irun ].tor[i] = sSave.tor[i];
 
         if (ntor > 0 && outlev>=LOGRUNVV) {
 	    pr( logFile, "Final Torsions:\n" );
@@ -609,7 +609,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
                 torTmp = RadiansToDegrees( sSave.tor[i] );
                 torTmp = ModDeg( torTmp );
                 torTmp = WrpDeg( torTmp );
-                sHist[ *Addr_nconf ].tor[i] = sSave.tor[i];
+                sHist[ nconf+irun ].tor[i] = sSave.tor[i];
                 pr( logFile, "          %2d = %7.2f deg", i+1, torTmp);
                 if (B_isTorConstrained[i] && B_ShowTorE) {
                     pr(logFile, ", Energetic penalty = %uhd\n", US_TorE[i]);

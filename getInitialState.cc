@@ -1,6 +1,6 @@
 /*
 
- $Id: getInitialState.cc,v 1.41 2014/06/12 05:04:57 mp Exp $
+ $Id: getInitialState.cc,v 1.42 2014/07/02 00:01:21 mp Exp $
 
  AutoDock  
 
@@ -78,7 +78,7 @@ void getInitialState(
             const int   tlist[MAX_TORS+1][MAX_ATOMS],
             const int   type[MAX_ATOMS],
             const Real vt[MAX_TORS][SPACE],
-            const int   irun1,
+            const int   irun, // 0-origin, includes nconf
             const int   MaxRetries,
 
             ConstReal  torsFreeEnergy,
@@ -208,7 +208,7 @@ void getInitialState(
                 (e0total > e0max) && (outlev >= LOGRUNVV)) {
 
                 pr(logFile, "Initial total energy, e0total = %.3f, too high!\n", e0total);
-                pr(logFile, "Number of attempts = %d (run %d)\n\n", retries, irun1);
+                pr(logFile, "Number of attempts = %d (run %d)\n\n", retries, irun+1);
                 pr(logFile, "Will try again...\n");
 
             } else if (retries >= MaxRetries) {
@@ -243,7 +243,7 @@ void getInitialState(
        ligand_is_inhibitor, B_have_flexible_residues, ad4_unbound_model,
 	outlev, logFile);
       initEnd = times( &tms_initEnd );
-      pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun1);
+      pr(logFile, "Number of initialization attempts = %d (run %d)\n", retries, irun+1);
       pr(logFile, "Time spent initializing: (Real, CPU, System): ");
       timesys( initEnd - initStart, &tms_initStart, &tms_initEnd, logFile);
     }
