@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.45 2014/06/12 01:44:08 mp Exp $
+ $Id: support.cc,v 1.46 2014/07/02 20:24:53 mp Exp $
 
  AutoDock 
 
@@ -336,11 +336,8 @@ int returnCode=0;
    returnCode= printPopulationStatistics(output, 3, "");
 
    // print "State0:" field with compact state for best individual.
-   //  Note we cannot use printIndividualsState method because it
-   //    appends a newline so we call lower-level printState() from 
-   //    stateLibrary.cc  
    (void) fprintf(output," State0: ");
-   heap[best_i].printIndividualsState( output, ntor, 4); // 4 means print compact state
+   heap[best_i].printIndividualsState( output, ntor, 4); // 4 means print compact state, no following newline
 
    (void) fprintf(output, " Num.evals: %ld%s", nevals, suffix );
     return returnCode; 
