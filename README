@@ -1,4 +1,4 @@
-AutoDock README $Id: README,v 1.11 2014/06/26 01:33:05 mp Exp $
+AutoDock README $Id: README,v 1.12 2014/07/08 19:39:26 mp Exp $
 
 
 What is AutoDock?
@@ -48,12 +48,8 @@ to modify AutoDock or build it for other platforms, see
 Bootstrapping Installation from CVS
 ===================================
 Make sure you checkout both "autodock" and "autogrid" at the same 
-time and into the same directory.  The compilation of "autogrid" 
+time and into the same parent directory.  The compilation of "autogrid" 
 depends on certain files in the "../autodock" directory.
-
-The CVS repository includes pre-made 'configure' files, one each
-for AutoDock and AutoGrid;  'configure' creates a Makefile that
-is customized to your particular computer platform.
 
 Proceed to the next section, "Building AutoDock from source tar
 File", omitting the download and unzipping step.
@@ -66,16 +62,58 @@ Download the "src" tar file from the web site.
 Unzip the downloaded tar file into a directory of your choice;
 this will create directories src/autodock and src/autogrid.
 
-For ARCHOSV below, substitute your
+
+You must install "autoconf" and "automake" if they are not already
+installed on your computer.  Both are from the Free Software Foundation's
+Autotools system, available at
+http://www.gnu.org/software/autoconf
+and
+http://www.gnu.org/software/automake
+On many Linux systems you can do this by running
+  sudo apt-get install autoconf automake
+
+To generate the `configure' file, you need to run 'autoreconf -i'
+in first the autodock, and then the autogrid directory;
+You will need autoconf version 2.62 or later.
+
+We suggest creating subdirectories below each of "autodock" and "autogrid"
+to do the compilations in.  We suggest naming them after the computer
+architecture and operating system, which we abbreviate as 'ARCHOSV'.
+
+For ARCHOSV, substitute your
 computer type and operating system version, such as "i86Linux2".
 You can use any name you like; nothing in the build process depends
 on the name. We suggest following these patterns:
   i86Linux2 : 32-bit Intel Linux
   x86_64Linux2 : 64-bit Intel Linux
-  universalDarwin9 : Mac OS X 10.5 (Leopard) Intel or PPC
-  universalDarwin11 : Mac OS X 10.7 (Lion) Intel
+  universalDarwin : Mac OS X PPC or Intel
   i86Windows : Microsoft Windows Intel
   sun4SunOS5 : SPARC Solaris
+
+The general process is:
+
+ cd to autodock source directory
+ autoreconf -i
+ "mkdir" and "cd" to your architecture's build directory (such as x86_64Linux3)
+ ../configure
+ make
+ make check (optional but recommended)
+ make install (optional)
+
+ cd to autogrid source directory
+ autoreconf -i
+ "mkdir" and "cd" your architecture's build directory (such as x86_64Linux3)
+ ../configure
+ make
+ make check (optional but recommended)
+ make install (optional)
+
+
+Copying AutoDock and AutoGrid
+=============================
+
+Please refer to the file "COPYING" in this directory for
+more information on copying AutoDock.
 
 First, build autodock.
 
@@ -144,28 +182,5 @@ If you have suggestions for improvements, please email us.
 If you add source files you will need to modify Makefile.am to include any
 new source files.  If you add source files or change the dependencies
 of one source file upon another, you will need to generate a new 'configure'
-file (for AutoDock or for AutoGrid).
+file (for AutoDock or for AutoGrid), using 'autoreconf' as above.
 
-To generate the `configure' file, you need to run 'autoreconf -i'.
-You will need autoconf version 2.62 or later; both autoconf and autoreconf
-are from the Free Software Foundation's Autotools system, available at
-http://www.gnu.org/software/autoconf
-
-You will then need to install automake, a companion
-program to autoconf, also from the Free Software Foundation, available at
-http://www.gnu.org/software/automake
-
-The general process, then, is
- cd to autodock source directory
- autoreconf -i
- cd to your architecture's build directory (such as x86_64Linux3)
- ../configure
- make
- make check
-
-
-Copying AutoDock and AutoGrid
-=============================
-
-Please refer to the file "COPYING" in this directory for
-more information on copying AutoDock.

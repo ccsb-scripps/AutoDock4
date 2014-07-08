@@ -1,17 +1,22 @@
 =============================================================================
                    AutoDock Release Notes
-                  Release 4.2.6 (June 2014)
+                  Release 4.2.6 (July 2014)
 =============================================================================
 
 Supported computer platforms in 4.2.6:
 
 Linux2 on Intel i86 (32-bit) and on Intel x86_64 (64-bit).
 Linux3 on Intel x86_64 (64-bit).
-Macintosh OS X 10.5 (Leopard) on Intel i86 and PowerPC (32- and 64-bit).
-Macintosh OS X 10.6-10.9 (Snow Leopard, Lion, Mountain Lion,
- and Mavericks) on Intel x86_64.  
-Solaris 8 (SunOS 5) on SPARC.
+Macintosh OS X 10.5 (Leopard) on PowerPC (32- and 64-bit),
+  OS X 10.5-10.9 (Leopard, Snow Leopard, Lion, Mountain Lion,
+ and Mavericks) on Intel i86 (32-bit) and Intel x86_64 (64-bit).
+Solaris 8 (SunOS 5.8) on SPARC.
 Windows 5-8.1 on Intel i86.
+
+The executable binaries (autogrid4, autodock4) for Macintosh OS X 
+are built on Mac OS X 10.5 and tested on up to Mac OS X 10.9.
+Each of the two binaries is "universal" and will run on any of
+the supported Macs.
 
 The executable binaries for Windows on Intel i86 are built on
 Windows 5 (XP) and have been tested on Windows 6, Windows 7, and Windows 8.1.  
@@ -20,13 +25,24 @@ but they may if they like.
 
 To increase consistency across platforms, all executable programs (both
 autogrid and autodock) are compiled using double-precision arithmetic.
+The grid maps, as read by AutoDock, are stored internally in single-precision.
 
 Multiple search methods are now possible in a single AutoDock job:
 such as 20 runs using Simulated Annealing, 20 runs using the Genetic
 Algorithm, and 20 runs using local-search-only.  The runs are
-done serially and results do not "carry over" from one method to another.
+done serially and no results "carry over" from one method to another.
 However, all results are ranked and clustered together in the
 analysis step at the end of the entire job.
+
+You can now use ADT (AutoDock Tools) to visualize results from AutoDock
+jobs that use simulated annealing or local-search-only. You must download the
+latest build of ADT from http://mgltools.scripps.edu/downloads/latest
+
+A limitation in the 4.2.6 release: the "do_local_only" command runs
+the pseudo-solis-wets algorithm, even if the non-pseudo-solis-wets
+has been specified.  This applies only to "do_local_only": the
+"ga_run" command will use whichever local search has been specified.
+(We recommend the pseudo-solis-wets for all local searches: "set psw1").
 
 AutoDock calculations are normally done as a series of independent
 runs.  Users will occasionally need to repeat a run. For example,
@@ -45,15 +61,16 @@ We continue to improve AutoDock's robustness and stability.  AutoDock
 now verifies that all its input grid maps are the same size.  
 If AutoDock's standard input has not been redirected to come from a file 
 or from a pipe, you must specify a docking parameter file using 
-"-p <docking parameter file.dpf>".  Reading and parsing the input PDBQT
-coordinate files has been made more robust.
+"-p <docking parameter file.dpf>".  When the docking parameters are
+read from standard input (e.g., "autodock4 -l mol.dlg < mol.dpf"),
+the docking parameter file now appears in output PDBQT files as "stdin".
+Reading and parsing the input PDBQT coordinate files has been made more robust.
 
 Other changes since the 4.2.5.1 release (12/13/2012):
 Improved error checking of command-line arguments.
 Better checking of the atom numbers that define internal and "flexres" torsions.
 Better cross-platform compatibility of the internal random number generator.
 Running "autodock4 --version" reports compile-time configuration options.
-CVS repositories for AutoDock and AutoGrid now include "configure" file.
 
 =============================================================================
                    AutoDock Release Notes
