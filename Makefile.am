@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.49 2014/07/08 19:34:12 mp Exp $
+# $Id: Makefile.am,v 1.50 2014/07/08 19:36:27 mp Exp $
 # 
 # AutoDock  
 # 
@@ -459,8 +459,8 @@ endif
 
 BUILT_SOURCES = $(autodock4_SOURCES) default_parameters.h
 
-#MP AM_CXXFLAGS = -O3 # Agressive optimization
-AM_CXXFLAGS = -g # debug
+AM_CXXFLAGS = -O3 # Agressive optimization
+#AM_CXXFLAGS = -g # debug
 
     # if gnu c++ compiler
 AM_CXXFLAGS += -Wall # All warnings
@@ -484,10 +484,12 @@ endif
 #  M Pique - USE_INT_AS_FOURBYTELONG is for random number seeds only and is appropriate for
 #     all post-2005 computers, which treat "int" as four bytes.
 #  M Pique - add -g for debugging
+#  M Pique - add -O3 for optimization
 AM_CPPFLAGS = -DNOSQRT \
 	      -DUSE_DOUBLE \
               -DUSE_8A_NBCUTOFF \
-	      -DUSE_INT_AS_FOURBYTELONG
+	      -DUSE_INT_AS_FOURBYTELONG \
+	      -O3
 # AM_LDFLAGS = -g # -g is MP debug
 
 
