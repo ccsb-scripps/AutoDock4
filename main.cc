@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.208 2014/06/25 01:09:18 mp Exp $
+ $Id: main.cc,v 1.209 2014/07/08 19:33:45 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.208 2014/06/25 01:09:18 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.209 2014/07/08 19:33:45 mp Exp $"};
 
 
 
@@ -793,7 +793,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.208 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.209 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1637,7 +1637,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                        ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[atm1])
                        + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[atm2]) );
                 nonbondlist[i].q1q2 = charge[atm1] * charge[atm2];
-		nonbondlist[i].is_hbond = ad_energy_tables->is_hbond[t1][t2];  // MPique untested @@
+		nonbondlist[i].is_hbond = ad_energy_tables->is_hbond[t1][t2];  // MPique untested
                 if (outlev >= LOGLIGREAD) {
                     pr(logFile,"   %4d     %5d-%-5d  %7.4f",i+1,atm1+1,atm2+1,nonbondlist[i].q1q2);
                 }//outlev
@@ -3474,8 +3474,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		{ // MP begin storage allocation for hacks...
 
 	   // MP hack: create all necessary rho_ptrs, lb_rho_ptrs, tLocalSearchMethods
+	   //  MP: Note this overrides the LocalSearchMethod defined in the DPF,
+	   //  which might have been non-pseudo SW, or even "pattern"
+	   //  I will fix this when the virtual functions are revised.
 	   Real *trho_ptr[NUMG], *tlb_rho_ptr[NUMG];
-	   Pseudo_Solis_Wets1 *tLocalSearchMethod[NUMG]; 
+	   Pseudo_Solis_Wets1 *tLocalSearchMethod[NUMG];  // should be clone of LocalSearchMethod object MP
 	   Eval *tevaluate[NUMG];
 
 	   for(int t=0;t<NUMG;t++) {
