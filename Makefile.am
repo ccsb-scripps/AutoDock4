@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.48 2014/06/20 23:14:59 mp Exp $
+# $Id: Makefile.am,v 1.49 2014/07/08 19:34:12 mp Exp $
 # 
 # AutoDock  
 # 
@@ -460,7 +460,7 @@ endif
 BUILT_SOURCES = $(autodock4_SOURCES) default_parameters.h
 
 #MP AM_CXXFLAGS = -O3 # Agressive optimization
-AM_CXXFLAGS = -g # MP debug
+AM_CXXFLAGS = -g # debug
 
     # if gnu c++ compiler
 AM_CXXFLAGS += -Wall # All warnings
@@ -483,12 +483,12 @@ endif
 #  M Pique - add USE_DOUBLE to define Real as double instead of float, see typedefs.h
 #  M Pique - USE_INT_AS_FOURBYTELONG is for random number seeds only and is appropriate for
 #     all post-2005 computers, which treat "int" as four bytes.
+#  M Pique - add -g for debugging
 AM_CPPFLAGS = -DNOSQRT \
 	      -DUSE_DOUBLE \
               -DUSE_8A_NBCUTOFF \
-	      -DUSE_INT_AS_FOURBYTELONG \
-               -g # -g is MP debug
-AM_LDFLAGS = -g # -g is MP debug
+	      -DUSE_INT_AS_FOURBYTELONG
+# AM_LDFLAGS = -g # -g is MP debug
 
 
 #autodock4_CXXFLAGS = -Wall -O3 # All warnings, Agressive optimization
