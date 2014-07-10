@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.209 2014/07/08 19:33:45 mp Exp $
+ $Id: main.cc,v 1.210 2014/07/10 19:10:01 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.209 2014/07/08 19:33:45 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.210 2014/07/10 19:10:01 mp Exp $"};
 
 
 
@@ -793,7 +793,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.209 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.210 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3310,7 +3310,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		if(j==0&&nconf==0) getsd(&runseed[0][0], &runseed[0][1]);
 		setsd(runseed[nconf+j][0], runseed[nconf+j][1]); 
 
-                pr( tlogFile, "Run:\t%d Seed: %ld %ld [ Run %d of %d GA/GALS ]\n", nconf+j+1,
+                pr( tlogFile, "Run: %d Seed: %ld %ld [ Run %d of %d GA/GALS ]\n", nconf+j+1,
 		 (long)runseed[nconf+j][0], (long)runseed[nconf+j][1],
 		 j+1, nruns );
 
@@ -3540,7 +3540,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
 	       if(outlev>=LOGBASIC)
                (void) fprintf( tlogFile, "\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
-                pr( tlogFile, "Run:\t%d Seed: %ld %ld  [ Run %d of %d LS ]\n", nconf+j+1,
+                pr( tlogFile, "Run: %d Seed: %ld %ld  [ Run %d of %d LS ]\n", nconf+j+1,
 		 (long)runseed[nconf+j][0], (long)runseed[nconf+j][1],
 		  j+1, nruns );
 
@@ -4048,7 +4048,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		if(nconf==0&&j==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
 		else setsd(runseed[nconf+j][0], runseed[nconf+j][1]); 
 
-                pr( logFile, "Run:\t%d Seed: %ld %ld [ Run %d of %d %s ]\n", nconf+j+1,
+                pr( logFile, "Run: %d Seed: %ld %ld [ Run %d of %d %s ]\n", nconf+j+1,
 		 (long)runseed[nconf+j][0], (long)runseed[nconf+j][1],
 		 j+1, nruns, GlobalSearchMethod->shortname() );
 	 		pr(logFile, "Date:\t");

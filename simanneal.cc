@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.48 2014/07/02 00:01:21 mp Exp $
+ $Id: simanneal.cc,v 1.49 2014/07/10 19:10:01 mp Exp $
 
  AutoDock  
 
@@ -286,7 +286,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
             pr( logFile, "\n\n\t\tBEGINNING SIMULATED ANNEALING");
             pr( logFile, "\n\t\t_____________________________\n\n");
             pr( logFile, "\n      \t      \tMinimum     Average     | Acc/    Accepted:    Rejected:     |          |  xyz-Translation  |        Time:        \n");
-              pr( logFile, "Run:  \tCycle:\tEnergy:     Energy:     |   /Rej: Down:  Up:   Total: Edge:  |   RT:    |   of Min.Energy   |  Real, CPU, System  \n" );
+              pr( logFile, "Run#  \tCycle:\tEnergy:     Energy:     |   /Rej: Down:  Up:   Total: Edge:  |   RT:    |   of Min.Energy   |  Real, CPU, System  \n" );
               pr( logFile, "______\t______\t___________ ___________ | ______ ______ ______ ______ ______ | ________ | _________________ | ____________________\n" );
 /*                                          12345678901 12345678901   123456 123456 123456 123456 123456   12345678   12345 12345 12345
 **                         "%D /%D\T%D /%D\T%+11.2F     %+11.2F       %6.2F  %6D    %6D    %6D    %6D      %8.1F     %5.2F %5.2F %5.2F   ",
