@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.211 2014/07/10 19:42:02 mp Exp $
+ $Id: main.cc,v 1.212 2014/07/10 23:27:37 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.211 2014/07/10 19:42:02 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.212 2014/07/10 23:27:37 mp Exp $"};
 
 
 
@@ -793,7 +793,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.211 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.212 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3606,7 +3606,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                   pr( tlogFile, "\n");
 		  }
 
-	       if(outlev>=LOGBASIC) {
+	       if(outlev>=LOGFORADT) {
                   pr( tlogFile, "\n\n\tFINAL LOCAL SEARCH DOCKED STATE\n" );
                   pr( tlogFile,     "\t_______________________________\n\n\n" );
 		  }

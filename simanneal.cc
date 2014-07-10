@@ -1,6 +1,6 @@
 /*
 
- $Id: simanneal.cc,v 1.49 2014/07/10 19:10:01 mp Exp $
+ $Id: simanneal.cc,v 1.50 2014/07/10 23:27:37 mp Exp $
 
  AutoDock  
 
@@ -228,7 +228,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
 
 /* Begin the automated docking simulation, ===================================*/
 
-    if(outlev>=LOGBASIC) {
+    if(outlev>LOGBASIC) {
     pr( logFile, "\n\n\t\tBEGINNING MONTE CARLO SIMULATED ANNEALING\n");
     pr( logFile, "     \t\t_________________________________________\n\n\n\n" );
     }
@@ -242,7 +242,7 @@ void simanneal ( int   *const Addr_nconf, /* absolute serial number of "run", mo
 	else setsd(runseed[nconf+irun][0], runseed[nconf+irun][1]); 
 
 
-        if (outlev >= LOGFORADT) 
+        if (outlev >= LOGRUNV) 
             pr(logFile, "\n\tINITIALIZING AUTOMATED DOCKING SIMULATION\n" );
         pr( logFile, "Run: %d Seed: %ld %ld [ Run %d of %d SA ]\n", nconf+irun+1,
 		(long)runseed[nconf+irun][0], (long)runseed[nconf+irun][1],

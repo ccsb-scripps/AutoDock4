@@ -1,6 +1,6 @@
 /*
 
- $Id: writePDBQT.cc,v 1.43 2014/06/12 01:36:45 mp Exp $
+ $Id: writePDBQT.cc,v 1.44 2014/07/10 23:27:37 mp Exp $
 
  AutoDock  
 
@@ -313,7 +313,7 @@ writePDBQT(const int irun, const FourByteLong seed[2],
         (void) fprintf(logFile, "%s: TER\n", state_type_string);
         (void) fprintf(logFile, "%s: ENDMDL\n", state_type_string);
         //(void) fprintf(logFile, UnderLine);
-    } // outlev >= LOGMIN
+    } // outlev >= LOGFORADT
    (void) fflush(logFile);
 } // writePDBQT()
 
