@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.45 2014/06/12 01:44:08 mp Exp $
+ $Id: readPDBQT.cc,v 1.46 2014/07/10 19:42:02 mp Exp $
 
  AutoDock 
 
@@ -188,7 +188,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
     if (B_have_flexible_residues) {
         //  Attempt to open the flexible residue PDBQT file...
         if (openFile(FN_flexres, "r", &FP_flexres, jobStart, tms_jobStart, TRUE, logFile)) {
-            if(outlev>=LOGBASIC)
+            if(outlev>=LOGMIN)
             pr(logFile, "Flexible Residues PDBQT file = \"%s\"\n\n", FN_flexres);
         }
     }
@@ -221,31 +221,33 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	} else {
         // Read in the input Ligand PDBQT file...
 		if (openFile(FN_ligand, "r", &FP_ligand, jobStart, tms_jobStart, TRUE, logFile)) {
-			if(outlev>=LOGFORADT){
+			if(outlev>=LOGBASIC){
 			  pr(logFile,   "INPUT LIGAND PDBQT FILE:");
 			  pr(logFile, "\n________________________\n\n");
 			 }
 			for (i = 0; i < nligand_record; i++) {
 				if (fgets(PDBQT_record[i], LINE_LEN, FP_ligand) != NULL) {
-					if(outlev>=LOGFORADT)
+					if(outlev>=LOGBASIC)
 					pr(logFile, "INPUT-LIGAND-PDBQT: %s", PDBQT_record[i]);
 				}
 			} // i
-			if(outlev>=LOGFORADT) pr(logFile, UnderLine);
+			if(outlev>=LOGBASIC) pr(logFile, UnderLine);
 		} // if
 		(void) fclose(FP_ligand);
 
         if (B_have_flexible_residues) {
             // Read in the input Flexible Residues PDBQT file...
             if (openFile(FN_flexres, "r", &FP_flexres, jobStart, tms_jobStart, TRUE, logFile)) {
-                pr(logFile,   "INPUT FLEXIBLE RESIDUES PDBQT FILE:");
-                pr(logFile, "\n___________________________________\n\n");
+		if(outlev>=LOGBASIC) {
+                   pr(logFile,   "INPUT FLEXIBLE RESIDUES PDBQT FILE:");
+                   pr(logFile, "\n___________________________________\n\n");
+		   }
                 for (i = nligand_record; i < nrecord; i++) {
                     if (fgets(PDBQT_record[i], LINE_LEN, FP_flexres) != NULL) {
-                        pr(logFile, "INPUT-FLEXRES-PDBQT: %s", PDBQT_record[i]);
+                        if(outlev>=LOGBASIC) pr(logFile, "INPUT-FLEXRES-PDBQT: %s", PDBQT_record[i]);
                     }
                 } // i
-                pr(logFile, UnderLine);
+                if(outlev>=LOGBASIC) pr(logFile, UnderLine);
             } // if
             (void) fclose(FP_flexres);
         }

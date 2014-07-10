@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.210 2014/07/10 19:10:01 mp Exp $
+ $Id: main.cc,v 1.211 2014/07/10 19:42:02 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.210 2014/07/10 19:10:01 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.211 2014/07/10 19:42:02 mp Exp $"};
 
 
 
@@ -793,7 +793,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.210 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.211 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3294,7 +3294,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		tlogFile=logFile;
 #endif
 		
-		if(outlev>=LOGBASIC) 
+		if(outlev>LOGBASIC) 
                 (void) fprintf( tlogFile, "\n\tBEGINNING %s DOCKING %d of %d\n", 
 		GlobalSearchMethod->longname(), j+1, nruns);
 
@@ -3363,8 +3363,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 			}
 		(void) fflush( tlogFile );
 
-		if(outlev>=LOGBASIC) {
-                pr( tlogFile, "\n\n\tFINAL %s ALGORITHM DOCKED STATE\n", GlobalSearchMethod->longname());
+		if(outlev>LOGBASIC) {
+                pr( tlogFile, "\n\n\tFINAL %s DOCKED STATE\n", GlobalSearchMethod->longname());
                 pr( tlogFile,     "\t_______________________________________________\n\n\n" );
 		}
 
@@ -3538,7 +3538,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		if(nconf+j==0) getsd(&runseed[nconf][0], &runseed[nconf][1]);
 		setsd(runseed[nconf+j][0], runseed[nconf+j][1]); 
 
-	       if(outlev>=LOGBASIC)
+	       if(outlev>LOGBASIC)
                (void) fprintf( tlogFile, "\tBEGINNING SOLIS & WETS LOCAL SEARCH DOCKING\n");
                 pr( tlogFile, "Run: %d Seed: %ld %ld  [ Run %d of %d LS ]\n", nconf+j+1,
 		 (long)runseed[nconf+j][0], (long)runseed[nconf+j][1],
@@ -4041,7 +4041,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		struct tms tms_runStart, tms_runEnd;
 		Clock  runStart, runEnd;
 		//(void) fprintf( logFile, "\n\tBEGINNING PARTICLE SWARM OPTIMIZATION (PSO) \n");
-	    if(outlev>=LOGBASIC)
+	    if(outlev>LOGBASIC)
             (void) fprintf( logFile, "\n\tBEGINNING %s DOCKING\n", GlobalSearchMethod->longname());
 
 		/* set RNG seed using global run number */
