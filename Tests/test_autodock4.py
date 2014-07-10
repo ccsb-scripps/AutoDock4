@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.72 2014/06/27 04:16:12 mp Exp $
+# $Id: test_autodock4.py,v 1.73 2014/07/10 19:41:05 mp Exp $
 #
 
 """
@@ -312,6 +312,13 @@ class AutoDock4_1pgp_mixed_adt_analysis_test( AutoDock_simple_test ):
 
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_mixed_basic_analysis_test( AutoDock_simple_test ):
+    """Test that autodock 4 with outlevel BASIC runs mixed between search methods followed by cluster analysis"""
+    dpf_stem = "1pgp_mixed_basic_analysis"
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_ga_run_maxruns_test( AutoDock_simple_test ):
     """Test that autodock 4 runs with max number of runs"""
     dpf_stem = "1pgp_ga_run_maxruns"
@@ -335,6 +342,21 @@ class AutoDock4_1pgp_mixed_maxruns_test( AutoDock_simple_test ):
 class AutoDock4_1pgp_mixed_maxruns_analysis_test( AutoDock_simple_test ):
     """Test that autodock 4 runs with max number of runs  mixed between search methods followed by cluster analysis"""
     dpf_stem = "1pgp_mixed_maxruns_analysis"
+    expected_outcome = True # True means Successful Completion!
+
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_mixed_maxruns_adt_analysis_test( AutoDock_simple_test ):
+    """Test that autodock 4 runs with max number of runs  mixed between search methods followed by cluster analysis with outlev 1 ADT"""
+    dpf_stem = "1pgp_mixed_maxruns_adt_analysis"
+    expected_outcome = True # True means Successful Completion!
+
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_mixed_maxruns_basic_analysis_test( AutoDock_simple_test ):
+    """Test that autodock 4 runs with max number of runs  mixed between search methods followed by cluster analysis with outlev 0 BASIC"""
+    dpf_stem = "1pgp_mixed_maxruns_basic_analysis"
     expected_outcome = True # True means Successful Completion!
 
 #______________________________________________________________________________
@@ -934,6 +956,7 @@ if __name__ == '__main__':
 	'AutoDock4_1pgp_no_outlev_test',
 	'AutoDock4_1pgp_illegal_outlev_test',
         'AutoDock4_1pgp_illegal_symoutlev_test',
+	'AutoDock4_1pgp_mixed_basic_analysis_test',
 	'AutoDock4_1pgp_mixed_adt_analysis_test',
         'AutoDock4_1pgp_ligand_types_map_mismatch',
         'AutoDock4_1pgp_map_truncated',
@@ -1015,6 +1038,8 @@ if __name__ == '__main__':
 	'AutoDock4_1pgp_ga_run_maxruns_analysis_test',
 	'AutoDock4_1pgp_mixed_maxruns_test',
 	'AutoDock4_1pgp_mixed_maxruns_analysis_test',
+	'AutoDock4_1pgp_mixed_maxruns_basic_analysis_test',
+	'AutoDock4_1pgp_mixed_maxruns_adt_analysis_test',
 	'AutoDock4_1pgp_overmaxruns_test',
     ]
     unittest.main( argv=( [__name__ ,] + test_cases ) )
