@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.212 2014/07/10 23:27:37 mp Exp $
+ $Id: main.cc,v 1.213 2014/07/10 23:49:14 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -85,7 +85,7 @@ using std::string;
 
 #include <sys/param.h>
 #include <ctype.h> // tolower
-#include <unistd.h> // sysconf
+#include <unistd.h> // sysconf and getcwd
 
 /* the BOINC API header file */
 #ifdef BOINC
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.212 2014/07/10 23:27:37 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.213 2014/07/10 23:49:14 mp Exp $"};
 
 
 
@@ -229,6 +229,7 @@ char FN_watch[PATH_MAX];
 char dummy_FN_ligand[PATH_MAX];
 char FN_pop_file[PATH_MAX];
 char FN_trj[PATH_MAX];
+char FN_current_working_directory[PATH_MAX];
 
 //   MAX_CHARS
 char hostnm[MAX_CHARS];
@@ -787,35 +788,33 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 
 //______________________________________________________________________________
 /*
-** Output banner...
+** Output banner, date/time of run, hostname, working directory
 */
 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.212 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.213 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
-
-//______________________________________________________________________________
-/*
-** Print the time and date when the log file was created...
-*/
-
-if(outlev>=LOGBASIC) {
-	pr( logFile, "This file was created at:\t\t\t" );
-	printdate( logFile, 1 );
-}
-
-(void) strcpy(hostnm, "");
+(void) strcpy(hostnm, "unknown_host");
 #ifdef HAVE_GETHOSTNAME
 gethostname( hostnm, sizeof hostnm );
 #endif
 if(hostnm[0]=='\0') strcpy(hostnm, "unknown_host");
-else if (outlev>=LOGBASIC ) {
-    pr( logFile, "                   using:\t\t\t\"%s\"\n", hostnm );
+
+(void) strcpy(FN_current_working_directory, "unknown_directory");
+if(NULL==getcwd(FN_current_working_directory, sizeof FN_current_working_directory))
+  strcpy(FN_current_working_directory, "unknown_directory");
+
+if(outlev>=LOGMIN) {
+	pr( logFile, "This file was created at:\t\t\t" );
+	printdate( logFile, 1 );
+	pr( logFile, "                   on host:\t\t\"%s\"\n", hostnm );
+	pr(logFile, "Current Working Directory = \"%s\"\n", FN_current_working_directory);
 }
+
 
 //______________________________________________________________________________
 if(outlev>=LOGFORADT) {
