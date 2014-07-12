@@ -38,18 +38,28 @@ You can now use ADT (AutoDock Tools) to visualize results from AutoDock
 jobs that use simulated annealing or local-search-only. You must download the
 latest build of ADT from http://mgltools.scripps.edu/downloads/latest
 
-A limitation in the 4.2.6 release: the "do_local_only" command runs
-the pseudo-solis-wets algorithm, even if the non-pseudo-solis-wets
-has been specified.  This applies only to "do_local_only": the
-"ga_run" command will use whichever local search has been specified.
+Note a limitation in the 4.2.6 release: the "do_local_only" command
+runs the pseudo-solis-wets algorithm, even if the solis-wets has been
+specified using "set_local sw1".  This applies only to "do_local_only":
+the "ga_run" command will use whichever local search has been specified.
 (We recommend the pseudo-solis-wets for all local searches: "set psw1").
 
-AutoDock calculations are normally done as a series of independent
+AutoDock calculations are performed as a series of independent
 runs.  Users will occasionally need to repeat a run. For example,
 they might want to repeat a particular run to examine the search space
 and convergence of that run.  AutoDock now reports the specific random
 number seeds used for each run. Any specific run can be repeated
 exactly by using the random number seeds reported in the prior calculation. 
+
+The docking log file (.dlg) contents have been further standardized:
+Regardless of 'outlev' setting, the host name, run date, working directory,
+and names of input PDBQT files are reported at the beginning of the AutoDock
+job.  Each 'run' (GA, LGA, local search, simulated annealing) reports its
+initial random number seeds and its ending total energy and state
+in a uniform format suitable for automated analysis.  At outlev setting
+"BASIC" (0) or above, the initial PDBQT ligand (and flexres, if present)
+coordinates are reported.  At outlev setting "ADT" (1) or above, the
+final docked coordinates of each run are reported.
 
 Some advanced autodock users customize the program for
 their own specific needs.  We've improved and simplified building
@@ -97,7 +107,6 @@ Supported Macintosh platforms are OS X 10.4-10.5 (Tiger and Leopard) on
 Intel x86 and PowerPC, and OS X 10.6-10.8 (Snow Leopard, Lion, and
 Mountain Lion) on Intel x86.  The executable binaries for Windows on
 Intel x86 have been built on Windows 5 (XP) and have been tested on Windows 6
-and Windows 7.  Windows users no longer need to install the CygWin environment,
 but they may if they like.
 
 The changes since the 4.2.3 release (1/29/2010):
