@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.73 2014/07/10 19:41:05 mp Exp $
+# $Id: test_autodock4.py,v 1.74 2014/07/16 23:27:27 mp Exp $
 #
 
 """
@@ -703,13 +703,13 @@ class AutoDock4_1pgp_lsonly_10runs_test( AutoDock_simple_test ):
     dpf_stem = "1pgp_lsonly_10runs"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
-class AutoDock4_1pgp_gals_no_set_ga_test( AutoDock_simple_test ):
+class AutoDock4_1pgp_no_set_ga_test( AutoDock_simple_test ):
     """Test that autodock4 ga_run fails when set_ga command is omitted."""
     dpf_stem = "1pgp_no_set_ga"
     expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
-class AutoDock4_1pgp_gals_no_set_psw1_test( AutoDock_simple_test ):
+class AutoDock4_1pgp_no_set_psw1_test( AutoDock_simple_test ):
     """Test that autodock4 gals_run fails when set_psw1 command is omitted."""
     dpf_stem = "1pgp_no_set_psw1"
     expected_outcome = False # True means Successful Completion!
@@ -997,8 +997,8 @@ if __name__ == '__main__':
 	# 'AutoDock4_1pgp_intelec_off_test',
         'AutoDock4_1pgp_no_parameter_file_test',
 	'AutoDock4_1pgp_gals_set_sw1_test',
-	'AutoDock4_1pgp_gals_no_set_psw1_test',
-	'AutoDock4_1pgp_gals_no_set_ga_test',
+	'AutoDock4_1pgp_no_set_psw1_test',
+	'AutoDock4_1pgp_no_set_ga_test',
 	'AutoDock4_1pgp_gals_use_defaults_test',
 	'AutoDock4_1pgp_simanneal_10runs_test',
 	'AutoDock4_1pgp_lsonly_10runs_test',
