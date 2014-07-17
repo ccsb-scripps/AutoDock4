@@ -1,6 +1,6 @@
 #! /bin/bash
 
-if [ ! -e ../1dwd_rigid_maps/1dwd_rigid.maps.fld ]; then
+if [ ! -e 1dwd_rigid.maps.fld ]; then
         bash ../dock_flexlig_flexres/make_rigid_maps
 fi
 
