@@ -1,17 +1,18 @@
-          AutoDock 4.2 Release 4.2.4.x.20121101
+          AutoDock 4.2 Release 4.2.6   
          (C) 1989-2012 The Scripps Research Institute
         AutoDock comes with ABSOLUTELY NO WARRANTY.
         AutoDock is free software, and you are welcome
         to redistribute it under certain conditions;
         for details type 'autodock4 -C'
 
-                     main.cc  $Revision: 1.1 $
+                     main.cc  $Revision: 1.2 $
 
-                   Compiled on Nov  1 2012 at 20:24:49
+                   Compiled on Jul 17 2014 at 12:49:25
 
 
-This file was created at:			8:28 19" p.m., 11/01/2012
-                   using:			"riscfs2"
+This file was created at:			3:57 11" p.m., 07/17/2014
+                   on host:		"xtal.scripps.edu"
+Current Working Directory = "/home/mp/facil/autodock/20140717cvs/autodock/EXAMPLES/1dwd/recluster"
 
       ________________________________________________________________
 
@@ -19,7 +20,7 @@ This file was created at:			8:28 19" p.m., 11/01/2012
       ________________________________________________________________
 
 
-Random number generator was seeded with values 8962, 1351826899.
+Random number generator was seeded with values 18241, 1405637831.
 Docking parameter file (DPF) used for this docking:		recluster.dpf
 DPF> ## GENERIC SECTION
 
@@ -6640,8 +6641,8 @@ AVSFLD: # end of file
 
 ________________________________________________________________________________
 
-autodock4: Successful Completion on "riscfs2"
+autodock4: Successful Completion on "xtal.scripps.edu"
 
-Real= 1.54s,  CPU= 1.32s,  System= 0.11s
+Real= 0.29s,  CPU= 0.18s,  System= 0.01s
 ________________________________________________________________________________
 
