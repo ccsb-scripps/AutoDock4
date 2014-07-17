@@ -1,5 +1,5 @@
 #! /bin/bash
-# $Id: run_examples,v 1.3 2014/07/17 22:47:30 mp Exp $
+# $Id: run_examples,v 1.4 2014/07/17 22:52:13 mp Exp $
 #
 # run the main set of AutoDock examples 
 #   - omits the very long 25,000,000-eval runs
@@ -20,6 +20,6 @@ for d in \
 
 	if [ -d $d ]; then
 	  echo "$(date)  running examples in $d"
-	  ( cd $d  bash run_examples )
+	  ( cd $d && bash run_examples )
 	fi
 done

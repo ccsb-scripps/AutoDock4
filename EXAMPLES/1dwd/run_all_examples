@@ -26,6 +26,6 @@ for d in \
 
 	if [ -d $d ]; then
 	  echo "$(date)  running examples in $d"
-	  ( cd $d  bash run_examples )
+	  ( cd $d && bash run_examples )
 	fi
 done
