@@ -80,7 +80,7 @@ Other changes since the 4.2.5.1 release (12/13/2012):
 Improved error checking of command-line arguments.
 Better checking of the atom numbers that define internal and "flexres" torsions.
 Better cross-platform compatibility of the internal random number generator.
-Running "autodock4 --version" reports compile-time configuration options.
+Running "autodock4 (or autogrid4) --version" reports compile-time configuration options.
 
 =============================================================================
                    AutoDock Release Notes
