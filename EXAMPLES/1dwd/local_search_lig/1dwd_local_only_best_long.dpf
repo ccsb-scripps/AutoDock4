@@ -30,7 +30,7 @@ ls_search_freq 1.00                  # probability of performing local search on
 set_psw1                             # set the above psw Solis & Wets parameters
 
 ## PERFORM SEARCH SECTION
-do_local_only 50                     # do this many hybrid GA-LS runs
+do_local_only 50                     # do this many LS-only runs
 
 ## ANALYSIS SECTION
 rmstol 0.5                           # cluster_tolerance/A
