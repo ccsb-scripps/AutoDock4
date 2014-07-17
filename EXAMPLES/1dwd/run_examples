@@ -1,5 +1,5 @@
 #! /bin/bash
-# $id$
+# $Id: run_examples,v 1.3 2014/07/17 22:47:30 mp Exp $
 #
 # run the main set of AutoDock examples 
 #   - omits the very long 25,000,000-eval runs
@@ -18,6 +18,8 @@ for d in \
 	dock_flexlig_flexres  \
 	; do
 
-	echo "$(date)  running examples in $d"
-	( cd $d; bash run_examples )
+	if [ -d $d ]; then
+	  echo "$(date)  running examples in $d"
+	  ( cd $d  bash run_examples )
+	fi
 done
