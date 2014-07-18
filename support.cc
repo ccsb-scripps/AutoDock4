@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.46 2014/07/02 20:24:53 mp Exp $
+ $Id: support.cc,v 1.47 2014/07/18 05:43:18 mp Exp $
 
  AutoDock 
 
@@ -537,9 +537,10 @@ Genotype &Genotype::operator=(const Genotype &original)
       return *this;
    }
 
-/*** MP 2014 This is dumping core - not sure what it does wrong 
-*** seems to be to remove old rep from "A" in "A=B" expression
-*** I do not know what number_of_vectors is supposed to be - it seems to be theppopulation size though
+/*** MPique 2014 This next block at one point was dumping core
+ * and probably should be looked at more carefully in context.
+ * Its job is to remove old rep from "A" in "A=B" expression
+***/
 
    if (rep_vector!=NULL) {
       for (i=0; i<number_of_vectors; i++) {
@@ -549,7 +550,6 @@ Genotype &Genotype::operator=(const Genotype &original)
       delete [] lookup;
    }
 
-***/
 
    number_of_vectors = original.number_of_vectors;
    number_of_genes = original.number_of_genes;
