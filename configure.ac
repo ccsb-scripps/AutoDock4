@@ -1,17 +1,17 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-# $Id: configure.ac,v 1.91 2014/07/08 19:34:12 mp Exp $
+# $Id: configure.ac,v 1.92 2014/07/19 01:12:41 mp Exp $
 AC_PREREQ(2.62)
 
 # for release replace x with appropriate version (4.2.4 was 2010-Jul-7)
 #     release 4.2.5 was 2012-Nov-2
 #     release 4.2.5.1 was 2012-Dec-13
 #     release 4.2.6 was 2014-Jun
-##AC_INIT([autodock], [4.2.6], [autodock@scripps.edu])
+AC_INIT([autodock], [4.2.6], [autodock@scripps.edu])
 # the m4_esyscmd following creates a string such as VERSION='4.2.5.x.2014-12-25'
 # indicating when the "autoreconf" was most recently run.
 # This date is also inserted into PACKAGE_VERSION and PACKAGE_STRING
-AC_INIT([autodock], m4_esyscmd([date +4.2.6.%Y-%m-%d|tr -d '\n']), [autodock@scripps.edu])
+#AC_INIT([autodock], m4_esyscmd([date +4.2.6.%Y-%m-%d|tr -d '\n']), [autodock@scripps.edu])
 AC_CONFIG_SRCDIR([analysis.cc])
 
 AM_INIT_AUTOMAKE()
