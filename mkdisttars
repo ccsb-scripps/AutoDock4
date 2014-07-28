@@ -1,5 +1,29 @@
 #! /bin/bash
-# $Id: mkdisttars,v 1.12 2014/07/17 18:29:16 mp Exp $
+# $Id: mkdisttars,v 1.13 2014/07/28 19:55:41 mp Exp $
+# prepare 
+#   architecture-specific-executable
+#   examples
+#   src 
+#   userguides
+# tar files
+#
+# Run this script in the directory where the tar files
+# are to be created.  The binary executables 
+# must already be present in subdirectories of the
+# location named below in "bindir": e.g.
+#    $bindir/autodock/i86Windows/autodock4.exe
+#    $bindir/autogrid/MacOSX/autogrid4
+#
+# The source, examples, and userguides  will be checked out of CVS (if needed)
+# into a new directory "src"
+# "autoconf -i" will be run (if needed)
+# directories not to be in distribution (eg CVS) will be removed
+#
+# The src/examples/1dwd directory will be moved
+# into a new directory "examples"
+# The src/USERGUIDE directory will be moved
+# into a new directory "userguides"
+#
 # Usage example:
 # 
 #  cd /mgl/works/rhuey/autodocksuite_4.2.2.1
@@ -11,34 +35,50 @@ release=4.2.6
 umask 0
 proglist="autodock autogrid"
 
+bindir="."
+if [ t$1 != t ]; then
+	bindir=$1;shift
+fi
+echo binaries will be looked for in $bindir/autodock and $bindir/autogrid
+
 # name for "arch" tar files is 
 # "autodocksuite-$release-<arch>.tar.gz"
 #
 # content for "arch" tar files is 
 # simply "<arch>/autodock4 <arch>/autogrid4"
+allarchok=y
 for arch in $archlist; do
-   archok=y
    case $arch in 
     i86Cygwin|i86Windows) exeext=.exe ;;
     *) exeext="";;
     esac
     for prog in $proglist; do
     progfile=${prog}${version}  # eg autodock4
-      archprogfile=$prog/$arch/$progfile$exeext
+      archprogfile=$bindir/$prog/$arch/$progfile$exeext
       if [ ! -e $archprogfile ] ; then
         echo $archprogfile missing
-	archok=n
+        allarchok=n
       else
         ls -l $archprogfile
       fi
    done
-   if [ test$archok != testn ] ; then
+done
+if [ $allarchok = n ];then
+   echo stop: architectures missing
+   exit 1
+fi
+
+for arch in $archlist; do
+   archok=y
+   case $arch in 
+    i86Cygwin|i86Windows) exeext=.exe ;;
+    *) exeext="";;
+    esac
      tar cvf \
      autodocksuite-${release}-$arch.tar \
-     -C autodock $arch/autodock4$exeext \
-     -C ../autogrid $arch/autogrid4$exeext 
-   gzip  autodocksuite-${release}-$arch.tar
-   fi
+     -C $bindir/autodock $arch/autodock4$exeext \
+     -C $bindir/autogrid $arch/autogrid4$exeext 
+   #gzip  autodocksuite-${release}-$arch.tar
 done
 
 # name for "src" tar file is 
@@ -46,11 +86,12 @@ done
 # content for "src" tar file is 
 #   "autodocksuite-${release}/src/auto{grid,dock}-${release}/"
 #   with all *.cc *.h *.cpp README COPYING, ... Tests
-# NOTE:    includes 'configure' but not Makefile)
+# NOTE:    includes 'configure' set but not Makefile)
 
-# how to create src directory:
+# create and fill src directory:
 #
 # cd  autodocksuite-${release}
+if [ ! -e  autodocksuite-${release}-src.tar ]; then
  if [ ! -d src ]; then
    mkdir src
  fi
@@ -60,28 +101,54 @@ done
       cvs co $prog
    fi
    if [ ! -e $prog/configure ]; then
-      cd $prog; autoreconf -i; cd ..
+      #cd $prog; autoreconf -i; cd ..
+      echo pause to run \'autoreconf -i\' in $(pwd)/$prog
+	read junk
    fi
  done
- cp -p autodock/README .   # more noticeable to users
- cp -p autodock/RELEASENOTES .   # more noticeable to users
+ for f in README RELEASENOTES; do
+   rm -f $f; cp -p autodock/$f $f   # more noticeable to users
+ done
+ echo removing unneeded directories and files
  find . \( \
    -name CVS -o \
    -name test -o \
    -name testdir -o \
+   -name Testruns -o \
    -name '*.xcode' -o \
+   -name '*.Xcode' -o \
    -name '*.pbproj' -o \
-   -name '*.cache' \
+   -name '*.cache' -o \
+   -name win_build -o \
+   -name NEWS -o \
+   -name ChangeLog -o \
+   -name 'Makefile.pre-autoconf' \
    \) -exec /bin/rm -rf {}  \;
 
- cd ..  # 
-# 
-mv src/autodock/EXAMPLES/1dwd ./examples  # cwd is autodocksuite-x
-rm -rf src/autodock/EXAMPLES
-( cd examples; bash mkdist; rm mkdist )
-mv  src/autodock/USERGUIDES src   # more noticeable to users
-tar cf autodocksuite-${release}-examples.tar examples
-gzip autodocksuite-${release}-examples.tar
+ cd ..  
 
-tar cf autodocksuite-${release}-src.tar src
-gzip autodocksuite-${release}-src.tar
+ if [ ! -d examples ]; then
+  mv src/autodock/EXAMPLES/1dwd ./examples  # cwd is autodocksuite-x
+  rm -rf src/autodock/EXAMPLES
+  ( cd examples; bash mkdist; rm mkdist )
+ fi
+
+ if [ ! -d userguides ]; then
+  mv  src/autodock/USERGUIDES userguides
+ fi
+
+ # adjust permissions in src - not sure about all these
+ find src -type f -exec chmod a=r {} \;
+ chmod +w src/*
+ chmod +x src/*/configure* src/*/install-sh   # created by autoreconf
+
+ tar cf autodocksuite-${release}-src.tar src/*
+else
+ echo not creating or modifying src directory, src.tar exists
+fi
+tar cf autodocksuite-${release}-examples.tar examples/*
+tar cf autodocksuite-${release}-userguides.tar userguides/*
+#gzip autodocksuite-${release}-src.tar
+#gzip autodocksuite-${release}-examples.tar
+#gzip autodocksuite-${release}-userguides.tar
+
