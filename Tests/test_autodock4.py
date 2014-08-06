@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.74 2014/07/16 23:27:27 mp Exp $
+# $Id: test_autodock4.py,v 1.75 2014/08/06 23:25:51 mp Exp $
 #
 
 """
@@ -581,7 +581,7 @@ class AutoDock4_1pgp_test( AutoDock_test ):
 # next test not installed yet as I do not have a way I know of to pass
 # different expected values to the superclass - M Pique  July 2012
 class AutoDock4_1pgp_intelec_off_test( AutoDock_test ):
-    """Test autodock4.3 internal energy off option yields 4.2 value."""
+    """Test autodock4.2.5 internal energy off option yields 4.2 value."""
     dpf_stem = "1pgp_intelec_off"
     expected_intermol = -7.72
     expected_outcome = True # True means Successful Completion!
@@ -612,49 +612,72 @@ class AutoDock4_1pgp_seedinttime_test( AutoDock_simple_test ):
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_epdb_flexres_intelec_test( AutoDock_simple_test ):
-    """Test autodock 4.3 epdb output flexres with intelec on."""
+    """Test autodock 4.2.5 epdb output flexres with intelec on."""
     dpf_stem = "1pgp_epdb_flexres_intelec"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_epdb_flexres_nointelec_test( AutoDock_simple_test ):
-    """Test autodock 4.3 epdb output flexres with intelec off."""
+    """Test autodock 4.2.5 epdb output flexres with intelec off."""
     dpf_stem = "1pgp_epdb_flexres_nointelec"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_epdb_flexres_renum_intelec_test( AutoDock_simple_test ):
+    """Test autodock 4.2.6 epdb output flexres renumbered atoms with intelec on."""
+    dpf_stem = "1pgp_epdb_flexres_renum_intelec"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_epdb_flexres_flex_renum_bad_test( AutoDock_simple_test ):
+    """Test autodock 4.2.6 epdb flexres renumbered atoms with bad flexres branch atom number."""
+    dpf_stem = "1pgp_epdb_flexres_flex_renum_bad"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_epdb_flexres_lig_renum_bad_test( AutoDock_simple_test ):
+    """Test autodock 4.2.6 epdb flexres renumbered atoms bad ligand branch atom number."""
+    dpf_stem = "1pgp_epdb_flexres_lig_renum_bad"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+class AutoDock4_1pgp_epdb_lig_renum_bad_test( AutoDock_simple_test ):
+    """Test autodock 4.2.6 epdb renumbered atoms bad ligand branch atom number."""
+    dpf_stem = "1pgp_epdb_lig_renum_bad"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_epdb_etables_test( AutoDock_simple_test ):
-    """Test autodock 4.3 high outlev detail for epdb and energy tables."""
+    """Test autodock 4.2.5 high outlev detail for epdb and energy tables."""
     dpf_stem = "1pgp_epdb_etables"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_numoutlev_test( AutoDock_simple_test ):
-    """Test autodock 4.3 numeric outlev detail settings."""
+    """Test autodock 4.2.5 numeric outlev detail settings."""
     dpf_stem = "1pgp_numoutlev"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_no_outlev_test( AutoDock_simple_test ):
-    """Test autodock 4.3 default outlev detail setting."""
+    """Test autodock 4.2.5 default outlev detail setting."""
     dpf_stem = "1pgp_no_outlev"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_illegal_outlev_test( AutoDock_simple_test ):
-    """Test autodock 4.3 outlev with no argument setting."""
+    """Test autodock 4.2.5 outlev with no argument setting."""
     dpf_stem = "1pgp_illegal_outlev"
     expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_symoutlev_test( AutoDock_simple_test ):
-    """Test autodock 4.3 symbolic and numeric outlev detail settings."""
+    """Test autodock 4.2.5 symbolic and numeric outlev detail settings."""
     dpf_stem = "1pgp_symoutlev"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
 class AutoDock4_1pgp_illegal_symoutlev_test( AutoDock_simple_test ):
-    """Test autodock 4.3 symbolic outlev incorrect setting."""
+    """Test autodock 4.2.5 symbolic outlev incorrect setting."""
     dpf_stem = "1pgp_illegal_symoutlev"
     expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
@@ -950,6 +973,10 @@ if __name__ == '__main__':
 	'AutoDock4_1pgp_seedinttime_test',
         'AutoDock4_1pgp_epdb_flexres_intelec_test',
         'AutoDock4_1pgp_epdb_flexres_nointelec_test',
+        'AutoDock4_1pgp_epdb_flexres_renum_intelec_test',
+	'AutoDock4_1pgp_epdb_flexres_flex_renum_bad_test',
+	'AutoDock4_1pgp_epdb_flexres_lig_renum_bad_test',
+	'AutoDock4_1pgp_epdb_lig_renum_bad_test',
         'AutoDock4_1pgp_epdb_etables_test',
         'AutoDock4_1pgp_numoutlev_test',
         'AutoDock4_1pgp_symoutlev_test',
