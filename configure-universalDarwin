@@ -1,5 +1,5 @@
 #! /bin/bash
-# $Id: configure-universalDarwin,v 1.5 2014/06/11 03:44:21 mp Exp $
+# $Id: configure-universalDarwin,v 1.6 2014/08/07 22:26:25 mp Exp $
 
 # run configure (or ../configure) for universalDarwinNN
 # NN=8  Mac OS X 10.4 Tiger
@@ -9,6 +9,8 @@
 # NN=12 OS X 10.8 Mountain Lion
 # NN=13 OS X 10.9 Mavericks
 # NN=14 OS X 10.10 Yosemite
+
+# This file exists separately for autodock and autogrid but should be identical
 
 
 osrev=$(uname -r)  # example 9.8.0 is Darwin 9.8 or Mac OS 10.9.8
@@ -48,9 +50,9 @@ case $ver in
 	sdkver=0 # hack for TSRI since our only 10.7 machine has no SDK dir
 	;;
   *1[2-9]) 
-	# Mountain Lion and beyond (Intel 64-bit)
+	# Mountain Lion, Mavericks, Yosemite, and maybe beyond (Intel 64-bit)
 	archlist="-arch x86_64"
-	sdkver=0 # hack for TSRI since our only 10.8 machine has no SDK dir
+	sdkver=0 # seems no longer needed
 	;;
   *)
   	echo $0 unrecogized Darwin version $ver \( osrev = $osrev \)
