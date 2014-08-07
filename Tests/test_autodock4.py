@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.75 2014/08/06 23:25:51 mp Exp $
+# $Id: test_autodock4.py,v 1.76 2014/08/07 22:44:37 mp Exp $
 #
 
 """
@@ -623,6 +623,12 @@ class AutoDock4_1pgp_epdb_flexres_nointelec_test( AutoDock_simple_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_epdb_flexres_lig_notorsdof_intelec_test( AutoDock_simple_test ):
+    """Test autodock 4.2.5 epdb output flexres without TORSDOF with intelec on."""
+    dpf_stem = "1pgp_epdb_flexres_lig_notorsdof_intelec"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_epdb_flexres_renum_intelec_test( AutoDock_simple_test ):
     """Test autodock 4.2.6 epdb output flexres renumbered atoms with intelec on."""
     dpf_stem = "1pgp_epdb_flexres_renum_intelec"
@@ -649,6 +655,12 @@ class AutoDock4_1pgp_epdb_lig_renum_bad_test( AutoDock_simple_test ):
 class AutoDock4_1pgp_epdb_etables_test( AutoDock_simple_test ):
     """Test autodock 4.2.5 high outlev detail for epdb and energy tables."""
     dpf_stem = "1pgp_epdb_etables"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_epdb_etables_flexres_intelec_test( AutoDock_simple_test ):
+    """Test autodock 4.2.5 high outlev detail for epdb and energy tables."""
+    dpf_stem = "1pgp_epdb_etables_flexres_intelec"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -975,9 +987,11 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_epdb_flexres_nointelec_test',
         'AutoDock4_1pgp_epdb_flexres_renum_intelec_test',
 	'AutoDock4_1pgp_epdb_flexres_flex_renum_bad_test',
+	'AutoDock4_1pgp_epdb_flexres_lig_notorsdof_intelec_test',
 	'AutoDock4_1pgp_epdb_flexres_lig_renum_bad_test',
 	'AutoDock4_1pgp_epdb_lig_renum_bad_test',
         'AutoDock4_1pgp_epdb_etables_test',
+        'AutoDock4_1pgp_epdb_etables_flexres_intelec_test',
         'AutoDock4_1pgp_numoutlev_test',
         'AutoDock4_1pgp_symoutlev_test',
 	'AutoDock4_1pgp_no_outlev_test',
