@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.76 2014/08/07 22:44:37 mp Exp $
+# $Id: test_autodock4.py,v 1.77 2014/08/12 20:35:09 mp Exp $
 #
 
 """
@@ -629,6 +629,13 @@ class AutoDock4_1pgp_epdb_flexres_lig_notorsdof_intelec_test( AutoDock_simple_te
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+# 1pgp_epdb_flexres_lig_3torsdofs_intelec.dpf
+class AutoDock4_1pgp_epdb_flexres_lig_3torsdofs_intelec_test( AutoDock_simple_test ):
+    """Test autodock 4.2.5 epdb output flexres with TORSDOF in ligand, flexres, and dpf file, with intelec on."""
+    dpf_stem = "1pgp_epdb_flexres_lig_3torsdofs_intelec"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_epdb_flexres_renum_intelec_test( AutoDock_simple_test ):
     """Test autodock 4.2.6 epdb output flexres renumbered atoms with intelec on."""
     dpf_stem = "1pgp_epdb_flexres_renum_intelec"
@@ -988,6 +995,7 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_epdb_flexres_renum_intelec_test',
 	'AutoDock4_1pgp_epdb_flexres_flex_renum_bad_test',
 	'AutoDock4_1pgp_epdb_flexres_lig_notorsdof_intelec_test',
+	'AutoDock4_1pgp_epdb_flexres_lig_3torsdofs_intelec_test',
 	'AutoDock4_1pgp_epdb_flexres_lig_renum_bad_test',
 	'AutoDock4_1pgp_epdb_lig_renum_bad_test',
         'AutoDock4_1pgp_epdb_etables_test',
