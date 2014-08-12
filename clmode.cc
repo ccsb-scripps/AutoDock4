@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.24 2014/06/12 05:04:57 mp Exp $
+ $Id: clmode.cc,v 1.25 2014/08/12 20:40:54 mp Exp $
 
  AutoDock 
 
@@ -71,7 +71,7 @@ void  clmode( const int   num_atm_maps,
     char  line[LINE_LEN];
     int   atomCounter = 0;
     int   natom = 0;
-    int   natom_1 = -1;
+    int   natom_1 ;
     int   nconf = 0;
     int   confCounter = 0;
     int   ntype[MAX_ATOMS];
@@ -79,13 +79,11 @@ void  clmode( const int   num_atm_maps,
     Real q = 0.;
     char  rec5[5];
     int   nsaved = 0;
-    char  anumStr[5];
+    char  anumStr[6];
     int   type[MAX_ATOMS];
-    // the next three arrays are "static" solely to prevent stack size
-    // failures on some computers when MAX_RUNS is large (e.g. 2000)
-    static Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
-    static Real clu_rms[MAX_RUNS][MAX_RUNS];
-    static int   cluster[MAX_RUNS][MAX_RUNS];
+    Real (*crdSave)/* [nconf or MAX_RUNS] */[MAX_ATOMS][SPACE];
+    Real (*clu_rms) /* [nconf or MAX_RUNS] */[MAX_RUNS];
+    int   (*cluster)/*[MAX_RUNS]*/[MAX_RUNS];
     register int i = 0;
     register int j = 0;
     int   irunmax = -1;
@@ -103,6 +101,10 @@ void  clmode( const int   num_atm_maps,
         isort[j] = j;
         econf[j] = 0.;
     }
+    crdSave = (Real (*) [MAX_ATOMS][SPACE]) malloc( MAX_RUNS * sizeof *crdSave);
+    clu_rms = (Real (*) [MAX_RUNS]) malloc( MAX_RUNS * sizeof *clu_rms);
+    cluster = (int (*) [MAX_RUNS]) calloc( MAX_RUNS, sizeof *cluster);
+    if(crdSave==NULL||clu_rms==NULL||cluster==NULL) stop("memory alloc failure 1 in clmode");
     /*
      * Open file containing coordinates to be clustered...
      */
@@ -130,6 +132,7 @@ void  clmode( const int   num_atm_maps,
              * printed out rounded up as +4.25e+03, but always as +4246.45, e.g.:
              */
             if ( haveAtoms ) {
+		if(confCounter>=MAX_RUNS) stop("too many runs to cluster in clmode");
                 econf[confCounter] = 0.;
                 sscanf( line, "%*s %*s %*s %*s %*s %*s %*s " FDFMT, &econf[confCounter]);
                 haveEnergy = TRUE;
@@ -137,6 +140,7 @@ void  clmode( const int   num_atm_maps,
                 /* ! haveAtoms
                  * We have not seen any atoms yet, so save this energy. 
                  */
+		if(atomCounter>=MAX_ATOMS) stop("too many atoms to cluster in clmode");
                 eSave[nsaved]=0.;
                 sscanf( line, "%*s %*s %*s %*s %*s %*s %*s " FDFMT, &eSave[nsaved] );
                 ++nsaved;
@@ -177,6 +181,7 @@ void  clmode( const int   num_atm_maps,
                  * We do not have any atoms for this conformation,
                  */
                 sscanf( &line[6], "%s", anumStr );
+	        anumStr[5] = '\0';
 
                 if ((anum = atoi(anumStr)) < lastanum) { /* initially, lastanum is -1, while anum is probably never -1, so this is false initially */
                     /*
@@ -325,6 +330,10 @@ void  clmode( const int   num_atm_maps,
                  atomstuff, natom, write_all_clusmem, ref_rms, outlev, logFile);
 
     }/*if we have more than 1 conformation... */
+
+    free(cluster);
+    free(clu_rms);
+    free(crdSave);
 
 /*
  *  End cluster_mode and END PROGRAM...

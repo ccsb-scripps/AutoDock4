@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.18 2012/10/15 17:48:28 mp Exp $
+ $Id: nonbonds.cc,v 1.19 2014/08/12 20:40:54 mp Exp $
 
  AutoDock 
 
@@ -42,7 +42,7 @@ using namespace std;
 // nonbonds - returns 0 if OK, else non-zero for error
 int
 nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
-		      /* not const */ int         nbmatrix[MAX_ATOMS][MAX_ATOMS],
+		      /* not const */ int         nbmatrix[/*natom*/][MAX_ATOMS],
 	      const int   natom, 
               const int   bond_index[MAX_ATOMS],
               const int         B_include_1_4_interactions,
@@ -65,7 +65,7 @@ nonbonds(const Real  crdpdb[MAX_ATOMS][SPACE],
     //                           0                                         ignored
  
     // set all nonbonds in nbmatrix to 1, except "1-1 interactions" (self interaction)
-    for (i = 0; i<MAX_ATOMS; i++) {
+    for (i = 0; i<natom; i++) {
         for (j = 0; j<MAX_ATOMS; j++){
             nbmatrix[i][j] = 1;
         } // j

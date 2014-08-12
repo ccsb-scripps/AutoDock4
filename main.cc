@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.213 2014/07/10 23:49:14 mp Exp $
+ $Id: main.cc,v 1.214 2014/08/12 20:40:54 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.213 2014/07/10 23:49:14 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.214 2014/08/12 20:40:54 mp Exp $"};
 
 
 
@@ -794,7 +794,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.213 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.214 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3048,7 +3048,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                         B_rms_heavy_atoms_only, h_index, outlev, logFile);
             }
             for (j = nconf; j < MAX_RUNS; j++) {
-                econf[j] = torsFreeEnergy;
+                econf[j] = torsFreeEnergy; // MP TODO not needed, simanneal has this info now
             }
             if (ad4_unbound_model==Unbound_Default) ad4_unbound_model = Unbound_Same_As_Bound;
             pr(logFile, "Unbound model to be used is %s.\n", report_parameter_library());

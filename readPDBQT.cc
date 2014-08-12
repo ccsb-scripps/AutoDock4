@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.46 2014/07/10 19:42:02 mp Exp $
+ $Id: readPDBQT.cc,v 1.47 2014/08/12 20:40:54 mp Exp $
 
  AutoDock 
 
@@ -112,11 +112,13 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	Real   uq = 0.;
 
     int             branch_last_piece[MAX_TORS+2];//0 unused, 1 means ROOT
-	static int      atomnumber[MAX_RECORDS]; /* -1 for non-ATOM/HETATM */ // static to save stack space
-	int pdbatomnumber[2][MAX_RECORDS]; /* two namespaces; each records's PDB atom number */
+	//int      atomnumber [MAX_RECORDS]; /* -1 for non-ATOM/HETATM */ 
+	int      *atomnumber /*[MAX_RECORDS]*/; /* -1 for non-ATOM/HETATM */ 
+	//int pdbatomnumber [2] [MAX_RECORDS]; /* two namespaces; each records's PDB atom number */
+	int (*pdbatomnumber) /*[2]*/ [MAX_RECORDS]; /* two namespaces; each records's PDB atom number */
+	//int             (*bonded) /* [natom] */ [MAX_NBONDS];
 	int             iq = 0;
 	int             natom = 0;
-	static int      nbmatrix[MAX_ATOMS][MAX_ATOMS]; // static to save stack space
 	int             nrecord = 0;
     int             nligand_record = 0;
 	int             ntor = 0;
@@ -150,6 +152,11 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 	Molecule        mol;
 
 	ParameterEntry  this_parameter_entry;
+
+		// Initialise the atomnumber and pdbatomnumber arrays
+	atomnumber=(int *) malloc(MAX_RECORDS * sizeof *atomnumber);
+	pdbatomnumber=(int (*)[MAX_RECORDS])  malloc(2 * sizeof *pdbatomnumber);
+	if(atomnumber==NULL || pdbatomnumber==NULL) stop("memory alloc failure 1 in readPDBQT");
 
 	for (i = 0; i < MAX_RECORDS; i++) {
 		atomnumber[i] = -1;
@@ -596,15 +603,18 @@ Molecule readPDBQT(char input_line[LINE_LEN],
         //  Create a list of internal non-bonds to be used in internal energy calculation...
 	//int		nbonds[MAX_ATOMS];
 	//int             bonded[MAX_ATOMS][MAX_NBONDS];
+	//int		  nbmatrix[/*natom or MAX_ATOMS*/][MAX_ATOMS];
 	int		*nbonds; // [natom];
 	int             (*bonded) /* [natom] */ [MAX_NBONDS];
+	int      	(*nbmatrix) /*[natom]*/ [MAX_ATOMS];
 		if (debug > 0) {
 			pr(logFile, "Finding bonds.\n\n");
 		}
-		// Initialise the bonded and nbonds arrays
+		// Initialise the bonded, nbonds, and nbmatrix arrays
 	nbonds=(int *) calloc(natom, sizeof *nbonds);
 	bonded=(int (*)[MAX_NBONDS])  malloc(natom * sizeof *bonded);
-	if(nbonds==NULL || bonded==NULL) stop("memory alloc failure in readPDBQT");
+	nbmatrix=(int (*)[MAX_ATOMS])  malloc(natom * sizeof *nbmatrix);
+	if(nbonds==NULL || bonded==NULL || nbmatrix==NULL) stop("memory alloc failure 2 in readPDBQT");
         for (i = 0; i < natom; i++)  for (j = 0; j < MAX_NBONDS; j++) {
 		bonded[i][j] = -1;
 	}
@@ -652,8 +662,9 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
 		flushLog;
 
-	free(nbonds);
+	free(nbmatrix);
 	free(bonded);
+	free(nbonds);
 	} else {
 		if(outlev>=LOGLIGREAD)
 		fprintf(logFile, ">>> No torsions detected, so skipping \"nonbonds\", \"weedbonds\" and \"torNorVec\" <<<\n\n");
@@ -665,6 +676,8 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 		success(hostnm, jobStart, tms_jobStart, logFile);
 		exit(EXIT_SUCCESS);
 	}
+	free(pdbatomnumber);
+	free(atomnumber);
 	return mol;
 }
 

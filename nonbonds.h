@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.h,v 1.12 2012/02/02 02:16:47 mp Exp $
+ $Id: nonbonds.h,v 1.13 2014/08/12 20:40:54 mp Exp $
 
  AutoDock 
 
@@ -29,7 +29,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "constants.h"
 int
 nonbonds( const Real crdpdb[MAX_ATOMS][SPACE],  
-	/* not const */  int nbmatrix[MAX_ATOMS][MAX_ATOMS],
+	/* not const */  int nbmatrix[/*natom*/][MAX_ATOMS],
 	const int natom, 
 	const int bond_index[MAX_ATOMS],
 	const int B_include_1_4_interactions,

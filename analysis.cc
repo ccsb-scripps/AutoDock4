@@ -1,6 +1,6 @@
 /*
 
- $Id: analysis.cc,v 1.57 2014/07/02 00:01:21 mp Exp $
+ $Id: analysis.cc,v 1.58 2014/08/12 20:40:54 mp Exp $
 
  AutoDock  
 
@@ -30,6 +30,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <limits>
@@ -111,11 +112,9 @@ void analysis( const int   Nnb,
     char  filename[PATH_MAX];
     char  *label;
 
-    static Real clu_rms[MAX_RUNS][MAX_RUNS];
-    static Real crdSave[MAX_RUNS][MAX_ATOMS][SPACE];
-    static Real crd[MAX_ATOMS][SPACE];
+    Real (*clu_rms) /* [nconf or MAX_RUNS] */[MAX_RUNS];
+    Real (*crdSave) /* [nconf or MAX_RUNS] */[MAX_ATOMS][SPACE];
     static EnergyComponent  peratomE[MAX_ATOMS];
-    // Real lo[3];
     static Real ref_crds[MAX_ATOMS][SPACE];
     static Real ref_rms[MAX_RUNS];
     Real torDeg = 0.;
@@ -123,9 +122,7 @@ void analysis( const int   Nnb,
     Real MaxValue = 99.99;
 
     int   c = 0;
-    int   c1 = 0;
-    static int   cluster[MAX_RUNS][MAX_RUNS];
-    int   i1=1;
+    int   (*cluster)/*[MAX_RUNS]*/[MAX_RUNS];
     int   indpf = 0;
     static int   isort[MAX_RUNS];
     int   ncluster = 1; int   num_in_clu[MAX_RUNS];
@@ -145,13 +142,12 @@ void analysis( const int   Nnb,
 
     pr( logFile, "\n\t\tCLUSTER ANALYSIS OF CONFORMATIONS\n\t\t_________________________________\n\nNumber of conformations = %d\n", nconf );
 
+    cluster = (int (*)[MAX_RUNS]) calloc( MAX_RUNS, sizeof *cluster);
+    if(cluster==NULL) stop("memory alloc failure 1 in analysis");
     // Initialise these arrays
     for (j = 0; j < MAX_RUNS; j++) {
         num_in_clu[j] = 0;
         isort[j] = j;
-        for (i = 0; i < MAX_RUNS; i++) {
-            cluster[j][i] = 0;
-        }
     }
 
     // Set the number of atoms to cluster on
@@ -182,6 +178,10 @@ void analysis( const int   Nnb,
         }
     }
 
+    crdSave = (Real (*) [MAX_ATOMS][SPACE]) malloc( nconf * sizeof *crdSave);
+    clu_rms = (Real (*) [MAX_RUNS]) malloc( nconf * sizeof *clu_rms);
+    if(crdSave==NULL||clu_rms==NULL) stop("memory alloc failure 2 in analysis");
+
     // Generate coordinates for each final transformation,
     for ( k=0; k<nconf; k++ ) {
 
@@ -195,11 +195,9 @@ void analysis( const int   Nnb,
         }
 
         copyState( &save, hist[k] );
-        cnv_state_to_coords( save, vt, tlist, ntor, crdpdb, crd, natom,
+        /* Place coordinates in crdSave array...  */
+        cnv_state_to_coords( save, vt, tlist, ntor, crdpdb, crdSave[k], natom,
 	 true_ligand_atoms, outlev, logFile);
-        /* Save coordinates in crdSave array...  */
-	// MP TODO why not just pass crdSave[k] to cnv_state_to_coords?
-        (void)memcpy(crdSave[k], crd, natom*SPACE*sizeof(Real));
     } /*k*/
 
     // Sort conformations by energy and perform cluster analysis,
@@ -234,16 +232,16 @@ void analysis( const int   Nnb,
         pr( logFile, "\nSorry!  Unable to perform cluster analysis, because not enough conformations were generated.\n" );
 
         ncluster = 1;
-        ref_rms[0] = getrms( crd, ref_crds, B_symmetry_flag, B_unique_pair_flag, n_rms_atoms, type, B_rms_heavy_atoms_only, h_index);
-        clu_rms[0][0] = 0.;
+        ref_rms[0] = getrms( crdSave[0], ref_crds, B_symmetry_flag, B_unique_pair_flag, n_rms_atoms, type, B_rms_heavy_atoms_only, h_index);
+        clu_rms[0][0] = 0.;  // MP appears unused beyond this point TODO
         num_in_clu[0] = 1;
         cluster[0][0] = 0;
     }
     flushLog;
+    free(clu_rms);
 
     // For each cluster, i
     for (i = 0;  i < ncluster;  i++) {
-        i1 = i + 1;
 
         // c = cluster[i][0];
         if (B_write_all_clusmem) {
@@ -255,21 +253,18 @@ void analysis( const int   Nnb,
         // For each member, k, of this cluster
         for (k = 0;  k < kmax;  k++) {
             c = cluster[i][k];
-            c1 = c + 1;
-
-            (void)memcpy(crd, crdSave[c], natom*SPACE*sizeof(Real));
 
             EnergyBreakdown eb;
 
             eb = calculateBindingEnergies( natom, ntor, unbound_internal_FE, torsFreeEnergy, B_have_flexible_residues,
-                 crd, charge, abs_charge, type, map, info,
+                 crdSave[c], charge, abs_charge, type, map, info,
                  ignore_inter, peratomE, NULL,
                  nonbondlist, ptr_ad_energy_tables, Nnb, Nnb_array, group_energy, true_ligand_atoms,
 		 B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, ad4_unbound_model, outlev, logFile);
      
 	    if(outlev >= LOGMIN) {
      	    AxisAngle aa = QuatToAxisAngle(hist[c].Q);
-            print_rem( logFile, i1, num_in_clu[i], c1, ref_rms[c]);
+            print_rem( logFile, i+1, num_in_clu[i], c+1, ref_rms[c]);
 
 	    // see also writePDBQT for similar code
 	    // we use here the newer group_energy in place of the legacy "emap_total" and "elec_total"
@@ -310,7 +305,7 @@ void analysis( const int   Nnb,
                     pr( logFile, "USER                              x       y       z    vdW   Elec        q     RMS \n" );
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     for (j = 0;  j < natom;  j++) {
-                        print_PDBQT_atom_resstr( logFile, "", j, atomstuff[j],  crd, 
+                        print_PDBQT_atom_resstr( logFile, "", j, atomstuff[j],  crdSave[c], 
                           min(peratomE[j].vdW_Hb+peratomE[j].desolv, MaxValue), 
 			  min(peratomE[j].elec, MaxValue), 
 			  charge[j],"", "");
@@ -322,7 +317,7 @@ void analysis( const int   Nnb,
                     // TODO output the ROOT, ENDROOT, BRANCH, ENDBRANCH, TORS records...
                     pr( logFile, "USER                 Rank         x       y       z    vdW   Elec        q     RMS \n");
                     for (j = 0;  j < natom;  j++) {
-                        print_PDBQT_atom_resnum( logFile, "", j, atomstuff[j],  i1, crd, 
+                        print_PDBQT_atom_resnum( logFile, "", j, atomstuff[j],  i+1, crdSave[c], 
                           min(peratomE[j].vdW_Hb+peratomE[j].desolv, MaxValue), 
 			  min(peratomE[j].elec, MaxValue), 
                           charge[j],"", "");
@@ -337,7 +332,7 @@ void analysis( const int   Nnb,
 
 	    if(outlev >= LOGNBINTE ){
             // Print detailed breakdown of internal energies of all non-bonds
-            (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crd, 
+            (void) eintcalPrint(nonbondlist, ptr_ad_energy_tables, crdSave[c], 
 	    Nnb, Nnb_array, group_energy, 
 	    B_calcIntElec, B_include_1_4_interactions, scale_1_4, qsp_abs_charge, B_use_non_bond_cutoff, B_have_flexible_residues,
 	    natom, type, info->atom_type_name,
@@ -347,6 +342,9 @@ void analysis( const int   Nnb,
         } /*k*/
     } /*i   (Next cluster.) */
     pr( logFile, "\n\n" );
+
+    free(crdSave);
+    free(cluster);
 
     if(outlev >= LOGFORADT)  {
     // AVS Field file 

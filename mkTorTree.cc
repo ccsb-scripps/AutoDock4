@@ -1,6 +1,6 @@
 /*
 
- $Id: mkTorTree.cc,v 1.28 2014/06/12 01:44:07 mp Exp $
+ $Id: mkTorTree.cc,v 1.29 2014/08/12 20:40:54 mp Exp $
 
  AutoDock 
 
@@ -428,7 +428,8 @@ fprintf(logFile, "    tlist[ntor=%d][a=%d %d] = %d \n", ntor,a,((a==0)?ATM1:ATM2
     } // local block
 
     if (ntor > 0 ) {
-        pr( logFile, "\n\nNumber of Rotatable Bonds in Small Molecule =\t%d torsions\n", ntor);
+        pr( logFile, "\n\nNumber of Rotatable Bonds in Small Molecule =\t%d torsions\n", *P_ntor_ligand);
+        if(ntor>*P_ntor_ligand) pr( logFile, "\n\nNumber of Total Rotatable Bonds =\t%d torsions\n", ntor);
 	if(outlev>=LOGLIGREAD)  {
         pr( logFile, "\n\nTORSION TREE\n____________\n\nSorted in order of increasing number of atoms moved:\n\n" );
      
@@ -448,7 +449,7 @@ fprintf(logFile, "    tlist[ntor=%d][a=%d %d] = %d \n", ntor,a,((a==0)?ATM1:ATM2
 	} // end outlev
     } else { 
 	if(outlev>=LOGBASIC)
-        pr( logFile, "\n*** No Rotatable Bonds detected in Small Molecule. ***\n\n" );
+        pr( logFile, "\n*** No Rotatable Bonds. ***\n\n" );
     }
 }
 
