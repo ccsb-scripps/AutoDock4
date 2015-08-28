@@ -1,6 +1,6 @@
 /*
 
- $Id: support.cc,v 1.47 2014/07/18 05:43:18 mp Exp $
+ $Id: support.cc,v 1.48 2015/08/28 17:51:18 mp Exp $
 
  AutoDock 
 
@@ -363,7 +363,7 @@ void Population::printPopulationAsStates(FILE *const output, const int num, cons
       thisValue = heap[i].value(Always_Eval);
       (void)fprintf( output, "%4d\t%9.4lg\t", i+1, thisValue);
       (void)fprintf( output, "%4lu\t", heap[i].age );
-      heap[i].printIndividualsState(output, ntor, 0);
+      heap[i].printIndividualsState(output, ntor, 5); // 5= quaternion, 0= axis-angle
       (void)fprintf( output, "\n");
 
 #ifdef DEBUG2
