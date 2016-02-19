@@ -1,6 +1,6 @@
 /*
 
- $Id: clmode.cc,v 1.25 2014/08/12 20:40:54 mp Exp $
+ $Id: clmode.cc,v 1.26 2016/02/19 23:18:34 mp Exp $
 
  AutoDock 
 
@@ -165,7 +165,7 @@ void  clmode( const int   num_atm_maps,
                 ++nsaved;
             }
 
-        } else if (equal( rec5,"atom", 4) || equal( rec5,"heta", 4)) {
+        } else if (equal( rec5,"atom  ") || equal( rec5,"hetatm")) {
 
             int serial;
 

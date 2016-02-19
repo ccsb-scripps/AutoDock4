@@ -1,6 +1,6 @@
 /*
 
- $Id: getpdbcrds.cc,v 1.8 2014/02/01 05:14:53 mp Exp $
+ $Id: getpdbcrds.cc,v 1.9 2016/02/19 23:18:34 mp Exp $
 
  AutoDock 
 
@@ -61,7 +61,7 @@ int getpdbcrds( const char *const rms_ref_crds_FN,
 	for (ii = 0; ii < 4; ii++) {
 	    rec5[ii] = (char)tolower( (int)line[ii] );
 	}
-	if (equal(rec5,"atom",4) || equal(rec5,"heta",4)) {
+	if (equal(rec5,"atom  ") || equal(rec5,"hetatm")) {
 
 	    if (natoms < MAX_ATOMS) {
 		sscanf( &line[30], "%s %s %s", str[X], str[Y], str[Z] );

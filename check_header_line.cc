@@ -1,6 +1,6 @@
 /*
 
- $Id: check_header_line.cc,v 1.7 2012/02/28 00:18:40 mp Exp $
+ $Id: check_header_line.cc,v 1.8 2016/02/19 23:18:34 mp Exp $
 
  AutoDock 
 
@@ -40,7 +40,7 @@ extern FILE *logFile;
 void check_header_line( const char s1[], const char s2[] )
 
 {
-    if ( !equal(s1, s2, strlen(s1) ) ) {
+    if ( !equal(s1, s2) ) {
 
 	    fprintf( logFile,"%s: WARNING: Filename mismatch: \"%s\" :: \"%s\"\n", programname, s1,s2); 
     }

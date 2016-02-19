@@ -1,6 +1,6 @@
 /*
 
- $Id: readfield.cc,v 1.11 2014/02/01 05:14:53 mp Exp $
+ $Id: readfield.cc,v 1.12 2016/02/19 23:18:34 mp Exp $
 
  AutoDock 
 
@@ -67,7 +67,7 @@ void readfield( /* not const */ GridMapSetInfo *const info,
     */
     while( fgets(line, LINE_LEN, fldFile) != NULL ) {
         (void) sscanf(line,"%s", rec9);
-        if (equal(rec9,"#SPACING", 8)) {
+        if (equal(rec9,"#SPACING")) {
         (void) sscanf(line,"%*s %lf", &localSpacing);
             info->spacing = localSpacing;
             break;
