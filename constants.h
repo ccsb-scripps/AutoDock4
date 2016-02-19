@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.44 2014/06/12 01:44:07 mp Exp $
+ $Id: constants.h,v 1.45 2016/02/19 23:06:18 mp Exp $
 
  AutoDock 
 
@@ -260,7 +260,7 @@ const struct {
 #ifndef MACROS
 #define MACROS
 
-#define equal(a,b,n) ( strncmp(a,b,(size_t)(n)) == (int)0 )
+#define equal(a,b) ( strncmp(a,b,(size_t) strlen(b)) == (int)0 )
 
 #define max(x,y)     ( ((x) > (y)) ? (x) : (y) )
 #define min(x,y)     ( ((x) < (y)) ? (x) : (y) )
