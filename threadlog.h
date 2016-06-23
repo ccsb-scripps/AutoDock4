@@ -1,6 +1,6 @@
 /*
 
- $Id: threadlog.h,v 1.1 2014/06/11 03:45:44 mp Exp $
+ $Id: threadlog.h,v 1.2 2016/06/23 22:49:33 mp Exp $
 
  AutoDock 
 
@@ -34,6 +34,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 /* thread-safe log file utility functions - M Pique, 2014 */
 #include <stdio.h>
 
+void threadLogAlloc(int j);
 FILE * threadLogOpen(int j);
 void threadLogClose(int j);
 void threadLogConcat(FILE * logFile, int j);

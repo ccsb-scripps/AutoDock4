@@ -2,7 +2,7 @@
 
 /*
 
- $Id: threadlog.cc,v 1.3 2016/06/23 21:54:14 mp Exp $
+ $Id: threadlog.cc,v 1.4 2016/06/23 22:49:33 mp Exp $
 
  AutoDock 
 
@@ -38,13 +38,26 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdlib.h>
 #include <unistd.h>
 
-static char *tfilename[MAX_RUNS];
-static FILE *tfileptr[MAX_RUNS];
+static char **tfilename /*[max_threads]*/;
+static FILE **tfileptr /*[max_threads]*/;
+static int max_threads;
+
+void
+threadLogAlloc(int j)
+{
+	
+	free(tfileptr);
+	free(tfilename);
+	tfilename =  (char **) calloc(j, sizeof (char*));
+	tfileptr =  (FILE **) calloc(j, sizeof (FILE*));
+	if(tfilename==NULL || tfileptr==NULL) stop("threadLogAlloc failure");
+	max_threads=j;
+	}
 
 FILE *
 threadLogOpen(int j)
 {
-	if(j>=MAX_RUNS) stop("threadLogOpen thread number too large");
+	if(j>=max_threads) stop("threadLogOpen thread number too large");
 	// note that tempnam does its own malloc() and is thread-safe MPique
 	tfilename[j] = tempnam(NULL, "autod");
 	tfileptr[j] = fopen(tfilename[j], "w");
@@ -54,7 +67,7 @@ threadLogOpen(int j)
 	}
 void
 threadLogClose(int j) {
-	if(j>=MAX_RUNS) stop("threadLogClose thread number too large");
+	if(j>=max_threads) stop("threadLogClose thread number too large");
 	if(NULL==tfileptr[j]) stop("closing non-open temp log file");
 	fclose(tfileptr[j]);
 	}
@@ -62,7 +75,7 @@ void
 threadLogConcat(FILE * logFile, int j) {
 	int c;
 	FILE * tmpfd = fopen(tfilename[j], "r");
-	if(j>=MAX_RUNS) stop("threadLogConcat thread number too large");
+	if(j>=max_threads) stop("threadLogConcat thread number too large");
 	if(NULL==tmpfd) stop("cannot obtain new fd to concatenate log file");
 	fflush(logFile);
 	while( EOF != (c=getc(tmpfd)) ) putc(c, logFile);
@@ -71,7 +84,7 @@ threadLogConcat(FILE * logFile, int j) {
 	}
 void
 threadLogFree(int j) {
-	if(j>=MAX_RUNS) stop("threadLogFree thread number too large");
+	if(j>=max_threads) stop("threadLogFree thread number too large");
 	if(NULL==tfileptr[j]) stop("freeing non-active temp log file");
 #pragma omp critical
 {
@@ -83,7 +96,7 @@ threadLogFree(int j) {
 void
 threadLogFreeAll(void) {
 	// for emergency cleanup of the temporary files on abnormal exit
-   for(int j=0;j<MAX_RUNS;j++) {
+   for(int j=0;j<max_threads;j++) {
 	if(NULL==tfileptr[j]) continue;
 	unlink(tfilename[j]);
 	//free(tfilename[j]);

@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.214 2014/08/12 20:40:54 mp Exp $
+ $Id: main.cc,v 1.215 2016/06/23 22:49:33 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.214 2014/08/12 20:40:54 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.215 2016/06/23 22:49:33 mp Exp $"};
 
 
 
@@ -794,7 +794,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.214 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.215 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3270,6 +3270,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
               fprintf(stateFile,"\t<run_requested>%d</run_requested>\n",nruns);
               fprintf(stateFile,"\t<runs>\n");
             }
+	    if(nruns>1 && omp_get_max_threads()>1) threadLogAlloc(nruns);
             for (j=0; j<nruns; j++) {
 
 		Real eintra = 0.0;  // sum of intramolecular energy for the ligand plus that of the protein
