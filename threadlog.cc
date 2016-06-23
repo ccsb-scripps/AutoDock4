@@ -2,7 +2,7 @@
 
 /*
 
- $Id: threadlog.cc,v 1.4 2016/06/23 22:49:33 mp Exp $
+ $Id: threadlog.cc,v 1.5 2016/06/23 23:11:40 mp Exp $
 
  AutoDock 
 
@@ -57,7 +57,12 @@ threadLogAlloc(int j)
 FILE *
 threadLogOpen(int j)
 {
-	if(j>=max_threads) stop("threadLogOpen thread number too large");
+	if(j>=max_threads) {
+		char msg[200];
+		sprintf(msg,"threadLogOpen thread number too large j %d >= max_threads %d",
+				j,max_threads);
+		stop(msg);
+	}
 	// note that tempnam does its own malloc() and is thread-safe MPique
 	tfilename[j] = tempnam(NULL, "autod");
 	tfileptr[j] = fopen(tfilename[j], "w");

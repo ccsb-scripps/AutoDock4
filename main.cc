@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.215 2016/06/23 22:49:33 mp Exp $
+ $Id: main.cc,v 1.216 2016/06/23 23:11:40 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.215 2016/06/23 22:49:33 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.216 2016/06/23 23:11:40 mp Exp $"};
 
 
 
@@ -794,7 +794,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.215 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.216 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -3488,6 +3488,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                    new Pseudo_Solis_Wets1(7+sInit.ntor, max_its, max_succ, max_fail, 2.0, 0.5, trho_ptr[t], tlb_rho_ptr[t]);
  		tevaluate[t] = new Eval;
 	   }
+	    if(nruns>1 && omp_get_max_threads()>1) threadLogAlloc(nruns);
 #pragma omp parallel for \
    shared(crdpdb,nconf) \
    private(j) \
