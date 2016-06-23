@@ -2,7 +2,7 @@
 
 /*
 
- $Id: threadlog.cc,v 1.2 2014/06/12 01:44:08 mp Exp $
+ $Id: threadlog.cc,v 1.3 2016/06/23 21:54:14 mp Exp $
 
  AutoDock 
 
@@ -44,6 +44,7 @@ static FILE *tfileptr[MAX_RUNS];
 FILE *
 threadLogOpen(int j)
 {
+	if(j>=MAX_RUNS) stop("threadLogOpen thread number too large");
 	// note that tempnam does its own malloc() and is thread-safe MPique
 	tfilename[j] = tempnam(NULL, "autod");
 	tfileptr[j] = fopen(tfilename[j], "w");
@@ -53,6 +54,7 @@ threadLogOpen(int j)
 	}
 void
 threadLogClose(int j) {
+	if(j>=MAX_RUNS) stop("threadLogClose thread number too large");
 	if(NULL==tfileptr[j]) stop("closing non-open temp log file");
 	fclose(tfileptr[j]);
 	}
@@ -60,6 +62,7 @@ void
 threadLogConcat(FILE * logFile, int j) {
 	int c;
 	FILE * tmpfd = fopen(tfilename[j], "r");
+	if(j>=MAX_RUNS) stop("threadLogConcat thread number too large");
 	if(NULL==tmpfd) stop("cannot obtain new fd to concatenate log file");
 	fflush(logFile);
 	while( EOF != (c=getc(tmpfd)) ) putc(c, logFile);
@@ -68,6 +71,7 @@ threadLogConcat(FILE * logFile, int j) {
 	}
 void
 threadLogFree(int j) {
+	if(j>=MAX_RUNS) stop("threadLogFree thread number too large");
 	if(NULL==tfileptr[j]) stop("freeing non-active temp log file");
 #pragma omp critical
 {
