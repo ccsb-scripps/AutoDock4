@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.216 2016/06/23 23:11:40 mp Exp $
+ $Id: main.cc,v 1.217 2017/03/24 19:53:44 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.216 2016/06/23 23:11:40 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.217 2017/03/24 19:53:44 mp Exp $"};
 
 
 
@@ -794,7 +794,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.216 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.217 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1267,9 +1267,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	    hbond_type hbondi;
 
             Ri = parameterArray[i].Rij;
-            epsi = parameterArray[i].epsij;
+            epsi = parameterArray[i].epsij;  // already weighted by coeff_vdW, see read_parameter_library.cc
             Ri_hb = parameterArray[i].Rij_hb;
-            epsi_hb = parameterArray[i].epsij_hb;
+            epsi_hb = parameterArray[i].epsij_hb;  // already weighted by coeff_hbond, see read_parameter_library.cc
             hbondi = parameterArray[i].hbond;
 
             // loop over atom types, j, from i to number of atom types
@@ -1323,6 +1323,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                      * exit(EXIT_FAILURE); */
                 }
                 /* Check that the epsij is reasonable */
+		// MP TODO should this check be against the weighted or unweighted value? 2017-03
                 if ((epsij < EPSIJ_MIN) || (epsij > EPSIJ_MAX)) {
                     (void) fprintf( logFile,
                     "WARNING: well-depth, epsilon_ij, %.2f, is not a very reasonable value for the equilibrium potential energy of two atoms! (%.2f kcal/mol <= epsilon_ij <= %.2f kcal/mol)\n\n", epsij, EPSIJ_MIN, EPSIJ_MAX);
@@ -2309,9 +2310,9 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         /*
         **  intnbp_r_eps
         **  Read internal energy parameters:
-        **  Lennard-Jones and Hydrogen Bond Potentials,
+        **  Lennard-Jones Potentials,
         **  DPF_INTNBP_REQM_EPS: Using epsilon and r-equilibrium values...
-        **  DPF_INTNBP_COEFFS: Using coefficients...
+        **  DPF_INTNBP_COEFFS: Using as cA, cB coefficients...
         */
 	{ // block for locals
         Real epsij;
@@ -2320,13 +2321,13 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         nfields = sscanf( line, "%*s " FDFMT2 " %d %d %s %s", &Rij, &epsij, &xA, &xB, param[0], param[1] );
 	if(nfields!=6) stop("syntax error, not 6 values in INTNBP_R_EPS line");
         if ( dpf_keyword == DPF_INTNBP_REQM_EPS ) {
-        /* check that the Rij is reasonable */
+        /* check that the Rij is reasonable; apply coeff_vdW to epsij and check that it is reasonable */
 	/* SF ...but only if there are no G-atoms. */        /* SF RING CLOSURE */
 
 	if ((Rij <= 2.0 ) && (epsij >= EPSIJ_MAX )) {    /* RING CLOSURE */
  	     (void) fprintf( logFile, "Ring closure distance potential found for atom type %s :\n    Equilibrium distance   = %.2f Angstroms \n    Equilibrium potential  = %.6f Kcal/mol\n    Pseudo-LJ coefficients = %d-%d \n\n", param[1] , Rij, epsij, xA, xB); /* SF RING CLOSURE */
 			}   /* SF RING CLOSURE */
-	else { /* SF RING CLOSURE */
+	else { /* SF not RING CLOSURE */
 
 	        if ((Rij < RIJ_MIN) || (Rij > RIJ_MAX)) {
         	    (void) fprintf( logFile,
@@ -2335,7 +2336,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 	            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
 	             * exit(EXIT_FAILURE); */
 	     	     }
-	        /* check that the epsij is reasonable */
+	        /* apply weight to epsij and check that the epsij is reasonable */
+		epsij *= AD4.coeff_vdW;
 	        if ((epsij < EPSIJ_MIN) || (epsij > EPSIJ_MAX)) {
 	            (void) fprintf( logFile,
 	            "WARNING: well-depth, epsilon_ij, %.2f, is not a very reasonable value for the equilibrium potential energy of two atoms! (%.2f kcal/mol <= epsilon_ij <= %.2f kcal/mol)\n\n", epsij, EPSIJ_MIN, EPSIJ_MAX);
