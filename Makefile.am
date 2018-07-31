@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.50 2014/07/08 19:36:27 mp Exp $
+# $Id: Makefile.am,v 1.51 2018/07/31 23:14:25 mp Exp $
 # 
 # AutoDock  
 # 
@@ -485,7 +485,7 @@ endif
 #     all post-2005 computers, which treat "int" as four bytes.
 #  M Pique - add -g for debugging
 #  M Pique - add -O3 for optimization
-AM_CPPFLAGS = -DNOSQRT \
+AM_CPPFLAGS =  \
 	      -DUSE_DOUBLE \
               -DUSE_8A_NBCUTOFF \
 	      -DUSE_INT_AS_FOURBYTELONG \
