@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.30 2014/06/12 01:44:07 mp Exp $
+ $Id: intnbtable.cc,v 1.31 2018/07/31 23:19:53 mp Exp $
 
  AutoDock 
 
@@ -50,7 +50,6 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #endif
 
-extern int debug;
 static void printminvalue( char *label, const Real e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES],
  const int neint, const int a1, const int a2, FILE *logFile);  // see end of this file
 
@@ -103,7 +102,7 @@ void intnbtable( Boole *const P_B_havenbp,
     }
     // Output the form of the potential energy equation:
     if ( B_is_unbound_calculation ) {
-        pr( logFile, "\n            %12.5lf\n", cA );
+        pr( logFile, "\n            %12.5lg\n", cA );
         pr( logFile, "    E      =  -----------  -  r\n");
         pr( logFile, "     %2s,%-2s         %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA );
         pr( logFile, "                  r\n\n");
@@ -112,13 +111,13 @@ void intnbtable( Boole *const P_B_havenbp,
 	const char * wname = is_hbond ? "coeff_hbond" : "coeff_vdW";
 	Real cA_unw = cA/weight;
 	Real cB_unw = cB/weight;
-        pr( logFile, "\n                            %12.5lf    %12.5lf    %12.5lf   %12.5lf \n", cA_unw, cB_unw, cA, cB );
+        pr( logFile, "\n                            %12.5lg    %12.5lg    %12.5lg   %12.5lg \n", cA_unw, cB_unw, cA, cB );
 	 
 	pr( logFile, "    E      =  %11s * (-----------  -  -----------) =  -----------  -  -----------\n",
 	wname);
         pr( logFile, "     %2s,%-2s        %6.4f           %-2d               %-2d             %-2d            %-2d\n", info->atom_type_name[a1], info->atom_type_name[a2], weight, xA, xB , xA,xB);
         pr( logFile, "                                  r                r              r             r \n\n");
-//      pr( logFile, "\n            %12.5lf   %12.5lf \n", cA, cB );
+//      pr( logFile, "\n            %12.5lg   %12.5lg \n", cA, cB );
 //      pr( logFile, "    E      =  -----------  -  -----------\n");
 //      pr( logFile, "     %2s,%-2s         %2d              %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA, xB );
 //      pr( logFile, "                  r               r \n\n");
@@ -134,27 +133,28 @@ void intnbtable( Boole *const P_B_havenbp,
     } // end if outlev
     nbeStart = times( &tms_nbeStart );
 
-    // loop up to a maximum distance of  (NEINT * INV_A_DIV), 
-    //                          usually    2048 * 0.01,       or 20.48 Angstroms
-
-//#define SHOWDISTANCES
+  if ( outlev >= LOGETABLES ) {
  // MPique 2011 produce table of distances and values for judging cutoffs
-#ifdef SHOWDISTANCES
     fprintf(logFile, "DISTANCES SQA_DIV= %.5f\n", SQA_DIV);
     fprintf(logFile, "DISTANCES INV_SQA_DIV= %.5f\n", INV_SQA_DIV);
-    fprintf(logFile, "DISTANCES %s %.2f %.2f %.2f %.2f  ... %.2f %.2f %.2f [%d]\n",
-       "NEINT",
-       IndexToDistance(0),
+    fprintf(logFile, "DISTANCES %s %.2f %.2f %.2f  ... %.2f %.2f %.2f [%d]\n",
+       "NEINT 1,2,3,...,NEINT-1",
        IndexToDistance(1),
        IndexToDistance(2),
        IndexToDistance(3),
        IndexToDistance(NEINT-3),
        IndexToDistance(NEINT-2),
        IndexToDistance(NEINT-1),
-       NEINT);
-#endif
+       NEINT-1);
+    }
 
-    for ( i = 1;  i < NEINT;  i++ ) {
+    // loop from index 1 up to a maximum distance of  (NEINT-1) * INV_A_DIV, 
+    //                          usually    2048 * 0.01,       or 20.48 Angstroms
+    // Note the zero-th entry is set to EINTCLAMP
+
+    ad_tables->e_vdW_Hb[0][a1][a2]  =  ad_tables->e_vdW_Hb[0][a2][a1]  =   EINTCLAMP;
+
+    for ( i = 0;  i < NEINT;  i++ ) {
         // i is the lookup-table index that corresponds to the distance
 
         // r is the distance that corresponds to the lookup index
@@ -172,22 +172,24 @@ void intnbtable( Boole *const P_B_havenbp,
             // Calculate the interaction energy at this distance, r, using an equation 
             // of the form E  =  cA / r^xA  i.e. just the repulsive term
             // minus r, to make the potential long range
-            ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA) ) - r;
+            if(i>0) ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA) ) - r;
         } else {
             // Calculate the bound potential for docking:
 
             // Calculate the interaction energy at this distance, r, using an equation 
             // of the form E  =  cA / r^xA  -  cB / r^xB
-            ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA - cB/rB) );
+            if(i>0) ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA - cB/rB) );
 
-            if (debug > 1) {
-                pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %.5f,   r=%.4lf\n",i, ad_tables->e_vdW_Hb[i][a1][a2], r ); // Xcode-gmm
-            }
         }
+    // optionally dump non-zero-ish values to log file for scoring function development
+    if( outlev >= LOGETABLES && (!B_is_unbound_calculation) && (i==0 || fabs(ad_tables->e_vdW_Hb[i][a1][a2]) >= 0.001 )) {
+                pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %12.8g,   r=%7.4lf\n",i, ad_tables->e_vdW_Hb[i][a1][a2], r );
+            }
 
     } // next i // for ( i = 1;  i < NEINT;  i++ )
-    ad_tables->e_vdW_Hb[0][a1][a2]  =  ad_tables->e_vdW_Hb[0][a2][a1]  =   EINTCLAMP;
+  
     //ad_tables->e_vdW_Hb[NEINT-1][a1][a2]  =  ad_tables->e_vdW_Hb[NEINT-1][a2][a1]  = 0;
+
 
     // report range of minimum values before smoothing
     if( outlev >= LOGETABLES ) {
@@ -206,11 +208,11 @@ void intnbtable( Boole *const P_B_havenbp,
 	    double rhigh = r + r_smooth/2;
             energy_smooth[i] = 100000.;
 #ifdef NOSQRT
-            for (int j = max(0, BoundedSqAng_to_index(rlow*rlow)); 
+            for (int j = max(0, BoundedSqAng_to_index(rlow*rlow));  \
 	      j <= min(NEINT-1, BoundedSqAng_to_index(rhigh*rhigh));  j++)
 #else
-            for (int j = max(0, BoundedAng_to_index(rlow));
-	      j =< min(NEINT-1, BoundedAng_to_index(rhigh));  j++) 
+            for (int j = max(0, BoundedAng_to_index(rlow)); \
+	      j <= min(NEINT-1, BoundedAng_to_index(rhigh));  j++) 
 #endif
               energy_smooth[i] = min(energy_smooth[i], ad_tables->e_vdW_Hb[j][a1][a2]);
         }
@@ -225,12 +227,10 @@ void intnbtable( Boole *const P_B_havenbp,
        }
     } /* endif smoothing */
 
-    // loop up to a maximum distance of  (NDIEL * INV_A_DIV), 
-    //                          usually    16384 * 0.01,       or 163.84 Angstroms
-#ifdef SHOWDISTANCES
- // MPique fall 2011
-    fprintf(logFile, "DISTANCES %s %.2f %.2f %.2f %.2f  ... %.2f %.2f %.2f [%d]\n",
-       "NDIEL",
+    if ( outlev >= LOGETABLES ) {
+    // MPique fall 2011
+    fprintf(logFile, "DISTANCES %s %.3f %.3f %.3f %.3f  ... %.3f %.3f %.3f [%d]\n",
+       "NDIEL 0,1,2,3,...NDIEL-1",
        IndexToDistance(0),
        IndexToDistance(1),
        IndexToDistance(2),
@@ -238,8 +238,11 @@ void intnbtable( Boole *const P_B_havenbp,
        IndexToDistance(NDIEL-3),
        IndexToDistance(NDIEL-2),
        IndexToDistance(NDIEL-1),
-       NDIEL);
-#endif
+       NDIEL-1);
+    }
+
+    // loop from 0 up to a maximum distance of  (NDIEL-1) * INV_A_DIV, 
+    //                          usually    16384 * 0.01,       or 163.84 Angstroms
     for ( i = 0;  i < NDIEL;  i++ ) {
         // i is the lookup-table index that corresponds to the distance
 
