@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.cc,v 1.25 2014/08/12 20:40:54 mp Exp $
+ $Id: weedbonds.cc,v 1.26 2018/07/31 23:07:29 mp Exp $
 
  AutoDock 
 
@@ -90,6 +90,7 @@ void weedbonds( const int natom,
     for (j = 0;  j < natom;  j++) {
         for (i = 0;  i < natom;  i++) {
             // Is atom "i" in the same rigid piece as atom "j"?
+            // If so, mark the pair (i,j) as bonded (0)
             if (rigid_piece[i] == rigid_piece[j]) {
                 // Set the entry for atoms "i" and "j" in the
                 //    nonbond matrix to 0 ;
@@ -102,12 +103,13 @@ void weedbonds( const int natom,
     } // j
 
     /* 
-    \   Weed out bonds across torsions,
+    \   Mark both ends of each torsion as bonded
      \______________________________________________________________
     */
     // Loop over all "ntor" torsions, "i"
     for (i=0; i<ntor; i++) {
         nbmatrix[ tlist[i][ATM2] ][ tlist[i][ATM1] ] = 0;
+        nbmatrix[ tlist[i][ATM1] ][ tlist[i][ATM2] ] = 0;
 
         if (debug>0) {
             pr(logFile, "DEBUG: Inside weedbonds now; torsion i=%d, outlev is set to %d.\n\n", i, outlev);
@@ -119,7 +121,7 @@ void weedbonds( const int natom,
     } // i
 
     /* 
-    \  Weed out bonds from atoms directly connected to rigid pieces,
+    \  Add bonds between atoms directly connected to rigid pieces,
      \_ we think these are 1-3 interactions mp+rh, 10-2008______________________
     */
     for (i=0; i<ntor; i++) {
@@ -149,24 +151,6 @@ void weedbonds( const int natom,
             if (p21 == p)  { nbmatrix[ k ][ a11 ] = nbmatrix[ a11 ][ k ] = 0; }
         } // k
     } // i
-
-    /*
-    for ( i = 0;  i < (natom-1);  i++ ) {
-        for ( j = i+1;  j < natom;  j++ ) {
-            if ( ((nbmatrix[i][j] == 1) && (nbmatrix[j][i] == 1)) || ((nbmatrix[i][j] == 4) && (nbmatrix[j][i] == 4)) ) {
-                nonbondlist[Nnb][ATM1] = i;
-                nonbondlist[Nnb][ATM2] = j;
-                nonbondlist[Nnb][TYPE1] = type[i];
-                nonbondlist[Nnb][TYPE2] = type[j];
-                nonbondlist[Nnb][NBTYPE] = nbmatrix[i][j];
-                ++Nnb;
-            } else if ( (nbmatrix[i][j] != 0 && nbmatrix[j][i] == 0) || (nbmatrix[i][j] == 0 && nbmatrix[j][i] != 0) ) {
-                prStr( error_msg, "BUG: ASSYMMETRY detected in Non-Bond Matrix at %d,%d\n", i,j);
-		stop(error_msg);
-            }
-        } // j
-    } // i
-    */
 
     // intramolecular non-bonds for ligand
     for ( i = 0;  i < (true_ligand_atoms-1);  i++ ) {
@@ -245,6 +229,7 @@ void print_nonbonds(
                 const int Nnb,
                 const NonbondParam *const nonbondlist,
                 const int type[MAX_ATOMS],
+		const bool B_include_1_4_interactions,
                 const int outlev,
 		FILE *logFile)
 
@@ -270,13 +255,26 @@ void print_nonbonds(
             pr( logFile, "\n\nMatrix of Non-Bonded Interactions:\n" );
             pr( logFile, "__________________________________\n\n" );
             pr( logFile, "Key:\nX = non-bonded interaction\n" );
-            pr( logFile, "_ = 1,2 or 1,3 interaction\n\n" );
+	    if ( B_include_1_4_interactions )  {
+		    pr( logFile, "_ = 1,2 or 1,3 interaction\n" );
+		    pr( logFile, "4 = 1-4 interaction\n\n" );
+		    }
+	    else pr( logFile, "_ = 1,2 or 1,3 or 1,4 interaction\n\n" );
+
             pr( logFile, "\nAtom: ID: " ); for (j = 0;  j < natom;  j++)   fprintf( logFile, "%2d", (1+j) );
             pr( logFile, "\n_____ ___ " ); for (j = 0;  j < natom;  j++)   fprintf( logFile, "__" );
             for (j = 0;  j < natom;  j++) {
                 pr( logFile, "\n%4s  %2d  ", pdbaname[j], 1+j );
                 for (i = 0;  i < natom;  i++) {
-                    pr( logFile, "|%c", (nbmatrix[j][i])?'X':'_' );
+		    char *s;
+		    switch (nbmatrix[j][i]) {
+		     case 0: s="_";break;
+		     case 1: s="X";break;
+		     case 4: s="4";break;
+	 	     default: s=" ";break;
+		     }
+		
+                    pr( logFile, "|%s", s);
                 } // i
             } // j
             pr( logFile, "\n\n" );

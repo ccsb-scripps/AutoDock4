@@ -1,6 +1,6 @@
 /*
 
- $Id: weedbonds.h,v 1.14 2014/08/12 20:40:55 mp Exp $
+ $Id: weedbonds.h,v 1.15 2018/07/31 23:07:29 mp Exp $
 
  AutoDock 
 
@@ -65,6 +65,7 @@ void print_nonbonds(
                 const int Nnb,
                 const NonbondParam *nonbondlist,
                 const int type[MAX_ATOMS],
+                const bool B_include_1_4_interactions,
                 const int outlev,
 		FILE *logFile);
 #endif
