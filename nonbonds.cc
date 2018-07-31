@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.cc,v 1.19 2014/08/12 20:40:54 mp Exp $
+ $Id: nonbonds.cc,v 1.20 2018/07/31 23:12:22 mp Exp $
 
  AutoDock 
 
@@ -133,6 +133,9 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
               const int from_atom,
               const int to_atom,
               const int bond_index[MAX_ATOMS],
+	      const int rigid_piece[MAX_ATOMS],
+	      const int tlist[MAX_TORS][MAX_ATOMS],
+	      const int ntor, 
 	      /* not const */ int nbonds[MAX_ATOMS],
               /* not const */ int bonded[MAX_ATOMS][MAX_NBONDS],
 	      const int debug,
@@ -190,6 +193,21 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
 
             // if distance from "i" to "j" is in range for their atom types, 
             // set one of the atoms to which "i" is bonded to "j", and vice-versa.
+	    // Do not allow bonds between atoms in different rigid pieces
+	    // except for the ends of a torsion link
+	    	if ( rigid_piece[i] != rigid_piece[j] ) {
+			bool intorsion=false;
+			for(int t=0; t<ntor; t++) {
+				if (
+				(tlist[t][ATM1] == i && tlist[t][ATM2] == j) ||
+				(tlist[t][ATM1] == j && tlist[t][ATM2] == i) ){
+					intorsion=true;
+					break;
+					}
+				}
+			if ( ! intorsion ) continue; // next j_index
+		}
+		// get here if same rigid_piece or in a torsion
 			if (dist >= mindist[bond_index[i]][bond_index[j]] && 
                 dist <= maxdist[bond_index[i]][bond_index[j]]) {  
 

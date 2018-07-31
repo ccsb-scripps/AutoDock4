@@ -1,6 +1,6 @@
 /*
 
- $Id: nonbonds.h,v 1.13 2014/08/12 20:40:54 mp Exp $
+ $Id: nonbonds.h,v 1.14 2018/07/31 23:12:22 mp Exp $
 
  AutoDock 
 
@@ -48,6 +48,9 @@ getbonds(const Real crdpdb[MAX_ATOMS][SPACE],
               const int from_atom,
               const int to_atom,
 	      const int bond_index[MAX_ATOMS],
+	      const int rigid_piece[MAX_ATOMS],
+	      const int tlist[MAX_TORS][MAX_ATOMS],
+	      const int ntor, 
 	      /* not const */ int nbonds[MAX_ATOMS], // per atom
               /* not const */ int bonded[MAX_ATOMS][MAX_NBONDS],
 	      const int debug,
