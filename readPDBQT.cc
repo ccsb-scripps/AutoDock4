@@ -1,6 +1,6 @@
 /*
 
- $Id: readPDBQT.cc,v 1.47 2014/08/12 20:40:54 mp Exp $
+ $Id: readPDBQT.cc,v 1.48 2018/07/31 23:24:43 mp Exp $
 
  AutoDock 
 
@@ -623,7 +623,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 			printbonds(natom, nbonds, bonded, "\nDEBUG:  1. BEFORE getbonds, bonded[][] array is:\n\n", 1, outlev, logFile);
 		}
         // find all the bonds in the ligand
-		errorcode = getbonds(crdpdb, 0, *P_true_ligand_atoms, bond_index, nbonds, bonded, debug, outlev, logFile);
+		errorcode = getbonds(crdpdb, 0, *P_true_ligand_atoms, bond_index, rigid_piece, tlist, ntor, nbonds, bonded, debug, outlev, logFile);
 	   if(errorcode!=0)  {
 			pr(logFile, " ERROR in ligand getbonds, code=%d\n", errorcode);
 			stop(" ERROR in ligand getbonds");
@@ -631,7 +631,7 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 
         if (B_have_flexible_residues) {
             // find all the bonds in the receptor
-            errorcode = getbonds(crdpdb, *P_true_ligand_atoms, natom, bond_index, nbonds, bonded, debug, outlev, logFile);
+            errorcode = getbonds(crdpdb, *P_true_ligand_atoms, natom, bond_index, rigid_piece, tlist, ntor, nbonds, bonded, debug, outlev, logFile);
 	   if(errorcode!=0)  {
 			pr(logFile, " ERROR in receptor getbonds, code=%d\n", errorcode);
 			stop(" ERROR in receptor getbonds");
@@ -654,7 +654,8 @@ Molecule readPDBQT(char input_line[LINE_LEN],
 		}
 		weedbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, P_Nnb, nonbondlist, Nnb_array, *P_true_ligand_atoms, map_index, debug, outlev, logFile);
 
-		print_nonbonds(natom, pdbaname, rigid_piece, ntor, tlist, nbmatrix, *P_Nnb, nonbondlist, map_index, outlev, logFile);
+		print_nonbonds(natom, pdbaname, rigid_piece, ntor, tlist, 
+  nbmatrix, *P_Nnb, nonbondlist, map_index, B_include_1_4_interactions, outlev, logFile);
 
         // Update the unit vectors for the torsion rotations
         update_torsion_vectors( crdpdb, ntor, tlist, vt, &mol, debug, 
