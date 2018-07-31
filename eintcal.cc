@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.33 2014/06/12 01:44:07 mp Exp $
+ $Id: eintcal.cc,v 1.34 2018/07/31 22:58:46 mp Exp $
 
  AutoDock  
 
@@ -221,15 +221,17 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
             //|
 
             r2 = sqhypotenuse(dx,dy,dz); // r2, the square of the separation between the atoms a1 and a2 in this non-bond, inb, 
-            r2 = clamp(r2, (RMIN_ELEC*RMIN_ELEC));
 
 	    // convert real-valued distance to an index for energy lookup tables
-#ifndef NOSQRT 
-            // Use square-root, slower...
-            const int index = Ang_to_index(sqrt(r2)); 
-#else   
+#ifdef NOSQRT 
             //  Non-square-rooting version, faster...
             const int index = SqAng_to_index(r2);
+	    const int index_elec = SqAng_to_index( clamp( r2, (RMIN_ELEC*RMIN_ELEC)));
+#else   
+            // Use square-root, slower...
+	    const double r = sqrt(r2);
+            const int index = Ang_to_index(r); 
+	    const int index_elec = Ang_to_index( clamp( r, RMIN_ELEC));
 #endif  // NOSQRT
 
             index_lt_NDIEL = BoundedNdiel(index);  // guarantees that index_lt_NDIEL is never greater than (NDIEL - 1)
@@ -239,7 +241,8 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 
             if (B_calcIntElec) {
                 //  Calculate  Electrostatic  Energy
-                double r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[index_lt_NDIEL];
+                // guarantee that index is never greater than (NDIEL - 1)
+                double r_dielectric = ptr_ad_energy_tables->r_epsilon_fn[BoundedNdiel(index_elec)];
                 e_elec = nonbondlist[inb].q1q2 * r_dielectric;
             }
 	    else e_elec = 0;
