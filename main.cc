@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.217 2017/03/24 19:53:44 mp Exp $
+ $Id: main.cc,v 1.218 2018/07/31 23:21:38 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.217 2017/03/24 19:53:44 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.218 2018/07/31 23:21:38 mp Exp $"};
 
 
 
@@ -794,7 +794,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.217 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.218 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -2333,6 +2333,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         	    (void) fprintf( logFile,
 	            "WARNING: pairwise distance, Rij, %.2f, is not a very reasonable value for the equilibrium separation of two atoms! (%.2f Angstroms <= Rij <= %.2f Angstroms)\n\n", Rij, RIJ_MIN, RIJ_MAX);
 	            (void) fprintf( logFile, "Perhaps you meant to use \"intnbp_coeffs\" instead of \"intnbp_r_eps\"?\n\n");
+        	    (void) fprintf( logFile,
+		      "  AD4.coeff_vdW=%.8g  epsij=%.8g    epsij / (Real)(xA - xB)=%.8g\n", AD4.coeff_vdW,  epsij, epsij / (Real)(xA - xB));
 	            /* GMM COMMENTED OUT FOR DAVE GOODSELL, MUTABLE ATOMS
 	             * exit(EXIT_FAILURE); */
 	     	     }
