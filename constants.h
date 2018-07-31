@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.45 2016/02/19 23:06:18 mp Exp $
+ $Id: constants.h,v 1.46 2018/07/31 23:16:04 mp Exp $
 
  AutoDock 
 
@@ -310,7 +310,7 @@ const struct {
 #define Ang_to_index(r)           ( (int) ( (r) * A_DIV ) )
 
 /* BoundedAng_to_index converts from a distance to an array index, but never returns an index out of bounds. */
-#define BoundedAng_to_index(r)    ((((int)((r)*A_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r)*A_DIV))
+#define BoundedAng_to_index(r)    ((((int)((r)*A_DIV)) > NEINT_1) ? NEINT_1 : ((int)((r)*A_DIV)) )
 
 /* index_to_SqAng converts from an array index to the square of a distance */
 #define index_to_SqAng(i)         ( ( (Real) (i) ) * INV_SQA_DIV )
