@@ -1,6 +1,6 @@
 /*
 
- $Id: stop.h,v 1.5 2010/08/27 00:05:08 mp Exp $
+ $Id: stop.h,v 1.6 2018/09/13 20:25:45 mp Exp $
 
  AutoDock 
 
@@ -31,4 +31,5 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "print_2x.h"
 
 void  stop(const char *const reason);
+void  stop_if_nonnumeric(const char *const str, const char *const reason);
 #endif

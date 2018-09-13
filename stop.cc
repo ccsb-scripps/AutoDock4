@@ -1,6 +1,6 @@
 /*
 
- $Id: stop.cc,v 1.10 2012/10/15 17:48:28 mp Exp $
+ $Id: stop.cc,v 1.11 2018/09/13 20:25:46 mp Exp $
 
  AutoDock 
 
@@ -64,5 +64,18 @@ void stop(const char *const reason)
     }
 
     exit(EXIT_FAILURE); // POSIX, defined in stdlib.h
+}
+/*----------------------------------------------------------------------------*/
+void  stop_if_nonnumeric(const char *const str, const char *const reason)
+/*----------------------------------------------------------------------------*/
+{
+double junk1;
+char junk2[200];
+     if (1 != sscanf (str, "%lf%s", &junk1, junk2) ) {
+	char msg[200];
+	snprintf(msg, sizeof(msg), 
+   	   "%s: Cannot interpret '%s' as a number.", reason, str);
+	stop(msg);
+	}
 }
 /* EOF */
