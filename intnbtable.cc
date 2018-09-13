@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.31 2018/07/31 23:19:53 mp Exp $
+ $Id: intnbtable.cc,v 1.32 2018/09/13 20:24:50 mp Exp $
 
  AutoDock 
 
@@ -63,6 +63,7 @@ void intnbtable( Boole *const P_B_havenbp,
                  const int xA, 
                  const int xB,
 		 Boole is_hbond,
+                 ConstReal nb_cutoff, /* soft cutoff honored by vdw & hb only */
                  ConstReal r_smooth,
                  const Linear_FE_Model AD4,
                  ConstDouble sigma,
@@ -93,6 +94,7 @@ void intnbtable( Boole *const P_B_havenbp,
 
     *P_B_havenbp = TRUE;
     ad_tables->is_hbond[a1][a2]  =  ad_tables->is_hbond[a2][a1]  = is_hbond;
+    ad_tables->nbc[a1][a2]  =  ad_tables->nbc[a2][a1]  = nb_cutoff;
 
     if( outlev >= LOGETABLES ) {
     if (a1 != a2) {
@@ -122,6 +124,10 @@ void intnbtable( Boole *const P_B_havenbp,
 //      pr( logFile, "     %2s,%-2s         %2d              %2d\n", info->atom_type_name[a1], info->atom_type_name[a2], xA, xB );
 //      pr( logFile, "                  r               r \n\n");
     }
+    pr( logFile, "\n Distance cutoff for %s evaluation = %.2f\n", 
+	is_hbond ? "hbond" : "vdW", nb_cutoff);
+    pr( logFile, "\n Smoothing range  = %.2f\n", r_smooth);
+    if(r_smooth==0) pr( logFile, "\n No smoothing will be applied.\n");
     pr( logFile, "Calculating %s-%-s interaction energy versus atomic separation (%.3f to %.3f Ang, %d intervals: widths %.3f to %.3f).\n",
     info->atom_type_name[a1], info->atom_type_name[a2], 
     IndexToDistance(1), IndexToDistance(NEINT-1),

@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.35 2014/06/27 01:18:21 mp Exp $
+ $Id: setflags.cc,v 1.36 2018/09/13 20:24:50 mp Exp $
 
  AutoDock 
 
@@ -243,7 +243,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
 #else
 	    fprintf(stdout, " no\n");
 #endif
-            fprintf(stdout, "  Fast lookup of distance-dependent scoring terms (NOSQRT): ");
+            fprintf(stdout, "  Non-uniform lookup of distance-dependent scoring terms (NOSQRT): ");
 #ifdef NOSQRT
 	    fprintf(stdout, " yes\n");
 #else

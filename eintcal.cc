@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.34 2018/07/31 22:58:46 mp Exp $
+ $Id: eintcal.cc,v 1.35 2018/09/13 20:24:50 mp Exp $
 
  AutoDock  
 
@@ -113,11 +113,6 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 
 {
 
-  // if r is less than the non-bond-cutoff, 
-  //  -OR-
-  // If we are computing the unbound conformation then we ignore the non bond cutoff, NBC
-        // if we have defined USE_8A_CUTOFF, then NBC = 8
-        const double nbc2 = B_use_non_bond_cutoff ? NBC2 : 999 * 999;
 
 
     // strutures for tallying and reporting energy components by atom group
@@ -250,7 +245,10 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 	    e_total = e_elec;
 
             e_desolv = ptr_ad_energy_tables->sol_fn[index_lt_NDIEL] * nb_desolv;
-            if  ( r2 < nbc2 ) {   
+  // if r is less than the non-bond-cutoff, 
+  //  -OR-
+  // If we are computing the unbound conformation then we ignore the non bond cutoff, NBC
+            if  ( r <= nonbondlist[inb].nbc || !B_use_non_bond_cutoff) {   
 		int t1, t2; 
 		t1 = nonbondlist[inb].t1; // t1 is a map_index
 		t2 = nonbondlist[inb].t2; // t2 is a map_index
@@ -271,7 +269,7 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 		}
                 e_total += e_vdW_Hb + e_desolv;
 	   }
-	   else e_total += e_desolv; // no NBC-based cutoff for desolvation
+	   else e_total += e_desolv; // no softNBC-based cutoff for desolvation
 
 
           total_e_total += e_total;

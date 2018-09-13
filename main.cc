@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.218 2018/07/31 23:21:38 mp Exp $
+ $Id: main.cc,v 1.219 2018/09/13 20:24:50 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.218 2018/07/31 23:21:38 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.219 2018/09/13 20:24:50 mp Exp $"};
 
 
 
@@ -213,7 +213,7 @@ char error_message[LINE_LEN+100];
 char message[LINE_LEN];
 char line[LINE_LEN];
 char torfmt[LINE_LEN];
-char param[2][LINE_LEN];
+char param[4][LINE_LEN]; /* temp storage during tokenizing of DPF lines */
 char rms_atoms_cmd[LINE_LEN];
 char c_mode_str[LINE_LEN];
 char confsampler_type[LINE_LEN];
@@ -707,6 +707,7 @@ for (i = 0; i < MAX_TORS;  i++ ) {
 
 for (j = 0; j < MAX_NONBONDS; j++) {
     nonbondlist[j].a1 = nonbondlist[j].a2 = 0;
+    nonbondlist[j].nbc  = SOFTNBC;
 }
 
 for (j = 0; j < MAX_RUNS; j++) {
@@ -794,7 +795,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.218 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.219 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -1343,12 +1344,12 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 		     r_smooth, r_smooth/2, r_smooth/2);
 		    }
                     intnbtable( &B_havenbp, a1, a2, info, cA, cB, xA, xB, is_hbond, 
-		      r_smooth, AD4, sigma, ad_energy_tables, BOUND_CALCULATION, 
+		      SOFTNBC, r_smooth, AD4, sigma, ad_energy_tables, BOUND_CALCULATION, 
 		      logFile, outlev);
 		    if(outlev>=LOGETABLES)
                     pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
                     intnbtable( &B_havenbp, a1, a2, info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, is_hbond,
-		      r_smooth, AD4,  sigma, unbound_energy_tables, UNBOUND_CALCULATION, 
+		      SOFTNBC, r_smooth, AD4,  sigma, unbound_energy_tables, UNBOUND_CALCULATION, 
 		      logFile, outlev);
                     // Increment the atom type numbers, a1 and a2, for the internal non-bond table
                     a2++;
@@ -1524,6 +1525,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         }
         for (j = 0; j < MAX_NONBONDS; j++) {
             nonbondlist[j].a1 = nonbondlist[j].a2 = 0;
+            nonbondlist[j].nbc = SOFTNBC;
         }
         for (j=0; j<3; j++) {
             Nnb_array[j] = 0;
@@ -1637,7 +1639,8 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                        ( parameterArray[t2].vol * (parameterArray[t1].solpar + qsp_abs_charge[atm1])
                        + parameterArray[t1].vol * (parameterArray[t2].solpar + qsp_abs_charge[atm2]) );
                 nonbondlist[i].q1q2 = charge[atm1] * charge[atm2];
-		nonbondlist[i].is_hbond = ad_energy_tables->is_hbond[t1][t2];  // MPique untested
+		nonbondlist[i].is_hbond = ad_energy_tables->is_hbond[t1][t2];  // copy over
+		nonbondlist[i].nbc = ad_energy_tables->nbc[t1][t2];  // copy over
                 if (outlev >= LOGLIGREAD) {
                     pr(logFile,"   %4d     %5d-%-5d  %7.4f",i+1,atm1+1,atm2+1,nonbondlist[i].q1q2);
                 }//outlev
@@ -2313,13 +2316,30 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
         **  Lennard-Jones Potentials,
         **  DPF_INTNBP_REQM_EPS: Using epsilon and r-equilibrium values...
         **  DPF_INTNBP_COEFFS: Using as cA, cB coefficients...
+	**  The atom types of the pair of atoms (character strings)
+ 	**  Optional additional parameters follow:
+	**     cutoff distance (Angs) - default is large, the hard NBC 
+	**     smoothing range (not radius) (Angs) - default is zero, no smoothing
         */
 	{ // block for locals
         Real epsij;
         Real Rij;
 	int xA, xB;
-        nfields = sscanf( line, "%*s " FDFMT2 " %d %d %s %s", &Rij, &epsij, &xA, &xB, param[0], param[1] );
-	if(nfields!=6) stop("syntax error, not 6 values in INTNBP_R_EPS line");
+	Real cutoff=NBC;
+	Real smoothing=0.;
+        nfields = sscanf( line, "%*s " FDFMT2 " %d %d %s %s %s %s", 
+	  &Rij, &epsij, &xA, &xB, param[0], param[1], param[2], param[3] );
+	if(nfields<6) stop("syntax error, not 6 values in INTNBP_R_EPS/DPF_INTNBP_COEFFS line");
+	if(nfields>=7 && !streq(param[2],"none")) {
+		sscanf( param[2], FDFMT, &cutoff);
+		stop_if_nonnumeric(param[2], "DPF_INTNB cutoff");
+	}
+	if(cutoff<0) stop("specified cutoff value is less than zero");
+	if(nfields>=8) {
+		sscanf( param[3], FDFMT, &smoothing);
+		stop_if_nonnumeric(param[3], "DPF_INTNB smoothing");
+	}
+	if(smoothing<0) stop("specified smoothing value is less than zero");
         if ( dpf_keyword == DPF_INTNBP_REQM_EPS ) {
         /* check that the Rij is reasonable; apply coeff_vdW to epsij and check that it is reasonable */
 	/* SF ...but only if there are no G-atoms. */        /* SF RING CLOSURE */
@@ -2375,9 +2395,11 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
                 else a[i] = foundParameter->map_index;
             }
             pr(logFile, "\nCalculating internal non-bonded interaction energies for docking calculation;\n");
-            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, is_hbond, r_smooth, AD4, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
+            intnbtable( &B_havenbp, a[0], a[1], info, cA, cB, xA, xB, is_hbond, 
+		cutoff, smoothing, AD4, sigma, ad_energy_tables, BOUND_CALCULATION, logFile, outlev);
            pr(logFile, "\nCalculating internal non-bonded interaction energies for unbound conformation calculation;\n");
-           intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, is_hbond, r_smooth, AD4, sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev );
+           intnbtable( &B_havenbp, a[0], a[1], info, cA_unbound, cB_unbound, xA_unbound, xB_unbound, is_hbond, 
+		cutoff, smoothing, AD4, sigma, unbound_energy_tables, UNBOUND_CALCULATION, logFile, outlev );
         } else {
             stop("ERROR: Exponents must be different, to avoid division by zero!\n\tAborting...\n");
             exit(EXIT_FAILURE);

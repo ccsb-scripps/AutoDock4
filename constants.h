@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.46 2018/07/31 23:16:04 mp Exp $
+ $Id: constants.h,v 1.47 2018/09/13 20:24:50 mp Exp $
 
  AutoDock 
 
@@ -146,31 +146,30 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
                                  last energy was higher than ENERGY_CUTOFF. */
 
 #ifdef USE_8A_NBCUTOFF
-
-#define NBC         8.00      /* Non-bonded cutoff for internal energy calc./Ang*/ 
-#define NEINT    2048         /* Number of values in internal energy table */
-#define A_DIV     100.00      /* Used in distance look-up table. */
+#define NBC         8.00      /* Hard Non-bonded cutoff for internal energy tables (Ang.) */ 
+#define SOFTNBC     8.00      /* Default non-bonded cutoff for internal energy calc */ 
+#define A_DIV     128      /* Resolution of 1-D pairwise distance look-up table. (/Ang) */
 
 #else
-
-#define NBC        64.00      /* Non-bonded cutoff for internal energy calc./Ang*/
-#define NEINT  131072         /* Number of values in internal energy table */
-#define A_DIV     100.00      /* Used in distance look-up table. */
-
+#define NBC       128.00      /* Hard Non-bonded cutoff for internal energy tables (Ang.) */ 
+#define SOFTNBC     8.00      /* Default non-bonded cutoff for internal energy calc */ 
+#define A_DIV     128      /* Resolution of 1-D pairwise distance look-up table. (/Ang) */
 #endif
+
+#define NEINT    ((int)(NBC*A_DIV)) /* Number of values in internal energy table */
 
 #define NBC2     (NBC*NBC)    /* NBC^2, units: Angstrom^2 */
 #define NEINT_1 (NEINT - 1)   /* index of last entry in internal energy table */
-#define INV_A_DIV  (1./A_DIV)      /* Used in distance look-up table. i.e. every 1/100-th of an Angstrom */
+#define INV_A_DIV  (1./A_DIV)      /* Used in distance look-up table. i.e. every 1/A_DIV-th of an Angstrom */
 #define INT_SQA_DIV   (NEINT/(int)NBC2)      /* Xcode-gmm */
 #define SQA_DIV    (NEINT/NBC2)      /* Used in square-distance look-up table. */
-#define INV_SQA_DIV (1./SQA_DIV) /* 0.03125   INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
+#define INV_SQA_DIV (1./SQA_DIV) /*    INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
 
 
-#define NDIEL 16384           /* Number of dielectric and desolvation values in lookup table.
+#define NDIEL ((int)(NBC*A_DIV))    /* Number of dielectric and desolvation values in lookup table.
                                  NDIEL is bigger than NEINT because electrostatic interactions are much
                                  longer-range than van der Waals interactions. */
-#define NDIEL_1 (NDIEL - 1)   /* The last valid index in dielectric and desolv lookup tables, NDIEL minus 1 */
+#define NDIEL_1 (NDIEL - 1)   /* The last valid index in dielectric and desolv lookup tables */
 
 /*
  * Alternate Scheme:-              (Uses less memory; for smaller ligands, < 8.0 Ang.)

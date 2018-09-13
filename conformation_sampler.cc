@@ -1,6 +1,6 @@
 /*
 
- $Id: conformation_sampler.cc,v 1.19 2014/06/12 01:44:07 mp Exp $
+ $Id: conformation_sampler.cc,v 1.20 2018/09/13 20:24:50 mp Exp $
 
  AutoDock 
 
@@ -156,6 +156,19 @@ Real ConformationSampler::current_energy(int true_ligand_atoms, int outlev, FILE
 	evals++;
 	Real energy = probe_point.evaluate(Normal_Eval);
 	Real rmsd = current_rmsd(true_ligand_atoms, outlev, logFile);
+
+	// next block MP experimenting for writing searched coords: 2017-07
+	if (outlev > LOGFORADT ) {
+	  probe_ind.phenotyp = probe_point;
+	  probe_ind.inverse_mapping();
+	  probe_state = probe_ind.state(base_state.ntor);
+	  cnv_state_to_coords(probe_state, vt, tlist, probe_state.ntor, crdpdb, crd, natom,
+	   true_ligand_atoms, outlev, logFile);
+	  for (int a=0; a < true_ligand_atoms; a++) {
+		fprintf(logFile, "CONFORMATION SAMPLER %.4f %.4f %.4f %.4f %.4f\n",
+			crd[a][X], crd[a][Y], crd[a][Z], energy, rmsd);
+		}
+	  }
 	
 #ifdef VERBOSE
 		fprintf(logFile, "state %d %.3f %.3f", evals, energy, rmsd);
@@ -287,7 +300,10 @@ void ConformationSampler::systematic_search(const int index, int true_ligand_ato
 				probe_point.write(start + current * step_size, index);
 			}
 			
-			if (index == 0) {
+			// general if (index == 0) {
+		// MPique for ZY plane : if (index <= 1) {
+		// MPique for general or ZX : 
+		if (index <= 1) {
                 // End recursion
 				(void)current_energy(true_ligand_atoms,outlev,logFile);
 			}
@@ -299,7 +315,9 @@ void ConformationSampler::systematic_search(const int index, int true_ligand_ato
 					//current_energy(true_ligand_atoms,outlev,logFile);// DEBUGGING
 				}
 				else {
-					systematic_search(index-1, true_ligand_atoms, outlev, logFile);
+					// MPique general: systematic_search(index-1, true_ligand_atoms, outlev, logFile);
+					// MPique ZX plane:
+					 systematic_search(index-2, true_ligand_atoms, outlev, logFile);
 				}
 			}
 		}
@@ -408,7 +426,13 @@ void systematic_conformation_sampler(const State hist[MAX_RUNS], const int nconf
 		State base_state = hist[i];
 		ConformationSampler CS(base_state, true_ligand_atoms, evaluate, outlev, logFile);
 		//CS.systematic_search(CS.dimensionality-1, true_ligand_atoms, outlev, logFile);
-		CS.systematic_search(BASE_DIMENSIONS-1, true_ligand_atoms, outlev, logFile);
+
+
+		// MPique simplified for YX only: was CS.systematic_search(BASE_DIMENSIONS-1, true_ligand_atoms, outlev, logFile);
+		// YX CS.systematic_search(1, true_ligand_atoms, outlev, logFile);
+		// ZY : CS.systematic_search(2, true_ligand_atoms, outlev, logFile);
+		// ZX : 
+		CS.systematic_search(2, true_ligand_atoms, outlev, logFile);
 		CS.output_statistics(outlev, logFile);
 	}
 	fprintf(logFile,"\n\n");

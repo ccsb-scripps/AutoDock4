@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.h,v 1.17 2012/05/01 00:22:29 mp Exp $
+ $Id: intnbtable.h,v 1.18 2018/09/13 20:24:50 mp Exp $
 
  AutoDock 
 
@@ -39,6 +39,7 @@ void intnbtable(/* not const */ Boole *const P_B_havenbp,
                 const int   xA,
                 const int   xB,
 		const Boole is_hbond,
+		ConstReal nb_cutoff, /* soft cutoff honored by vdw & hb only */
                 ConstReal   r_smooth,
                 const Linear_FE_Model AD4,
                 ConstDouble sigma,

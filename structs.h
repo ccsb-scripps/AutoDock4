@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.36 2012/10/15 17:48:28 mp Exp $
+ $Id: structs.h,v 1.37 2018/09/13 20:24:50 mp Exp $
 
  AutoDock  
 
@@ -262,6 +262,7 @@ typedef struct energy_tables
     Real sol_fn[NDIEL];                            // distance-dependent desolvation function
     Real epsilon_fn[NDIEL];                        // distance-dependent dielectric function
     Real r_epsilon_fn[NDIEL];                      // r * distance-dependent dielectric function
+    Real  nbc[MAX_ATOM_TYPES][MAX_ATOM_TYPES]; // soft non-bonded cutoff distance for vdW/hbond
     Boole is_hbond[MAX_ATOM_TYPES][MAX_ATOM_TYPES]; // for eintcalprint use
 } EnergyTables;
 
@@ -277,6 +278,7 @@ typedef struct nonbond_param
     int t1;           // TYPE1
     int t2;           // TYPE2
     Boole is_hbond;
+    Real nbc; // soft non-bonded cutoff distance for vdW and hbond, not electro or desolv
 
     nonbond_param() : a1(0), a2(0) {}
 } NonbondParam;
