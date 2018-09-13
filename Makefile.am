@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.51 2018/07/31 23:14:25 mp Exp $
+# $Id: Makefile.am,v 1.52 2018/09/13 20:18:45 mp Exp $
 # 
 # AutoDock  
 # 
@@ -487,7 +487,6 @@ endif
 #  M Pique - add -O3 for optimization
 AM_CPPFLAGS =  \
 	      -DUSE_DOUBLE \
-              -DUSE_8A_NBCUTOFF \
 	      -DUSE_INT_AS_FOURBYTELONG \
 	      -O3
 # AM_LDFLAGS = -g # -g is MP debug
