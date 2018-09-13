@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.77 2014/08/12 20:35:09 mp Exp $
+# $Id: test_autodock4.py,v 1.78 2018/09/13 20:23:28 mp Exp $
 #
 
 """
@@ -374,8 +374,36 @@ class AutoDock4_1pgp_intnbpreps_test( AutoDock_simple_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1pgp_intnbprepscs_test( AutoDock_simple_test ):
+    """Test that autodock 4 handles intnbp_r_eps with cutoff and smoothing  OK """
+    dpf_stem = "1pgp_intnbpreps-cutoff-smooth"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_intnbprepscsb_test( AutoDock_simple_test ):
+    """Test that autodock 4 stops intnbp_r_eps with smoothing syntax error """
+    dpf_stem = "1pgp_intnbpreps-cutoff-smoothbadfmt"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_intnbprepscbs_test( AutoDock_simple_test ):
+    """Test that autodock 4 stops intnbp_r_eps with cutoff syntax error """
+    dpf_stem = "1pgp_intnbpreps-cutoffbadfmt-smooth"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+class AutoDock4_1pgp_intnbprepscsn_test( AutoDock_simple_test ):
+    """Test that autodock 4 stops intnbp_r_eps with smoothing<0 """
+    dpf_stem = "1pgp_intnbpreps-cutoff-smoothneg"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+class AutoDock4_1pgp_intnbprepscns_test( AutoDock_simple_test ):
+    """Test that autodock 4 stops intnbp_r_eps with cutoff<0 and smoothing """
+    dpf_stem = "1pgp_intnbpreps-cutoffneg-smooth"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
 class AutoDock4_1pgp_intnbpreps_toofew_test( AutoDock_simple_test ):
-    """Test that autodock 4 handles intnbp_r_eps with too few tokens """
+    """Test that autodock 4 stops intnbp_r_eps with too few tokens """
     dpf_stem = "1pgp_intnbpreps_toofew"
     expected_outcome = False # True means Successful Completion!
 #______________________________________________________________________________
@@ -389,6 +417,12 @@ class AutoDock4_1pgp_intnbpreps_illegal_atom_test( AutoDock_simple_test ):
 class AutoDock4_1pgp_intnbcoeffs_test( AutoDock_simple_test ):
     """Test that autodock 4 handles intnbp_coeffs OK """
     dpf_stem = "1pgp_intnbcoeffs"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_intnbcoeffscs_test( AutoDock_simple_test ):
+    """Test that autodock 4 handles intnbp_coeffs with cutoff and smoothing OK """
+    dpf_stem = "1pgp_intnbcoeffs-cutoff-smooth"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -668,6 +702,12 @@ class AutoDock4_1pgp_epdb_etables_test( AutoDock_simple_test ):
 class AutoDock4_1pgp_epdb_etables_flexres_intelec_test( AutoDock_simple_test ):
     """Test autodock 4.2.5 high outlev detail for epdb and energy tables."""
     dpf_stem = "1pgp_epdb_etables_flexres_intelec"
+    expected_outcome = True # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1pgp_investigate_t1_test( AutoDock_simple_test ):
+    """Test autodock investigate function"""
+    dpf_stem = "1pgp_investigate_t1"
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
@@ -1000,6 +1040,7 @@ if __name__ == '__main__':
 	'AutoDock4_1pgp_epdb_lig_renum_bad_test',
         'AutoDock4_1pgp_epdb_etables_test',
         'AutoDock4_1pgp_epdb_etables_flexres_intelec_test',
+	#'AutoDock4_1pgp_investigate_t1_test',
         'AutoDock4_1pgp_numoutlev_test',
         'AutoDock4_1pgp_symoutlev_test',
 	'AutoDock4_1pgp_no_outlev_test',
@@ -1021,9 +1062,15 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_unbound_set_illegal_test',
         'AutoDock4_1pgp_unbound_model_illegal_test', #1
 	'AutoDock4_1pgp_intnbpreps_test',
+	'AutoDock4_1pgp_intnbprepscs_test',
+	'AutoDock4_1pgp_intnbprepscbs_test',
+	'AutoDock4_1pgp_intnbprepscns_test',
+	'AutoDock4_1pgp_intnbprepscsb_test',
+	'AutoDock4_1pgp_intnbprepscsn_test',
 	'AutoDock4_1pgp_intnbpreps_toofew_test',
 	'AutoDock4_1pgp_intnbpreps_illegal_atom_test',
 	'AutoDock4_1pgp_intnbcoeffs_test',
+	'AutoDock4_1pgp_intnbcoeffscs_test',
         'AutoDock4_1pgp_ga_select_tournament_test',
         'AutoDock4_1pgp_ga_select_linear_ranking_test',
         #'AutoDock4_1pgp_rmsmode_heavy_atoms_only_test',
