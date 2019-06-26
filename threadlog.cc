@@ -2,7 +2,7 @@
 
 /*
 
- $Id: threadlog.cc,v 1.5 2016/06/23 23:11:40 mp Exp $
+ $Id: threadlog.cc,v 1.6 2019/06/26 19:14:43 mp Exp $
 
  AutoDock 
 
@@ -57,6 +57,11 @@ threadLogAlloc(int j)
 FILE *
 threadLogOpen(int j)
 {
+	if(j<0) {
+		char msg[200];
+		sprintf(msg,"threadLogOpen thread number j %d < 0", j);
+		stop(msg);
+	}
 	if(j>=max_threads) {
 		char msg[200];
 		sprintf(msg,"threadLogOpen thread number too large j %d >= max_threads %d",
@@ -72,6 +77,7 @@ threadLogOpen(int j)
 	}
 void
 threadLogClose(int j) {
+	if(j<0) stop("threadLogClose thread number < 0");
 	if(j>=max_threads) stop("threadLogClose thread number too large");
 	if(NULL==tfileptr[j]) stop("closing non-open temp log file");
 	fclose(tfileptr[j]);
@@ -79,8 +85,9 @@ threadLogClose(int j) {
 void
 threadLogConcat(FILE * logFile, int j) {
 	int c;
-	FILE * tmpfd = fopen(tfilename[j], "r");
+	if(j<0) stop("threadLogConcat thread number < 0");
 	if(j>=max_threads) stop("threadLogConcat thread number too large");
+	FILE * tmpfd = fopen(tfilename[j], "r");
 	if(NULL==tmpfd) stop("cannot obtain new fd to concatenate log file");
 	fflush(logFile);
 	while( EOF != (c=getc(tmpfd)) ) putc(c, logFile);
@@ -89,6 +96,7 @@ threadLogConcat(FILE * logFile, int j) {
 	}
 void
 threadLogFree(int j) {
+	if(j<0) stop("threadLogFree thread number < 0");
 	if(j>=max_threads) stop("threadLogFree thread number too large");
 	if(NULL==tfileptr[j]) stop("freeing non-active temp log file");
 #pragma omp critical
