@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.17 2014/06/12 01:44:08 mp Exp $
+ $Id: ranlib.cc,v 1.18 2020/05/01 17:56:08 mp Exp $
 
  AutoDock 
 
@@ -993,7 +993,7 @@ static Real fact[10] = {
     1.0,1.0,2.0,6.0,24.0,120.0,720.0,5040.0,40320.0,362880.0
 };
 FourByteLong ignpoi,j,k,kflag,l,m;
-Real b1,b2,c,c0,c1,c2,c3,d,del,difmuk,e,fk,fx,fy,g,omega,p,p0,px,py,q,s,
+static Real b1,b2,c,c0,c1,c2,c3,d,del,difmuk,e,fk,fx,fy,g,omega,p,p0,px,py,q,s,
     t,u,v,x,xx,pp[35];
 
     if(mu == muprev) goto S10;

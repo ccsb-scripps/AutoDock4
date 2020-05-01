@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.h,v 1.14 2014/06/12 01:44:08 mp Exp $
+ $Id: ranlib.h,v 1.15 2020/05/01 17:56:08 mp Exp $
 
  AutoDock 
 
@@ -36,7 +36,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 // set configuration of max number of random number generators, see com.cc
 // In the OpenMP (OMP) version, this is also the max number of threads allowed
-#define NUMG 8
+#define NUMG 32
 
 //extern void advnst(const FourByteLong k);
 extern Real genbet(ConstReal  aa,ConstReal  bb);
