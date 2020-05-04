@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.32 2018/09/13 20:24:50 mp Exp $
+ $Id: intnbtable.cc,v 1.33 2020/05/04 17:00:40 mp Exp $
 
  AutoDock 
 
@@ -50,7 +50,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #endif
 
-static void printminvalue( char *label, const Real e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES],
+static void printminvalue( char *label, const ETableType e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES],
  const int neint, const int a1, const int a2, FILE *logFile);  // see end of this file
 
 
@@ -300,7 +300,7 @@ void setup_distdepdiel( FILE *logFile,
 }
 /* end of setup_distdepdiel */
 
-static void printminvalue( char *label, const Real e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES],
+static void printminvalue( char *label, const ETableType e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES],
  const int neint, const int a1, const int a2, FILE *logFile) 
 {
    /* report distance range over which minimum value appears - a 'smoothing' debug tool mostly */

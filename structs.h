@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.37 2018/09/13 20:24:50 mp Exp $
+ $Id: structs.h,v 1.38 2020/05/04 17:00:40 mp Exp $
 
  AutoDock  
 
@@ -257,7 +257,7 @@ typedef struct linear_FE_model
 typedef struct energy_tables
 {
     // e_vdW_Hb is sized for distances only up to NBC, the non-bond-cutoff
-    Real e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES];  // vdW & Hb energies
+    ETableType e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES];  // vdW & Hb energies
     // the other tables are sized for "unlimited" distances
     Real sol_fn[NDIEL];                            // distance-dependent desolvation function
     Real epsilon_fn[NDIEL];                        // distance-dependent dielectric function

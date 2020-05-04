@@ -1,6 +1,6 @@
 /*
 
- $Id: typedefs.h,v 1.13 2014/06/12 01:44:08 mp Exp $
+ $Id: typedefs.h,v 1.14 2020/05/04 17:00:40 mp Exp $
 
  AutoDock  
 
@@ -76,6 +76,10 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 typedef float MapType; //the grid map type can be changed independent of other 'Real's
 #   define MAPFMT "%f"
+//
+// the 1-D e_vdW_Hb internal energy table type - this table can range into gigabytes
+//  when MAX_ATOM_TYPES is large and the 8-Angstrom NB cutoff is not used.
+typedef float ETableType; // for_evdW_Hb
 
 
 #ifdef USE_VELOCITY_ENGINE
