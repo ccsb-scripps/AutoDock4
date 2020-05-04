@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.36 2018/09/13 20:24:50 mp Exp $
+ $Id: setflags.cc,v 1.37 2020/05/04 17:06:38 mp Exp $
 
  AutoDock 
 
@@ -104,6 +104,7 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
     char logFileName[PATH_MAX+2];
     static char * p_logFileName = strdup("stdout"); // change with -l <NAME> or defaults
      // to parFile name with last 3 chars changed from "dpf" to "dlg"
+printf("hello,world 3\n"); fflush(stdout);
     /*
      * see autoglobal.h for initialization of debug and logicals...
      */
@@ -265,6 +266,10 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
 
 	    fprintf(stdout, "  Maximum number of torsions in ligand and flexres (MAX_TORS): %d\n", MAX_TORS);
 	    fprintf(stdout, "  Maximum number of atoms in ligand and flexres (MAX_ATOMS): %d\n", MAX_ATOMS);
+	    fprintf(stdout, "  Maximum number of atom types in ligand and flexres (MAX_ATOM_TYPES): %d\n", MAX_ATOM_TYPES);
+	    fprintf(stdout, "  Precision of internal energy tables (1/A_DIV): 1/%d\n", A_DIV);
+	    fprintf(stdout, "  Number of entries in NBC-sized internal energy tables (NEINT): %d\n", NEINT);
+	    fprintf(stdout, "  Number of entries in larger internal energy tables (NDIEL): %d\n", NDIEL);
 	    fprintf(stdout, "  Maximum number of maps (MAX_MAPS): %d\n", MAX_MAPS);
 	    fprintf(stdout, "  Maximum dimension of map x, y, or z (MAX_GRID_PTS): %d\n", MAX_GRID_PTS);
 	    /* print sizes of key types for this compilation */
