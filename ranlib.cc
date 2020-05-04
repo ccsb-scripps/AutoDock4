@@ -1,6 +1,6 @@
 /*
 
- $Id: ranlib.cc,v 1.18 2020/05/01 17:56:08 mp Exp $
+ $Id: ranlib.cc,v 1.19 2020/05/04 17:01:32 mp Exp $
 
  AutoDock 
 
@@ -227,7 +227,7 @@ S220:
 #undef infnty
 }
 
-static Real gengam(ConstReal a, ConstReal r)
+static Real gengam(ConstReal a, ConstReal r) // Not used in AutoDock code
 /*
 **********************************************************************
      Real gengam(Real a,Real r)
