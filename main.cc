@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.219 2018/09/13 20:24:50 mp Exp $
+ $Id: main.cc,v 1.220 2020/05/07 21:19:43 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,7 +122,7 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.219 2018/09/13 20:24:50 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.220 2020/05/07 21:19:43 mp Exp $"};
 
 
 
@@ -170,6 +170,7 @@ int main (int argc, const char ** argv)
 
 {
 
+if (NULL!=getenv("ADdebug")) printf("AD startup point 1\n"); fflush(stdout);
 //   MAX_GRID_PTS & MAX_MAPS
 //
 static MapType *map;  // Use this with malloc, see grid.h and map_declare.h
@@ -206,6 +207,7 @@ unsigned short US_torProfile[MAX_TORS][NTORDIVS];
 //   MAX_NONBONDS
 //
 NonbondParam *nonbondlist = new NonbondParam[MAX_NONBONDS];
+if (NULL!=getenv("ADdebug")) printf("AD startup point 2\n"); fflush(stdout);
 
 //   LINE_LEN
 //
@@ -558,12 +560,16 @@ float pso_rvmax = DegreesToRadians(50.0);
 PSO_Options pso_options ; //  MP in progress
 
 
+if (NULL!=getenv("ADdebug")) printf("AD startup point 3.0 %ld\n", sizeof(GridMapSetInfo)); fflush(stdout);
 info = (GridMapSetInfo *) calloc(1, sizeof(GridMapSetInfo) );
 if(info == NULL) stop("failed to allocate grid info structure");
+if (NULL!=getenv("ADdebug")) printf("AD startup point 3.1 %ld\n", sizeof(EnergyTables)); fflush(stdout);
 ad_energy_tables = (EnergyTables *) calloc(1, sizeof(EnergyTables) );
 if(ad_energy_tables == NULL)  stop("failed to allocate energy tables");
+if (NULL!=getenv("ADdebug")) printf("AD startup point 3.2 %ld\n", sizeof(EnergyTables)); fflush(stdout);
 unbound_energy_tables = (EnergyTables *) calloc(1, sizeof(EnergyTables) );
 if(unbound_energy_tables == NULL)  stop("failed to allocate unbound energy tables");
+if (NULL!=getenv("ADdebug")) printf("AD startup point 3.3\n"); fflush(stdout);
 
 // Create a coordinate at the origin:
 Coord origin;
@@ -576,7 +582,9 @@ origin.z = 0.;
 ** Get the time at the start of the run...
 */
 
+if (NULL!=getenv("ADdebug")) printf("AD startup point 4\n"); fflush(stdout);
 jobStart = times( &tms_jobStart );
+if (NULL!=getenv("ADdebug")) printf("AD startup point 5\n"); fflush(stdout);
 
 #ifdef _OPENMP
 /*
@@ -631,9 +639,11 @@ jobStart = times( &tms_jobStart );
 #endif
 #endif
 
+if (NULL!=getenv("ADdebug")) printf("AD startup point 6\n"); fflush(stdout);
 // set initial outlev value
 (void) getoutlev("default", &outlev); // see bottom of main.cc and constants.h
 if(outlev!=LOGFORADT) stop("default outlev fail"); // debug
+if (NULL!=getenv("ADdebug")) printf("AD startup point 7\n"); fflush(stdout);
 
 //______________________________________________________________________________
 /*
@@ -795,7 +805,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.219 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.220 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
