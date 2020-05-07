@@ -1,6 +1,6 @@
 /*
 
- $Id: eintcal.cc,v 1.35 2018/09/13 20:24:50 mp Exp $
+ $Id: eintcal.cc,v 1.36 2020/05/07 21:23:14 mp Exp $
 
  AutoDock  
 
@@ -253,7 +253,7 @@ Real eintcalPrint( const NonbondParam * const nonbondlist,
 		t1 = nonbondlist[inb].t1; // t1 is a map_index
 		t2 = nonbondlist[inb].t2; // t2 is a map_index
 		 int index_lt_NEINT = BoundedNeint(index);  // guarantees that index_lt_NEINT is never greater than (NEINT - 1) (scaled NBC, non-bond cutoff)
-		e_vdW_Hb= ptr_ad_energy_tables->e_vdW_Hb[index_lt_NEINT][t2][t1];
+		e_vdW_Hb= ptr_ad_energy_tables->e_vdW_Hb[t2][t1][index_lt_NEINT];
 #ifdef EINTCALPRINT
 		if( nonbondlist[inb].is_hbond ) e_Hb = e_vdW_Hb;
 		else e_vdW = e_vdW_Hb;

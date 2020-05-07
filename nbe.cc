@@ -1,6 +1,6 @@
 /*
 
- $Id: nbe.cc,v 1.11 2014/07/01 23:27:17 mp Exp $
+ $Id: nbe.cc,v 1.12 2020/05/07 21:23:14 mp Exp $
 
  AutoDock 
 
@@ -96,12 +96,12 @@ void nbe( const GridMapSetInfo *const info,
             for ( j = i;  j < num_atm_maps; j++) {
 		// confine to 6 digits, plus leading space
 		// We need worry only about positive values being of large magnitude
-                double e= ptr_ad_energy_tables->e_vdW_Hb[k][j][i];
+                double e= ptr_ad_energy_tables->e_vdW_Hb[j][i][k];
 		char * fmt;
 		if(e>=10000) fmt=" %6.0f";  
 		else if(e>=1000) fmt=" %6.1f";
 		else fmt=" %6.2f";
-                pr( logFile, fmt, ptr_ad_energy_tables->e_vdW_Hb[k][j][i] );
+                pr( logFile, fmt, ptr_ad_energy_tables->e_vdW_Hb[j][i][k] );
             } /*  j  */
         } /*  i  */
         pr( logFile, "\n" );

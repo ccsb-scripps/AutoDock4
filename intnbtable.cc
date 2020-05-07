@@ -1,6 +1,6 @@
 /*
 
- $Id: intnbtable.cc,v 1.33 2020/05/04 17:00:40 mp Exp $
+ $Id: intnbtable.cc,v 1.34 2020/05/07 21:23:14 mp Exp $
 
  AutoDock 
 
@@ -39,6 +39,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "structs.h"
 #include "distdepdiel.h"
 #include "autocomm.h"
+#include "stop.h"
 
 #ifdef NOSQRT
     /*  ACCELERATED NON-SQUARE-ROOTING VERSION  *  Look-up internal non-bond energy based on square-of-the-distance, in square Angstroms. */
@@ -50,7 +51,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 
 #endif
 
-static void printminvalue( char *label, const ETableType e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES],
+static void printminvalue( char *label, ETableType *e_vdW_Hb/*[NEINT]*/[MAX_ATOM_TYPES][MAX_ATOM_TYPES],
  const int neint, const int a1, const int a2, FILE *logFile);  // see end of this file
 
 
@@ -153,12 +154,21 @@ void intnbtable( Boole *const P_B_havenbp,
        IndexToDistance(NEINT-1),
        NEINT-1);
     }
+    // Allocate the e_vdW_Hb [a1][a2] 1-D array if needed, 
+    //  put pointer to it in [a2][a1] as well;
+    //  TODO check if not empty upon first call here
+    if ( ad_tables->e_vdW_Hb[a1][a2] == NULL ) {
+	    ad_tables->e_vdW_Hb[a1][a2] = (ETableType *) calloc( NEINT, sizeof (ETableType));
+	    ad_tables->e_vdW_Hb[a2][a1] = ad_tables->e_vdW_Hb[a1][a2];
+	}
+    if (ad_tables->e_vdW_Hb[a1][a2]==NULL) stop ( "unable to allocate e_vdW_Hb table");
+	    
 
     // loop from index 1 up to a maximum distance of  (NEINT-1) * INV_A_DIV, 
     //                          usually    2048 * 0.01,       or 20.48 Angstroms
     // Note the zero-th entry is set to EINTCLAMP
 
-    ad_tables->e_vdW_Hb[0][a1][a2]  =  ad_tables->e_vdW_Hb[0][a2][a1]  =   EINTCLAMP;
+    ad_tables->e_vdW_Hb[a1][a2][0]  =  ad_tables->e_vdW_Hb[a2][a1][0]  =   EINTCLAMP;
 
     for ( i = 0;  i < NEINT;  i++ ) {
         // i is the lookup-table index that corresponds to the distance
@@ -174,27 +184,27 @@ void intnbtable( Boole *const P_B_havenbp,
             // Calculate the unbound potential for computing the 
             // unbound extended conformation of the ligand:
             // E = -|r|
-            // ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  = -1. * fabs( r );
+            // ad_tables->e_vdW_Hb[a1][a2][i]  =  ad_tables->e_vdW_Hb[a2][a1][i]  = -1. * fabs( r );
             // Calculate the interaction energy at this distance, r, using an equation 
             // of the form E  =  cA / r^xA  i.e. just the repulsive term
             // minus r, to make the potential long range
-            if(i>0) ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA) ) - r;
+            if(i>0) ad_tables->e_vdW_Hb[a1][a2][i]  =  ad_tables->e_vdW_Hb[a2][a1][i]  =  min( EINTCLAMP, (cA/rA) ) - r;
         } else {
             // Calculate the bound potential for docking:
 
             // Calculate the interaction energy at this distance, r, using an equation 
             // of the form E  =  cA / r^xA  -  cB / r^xB
-            if(i>0) ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1]  =  min( EINTCLAMP, (cA/rA - cB/rB) );
+            if(i>0) ad_tables->e_vdW_Hb[a1][a2][i]  =  ad_tables->e_vdW_Hb[a2][a1][i]  =  min( EINTCLAMP, (cA/rA - cB/rB) );
 
         }
     // optionally dump non-zero-ish values to log file for scoring function development
-    if( outlev >= LOGETABLES && (!B_is_unbound_calculation) && (i==0 || fabs(ad_tables->e_vdW_Hb[i][a1][a2]) >= 0.001 )) {
-                pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %12.8g,   r=%7.4lf\n",i, ad_tables->e_vdW_Hb[i][a1][a2], r );
+    if( outlev >= LOGETABLES && (!B_is_unbound_calculation) && (i==0 || fabs(ad_tables->e_vdW_Hb[a1][a2][i]) >= 0.001 )) {
+                pr( logFile, "i=%6d  ad_tables->e_vdW_Hb = %12.8g,   r=%7.4lf\n",i, ad_tables->e_vdW_Hb[a1][a2][i], r );
             }
 
     } // next i // for ( i = 1;  i < NEINT;  i++ )
   
-    //ad_tables->e_vdW_Hb[NEINT-1][a1][a2]  =  ad_tables->e_vdW_Hb[NEINT-1][a2][a1]  = 0;
+    //ad_tables->e_vdW_Hb[a1][a2][NEINT-1]  =  ad_tables->e_vdW_Hb[a2][a1][NEINT-1] = 0;
 
 
     // report range of minimum values before smoothing
@@ -220,10 +230,10 @@ void intnbtable( Boole *const P_B_havenbp,
             for (int j = max(0, BoundedAng_to_index(rlow)); \
 	      j <= min(NEINT-1, BoundedAng_to_index(rhigh));  j++) 
 #endif
-              energy_smooth[i] = min(energy_smooth[i], ad_tables->e_vdW_Hb[j][a1][a2]);
+              energy_smooth[i] = min(energy_smooth[i], ad_tables->e_vdW_Hb[a1][a2][j]);
         }
         for (i = 1;  i < NEINT-1;  i++) {
-            ad_tables->e_vdW_Hb[i][a1][a2]  =  ad_tables->e_vdW_Hb[i][a2][a1] = energy_smooth[i];
+            ad_tables->e_vdW_Hb[a1][a2][i]  =  ad_tables->e_vdW_Hb[a2][a1][i] = energy_smooth[i];
         }
        // report range of minimum values after smoothing
        if( outlev >= LOGETABLES ) {
@@ -300,7 +310,7 @@ void setup_distdepdiel( FILE *logFile,
 }
 /* end of setup_distdepdiel */
 
-static void printminvalue( char *label, const ETableType e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES],
+static void printminvalue( char *label, ETableType *e_vdW_Hb/*[NEINT]*/[MAX_ATOM_TYPES][MAX_ATOM_TYPES],
  const int neint, const int a1, const int a2, FILE *logFile) 
 {
    /* report distance range over which minimum value appears - a 'smoothing' debug tool mostly */
@@ -310,14 +320,14 @@ int ifirstmin=-1, ilastmin=-1; // indices
 
 	// find minimum value in list
 	minval=EINTCLAMP; // big
-	for(i=0;i<neint;i++) minval=min(minval, e_vdW_Hb[i][a1][a2]);
+	for(i=0;i<neint;i++) minval=min(minval, e_vdW_Hb[a1][a2][i]);
 
 	// find first appearance of minval
-	for(i=0;i<neint;i++) if(e_vdW_Hb[i][a1][a2]==minval) break;
+	for(i=0;i<neint;i++) if(e_vdW_Hb[a1][a2][i]==minval) break;
 	ifirstmin=i;
 
 	// find last appearance of minval
-	for(i=0;i<neint;i++) if(e_vdW_Hb[i][a1][a2]==minval) ilastmin=i;
+	for(i=0;i<neint;i++) if(e_vdW_Hb[a1][a2][i]==minval) ilastmin=i;
 
 	if(ifirstmin<0||ifirstmin>=neint||ilastmin<0||ilastmin>=neint) {
 		// bug check

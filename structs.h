@@ -1,6 +1,6 @@
 /*
 
- $Id: structs.h,v 1.38 2020/05/04 17:00:40 mp Exp $
+ $Id: structs.h,v 1.39 2020/05/07 21:23:14 mp Exp $
 
  AutoDock  
 
@@ -257,12 +257,13 @@ typedef struct linear_FE_model
 typedef struct energy_tables
 {
     // e_vdW_Hb is sized for distances only up to NBC, the non-bond-cutoff
-    ETableType e_vdW_Hb[NEINT][MAX_ATOM_TYPES][MAX_ATOM_TYPES];  // vdW & Hb energies
+    // Note this array is sparse so cells of size NEINT are allocated in eintcal.cc
+    ETableType *e_vdW_Hb/*[NEINT]*/[MAX_ATOM_TYPES][MAX_ATOM_TYPES];  // vdW & Hb energies
     // the other tables are sized for "unlimited" distances
     Real sol_fn[NDIEL];                            // distance-dependent desolvation function
     Real epsilon_fn[NDIEL];                        // distance-dependent dielectric function
     Real r_epsilon_fn[NDIEL];                      // r * distance-dependent dielectric function
-    Real  nbc[MAX_ATOM_TYPES][MAX_ATOM_TYPES]; // soft non-bonded cutoff distance for vdW/hbond
+    float  nbc[MAX_ATOM_TYPES][MAX_ATOM_TYPES]; // soft non-bonded cutoff distance for vdW/hbond
     Boole is_hbond[MAX_ATOM_TYPES][MAX_ATOM_TYPES]; // for eintcalprint use
 } EnergyTables;
 
