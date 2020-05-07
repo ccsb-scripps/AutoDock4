@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.37 2020/05/04 17:06:38 mp Exp $
+ $Id: setflags.cc,v 1.38 2020/05/07 21:20:26 mp Exp $
 
  AutoDock 
 
@@ -256,7 +256,8 @@ printf("hello,world 3\n"); fflush(stdout);
 #else
 	    fprintf(stdout, " no\n");
 #endif
-	    fprintf(stdout, "  Non-bond cutoff for internal energy calculation (NBC): %.2f\n", NBC);
+	    fprintf(stdout, "  Non-bond cutoff for electostatic/desolvation internal energy calculation (DIELCUTOFF): %.2f Ang.\n", DIELCUTOFF);
+	    fprintf(stdout, "  Non-bond cutoff for vdW/Hb internal energy calculation (NBC): %.2f Ang.\n", NBC);
             fprintf(stdout, "  Optimize internal energy scoring (USE_8A_NBCUTOFF): ");
 #ifdef USE_8A_NBCUTOFF
 	    fprintf(stdout, " yes\n");
