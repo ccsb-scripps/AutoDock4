@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# $Id: test_autodock4.py,v 1.78 2018/09/13 20:23:28 mp Exp $
+# $Id: test_autodock4.py,v 1.79 2020/05/21 15:29:14 mp Exp $
 #
 
 """
@@ -809,6 +809,38 @@ class AutoDock4_1pgp_output_pop_file_test( AutoDock_simple_test ):
     expected_outcome = True # True means Successful Completion!
 #______________________________________________________________________________
 
+class AutoDock4_1aot_targetatomparameterWmissing_test( AutoDock_simple_test ):
+    """Test that autodock4 target file that is missing an atom type parameter for which a map was included gives fatal error"""
+    dpf_stem = "1aot_targetatomparameterWmissing"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1aot_targetnamemissing_test( AutoDock_simple_test ):
+    """Test that autodock4 target file name missing gives fatal error"""
+    dpf_stem = "1aot_targetnamemissing"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1aot_targetfilemissing_test( AutoDock_simple_test ):
+    """Test that autodock4 target file missing gives fatal error"""
+    dpf_stem = "1aot_targetfilemissing"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1aot_targetfileempty_test( AutoDock_simple_test ):
+    """Test that autodock4 target file empty gives fatal error"""
+    dpf_stem = "1aot_targetfileempty"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+class AutoDock4_1aot_targetfilemultiple_test( AutoDock_simple_test ):
+    """Test that autodock4 target file appearing multiple times gives fatal error"""
+    dpf_stem = "1aot_targetfilemultiple"
+    expected_outcome = False # True means Successful Completion!
+#______________________________________________________________________________
+
+
+
 class AutoDock4_1pgp_rmsmode_heavy_atoms_only_test( AutoDock_test ):
     """Test that autodock4 works using new keyword rmsmode heavy_atoms_only."""
     dpf_stem = "1pgp_rmsmode_heavy_atoms_only"
@@ -1013,9 +1045,6 @@ class AutoDock4_1pgp_ga_smooth0_energy_test( AutoDock4_energy_test ):
 
 #______________________________________________________________________________
 
-
-
-
 if __name__ == '__main__':
     #  This syntax lets us run all the tests,
     #  or conveniently comment out tests we're not interested in.
@@ -1026,6 +1055,11 @@ if __name__ == '__main__':
         'AutoDock4_1pgp_wrong_extension',
         'AutoDock4_1pgp_two_extensions',
         # simple tests:
+        'AutoDock4_1aot_targetatomparameterWmissing_test',
+        'AutoDock4_1aot_targetnamemissing_test',
+        'AutoDock4_1aot_targetfilemissing_test',
+        'AutoDock4_1aot_targetfileempty_test',
+        'AutoDock4_1aot_targetfilemultiple_test',
         'AutoDock4_1pgp_timepid_test',
 	'AutoDock4_1pgp_seed01_test',
 	'AutoDock4_1pgp_seed37_test',
