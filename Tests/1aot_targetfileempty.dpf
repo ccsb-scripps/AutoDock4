@@ -1,0 +1,14 @@
+# test target reading empty file
+intelec                              # calculate internal electrostatic energy
+
+target  /dev/null
+
+move 1pgp_lig.pdbqt                  # small molecule
+about 22.894 28.598 40.259           # small molecule center
+tran0 22.894 28.598 40.259           # small molecule center
+
+intnbp_coeffs 1297.46337890625 227.8125 12 6 OA P 11.0 1.1 # Cn=m/(n-m)*e*r^n,  Cm=n/(n-m)*e*r^m   r=1.5  e=10.0
+
+
+epdb                                 # compute energy of PDBQT specified by 'move' 
+
