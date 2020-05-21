@@ -1,6 +1,6 @@
 /*
 
- $Id: constants.h,v 1.47 2018/09/13 20:24:50 mp Exp $
+ $Id: constants.h,v 1.48 2020/05/21 15:32:56 mp Exp $
 
  AutoDock 
 
@@ -151,8 +151,9 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define A_DIV     128      /* Resolution of 1-D pairwise distance look-up table. (/Ang) */
 
 #else
-#define NBC       128.00      /* Hard Non-bonded cutoff for internal energy tables (Ang.) */ 
-#define SOFTNBC     8.00      /* Default non-bonded cutoff for internal energy calc */ 
+/*#define NBC       128.00 */     /* Hard Non-bonded cutoff for internal energy tables (Ang.) */ 
+#define NBC       16.00      /* Hard Non-bonded cutoff for internal energy tables (Ang.) */ 
+#define SOFTNBC     16.00      /* Default non-bonded cutoff for internal energy calc */ 
 #define A_DIV     128      /* Resolution of 1-D pairwise distance look-up table. (/Ang) */
 #endif
 
@@ -166,7 +167,8 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #define INV_SQA_DIV (1./SQA_DIV) /*    INV_SQA_DIV  =  1/SQA_DIV  =  NBC2 / NEINT   */
 
 
-#define NDIEL ((int)(NBC*A_DIV))    /* Number of dielectric and desolvation values in lookup table.
+#define DIELCUTOFF	64.00	/* Dielectric and desolvation cutoff distance */
+#define NDIEL ((int)(DIELCUTOFF*A_DIV))    /* Number of dielectric and desolvation values in lookup table.
                                  NDIEL is bigger than NEINT because electrostatic interactions are much
                                  longer-range than van der Waals interactions. */
 #define NDIEL_1 (NDIEL - 1)   /* The last valid index in dielectric and desolv lookup tables */
