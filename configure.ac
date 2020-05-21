@@ -1,6 +1,6 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-# $Id: configure.ac,v 1.94 2015/08/28 17:52:03 mp Exp $
+# $Id: configure.ac,v 1.95 2020/05/21 15:31:47 mp Exp $
 AC_PREREQ(2.62)
 
 # for release replace x with appropriate version (4.2.4 was 2010-Jul-7)
@@ -34,7 +34,7 @@ AC_CANONICAL_HOST
 
 # Checks for header files.
 AC_HEADER_STDC
-#AC_CHECK_HEADERS([fcntl.h limits.h stdlib.h string.h sys/param.h sys/time.h unistd.h])
+#AC_CHECK_HEADERS([fcntl.h limits.h stdlib.h string.h zip.h sys/param.h sys/time.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -68,6 +68,15 @@ AC_PROG_CXX
 AC_OPENMP  # requires autoconf 2.62 or newer, sets OPENMP_CXXFLAGS if successful
 
 AM_CONDITIONAL([WANT_OMP], [test "x$OPENMP_CXXFLAGS" != "x"])
+
+# M Pique: Check for libzip library availability, May 2020. Used by targetfile.cc
+# The AC_COMPILE.. is what is recommended but does not seem to work in autoconf 2.69,
+#  the most recent available on CentOS 'yum'
+#AC_COMPILE_IF_ELSE([AC_LANG_SOURCE([[#include <zip.h>]])],
+#	[HAVE_LIBZIP=yes])
+AC_TRY_CPP([#include <zip.h>], [HAVE_LIBZIP=yes], [HAVE_LIBZIP=])
+AM_CONDITIONAL([WANT_LIBZIP], [test "$HAVE_LIBZIP" = yes])
+
 
 
 # See "automake" manual, version 1.10, section 10.5 (Python)

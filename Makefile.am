@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-# $Id: Makefile.am,v 1.52 2018/09/13 20:18:45 mp Exp $
+# $Id: Makefile.am,v 1.53 2020/05/21 15:31:46 mp Exp $
 # 
 # AutoDock  
 # 
@@ -129,6 +129,7 @@ autodock4_SOURCES += \
     success.cc \
     support.cc \
     swap.cc \
+    targetfile.cc \
     threadlog.cc \
     timesys.cc \
     timesyshms.cc \
@@ -237,6 +238,7 @@ autodock4_SOURCES += \
 		success.h \
 		support.h \
 		swap.h \
+		targetfile.h \
 		threadlog.h \
 		timesys.h \
 		timesyshms.h \
@@ -332,6 +334,7 @@ autodock4_omp_SOURCES += \
     success.cc \
     support.cc \
     swap.cc \
+    targetfile.cc \
     threadlog.cc \
     timesys.cc \
     timesyshms.cc \
@@ -440,6 +443,7 @@ autodock4_omp_SOURCES += \
 		success.h \
 		support.h \
 		swap.h \
+		targetfile.h \
 		threadlog.h \
 		timesys.h \
 		timesyshms.h \
@@ -466,6 +470,14 @@ AM_CXXFLAGS = -O3 # Agressive optimization
 AM_CXXFLAGS += -Wall # All warnings
 AM_CXXFLAGS += -Wno-write-strings # increase compatibility with pre 4.x compilers for string handling
 
+AM_LDFLAGS = 
+
+# M Pique May 2020 support for libzip, see targetfile.cc
+if WANT_LIBZIP
+AM_CXXFLAGS += -DHAVE_ZIP_H
+AM_LDFLAGS += -lzip
+endif
+
 if WANT_OMP  
 # M Pique - I'm not sure which of these are really necessary
 # could this be replaced by :  AC_SUBST(AM_CXXFLAGS,"$OPENMP_CXXFLAGS")
@@ -478,7 +490,6 @@ autodock4_omp_LDADD = $(autodock4_LDADD)
 endif
 
 
-
 #  M Pique - add ASSERTQUATOK if you want error checking in qmultiply.cc
 #  M Pique - add USE_DOUBLE to define Real as double instead of float, see typedefs.h
 #  M Pique - USE_INT_AS_FOURBYTELONG is for random number seeds only and is appropriate for
@@ -489,6 +500,7 @@ AM_CPPFLAGS =  \
 	      -DUSE_DOUBLE \
 	      -DUSE_INT_AS_FOURBYTELONG \
 	      -O3
+# -DUSE_8A_NBCUTOFF 
 # AM_LDFLAGS = -g # -g is MP debug
 
 
@@ -498,8 +510,8 @@ AM_CPPFLAGS =  \
 autodock4_CPPFLAGS = $(AM_CPPFLAGS)
 autodock4_LDFLAGS = $(AM_LDFLAGS)
 
+autodock4_LDADD = $(COLINY_LDFLAGS) -lm 
 
-autodock4_LDADD = $(COLINY_LDFLAGS) -lm
 
 if WANT_BIGSTACK
     autodock4_LDFLAGS += -Wl,--stack,8388608 # Cygwin, big stacksize
@@ -624,6 +636,7 @@ endif
 	cp $(srcdir)/Tests/*.dpf  $$outputdir/Testruns;\
 	cp $(srcdir)/Tests/*.pdbqt  $$outputdir/Testruns;\
 	cp $(srcdir)/Tests/*.map*  $$outputdir/Testruns;\
+	ln -f $(srcdir)/Tests/*.trg  $$outputdir/Testruns;\
 	chmod -fR a+w $$outputdir/Testruns;
 	-cd Testruns; rm -f test_*.dlg ; \
 	python ./test_autodock4.py -d . -e ../autodock4$(EXEEXT) -o . ;
