@@ -1,6 +1,6 @@
 /*
 
- $Id: parse_dpf_line.cc,v 1.43 2014/06/12 01:44:07 mp Exp $
+ $Id: parse_dpf_line.cc,v 1.44 2020/05/21 15:35:51 mp Exp $
 
  AutoDock 
 
@@ -157,6 +157,10 @@ int parse_dpf_line( const char line[] )
 	      {"scale_eintermol", DPF_SCALE_EINTERMOL},
               {"parameter_library", DPF_PARAMETER_LIBRARY}, 
               {"parameter_file", DPF_PARAMETER_LIBRARY} 
+              , {"target", DPF_TARGETFILE} 
+              , {"targetfile", DPF_TARGETFILE} 
+              , {"target_file", DPF_TARGETFILE} 
+              , {"target_close", DPF_TARGETFILE_CLOSE} 
               , {"ligand_types", DPF_LIGAND_TYPES}      
               , {"unbound", DPF_UNBOUND}      
               , {"epdb", DPF_EPDB}      

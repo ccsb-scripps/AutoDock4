@@ -1,5 +1,5 @@
 /* AutoDock
- $Id: main.cc,v 1.220 2020/05/07 21:19:43 mp Exp $
+ $Id: main.cc,v 1.221 2020/05/21 15:35:51 mp Exp $
 
 **  Function: Performs Automated Docking of Small Molecule into Macromolecule
 **Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
@@ -122,13 +122,15 @@ Eval evaluate; // used by the search methods that are not yet thread-safe
 int sel_prop_count = 0; // gs.cc debug switch
 
 
-static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.220 2020/05/07 21:19:43 mp Exp $"};
+static const char* const ident[] = {ident[1], "@(#)$Id: main.cc,v 1.221 2020/05/21 15:35:51 mp Exp $"};
 
 
 
 
 // static (local to this source file main.cc) DPF-parsing state variables: 
 
+static Boole B_found_target_file = FALSE; // was a target file (zip archive) specified?
+static Boole B_found_multiple_target_files = FALSE; // were too many target files specified?
 static Boole parameter_library_found = FALSE; // was atom parm file specified? (not required)
 static Boole B_found_about_keyword = FALSE; //set false by 'move' true by 'about'
 static Boole B_found_tran0_keyword = FALSE; //set false by 'move' true by 'tran0'
@@ -223,6 +225,7 @@ char autodock_parameter_version[LINE_LEN]; //eg 4.1.1
 
 // filename max length is taken from system include file
 char FN_parameter_library[PATH_MAX];
+char FN_targetfilename[PATH_MAX];
 char FN_ligand[PATH_MAX];
 char FN_flexres[PATH_MAX];
 char FN_rms_ref_crds[PATH_MAX];
@@ -560,13 +563,13 @@ float pso_rvmax = DegreesToRadians(50.0);
 PSO_Options pso_options ; //  MP in progress
 
 
-if (NULL!=getenv("ADdebug")) printf("AD startup point 3.0 %ld\n", sizeof(GridMapSetInfo)); fflush(stdout);
+if (NULL!=getenv("ADdebug")) printf("AD startup point 3.0 %lu\n", (long unsigned int) sizeof(GridMapSetInfo)); fflush(stdout);
 info = (GridMapSetInfo *) calloc(1, sizeof(GridMapSetInfo) );
 if(info == NULL) stop("failed to allocate grid info structure");
-if (NULL!=getenv("ADdebug")) printf("AD startup point 3.1 %ld\n", sizeof(EnergyTables)); fflush(stdout);
+if (NULL!=getenv("ADdebug")) printf("AD startup point 3.1 %lu\n", (long unsigned int) sizeof(EnergyTables)); fflush(stdout);
 ad_energy_tables = (EnergyTables *) calloc(1, sizeof(EnergyTables) );
 if(ad_energy_tables == NULL)  stop("failed to allocate energy tables");
-if (NULL!=getenv("ADdebug")) printf("AD startup point 3.2 %ld\n", sizeof(EnergyTables)); fflush(stdout);
+if (NULL!=getenv("ADdebug")) printf("AD startup point 3.2 %lu\n", (long unsigned int) sizeof(EnergyTables)); fflush(stdout);
 unbound_energy_tables = (EnergyTables *) calloc(1, sizeof(EnergyTables) );
 if(unbound_energy_tables == NULL)  stop("failed to allocate unbound energy tables");
 if (NULL!=getenv("ADdebug")) printf("AD startup point 3.3\n"); fflush(stdout);
@@ -758,6 +761,8 @@ F_lnH = ((Real)log(0.5));
 ** Determine initial output level before we output anything.
 ** We must parse the entire DPF -- silently -- for any outlev settings
 ** or flexible residues file specification
+** We also look for (at most one) 'target <file>' specification and invoke
+** the target-file preprocessor to return an open file pointer to a new DPF
 */
 
 while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile */
@@ -788,6 +793,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
         get1arg( line, "%*s %s", FN_flexres, "FLEXIBLE_RESIDUES" );
         break;
 
+    case DPF_TARGETFILE:
+	// If a target file was specified, after printing the banner
+	//  main will invoke the target-file preprocessor 
+	// If more than target command appears in the DPF, we will then print an error and stop.
+	// If no name is specified, FN_targetfilename will be empty and this will be checked then too.
+	if (B_found_target_file) B_found_multiple_target_files = TRUE;
+	strcpy(FN_targetfilename, "");
+	sscanf( line, "%*s %s", FN_targetfilename);
+	B_found_target_file = TRUE;
+        break;
     default:
         break;
     } // switch( dpf_keyword )
@@ -795,6 +810,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 
 // Rewind DPF, so we can resume normal parsing
 (void) rewind( parFile );
+
 
 
 //______________________________________________________________________________
@@ -805,7 +821,7 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 1 PARSING-DPF parFile 
 banner( version_num.c_str(), outlev, logFile);
 
 if ( outlev >= LOGBASIC ) {
-(void) fprintf(logFile, "                     main.cc  $Revision: 1.220 $\n\n");
+(void) fprintf(logFile, "                     main.cc  $Revision: 1.221 $\n\n");
 (void) fprintf(logFile, "                   Compiled on %s at %s\n\n\n", __DATE__, __TIME__);
 }
 
@@ -826,6 +842,41 @@ if(outlev>=LOGMIN) {
 	pr(logFile, "Current Working Directory = \"%s\"\n", FN_current_working_directory);
 }
 
+// if the DPF specified a target file, pass the current DPF parfile (FILE *)
+//  to the target file preprocessor, which will create and return a modified DPF (FILE *)
+//  open and rewound for reading. See targetfile.cc   M Pique 2020-05
+if (B_found_target_file) {
+	if (target_file_capability() == 0) {
+		stop("Sorry, this version of AutoDock cannot read 'target' files");
+		}
+	if (B_found_multiple_target_files) {
+		stop("multiple target files not allowed");
+	}
+	if (0==strlen(FN_targetfilename)) {
+		stop("syntax error or missing file name in DPF 'target' line");
+	}
+	if(outlev>=LOGMIN) (void) fprintf(logFile,"Reading contents of target file \"%s\"\n", FN_targetfilename);
+	/*
+	int target_file_open ( const FILE * dpf_in [used], 
+		FILE ** dpf_out [is set] , char **dpf_out_filename [is set] , 
+		const int outLev, FILE *logFile );
+		Note target_file_open does not need the target file name as it will rewind the DPF and find it then.
+	*/
+	FILE * newparFile;
+	int rc_tfo;
+	char newparFilename[PATH_MAX]; // debugging use only - cannot be fopen()ed because target_file_open will have unlinked it.
+	rc_tfo=target_file_open ( parFile, &newparFile, newparFilename, outlev, logFile);
+	if (rc_tfo == 0) {
+		// fatal error, give up
+		fprintf(logFile, "fatal problem extracting target file \"%s\", see previous log file messages\n", FN_targetfilename);
+		stop("fatal problem extracting target file");
+	}
+	fclose(parFile);
+	parFile = newparFile;
+	if(outlev>LOGMIN) (void) fprintf(logFile,"Substituting target DPF %s for original DPF\n",
+		newparFilename);
+	}
+	
 
 //______________________________________________________________________________
 if(outlev>=LOGFORADT) {
@@ -4932,6 +4983,17 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 
 /*____________________________________________________________________________*/
 
+    case DPF_TARGETFILE_CLOSE:
+        /*
+         * Remove temporary file(s) created by the target_file manager 
+         */
+        nfields = sscanf( line, "%*s %s", param[0] );
+        target_file_remove_tfiles (nfields==1? param[0]:"all");
+        break;
+/*____________________________________________________________________________*/
+
+/*____________________________________________________________________________*/
+
     case DPF_COPYRIGHT:
         /*
          * 'copyright' to show the AutoDock copyright notice
@@ -4974,6 +5036,16 @@ while( fgets(line, LINE_LEN, parFile) != NULL ) { /* Pass 2 PARSING-DPF parFile 
 pr( logFile, ">>> Closing the docking parameter file (DPF)...\n" );
 (void) fclose( parFile );
 
+/*
+ * Delete any temp files created by extraction from a "target" zip directory.
+ * Normally this is done automatically when AutoDock main() sees the
+ * DPF line "target_close all" line that target_file_open() inserted into the
+ * re-written DPF, but it is harmless to call it here to be sure.
+ */
+if (B_found_target_file) {
+	pr( logFile, ">>> Removing target temporary files: ...\n" );
+	(void) target_file_remove_tfiles("all");
+}
 
 //______________________________________________________________________________
 /*

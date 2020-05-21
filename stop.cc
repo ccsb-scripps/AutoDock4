@@ -1,6 +1,6 @@
 /*
 
- $Id: stop.cc,v 1.11 2018/09/13 20:25:46 mp Exp $
+ $Id: stop.cc,v 1.12 2020/05/21 15:35:51 mp Exp $
 
  AutoDock 
 
@@ -32,6 +32,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include <stdlib.h>
 #include <string>
 #include "stop.h"
+#include "targetfile.h" 
 
 using std::string;
 
@@ -43,6 +44,11 @@ extern FILE *logFile;
 void stop(const char *const reason)
 /*----------------------------------------------------------------------------*/
 {
+    
+    /* remove any files created by extraction from a zip archive, see targetfile.cc
+     * This call is harmless if no files were created 
+     */
+    (void) target_file_remove_tfiles("all");
 
     if (logFile == stdout) {
 	fprintf( logFile, "%s: FATAL ERROR: %s\n", programname, reason);

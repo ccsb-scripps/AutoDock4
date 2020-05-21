@@ -1,6 +1,6 @@
 /*
 
- $Id: setflags.cc,v 1.38 2020/05/07 21:20:26 mp Exp $
+ $Id: setflags.cc,v 1.39 2020/05/21 15:35:51 mp Exp $
 
  AutoDock 
 
@@ -36,6 +36,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "version.h"
 #include "banner.h"
 #include "strindex.h"
+#include "targetfile.h" // for target_file_capability()
 
 
 extern FILE *parFile;
@@ -104,7 +105,6 @@ int setflags( /* not const */ int argc, const char ** /* not const */ argv, cons
     char logFileName[PATH_MAX+2];
     static char * p_logFileName = strdup("stdout"); // change with -l <NAME> or defaults
      // to parFile name with last 3 chars changed from "dpf" to "dlg"
-printf("hello,world 3\n"); fflush(stdout);
     /*
      * see autoglobal.h for initialization of debug and logicals...
      */
@@ -238,6 +238,8 @@ printf("hello,world 3\n"); fflush(stdout);
 #else
 	    fprintf(stdout, " no\n");
 #endif
+            fprintf(stdout, "  Target file reading support:  %s\n",
+		(target_file_capability() > 0)?"yes":"no");
             fprintf(stdout, "  Quaternion arithmetic validation(ASSERTQUATOK): ");
 #ifdef ASSERTQUATOK
 	    fprintf(stdout, " yes\n");

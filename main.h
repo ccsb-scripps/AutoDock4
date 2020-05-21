@@ -1,6 +1,6 @@
 /*
 
- $Id: main.h,v 1.12 2010/08/27 00:05:07 mp Exp $
+ $Id: main.h,v 1.13 2020/05/21 15:35:51 mp Exp $
 
  AutoDock 
 
@@ -57,6 +57,7 @@ Copyright (C) 2009 The Scripps Research Institute. All rights reserved.
 #include "strindex.h"
 #include "structs.h"
 #include "success.h"
+#include "targetfile.h"
 #include "timesyshms.h"
 #include "writePDBQT.h"
 

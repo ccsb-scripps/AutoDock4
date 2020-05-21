@@ -1,6 +1,6 @@
 /*
 
- $Id: dpftoken.h,v 1.36 2012/10/30 20:15:10 mp Exp $
+ $Id: dpftoken.h,v 1.37 2020/05/21 15:35:50 mp Exp $
 
  AutoDock 
 
@@ -182,6 +182,8 @@ enum DpfTokens {
   DPF_OUTPUT_POP_STATS         ,
   DPF_OUTPUT_RESNUM_AS         ,
   DPF_SMOOTH                   ,
+  DPF_TARGETFILE               ,
+  DPF_TARGETFILE_CLOSE         ,
 };
 #endif
 /* EOF */
