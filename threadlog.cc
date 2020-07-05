@@ -2,7 +2,7 @@
 
 /*
 
- $Id: threadlog.cc,v 1.6 2019/06/26 19:14:43 mp Exp $
+ $Id: threadlog.cc,v 1.7 2020/07/05 16:44:32 mp Exp $
 
  AutoDock 
 
@@ -69,10 +69,29 @@ threadLogOpen(int j)
 		stop(msg);
 	}
 	// note that tempnam does its own malloc() and is thread-safe MPique
-	tfilename[j] = tempnam(NULL, "autod");
+	// We look in environment variables to choose the directory, hoping this will work on Windows
+	char *tempdir = NULL;
+	if (tempdir==NULL) tempdir = getenv("TMP"); 
+	if (tempdir==NULL) tempdir = getenv("TMPDIR"); 
+	if (tempdir==NULL) tempdir = getenv("TEMP"); 
+#ifdef TEMPDIR_DEBUG
+	if (tempdir!=NULL) fprintf(stderr, "tempdir chosen as '%s'\n", tempdir);
+	else fprintf(stderr, "tempdir is default value NULL\n");
+#endif
+
+	tfilename[j] = tempnam(tempdir, "autod");
+#ifdef TEMPDIR_DEBUG
+	fprintf(stderr, "tempnam is '%s'\n", tfilename[j]);
+	fflush(stderr);
+#endif
+
 	tfileptr[j] = fopen(tfilename[j], "w");
 
 	if(NULL==tfileptr[j]) stop("cannot allocate or open temp log file");
+#ifdef TEMPDIR_DEBUG
+	if (tempdir!=NULL) fprintf(tfileptr[j], "thread %d tempdir chosen as '%s'\n", j, tempdir);
+	else fprintf(tfileptr[j], "thread %d tempdir is default value NULL\n",j);
+#endif
 	return tfileptr[j];
 	}
 void
