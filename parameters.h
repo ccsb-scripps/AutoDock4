@@ -1,6 +1,6 @@
 /*
 
- $Id: parameters.h,v 1.6 2010/10/23 00:05:02 rhuey Exp $
+ $Id: parameters.h,v 1.7 2020/08/25 20:22:05 mp Exp $
 
  AutoDock 
 
@@ -40,7 +40,8 @@ typedef struct parameter_entry
 {				// was "parm_info" in earlier AutoGrid 4 code
   char autogrid_type[MAX_LEN_AUTOGRID_TYPE + 1];	/* autogrid_type is a string based on babel_types assigned by PyBabel */
   double Rij;			/* Lennard-Jones equilibrium separation */
-  double epsij;			/* Lennard-Jones energy well-depth */
+  double epsij;			/* Lennard-Jones energy well-depth weighted by coeff_vdW */
+  double epsij_unweighted;	/* Lennard-Jones energy well-depth */
   double xs_radius;     /* AutoDock vina xs_vdw_radius */
   double vol;			/* solvation volume */
   double solpar;		/* solvation parameter */
@@ -52,7 +53,8 @@ typedef struct parameter_entry
 				   A1: acceptor of 1 directional hbond
 				   A2: acceptor of 2 directional hbonds */
   double Rij_hb;		/* 12-10 Lennard-Jones equilibrium separation */
-  double epsij_hb;		/* 12-10 Lennard-Jones energy well-depth */
+  double epsij_hb;		/* 12-10 Lennard-Jones energy well-depth weighted by coeff_hbond */
+  double epsij_hb_unweighted;	/* 12-10 Lennard-Jones energy well-depth */
   int rec_index;		/* used to set up receptor atom_types */
   int map_index;		/* used to set up map atom_types */
   int bond_index;		/* used to set up bonds; corresponds to the enum in mdist.h */

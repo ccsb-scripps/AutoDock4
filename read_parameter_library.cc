@@ -1,6 +1,6 @@
 /*
 
- $Id: read_parameter_library.cc,v 1.30 2014/02/01 05:14:53 mp Exp $
+ $Id: read_parameter_library.cc,v 1.31 2020/08/25 20:22:05 mp Exp $
 
  AutoDock 
 
@@ -129,11 +129,11 @@ void read_parameter_library(
                 nfields = sscanf(parameter_library_line, "%*s %s %lf %lf %lf %lf %lf %lf %d %d %d %d",
                                     thisParameter.autogrid_type,
                                     &thisParameter.Rij,
-                                    &thisParameter.epsij,
+                                    &thisParameter.epsij_unweighted,
                                     &thisParameter.vol,
                                     &thisParameter.solpar,
                                     &thisParameter.Rij_hb,
-                                    &thisParameter.epsij_hb,
+                                    &thisParameter.epsij_hb_unweighted,
                                     &int_hbond_type,
                                     &thisParameter.rec_index,
                                     &thisParameter.map_index,
@@ -158,8 +158,8 @@ void read_parameter_library(
                     thisParameter.hbond = NON;
                 }
 
-                thisParameter.epsij    *= AD4->coeff_vdW;
-                thisParameter.epsij_hb *= AD4->coeff_hbond;
+                thisParameter.epsij    = thisParameter.epsij_unweighted * AD4->coeff_vdW;
+                thisParameter.epsij_hb = thisParameter.epsij_hb_unweighted * AD4->coeff_hbond;
 
                 apm_enter(thisParameter.autogrid_type, thisParameter);
 		if(outlev >= LOGETABLES) {
@@ -169,6 +169,8 @@ void read_parameter_library(
 		    // high precision
                     pr(logFile, "\tR-eqm = %.6f Angstrom\n",
                             thisParameter.Rij);
+                    pr(logFile, "\tunweighted epsilon = %.8f\n",
+                            thisParameter.epsij_unweighted);
                     pr(logFile, "\tweighted epsilon = %.8f\n",
                             thisParameter.epsij);
                     pr(logFile, "\tAtomic fragmental volume = %.6f\n",
@@ -177,6 +179,8 @@ void read_parameter_library(
                             thisParameter.solpar);
                     pr(logFile, "\tH-bonding R-eqm = %.6f\n",
                             thisParameter.Rij_hb);
+                    pr(logFile, "\tunweighted H-bonding epsilon = %.8f\n",
+                            thisParameter.epsij_hb_unweighted);
                     pr(logFile, "\tweighted H-bonding epsilon = %.8f\n",
                             thisParameter.epsij_hb);
                     pr(logFile, "\tH-bonding type = %d,  bond index = %d\n",
@@ -282,11 +286,11 @@ void setup_parameter_library( FILE *logFile, const int outlev,
                 nfields = sscanf(parameter_library_line, "%*s %s %lf %lf %lf %lf %lf %lf %d %d %d %d",
                                     thisParameter.autogrid_type,
                                     &thisParameter.Rij,
-                                    &thisParameter.epsij,
+                                    &thisParameter.epsij_unweighted,
                                     &thisParameter.vol,
                                     &thisParameter.solpar,
                                     &thisParameter.Rij_hb,
-                                    &thisParameter.epsij_hb,
+                                    &thisParameter.epsij_hb_unweighted,
                                     &int_hbond_type,
                                     &thisParameter.rec_index,
                                     &thisParameter.map_index,
@@ -311,8 +315,8 @@ void setup_parameter_library( FILE *logFile, const int outlev,
                     thisParameter.hbond = NON;
                 }
 
-                thisParameter.epsij    *= AD4->coeff_vdW;
-                thisParameter.epsij_hb *= AD4->coeff_hbond;
+                thisParameter.epsij    = thisParameter.epsij_unweighted * AD4->coeff_vdW;
+                thisParameter.epsij_hb = thisParameter.epsij_hb_unweighted * AD4->coeff_hbond;
 #ifdef ADVINA // {
 // experimental 
     struct xs_vdw_lookup { char name[4]; float value;};
@@ -359,9 +363,11 @@ void setup_parameter_library( FILE *logFile, const int outlev,
 
 
                 if (outlev > LOGETABLES) {
-                    pr(logFile, "\tR-eqm = %5.2f Angstrom\n\tweighted epsilon = %5.3f\n\tAtomic fragmental volume = %5.3f\n\tAtomic solvation parameter = %5.3f\n\tH-bonding R-eqm = %5.3f\n\tweighted H-bonding epsilon = %5.3f\n\tH-bonding type = %d,  bond index = %d\n\n",
-                            thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
-                            thisParameter.Rij_hb, thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
+                    pr(logFile, "\tR-eqm = %5.2f Angstrom\n\tunweighted epsilon = %5.3f\tweighted epsilon = %5.3f\n\tAtomic fragmental volume = %5.3f\n\tAtomic solvation parameter = %5.3f\n\tH-bonding R-eqm = %5.3f\n\tunweighted H-bonding epsilon = %5.3f\n\tweighted H-bonding epsilon = %5.3f\n\tH-bonding type = %d,  bond index = %d\n\n",
+                            thisParameter.Rij, thisParameter.epsij_unweighted, thisParameter.epsij, 
+		   	    thisParameter.vol, thisParameter.solpar,
+                            thisParameter.Rij_hb, thisParameter.epsij_hb_unweighted,
+			    thisParameter.epsij_hb, thisParameter.hbond, thisParameter.bond_index );
                 } else {
                     pr(logFile, "\tR-eqm = %.2f Angstrom,  weighted epsilon = %.3f,\n\tAt.frag.vol. = %.3f,  At.solv.par. = %.3f,\n\tHb R-eqm = %.3f,  weighted Hb epsilon = %.3f,\n\tHb type = %d,  bond index = %d\n\n",
                             thisParameter.Rij, thisParameter.epsij, thisParameter.vol, thisParameter.solpar,
